@@ -60,6 +60,32 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
   }
 `;
 
+apiGql.GET_PRODUCT_DETAIL = gql`
+  query ProductDetail (
+    $business: String!,
+    $productId: String!
+  ) {
+    product(
+      business: $business,
+      productId: $productId
+    ) {
+      id
+      title
+      displayPrice
+      images
+      variations {
+        id
+        name
+        variationType
+        optionValues {
+          id
+          value
+        }
+      }
+    }
+  }
+`;
+
 apiGql.GET_PRODUCTS = gql`
   query ProductList($page: Int!, $size: Int!, $business: String!) {
     products(page: $page, size: $size, business: $business) {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import CurrencyNumber from './CurrencyNumber';
 import { productsMergedCartType, productsWithCategoryType, shoppingCartType } from '../propTypes';
 import { ScrollObservable } from './ScrollComponents';
+import ItemComponent from './ItemComponent';
 
 export class MainBodyComponent extends Component {
   static propTypes = {
@@ -36,38 +36,36 @@ export class MainBodyComponent extends Component {
                   </small>
                 </h3>
                 {products.map(prod => (
-                  <div key={prod.id} style={{ position: 'relative' }}>
-                    <img src={prod.images[0]} width={68} height={68} alt={prod.name} />
-                    <span style={{ display: 'inline-block', verticalAlign: 'top' }}>
-                      <div>{prod.title}</div>
-                      <div><CurrencyNumber money={prod.displayPrice} /></div>
-                    </span>
-                    <span style={{ display: 'inline-block', position: 'absolute', top: '30%', right: 5 }}>
-                      {prod.cartQuantity > 0 ? <button onClick={() => {
-                        this.props.addOrUpdateShoppingCartItem({
-                          variables: {
-                            action: 'edit',
-                            business: this.props.config.business,
-                            productId: prod.id,
-                            sessionId: this.props.sessionId,
-                            quantity: prod.cartQuantity - 1,
-                          }
-                        });
-                      }} disabled={!prod.canDecreaseQuantity}>-</button> : null}
-                      {prod.cartQuantity > 0 ? prod.cartQuantity : null}
-                      <button onClick={() => {
-                        this.props.addOrUpdateShoppingCartItem({
-                          variables: {
-                            action: 'edit',
-                            business: this.props.config.business,
-                            productId: prod.id,
-                            sessionId: this.props.sessionId,
-                            quantity: prod.cartQuantity + 1,
-                          }
-                        });
-                      }}>+</button>
-                    </span>
-                  </div>
+                  <ItemComponent
+                    key={prod.id}
+                    image={prod.images[0]}
+                    title={prod.title}
+                    price={prod.displayPrice}
+                    quantity={prod.cartQuantity}
+                    decreaseDisabled={!prod.canDecreaseQuantity}
+                    onDecrease={() => {
+                      this.props.addOrUpdateShoppingCartItem({
+                        variables: {
+                          action: 'edit',
+                          business: this.props.config.business,
+                          productId: prod.id,
+                          sessionId: this.props.sessionId,
+                          quantity: prod.cartQuantity - 1,
+                        }
+                      });
+                    }}
+                    onIncrease={() => {
+                      this.props.addOrUpdateShoppingCartItem({
+                        variables: {
+                          action: 'edit',
+                          business: this.props.config.business,
+                          productId: prod.id,
+                          sessionId: this.props.sessionId,
+                          quantity: prod.cartQuantity + 1,
+                        }
+                      });
+                    }}
+                  />
                 ))}
               </article>
             </ScrollObservable>

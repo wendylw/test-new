@@ -4,6 +4,7 @@ import MainBody from './components/MainBody';
 import MainMenu from './components/MainMenu';
 import CartItems from './components/CartItems';
 import PayButton from './components/PayButton';
+import ProductDetails from './components/ProductDetails';
 
 class Main extends React.Component {
   render() {
@@ -33,6 +34,11 @@ class Main extends React.Component {
         <hr />
         <h3>PayButton</h3>
         <PayButton />
+
+        <hr />
+        <hr />
+        <h3>ProductDetails</h3>
+        <ProductDetails productId="5b44788bbb36740d5975086b" />
       </div>
     );
   }
