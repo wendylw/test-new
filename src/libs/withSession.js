@@ -5,7 +5,7 @@ const withSession = TheComponent => class WithSessionComponent extends React.Com
 
   componentDidMount = async () => {
     // TODO: call real session info api for sync sessionInfo
-    const { sessionId } = await Promise.resolve({ sessionId: 'Qkf6WNhXPgLVHKo1pJTRLvin2OqKTOfb' });
+    const { sessionId } = await Promise.resolve({ sessionId: '91gmEKMS3TF5ycvbaRaFJhmCrdgfQPrh' });
     this.setState({ sessionId });
   };
 

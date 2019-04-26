@@ -7,12 +7,16 @@ const observableContainer = {};
 window.addEventListener('scroll', debounce((e) => {
   // TODO: send global event to tell which one is one the top of viewport
   const obs = Object.values(observableContainer);
-  const ob = obs
+
+  const [, ob] = obs
     .map(ob => [elementPartialOffsetTop(ob), ob])
     .sort(([k1], [k2]) => k1 - k2)
-    .find(([k]) => k > 0)
-    .pop();
+    .find(([k]) => k > 0) || [];
 
+  if (!ob) {
+    return;
+  }
+  
   console.debug(ob.getAttribute('scrollname'));
 
   document.dispatchEvent(new CustomEvent('SCROLL_FOUND_TOP', {
@@ -35,25 +39,25 @@ function debounce(fn, timeout = 50) {
 }
 
 // TODO: move into global libary
-function elementPartialInViewport(el) {
-  var top = el.offsetTop;
-  var left = el.offsetLeft;
-  var width = el.offsetWidth;
-  var height = el.offsetHeight;
+// function elementPartialInViewport(el) {
+//   var top = el.offsetTop;
+//   var left = el.offsetLeft;
+//   var width = el.offsetWidth;
+//   var height = el.offsetHeight;
 
-  while(el.offsetParent) {
-    el = el.offsetParent;
-    top += el.offsetTop;
-    left += el.offsetLeft;
-  }
+//   while(el.offsetParent) {
+//     el = el.offsetParent;
+//     top += el.offsetTop;
+//     left += el.offsetLeft;
+//   }
 
-  return (
-    top < (window.pageYOffset + window.innerHeight) &&
-    left < (window.pageXOffset + window.innerWidth) &&
-    (top + height) > window.pageYOffset &&
-    (left + width) > window.pageXOffset
-  );
-}
+//   return (
+//     top < (window.pageYOffset + window.innerHeight) &&
+//     left < (window.pageXOffset + window.innerWidth) &&
+//     (top + height) > window.pageYOffset &&
+//     (left + width) > window.pageXOffset
+//   );
+// }
 
 // TODO: move into global library
 function elementPartialOffsetTop(el) {
@@ -65,10 +69,7 @@ function elementPartialOffsetTop(el) {
     top += el.offsetTop;
   }
 
-  return (
-    // top < (window.pageYOffset + window.innerHeight) &&
-    (top + height) - window.pageYOffset
-  );
+  return (top + height) - window.pageYOffset;
 }
 
 

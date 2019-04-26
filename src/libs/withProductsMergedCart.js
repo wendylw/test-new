@@ -5,7 +5,6 @@ import withShoppingCart from "./withShoppingCart";
 
 const mergePwcAndShoppingCart = (productsWithCategory, shoppingCart) => {
   if (!shoppingCart || !Array.isArray(productsWithCategory)) {
-    console.warn('shoppingCart or productsWithCategory is not ready yet.');
     return null;
   }
 

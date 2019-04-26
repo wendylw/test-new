@@ -15,6 +15,10 @@ class CartItemsComponent extends Component {
   render() {
     const { shoppingCart } = this.props;
 
+    if (!shoppingCart) {
+      return null;
+    }
+
     return (
       <div>
         {
@@ -22,6 +26,7 @@ class CartItemsComponent extends Component {
             id,
             title,
             productId,
+            variations = [],
             variationTexts,
             displayPrice,
             quantity,
@@ -31,6 +36,7 @@ class CartItemsComponent extends Component {
               <img src={image} width={68} height={68} alt={title} />
               <span style={{ display: 'inline-block', verticalAlign: 'top' }}>
                 <div>{title}</div>
+                <div>{variationTexts.join(', ')}</div>
                 <div><CurrencyNumber money={displayPrice} /></div>
               </span>
               <span style={{ display: 'inline-block', position: 'absolute', top: '30%', right: 5 }}>
@@ -42,18 +48,20 @@ class CartItemsComponent extends Component {
                       productId,
                       sessionId: this.props.sessionId,
                       quantity: quantity - 1,
+                      variations: variations.map(({ variationId, optionId }) => ({ variationId, optionId })),
                     }
                   });
-                }} disabled={quantity > 0}>-</button> : null}
+                }} disabled={quantity === 0}>-</button> : null}
                 {quantity}
                 <button onClick={() => {
                   this.props.addOrUpdateShoppingCartItem({
                     variables: {
                       action: 'edit',
                       business: this.props.config.business,
-                      productId: id,
+                      productId,
                       sessionId: this.props.sessionId,
                       quantity: quantity + 1,
+                      variations: variations.map(({ variationId, optionId }) => ({ variationId, optionId })),
                     }
                   });
                 }}>+</button>

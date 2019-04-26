@@ -8,6 +8,10 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     productId
     title
     variationTexts
+    variations {
+      variationId
+      optionId
+    }
     displayPrice
     quantity
     image
