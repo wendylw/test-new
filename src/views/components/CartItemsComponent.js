@@ -40,7 +40,7 @@ class CartItemsComponent extends Component {
                 <div><CurrencyNumber money={displayPrice} /></div>
               </span>
               <span style={{ display: 'inline-block', position: 'absolute', top: '30%', right: 5 }}>
-                {quantity > 0 ? <button onClick={() => {
+                {quantity >= 0 ? <button onClick={() => {
                   this.props.addOrUpdateShoppingCartItem({
                     variables: {
                       action: 'edit',
