@@ -1,14 +1,16 @@
 import React from 'react';
 import { compose } from "react-apollo";
-import withProducts from "./withProducts";
+import withOnlineCategory from "./withOnlineCategory";
 import withShoppingCart from "./withShoppingCart";
 
-const mergePwcAndShoppingCart = (productsWithCategory, shoppingCart) => {
-  if (!shoppingCart || !Array.isArray(productsWithCategory)) {
+const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
+  if (!shoppingCart || !Array.isArray(onlineCategory)) {
     return null;
   }
 
-  productsWithCategory.forEach(({ category, products }) => {
+  onlineCategory.forEach((category) => {
+    const { products } = category;
+
     category.cartQuantity = 0;
     products.forEach(product => {
       product.cartQuantity = 0;
@@ -23,33 +25,29 @@ const mergePwcAndShoppingCart = (productsWithCategory, shoppingCart) => {
     });
   });
 
-  console.log('productsWithCategory (cart merged) => %o', productsWithCategory);
+  console.log('onlineCategory (cart merged) => %o', onlineCategory);
 
-  return productsWithCategory;
+  return onlineCategory;
 }
 
-const withProductsMergedCart = compose(
-  withProducts({
-    props: ({ gqlProducts/*, ownProps */ }) => {
-      const loading = gqlProducts.loading;
+const withOnlineCategoryMergedCart = compose(
+  withOnlineCategory({
+    props: ({ gqlProducts: { loading, onlineCategory } }) => {
       const props = { loading };
 
       if (!loading) {
         // TODO: remove it BEGIN
-        gqlProducts.productsWithCategory = require('./mocks/productsWithCategory.json');
+        // gqlProducts.onlineCategory = require('./mocks/onlineCategory.json');
         // TODO: remove it END
 
-        Object.assign(props, {
-          productsWithCategory: gqlProducts.productsWithCategory,
-        });
+        Object.assign(props, { onlineCategory });
       }
 
       return props;
     },
   }),
   withShoppingCart({
-    props: ({ gqlShoppingCart }) => {
-      const loading = gqlShoppingCart.loading;
+    props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
       const props = { loading };
 
       if (!loading) {
@@ -57,23 +55,21 @@ const withProductsMergedCart = compose(
         // gqlShoppingCart.shoppingCart = require('./mocks/shoppingCart.json');
         // TODO: remove it END
 
-        Object.assign(props, {
-          shoppingCart: gqlShoppingCart.shoppingCart,
-        });
+        Object.assign(props, { shoppingCart });
       }
 
       return props;
     },
   }),
-  TheComponent => ({ shoppingCart, productsWithCategory, children, ...props }) => {
-    const productsMergedCart = mergePwcAndShoppingCart(productsWithCategory, shoppingCart);
+  TheComponent => ({ shoppingCart, onlineCategory, children, ...props }) => {
+    const onlineCategoryMergedShoppingCart = mergeWithShoppingCart(onlineCategory, shoppingCart);
 
     return (
       <TheComponent
         {...props}
         shoppingCart={shoppingCart}
-        productsWithCategory={productsWithCategory}
-        productsMergedCart={productsMergedCart}
+        onlineCategory={onlineCategory}
+        onlineCategoryMergedShoppingCart={onlineCategoryMergedShoppingCart}
       >
         {children}
       </TheComponent>
@@ -81,4 +77,4 @@ const withProductsMergedCart = compose(
   },
 )
 
-export default withProductsMergedCart;
+export default withOnlineCategoryMergedCart;

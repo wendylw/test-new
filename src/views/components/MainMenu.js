@@ -1,7 +1,7 @@
 import { compose } from "react-apollo";
 import MainMenuComponent from "./MainMenuComponent";
-import withProductsMergedCart from '../../libs/withProductsMergedCart';
+import withOnlineCategoryMergedCart from "../../libs/withOnlineCategoryMergedShoppingCart";
 
 export default compose(
-  withProductsMergedCart,
+  withOnlineCategoryMergedCart,
 )(MainMenuComponent);

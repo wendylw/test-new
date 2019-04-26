@@ -38,7 +38,7 @@ apiGql.GET_LOCAL_STATE = gql`
   }
 `;
 
-apiGql.GET_ONLINE_CATEGORY = gql`
+apiGql.GET_ONLINE_CATEGORY_SIMPLE = gql`
   ${apiGql.FRAGMENT_ONLINE_CATEGORY}
   query OnlineCategory($business: String!) {
     onlineCategory(business: $business) {
@@ -99,14 +99,12 @@ apiGql.GET_PRODUCTS = gql`
   }
 `;
 
-apiGql.GET_PRODUCTS_WITH_CATEGORY = gql`
-  query ProductsWithCategory($business: String!) {
-    productsWithCategory(business: $business) {
-      category {
-        id
-        name
-        isEnabled
-      }
+apiGql.GET_ONLINE_CATEGORY = gql`
+  query OnlineCategory($business: String!) {
+    onlineCategory(business: $business) {
+      id
+      name
+      isEnabled
       products {
         id
         title

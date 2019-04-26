@@ -12,12 +12,10 @@ export const shoppingCartType = PropTypes.shape({
   })),
 });
 
-export const productsWithCategoryType = PropTypes.arrayOf(PropTypes.shape({
-  category: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    isEnabled: PropTypes.bool,
-  }),
+export const onlineCategoryType = PropTypes.arrayOf(PropTypes.shape({
+  id: PropTypes.string,
+  name: PropTypes.string,
+  isEnabled: PropTypes.bool,
   products: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     title: PropTypes.string,
@@ -35,13 +33,11 @@ export const productsWithCategoryType = PropTypes.arrayOf(PropTypes.shape({
   })),
 }));
 
-export const productsMergedCartType = PropTypes.arrayOf(PropTypes.shape({
-  category: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    isEnabled: PropTypes.bool,
-    cartQuantity: PropTypes.number, // @added
-  }),
+export const onlineCategoryMergedShoppingCartType = PropTypes.arrayOf(PropTypes.shape({
+  id: PropTypes.string,
+  name: PropTypes.string,
+  isEnabled: PropTypes.bool,
+  cartQuantity: PropTypes.number, // @added
   products: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     title: PropTypes.string,

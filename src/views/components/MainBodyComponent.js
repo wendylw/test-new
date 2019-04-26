@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import { productsMergedCartType, productsWithCategoryType, shoppingCartType } from '../propTypes';
+import { onlineCategoryMergedShoppingCartType, onlineCategoryType, shoppingCartType } from '../propTypes';
 import { ScrollObservable } from './ScrollComponents';
 import ItemComponent from './ItemComponent';
 
 export class MainBodyComponent extends Component {
   static propTypes = {
-    productsWithCategory: productsWithCategoryType,
+    onlineCategory: onlineCategoryType,
     shoppingCart: shoppingCartType,
-    productsMergedCart: productsMergedCartType,
+    onlineCategoryMergedShoppingCart: onlineCategoryMergedShoppingCartType,
   }
 
   state = {
@@ -15,16 +15,16 @@ export class MainBodyComponent extends Component {
   };
 
   render() {
-    const { productsMergedCart } = this.props;
+    const { onlineCategoryMergedShoppingCart } = this.props;
 
-    if (!Array.isArray(productsMergedCart)) {
+    if (!Array.isArray(onlineCategoryMergedShoppingCart)) {
       return null;
     }
 
     return (
       <div>
         {
-          productsMergedCart.map(({ category, products }) => (
+          onlineCategoryMergedShoppingCart.map((category) => (
             <ScrollObservable name={category.name} key={category.id}>
               <article key={category.id}>
                 <h3 style={{ backgroundColor: '#efefef' }}>
@@ -35,7 +35,7 @@ export class MainBodyComponent extends Component {
                     {`${category.cartQuantity} Items`}
                   </small>
                 </h3>
-                {products.map(prod => (
+                {category.products.map(prod => (
                   <ItemComponent
                     key={prod.id}
                     image={prod.images[0]}

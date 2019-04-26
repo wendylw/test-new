@@ -8,14 +8,13 @@ export default compose(
     table: props.config && props.config.table,
   })),
   withOnlineStoreInfo({
-    props: ({ gqlOnlineStoreInfo/*, ownProps */ }) => {
-      const loading = gqlOnlineStoreInfo.loading;
+    props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
       const props = { loading };
 
-      if (!loading) {
+      if (!loading && onlineStoreInfo) {
         Object.assign(props, {
-          logo: gqlOnlineStoreInfo.onlineStoreInfo.logo,
-          title: gqlOnlineStoreInfo.onlineStoreInfo.storeName,
+          logo: onlineStoreInfo.logo,
+          title: onlineStoreInfo.storeName,
         });
       }
 

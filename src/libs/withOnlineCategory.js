@@ -1,16 +1,11 @@
 import { graphql, compose } from 'react-apollo';
 import apiGql from '../apiGql';
-import withConfig from './withConfig';
+import config from '../config';
 
 export default options => compose(
-  withConfig(),
-  graphql(apiGql.GET_PRODUCTS_WITH_CATEGORY, {
+  graphql(apiGql.GET_ONLINE_CATEGORY, {
     name: 'gqlProducts',
-    options: ({ config }) => {
-      if (!config) {
-        return null;
-      }
-
+    options: () => {
       return ({
         variables: {
           business: config.business,

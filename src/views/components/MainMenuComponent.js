@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
-import { productsMergedCartType } from '../propTypes';
+import { onlineCategoryMergedShoppingCartType } from '../propTypes';
 import { ScrollObserver } from './ScrollComponents';
 
 class MainMenuComponent extends Component {
   static propTypes = {
-    productsMergedCart: productsMergedCartType,
+    onlineCategoryMergedShoppingCart: onlineCategoryMergedShoppingCartType,
   }
 
   render() {
-    const { productsMergedCart } = this.props;
+    const { onlineCategoryMergedShoppingCart } = this.props;
 
-    if (!productsMergedCart) {
+    if (!onlineCategoryMergedShoppingCart) {
       return null;
     }
 
     return (
       <div style={styles.wrapper}>
         {
-          productsMergedCart.map(({ category }) => (
+          onlineCategoryMergedShoppingCart.map((category) => (
             <ScrollObserver key={category.id} forName={category.name}>
               <div key={category.id} style={styles.itemRow}>
                 <span style={styles.itemRowLeft}>{category.name}</span>
