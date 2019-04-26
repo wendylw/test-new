@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ItemComponent from './ItemComponent';
+import VariationSelectorComponent from './VariationSelectorComponent';
 
 export class ProductDetailsComponent extends Component {
   static propTypes = {
@@ -27,16 +28,30 @@ export class ProductDetailsComponent extends Component {
 
   state = {
     mergedProduct: null,
+    variationsByIdMap: {}, // Object<VariationId, Array<[VariationId, OptionId]>>
   };
 
-  renderSingleChoice() {
-    // TODO: render single choice
-    return null;
+  getSingleChoiceVariations() {
+    const { variations } = this.props.product || {};
+    return Array.isArray(variations)
+      ? variations.filter(v => v.variationType === 'SingleChoice')
+      : [];
   }
 
-  renderMultipleChoice() {
-    // TODO: render multiple choice
-    return null;
+  getMultipleChoiceVariations() {
+    const { variations } = this.props.product || {};
+    return Array.isArray(variations)
+      ? variations.filter(v => v.variationType === 'MultipleChoice')
+      : [];
+  }
+
+  setVariationsByIdMap(variationId, variationAndOptionById) {
+    this.setState({
+      variationsByIdMap: {
+        ...this.state.variationsByIdMap,
+        [variationId]: variationAndOptionById,
+      },
+    })
   }
 
   render() {
@@ -45,14 +60,39 @@ export class ProductDetailsComponent extends Component {
     if (!product) {
       return null;
     }
+
+    console.log('variations =>', JSON.stringify(
+      Object.values(this.state.variationsByIdMap, null, 2)
+    ));
     
     const { images, title, displayPrice, cartQuantity } = product;
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
       <div>
-        {this.renderSingleChoice()}
-        {this.renderMultipleChoice()}
+        <h3>--SingleChoice--</h3>
+        {
+          this.getSingleChoiceVariations().map(variation => (
+            <VariationSelectorComponent
+              key={variation.id}
+              variation={variation}
+              onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+            />
+          ))
+        }
+
+        <h3>--MultipleChoice--</h3>
+        {
+          this.getMultipleChoiceVariations().map(variation => (
+            <VariationSelectorComponent
+              key={variation.id}
+              variation={variation}
+              onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+            />
+          ))
+        }
+
+        <h3>--Product View--</h3>
         <ItemComponent
           image={imageUrl}
           title={title}
