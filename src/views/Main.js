@@ -3,6 +3,7 @@ import MainTop from './components/MainTop';
 import MainBody from './components/MainBody';
 import MainMenu from './components/MainMenu';
 import CartItems from './components/CartItems';
+import PayButton from './components/PayButton';
 
 class Main extends React.Component {
   render() {
@@ -27,6 +28,11 @@ class Main extends React.Component {
         <hr />
         <h3>CartItems</h3>
         <CartItems />
+
+        <hr />
+        <hr />
+        <h3>PayButton</h3>
+        <PayButton />
       </div>
     );
   }
