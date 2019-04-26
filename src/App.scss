@@ -1,6 +1,7 @@
 $font-size-base: 14px;
 $main-color: #303030;
 $white: #FFFFFF;
+$dark: #2c2c2c;
 $red: #FF5821;
 $gary-1: #8D90A1;
 $gray-2: #909090;
@@ -47,6 +48,16 @@ body {
 h1 {
   margin: 0;
   font-size: 1.2rem;
+}
+
+.reset-font-size {
+  font-size: 0;
+}
+
+.reset-button {
+  border: 0;
+  outline: none;
+  box-shadow: none;
 }
 
 .flex {
@@ -133,10 +144,11 @@ h1 {
   background-color: $gray-5;
 
   &__image-container {
+    @extend .reset-font-size;
+
     position: relative;
     display: inline-block;
     width: 36px;
-    font-size: 0;
     border-radius: 50%;
     background-color: $gray-4;
 
@@ -149,7 +161,7 @@ h1 {
     display: inline-block;
     padding: 0 5.4vw;
     width: 100%;
-    max-width: 68vw;
+    max-width: 64vw;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -157,7 +169,7 @@ h1 {
 
 .category {
   &__list {
-    padding-bottom: 80px;
+    padding-bottom: 30vw;
   }
 
   &__header {
@@ -180,8 +192,9 @@ h1 {
   background-color: $white;
 
   &__image-container {
+    @extend .reset-font-size;
+
     width: 20vw;
-    font-size: 0;
     background-color: $gray-5;
     border-radius: 4px;
     background-repeat: no-repeat;
@@ -220,6 +233,23 @@ h1 {
 
   &__cart-ctrl {
     width: 28.4vw;
+
+    &::before {
+      content: "";
+      display: block;
+      width: 7vw;
+      height: 7vw;
+    }
+  }
+
+  &__cart-ctrl.is-minuts {
+    &::before {
+      content: none;
+    }
+
+    .cart__minuts {
+      display: block;
+    }
   }
 }
 
@@ -237,9 +267,9 @@ h1 {
   }
 
   &__minuts {
+    display: none;
     border-color: $gary-1;
     background-color: transparent;
-    opacity: 0;
   }
 
   &__add {
@@ -290,6 +320,125 @@ h1 {
     &::after {
       background-color: $white;
     }
+  }
+}
+
+.menu {
+  display: inline-block;
+  span {
+    @extend .reset-font-size;
+
+    display: block;
+    margin: 2px 0;
+  }
+
+  span:before,
+  span:after {
+    content: "";
+    margin: 0 1px;
+    display: inline-block;
+    background-color: $white;
+  }
+
+  span:before {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+  }
+
+  span:after {
+    height: 2px;
+    width: 4vw;
+    border-radius: 4px;
+  }
+}
+
+.tag {
+  &__number {
+    display: inline-block;
+    padding: 2px;
+    min-width: 20px;
+    height: 20px;
+    line-height: 16px;
+    font-size: 0.8rem;
+    color: $white;
+    background-color: $blue;
+    border-radius: 12px;
+  }
+}
+
+.menu-button {
+  @extend .reset-button;
+
+  position: relative;
+  width: 14vw;
+  height: 14vw;
+  background-color: $theme-color;
+  border-radius: 4px;
+}
+
+.footer-operation {
+  position: fixed;
+  padding: 3.8vw;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(37, 39, 44, 0.5);
+}
+
+.cart-bar {
+  padding: 0 2vw;
+  width: 76vw;
+  height: 14vw;
+  background-color: $dark;
+  border-radius: 4px;
+
+  &__icon-container {
+    position: relative;
+    display: inline-block;
+
+    svg {
+      transform: rotate(-5deg);
+      fill: $white;
+    }
+
+    .tag__number {
+      position: absolute;
+      top: 6px;
+      right: -6px;
+    }
+  }
+
+  &__money {
+    padding: 0 6px;
+    display: inline-block;
+    color: $white;
+    font-weight: bold;
+  }
+
+  &__icon-container ~ &__money {
+    margin: 0 5px;
+  }
+
+  &__order-button {
+    padding: 1vw;
+    height: 100%;
+    font-weight: bold;
+    color: $theme-color;
+    text-transform: uppercase;
+    -webkit-text-transform: uppercase;
+  }
+}
+
+main.hide {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+
+  .header,
+  .operation {
+    position: absolute;
   }
 }
 
