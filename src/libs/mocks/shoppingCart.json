@@ -1,0 +1,31 @@
+{
+  "total": 4.8,
+  "subtotal": 4,
+  "count": 4,
+  "discount": 0,
+  "tax": 0.8,
+  "items": [
+    {
+      "id": "05838cbc9eda62f88274587966443813",
+      "productId": "5b44788bbb36740d5975086b",
+      "userId": null,
+      "title": "Blue_Heel",
+      "displayPrice": 1,
+      "quantity": 3,
+      "image": "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b44788bbb36740d5975086b/fe0d96a7-415a-44c6-d13c-f9083bf392bd",
+      "__typename": "shoppingCartItem"
+    },
+    {
+      "id": "45fd5b62b7edd5e0b0aac99c8c32fc48",
+      "productId": "5b44788bbb36740d5975086b",
+      "userId": null,
+      "title": "Blue_Heel",
+      "displayPrice": 1,
+      "quantity": 1,
+      "image": "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b44788bbb36740d5975086b/fe0d96a7-415a-44c6-d13c-f9083bf392bd",
+      "__typename": "shoppingCartItem"
+    }
+  ],
+  "unavailableItems": [],
+  "__typename": "shoppingCart"
+}

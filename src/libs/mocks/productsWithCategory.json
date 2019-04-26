@@ -1,0 +1,780 @@
+[
+  {
+   "category": {
+    "id": "TXlPbmxpbmVDYXRlZ29yeTozMjY5OTc5MzQ2",
+    "name": "Music",
+    "isEnabled": true,
+    "__typename": "MyOnlineCategory"
+   },
+   "products": [
+    {
+     "id": "5b44788bbb36740d5975086b",
+     "title": "Blue_Heel",
+     "displayPrice": 588,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+        "id": "5b44788bbb36740d5975086f",
+        "name": "size",
+        "variationType": "SingleChoice",
+        "optionValues": [
+          {
+            "id": "5b44788bbb36740d59750873",
+            "value": "40",
+            "priceDiff": 0
+          },
+          {
+            "id": "5b44788bbb36740d59750872",
+            "value": "41",
+            "priceDiff": 0
+          },
+          {
+            "id": "5b44788bbb36740d59750871",
+            "value": "42",
+            "priceDiff": 0
+          },
+          {
+            "id": "5b44788bbb36740d59750870",
+            "value": "43",
+            "priceDiff": 0
+          }
+        ]
+      },
+      {
+        "id": "5b44788bbb36740d5975086c",
+        "name": "color",
+        "variationType": "SingleChoice",
+        "optionValues": [
+          {
+            "id": "5b44788bbb36740d5975086e",
+            "value": "bulue/white",
+            "priceDiff": 0
+          },
+          {
+            "id": "5b44788bbb36740d5975086d",
+            "value": "gray/white",
+            "priceDiff": 0
+          }
+        ]
+      }
+    ],
+     "__typename": "MyProduct"
+    },
+    {
+     "id": "TXlQcm9kdWN0OjUxNTEyMjk2MTc=",
+     "title": "Handcrafted Rubber Pants",
+     "displayPrice": 723,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjM1NjA4MzE0NTM=",
+       "name": "Granite",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NTEzMzU4NTA1",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3ODc3NTA0NjI3",
+         "value": "Metal",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjc4ODMyMTc1OA==",
+       "name": "Granite",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyMTU5MTIyNTAx",
+         "value": "Concrete",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1NDA4MzQzNDE2",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxMzMxMTkwMjY0",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxNTg1MTExNDY0",
+         "value": "Steel",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjI3OTI3NDI3MzE=",
+       "name": "Frozen",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3MjI5Mzg1Mjk2",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3NjMwNTgxMTM4",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1Mjg3OTQzMTkx",
+         "value": "Metal",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3NDE2MDM2NTE3",
+         "value": "Steel",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjQwMDkxNzc5NDM=",
+       "name": "Plastic",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4ODE3MjIyMjkw",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3NDUyMzQ3NDkw",
+         "value": "Cotton",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxNTg2MDUxMTQw",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    }
+   ],
+   "__typename": "productsWithCategory"
+  },
+  {
+   "category": {
+    "id": "TXlPbmxpbmVDYXRlZ29yeToyODExNjA0OTI=",
+    "name": "Toys",
+    "isEnabled": true,
+    "__typename": "MyOnlineCategory"
+   },
+   "products": [
+    {
+     "id": "TXlQcm9kdWN0OjM5NDA3MTY3NDQ=",
+     "title": "Tasty Rubber Bacon",
+     "displayPrice": 856,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjExODY4MTUzODg=",
+       "name": "Fresh",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1MTc1MjM5MTQ1",
+         "value": "Metal",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4ODgwOTA2NTQ1",
+         "value": "Metal",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo2MDU5OTQ5NzA1",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyNjY0NTg4NDE=",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjk3NzMwMDI5MQ==",
+       "name": "Wooden",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0NzU2MTA2MDAz",
+         "value": "Fresh",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4MDYyMDkyOTY5",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjkzMTAxMjM3OTI=",
+       "name": "Plastic",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NzEyMzE5MDgy",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0NTgzNDE1Njk4",
+         "value": "Concrete",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjMxNjU4MDY1NjY=",
+       "name": "Fresh",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyMDA4NjA3ODA2",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3MzExMjk5NTcz",
+         "value": "Concrete",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1ODcyMjkwNDQ2",
+         "value": "Concrete",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NTUwNjA4NTkz",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    },
+    {
+     "id": "TXlQcm9kdWN0OjM0MTU3NDEyNjg=",
+     "title": "Handmade Steel Bike",
+     "displayPrice": 393,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjQ3MjA2NjUwOTA=",
+       "name": "Fresh",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxODk3MTUxMTAy",
+         "value": "Fresh",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4MTkwNzcwNzk0",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjE4NDExNzIxODQ=",
+       "name": "Plastic",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3MzcyMjk3NTQ5",
+         "value": "Cotton",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo2MjAzNDcyNDc5",
+         "value": "Cotton",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    },
+    {
+     "id": "TXlQcm9kdWN0OjcwMjM4ODM2NQ==",
+     "title": "Incredible Cotton Towels",
+     "displayPrice": 150,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjM4MTI1NzI1ODM=",
+       "name": "Steel",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo5NzU5NDcxMjE4",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo2MzY5MTE3MTU=",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo2Mzc1OTA2MDkw",
+         "value": "Granite",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NjgyNzAxOQ==",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjk4MTk1MDEyNA==",
+       "name": "Fresh",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxMzgxOTMxMDc2",
+         "value": "Cotton",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyODM1ODQzMTM5",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTozMjc2OTE2NzYw",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    },
+    {
+     "id": "TXlQcm9kdWN0OjIzNjQ4NjcxMDY=",
+     "title": "Licensed Wooden Mouse",
+     "displayPrice": 995,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjM2ODI1Nzk3MzM=",
+       "name": "Wooden",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxMDYwNTAyNTk2",
+         "value": "Cotton",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3NjEwNTM2NzEx",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo2OTk0Nzc1NTcw",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3MDc5MzEzMzUz",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjI4ODU0OTg2ODY=",
+       "name": "Cotton",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4OTQxOTUxNTAx",
+         "value": "Cotton",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxMzg5Njg5MDI2",
+         "value": "Fresh",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0Mzk0NTg3NTc0",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    }
+   ],
+   "__typename": "productsWithCategory"
+  },
+  {
+   "category": {
+    "id": "TXlPbmxpbmVDYXRlZ29yeTo1NTg4NjE5ODI3",
+    "name": "Tools",
+    "isEnabled": true,
+    "__typename": "MyOnlineCategory"
+   },
+   "products": [
+    {
+     "id": "TXlQcm9kdWN0OjEyMTgyODE5MTk=",
+     "title": "Intelligent Concrete Shoes",
+     "displayPrice": 889,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjcxOTQ5MTM1Nzk=",
+       "name": "Metal",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4OTI2MDcxODA2",
+         "value": "Steel",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1MTcwMjAwMzU1",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1OTIyNzUxMzY4",
+         "value": "Metal",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjM4OTAyNzc1NTQ=",
+       "name": "Cotton",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTozMTUwNTk2ODc0",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4MzA2NjE3NzY3",
+         "value": "Steel",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    },
+    {
+     "id": "TXlQcm9kdWN0OjY5MzE2NjAyNDI=",
+     "title": "Handcrafted Fresh Chips",
+     "displayPrice": 343,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjk0NDczNDc5ODc=",
+       "name": "Plastic",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0OTQxODUxNzM4",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NTA3MDc0ODgx",
+         "value": "Steel",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0Njg1NDg4MDEw",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo5MjQ4NzMzNDA0",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjMzMTg1MDAzNjk=",
+       "name": "Concrete",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTozMTU5OTc1MjQ0",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo3NzYyMDk2MDE0",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    }
+   ],
+   "__typename": "productsWithCategory"
+  },
+  {
+   "category": {
+    "id": "TXlPbmxpbmVDYXRlZ29yeTo1MTY5ODY0Njg4",
+    "name": "Jewelery",
+    "isEnabled": true,
+    "__typename": "MyOnlineCategory"
+   },
+   "products": [
+    {
+     "id": "TXlQcm9kdWN0OjQ2MzUyNDM5Mw==",
+     "title": "Gorgeous Cotton Tuna",
+     "displayPrice": 254,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjE0OTkzNzYxMTc=",
+       "name": "Frozen",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyNzE1MjAyNzg0",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0Mzg0MjY1ODY1",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTozMTQ0NjM0OTU=",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1NjUxMDEyMTM=",
+         "value": "Granite",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjk5OTQwMzI1ODc=",
+       "name": "Plastic",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTozMzczNTU5NTg1",
+         "value": "Granite",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NTE3ODI5MTQ5",
+         "value": "Steel",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxMjQwNjU2MzAx",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    },
+    {
+     "id": "TXlQcm9kdWN0OjExMjM4MjkyMTg=",
+     "title": "Small Rubber Sausages",
+     "displayPrice": 482,
+     "images": [
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480",
+      "http://lorempixel.com/640/480"
+     ],
+     "variations": [
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjkwMzk0OTk5MTE=",
+       "name": "Rubber",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyOTYzMDg2OTQ4",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1MzIzNjkzNDk2",
+         "value": "Concrete",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjkzMDQzNjk1MzQ=",
+       "name": "Concrete",
+       "variationType": "single",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyMjMxMzM5Nzg=",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0ODUxNzY5Nzcw",
+         "value": "Plastic",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjUzNTIyNTc1NjA=",
+       "name": "Fresh",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo4NjYzNTM1MjU=",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToxNDgzNzk1MzAy",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo0NjE5MjgxMjI0",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1NTM2NjQ5MzUy",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      },
+      {
+       "id": "TXlQcm9kdWN0VmFyaWF0aW9uOjYzMTk2OTM1NDE=",
+       "name": "Granite",
+       "variationType": "multiple",
+       "optionValues": [
+        {
+         "id": "TXlPcHRpb25WYWx1ZTozODU5NDI5NDY0",
+         "value": "Rubber",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo5MjAwMjM5OTQ1",
+         "value": "Frozen",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZToyNDA3NDU2NjEz",
+         "value": "Wooden",
+         "__typename": "MyOptionValue"
+        },
+        {
+         "id": "TXlPcHRpb25WYWx1ZTo1OTIyMTI3MzMx",
+         "value": "Soft",
+         "__typename": "MyOptionValue"
+        }
+       ],
+       "__typename": "MyProductVariation"
+      }
+     ],
+     "__typename": "MyProduct"
+    }
+   ],
+   "__typename": "productsWithCategory"
+  }
+ ]

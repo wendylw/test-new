@@ -1,0 +1,11 @@
+  TheComponent => ({ shoppingCart, productsWithCategory, children, ...props }) => {
+    return (
+      <TheComponent
+        {...props}
+        shoppingCart={shoppingCart}
+        productsWithCategory={productsWithCategory}
+      >
+        {children}
+      </TheComponent>
+    );
+  },
