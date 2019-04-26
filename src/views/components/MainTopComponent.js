@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import config from '../../config';
 
 class MainTopComponent extends Component {
   static propTypes = {
     logo: PropTypes.string,
     title: PropTypes.string,
-    table: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }
 
   render() {
-    const { logo, title, table } = this.props;
+    const { logo, title } = this.props;
+    const { table } = config;
 
     return (
       <div>

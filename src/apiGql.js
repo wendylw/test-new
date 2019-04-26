@@ -38,15 +38,6 @@ apiGql.GET_LOCAL_STATE = gql`
   }
 `;
 
-apiGql.GET_ONLINE_CATEGORY_SIMPLE = gql`
-  ${apiGql.FRAGMENT_ONLINE_CATEGORY}
-  query OnlineCategory($business: String!) {
-    onlineCategory(business: $business) {
-      ...OnlineCategoryFragment
-    }
-  }
-`;
-
 apiGql.GET_ONLINE_STORE_INFO = gql`
   query OnlineStoreInfo($business: String!) {
     onlineStoreInfo(business: $business) {
@@ -126,11 +117,10 @@ apiGql.GET_ONLINE_CATEGORY = gql`
 
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
-  query ShoppingCart($business: String!, $sessionId: String!) {
+  query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: "",
-      sessionId: $sessionId,
+      userId: ""
     ) {
       total
       subtotal
@@ -147,14 +137,6 @@ apiGql.GET_SHOPPING_CART = gql`
   }
 `;
 
-apiGql.GET_SHOPPING_CART_COUNT = gql`
-  query ShoppingCartCount($business: String!, $sessionId: String!) {
-    shoppingCartCount(business: $business, userId: "", sessionId: $sessionId) {
-      count
-    }
-  }
-`;
-
 apiGql.SET_CURRENT_CATEGORY = gql`
   mutation SetCurrentCategory($category: Object!) {
     setCurrentCategory(category: $category) @client
@@ -166,7 +148,6 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
     $action: String!,
     $business: String!,
     $productId: String!,
-    $sessionId: String!,
     $quantity: Int!,
     $variations: [inputVariation],
   ) {
@@ -174,7 +155,6 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       action: $action,
       business: $business,
       productId: $productId,
-      sessionId: $sessionId,
       userId: "",
       quantity: $quantity,
       variations: $variations

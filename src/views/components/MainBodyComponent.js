@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { onlineCategoryMergedShoppingCartType, onlineCategoryType, shoppingCartType } from '../propTypes';
 import { ScrollObservable } from './ScrollComponents';
 import ItemComponent from './ItemComponent';
+import config from '../../config';
 
 export class MainBodyComponent extends Component {
   static propTypes = {
@@ -47,9 +48,8 @@ export class MainBodyComponent extends Component {
                       this.props.addOrUpdateShoppingCartItem({
                         variables: {
                           action: 'edit',
-                          business: this.props.config.business,
+                          business: config.business,
                           productId: prod.id,
-                          sessionId: this.props.sessionId,
                           quantity: prod.cartQuantity - 1,
                         }
                       });
@@ -58,9 +58,8 @@ export class MainBodyComponent extends Component {
                       this.props.addOrUpdateShoppingCartItem({
                         variables: {
                           action: 'edit',
-                          business: this.props.config.business,
+                          business: config.business,
                           productId: prod.id,
-                          sessionId: this.props.sessionId,
                           quantity: prod.cartQuantity + 1,
                         }
                       });

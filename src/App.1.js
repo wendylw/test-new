@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.scss';
-import withConfig from './libs/withConfig';
 import { compose } from 'react-apollo';
 import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
 import Main from './views/Main';
@@ -29,4 +28,4 @@ export default compose(withOnlineStoreInfo({
     const { error } = gqlOnlineStoreInfo;
     return { error };
   },
-}), withConfig())(App);
+}))(App);

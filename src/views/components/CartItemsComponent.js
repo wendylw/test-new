@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import { shoppingCartType } from '../propTypes';
 import ItemComponent from './ItemComponent';
+import config from '../../config';
 
 class CartItemsComponent extends Component {
   static propTypes = {
@@ -44,9 +45,8 @@ class CartItemsComponent extends Component {
                 this.props.addOrUpdateShoppingCartItem({
                   variables: {
                     action: 'edit',
-                    business: this.props.config.business,
+                    business: config.business,
                     productId,
-                    sessionId: this.props.sessionId,
                     quantity: quantity - 1,
                     variations: variations.map(({ variationId, optionId }) => ({ variationId, optionId })),
                   }
@@ -56,9 +56,8 @@ class CartItemsComponent extends Component {
                 this.props.addOrUpdateShoppingCartItem({
                   variables: {
                     action: 'edit',
-                    business: this.props.config.business,
+                    business: config.business,
                     productId,
-                    sessionId: this.props.sessionId,
                     quantity: quantity + 1,
                     variations: variations.map(({ variationId, optionId }) => ({ variationId, optionId })),
                   }

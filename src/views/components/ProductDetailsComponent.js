@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { shoppingCartType } from '../propTypes';
 import ItemComponent from './ItemComponent';
 
 export class ProductDetailsComponent extends Component {
@@ -19,7 +18,6 @@ export class ProductDetailsComponent extends Component {
         })),
       })),
     }),
-    shoppingCart: shoppingCartType,
   }
 
   static defaultProps = {
@@ -27,33 +25,9 @@ export class ProductDetailsComponent extends Component {
     shoppingCart: null,
   }
 
-  static mergeProductAndShoppingCart(product, shoppingCart) {
-    const found = shoppingCart.items.find(item => item.productId);
-
-    if (found) {
-      Object.assign(product, { cartQuantity: found.quantity });
-    }
-
-    return product;
-  }
-
   state = {
     mergedProduct: null,
   };
-
-  componentWillReceiveProps(nextProps) {
-    const { shoppingCart, product } = nextProps;
-
-    if (!shoppingCart || !product) {
-      return;
-    }
-
-    if (shoppingCart !== this.props.shoppingCart || product !== this.props.product) {
-      this.setState({
-        mergedProduct: ProductDetailsComponent.mergeProductAndShoppingCart(product, shoppingCart),
-      });
-    }
-  }
 
   renderSingleChoice() {
     // TODO: render single choice
@@ -66,13 +40,13 @@ export class ProductDetailsComponent extends Component {
   }
 
   render() {
-    const { mergedProduct } = this.state;
-    
-    if (!mergedProduct) {
+    const { product } = this.props;
+
+    if (!product) {
       return null;
     }
-
-    const { images, title, displayPrice, cartQuantity } = mergedProduct;
+    
+    const { images, title, displayPrice, cartQuantity } = product;
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
