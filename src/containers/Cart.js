@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { compose } from 'react-apollo';
+import { Link } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
 import { shoppingCartType } from '../views/propTypes';
 import CartItems from '../views/components/CartItems';
@@ -76,7 +77,10 @@ export class Cart extends Component {
             >Back</button>
           </div>
           <div className="footer-operation__item width-2-3">
-            <button className="billing__button button button__fill button__block font-weight-bold">Pay</button>
+            <Link
+              className="billing__button button button__fill button__block font-weight-bold"
+              to="/payment"
+            >Pay</Link>
           </div>
         </footer>
       </section>
