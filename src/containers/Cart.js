@@ -28,6 +28,7 @@ export class Cart extends Component {
       subtotal,
       total,
       tax,
+      taxRate, // TODO: Needs API NOW!!!
       serviceChargeRate,  // TODO: Needs API
       serviceCharge,  // TODO: Needs API
     } = shoppingCart;
@@ -58,7 +59,7 @@ export class Cart extends Component {
               <span className="gray-font-opacity">{serviceCharge}</span>
             </li> : null}
             <li className="billing__item flex flex-middle flex-space-between">
-              <label className="gray-font-opacity">SST 6%</label>
+              <label className="gray-font-opacity">{typeof taxRate === 'number' ? `SST ${taxRate}%` : `SST`}</label>
               <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
             </li>
             <li className="billing__item flex flex-middle flex-space-between">
