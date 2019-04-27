@@ -259,7 +259,7 @@ class App extends Component {
           </aside>
 
           <footer className="footer-operation flex flex-middle flex-space-between">
-            <button className="menu-button">
+            <button className="button menu-button">
               <i className="menu">
                 <span></span>
                 <span></span>
@@ -293,6 +293,14 @@ class App extends Component {
               <span className="warning__label text-middle">Clear All</span>
             </button>
           </header>
+          <footer className="footer-operation grid flex flex-middle flex-space-between">
+            <div className="footer-operation__item width-1-3">
+              <button className="button button__fill button__block dark">Back</button>
+            </div>
+            <div className="footer-operation__item width-2-3">
+              <button className="button button__fill button__block">Pay</button>
+            </div>
+          </footer>
         </section>
 
         <section className="customer-numbers__modal modal">
