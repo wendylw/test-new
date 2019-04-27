@@ -138,6 +138,15 @@ apiGql.GET_SHOPPING_CART = gql`
   }
 `;
 
+apiGql.GET_ORDER_DETAIL = gql`
+  query ($orderId: String!) {
+    order(orderId: $orderId) {
+      id
+      status
+    }
+  }
+`;
+
 apiGql.SET_CURRENT_CATEGORY = gql`
   mutation SetCurrentCategory($category: Object!) {
     setCurrentCategory(category: $category) @client
