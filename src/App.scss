@@ -988,7 +988,8 @@ main > section.hide {
     -webkit-transform: translateX(100%);
   }
 
-  &.table-ordering__payment {
+  &.table-ordering__payment,
+  &.table-ordering__thanks {
     display: none;
   }
 
