@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.scss';
 import { compose } from 'react-apollo';
 import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
-import Main from './views/Main';
+import Routes from './Routes';
 
 class App extends Component {
   render() {
@@ -16,9 +16,9 @@ class App extends Component {
     }
 
     return (
-      <div className="app">
-        <Main />
-      </div>
+      <main className="table-ordering">
+        <Routes />
+      </main>
     );
   }
 }

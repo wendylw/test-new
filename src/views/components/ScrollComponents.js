@@ -122,25 +122,12 @@ export class ScrollObserver extends React.Component {
   }
 
   render() {
-    const { children, forName } = this.props;
-    let elements = React.Children.toArray(children);
+    const { render } = this.props;
 
-    // set new props to the first child
-    elements = [
-      React.cloneElement(elements[0], {
-        className: [
-          elements[0].className,
-          forName === this.state.scrollname ? 'scroll-active' : '',
-        ].join(' '),
-      }),
-      ...elements.slice(1),
-    ]
+    if (typeof render === 'function') {
+      return render(this.state.scrollname);
+    }
 
-    return (
-      <div onClick={() => this.anchor.click()}>
-        <a ref={ref => this.anchor = ref} href={`#${forName}`} />
-        {elements}
-      </div>
-    );
+    return null;
   }
 }

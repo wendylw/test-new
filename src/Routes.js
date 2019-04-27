@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import Loadable from 'react-loadable';
+import Main from "./views/Main";
 
 const MyLoadingComponent = ({isLoading, error}) => {
   // Handle the loading state
@@ -27,8 +28,8 @@ const AsyncHome = Loadable({
   loading: MyLoadingComponent,
 });
 
-const AsyncPage2 = Loadable({
-  loader: () => import("./containers/Page2"),
+const AsyncCart = Loadable({
+  loader: () => import("./containers/Cart"),
   loading: MyLoadingComponent,
 });
 
@@ -37,16 +38,10 @@ const AsyncNotFound = Loadable({
   loading: MyLoadingComponent,
 });
 
-const AsyncUIHome = Loadable({
-  loader: () => import("./containers/UIHome"),
-  loading: MyLoadingComponent,
-});
-
 export default () =>
   <Switch>
     <Route path="/" exact component={AsyncHome} />
-    <Route path="/categories" component={AsyncHome} />
-    <Route path="/ui-home" exact component={AsyncUIHome} />
-    <Route path="/page2" exact component={AsyncPage2} />
+    <Route path="/cart" exact component={AsyncCart} />
+    <Route path="/playground" exact component={Main} />
     <Route component={AsyncNotFound} />
   </Switch>;

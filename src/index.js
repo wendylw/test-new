@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter as Router } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
 import './config'; // import here for globally init
 import apiClient from './apiClient';
@@ -9,7 +10,9 @@ import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <ApolloProvider client={apiClient}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </ApolloProvider>,
   document.getElementById('root')
 );

@@ -13,13 +13,13 @@ class MainTopComponent extends Component {
     const { table } = config;
 
     return (
-      <div>
-        <div>
-          <img src={logo} width={120} height={60} alt={title} />
-          <span>{title}</span>
-          <span>Table: {table}</span>
-        </div>
-      </div>
+      <header className="header boder-botton__divider flex flex-middle flex-space-between">
+        <figure className="header__image-container text-middle">
+          <img src={logo} alt={title} />
+        </figure>
+        <h1 className="header__title font-weight-bold text-middle">{title}</h1>
+        <span className="gray-font-opacity">Table {table} </span>
+      </header>
     )
   }
 }
