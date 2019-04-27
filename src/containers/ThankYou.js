@@ -42,7 +42,7 @@ export class ThankYou extends Component {
 }
 
 export default compose(withOrderDetail({
-  props: ({ gqlOrderDetail: { loading, order }}) => {
+  props: ({ gqlOrderDetail: { loading, order } }) => {
     if (loading) {
       return null;
     }
