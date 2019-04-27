@@ -4,7 +4,7 @@ import { ApolloProvider } from "react-apollo";
 import './config'; // import here for globally init
 import apiClient from './apiClient';
 import './index.css';
-import App from './App';
+import App from './App.1';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(

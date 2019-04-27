@@ -10,7 +10,6 @@ class CartItemsComponent extends Component {
     config: PropTypes.shape({
       business: PropTypes.string,
     }),
-    sessionId: PropTypes.string,
   }
 
   render() {

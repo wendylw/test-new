@@ -1,13 +1,12 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import './App.scss';
-import { compose } from 'react-apollo';
-import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
 
 class App extends Component {
   render() {
     return (
       <main className="table-ordering">
-        <section className="table-ordering__home hide">
+        <section className="table-ordering__home">
           <header className="header boder-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
@@ -281,7 +280,7 @@ class App extends Component {
           </footer>
         </section>
 
-        <section className="table-ordering__order">
+        <section className="table-ordering__order hide">
           <header className="header boder-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
@@ -357,4 +356,4 @@ class App extends Component {
   }
 }
 
-export default compose(withOnlineStoreInfo)(App);
+export default App;

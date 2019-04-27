@@ -131,6 +131,7 @@ export class ProductDetailsComponent extends Component {
             variables: {
               action: 'edit',
               business: config.business,
+              sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
               productId,
               quantity: cartQuantity,
               variations: this.getVariationsValue(),

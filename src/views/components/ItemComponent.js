@@ -38,19 +38,41 @@ export class ItemComponent extends Component {
     } = this.props;
 
     return (
-      <div style={{ position: 'relative' }}>
-        {image ? <img src={image} width={68} height={68} alt={title} /> : null}
-        <span style={{ display: 'inline-block', verticalAlign: 'top' }}>
-          <div>{title}</div>
-          {variation ? <div>{variation}</div> : null}
-          <div><CurrencyNumber money={price} /></div>
-        </span>
-        <span style={{ display: 'inline-block', position: 'absolute', top: '30%', right: 5 }}>
-          {quantity > 0 ? <button onClick={onDecrease} disabled={decreaseDisabled}>-</button> : null}
-          {quantity > 0 ? quantity : null}
-          <button onClick={onIncrease} disabled={increaseDisabled}>+</button>
-        </span>
-      </div>
+      <li className="item boder-botton__divider flex flex-top">
+        <figure className="item__image-container">
+          {image ? <img src={image} alt={title} /> : null}
+        </figure>
+        <div className="item__content flex flex-middle flex-space-between">
+          <div className="item__detail">
+            <summary className="item__title font-weight-bold">{title}</summary>
+            {variation ? <p className="item__description">{variation}</p> : null}
+            <span className="gray-font-opacity"><CurrencyNumber money={price} /></span>
+          </div>
+          <div className={`item__cart-ctrl ${quantity > 0 && !decreaseDisabled ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
+            <button
+              className="cart__ctrl cart__minuts"
+              disabled={decreaseDisabled}
+              onClick={onDecrease}
+            >
+              <i className="cart__icon"></i>
+            </button>
+
+            {
+              quantity > 0 ? (
+                <span className="font-weight-bold">{quantity}</span>
+              ) : null
+            }
+            
+            <button
+              className="cart__ctrl cart__add"
+              onClick={onIncrease}
+              disabled={increaseDisabled}
+            >
+              <i className="cart__icon"></i>
+            </button>
+          </div>
+        </div>
+      </li>
     )
   }
 }
