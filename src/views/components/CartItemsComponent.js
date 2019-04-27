@@ -20,13 +20,13 @@ class CartItemsComponent extends Component {
     }
 
     return (
-      <div>
+      <ul className="list">
         {
           shoppingCart.items.map(({
             id,
             title,
             productId,
-            variations = [],
+            variations, // NOTICE: API returns null, not a [].
             variationTexts,
             displayPrice,
             quantity,
@@ -48,7 +48,7 @@ class CartItemsComponent extends Component {
                     sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
                     productId,
                     quantity: quantity - 1,
-                    variations: variations.map(({ variationId, optionId }) => ({ variationId, optionId })),
+                    variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
                   }
                 });
               }}
@@ -60,14 +60,14 @@ class CartItemsComponent extends Component {
                     sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
                     productId,
                     quantity: quantity + 1,
-                    variations: variations.map(({ variationId, optionId }) => ({ variationId, optionId })),
+                    variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
                   }
                 });
               }}
             />
           ))
         }
-      </div>
+      </ul>
     )
   }
 }
