@@ -608,6 +608,12 @@ ol {
 
   top: 50px;
 
+  > .cart-pane,
+  > .nav-pane,
+  > .product-detail {
+    transition: transform 0.4s;
+  }
+
   &__product-detail {
     z-index: 300;
   }
@@ -621,6 +627,17 @@ ol {
     bottom: 0;
     width: 100%;
     background-color: $white;
+  }
+
+  &.active {
+    display: block;
+
+    > .cart-pane,
+    > .nav-pane,
+    > .product-detail {
+      transform: translateY(0%);
+      -webkit-transform: translateY(0%);
+    }
   }
 }
 
