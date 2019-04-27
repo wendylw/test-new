@@ -23,6 +23,7 @@ $font-weight-bold: 600;
   box-sizing: border-box;
   outline: 0;
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
 
 html {
@@ -50,6 +51,7 @@ h1 {
   font-size: 1.2rem;
 }
 
+ul,
 ol {
   list-style: none;
 }
@@ -189,6 +191,18 @@ ol {
   }
 
   &__order {
+    position: relative;
+    padding-bottom: 155px;
+    width: 100%;
+    background-color: $gray-4;
+
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 43.2vw;
+    }
+
     .header__title {
       max-width: 54vw;
       text-transform: uppercase;
@@ -712,11 +726,30 @@ ol {
   }
 }
 
-body.loading {
-  .cartpane,
-  .nav-pane,
-  .product-detail {
-    display: none;
+.customer-numbers {
+  padding: 4.8vw;
+
+  .tag__card {
+    display: block;
+  }
+}
+
+.billing {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 21.6vw;
+  padding: 10px 4.8vw;
+  border-top: 1px solid $gray-3;
+  background-color: $gray-5;
+  z-index: 200;
+
+  &__item {
+    margin: 14px 0;
+  }
+
+  &__button {
+    text-transform: uppercase;
   }
 }
 
@@ -733,45 +766,16 @@ main > section.hide {
   }
 
   .header,
-  .operation {
+  .operation,
+  .billing {
     position: absolute;
   }
 }
 
-.customer-numbers {
-  padding: 4.8vw;
-
-  .tag__card {
-    display: block;
+body.loading {
+  .cartpane,
+  .nav-pane,
+  .product-detail {
+    display: none;
   }
 }
-
-// .App-logo {
-//   animation: App-logo-spin infinite 20s linear;
-//   height: 40vmin;
-//   pointer-events: none;
-// }
-
-// .App-header {
-//   background-color: #282c34;
-//   /* min-height: 100vh; */
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   justify-content: center;
-//   font-size: calc(10px + 2vmin);
-//   color: white;
-// }
-
-// .App-link {
-//   color: #61dafb;
-// }
-
-// @keyframes App-logo-spin {
-//   from {
-//     transform: rotate(0deg);
-//   }
-//   to {
-//     transform: rotate(360deg);
-//   }
-// }
