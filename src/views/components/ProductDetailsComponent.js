@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import ItemComponent from './ItemComponent';
 import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
+import Constants from '../../Constants';
 
 export class ProductDetailsComponent extends Component {
   static propTypes = {
@@ -75,7 +76,7 @@ export class ProductDetailsComponent extends Component {
   }
 
   render() {
-    const { product } = this.props;
+    const { product, history } = this.props;
     const { cartQuantity, variationsByIdMap } = this.state;
 
     if (!product) {
@@ -88,30 +89,39 @@ export class ProductDetailsComponent extends Component {
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
-      <div>
-        <h3>--SingleChoice--</h3>
+      <div className="product-detail">
         {
-          this.getSingleChoiceVariations().map(variation => (
-            <VariationSelectorComponent
-              key={variation.id}
-              variation={variation}
-              onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-            />
-          ))
+          this.getSingleChoiceVariations().length ? (
+            <ol className="product-detail__options-category border-botton__divider">
+            {
+              this.getSingleChoiceVariations().map(variation => (
+                <VariationSelectorComponent
+                  key={variation.id}
+                  variation={variation}
+                  onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                />
+              ))
+            }
+            </ol>
+          ) : null
+        }
+        
+        {
+          this.getMultipleChoiceVariations().length ? (
+            <ol className="product-detail__options-category border-botton__divider">
+            {
+              this.getMultipleChoiceVariations().map(variation => (
+                <VariationSelectorComponent
+                  key={variation.id}
+                  variation={variation}
+                  onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                />
+              ))
+            }
+            </ol>
+          ) : null
         }
 
-        <h3>--MultipleChoice--</h3>
-        {
-          this.getMultipleChoiceVariations().map(variation => (
-            <VariationSelectorComponent
-              key={variation.id}
-              variation={variation}
-              onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-            />
-          ))
-        }
-
-        <h3>--Product View--</h3>
         <ItemComponent
           image={imageUrl}
           title={title}
@@ -125,20 +135,25 @@ export class ProductDetailsComponent extends Component {
             this.setState({ cartQuantity: cartQuantity + 1 });
           }}
         />
+        
+        <div className="aside__fix-bottom aside__section-container">
+          <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
+            const result = await this.props.addOrUpdateShoppingCartItem({
+              variables: {
+                action: 'edit',
+                business: config.business,
+                productId,
+                quantity: cartQuantity,
+                variations: this.getVariationsValue(),
+              }
+            });
 
-        <button type="button" onClick={async () => {
-          const result = await this.props.addOrUpdateShoppingCartItem({
-            variables: {
-              action: 'edit',
-              business: config.business,
-              productId,
-              quantity: cartQuantity,
-              variations: this.getVariationsValue(),
-            }
-          });
+            history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
 
-          console.log('result =>', result);
-        }} disabled={!this.isSubmitable()}>OK</button>
+            console.log('result =>', result);
+          }} disabled={!this.isSubmitable()}>OK</button>
+        </div>
+        
       </div>
     )
   }

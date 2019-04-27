@@ -1,4 +1,5 @@
 import { compose, graphql } from "react-apollo";
+import { withRouter } from 'react-router-dom';
 import MainBodyComponent from "./MainBodyComponent";
 import apiGql from "../../apiGql";
 import withOnlineCategoryMergedCart from "../../libs/withOnlineCategoryMergedShoppingCart";
@@ -11,4 +12,5 @@ export default compose(
       refetchQueries: [ 'ShoppingCart' ],
     },
   }),
+  withRouter,
 )(MainBodyComponent);

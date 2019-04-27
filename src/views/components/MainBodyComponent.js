@@ -3,6 +3,7 @@ import { onlineCategoryMergedShoppingCartType, onlineCategoryType, shoppingCartT
 import { ScrollObservable, ScrollObserver } from './ScrollComponents';
 import ItemComponent from './ItemComponent';
 import config from '../../config';
+import Constants from '../../Constants';
 
 export class MainBodyComponent extends Component {
   static propTypes = {
@@ -16,7 +17,7 @@ export class MainBodyComponent extends Component {
   };
 
   render() {
-    const { onlineCategoryMergedShoppingCart } = this.props;
+    const { onlineCategoryMergedShoppingCart, history } = this.props;
 
     if (!Array.isArray(onlineCategoryMergedShoppingCart)) {
       return null;
@@ -70,6 +71,11 @@ export class MainBodyComponent extends Component {
                           });
                         }}
                         onIncrease={() => {
+                          if (prod.variations && prod.variations.length) {
+                            history.push(`${Constants.ROUTER_PATHS.PORDUCTS}/${prod.id}`);
+                            return;
+                          }
+
                           this.props.addOrUpdateShoppingCartItem({
                             variables: {
                               action: 'edit',

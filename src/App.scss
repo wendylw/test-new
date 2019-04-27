@@ -617,6 +617,10 @@ ol {
 
   &__product-detail {
     z-index: 300;
+
+    .item {
+      margin-bottom: 70px;
+    }
   }
 
   &__section-container {

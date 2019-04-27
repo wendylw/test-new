@@ -52,28 +52,27 @@ export class VariationSelectorComponent extends Component {
     }
 
     return (
-      <div>
+      <li className="product-detail__options" key={variation.id}>
+        <h4 className="product-detail__options-title gray-font-opacity">{variation.name}</h4>
+        <ul className="tag__cards">
         {
           variation.optionValues.map(({ id, value }) => (
-            <span key={id}>
-              <input
-                type="checkbox"
-                value={value}
-                checked={!!this.state.selected[id]}
-                onChange={() => this.setState({
-                  selected: {
-                    ...(this.isSingleChoice() ? null : this.state.selected),
-                    [id]: !this.state.selected[id],
-                  }
-                }, () => this.props.onChange(
-                  this.getAllVariationAndOptionById(),
-                ))}
-              />
-              {value}
-            </span>
+            <li
+              key={id}
+              className={`tag__card ${!!this.state.selected[id] ? 'active' : ''}`}
+              onClick={() => this.setState({
+                selected: {
+                  ...(this.isSingleChoice() ? null : this.state.selected),
+                  [id]: !this.state.selected[id],
+                }
+              }, () => this.props.onChange(
+                this.getAllVariationAndOptionById(),
+              ))}
+            >{value}</li>
           ))
         }
-      </div>
+      </ul>
+      </li>
     )
   }
 }

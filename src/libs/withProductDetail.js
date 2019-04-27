@@ -1,17 +1,17 @@
 import { graphql, compose } from 'react-apollo';
+import { withRouter } from 'react-router-dom';
 import apiGql from '../apiGql';
 import config from '../config';
 
 export default options => compose(
+  withRouter,
   graphql(apiGql.GET_PRODUCT_DETAIL, {
     name: 'gqlProductDetail',
-    options: ({ productId }) => {
-      console.log('request gqlProductDetail with productId=%o', productId);
-
+    options: ({ match }) => {
       return ({
         variables: {
           business: config.business,
-          productId,
+          productId: match.params.productId,
         }
       });
     },
