@@ -11,7 +11,7 @@ export class Cart extends Component {
 
     return (
       <section className={`table-ordering__order ${match.isExact ? '' : 'hide'}`}>
-        <header className="header boder-botton__divider flex flex-middle flex-space-between">
+        <header className="header border-botton__divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
           </figure>
@@ -23,7 +23,7 @@ export class Cart extends Component {
         </header>
         <div className="list__container">
           <ul className="list">
-            <li className="item boder-botton__divider flex flex-top">
+            <li className="item border-botton__divider flex flex-top">
               <figure className="item__image-container">
                 <img src=""></img>
               </figure>
@@ -44,7 +44,7 @@ export class Cart extends Component {
                 </div>
               </div>
             </li>
-            <li className="item boder-botton__divider flex flex-top">
+            <li className="item border-botton__divider flex flex-top">
               <figure className="item__image-container">
                 <img src=""></img>
               </figure>
@@ -65,7 +65,7 @@ export class Cart extends Component {
                 </div>
               </div>
             </li>
-            <li className="item boder-botton__divider flex flex-top">
+            <li className="item border-botton__divider flex flex-top">
               <figure className="item__image-container">
                 <img src=""></img>
               </figure>
@@ -86,7 +86,7 @@ export class Cart extends Component {
                 </div>
               </div>
             </li>
-            <li className="item boder-botton__divider flex flex-top">
+            <li className="item border-botton__divider flex flex-top">
               <figure className="item__image-container">
                 <img src=""></img>
               </figure>
@@ -107,7 +107,7 @@ export class Cart extends Component {
                 </div>
               </div>
             </li>
-            <li className="item boder-botton__divider flex flex-top">
+            <li className="item border-botton__divider flex flex-top">
               <figure className="item__image-container">
                 <img src=""></img>
               </figure>
@@ -128,7 +128,7 @@ export class Cart extends Component {
                 </div>
               </div>
             </li>
-            <li className="item boder-botton__divider flex flex-top">
+            <li className="item border-botton__divider flex flex-top">
               <figure className="item__image-container">
                 <img src=""></img>
               </figure>

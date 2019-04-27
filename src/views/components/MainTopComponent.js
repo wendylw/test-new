@@ -13,7 +13,7 @@ class MainTopComponent extends Component {
     const { table } = config;
 
     return (
-      <header className="header boder-botton__divider flex flex-middle flex-space-between">
+      <header className="header border-botton__divider flex flex-middle flex-space-between">
         <figure className="header__image-container text-middle">
           <img src={logo} alt={title} />
         </figure>
