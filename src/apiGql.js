@@ -117,10 +117,11 @@ apiGql.GET_ONLINE_CATEGORY = gql`
 
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
-  query ShoppingCart($business: String!) {
+  query ShoppingCart($business: String!, $sessionId: String!) {
     shoppingCart(
       business: $business,
-      userId: ""
+      userId: "",
+      sessionId: $sessionId
     ) {
       total
       subtotal
@@ -143,18 +144,21 @@ apiGql.SET_CURRENT_CATEGORY = gql`
   }
 `;
 
+// TODO: remove sessionId when @Jiawei done in api.
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
     $action: String!,
     $business: String!,
     $productId: String!,
+    $sessionId: String!,
     $quantity: Int!,
-    $variations: [inputVariation],
+    $variations: [inputVariation]
   ) {
     addOrUpdateShoppingCartItem(input: {
       action: $action,
       business: $business,
       productId: $productId,
+      sessionId: $sessionId,
       userId: "",
       quantity: $quantity,
       variations: $variations

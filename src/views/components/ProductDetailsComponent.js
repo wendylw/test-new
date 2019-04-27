@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ItemComponent from './ItemComponent';
 import VariationSelectorComponent from './VariationSelectorComponent';
+import config from '../../config';
 
 export class ProductDetailsComponent extends Component {
   static propTypes = {
@@ -19,17 +20,31 @@ export class ProductDetailsComponent extends Component {
         })),
       })),
     }),
+    addOrUpdateShoppingCartItem: PropTypes.func,
   }
 
   static defaultProps = {
     product: null,
     shoppingCart: null,
+    addOrUpdateShoppingCartItem: () => {},
   }
 
   state = {
     mergedProduct: null,
     variationsByIdMap: {}, // Object<VariationId, Array<[VariationId, OptionId]>>
+    cartQuantity: 0,
   };
+
+  isSubmitable() {
+    const { cartQuantity, variationsByIdMap } = this.state;
+    const singleChoiceVariations = this.getSingleChoiceVariations();
+
+    return cartQuantity > 0
+      && this.getVariationsValue().length > 0
+      && singleChoiceVariations.filter(
+        v => (variationsByIdMap[v.id] || []).length > 0
+      ).length === singleChoiceVariations.length;
+  }
 
   getSingleChoiceVariations() {
     const { variations } = this.props.product || {};
@@ -54,18 +69,22 @@ export class ProductDetailsComponent extends Component {
     })
   }
 
+  getVariationsValue() {
+    const { variationsByIdMap } = this.state;
+    return Object.values(variationsByIdMap).reduce((ret, arr) => [...ret, ...arr], []);
+  }
+
   render() {
     const { product } = this.props;
+    const { cartQuantity, variationsByIdMap } = this.state;
 
     if (!product) {
       return null;
     }
 
-    console.log('variations =>', JSON.stringify(
-      Object.values(this.state.variationsByIdMap, null, 2)
-    ));
+    console.log('variationsByIdMap =>', variationsByIdMap);
     
-    const { images, title, displayPrice, cartQuantity } = product;
+    const { id: productId, images, title, displayPrice } = product;
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
@@ -98,13 +117,28 @@ export class ProductDetailsComponent extends Component {
           title={title}
           price={displayPrice}
           quantity={cartQuantity}
+          decreaseDisabled={cartQuantity === 0}
           onDecrease={() => {
-            // TODO: add to cart
+            this.setState({ cartQuantity: cartQuantity - 1 });
           }}
           onIncrease={() => {
-            // TODO: add to cart
+            this.setState({ cartQuantity: cartQuantity + 1 });
           }}
         />
+
+        <button type="button" onClick={async () => {
+          const result = await this.props.addOrUpdateShoppingCartItem({
+            variables: {
+              action: 'edit',
+              business: config.business,
+              productId,
+              quantity: cartQuantity,
+              variations: this.getVariationsValue(),
+            }
+          });
+
+          console.log('result =>', result);
+        }} disabled={!this.isSubmitable()}>OK</button>
       </div>
     )
   }

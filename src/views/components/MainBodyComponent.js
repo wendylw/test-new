@@ -49,6 +49,7 @@ export class MainBodyComponent extends Component {
                         variables: {
                           action: 'edit',
                           business: config.business,
+                          sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
                           productId: prod.id,
                           quantity: prod.cartQuantity - 1,
                         }
@@ -59,6 +60,7 @@ export class MainBodyComponent extends Component {
                         variables: {
                           action: 'edit',
                           business: config.business,
+                          sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
                           productId: prod.id,
                           quantity: prod.cartQuantity + 1,
                         }

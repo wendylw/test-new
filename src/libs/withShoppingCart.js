@@ -8,6 +8,7 @@ export default options => compose(
     options: () => ({
       variables: {
         business: config.business,
+        sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
       }
     }),
     ...options,
