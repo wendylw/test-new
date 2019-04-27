@@ -45,7 +45,6 @@ class CartItemsComponent extends Component {
                   variables: {
                     action: 'edit',
                     business: config.business,
-                    sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
                     productId,
                     quantity: quantity - 1,
                     variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
@@ -57,7 +56,6 @@ class CartItemsComponent extends Component {
                   variables: {
                     action: 'edit',
                     business: config.business,
-                    sessionId: config.sessionId, // TODO: remove it when @Jiawei done in api.
                     productId,
                     quantity: quantity + 1,
                     variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),

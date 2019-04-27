@@ -117,11 +117,10 @@ apiGql.GET_ONLINE_CATEGORY = gql`
 
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
-  query ShoppingCart($business: String!, $sessionId: String!) {
+  query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: "",
-      sessionId: $sessionId
+      userId: ""
     ) {
       total
       subtotal
@@ -159,7 +158,6 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
     $action: String!,
     $business: String!,
     $productId: String!,
-    $sessionId: String!,
     $quantity: Int!,
     $variations: [inputVariation]
   ) {
@@ -167,7 +165,6 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       action: $action,
       business: $business,
       productId: $productId,
-      sessionId: $sessionId,
       userId: "",
       quantity: $quantity,
       variations: $variations
