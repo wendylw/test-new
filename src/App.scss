@@ -92,6 +92,66 @@ ol {
   }
 }
 
+.radio {
+  position: relative;
+  padding: 4vw;
+
+  &__check-icon {
+    display: block;
+    padding: 6% 0 0 26%;
+    border: 2px solid $gray-3;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+
+    &::before,
+    &::after {
+      display: inline-block;
+      content: "";
+      background-color: $white;
+      height: 8px;
+      width: 2px;
+      border-radius: 2px;
+      opacity: 1;
+
+      transform-origin: bottom;
+      -webkit-transform-origin: bottom;
+    }
+
+    &::before {
+      transform: rotate(-45deg) translateY(2px);
+      -webkit-transform: rotate(-45deg) translateY(2px);
+    }
+
+    &::after {
+      height: 13px;
+      transform: rotate(45deg) translateY(2px);
+      -webkit-transform: rotate(45deg) translateY(2px);
+    }
+  }
+
+  input[type="radio"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+
+  &.active {
+    .radio__check-icon {
+      border-color: $theme-color;
+      background-color: $theme-color;
+
+      &::before,
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+}
+
 .reset-button {
   border: 0;
   outline: none;
@@ -130,6 +190,10 @@ ol {
 
 .font-weight-bold {
   font-weight: $font-weight-bold;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
 }
 
 .grid {
@@ -195,6 +259,11 @@ ol {
     .header__image-container {
       background-color: $gray-4;
     }
+
+    .header__title {
+      max-width: 64vw;
+      text-transform: none;
+    }
   }
 
   &__order {
@@ -215,12 +284,17 @@ ol {
 
     .header__title {
       max-width: 54vw;
-      text-transform: uppercase;
     }
+  }
+
+  &__payment {
+    padding-bottom: 43.2vw;
+    width: 100%;
+    background-color: $gray-4;
   }
 }
 
-.boder-botton {
+.border-botton {
   &__divider {
     border-bottom: 1px solid $gray-3;
   }
@@ -274,10 +348,12 @@ ol {
   }
 
   &__title {
+    @extend .text-uppercase;
+
     display: inline-block;
     padding: 0 5.4vw;
     width: 100%;
-    max-width: 64vw;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -726,13 +802,12 @@ ol {
 
   &__order-button {
     @extend .font-weight-bold;
+    @extend .text-uppercase;
 
     display: none;
     padding: 1vw;
     height: 100%;
     color: $theme-color;
-    text-transform: uppercase;
-    -webkit-text-transform: uppercase;
   }
 
   &.has-products {
@@ -775,7 +850,41 @@ ol {
   }
 
   &__button {
-    text-transform: uppercase;
+    @extend .text-uppercase;
+  }
+}
+
+.payment {
+  &__item {
+    padding: 3.6vw 0 3.6vw 3.6vw;
+    background-color: $white;
+
+    &::before {
+      content:  "";
+      display: block;
+      width: 26px;
+      height: 1px;
+    }
+  }
+
+  &__image-container {
+    max-width: 80px;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  &__pay-now-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 4vw;
+    background-color: $white;
+
+    .button {
+      border-radius: 4px;
+    }
   }
 }
 
