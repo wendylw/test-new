@@ -188,6 +188,10 @@ ol {
     position: relative;
     width: 100%;
     background-color: $gray-4;
+
+    .header__image-container {
+      background-color: $gray-4;
+    }
   }
 
   &__order {
@@ -240,7 +244,6 @@ ol {
     display: inline-block;
     width: 36px;
     border-radius: 50%;
-    background-color: $gray-4;
 
     &::before {
       @extend .w-h-same;
