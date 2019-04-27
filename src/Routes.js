@@ -33,6 +33,11 @@ const AsyncCart = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncPayment = Loadable({
+  loader: () => import("./containers/Payment"),
+  loading: MyLoadingComponent,
+});
+
 const AsyncThankYou = Loadable({
   loader: () => import("./containers/ThankYou"),
   loading: MyLoadingComponent,
@@ -47,6 +52,7 @@ export default () =>
   <Switch>
     <Route path="/" exact component={AsyncHome} />
     <Route path="/cart" exact component={AsyncCart} />
+    <Route path="/payment" exact component={AsyncPayment} />
     <Route path="/thank-you" exact component={AsyncThankYou} />
     <Route path="/playground" exact component={Main} />
     <Route component={AsyncNotFound} />
