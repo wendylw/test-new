@@ -189,6 +189,9 @@ ol {
     width: 100%;
     background-color: $gray-4;
 
+    transition: all 0.4s;
+    -webkit-transition: all 0.4s;
+
     .header__image-container {
       background-color: $gray-4;
     }
@@ -199,6 +202,9 @@ ol {
     padding-bottom: 155px;
     width: 100%;
     background-color: $gray-4;
+
+    transition: transform 0.4s;
+    -webkit-transition: -webkit-transform 0.4s;
 
     &::after {
       content: "";
@@ -758,8 +764,8 @@ ol {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 21.6vw;
-  padding: 10px 4.8vw;
+  bottom: 0;
+  padding: 10px 4.8vw 21.6vw;
   border-top: 1px solid $gray-3;
   background-color: $gray-5;
   z-index: 200;
@@ -773,6 +779,10 @@ ol {
   }
 }
 
+main.transition {
+  padding-top: 0;
+}
+
 main > section.hide {
   position: fixed;
   top: 0;
@@ -783,6 +793,11 @@ main > section.hide {
   &.table-ordering__home {
     transform: translateX(-100%);
     -webkit-transform: translateX(-100%);
+  }
+
+  &.table-ordering__order {
+    transform: translateX(100%);
+    -webkit-transform: translateX(100%);
   }
 
   .header,
