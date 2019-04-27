@@ -6,8 +6,8 @@ class App extends Component {
   render() {
     return (
       <main className="table-ordering">
-        <section className="table-ordering__home">
-          <header className="header boder-botton__divider flex flex-middle flex-space-between">
+        <section className="table-ordering__home hide">
+          <header className="header border-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
             </figure>
@@ -26,7 +26,7 @@ class App extends Component {
                   <span className="gray-font-opacity">45 items</span>
                 </h2>
                 <ul className="list">
-                  <li className="item boder-botton__divider flex flex-top">
+                  <li className="item border-botton__divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -47,7 +47,7 @@ class App extends Component {
                       </div>
                     </div>
                   </li>
-                  <li className="item boder-botton__divider flex flex-top">
+                  <li className="item border-botton__divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -76,7 +76,7 @@ class App extends Component {
                   <span className="gray-font-opacity">45 items</span>
                 </h2>
                 <ul className="list">
-                  <li className="item boder-botton__divider flex flex-top">
+                  <li className="item border-botton__divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -97,7 +97,7 @@ class App extends Component {
                       </div>
                     </div>
                   </li>
-                  <li className="item boder-botton__divider flex flex-top">
+                  <li className="item border-botton__divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -125,7 +125,7 @@ class App extends Component {
 
           <aside className="aside">
             <div className="cart-pane">
-              <div className="cart-pane__operation boder-botton__divider flex flex-middle flex-space-between">
+              <div className="cart-pane__operation border-botton__divider flex flex-middle flex-space-between">
                 <h3 className="cart-pane__amount-container">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
                   <span className="cart-pane__amount-label text-middle gray-font-opacity">46 Items</span>
@@ -137,7 +137,7 @@ class App extends Component {
               </div>
               <div className="cart-pane__list">
                 <ul className="list">
-                  <li className="item boder-botton__divider flex flex-top">
+                  <li className="item border-botton__divider flex flex-top">
                     <div className="item__content flex flex-middle flex-space-between">
                       <div className="item__detail">
                         <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
@@ -155,7 +155,7 @@ class App extends Component {
                       </div>
                     </div>
                   </li>
-                  <li className="item boder-botton__divider flex flex-top">
+                  <li className="item border-botton__divider flex flex-top">
                     <div className="item__content flex flex-middle flex-space-between">
                       <div className="item__detail">
                         <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
@@ -205,7 +205,7 @@ class App extends Component {
 
           <aside className="aside aside__product-detail">
             <div className="product-detail">
-              <ol className="product-detail__options-category boder-botton__divider">
+              <ol className="product-detail__options-category border-botton__divider">
                 <li className="product-detail__options">
                   <h4 className="product-detail__options-title gray-font-opacity">Single choice</h4>
                   <ul className="tag__cards">
@@ -228,7 +228,7 @@ class App extends Component {
                 </li>
               </ol>
 
-              <div className="item boder-botton__divider flex flex-top">
+              <div className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -281,7 +281,7 @@ class App extends Component {
         </section>
 
         <section className="table-ordering__order hide">
-          <header className="header boder-botton__divider flex flex-middle flex-space-between">
+          <header className="header border-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </figure>
@@ -293,7 +293,7 @@ class App extends Component {
           </header>
           <div className="list__container">
             <ul className="list">
-              <li className="item boder-botton__divider flex flex-top">
+              <li className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -314,7 +314,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item boder-botton__divider flex flex-top">
+              <li className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -335,7 +335,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item boder-botton__divider flex flex-top">
+              <li className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -356,7 +356,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item boder-botton__divider flex flex-top">
+              <li className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -377,7 +377,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item boder-botton__divider flex flex-top">
+              <li className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -398,7 +398,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item boder-botton__divider flex flex-top">
+              <li className="item border-botton__divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -451,9 +451,87 @@ class App extends Component {
           </footer>
         </section>
 
+        <section className="table-ordering__payment hide">
+          <header className="header border-botton__divider flex flex-middle flex-space-between">
+            <figure className="header__image-container text-middle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+            </figure>
+            <h2 className="header__title font-weight-bold text-middle">Select Payment</h2>
+          </header>
+
+          <div>
+            <ul className="payment__list">
+              <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+                <figure className="payment__image-container">
+                  <img src="/img/logo-grabpay.png"></img>
+                </figure>
+                <div className="radio">
+                  <i className="radio__check-icon"></i>
+                  <input type="radio"></input>
+                </div>
+              </li>
+              <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+                <figure className="payment__image-container">
+                  <img src="/img/logo-boost.png"></img>
+                </figure>
+                <div className="radio">
+                  <i className="radio__check-icon"></i>
+                  <input type="radio"></input>
+                </div>
+              </li>
+              <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+                <figure className="payment__image-container">
+                  <img src="/img/logo-bigpay.png"></img>
+                </figure>
+                <div className="radio">
+                  <i className="radio__check-icon"></i>
+                  <input type="radio"></input>
+                </div>
+              </li>
+              <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+                <figure className="payment__image-container">
+                  <img src="/img/logo-maybank.png"></img>
+                </figure>
+                <div className="radio active">
+                  <i className="radio__check-icon"></i>
+                  <input type="radio"></input>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="payment__pay-now-container">
+            <button className="button button__fill button__block font-weight-bold text-uppercase">Pay now</button>
+          </div>
+        </section>
+
+        <section className="table-ordering__thanks">
+          <header className="header border-botton__divider flex flex-middle flex-space-between">
+            <figure className="header__image-container text-middle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+            </figure>
+            <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
+            <span className="gray-font-opacity">Table 32 </span>
+          </header>
+          <div className="thanks text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <h2 className="thanks__title font-weight-bold">Thank You!</h2>
+            <h4 className="thanks__subtitle gray-font-opacity font-weight-bold">Total paid RM 101.20</h4>
+
+            <form className="thanks__form form">
+              <div className="input__group">
+                <input className="input input__block" type="email" placeholder="Email"></input>
+              </div>
+              <div>
+                <button className="font-weight-bold text-uppercase button button__fill button__block">Send receipt</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
         <section className="customer-numbers__modal modal">
           <div className="modal__content">
-            <header className="modal__header boder-botton__divider">
+            <header className="modal__header border-botton__divider">
               <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
             </header>
             <div className="modal__body">
