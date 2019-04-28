@@ -59,7 +59,12 @@ ol {
 
 button {
   background-color: transparent;
-  border: 0;
+  border-color: transparent;
+
+  &:disabled {
+    color: $white;
+    background-color: $gray-3;
+  }
 }
 
 .reset-font-size {
