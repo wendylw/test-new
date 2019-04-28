@@ -195,4 +195,22 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
+apiGql.CREATE_ORDER = gql`
+  mutation CreateOrder($business: String!, $storeId: String!, $tableId: String!, $shoppingCartIds: [String]) {
+    createOrder(input: {
+      business: $business,
+      storeId: $storeId,
+      shoppingCartIds: $shoppingCartIds,
+      tableId: $tableId,
+      channel: 3
+    }) {
+      orders {
+        id
+        total
+        orderId
+      }
+    }
+  }
+`;
+
 export default apiGql;

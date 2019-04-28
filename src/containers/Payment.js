@@ -1,15 +1,55 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react'
-import { compose } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
+import withShoppingCart from '../libs/withShoppingCart';
+import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
+import Constants from '../Constants';
+import apiGql from '../apiGql';
+import config from '../config';
+import RedirectForm from '../views/components/RedirectForm';
 
 // Example URL: http://nike.storehub.local:3002/#/payment
 export class Payment extends Component {
   static propTypes = {
+  }
 
+  form = null;
+
+  state = {
+    paymentMethod: Constants.PAYMENT_METHODS.GRAB_PAY,
+    order: null,
+    fire: false,
+  };
+
+  savePaymentMethod(paymentMethod) {
+    this.setState({ paymentMethod });
+  }
+
+  async payNow() {
+    const { shoppingCart } = this.props;
+
+    alert('pay now');
+    const { data } = await this.props.createOrder({
+      variables: {
+        business: config.business,
+        storeId: config.storeId,
+        tableId: config.table,
+        shoppingCartIds: shoppingCart.items.map(i => i.id),
+      },
+    });
+
+    if (data.createOrder) {
+      console.log('data.createOrder => %o', data.createOrder);
+      this.setState({
+        order: data.createOrder.orders[0],
+        fire: true,
+      });
+    }
   }
 
   render() {
-    const { match, order } = this.props;
+    const { match } = this.props;
+    const { paymentMethod, order } = this.state;
 
     console.log('order =>', order);
 
@@ -28,20 +68,21 @@ export class Payment extends Component {
               <figure className="payment__image-container">
                 <img src="/img/logo-grabpay.png"></img>
               </figure>
-              <div className="radio">
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.GRAB_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
-                <input type="radio"></input>
+                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}></input>
               </div>
             </li>
             <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-boost.png"></img>
               </figure>
-              <div className="radio">
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.BOOST_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
-                <input type="radio"></input>
+                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}></input>
               </div>
             </li>
+            {/*
             <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-bigpay.png"></img>
@@ -60,15 +101,67 @@ export class Payment extends Component {
                 <input type="radio"></input>
               </div>
             </li>
+            */}
           </ul>
         </div>
 
         <div className="payment__pay-now-container">
-          <button className="button button__fill button__block font-weight-bold text-uppercase">Pay now</button>
+          <button
+            className="button button__fill button__block font-weight-bold text-uppercase"
+            onClick={this.payNow.bind(this)}
+          >Pay now</button>
         </div>
+
+        <RedirectForm
+          ref={ref => this.form = ref}
+          action={config.storehubPaymentEntryURL}
+          method="POST"
+          fields={() => {
+            const { onlineStoreInfo } = this.props;
+            const { order, paymentMethod } = this.state;
+            const fields = [];
+
+            if (!onlineStoreInfo || !order || !paymentMethod) {
+              return null;
+            }
+
+            fields.push({ name: 'amount', value: order.total });
+            fields.push({ name: 'currency', value: onlineStoreInfo.currency });
+            fields.push({ name: 'receiptNumber', value: order.orderId });
+            fields.push({ name: 'businessName', value: config.business });
+            fields.push({ name: 'redirectURL', value: config.storehubPaymentResponseURL });
+            fields.push({ name: 'webhookURL', value: config.storehubPaymentBackendResponseURL });
+            fields.push({ name: 'paymentName', value: paymentMethod });
+
+            return fields;
+          }}
+          fire={this.state.fire}
+        />
       </section>
     )
   }
 }
 
-export default Payment;
+
+export default compose(
+  withOnlinstStoreInfo({
+    props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
+      if (loading) {
+        return null;
+      }
+      return { onlineStoreInfo };
+    },
+  }),
+  withShoppingCart({
+    props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
+      const props = { loading };
+      if (!loading) {
+        Object.assign(props, { shoppingCart });
+      }
+      return props;
+    },
+  }),
+  graphql(apiGql.CREATE_ORDER, {
+    name: 'createOrder',
+  }),
+)(Payment);
