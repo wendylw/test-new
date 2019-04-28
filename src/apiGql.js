@@ -159,6 +159,7 @@ apiGql.GET_ORDER_DETAIL = gql`
     order(orderId: $orderId) {
       id
       status
+      total
     }
   }
 `;
