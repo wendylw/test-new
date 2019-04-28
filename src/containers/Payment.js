@@ -27,8 +27,6 @@ export class Payment extends Component {
 
   async payNow() {
     const { shoppingCart } = this.props;
-
-    alert('pay now');
     const { data } = await this.props.createOrder({
       variables: {
         business: config.business,
