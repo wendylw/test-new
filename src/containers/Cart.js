@@ -78,7 +78,7 @@ export class Cart extends Component {
           </div>
           <div className="footer-operation__item width-2-3">
             <Link
-              className="billing__button button button__fill button__block font-weight-bold"
+              className="billing__link button button__fill button__block font-weight-bold"
               to="/payment"
             >Pay</Link>
           </div>

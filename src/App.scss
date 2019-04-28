@@ -908,8 +908,16 @@ ol {
     margin: 14px 0;
   }
 
+  &__link,
   &__button {
     @extend .text-uppercase;
+  }
+
+  &__link {
+    display: block;
+    text-align: center;
+    line-height: 14vw;
+    text-decoration: none;
   }
 }
 
