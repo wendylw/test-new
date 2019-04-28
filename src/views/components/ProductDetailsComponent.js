@@ -36,6 +36,19 @@ export class ProductDetailsComponent extends Component {
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
   };
 
+  displayPrice() {
+    const { product } = this.props;
+    const { childrenMap } = product;
+
+    const variationNames = this.getVariationNames();
+
+    const childProduct = childrenMap.find(({ variation }) => (
+      variation.sort().toString() === variationNames.sort().toString()
+    ));
+
+    return childProduct ? childProduct.displayPrice : product.displayPrice;
+  }
+
   isSubmitable() {
     const { cartQuantity, variationsByIdMap } = this.state;
     const singleChoiceVariations = this.getSingleChoiceVariations();
@@ -75,6 +88,16 @@ export class ProductDetailsComponent extends Component {
     return Object.values(variationsByIdMap).reduce((ret, arr) => [...ret, ...arr], []);
   }
 
+  getVariationNames() {
+    const { product } = this.props;
+    const variations = this.getVariationsValue();
+    return variations.map(({ variationId, optionId }) => {
+      const variation = product.variations.find(v => v.id === variationId);
+      const optionValue = variation.optionValues.find(o => o.id === optionId);
+      return optionValue.value;
+    })
+  }
+
   render() {
     const { product, history } = this.props;
     const { cartQuantity, variationsByIdMap } = this.state;
@@ -85,7 +108,7 @@ export class ProductDetailsComponent extends Component {
 
     console.log('variationsByIdMap =>', variationsByIdMap);
     
-    const { id: productId, images, title, displayPrice } = product;
+    const { id: productId, images, title } = product;
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
@@ -125,7 +148,7 @@ export class ProductDetailsComponent extends Component {
         <ItemComponent
           image={imageUrl}
           title={title}
-          price={displayPrice}
+          price={this.displayPrice()}
           quantity={cartQuantity}
           decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
           onDecrease={() => {
