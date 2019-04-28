@@ -48,7 +48,7 @@ export class ItemComponent extends Component {
             {variation ? <p className="item__description">{variation}</p> : null}
             <span className="gray-font-opacity"><CurrencyNumber money={price} /></span>
           </div>
-          <div className={`item__cart-ctrl ${quantity > 0 && !decreaseDisabled ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
+          <div className={`item__cart-ctrl ${quantity > 0 ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
             <button
               className="cart__ctrl cart__minuts"
               disabled={decreaseDisabled}

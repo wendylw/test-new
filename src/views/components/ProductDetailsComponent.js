@@ -33,7 +33,7 @@ export class ProductDetailsComponent extends Component {
   state = {
     mergedProduct: null,
     variationsByIdMap: {}, // Object<VariationId, Array<[VariationId, OptionId]>>
-    cartQuantity: 0,
+    cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
   };
 
   isSubmitable() {
@@ -127,7 +127,7 @@ export class ProductDetailsComponent extends Component {
           title={title}
           price={displayPrice}
           quantity={cartQuantity}
-          decreaseDisabled={cartQuantity === 0}
+          decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
           onDecrease={() => {
             this.setState({ cartQuantity: cartQuantity - 1 });
           }}
@@ -138,19 +138,23 @@ export class ProductDetailsComponent extends Component {
         
         <div className="aside__fix-bottom aside__section-container">
           <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
-            const result = await this.props.addOrUpdateShoppingCartItem({
-              variables: {
-                action: 'edit',
-                business: config.business,
-                productId,
-                quantity: cartQuantity,
-                variations: this.getVariationsValue(),
-              }
-            });
+            const variations = this.getVariationsValue();
 
+            if (cartQuantity && variations.length) {
+              const result = await this.props.addOrUpdateShoppingCartItem({
+                variables: {
+                  action: 'edit',
+                  business: config.business,
+                  productId,
+                  quantity: cartQuantity,
+                  variations,
+                }
+              });
+              console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
+            }
+
+            // close popup and go back home.
             history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
-
-            console.log('result =>', result);
           }} disabled={!this.isSubmitable()}>OK</button>
         </div>
         
