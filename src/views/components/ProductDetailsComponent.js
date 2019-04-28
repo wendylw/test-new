@@ -75,12 +75,16 @@ export class ProductDetailsComponent extends Component {
   }
 
   setVariationsByIdMap(variationId, variationAndOptionById) {
-    this.setState({
-      variationsByIdMap: {
-        ...this.state.variationsByIdMap,
-        [variationId]: variationAndOptionById,
-      },
-    })
+    const newState = {
+      variationsByIdMap: this.state.variationsByIdMap,
+    };
+
+    // don't know why, but just found that set values to this.state 
+    // can avoid another call issue in an extremely shot time.
+    // which case is about auto select first SingleChoice variations.
+    newState.variationsByIdMap[variationId] = variationAndOptionById;
+
+    this.setState(newState);
   }
 
   getVariationsValue() {
@@ -98,8 +102,13 @@ export class ProductDetailsComponent extends Component {
     })
   }
 
+  hide() {
+    const { history } = this.props;
+    history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);;
+  }
+
   render() {
-    const { product, history } = this.props;
+    const { product } = this.props;
     const { cartQuantity, variationsByIdMap } = this.state;
 
     if (!product) {
@@ -112,76 +121,81 @@ export class ProductDetailsComponent extends Component {
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
-      <div className="product-detail">
-        {
-          this.getSingleChoiceVariations().length ? (
-            <ol className="product-detail__options-category border-botton__divider">
-            {
-              this.getSingleChoiceVariations().map(variation => (
-                <VariationSelectorComponent
-                  key={variation.id}
-                  variation={variation}
-                  onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                />
-              ))
-            }
-            </ol>
-          ) : null
+      <aside className="aside aside__product-detail active" onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          this.hide();
         }
-        
-        {
-          this.getMultipleChoiceVariations().length ? (
-            <ol className="product-detail__options-category border-botton__divider">
-            {
-              this.getMultipleChoiceVariations().map(variation => (
-                <VariationSelectorComponent
-                  key={variation.id}
-                  variation={variation}
-                  onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                />
-              ))
-            }
-            </ol>
-          ) : null
-        }
+      }}>
+        <div className="product-detail">
+          {
+            this.getSingleChoiceVariations().length ? (
+              <ol className="product-detail__options-category border-botton__divider">
+              {
+                this.getSingleChoiceVariations().map(variation => (
+                  <VariationSelectorComponent
+                    key={variation.id}
+                    variation={variation}
+                    onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                  />
+                ))
+              }
+              </ol>
+            ) : null
+          }
+          
+          {
+            this.getMultipleChoiceVariations().length ? (
+              <ol className="product-detail__options-category border-botton__divider">
+              {
+                this.getMultipleChoiceVariations().map(variation => (
+                  <VariationSelectorComponent
+                    key={variation.id}
+                    variation={variation}
+                    onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                  />
+                ))
+              }
+              </ol>
+            ) : null
+          }
 
-        <ItemComponent
-          image={imageUrl}
-          title={title}
-          price={this.displayPrice()}
-          quantity={cartQuantity}
-          decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
-          onDecrease={() => {
-            this.setState({ cartQuantity: cartQuantity - 1 });
-          }}
-          onIncrease={() => {
-            this.setState({ cartQuantity: cartQuantity + 1 });
-          }}
-        />
-        
-        <div className="aside__fix-bottom aside__section-container">
-          <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
-            const variations = this.getVariationsValue();
+          <ItemComponent
+            image={imageUrl}
+            title={title}
+            price={this.displayPrice()}
+            quantity={cartQuantity}
+            decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+            onDecrease={() => {
+              this.setState({ cartQuantity: cartQuantity - 1 });
+            }}
+            onIncrease={() => {
+              this.setState({ cartQuantity: cartQuantity + 1 });
+            }}
+          />
+          
+          <div className="aside__fix-bottom aside__section-container">
+            <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
+              const variations = this.getVariationsValue();
 
-            if (this.isSubmitable()) {
-              const result = await this.props.addOrUpdateShoppingCartItem({
-                variables: {
-                  action: 'edit',
-                  business: config.business,
-                  productId,
-                  quantity: cartQuantity,
-                  variations,
-                }
-              });
-              console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
-            }
+              if (this.isSubmitable()) {
+                const result = await this.props.addOrUpdateShoppingCartItem({
+                  variables: {
+                    action: 'edit',
+                    business: config.business,
+                    productId,
+                    quantity: cartQuantity,
+                    variations,
+                  }
+                });
+                console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
+              }
 
-            // close popup and go back home.
-            history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
-          }}>OK</button>
+              // close popup and go back home.
+              this.hide();
+            }}>OK</button>
+          </div>
         </div>
-        
-      </div>
+      </aside>
     )
   }
 }

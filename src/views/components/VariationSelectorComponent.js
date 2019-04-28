@@ -1,17 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { variationOnProductType } from '../propTypes';
 
 export class VariationSelectorComponent extends Component {
   static propTypes = {
-    variation: PropTypes.shape({
-      id: PropTypes.string,
-      name: PropTypes.string,
-      variationType: PropTypes.oneOf(['SingleChoice', 'MultipleChoice']),
-      optionValues: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string,
-        value: PropTypes.string,
-      })),
-    }),
+    variation: variationOnProductType,
     onChange: PropTypes.func,
   }
 
@@ -22,6 +15,24 @@ export class VariationSelectorComponent extends Component {
   state = {
     selected: {},  // Object<OptionId, Boolean<isSelected>}>
   };
+
+  componentDidMount() {
+    this.selectDefault();
+  }
+
+  selectDefault() {
+    if (Object.keys(this.state.selected).lenght || !this.isSingleChoice()) {
+      return;
+    }
+
+    const { optionValues } = this.props.variation;
+
+    this.setState({
+      selected: {
+        [optionValues[0].id]: true,
+      }
+    }, this.onSelected);
+  }
 
   isSingleChoice() {
     const { variation } = this.props;
@@ -42,6 +53,10 @@ export class VariationSelectorComponent extends Component {
         variationId: variation.id,
         optionId: id,
       }));
+  }
+
+  onSelected() {
+    this.props.onChange(this.getAllVariationAndOptionById());
   }
 
   render() {
@@ -65,9 +80,7 @@ export class VariationSelectorComponent extends Component {
                   ...(this.isSingleChoice() ? null : this.state.selected),
                   [id]: !this.state.selected[id],
                 }
-              }, () => this.props.onChange(
-                this.getAllVariationAndOptionById(),
-              ))}
+              }, this.onSelected)}
             >{value}</li>
           ))
         }

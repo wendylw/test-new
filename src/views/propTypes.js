@@ -1,5 +1,31 @@
 import PropTypes from 'prop-types';
 
+export const selectorType = PropTypes.shape({
+  multiple: PropTypes.bool,
+  label: PropTypes.string,
+  value: PropTypes.arrayOf(PropTypes.any),
+  options: PropTypes.oneOfType(
+    PropTypes.func, // options initializer
+    PropTypes.arrayOf(PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.string,
+      origin: PropTypes.any,
+    })),
+  ),
+  onChange: PropTypes.func,
+});
+
+export const variationOnProductType = PropTypes.shape({
+  id: PropTypes.string,
+  name: PropTypes.string,
+  variationType: PropTypes.oneOf(['SingleChoice', 'MultipleChoice']),
+  optionValues: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    value: PropTypes.string,
+    priceDiff: PropTypes.number,
+  })),
+});
+
 export const shoppingCartType = PropTypes.shape({
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,

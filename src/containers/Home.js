@@ -27,13 +27,7 @@ export class Home extends Component {
       <section className={`table-ordering__home ${hideClassName}`}>
         <MainTop />
         <MainBody />
-        <Route path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`} component={() => {
-          return (
-            <aside className="aside aside__product-detail active">
-              <ProductDetails />
-            </aside>
-          );
-        }} />
+        <Route path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`} component={() => <ProductDetails />} />
 
         <aside className="aside">
           <div className="cart-pane">
