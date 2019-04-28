@@ -11,8 +11,8 @@ export default options => compose(
       }
     }),
     ...options,
-    props: () => { // TODO: hide codes
-      return require('./mocks/shoppingCart.json').data;
-    }
+    // props: () => { // TODO: hide codes
+    //   return require('./mocks/shoppingCart.json').data;
+    // }
   }),
 );

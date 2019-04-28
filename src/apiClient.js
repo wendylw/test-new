@@ -8,6 +8,7 @@ const client = new ApolloClient({
   cache,
   typeDefs,
   resolvers,
+  // credentials: 'include',
 });
 
 if (process.env.NODE_ENV === 'development') {
