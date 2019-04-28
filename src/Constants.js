@@ -7,12 +7,18 @@ const ROUTER_PATHS = {
     PLAYGROUND: 'playground',
 };
 
+const PAYMENT_METHODS = {
+  GRAB_PAY: 'GrabPay',
+  BOOST_PAY: 'BoostPay',
+};
+
 const ADD_TO_CART_MIN_QUANTITY = 1;
 
 const BACKEND_PING_PATH = '/ping';
 
 export default {
     ROUTER_PATHS,
+    PAYMENT_METHODS,
     ADD_TO_CART_MIN_QUANTITY,
     BACKEND_PING_PATH,
 }
