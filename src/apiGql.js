@@ -18,6 +18,15 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
   }
 `;
 
+apiGql.FRAGMENT_PRODUCT_CHILDREN_MAP = gql`
+  fragment ProductChildrenMap on Product {
+    variation
+    childId
+    quantityOnHand
+    displayPrice
+  }
+`;
+
 apiGql.FRAGMENT_ONLINE_CATEGORY = gql`
   fragment OnlineCategoryFragment on OnlineCategory {
     id
@@ -71,7 +80,15 @@ apiGql.GET_PRODUCT_DETAIL = gql`
         optionValues {
           id
           value
+          priceDiff
         }
+      }
+      trackInventory
+      childrenMap {
+        childId
+        quantityOnHand
+        displayPrice
+        variation
       }
     }
   }
