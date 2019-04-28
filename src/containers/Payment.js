@@ -129,7 +129,7 @@ export class Payment extends Component {
             fields.push({ name: 'currency', value: onlineStoreInfo.currency });
             fields.push({ name: 'receiptNumber', value: order.orderId });
             fields.push({ name: 'businessName', value: config.business });
-            fields.push({ name: 'redirectURL', value: config.storehubPaymentResponseURL });
+            fields.push({ name: 'redirectURL', value: config.storehubPaymentResponseURL.replace('{{business}}', config.business) });
             fields.push({ name: 'webhookURL', value: config.storehubPaymentBackendResponseURL });
             fields.push({ name: 'paymentName', value: paymentMethod });
 
