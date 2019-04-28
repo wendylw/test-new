@@ -140,7 +140,7 @@ export class ProductDetailsComponent extends Component {
           <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
             const variations = this.getVariationsValue();
 
-            if (cartQuantity && variations.length) {
+            if (this.isSubmitable()) {
               const result = await this.props.addOrUpdateShoppingCartItem({
                 variables: {
                   action: 'edit',
@@ -155,7 +155,7 @@ export class ProductDetailsComponent extends Component {
 
             // close popup and go back home.
             history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
-          }} disabled={!this.isSubmitable()}>OK</button>
+          }}>OK</button>
         </div>
         
       </div>
