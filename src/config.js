@@ -10,7 +10,7 @@ const getTableId = () => {
 };
 
 const config = {
-  backendUrl: process.env.REACT_APP_BACKEND_URL,
+  backendBaseUrl: process.env.REACT_APP_BACKEND_BASE_URL,
   business: (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.')),
   table: getTableId(),
 };

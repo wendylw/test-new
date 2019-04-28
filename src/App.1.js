@@ -3,8 +3,19 @@ import './App.scss';
 import { compose } from 'react-apollo';
 import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
 import Routes from './Routes';
+import config from './config';
+import Constants from './Constants';
 
 class App extends Component {
+  state = {
+    sessionReady: false,
+  };
+
+  async componentDidMount() {
+    await fetch(`${config.backendBaseUrl}${Constants.BACKEND_PING_PATH}`);
+    this.setState({ sessionReady: true });
+  }
+
   render() {
     const { error } = this.props;
 
@@ -17,7 +28,7 @@ class App extends Component {
 
     return (
       <main className="table-ordering">
-        <Routes />
+        {this.state.sessionReady ? <Routes /> : null}
       </main>
     );
   }

@@ -4,7 +4,7 @@ import cache from "./apiCache";
 import { resolvers, typeDefs } from "./apiResolvers";
 
 const client = new ApolloClient({
-  uri: config.backendUrl,
+  uri: `${config.backendBaseUrl}/graphql`,
   cache,
   typeDefs,
   resolvers,
