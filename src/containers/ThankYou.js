@@ -5,6 +5,7 @@ import config from '../config';
 import CurrencyNumber from '../views/components/CurrencyNumber';
 
 // Example URL: http://nike.storehub.local:3002/#/thank-you?orderId=811030873332195
+// Example2 URL: http://nike.storehub.local:3000/#/thank-you?orderId=811071330657523
 export class ThankYou extends Component {
   static propTypes = {
 
@@ -48,6 +49,17 @@ export class ThankYou extends Component {
 }
 
 export default compose(withOrderDetail({
+  options: ({ history }) => {
+    const query = new URLSearchParams(history.location.search);
+    const orderId = query.get('receiptNumber');
+
+    return ({
+      variables: {
+        business: config.business,
+        orderId,
+      }
+    });
+  },
   props: ({ gqlOrderDetail: { loading, order } }) => {
     if (loading) {
       return null;
