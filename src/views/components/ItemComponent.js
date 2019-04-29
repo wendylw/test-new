@@ -62,7 +62,7 @@ export class ItemComponent extends Component {
                 <span className="font-weight-bold">{quantity}</span>
               ) : null
             }
-            
+
             <button
               className="cart__ctrl cart__add"
               onClick={onIncrease}

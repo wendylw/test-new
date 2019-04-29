@@ -631,7 +631,7 @@ button {
   &__minuts {
     display: none;
     border-color: $gray-1;
-    background-color: transparent;
+    background-color: $white;
   }
 
   &__add {
@@ -818,7 +818,7 @@ button {
   }
 
   .item {
-    margin-bottom: 70px;
+    margin-bottom: 21.8vw;
   }
 }
 
@@ -963,6 +963,11 @@ button {
     padding: 1vw;
     height: 100%;
     color: $theme-color;
+  }
+
+  a.cart-bar__order-button {
+    line-height: 12vw;
+    text-decoration: none;
   }
 
   &.has-products {

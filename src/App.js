@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <main className="table-ordering">
-        <section className="table-ordering__home hide">
+        <section className="table-ordering__home">
           <header className="header border-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
@@ -273,9 +273,9 @@ class App extends Component {
                 </div>
                 <label className="cart-bar__money text-middle">RM 101.20</label>
               </button>
-              <button className="cart-bar__order-button">
+              <a className="cart-bar__order-button">
                 Order now
-              </button>
+              </a>
             </div>
           </footer>
         </section>
@@ -505,7 +505,7 @@ class App extends Component {
           </div>
         </section>
 
-        <section className="table-ordering__thanks">
+        <section className="table-ordering__thanks hide">
           <header className="header border-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
