@@ -170,6 +170,14 @@ apiGql.SET_CURRENT_CATEGORY = gql`
   }
 `;
 
+apiGql.EMPTY_SHOPPING_CART = gql`
+  mutation EmptyShoppingCart {
+    emptyShoppingCart(input: {}) {
+      success
+    }
+  }
+`;
+
 // TODO: remove sessionId when @Jiawei done in api.
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
