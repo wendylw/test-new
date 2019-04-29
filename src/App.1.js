@@ -5,6 +5,7 @@ import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
 import Routes from './Routes';
 import config from './config';
 import Constants from './Constants';
+import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
 
 class App extends Component {
   state = {
@@ -34,9 +35,12 @@ class App extends Component {
   }
 }
 
-export default compose(withOnlineStoreInfo({
-  props: ({ gqlOnlineStoreInfo }) => {
-    const { error } = gqlOnlineStoreInfo;
-    return { error };
-  },
-}))(App);
+export default compose(
+  withResizeWindowBlocker,
+  withOnlineStoreInfo({
+    props: ({ gqlOnlineStoreInfo }) => {
+      const { error } = gqlOnlineStoreInfo;
+      return { error };
+    },
+  })
+)(App);
