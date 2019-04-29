@@ -125,6 +125,7 @@ apiGql.GET_ONLINE_CATEGORY = gql`
         id
         title
         displayPrice
+        trackInventory
         images
         variations {
           id
