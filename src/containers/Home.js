@@ -10,23 +10,10 @@ import Constants from '../Constants';
 import ProductDetails from '../views/components/ProductDetails';
 import ProductsEditCart from '../views/components/ProductsEditCart';
 import MainMenu from '../views/components/MainMenu';
-import withLocalState from '../libs/withLocalState';
 
 export class Home extends Component {
   static propTypes = {
 
-  }
-
-  state = {
-    showMenu: false,
-  };
-
-  isRouterPath(path) {
-    return this.props.match.path === path;
-  }
-
-  asideClassNameByPath(path) {
-    return this.isRouterPath(path) ? 'active' : '';
   }
 
   hideAside() {
@@ -42,13 +29,12 @@ export class Home extends Component {
   }
 
   render() {
-    const { match, localState } = this.props;
+    const { match } = this.props;
     const hideClassName = [
       Constants.ROUTER_PATHS.HOME,
       Constants.ROUTER_PATHS.PORDUCTS,
     ].includes(match.path) ? '' : 'hide';
 
-    console.log('localState => %o', localState);
     console.log('match => %o', match);
 
     return (
@@ -66,11 +52,13 @@ export class Home extends Component {
           path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/edit`}
           exact
           component={ProductsEditCart}
-        /> 
+        />
 
-        {
-          localState.showMenu ? <MainMenu /> : null
-        }
+        <Route
+          path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/menu`}
+          exact
+          component={MainMenu}
+        />
 
         <FooterOperation />
       </section>
@@ -80,5 +68,4 @@ export class Home extends Component {
 
 export default compose(
   withRouter,
-  withLocalState,
 )(Home);

@@ -11,7 +11,6 @@ const initialData = {
     counts: 100,
     countsUpdatedAt: Date.now(),
     currentCategory: null,
-    showMenu: false,
   },
 };
 

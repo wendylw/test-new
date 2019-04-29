@@ -8,10 +8,17 @@ class MainMenuComponent extends Component {
     onlineCategoryMergedShoppingCart: onlineCategoryMergedShoppingCartType,
   }
 
-  render() {
-    const { onlineCategoryMergedShoppingCart, toggleMenu } = this.props;
+  toggleMenu() {
+    const { match, history } = this.props;
+    
+    if (match.isExact) {
+      history.replace('/', history.location.state);
+      return;
+    }
+  }
 
-    console.log('onlineCategoryMergedShoppingCart => %o', onlineCategoryMergedShoppingCart);
+  render() {
+    const { onlineCategoryMergedShoppingCart } = this.props;
 
     if (!onlineCategoryMergedShoppingCart) {
       return null;
@@ -20,7 +27,7 @@ class MainMenuComponent extends Component {
     return (
       <aside className="aside active" onClick={e => {
         if (e.currentTarget === e.target) {
-          toggleMenu();
+          this.toggleMenu();
         }
       }}>
         <nav className="nav-pane">
@@ -35,7 +42,7 @@ class MainMenuComponent extends Component {
                       className="nav-pane__link flex flex-middle flex-space-between"
                       onClick={() => {
                         scrollTo(category.name);
-                        toggleMenu();
+                        this.toggleMenu();
                       }}
                     >
                       <label className="nav-pane__label">{category.name}</label>

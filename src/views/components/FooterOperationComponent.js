@@ -20,7 +20,9 @@ export class FooterOperationComponent extends Component {
     
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
-        <button className="button menu-button" onClick={() => toggleMenu()}>
+        <button className="button menu-button" onClick={() => {
+          this.props.history.push(`${Constants.ROUTER_PATHS.PORDUCTS}/all/menu`);
+        }}>
           <i className="menu">
             <span></span>
             <span></span>

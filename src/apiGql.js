@@ -44,7 +44,6 @@ apiGql.GET_LOCAL_STATE = gql`
     currentCategory @client {
       ...OnlineCategoryFragment
     }
-    showMenu @client
   }
 `;
 
