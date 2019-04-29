@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import { onlineCategoryMergedShoppingCartType } from '../propTypes';
 import { ScrollObserver } from './ScrollComponents';
@@ -8,49 +9,48 @@ class MainMenuComponent extends Component {
   }
 
   render() {
-    const { onlineCategoryMergedShoppingCart } = this.props;
+    const { onlineCategoryMergedShoppingCart, toggleMenu } = this.props;
+
+    console.log('onlineCategoryMergedShoppingCart => %o', onlineCategoryMergedShoppingCart);
 
     if (!onlineCategoryMergedShoppingCart) {
       return null;
     }
 
     return (
-      <div style={styles.wrapper}>
-        {
-          onlineCategoryMergedShoppingCart.map((category) => (
-            <ScrollObserver key={category.id} forName={category.name}>
-              <div key={category.id} style={styles.itemRow}>
-                <span style={styles.itemRowLeft}>{category.name}</span>
-                <small style={styles.itemRowRight}>{category.cartQuantity}</small>
-              </div>
-            </ScrollObserver>
-          ))
+      <aside className="aside active" onClick={e => {
+        if (e.currentTarget === e.target) {
+          toggleMenu();
         }
-      </div>
+      }}>
+        <nav className="nav-pane">
+          <ul className="nav-pane__list">
+          {
+            onlineCategoryMergedShoppingCart.map((category) => (
+              <ScrollObserver key={category.id} render={(scrollname, scrollTo) => {
+                // TODO: this scrollname value should always be top visiable scrollname.
+                return (
+                  <li className={`nav-pane__item ${scrollname === category.name ? 'active' : ''}`}>
+                    <a
+                      className="nav-pane__link flex flex-middle flex-space-between"
+                      onClick={() => {
+                        scrollTo(category.name);
+                        toggleMenu();
+                      }}
+                    >
+                      <label className="nav-pane__label">{category.name}</label>
+                      <span className="nav-pane__number gray-font-opacity">{category.cartQuantity}</span>
+                    </a>
+                  </li>
+                );
+              }} />
+            ))
+          }
+          </ul>
+        </nav>
+      </aside>
     )
   }
 }
-
-const styles = {
-  wrapper: {
-    backgroundColor: '#f8f8f8',
-  },
-  itemRow: {
-    paddingRight: '5px',
-    paddingLeft: '5px',
-    paddingTop: '3px',
-    paddingBottom: '2px',
-    lineHeight: '1.25em',
-  },
-  itemRowLeft: {
-    display: 'inline-block',
-    width: '80%',
-  },
-  itemRowRight: {
-    display: 'inline-block',
-    width: '20%',
-    textAlign: 'right',
-  },
-};
 
 export default MainMenuComponent;

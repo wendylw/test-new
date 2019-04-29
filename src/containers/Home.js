@@ -9,11 +9,17 @@ import FooterOperation from '../views/components/FooterOperation';
 import Constants from '../Constants';
 import ProductDetails from '../views/components/ProductDetails';
 import ProductsEditCart from '../views/components/ProductsEditCart';
+import MainMenu from '../views/components/MainMenu';
+import withLocalState from '../libs/withLocalState';
 
 export class Home extends Component {
   static propTypes = {
 
   }
+
+  state = {
+    showMenu: false,
+  };
 
   isRouterPath(path) {
     return this.props.match.path === path;
@@ -36,12 +42,13 @@ export class Home extends Component {
   }
 
   render() {
-    const { match } = this.props;
+    const { match, localState } = this.props;
     const hideClassName = [
       Constants.ROUTER_PATHS.HOME,
       Constants.ROUTER_PATHS.PORDUCTS,
     ].includes(match.path) ? '' : 'hide';
 
+    console.log('localState => %o', localState);
     console.log('match => %o', match);
 
     return (
@@ -61,30 +68,9 @@ export class Home extends Component {
           component={ProductsEditCart}
         /> 
 
-        <aside className="aside">
-          <nav className="nav-pane">
-            <ul className="nav-pane__list">
-              <li className="nav-pane__item active">
-                <a className="nav-pane__link flex flex-middle flex-space-between">
-                  <label className="nav-pane__label">I Want Eat</label>
-                  <span className="nav-pane__number gray-font-opacity">45</span>
-                </a>
-              </li>
-              <li className="nav-pane__item">
-                <a className="nav-pane__link flex flex-middle flex-space-between">
-                  <label className="nav-pane__label">I Want Drink</label>
-                  <span className="nav-pane__number gray-font-opacity">45</span>
-                </a>
-              </li>
-              <li className="nav-pane__item">
-                <a className="nav-pane__link flex flex-middle flex-space-between">
-                  <label className="nav-pane__label">Hong Kong Style Wantan Noodle Wet and Dry</label>
-                  <span className="nav-pane__number gray-font-opacity">45</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </aside>
+        {
+          localState.showMenu ? <MainMenu /> : null
+        }
 
         <FooterOperation />
       </section>
@@ -92,4 +78,7 @@ export class Home extends Component {
   }
 }
 
-export default compose(withRouter)(Home);
+export default compose(
+  withRouter,
+  withLocalState,
+)(Home);

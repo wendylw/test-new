@@ -10,7 +10,7 @@ export class FooterOperationComponent extends Component {
   }
 
   render() {
-    const { shoppingCart } = this.props;
+    const { shoppingCart, toggleMenu } = this.props;
 
     if (!shoppingCart) {
       return null;
@@ -20,7 +20,7 @@ export class FooterOperationComponent extends Component {
     
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
-        <button className="button menu-button">
+        <button className="button menu-button" onClick={() => toggleMenu()}>
           <i className="menu">
             <span></span>
             <span></span>

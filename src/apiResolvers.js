@@ -7,10 +7,12 @@ export const typeDefs = gql`
   extend type Query {
     counts: Int!
     countsUpdatedAt: Int!
+    showMenu: Boolean!
   }
 
   extend type Mutation {
     toggleCounts: Int!
+    toggleMenu: Boolean!
   }
 `;
 
@@ -28,6 +30,18 @@ const toggleCountMutation = (obj, args, context) => {
   return data.counts;
 };
 
+const toggleMenuMutation = (obj, args, context) => {
+  const { cache } = context;
+
+  const { showMenu = false } = cache.readQuery({ query: apiGql.GET_LOCAL_STATE });
+  const data = {
+    showMenu: !showMenu,
+  };
+  cache.writeQuery({ query: apiGql.GET_LOCAL_STATE, data });
+
+  return data.showMenu;
+};
+
 const setCurrentCategoryMutation = (obj, { category }, context) => {
   if (!category) {
     return null;
@@ -42,6 +56,7 @@ const setCurrentCategoryMutation = (obj, { category }, context) => {
 export const resolvers = {
   Mutation: {
     toggleCounts: toggleCountMutation,
+    toggleMenu: toggleMenuMutation,
     setCurrentCategory: setCurrentCategoryMutation,
   },
 };

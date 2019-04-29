@@ -4,6 +4,10 @@ import React from 'react';
 
 const observableContainer = {};
 
+function scrollTo(scrollname) {
+  document.querySelector(`[scrollname=${scrollname}]`).scrollIntoView({behavior: "smooth"});
+}
+
 window.addEventListener('scroll', debounce((e) => {
   // TODO: send global event to tell which one is one the top of viewport
   const obs = Object.values(observableContainer);
@@ -125,7 +129,7 @@ export class ScrollObserver extends React.Component {
     const { render } = this.props;
 
     if (typeof render === 'function') {
-      return render(this.state.scrollname);
+      return render(this.state.scrollname, scrollTo);
     }
 
     return null;
