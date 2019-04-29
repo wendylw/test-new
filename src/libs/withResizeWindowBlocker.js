@@ -5,6 +5,7 @@ const withResizeWindowBlocker = TheComponent =>
     componentWillMount() {
       this.blockResize();
       this.blockRotation();
+      this.blockZoomInOnSafariIOS();
     }
 
     blockResize() {
@@ -20,6 +21,15 @@ const withResizeWindowBlocker = TheComponent =>
           onresize.apply(this, arguments);
         }
       }
+    }
+
+    blockZoomInOnSafariIOS() {
+      document.addEventListener('touchmove', function(event) {
+        event = event.originalEvent || event;
+        if(event.scale > 1) {
+            event.preventDefault();
+        }
+      }, false);
     }
 
     blockRotation() {
