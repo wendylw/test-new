@@ -8,10 +8,31 @@ import MainBody from '../views/components/MainBody';
 import FooterOperation from '../views/components/FooterOperation';
 import Constants from '../Constants';
 import ProductDetails from '../views/components/ProductDetails';
+import ProductsEditCart from '../views/components/ProductsEditCart';
 
 export class Home extends Component {
   static propTypes = {
 
+  }
+
+  isRouterPath(path) {
+    return this.props.match.path === path;
+  }
+
+  asideClassNameByPath(path) {
+    return this.isRouterPath(path) ? 'active' : '';
+  }
+
+  hideAside() {
+    const { history } = this.props;
+    history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
+    
+  }
+
+  handleAsideClick(e) {
+    if (e.target === e.currentTarget) {
+      this.hideAside();
+    }
   }
 
   render() {
@@ -27,62 +48,18 @@ export class Home extends Component {
       <section className={`table-ordering__home ${hideClassName}`}>
         <MainTop />
         <MainBody />
-        <Route path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`} component={() => <ProductDetails />} />
+        
+        <Route
+          path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`}
+          exact
+          component={ProductDetails}
+        />
 
-        <aside className="aside">
-          <div className="cart-pane">
-            <div className="cart-pane__operation border-botton__divider flex flex-middle flex-space-between">
-              <h3 className="cart-pane__amount-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-                <span className="cart-pane__amount-label text-middle gray-font-opacity">46 Items</span>
-              </h3>
-              <button className="warning__button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
-                <span className="warning__label text-middle">Clear All</span>
-              </button>
-            </div>
-            <div className="cart-pane__list">
-              <ul className="list">
-                <li className="item border-botton__divider flex flex-top">
-                  <div className="item__content flex flex-middle flex-space-between">
-                    <div className="item__detail">
-                      <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
-                      <p className="item__description">Option 1, Option 2</p>
-                      <span className="gray-font-opacity">RM 25.80</span>
-                    </div>
-                    <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                      <button className="cart__ctrl cart__minuts">
-                        <i className="cart__icon"></i>
-                      </button>
-                      <span className="font-weight-bold">3</span>
-                      <button className="cart__ctrl cart__add">
-                        <i className="cart__icon"></i>
-                      </button>
-                    </div>
-                  </div>
-                </li>
-                <li className="item border-botton__divider flex flex-top">
-                  <div className="item__content flex flex-middle flex-space-between">
-                    <div className="item__detail">
-                      <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
-                      <p className="item__description">Option 1, Option 2</p>
-                      <span className="gray-font-opacity">RM 25.80</span>
-                    </div>
-                    <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
-                      <button className="cart__ctrl cart__minuts">
-                        <i className="cart__icon"></i>
-                      </button>
-                      <span className="font-weight-bold">3</span>
-                      <button className="cart__ctrl cart__add">
-                        <i className="cart__icon"></i>
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </aside>
+        <Route
+          path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/edit`}
+          exact
+          component={ProductsEditCart}
+        /> 
 
         <aside className="aside">
           <nav className="nav-pane">

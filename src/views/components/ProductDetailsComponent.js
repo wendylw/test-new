@@ -31,6 +31,7 @@ export class ProductDetailsComponent extends Component {
   }
 
   state = {
+    active: false,
     mergedProduct: null,
     variationsByIdMap: {}, // Object<VariationId, Array<[VariationId, OptionId]>>
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
@@ -47,6 +48,14 @@ export class ProductDetailsComponent extends Component {
     ));
 
     return childProduct ? childProduct.displayPrice : product.displayPrice;
+  }
+
+  componentDidMount() {
+    this.setState({ active: true });
+  }
+
+  componentWillUnmount() {
+    this.setState({ active: false });
   }
 
   isSubmitable() {
@@ -121,7 +130,7 @@ export class ProductDetailsComponent extends Component {
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
-      <aside className="aside aside__product-detail active" onClick={(e) => {
+      <aside className={`aside aside__product-detail ${this.state.active ? 'active' : ''}`} onClick={(e) => {
         if (e.target === e.currentTarget) {
           this.hide();
         }
