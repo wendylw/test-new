@@ -79,6 +79,7 @@ export const onlineCategoryMergedShoppingCartType = PropTypes.arrayOf(PropTypes.
       })),
     })),
     cartQuantity: PropTypes.number, // @added
+    cartItems: PropTypes.arrayOf(PropTypes.object), // @added
     hasSingleChoice: PropTypes.bool, // @added
     canDecreaseQuantity: PropTypes.bool, // @added
   })),

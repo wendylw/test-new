@@ -61,6 +61,22 @@ export class MainBodyComponent extends Component {
                         quantity={prod.cartQuantity}
                         decreaseDisabled={!prod.canDecreaseQuantity}
                         onDecrease={() => {
+                          if (prod.cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
+                            if (prod.hasSingleChoice) {
+                              console.warn('Product<%o> has single choice, cannot decrease here.', prod.id);
+                              return;
+                            }
+
+                            const cartItem = prod.cartItems.find(item => item.productId === prod.id);
+                            this.props.removeShoppingCartItem({
+                              variables: {
+                                productId: cartItem.productId,
+                                variations: cartItem.variations,
+                              }
+                            });
+                            return;
+                          }
+
                           this.props.addOrUpdateShoppingCartItem({
                             variables: {
                               action: 'edit',

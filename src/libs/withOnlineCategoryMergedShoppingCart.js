@@ -18,8 +18,9 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
       if (results.length) {
         product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);
         product.cartItemIds = results.map(c => c.id);
+        product.cartItems = results;
         product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
-        product.canDecreaseQuantity = (!product.hasSingleChoice || product.cartQuantity === 1);
+        product.canDecreaseQuantity = !product.hasSingleChoice;
         category.cartQuantity += product.cartQuantity;
       }
     });
@@ -52,7 +53,7 @@ const withOnlineCategoryMergedCart = compose(
 
       if (!loading) {
         // TODO: remove it BEGIN
-        // gqlShoppingCart.shoppingCart = require('./mocks/shoppingCart.json');
+        // return { shoppingCart: require('./mocks/shoppingCart.json').data.shoppingCart };
         // TODO: remove it END
 
         Object.assign(props, { shoppingCart });
