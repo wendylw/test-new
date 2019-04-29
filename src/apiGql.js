@@ -79,6 +79,8 @@ apiGql.GET_PRODUCT_DETAIL = gql`
       id
       title
       displayPrice
+      unitPrice
+      inventoryType
       images
       variations {
         id

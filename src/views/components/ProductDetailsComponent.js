@@ -39,7 +39,7 @@ export class ProductDetailsComponent extends Component {
 
   displayPrice() {
     const { product } = this.props;
-    const { childrenMap } = product;
+    const { childrenMap, unitPrice } = product;
 
     const variationNames = this.getVariationNames();
 
@@ -47,7 +47,14 @@ export class ProductDetailsComponent extends Component {
       variation.sort().toString() === variationNames.sort().toString()
     ));
 
-    return childProduct ? childProduct.displayPrice : product.displayPrice;
+    let displayPrice = childProduct ? childProduct.displayPrice : product.displayPrice;
+
+    if (!displayPrice) {
+      // should be composite
+      displayPrice = unitPrice + this.getVariationPriceDiffs().reduce((total, diff) => total + diff, 0);
+    }
+
+    return displayPrice;
   }
 
   componentDidMount() {
@@ -101,14 +108,22 @@ export class ProductDetailsComponent extends Component {
     return Object.values(variationsByIdMap).reduce((ret, arr) => [...ret, ...arr], []);
   }
 
-  getVariationNames() {
+  getVariationOptionValuesWithFieldOnly(field) {
     const { product } = this.props;
     const variations = this.getVariationsValue();
     return variations.map(({ variationId, optionId }) => {
       const variation = product.variations.find(v => v.id === variationId);
       const optionValue = variation.optionValues.find(o => o.id === optionId);
-      return optionValue.value;
+      return optionValue[field];
     })
+  }
+
+  getVariationNames() {
+    return this.getVariationOptionValuesWithFieldOnly('value');
+  }
+
+  getVariationPriceDiffs() {
+    return this.getVariationOptionValuesWithFieldOnly('priceDiff');
   }
 
   hide() {

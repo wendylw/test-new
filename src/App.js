@@ -529,6 +529,7 @@ class App extends Component {
           </div>
         </section>
 
+        {/* BO: /settings/account has a "Enable Pax" settings, if has pax, then use this step. */}
         <section className="customer-numbers__modal modal">
           <div className="modal__content">
             <header className="modal__header border-botton__divider">
