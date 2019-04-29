@@ -163,6 +163,17 @@ apiGql.GET_SHOPPING_CART = gql`
   }
 `;
 
+apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
+  mutation RemoveShoppingCartItem($productId: String!, $variations: [inputVariation]) {
+    removeShoppingCartItem(input: {
+      productId: $productId,
+      variations: $variations
+    }) {
+      productId
+    }
+  }
+`;
+
 apiGql.GET_ORDER_DETAIL = gql`
   query ($orderId: String!) {
     order(orderId: $orderId) {

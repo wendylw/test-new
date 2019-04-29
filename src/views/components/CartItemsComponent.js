@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { shoppingCartType } from '../propTypes';
 import ItemComponent from './ItemComponent';
 import config from '../../config';
+import Constants from '../../Constants';
 
 class CartItemsComponent extends Component {
   static propTypes = {
@@ -41,6 +42,16 @@ class CartItemsComponent extends Component {
               quantity={quantity}
               decreaseDisabled={quantity === 0}
               onDecrease={() => {
+                if (quantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
+                  this.props.removeShoppingCartItem({
+                    variables: {
+                      productId,
+                      variations,
+                    }
+                  });
+                  return;
+                }
+
                 this.props.addOrUpdateShoppingCartItem({
                   variables: {
                     action: 'edit',
