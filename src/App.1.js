@@ -6,7 +6,6 @@ import Routes from './Routes';
 import config from './config';
 import Constants from './Constants';
 import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
-import PeopleCountModal from './views/components/PeopleCountModal';
 
 class App extends Component {
   state = {
@@ -31,7 +30,6 @@ class App extends Component {
     return (
       <main className="table-ordering">
         {this.state.sessionReady ? <Routes /> : null}
-        <PeopleCountModal />
       </main>
     );
   }

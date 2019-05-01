@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import Modal from './Modal';
 
 class PeopleCountModal extends Component {
+  modal = null;
+
   render() {
+    const { history } = this.props;
+
     return (
-      <Modal className="customer-numbers__modal">
+      <Modal ref={ref => this.modal = ref} className="customer-numbers__modal" show onHide={() => history.goBack()}>
           <Modal.Header>
             <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
           </Modal.Header>
@@ -49,11 +54,12 @@ class PeopleCountModal extends Component {
             </ul>
           </Modal.Body>
           <Modal.Footer>
-            <button className="button__fill button__block">OK</button>
+            <button className="button__fill button__block" onClick={() => this.modal.hide()}>OK</button>
           </Modal.Footer>
         </Modal>
     );
   }
 }
 
-export default PeopleCountModal;
+
+export default withRouter(PeopleCountModal);

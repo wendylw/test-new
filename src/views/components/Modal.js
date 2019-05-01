@@ -3,14 +3,60 @@ import PropTypes from 'prop-types';
 
 class Modal extends Component {
   static propTypes = {
-
+    show: PropTypes.bool,
+    onShow: PropTypes.func,
+    onHide: PropTypes.func,
   };
+
+  static defaultProps = {
+    show: false,
+    onShow: () => {},
+    onHide: () => {},
+  }
+
+  state = {
+    show: typeof this.props.show === 'boolean' ? this.props.show : false,
+  };
+
+  componentWillReceiveProps({nextProps}) {
+    if (this.props.show !== nextProps.show) {
+      this.setState({ show: nextProps.show });
+    }
+  }
+
+  hide() {
+    this.setState({ show: false }, () => {
+      this.props.onHide();
+    });
+  }
+
+  show() {
+    this.setState({ show: true }, () => {
+      this.props.onShow();
+    });
+  }
+
+  toggle() {
+    this.setState({ show: !this.state.show }, () => {
+      if (this.state.show) {
+        this.props.onShow();
+      } else {
+        this.props.onHide();
+      }
+    });
+  }
+
+  handleClick = (e) => {
+    if (e.currentTarget === e.target) {
+      this.hide();
+    }
+  }
 
   render() {
     const { children, className = '' } = this.props;
 
     return (
-      <section className={`modal ${className}`} style={{display: 'block'}}>
+      <section className={`modal ${className}`} style={this.state.show ? {display: 'block'} : null} onClick={this.handleClick}>
           <div className="modal__content">
             {children}
           </div>

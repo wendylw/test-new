@@ -1,5 +1,6 @@
 const ROUTER_PATHS = {
-    HOME: '/',
+    INDEX: '/',
+    HOME: '/home',
     PORDUCTS: '/products',
     CART: '/cart',
     PAYMENT: '/payment',

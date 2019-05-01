@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Redirect, Switch } from "react-router-dom";
 import Loadable from 'react-loadable';
 import Main from "./views/Main";
 import Constants from "./Constants";
@@ -49,13 +49,26 @@ const AsyncNotFound = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncPeopleCountModal = Loadable({
+  loader: () => import("./views/components/PeopleCountModal"),
+  loading: MyLoadingComponent,
+});
+
 export default () =>
-  <Switch>
-    <Route path={Constants.ROUTER_PATHS.HOME} exact component={AsyncHome} />
-    <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
-    <Route path={Constants.ROUTER_PATHS.CART} exact component={AsyncCart} />
-    <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
-    <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
-    <Route path={Constants.ROUTER_PATHS.PLAYGROUND} exact component={Main} />
-    <Route component={AsyncNotFound} />
-  </Switch>;
+  <React.Fragment>
+    <Switch>
+      <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.HOME} />
+      <Route path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
+      <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
+      <Route path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
+      <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
+      <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
+      <Route path={Constants.ROUTER_PATHS.PLAYGROUND} exact component={Main} />
+      <Route component={AsyncNotFound} />
+    </Switch>
+    <Route path={`*/modal/:modal`} render={({ match }) => {
+      if (match.params.modal === 'people-count') return <AsyncPeopleCountModal />;
+      // TODO: more modals here.
+      return <AsyncNotFound />;
+    }} />
+  </React.Fragment>;
