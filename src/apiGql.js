@@ -62,6 +62,7 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
       locale
       currency
       currencySymbol
+      isPeopleCountRequired
     }
   }
 `;
