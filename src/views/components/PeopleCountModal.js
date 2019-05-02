@@ -17,7 +17,11 @@ class PeopleCountModal extends Component {
     const lastNumber = `${Constants.PeopleCount.MAX}+ pax`;
 
     return (
-      <Modal ref={ref => this.modal = ref} className="customer-numbers__modal" show onHide={() => history.goBack()}>
+      <Modal
+        ref={ref => this.modal = ref} className="customer-numbers__modal"
+        show
+        onHide={() => history.replace(Constants.ROUTER_PATHS.HOME)}
+      >
           <Modal.Header>
             <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
           </Modal.Header>

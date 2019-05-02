@@ -26,8 +26,10 @@ class App extends Component {
     const { isPeopleCountRequired = true } = onlineStoreInfo;
 
     if (isPeopleCountRequired && !config.peopleCount) {
-      const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
-      history.push(peopleCountModalPath);
+      if (history.location.pathname.indexOf('/modal/people-count') === -1) {
+        const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
+        history.push(peopleCountModalPath);
+      }
     }
   }
 
