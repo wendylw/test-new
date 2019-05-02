@@ -4,12 +4,14 @@ import PropTypes from 'prop-types';
 class Modal extends Component {
   static propTypes = {
     show: PropTypes.bool,
+    hideOnBlank: PropTypes.bool,
     onShow: PropTypes.func,
     onHide: PropTypes.func,
   };
 
   static defaultProps = {
     show: false,
+    hideOnBlank: false,
     onShow: () => {},
     onHide: () => {},
   }
@@ -47,7 +49,9 @@ class Modal extends Component {
   }
 
   handleClick = (e) => {
-    if (e.currentTarget === e.target) {
+    const { hideOnBlank } = this.props;
+
+    if (e.currentTarget === e.target && hideOnBlank) {
       this.hide();
     }
   }
@@ -56,7 +60,7 @@ class Modal extends Component {
     const { children, className = '' } = this.props;
 
     return (
-      <section className={`modal ${className}`} style={this.state.show ? {display: 'block'} : null} onClick={this.handleClick}>
+      <section className={`modal ${className}`} style={this.state.show ? {display: 'block'} : null} onClick={this.handleClick.bind(this)}>
           <div className="modal__content">
             {children}
           </div>
