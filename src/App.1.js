@@ -25,7 +25,7 @@ class App extends Component {
     // TODO: remove this default value when API dev is completed.
     const { isPeopleCountRequired = true } = onlineStoreInfo;
 
-    if (isPeopleCountRequired) {
+    if (isPeopleCountRequired && !config.peopleCount) {
       const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
       history.push(peopleCountModalPath);
     }
