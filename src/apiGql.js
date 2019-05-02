@@ -53,6 +53,7 @@ apiGql.TOGGLE_MENU = gql`
   }
 `;
 
+// TDOO: add isPeopleCountRequired field
 apiGql.GET_ONLINE_STORE_INFO = gql`
   query OnlineStoreInfo($business: String!) {
     onlineStoreInfo(business: $business) {
@@ -62,7 +63,6 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
       locale
       currency
       currencySymbol
-      isPeopleCountRequired
     }
   }
 `;
@@ -225,6 +225,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
+// TODO: add peopleCount in input param when API is ready for it
 apiGql.CREATE_ORDER = gql`
   mutation CreateOrder($business: String!, $storeId: String!, $tableId: String!, $shoppingCartIds: [String]) {
     createOrder(input: {

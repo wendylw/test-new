@@ -35,7 +35,7 @@ export class Home extends Component {
       Constants.ROUTER_PATHS.PORDUCTS,
     ].includes(match.path) ? '' : 'hide';
 
-    console.log('match => %o', match);
+    // console.log('match => %o', match);
 
     return (
       <section className={`table-ordering__home ${hideClassName}`}>

@@ -26,7 +26,7 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     });
   });
 
-  console.log('onlineCategory (cart merged) => %o', onlineCategory);
+  // console.log('onlineCategory (cart merged) => %o', onlineCategory);
 
   return onlineCategory;
 }

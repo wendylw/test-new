@@ -30,4 +30,13 @@ const config = {
   storeId: getStoreId(),
 };
 
+Object.defineProperty(config, 'peopleCount', {
+  get() {
+    return JSON.parse(localStorage.getItem('peopleCount'));
+  },
+  set(value) {
+    localStorage.setItem('peopleCount', JSON.stringify(Number(value)));
+  }
+})
+
 export default config;

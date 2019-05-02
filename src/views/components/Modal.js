@@ -18,7 +18,7 @@ class Modal extends Component {
     show: typeof this.props.show === 'boolean' ? this.props.show : false,
   };
 
-  componentWillReceiveProps({nextProps}) {
+  componentWillReceiveProps(nextProps) {
     if (this.props.show !== nextProps.show) {
       this.setState({ show: nextProps.show });
     }

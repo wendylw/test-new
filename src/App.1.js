@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import './App.scss';
-import { compose } from 'react-apollo';
-import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
+import { compose, Query } from 'react-apollo';
 import Routes from './Routes';
 import config from './config';
 import Constants from './Constants';
 import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
+import apiGql from './apiGql';
 
 class App extends Component {
   state = {
@@ -17,30 +18,53 @@ class App extends Component {
     this.setState({ sessionReady: true });
   }
 
-  render() {
-    const { error } = this.props;
+  tryPeopleCount(response) {
+    const { history } = this.props;
+    const { onlineStoreInfo } = response;
 
-    if (error) {
-      console.error(error);
-      return (
-        <div>Fail to get store info, refresh page after 30 seconds.</div>
-      );
+    // TODO: remove this default value when API dev is completed.
+    const { isPeopleCountRequired = true } = onlineStoreInfo;
+
+    if (isPeopleCountRequired) {
+      const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
+      history.push(peopleCountModalPath);
     }
+  }
+
+  renderError(error) {
+
+    return null;
+  }
+
+  render() {
+    
 
     return (
-      <main className="table-ordering">
-        {this.state.sessionReady ? <Routes /> : null}
-      </main>
+      <Query
+        query={apiGql.GET_ONLINE_STORE_INFO}
+        variables={{ business: config.business }}
+        onCompleted={this.tryPeopleCount.bind(this)}
+      >
+        {({ error }) => {
+          if (error) {
+            console.error(error);
+            return (
+              <div>Fail to get store info, refresh page after 30 seconds.</div>
+            );
+          }
+
+          return (
+            <main className="table-ordering">
+              {this.state.sessionReady ? <Routes /> : null}
+            </main>
+          )
+        }}
+      </Query>
     );
   }
 }
 
 export default compose(
   withResizeWindowBlocker,
-  withOnlineStoreInfo({
-    props: ({ gqlOnlineStoreInfo }) => {
-      const { error } = gqlOnlineStoreInfo;
-      return { error };
-    },
-  })
+  withRouter,
 )(App);

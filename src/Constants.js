@@ -17,9 +17,16 @@ const ADD_TO_CART_MIN_QUANTITY = 1;
 
 const BACKEND_PING_PATH = '/ping';
 
+const PeopleCount = {
+  DEFAULT: 1,
+  MAX: 10,
+  MAX_PLUS: -1,
+}
+
 export default {
     ROUTER_PATHS,
     PAYMENT_METHODS,
     ADD_TO_CART_MIN_QUANTITY,
     BACKEND_PING_PATH,
+    PeopleCount,
 }
