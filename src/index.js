@@ -7,13 +7,16 @@ import apiClient from './apiClient';
 import './index.css';
 import App from './App.1';
 import * as serviceWorker from './serviceWorker';
+import HeapJS from './views/components/HeapJS';
 
 ReactDOM.render(
-  <ApolloProvider client={apiClient}>
-    <Router>
-      <App />
-    </Router>
-  </ApolloProvider>,
+  <HeapJS>
+    <ApolloProvider client={apiClient}>
+      <Router>
+        <App />
+      </Router>
+    </ApolloProvider>
+  </HeapJS>,
   document.getElementById('root')
 );
 
