@@ -15,7 +15,10 @@ class App extends Component {
 
   async componentDidMount() {
     await fetch(`${config.backendBaseUrl}${Constants.BACKEND_PING_PATH}`);
-    this.setState({ sessionReady: true });
+    this.setState({ sessionReady: true }, () => this.check());
+  }
+
+  check() {
   }
 
   tryPeopleCount(response) {
@@ -40,25 +43,24 @@ class App extends Component {
   }
 
   render() {
-    
+    const { history } = this.props;
 
     return (
       <Query
         query={apiGql.GET_ONLINE_STORE_INFO}
         variables={{ business: config.business }}
         onCompleted={this.tryPeopleCount.bind(this)}
+        onError={() => {
+          history.replace({
+            pathname: Constants.ROUTER_PATHS.ERROR,
+            state: { message: 'Account name is not found.' },
+          });
+        }}
       >
-        {({ error }) => {
-          if (error) {
-            console.error(error);
-            return (
-              <div>Fail to get store info, refresh page after 30 seconds.</div>
-            );
-          }
-
+        {() => {
           return (
             <main className="table-ordering">
-              {this.state.sessionReady ? <Routes /> : null}
+              <Routes />
             </main>
           )
         }}

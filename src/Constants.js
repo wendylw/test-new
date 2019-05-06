@@ -6,6 +6,7 @@ const ROUTER_PATHS = {
     PAYMENT: '/payment',
     THANK_YOU: '/thank-you',
     PLAYGROUND: 'playground',
+    ERROR: '/error',
 };
 
 const PAYMENT_METHODS = {

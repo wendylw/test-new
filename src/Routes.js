@@ -54,6 +54,11 @@ const AsyncPeopleCountModal = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncError = Loadable({
+  loader: () => import("./views/components/Error"),
+  loading: MyLoadingComponent,
+});
+
 export default () =>
   <React.Fragment>
     <Switch>
@@ -64,6 +69,7 @@ export default () =>
       <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
       <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
       <Route path={Constants.ROUTER_PATHS.PLAYGROUND} exact component={Main} />
+      <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
       <Route component={AsyncNotFound} />
     </Switch>
     <Route path={`*/modal/:modal`} render={({ match }) => {
