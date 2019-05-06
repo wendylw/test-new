@@ -38,7 +38,7 @@ export class Payment extends Component {
     });
 
     if (data.createOrder) {
-      config.peopleCount = null; // clear peopleCount for next order
+      // config.peopleCount = null; // clear peopleCount for next order
       this.setState({
         order: data.createOrder.orders[0],
         fire: true,

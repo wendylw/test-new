@@ -13,9 +13,17 @@ class App extends Component {
     sessionReady: false,
   };
 
-  async componentDidMount() {
+  async componentWillMount() {
     await fetch(`${config.backendBaseUrl}${Constants.BACKEND_PING_PATH}`);
     this.setState({ sessionReady: true }, () => this.check());
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (!nextState.sessionReady) {
+      return false;
+    }
+
+    return true;
   }
 
   check() {
@@ -39,8 +47,8 @@ class App extends Component {
     // TODO: remove this default value when API dev is completed.
     const { isPeopleCountRequired = true } = onlineStoreInfo;
 
-    // TODO: remove false and fix payment callback redirect issue.
-    if (false && isPeopleCountRequired && !config.peopleCount) {
+    // Everytime reload /home page, will effects a Pax selector.
+    if (isPeopleCountRequired && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
       if (history.location.pathname.indexOf('/modal/people-count') === -1) {
         const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
         history.push(peopleCountModalPath);
@@ -55,6 +63,11 @@ class App extends Component {
 
   render() {
     const { history } = this.props;
+    const { sessionReady } = this.state;
+
+    if (!sessionReady) {
+      return null;
+    }
 
     return (
       <Query

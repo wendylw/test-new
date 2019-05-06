@@ -10,14 +10,23 @@ export class ThankYou extends Component {
 
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (!nextProps.order) {
+      return false;
+    }
+
+    return true;
+  }
+
   render() {
     const { match, order } = this.props;
 
+    console.log('order =>', order);
+
     if (!order) {
+      // TODO: render order not found message.
       return null;
     }
-
-    console.log('order =>', order);
 
     return (
       <section className={`table-ordering__thanks ${match.isExact ? '' : 'hide'}`}>
