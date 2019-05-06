@@ -18,10 +18,7 @@ export const client = new ApolloClient({
   // credentials: 'include',
 });
 
-// TODO: will use backendBaseUrl as proxy when api is ready.
-// const uriCoreApi = `${config.backendBaseUrl || ''}/graphql-c`;
-const uriCoreApi = 'http://localhost:4000/graphql';
-
+const uriCoreApi = `${config.backendBaseUrl || ''}/graphql-c`;
 const httpLinkCoreApi = new HttpLink({ uri: uriCoreApi });
 const basicRequest = new ApolloLink((operation, forward) => {
   // add the authorization to the headers

@@ -33,7 +33,6 @@ export class Cart extends Component {
       subtotal,
       total,
       tax,
-      taxRate, // TODO: Needs API NOW!!!
       serviceChargeRate,  // TODO: Needs API
       serviceCharge,  // TODO: Needs API
     } = shoppingCart;
@@ -65,10 +64,10 @@ export class Cart extends Component {
               query={apiGql.GET_CORE_BUSINESS}
               client={clientCoreApi}
               variables={{ business: config.business, storeId: config.storeId }}
+              onError={err => console.error('Can not get business.stores from core-api\n', err)}
             >
               {({ data: { business = {} } = {} }) => {
                 if (!Array.isArray(business.stores) || !business.stores.length) {
-                  console.warn('Can not get business.stores from core-api');
                   return null;
                 }
 
