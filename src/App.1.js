@@ -19,6 +19,17 @@ class App extends Component {
   }
 
   check() {
+    const { history } = this.props;
+
+    if (!config.storeId || !config.table) {
+      history.replace({
+        pathname: Constants.ROUTER_PATHS.ERROR,
+        state: {
+          message: 'Invalid URL, please scan QR code to entry this page.',
+        },
+      });
+      return;
+    }
   }
 
   tryPeopleCount(response) {
