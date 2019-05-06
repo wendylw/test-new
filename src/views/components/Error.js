@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 
 class Error extends React.Component {
   render() {
-    const { message } = this.props.location.state;
+    const { message = '' } = this.props.location.state || {};
 
     return (
       <div style={{ textAlign: 'center', width: '100%', color: 'red' }}>
