@@ -53,6 +53,20 @@ apiGql.TOGGLE_MENU = gql`
   }
 `;
 
+// TODO: remove this
+apiGql.GET_CORE_BUSINESS = gql`
+  query CoreBusiness($business: String!, $storeId: String!) {
+    business(name: $business) {
+      name
+      stores(id: $storeId) {
+        receiptTemplateData {
+          taxName
+        }
+      }
+    }
+  }
+`;
+
 // TDOO: add isPeopleCountRequired field
 // TDOO: add subscriptionStatus field
 apiGql.GET_ONLINE_STORE_INFO = gql`

@@ -1,12 +1,15 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import { compose } from 'react-apollo';
+import { compose, Query } from 'react-apollo';
 import { Link } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
 import { shoppingCartType } from '../views/propTypes';
 import CartItems from '../views/components/CartItems';
 import CurrencyNumber from '../views/components/CurrencyNumber';
 import ClearAll from '../views/components/ClearAll';
+import { clientCoreApi } from '../apiClient';
+import apiGql from '../apiGql';
+import config from '../config';
 
 export class Cart extends Component {
   static propTypes = {
@@ -54,6 +57,17 @@ export class Cart extends Component {
               <label className="gray-font-opacity">Subtotal</label>
               <span className="gray-font-opacity"><CurrencyNumber money={subtotal} /></span>
             </li>
+
+            <Query
+              query={apiGql.GET_CORE_BUSINESS}
+              client={clientCoreApi}
+              variables={{ business: config.business, storeId: config.storeId }}
+            >
+              {({ data }) => (
+                <pre>{JSON.stringify( data )}</pre>
+              )}
+            </Query>
+
             {serviceCharge ? <li className="billing__item flex flex-middle flex-space-between">
               <label className="gray-font-opacity">Service Charge {serviceChargeRate}%</label>
               <span className="gray-font-opacity">{serviceCharge}</span>

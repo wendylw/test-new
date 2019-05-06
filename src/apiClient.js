@@ -3,7 +3,7 @@ import config from './config';
 import cache from "./apiCache";
 import { resolvers, typeDefs } from "./apiResolvers";
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   uri: `${config.backendBaseUrl || ''}/graphql`,
   cache,
   typeDefs,
@@ -11,9 +11,14 @@ const client = new ApolloClient({
   // credentials: 'include',
 });
 
+export const clientCoreApi = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  // uri: `${config.backendBaseUrl || ''}/graphql-c`, // TODO: use this line of code when api is ready.
+});
+
 if (process.env.NODE_ENV === 'development') {
   console.warn('development mode, exports window.apiClient for debugging.');
   window.apiClient = client;
 }
 
-export default client;
+export default {};
