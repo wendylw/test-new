@@ -57,25 +57,31 @@ export class Cart extends Component {
               <label className="gray-font-opacity">Subtotal</label>
               <span className="gray-font-opacity"><CurrencyNumber money={subtotal} /></span>
             </li>
-
+            {serviceCharge ? <li className="billing__item flex flex-middle flex-space-between">
+              <label className="gray-font-opacity">Service Charge {serviceChargeRate}%</label>
+              <span className="gray-font-opacity">{serviceCharge}</span>
+            </li> : null}
             <Query
               query={apiGql.GET_CORE_BUSINESS}
               client={clientCoreApi}
               variables={{ business: config.business, storeId: config.storeId }}
             >
-              {({ data }) => (
-                <pre>{JSON.stringify( data )}</pre>
-              )}
-            </Query>
+              {({ data: { business = {} } = {} }) => {
+                if (!Array.isArray(business.stores) || !business.stores.length) {
+                  console.warn('Can not get business.stores from core-api');
+                  return null;
+                }
 
-            {serviceCharge ? <li className="billing__item flex flex-middle flex-space-between">
-              <label className="gray-font-opacity">Service Charge {serviceChargeRate}%</label>
-              <span className="gray-font-opacity">{serviceCharge}</span>
-            </li> : null}
-            <li className="billing__item flex flex-middle flex-space-between">
-              <label className="gray-font-opacity">{typeof taxRate === 'number' ? `SST ${taxRate}%` : `SST`}</label>
-              <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
-            </li>
+                const { stores } = business;
+
+                return (
+                  <li className="billing__item flex flex-middle flex-space-between">
+                    <label className="gray-font-opacity">{stores[0].receiptTemplateData.taxName}</label>
+                    <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
+                  </li>
+                );
+              }}
+            </Query>
             <li className="billing__item flex flex-middle flex-space-between">
               <label className="font-weight-bold">Total</label>
               <span className="font-weight-bold"><CurrencyNumber money={total} /></span>

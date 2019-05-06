@@ -53,9 +53,9 @@ apiGql.TOGGLE_MENU = gql`
   }
 `;
 
-// TODO: remove this
+// powered by core-api
 apiGql.GET_CORE_BUSINESS = gql`
-  query CoreBusiness($business: String!, $storeId: String!) {
+  query CoreBusiness($business: ID!, $storeId: ID!) {
     business(name: $business) {
       name
       stores(id: $storeId) {
