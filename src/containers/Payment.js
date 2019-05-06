@@ -74,6 +74,7 @@ export class Payment extends Component {
                 <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}></input>
               </div>
             </li>
+            {/*
             <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-boost.png"></img>
@@ -83,7 +84,6 @@ export class Payment extends Component {
                 <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}></input>
               </div>
             </li>
-            {/*
             <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-bigpay.png"></img>
