@@ -25,7 +25,8 @@ class App extends Component {
     // TODO: remove this default value when API dev is completed.
     const { isPeopleCountRequired = true } = onlineStoreInfo;
 
-    if (isPeopleCountRequired && !config.peopleCount) {
+    // TODO: remove false and fix payment callback redirect issue.
+    if (false && isPeopleCountRequired && !config.peopleCount) {
       if (history.location.pathname.indexOf('/modal/people-count') === -1) {
         const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
         history.push(peopleCountModalPath);
