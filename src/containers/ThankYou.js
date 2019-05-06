@@ -4,8 +4,7 @@ import withOrderDetail from '../libs/withOrderDetail';
 import config from '../config';
 import CurrencyNumber from '../views/components/CurrencyNumber';
 
-// Example URL: http://nike.storehub.local:3002/#/thank-you?orderId=811030873332195
-// Example2 URL: http://nike.storehub.local:3000/#/thank-you?orderId=811071330657523
+// Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
   static propTypes = {
 
