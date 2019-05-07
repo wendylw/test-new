@@ -5,6 +5,7 @@ const ROUTER_PATHS = {
     CART: '/cart',
     PAYMENT: '/payment',
     THANK_YOU: '/thank-you',
+    SORRY: '/sorry',
     PLAYGROUND: 'playground',
     ERROR: '/error',
 };
