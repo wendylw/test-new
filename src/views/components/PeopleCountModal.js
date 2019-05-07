@@ -15,6 +15,7 @@ class PeopleCountModal extends Component {
     const { history } = this.props;
     const mostNumbers = Array.from(new Array(Constants.PeopleCount.MAX).fill(0), (_, index) => index + 1);
     const lastNumber = `${Constants.PeopleCount.MAX}+ pax`;
+    const showLastNumber = false; // hide the MAX+ pax button for API asking
 
     return (
       <Modal
@@ -35,12 +36,14 @@ class PeopleCountModal extends Component {
                   >{n}</span>
                 </li>
               )}
-              <li className="text-center width-2-3" key={`${lastNumber}`}>
-                <span
-                  className={`tag__card ${this.state.value === Constants.PeopleCount.MAX_PLUS ? 'active' : ''}`}
-                  onClick={() => this.setState({ value: Constants.PeopleCount.MAX_PLUS })}
-                >{lastNumber}</span>
-              </li>
+              {showLastNumber ? (
+                <li className="text-center width-2-3" key={`${lastNumber}`}>
+                  <span
+                    className={`tag__card ${this.state.value === Constants.PeopleCount.MAX_PLUS ? 'active' : ''}`}
+                    onClick={() => this.setState({ value: Constants.PeopleCount.MAX_PLUS })}
+                  >{lastNumber}</span>
+                </li>
+              ) : null}
             </ul>
           </Modal.Body>
           <Modal.Footer>

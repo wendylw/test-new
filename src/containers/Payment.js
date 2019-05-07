@@ -33,7 +33,7 @@ export class Payment extends Component {
         storeId: config.storeId,
         tableId: config.table,
         shoppingCartIds: shoppingCart.items.map(i => i.id),
-        peopleCount: config.peopleCount, // TODO: double confirm if this value is correct to render when API is ready.
+        pax: config.peopleCount,
       },
     });
 

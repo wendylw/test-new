@@ -240,14 +240,20 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
-// TODO: add peopleCount in input param when API is ready for it
 apiGql.CREATE_ORDER = gql`
-  mutation CreateOrder($business: String!, $storeId: String!, $tableId: String!, $shoppingCartIds: [String]) {
+  mutation CreateOrder(
+    $business: String!,
+    $storeId: String!,
+    $tableId: String!,
+    $pax: Int!,
+    $shoppingCartIds: [String]
+  ) {
     createOrder(input: {
       business: $business,
       storeId: $storeId,
       shoppingCartIds: $shoppingCartIds,
       tableId: $tableId,
+      pax: $pax,
       channel: 3
     }) {
       orders {
