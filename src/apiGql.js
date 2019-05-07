@@ -58,6 +58,11 @@ apiGql.GET_CORE_BUSINESS = gql`
   query CoreBusiness($business: ID!, $storeId: ID!) {
     business(name: $business) {
       name
+      enablePax
+      enableServiceCharge
+      serviceChargeRate
+      serviceChargeTax
+      subscriptionStatus
       stores(id: $storeId) {
         receiptTemplateData {
           taxName

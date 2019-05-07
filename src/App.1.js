@@ -7,6 +7,7 @@ import config from './config';
 import Constants from './Constants';
 import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
 import apiGql from './apiGql';
+import { clientCoreApi } from './apiClient';
 
 class App extends Component {
   state = {
@@ -27,25 +28,38 @@ class App extends Component {
   }
 
   check() {
-    const { history } = this.props;
-
     if (!config.storeId || !config.table) {
-      history.replace({
-        pathname: Constants.ROUTER_PATHS.ERROR,
-        state: {
-          message: 'Invalid URL, please scan QR code to entry this page.',
-        },
-      });
+      this.goToError('Invalid URL, please scan QR code to entry this page.');
       return;
     }
   }
 
+  goToError(message) {
+    const { history } = this.props;
+
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.ERROR,
+      state: {
+        message,
+      },
+    });
+  }
+
   tryPeopleCount(response) {
     const { history } = this.props;
-    const { onlineStoreInfo } = response;
+    const { business } = response;
 
-    // TODO: remove this default value when API dev is completed.
-    const { enablePax = true } = onlineStoreInfo;
+    const { enablePax, subscriptionStatus, stores } = business;
+
+    if (subscriptionStatus === 'Expired') {
+      this.goToError('Account is expired.');
+      return;
+    }
+
+    if (!Array.isArray(stores) || !stores.length) {
+      this.goToError('Store is not found.');
+      return;
+    }
 
     // Everytime reload /home page, will effects a Pax selector.
     if (enablePax && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
@@ -71,8 +85,9 @@ class App extends Component {
 
     return (
       <Query
-        query={apiGql.GET_ONLINE_STORE_INFO}
-        variables={{ business: config.business }}
+        query={apiGql.GET_CORE_BUSINESS}
+        client={clientCoreApi}
+        variables={{ business: config.business, storeId: config.storeId }}
         onCompleted={this.tryPeopleCount.bind(this)}
         onError={() => {
           history.replace({
