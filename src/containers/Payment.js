@@ -54,7 +54,7 @@ export class Payment extends Component {
     } catch (e) {
       console.error('Fail to create order\n', e);
       this.setState({
-        payNowlOading: false,
+        payNowLoading: false,
       });
     }
   }
