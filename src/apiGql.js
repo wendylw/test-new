@@ -240,12 +240,12 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
-// TODO: add pax back when api is released.
 apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,
     $storeId: String!,
     $tableId: String!,
+    $pax: Int!,
     $shoppingCartIds: [String]
   ) {
     createOrder(input: {
@@ -253,6 +253,7 @@ apiGql.CREATE_ORDER = gql`
       storeId: $storeId,
       shoppingCartIds: $shoppingCartIds,
       tableId: $tableId,
+      pax: $pax,
       channel: 3
     }) {
       orders {
