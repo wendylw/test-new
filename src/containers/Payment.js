@@ -17,6 +17,7 @@ export class Payment extends Component {
 
   state = {
     paymentMethod: Constants.PAYMENT_METHODS.GRAB_PAY,
+    payNowLoading: false,
     order: null,
     fire: false,
   };
@@ -27,21 +28,33 @@ export class Payment extends Component {
 
   async payNow() {
     const { shoppingCart } = this.props;
-    const { data } = await this.props.createOrder({
-      variables: {
-        business: config.business,
-        storeId: config.storeId,
-        tableId: config.table,
-        shoppingCartIds: shoppingCart.items.map(i => i.id),
-        pax: config.peopleCount,
-      },
+    
+    this.setState({
+      payNowLoading: true,
     });
-
-    if (data.createOrder) {
-      // config.peopleCount = null; // clear peopleCount for next order
+    
+    try {
+      const { data } = await this.props.createOrder({
+        variables: {
+          business: config.business,
+          storeId: config.storeId,
+          tableId: config.table,
+          shoppingCartIds: shoppingCart.items.map(i => i.id),
+          pax: config.peopleCount,
+        },
+      });
+  
+      if (data.createOrder) {
+        // config.peopleCount = null; // clear peopleCount for next order
+        this.setState({
+          order: data.createOrder.orders[0],
+          fire: true,
+        });
+      }
+    } catch (e) {
+      console.error('Fail to create order\n', e);
       this.setState({
-        order: data.createOrder.orders[0],
-        fire: true,
+        payNowlOading: false,
       });
     }
   }
@@ -110,7 +123,8 @@ export class Payment extends Component {
           <button
             className="button button__fill button__block font-weight-bold text-uppercase"
             onClick={this.payNow.bind(this)}
-          >Pay now</button>
+            disabled={this.state.payNowLoading}
+          >{this.state.payNowLoading ? 'Redirecting' : 'Pay now'}</button>
         </div>
 
         <RedirectForm
