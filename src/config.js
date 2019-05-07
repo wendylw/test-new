@@ -21,7 +21,6 @@ const getStoreId = () => {
 };
 
 const config = {
-  backendBaseUrl: process.env.REACT_APP_BACKEND_BASE_URL,
   storehubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,

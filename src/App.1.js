@@ -14,7 +14,7 @@ class App extends Component {
   };
 
   async componentWillMount() {
-    await fetch(`${config.backendBaseUrl}${Constants.BACKEND_PING_PATH}`);
+    await fetch(`${Constants.BACKEND_PING_PATH}`);
     this.setState({ sessionReady: true }, () => this.check());
   }
 
