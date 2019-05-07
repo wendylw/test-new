@@ -580,6 +580,23 @@ class App extends Component {
             </footer>
           </div>
         </section>
+
+        {/* Please use display: flex when you want show modal */}
+        <section className="modal__align-middle modal flex flex-middle flex-space-between">
+          <div className="modal__content">
+            <header className="hint-modal__header modal__header">
+              <h4 className="font-weight-bold">Payment Cancelled</h4>
+            </header>
+            <div className="modal__body">
+              <div className="modal__paragraph-container">
+                <p className="modal__paragraph">You have cancelled your payment. The contents of your cart have been saved for you.</p>
+              </div>
+            </div>
+            <footer>
+              <button className="button__fill button__block">OK</button>
+            </footer>
+          </div>
+        </section>
       </main>
     );
   }

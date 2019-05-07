@@ -613,6 +613,21 @@ button {
     max-height: 70vh;
     overflow-y: auto;
   }
+
+  &__paragraph-container {
+    padding-bottom: 4.8vw;
+  }
+
+  &__paragraph {
+    padding: 0 4.8vw 4.8vw;
+    line-height: 1.5em;
+  }
+}
+
+.hint-modal {
+  &__header {
+    font-size: 1.4rem;
+  }
 }
 
 .cart {
