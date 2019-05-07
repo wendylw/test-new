@@ -67,8 +67,8 @@ apiGql.GET_CORE_BUSINESS = gql`
   }
 `;
 
-// TDOO: add isPeopleCountRequired field
-// TDOO: add subscriptionStatus field
+// TODO: add enablePax field
+// TODO: add subscriptionStatus field
 apiGql.GET_ONLINE_STORE_INFO = gql`
   query OnlineStoreInfo($business: String!) {
     onlineStoreInfo(business: $business) {

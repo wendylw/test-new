@@ -45,10 +45,10 @@ class App extends Component {
     const { onlineStoreInfo } = response;
 
     // TODO: remove this default value when API dev is completed.
-    const { isPeopleCountRequired = true } = onlineStoreInfo;
+    const { enablePax = true } = onlineStoreInfo;
 
     // Everytime reload /home page, will effects a Pax selector.
-    if (isPeopleCountRequired && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
+    if (enablePax && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
       if (history.location.pathname.indexOf('/modal/people-count') === -1) {
         const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
         history.push(peopleCountModalPath);
