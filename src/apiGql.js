@@ -197,7 +197,7 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
 apiGql.GET_ORDER_DETAIL = gql`
   query ($orderId: String!) {
     order(orderId: $orderId) {
-      id
+      orderId
       status
       total
       storeId

@@ -10,6 +10,10 @@ export class ThankYou extends Component {
 
   }
 
+  state = {
+    needReceipt: 'remind'
+  };
+
   shouldComponentUpdate(nextProps) {
     if (!nextProps.order) {
       return false;
@@ -18,13 +22,48 @@ export class ThankYou extends Component {
     return true;
   }
 
+  renderNeedReceipt() {
+    const { orderId } = this.props.order;
+
+    if (this.state.needReceipt === 'detail') {
+      return (
+        <div>
+          <div>Ping the staff for a receipt</div>
+          <div>Receipt Number: {orderId}</div>
+        </div>
+      );
+    }
+
+    return (
+      <h3 onClick={() => this.setState({ needReceipt: 'detail' })}>
+        NEED A RECEIPT
+      </h3>
+    );
+  }
+
+  renderSendReceipt() {
+
+    // TODO: when email receipt API is supported, then we can remove this and render form below.
+    if (true) {
+      return null;
+    }
+
+    return (
+      <form className="thanks__form form">
+        <div className="input__group">
+          <input className="input input__block" type="email" placeholder="Email"></input>
+        </div>
+        <div>
+          <button className="font-weight-bold text-uppercase button button__fill button__block">Send receipt</button>
+        </div>
+      </form>
+    );
+  }
+
   render() {
     const { match, order } = this.props;
 
-    console.log('order =>', order);
-
     if (!order) {
-      // TODO: render order not found message.
       return null;
     }
 
@@ -41,15 +80,8 @@ export class ThankYou extends Component {
           <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           <h2 className="thanks__title font-weight-bold">Thank You!</h2>
           <h4 className="thanks__subtitle gray-font-opacity font-weight-bold">Total paid {<CurrencyNumber money={order.total} />}</h4>
-
-          <form className="thanks__form form">
-            <div className="input__group">
-              <input className="input input__block" type="email" placeholder="Email"></input>
-            </div>
-            <div>
-              <button className="font-weight-bold text-uppercase button button__fill button__block">Send receipt</button>
-            </div>
-          </form>
+          {this.renderNeedReceipt()}
+          {this.renderSendReceipt()}
         </div>
       </section>
     )
