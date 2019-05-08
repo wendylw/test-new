@@ -6,13 +6,13 @@ class DocumentFavicon extends React.Component {
     icon: PropTypes.string.isRequired,
   };
 
-  icon = '';
+  static icon = '';
 
   static setIcon(icon) {
-    if (icon && icon !== this.icon) {
-      // TODO: create link and set icon
-      let link1 = document.querySelector('link[ref=apple-touch-icon-precomposed]');
-      let link2 = document.querySelector('link[ref=shortcut icon]');
+    if (icon && icon !== DocumentFavicon.icon) {
+
+      let link1 = document.querySelector('link[rel=apple-touch-icon-precomposed]');
+      let link2 = document.querySelector('link[rel="shortcut icon"]');
 
       if (link1) {
         link1.parentNode.removeChild(link1);
@@ -23,11 +23,11 @@ class DocumentFavicon extends React.Component {
       }
 
       link1 = document.createElement('link');
-      link1.ref = 'apple-touch-icon-precomposed';
+      link1.rel = 'apple-touch-icon-precomposed';
       link1.href = icon;
 
       link2 = document.createElement('link');
-      link2.ref = 'shortcut icon';
+      link2.rel = 'shortcut icon';
       link2.href = icon;
 
       const head = document.querySelector('head');
@@ -35,7 +35,7 @@ class DocumentFavicon extends React.Component {
       head.appendChild(link2);
 
       // save for next time comparision
-      this.icon = icon;
+      DocumentFavicon.icon = icon;
     }
   }
 

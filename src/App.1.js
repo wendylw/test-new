@@ -7,6 +7,8 @@ import config from './config';
 import Constants from './Constants';
 import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
 import withCoreApiBusiness from './libs/withCoreApiBusiness';
+import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
+import DocumentFavicon from './views/components/DocumentFavicon';
 
 class App extends Component {
   state = {
@@ -45,16 +47,26 @@ class App extends Component {
   }
 
   render() {
+    const { gqlOnlineStoreInfo } = this.props;
+
+    if (gqlOnlineStoreInfo.loading) {
+      return null;
+    }
+
     const { sessionReady } = this.state;
 
     if (!sessionReady) {
       return null;
     }
 
+    const { onlineStoreInfo } = gqlOnlineStoreInfo;
+
     return (
-      <main className="table-ordering">
-        <Routes />
-      </main>
+      <DocumentFavicon icon={onlineStoreInfo.favicon}>
+        <main className="table-ordering">
+          <Routes />
+        </main>
+      </DocumentFavicon>
     );
   }
 }
@@ -63,4 +75,5 @@ export default compose(
   withResizeWindowBlocker,
   withRouter,
   withCoreApiBusiness,
+  withOnlineStoreInfo(),
 )(App);
