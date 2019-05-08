@@ -11,8 +11,8 @@ const ROUTER_PATHS = {
 };
 
 const PAYMENT_METHODS = {
-  GRAB_PAY: 'grabpay',
-  BOOST_PAY: 'boost',
+  GRAB_PAY: 'GrabPay',
+  BOOST_PAY: 'Boost',
 };
 
 const ADD_TO_CART_MIN_QUANTITY = 1;
