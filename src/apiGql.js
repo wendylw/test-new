@@ -78,6 +78,7 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
       id
       storeName
       logo
+      favicon
       locale
       currency
       currencySymbol
