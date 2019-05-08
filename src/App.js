@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <main className="table-ordering">
-        <section className="table-ordering__home">
+        <section className="table-ordering__home hide">
           <header className="header border-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
@@ -526,6 +526,18 @@ class App extends Component {
                 <button className="font-weight-bold text-uppercase button button__fill button__block">Send receipt</button>
               </div>
             </form>
+          </div>
+        </section>
+
+        <section className="table-ordering__prompt-page">
+          <figure className="prompt-page__image-container text-center">
+            <img src="/img/matching-error.jpg"></img>
+          </figure>
+          <div className="prompt-page__content">
+            <h2 className="prompt-page__title text-center">Eep!</h2>
+            <div className="prompt-page__paragraphs">
+              <p>Looks like something went wrong. Please scan the QR again, or ask the staff for help.</p>
+            </div>
           </div>
         </section>
 
