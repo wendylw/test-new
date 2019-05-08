@@ -3,6 +3,7 @@ import { compose } from 'react-apollo';
 import withOrderDetail from '../libs/withOrderDetail';
 import config from '../config';
 import CurrencyNumber from '../views/components/CurrencyNumber';
+import Constants from '../Constants';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
@@ -67,7 +68,7 @@ export class ThankYou extends Component {
   }
 
   render() {
-    const { match, order } = this.props;
+    const { history, match, order } = this.props;
 
     if (!order) {
       return null;
@@ -76,7 +77,10 @@ export class ThankYou extends Component {
     return (
       <section className={`table-ordering__thanks ${match.isExact ? '' : 'hide'}`}>
         <header className="header border-botton__divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle">
+          <figure className="header__image-container text-middle" onClick={() => history.replace({
+            pathname: `${Constants.ROUTER_PATHS.HOME}`,
+            search: `?table=${order.additionalComments}&storeId=${order.storeId}`
+          })}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
           </figure>
           <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
