@@ -35,7 +35,6 @@ class MainMenuComponent extends Component {
           {
             onlineCategoryMergedShoppingCart.map((category) => (
               <ScrollObserver key={category.id} render={(scrollname, scrollTo) => {
-                // TODO: this scrollname value should always be top visiable scrollname.
                 return (
                   <li className={`nav-pane__item ${scrollname === category.name ? 'active' : ''}`}>
                     <a

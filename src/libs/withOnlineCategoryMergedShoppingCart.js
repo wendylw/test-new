@@ -37,9 +37,8 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
-        // TODO: remove it BEGIN
+        // mocked data
         // gqlProducts.onlineCategory = require('./mocks/onlineCategory.json');
-        // TODO: remove it END
 
         Object.assign(props, { onlineCategory });
       }
@@ -52,9 +51,8 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
-        // TODO: remove it BEGIN
+        // mocked data
         // return { shoppingCart: require('./mocks/shoppingCart.json').data.shoppingCart };
-        // TODO: remove it END
 
         Object.assign(props, { shoppingCart });
       }

@@ -193,12 +193,15 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
+// Field [additionalComments] stores table id here.
 apiGql.GET_ORDER_DETAIL = gql`
   query ($orderId: String!) {
     order(orderId: $orderId) {
       id
       status
       total
+      storeId
+      additionalComments
     }
   }
 `;
@@ -217,7 +220,6 @@ apiGql.EMPTY_SHOPPING_CART = gql`
   }
 `;
 
-// TODO: remove sessionId when @Jiawei done in api.
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
     $action: String!,

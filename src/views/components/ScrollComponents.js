@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React from 'react';
+import Utils from '../../libs/utils';
 
 const observableContainer = {};
 
@@ -8,12 +9,11 @@ function scrollTo(scrollname) {
   document.querySelector(`[scrollname=${scrollname}]`).scrollIntoView({behavior: "smooth"});
 }
 
-window.addEventListener('scroll', debounce((e) => {
-  // TODO: send global event to tell which one is one the top of viewport
+window.addEventListener('scroll', (e) => {
   const obs = Object.values(observableContainer);
 
   const [, ob] = obs
-    .map(ob => [elementPartialOffsetTop(ob), ob])
+    .map(ob => [Utils.elementPartialOffsetTop(ob), ob])
     .sort(([k1], [k2]) => k1 - k2)
     .find(([k]) => k > 0) || [];
 
@@ -28,54 +28,7 @@ window.addEventListener('scroll', debounce((e) => {
       scrollname: ob.getAttribute('scrollname'),
     },
   }));
-}, 200));
-
-// TODO: move into global library
-function debounce(fn, timeout = 50) {
-	let timer = null;
-	return function newFn(...args) {
-		if (timer) {
-			clearTimeout(timer);
-		}
-
-		timer = setTimeout(() => fn.apply(fn, args), timeout);
-	};
-}
-
-// TODO: move into global libary
-// function elementPartialInViewport(el) {
-//   var top = el.offsetTop;
-//   var left = el.offsetLeft;
-//   var width = el.offsetWidth;
-//   var height = el.offsetHeight;
-
-//   while(el.offsetParent) {
-//     el = el.offsetParent;
-//     top += el.offsetTop;
-//     left += el.offsetLeft;
-//   }
-
-//   return (
-//     top < (window.pageYOffset + window.innerHeight) &&
-//     left < (window.pageXOffset + window.innerWidth) &&
-//     (top + height) > window.pageYOffset &&
-//     (left + width) > window.pageXOffset
-//   );
-// }
-
-// TODO: move into global library
-function elementPartialOffsetTop(el) {
-  var top = el.offsetTop;
-  var height = el.offsetHeight;
-
-  while(el.offsetParent) {
-    el = el.offsetParent;
-    top += el.offsetTop;
-  }
-
-  return (top + height) - window.pageYOffset;
-}
-
+});
 
 export class ScrollObservable extends React.Component {
   container = null;

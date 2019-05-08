@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
 import Loadable from 'react-loadable';
-import Main from "./views/Main";
 import Constants from "./Constants";
 import MessageModal from "./views/components/MessageModal";
 
@@ -75,14 +74,16 @@ export default () =>
       <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
       <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
       <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
-      <Route path={Constants.ROUTER_PATHS.PLAYGROUND} exact component={Main} />
       <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
       <Route component={AsyncNotFound} />
     </Switch>
     <Route path={`*/modal/:modal`} render={({ match }) => {
       if (match.params.modal === 'people-count') return <AsyncPeopleCountModal />;
-      // TODO: more modals here.
+      // more modals can put here.
       return <AsyncNotFound />;
     }} />
+    {/*
+      // TODO: can use react context + portal to do modal render/show/hide.
+    */}
     <MessageModal />
   </React.Fragment>;

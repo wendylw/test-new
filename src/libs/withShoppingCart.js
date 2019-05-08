@@ -11,7 +11,8 @@ export default options => compose(
       }
     }),
     ...options,
-    // props: () => { // TODO: hide codes
+    // mocked data
+    // props: () => {
     //   return require('./mocks/shoppingCart.json').data;
     // }
   }),
