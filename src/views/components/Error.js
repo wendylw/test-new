@@ -3,13 +3,22 @@ import { withRouter } from 'react-router-dom';
 
 class Error extends React.Component {
   render() {
-    const { message = '' } = this.props.location.state || {};
+    const {
+      message = 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+    } = this.props.location.state || {};
 
     return (
-      <div style={{ textAlign: 'center', width: '100%', color: 'red' }}>
-        <h2 style={{ fontSize: '18px', marginTop: '0.6em' }}>{`Oops!`}</h2>
-        <h3 style={{ fontSize: '16px', marginTop: '0.6em' }}>{message}</h3>
-      </div>
+      <section className="table-ordering__prompt-page">
+        <figure className="prompt-page__image-container text-center">
+          <img src="/img/matching-error.jpg" alt="error found" />
+        </figure>
+        <div className="prompt-page__content">
+          <h2 className="prompt-page__title text-center">Eep!</h2>
+          <div className="prompt-page__paragraphs">
+            <p>{message}</p>
+          </div>
+        </div>
+      </section>
     );
   }
 }
