@@ -33,7 +33,6 @@ export class Cart extends Component {
       subtotal,
       total,
       tax,
-      serviceChargeRate,  // TODO: Needs API
       serviceCharge,  // TODO: Needs API
     } = shoppingCart;
 
@@ -56,10 +55,6 @@ export class Cart extends Component {
               <label className="gray-font-opacity">Subtotal</label>
               <span className="gray-font-opacity"><CurrencyNumber money={subtotal} /></span>
             </li>
-            {serviceCharge ? <li className="billing__item flex flex-middle flex-space-between">
-              <label className="gray-font-opacity">Service Charge {serviceChargeRate}%</label>
-              <span className="gray-font-opacity">{serviceCharge}</span>
-            </li> : null}
             <Query
               query={apiGql.GET_CORE_BUSINESS}
               client={clientCoreApi}
@@ -71,13 +66,19 @@ export class Cart extends Component {
                   return null;
                 }
 
-                const { stores } = business;
+                const { stores, enableServiceCharge, serviceChargeRate/*, serviceChargeTax*/ } = business;
 
                 return (
-                  <li className="billing__item flex flex-middle flex-space-between">
-                    <label className="gray-font-opacity">{stores[0].receiptTemplateData.taxName}</label>
-                    <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
-                  </li>
+                  <React.Fragment>
+                    <li className="billing__item flex flex-middle flex-space-between">
+                      <label className="gray-font-opacity">{stores[0].receiptTemplateData.taxName || `Tax`}</label>
+                      <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
+                    </li>
+                    {(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
+                      <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
+                      <span className="gray-font-opacity">{serviceCharge}</span>
+                    </li> : null}
+                  </React.Fragment>
                 );
               }}
             </Query>

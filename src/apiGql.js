@@ -58,6 +58,11 @@ apiGql.GET_CORE_BUSINESS = gql`
   query CoreBusiness($business: ID!, $storeId: ID!) {
     business(name: $business) {
       name
+      enablePax
+      enableServiceCharge
+      serviceChargeRate
+      serviceChargeTax
+      subscriptionStatus
       stores(id: $storeId) {
         receiptTemplateData {
           taxName
@@ -67,8 +72,6 @@ apiGql.GET_CORE_BUSINESS = gql`
   }
 `;
 
-// TDOO: add isPeopleCountRequired field
-// TDOO: add subscriptionStatus field
 apiGql.GET_ONLINE_STORE_INFO = gql`
   query OnlineStoreInfo($business: String!) {
     onlineStoreInfo(business: $business) {
@@ -240,12 +243,12 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
-// TODO: add pax back when api is released.
 apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,
     $storeId: String!,
     $tableId: String!,
+    $pax: Int!,
     $shoppingCartIds: [String]
   ) {
     createOrder(input: {
@@ -253,6 +256,7 @@ apiGql.CREATE_ORDER = gql`
       storeId: $storeId,
       shoppingCartIds: $shoppingCartIds,
       tableId: $tableId,
+      pax: $pax,
       channel: 3
     }) {
       orders {

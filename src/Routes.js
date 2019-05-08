@@ -3,6 +3,7 @@ import { Route, Redirect, Switch } from "react-router-dom";
 import Loadable from 'react-loadable';
 import Main from "./views/Main";
 import Constants from "./Constants";
+import MessageModal from "./views/components/MessageModal";
 
 const MyLoadingComponent = ({isLoading, error}) => {
   // Handle the loading state
@@ -44,6 +45,11 @@ const AsyncThankYou = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncSorry = Loadable({
+  loader: () => import("./containers/Sorry"),
+  loading: MyLoadingComponent,
+});
+
 const AsyncNotFound = Loadable({
   loader: () => import("./containers/NotFound"),
   loading: MyLoadingComponent,
@@ -68,6 +74,7 @@ export default () =>
       <Route path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
       <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
       <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
+      <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
       <Route path={Constants.ROUTER_PATHS.PLAYGROUND} exact component={Main} />
       <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
       <Route component={AsyncNotFound} />
@@ -77,4 +84,5 @@ export default () =>
       // TODO: more modals here.
       return <AsyncNotFound />;
     }} />
+    <MessageModal />
   </React.Fragment>;

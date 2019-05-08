@@ -2,11 +2,10 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink, from } from 'apollo-link';
 
-import config from './config';
 import cache from "./apiCache";
 import { resolvers, typeDefs } from "./apiResolvers";
 
-const uri = `${config.backendBaseUrl || ''}/graphql`;
+const uri = process.env.REACT_APP_GQL_ENTRY_MP;
 const httpLink = new HttpLink({ uri });
 export const client = new ApolloClient({
   link: from([
@@ -18,7 +17,7 @@ export const client = new ApolloClient({
   // credentials: 'include',
 });
 
-const uriCoreApi = `${config.backendBaseUrl || ''}/graphql-c`;
+const uriCoreApi = process.env.REACT_APP_GQL_ENTRY_CO;
 const httpLinkCoreApi = new HttpLink({ uri: uriCoreApi });
 const basicRequest = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
