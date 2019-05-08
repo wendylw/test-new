@@ -1092,6 +1092,24 @@ button {
     margin: 8vw 0;
   }
 
+  &__link-label {
+    margin: 15vw 0;
+    color: #1E8CF0;
+  }
+
+  &__receipt-label {
+    margin: 15vw 0;
+
+    > * {
+      margin: 2vw 0;
+    }
+
+    .receipt-number {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  }
+
   .input,
   .button {
     padding: 6px 12px;

@@ -24,20 +24,26 @@ export class ThankYou extends Component {
 
   renderNeedReceipt() {
     const { orderId } = this.props.order;
+    let text = (
+      <h3 className="thanks__link-label" onClick={() => this.setState({ needReceipt: 'detail' })}>
+        NEED A RECEIPT?
+      </h3>
+    );
 
     if (this.state.needReceipt === 'detail') {
-      return (
-        <div>
+      text = (
+        <div className="thanks__receipt-label">
           <div>Ping the staff for a receipt</div>
-          <div>Receipt Number: {orderId}</div>
+          <div>
+            <span>Receipt Number: </span>
+            <span className="receipt-number">{orderId}</span>
+          </div>
         </div>
       );
     }
 
     return (
-      <h3 onClick={() => this.setState({ needReceipt: 'detail' })}>
-        NEED A RECEIPT
-      </h3>
+      <>{text}</>
     );
   }
 
