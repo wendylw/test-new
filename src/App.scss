@@ -10,6 +10,7 @@ $gray-3: #DEDEDF;
 $gray-4: #EFEFEF;
 $gray-5: #FAFAFA;
 $blue: #31728D;
+$link-blue: #2196F3;
 $theme-color: #FF9419;
 $font-weight-bold: 600;
 
@@ -73,6 +74,10 @@ img {
 
 .reset-font-size {
   font-size: 0;
+}
+
+.link {
+  color: $link-blue;
 }
 
 .warning {
@@ -1099,22 +1104,26 @@ img {
     margin: 8vw 0;
   }
 
-  &__link-label {
-    margin: 15vw 0;
-    color: #1E8CF0;
+  &__link,
+  &__receipt-info {
+    margin: 4vh 0;
   }
 
-  &__receipt-label {
-    margin: 15vw 0;
+  &__receipt-title,
+  &__receipt-label,
+  &__receipt-number {
+    margin: 5px 0;
+    font-size: 1.1rem;
+    line-height: 1.5em;
+  }
 
-    > * {
-      margin: 2vw 0;
-    }
+  &__receipt-title {
+    font-size: 1.2rem;
+  }
 
-    .receipt-number {
-      font-size: 18px;
-      font-weight: bold;
-    }
+  &__receipt-number {
+    margin-left: 5px;
+    letter-spacing: 0.05rem;
   }
 
   .input,

@@ -505,7 +505,7 @@ class App extends Component {
           </div>
         </section>
 
-        <section className="table-ordering__thanks hide">
+        <section className="table-ordering__thanks">
           <header className="header border-botton__divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
@@ -517,6 +517,16 @@ class App extends Component {
             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
             <h2 className="thanks__title font-weight-bold">Thank You!</h2>
             <h4 className="thanks__subtitle gray-font-opacity font-weight-bold">Total paid RM 101.20</h4>
+
+            <button className="thanks__link link text-uppercase">Need a receipt?</button>
+
+            <div className="thanks__receipt-info">
+              <h4 className="thanks__receipt-title font-weight-bold">Ping the staff for a receipt</h4>
+              <div>
+                <label className="thanks__receipt-label">Receipt Number: </label>
+                <span className="thanks__receipt-number font-weight-bold">12345678</span>
+              </div>
+            </div>
 
             <form className="thanks__form form">
               <div className="input__group">
