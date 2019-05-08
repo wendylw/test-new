@@ -40,7 +40,7 @@ export class Payment extends Component {
           storeId: config.storeId,
           tableId: config.table,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
-          pax: config.peopleCount,
+          pax: Number(config.peopleCount),
         },
       });
   
