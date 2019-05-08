@@ -4,6 +4,7 @@ import withOrderDetail from '../libs/withOrderDetail';
 import config from '../config';
 import CurrencyNumber from '../views/components/CurrencyNumber';
 import Constants from '../Constants';
+import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
@@ -67,7 +68,7 @@ export class ThankYou extends Component {
     );
   }
 
-  render() {
+  renderMain() {
     const { history, match, order } = this.props;
 
     if (!order) {
@@ -95,6 +96,14 @@ export class ThankYou extends Component {
         </div>
       </section>
     )
+  }
+
+  render() {
+    return (
+      <DocumentTitle title={Constants.DOCUMENT_TITLE.THANK_YOU}>
+        {this.renderMain()}
+      </DocumentTitle>
+    );
   }
 }
 

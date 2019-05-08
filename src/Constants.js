@@ -10,6 +10,16 @@ const ROUTER_PATHS = {
     ERROR: '/error',
 };
 
+const DOCUMENT_TITLE = {
+  HOME: 'Home',
+  CART: 'Cart',
+  PAYMENT: 'Payment',
+  THANK_YOU: 'Payment Success',
+  SORRY: 'Payment Failed',
+  ERROR: 'Error',
+  NOT_FOUND: '404 - Page Not Found',
+};
+
 const PAYMENT_METHODS = {
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
@@ -30,5 +40,6 @@ export default {
     PAYMENT_METHODS,
     ADD_TO_CART_MIN_QUANTITY,
     BACKEND_PING_PATH,
+    DOCUMENT_TITLE,
     PeopleCount,
 }

@@ -10,6 +10,7 @@ import Constants from '../Constants';
 import ProductDetails from '../views/components/ProductDetails';
 import ProductsEditCart from '../views/components/ProductsEditCart';
 import MainMenu from '../views/components/MainMenu';
+import DocumentTitle from '../views/components/DocumentTitle';
 
 export class Home extends Component {
   static propTypes = {
@@ -38,30 +39,32 @@ export class Home extends Component {
     // console.log('match => %o', match);
 
     return (
-      <section className={`table-ordering__home ${hideClassName}`}>
-        <MainTop />
-        <MainBody />
-        
-        <Route
-          path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`}
-          exact
-          component={ProductDetails}
-        />
+      <DocumentTitle title={Constants.DOCUMENT_TITLE.HOME}>
+        <section className={`table-ordering__home ${hideClassName}`}>
+          <MainTop />
+          <MainBody />
+          
+          <Route
+            path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`}
+            exact
+            component={ProductDetails}
+          />
 
-        <Route
-          path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/edit`}
-          exact
-          component={ProductsEditCart}
-        />
+          <Route
+            path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/edit`}
+            exact
+            component={ProductsEditCart}
+          />
 
-        <Route
-          path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/menu`}
-          exact
-          component={MainMenu}
-        />
+          <Route
+            path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/menu`}
+            exact
+            component={MainMenu}
+          />
 
-        <FooterOperation />
-      </section>
+          <FooterOperation />
+        </section>
+      </DocumentTitle>
     )
   }
 }
