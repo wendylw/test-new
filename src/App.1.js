@@ -29,7 +29,7 @@ class App extends Component {
 
   check() {
     if (!config.storeId || !config.table) {
-      this.goToError('Invalid URL, please scan QR code to entry this page.');
+      this.goToError(); // use default message
       return;
     }
   }
@@ -68,11 +68,6 @@ class App extends Component {
         history.push(peopleCountModalPath);
       }
     }
-  }
-
-  renderError(error) {
-
-    return null;
   }
 
   render() {
