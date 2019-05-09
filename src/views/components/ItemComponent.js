@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CurrencyNumber from './CurrencyNumber';
+import Image from './Image';
 
 export class ItemComponent extends Component {
   static propTypes = {
@@ -39,9 +40,7 @@ export class ItemComponent extends Component {
 
     return (
       <li className="item border-botton__divider flex flex-top">
-        <figure className="item__image-container">
-          {image ? <img src={image} alt={title} /> : null}
-        </figure>
+        <Image className="item__image-container" src={image} />
         <div className="item__content flex flex-middle flex-space-between">
           <div className="item__detail">
             <summary className="item__title font-weight-bold">{title}</summary>
