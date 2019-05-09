@@ -61,6 +61,8 @@ const withOnlineCategoryMergedCart = compose(
     },
   }),
   TheComponent => ({ shoppingCart, onlineCategory, children, ...props }) => {
+    // onlineCategory = require('./mocks/onlineCategory.json').data.onlineCategory;
+
     const onlineCategoryMergedShoppingCart = mergeWithShoppingCart(onlineCategory, shoppingCart);
 
     return (

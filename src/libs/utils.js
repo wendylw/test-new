@@ -11,7 +11,7 @@ Utils.debounce = function debounce(fn, timeout = 50) {
 	};
 };
 
-Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el) {
+Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustment = 0) {
   var top = el.offsetTop;
   var height = el.offsetHeight;
 
@@ -20,7 +20,7 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el) {
     top += el.offsetTop;
   }
 
-  return (top + height) - window.pageYOffset;
+  return (top + height) - window.pageYOffset - topAdjustment;
 }
 
 export default Utils;
