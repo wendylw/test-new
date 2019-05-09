@@ -1,9 +1,9 @@
 const getTableId = () => {
-  return document.cookie.split(';').find(s => s.includes('table')).split('=')[1];
+  return document.cookie.split(';').find(s => s.includes('__t')).split('=')[1];
 };
 
 const getStoreId = () => {
-  return document.cookie.split(';').find(s => s.includes('storeId')).split('=')[1];
+  return document.cookie.split(';').find(s => s.includes('__s')).split('=')[1];
 };
 
 const config = {
