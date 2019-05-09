@@ -29,7 +29,7 @@ class Image extends React.Component {
         data-src={src}
 				data-type={type}
       >
-        <img src={placeholder} alt={alt} />;
+        <img src={src || placeholder} alt={alt} />;
       </figure>
     );
   }
