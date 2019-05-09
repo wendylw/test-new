@@ -1,9 +1,17 @@
 const getTableId = () => {
-  return document.cookie.split(';').find(s => s.includes('__t')).split('=')[1];
+  try {
+    return document.cookie.split(';').find(s => s.includes('__t')).split('=')[1];
+  } catch(e) {
+    return null;
+  }
 };
 
 const getStoreId = () => {
-  return document.cookie.split(';').find(s => s.includes('__s')).split('=')[1];
+  try {
+    return document.cookie.split(';').find(s => s.includes('__s')).split('=')[1];
+  } catch(e) {
+    return null;
+  }
 };
 
 const config = {
