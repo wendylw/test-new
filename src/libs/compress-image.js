@@ -1,4 +1,11 @@
+import config from "../config";
+
 /* CONSTANTS variable */
+// --BEGIN-- different from marketplace
+const { imageS3Domain, imageCompressionDomain, isImageCompression } = config;
+window.storehub = window.storehub || { imageS3Domain, imageCompressionDomain, isImageCompression };
+// ---END--- different from marketplace
+
 const IMAGE_RESIZE_METHODS = {
   COVER: 'cover',
   CONTAIN: 'contain',

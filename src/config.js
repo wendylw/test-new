@@ -14,11 +14,16 @@ const getStoreId = () => {
   }
 };
 
+const business = (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.'));
+
 const config = {
   storehubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
-  business: (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.')),
+  imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
+  imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
+  isImageCompression: (whitelist => (!whitelist) || whitelist.split(',').includes(business))(process.env.REACT_APP_IMAGE_COMPRESSION_BUSINESS_WHITELIST),
+  business,
   table: getTableId(),
   storeId: getStoreId(),
 };
