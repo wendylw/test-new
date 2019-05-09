@@ -9,7 +9,7 @@ const CATEGORY_BAR_HEIGHT = 50;
 
 function scrollTo(scrollname) {
   // document.querySelector(`[scrollname="${scrollname}"]`).scrollIntoView({behavior: "smooth"});
-  scrollToSmoothly(document.querySelector(`[scrollname="${scrollname}"]`).offsetTop - TOP_BAR_HEIGHT, 500);
+  scrollToSmoothly(document.querySelector(`[scrollname="${scrollname}"]`).offsetTop - TOP_BAR_HEIGHT, 200);
 }
 
 function scrollToSmoothly(pos, time) {
