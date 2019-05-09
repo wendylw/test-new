@@ -207,7 +207,7 @@
         "isEnabled": true,
         "products": [
           {
-            "id": "5b43269e678e5590a0afc446",
+            "id": "5b43269e678e5590a0afc446-1",
             "title": "Air Force 1",
             "displayPrice": 1,
             "trackInventory": true,
@@ -257,7 +257,7 @@
             ]
           },
           {
-            "id": "5b43269e678e5590a0afc446",
+            "id": "5b43269e678e5590a0afc446-2",
             "title": "Air Force 1",
             "displayPrice": 1,
             "trackInventory": true,
@@ -307,7 +307,7 @@
             ]
           },
           {
-            "id": "5b43269e678e5590a0afc446",
+            "id": "5b43269e678e5590a0afc446-3",
             "title": "Air Force 1",
             "displayPrice": 1,
             "trackInventory": true,
@@ -357,7 +357,7 @@
             ]
           },
           {
-            "id": "5b43269e678e5590a0afc446",
+            "id": "5b43269e678e5590a0afc446-4",
             "title": "Air Force 1",
             "displayPrice": 1,
             "trackInventory": true,
@@ -407,7 +407,7 @@
             ]
           },
           {
-            "id": "5b43269e678e5590a0afc446",
+            "id": "5b43269e678e5590a0afc446-5",
             "title": "Air Force 1",
             "displayPrice": 1,
             "trackInventory": true,
@@ -457,7 +457,7 @@
             ]
           },
           {
-            "id": "5b43269e678e5590a0afc446",
+            "id": "5b43269e678e5590a0afc446-6",
             "title": "Air Force 1",
             "displayPrice": 1,
             "trackInventory": true,

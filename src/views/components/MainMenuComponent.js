@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import { onlineCategoryMergedShoppingCartType } from '../propTypes';
-import { ScrollObserver } from './ScrollComponents';
+import { ScrollObserver, getCurrentScrollName } from './ScrollComponents';
+import Constants from '../../Constants';
 
 class MainMenuComponent extends Component {
   static propTypes = {
@@ -12,7 +13,7 @@ class MainMenuComponent extends Component {
     const { match, history } = this.props;
     
     if (match.isExact) {
-      history.replace('/', history.location.state);
+      history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
       return;
     }
   }
@@ -35,8 +36,10 @@ class MainMenuComponent extends Component {
           {
             onlineCategoryMergedShoppingCart.map((category) => (
               <ScrollObserver key={category.id} render={(scrollname, scrollTo) => {
+                const currentScrollName = scrollname || getCurrentScrollName();
+
                 return (
-                  <li className={`nav-pane__item ${scrollname === category.name ? 'active' : ''}`}>
+                  <li className={`nav-pane__item ${(currentScrollName) === category.name ? 'active' : ''}`}>
                     <a
                       className="nav-pane__link flex flex-middle flex-space-between"
                       onClick={() => {
