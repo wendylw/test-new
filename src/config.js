@@ -1,23 +1,9 @@
 const getTableId = () => {
-  const tableId = (m => m ? parseInt(m[1]) : null)(window.location.hash.match(/\btable\b=(\d+)/));
-  
-  if (tableId) {
-    localStorage.setItem('tableId', tableId);
-    return tableId;
-  }
-
-  return localStorage.getItem('tableId');
+  return document.cookie.split(';').find(s => s.includes('table')).split('=')[1];
 };
 
 const getStoreId = () => {
-  const storeId = (m => m ? m[1] : null)(window.location.hash.match(/\bstoreId\b=([^&=?#]+)/));
-
-  if (storeId) {
-    localStorage.setItem('storeId', storeId);
-    return storeId;
-  }
-
-  return localStorage.getItem('storeId');
+  return document.cookie.split(';').find(s => s.includes('storeId')).split('=')[1];
 };
 
 const config = {
