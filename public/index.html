@@ -43,5 +43,24 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+      window.onload=function () {
+        document.addEventListener('touchstart', function(event) {
+          if(event.touches.length > 1){
+            event.preventDefault();
+          }
+        }, {passive: false});
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+          var now = (new Date()).getTime();
+          if(now - lastTouchEnd <= 300){
+            event.preventDefault();
+          }
+
+          lastTouchEnd = now;
+        }, false);
+      }
+    </script>
   </body>
 </html>

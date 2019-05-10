@@ -540,7 +540,7 @@ class App extends Component {
           </div>
         </section>
 
-        <section className="table-ordering__prompt-page">
+        <section className="table-ordering__prompt-page hide">
           <figure className="prompt-page__image-container text-center">
             <img src="/img/matching-error.jpg"></img>
           </figure>
