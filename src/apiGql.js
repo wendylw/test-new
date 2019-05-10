@@ -99,6 +99,7 @@ apiGql.GET_PRODUCT_DETAIL = gql`
       title
       displayPrice
       unitPrice
+      onlineUnitPrice
       inventoryType
       images
       variations {

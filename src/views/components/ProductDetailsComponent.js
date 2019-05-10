@@ -39,7 +39,7 @@ export class ProductDetailsComponent extends Component {
 
   displayPrice() {
     const { product } = this.props;
-    const { childrenMap, unitPrice } = product;
+    const { childrenMap, unitPrice, onlineUnitPrice } = product;
 
     const variationNames = this.getVariationNames();
 
@@ -51,7 +51,7 @@ export class ProductDetailsComponent extends Component {
 
     if (!displayPrice) {
       // should be composite
-      displayPrice = unitPrice + this.getVariationPriceDiffs().reduce((total, diff) => total + diff, 0);
+      displayPrice = (onlineUnitPrice || unitPrice) + this.getVariationPriceDiffs().reduce((total, diff) => total + diff, 0);
     }
 
     return displayPrice;
