@@ -209,7 +209,7 @@ export class ProductDetailsComponent extends Component {
                 if (this.isSubmitable()) {
                   const result = await this.props.addOrUpdateShoppingCartItem({
                     variables: {
-                      action: 'edit',
+                      action: 'add',
                       business: config.business,
                       productId,
                       quantity: cartQuantity,
