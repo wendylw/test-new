@@ -20,7 +20,7 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
         product.cartItemIds = results.map(c => c.id);
         product.cartItems = results;
         product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
-        product.canDecreaseQuantity = !product.hasSingleChoice || product.cartQuantity === 1;
+        product.canDecreaseQuantity = !product.hasSingleChoice || product.cartItemIds.length === 1;
         category.cartQuantity += product.cartQuantity;
       }
     });
