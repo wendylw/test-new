@@ -51,9 +51,8 @@ export class ProductDetailsComponent extends Component {
     let displayPrice = childProduct ? childProduct.displayPrice : product.displayPrice;
     const diffPriceArr = this.getVariationPriceDiffs();
 
-    if (!displayPrice || diffPriceArr.length ) {
-      // should be composite
-      displayPrice = (onlineUnitPrice || unitPrice) + diffPriceArr.reduce((total, diff) => total + diff, 0);
+    if (diffPriceArr.length) {
+      displayPrice = (displayPrice || onlineUnitPrice || unitPrice) + diffPriceArr.reduce((total, diff) => total + diff, 0);
     }
 
     return displayPrice;
