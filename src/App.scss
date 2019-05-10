@@ -12,6 +12,8 @@ $gray-5: #FAFAFA;
 $blue: #31728D;
 $link-blue: #2196F3;
 $theme-color: #FF9419;
+$gray-1-active: #4f515f;
+$theme-color-active: #DE8115;
 $font-weight-bold: 600;
 
 // @import '~normalize.css';
@@ -682,11 +684,24 @@ img {
     display: none;
     border-color: $gray-1;
     background-color: $white;
+
+    &:active {
+      border-color: $gray-1-active;
+
+      .cart__icon::before {
+        background-color: $gray-1-active;
+      }
+    }
   }
 
   &__add {
     border-color: $theme-color;
     background-color: $theme-color;
+
+    &:active {
+      border-color: $theme-color-active;
+      background-color: $theme-color-active;
+    }
   }
 
   &__icon {
@@ -1200,7 +1215,8 @@ main > section.hide {
   }
 
   &.table-ordering__payment,
-  &.table-ordering__thanks {
+  &.table-ordering__thanks,
+  &.table-ordering__prompt-page {
     display: none;
   }
 
