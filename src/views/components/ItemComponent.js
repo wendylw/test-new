@@ -39,7 +39,7 @@ export class ItemComponent extends Component {
     } = this.props;
 
     return (
-      <li className="item border-botton__divider flex flex-top">
+      <li className="item border__bottom-divider flex flex-top">
         <Image className="item__image-container" src={image} />
         <div className="item__content flex flex-middle flex-space-between">
           <div className="item__detail">

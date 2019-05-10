@@ -77,7 +77,7 @@ export class ThankYou extends Component {
 
     return (
       <section className={`table-ordering__thanks ${match.isExact ? '' : 'hide'}`}>
-        <header className="header border-botton__divider flex flex-middle flex-space-between">
+        <header className="header border__bottom-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => history.replace({
             pathname: `${Constants.ROUTER_PATHS.HOME}`,
             search: `?table=${order.additionalComments}&storeId=${order.storeId}`

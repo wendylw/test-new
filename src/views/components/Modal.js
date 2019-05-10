@@ -70,7 +70,7 @@ class Modal extends Component {
 }
 
 Modal.Header = ({ children, className = '' }) => (
-  <header className={`modal__header border-botton__divider ${className}`}>
+  <header className={`modal__header border__botton-divider ${className}`}>
     {children}
   </header>
 );

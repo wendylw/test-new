@@ -14,7 +14,7 @@ class MainTopComponent extends Component {
     const { table } = config;
 
     return (
-      <header className="header border-botton__divider flex flex-middle flex-space-between">
+      <header className="header border__bottom-divider flex flex-middle flex-space-between">
         <Image className="header__image-container text-middle" src={logo} alt={title} />
         <h1 className="header__title font-weight-bold text-middle">{title}</h1>
         <span className="gray-font-opacity">Table {table} </span>

@@ -29,11 +29,11 @@ class Payment extends Component {
 
   async payNow() {
     const { shoppingCart } = this.props;
-    
+
     this.setState({
       payNowLoading: true,
     });
-    
+
     try {
       const { data } = await this.props.createOrder({
         variables: {
@@ -44,7 +44,7 @@ class Payment extends Component {
           pax: Number(config.peopleCount),
         },
       });
-  
+
       if (data.createOrder) {
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
@@ -68,7 +68,7 @@ class Payment extends Component {
 
     return (
       <section className={`table-ordering__payment ${match.isExact ? '' : 'hide'}`}>
-        <header className="header border-botton__divider flex flex-middle flex-space-between">
+        <header className="header border__botton-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => {
             history.replace(Constants.ROUTER_PATHS.CART, history.location.state);
           }}>
@@ -79,7 +79,7 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-grabpay.png"></img>
               </figure>
@@ -89,7 +89,7 @@ class Payment extends Component {
               </div>
             </li>
             {/*
-            <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-boost.png"></img>
               </figure>
@@ -98,7 +98,7 @@ class Payment extends Component {
                 <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}></input>
               </div>
             </li>
-            <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-bigpay.png"></img>
               </figure>
@@ -107,7 +107,7 @@ class Payment extends Component {
                 <input type="radio"></input>
               </div>
             </li>
-            <li className="payment__item border-botton__divider flex flex-middle flex-space-between">
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-maybank.png"></img>
               </figure>
