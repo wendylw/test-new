@@ -3,6 +3,8 @@ import { compose } from 'react-apollo';
 import withOrderDetail from '../libs/withOrderDetail';
 import config from '../config';
 import CurrencyNumber from '../views/components/CurrencyNumber';
+import Constants from '../Constants';
+import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
@@ -25,18 +27,18 @@ export class ThankYou extends Component {
   renderNeedReceipt() {
     const { orderId } = this.props.order;
     let text = (
-      <h3 className="thanks__link-label" onClick={() => this.setState({ needReceipt: 'detail' })}>
-        NEED A RECEIPT?
-      </h3>
+      <button className="thanks__link link text-uppercase" onClick={() => this.setState({ needReceipt: 'detail' })}>
+        Need a receipt?
+      </button>
     );
 
     if (this.state.needReceipt === 'detail') {
       text = (
-        <div className="thanks__receipt-label">
-          <div>Ping the staff for a receipt</div>
+        <div className="thanks__receipt-info">
+          <h4 className="thanks__receipt-title font-weight-bold">Ping the staff for a receipt</h4>
           <div>
-            <span>Receipt Number: </span>
-            <span className="receipt-number">{orderId}</span>
+            <label className="thanks__receipt-label">Receipt Number: </label>
+            <span className="thanks__receipt-number font-weight-bold">{orderId}</span>
           </div>
         </div>
       );
@@ -66,8 +68,8 @@ export class ThankYou extends Component {
     );
   }
 
-  render() {
-    const { match, order } = this.props;
+  renderMain() {
+    const { history, match, order } = this.props;
 
     if (!order) {
       return null;
@@ -75,8 +77,11 @@ export class ThankYou extends Component {
 
     return (
       <section className={`table-ordering__thanks ${match.isExact ? '' : 'hide'}`}>
-        <header className="header border__botton-divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle">
+        <header className="header border__bottom-divider flex flex-middle flex-space-between">
+          <figure className="header__image-container text-middle" onClick={() => history.replace({
+            pathname: `${Constants.ROUTER_PATHS.HOME}`,
+            search: `?table=${order.additionalComments}&storeId=${order.storeId}`
+          })}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
           </figure>
           <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
@@ -91,6 +96,14 @@ export class ThankYou extends Component {
         </div>
       </section>
     )
+  }
+
+  render() {
+    return (
+      <DocumentTitle title={Constants.DOCUMENT_TITLE.THANK_YOU}>
+        {this.renderMain()}
+      </DocumentTitle>
+    );
   }
 }
 

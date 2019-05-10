@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import config from '../../config';
+import Image from './Image';
 
 class MainTopComponent extends Component {
   static propTypes = {
@@ -13,10 +14,8 @@ class MainTopComponent extends Component {
     const { table } = config;
 
     return (
-      <header className="header border__botton-divider flex flex-middle flex-space-between">
-        <figure className="header__image-container text-middle">
-          <img src={logo} alt={title} />
-        </figure>
+      <header className="header border__bottom-divider flex flex-middle flex-space-between">
+        <Image className="header__image-container text-middle" src={logo} alt={title} />
         <h1 className="header__title font-weight-bold text-middle">{title}</h1>
         <span className="gray-font-opacity">Table {table} </span>
       </header>

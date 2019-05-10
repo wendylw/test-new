@@ -7,7 +7,7 @@ class App extends Component {
     return (
       <main className="table-ordering">
         <section className="table-ordering__home">
-          <header className="header border__botton-divider flex flex-middle flex-space-between">
+          <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
             </figure>
@@ -26,7 +26,7 @@ class App extends Component {
                   <span className="gray-font-opacity">45 items</span>
                 </h2>
                 <ul className="list">
-                  <li className="item border__botton-divider flex flex-top">
+                  <li className="item border__bottom-divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -47,7 +47,7 @@ class App extends Component {
                       </div>
                     </div>
                   </li>
-                  <li className="item border__botton-divider flex flex-top">
+                  <li className="item border__bottom-divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -76,7 +76,7 @@ class App extends Component {
                   <span className="gray-font-opacity">45 items</span>
                 </h2>
                 <ul className="list">
-                  <li className="item border__botton-divider flex flex-top">
+                  <li className="item border__bottom-divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -97,7 +97,7 @@ class App extends Component {
                       </div>
                     </div>
                   </li>
-                  <li className="item border__botton-divider flex flex-top">
+                  <li className="item border__bottom-divider flex flex-top">
                     <figure className="item__image-container">
                       <img src=""></img>
                     </figure>
@@ -125,7 +125,7 @@ class App extends Component {
 
           <aside className="aside">
             <div className="cart-pane">
-              <div className="cart-pane__operation border__botton-divider flex flex-middle flex-space-between">
+              <div className="cart-pane__operation border__bottom-divider flex flex-middle flex-space-between">
                 <h3 className="cart-pane__amount-container">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
                   <span className="cart-pane__amount-label text-middle gray-font-opacity">46 Items</span>
@@ -137,7 +137,7 @@ class App extends Component {
               </div>
               <div className="cart-pane__list">
                 <ul className="list">
-                  <li className="item border__botton-divider flex flex-top">
+                  <li className="item border__bottom-divider flex flex-top">
                     <div className="item__content flex flex-middle flex-space-between">
                       <div className="item__detail">
                         <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
@@ -155,7 +155,7 @@ class App extends Component {
                       </div>
                     </div>
                   </li>
-                  <li className="item border__botton-divider flex flex-top">
+                  <li className="item border__bottom-divider flex flex-top">
                     <div className="item__content flex flex-middle flex-space-between">
                       <div className="item__detail">
                         <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
@@ -230,7 +230,7 @@ class App extends Component {
             </div>
 
             <div className="aside__fix-bottom">
-              <div className="item aside__section-container border__top-divider border__botton-divider flex flex-top">
+              <div className="item aside__section-container border__top-divider border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -282,7 +282,7 @@ class App extends Component {
         </section>
 
         <section className="table-ordering__order hide">
-          <header className="header border__botton-divider flex flex-middle flex-space-between">
+          <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </figure>
@@ -294,7 +294,7 @@ class App extends Component {
           </header>
           <div className="list__container">
             <ul className="list">
-              <li className="item border__botton-divider flex flex-top">
+              <li className="item border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -315,7 +315,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item border__botton-divider flex flex-top">
+              <li className="item border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -336,7 +336,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item border__botton-divider flex flex-top">
+              <li className="item border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -357,7 +357,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item border__botton-divider flex flex-top">
+              <li className="item border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -378,7 +378,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item border__botton-divider flex flex-top">
+              <li className="item border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -399,7 +399,7 @@ class App extends Component {
                   </div>
                 </div>
               </li>
-              <li className="item border__botton-divider flex flex-top">
+              <li className="item border__bottom-divider flex flex-top">
                 <figure className="item__image-container">
                   <img src=""></img>
                 </figure>
@@ -453,7 +453,7 @@ class App extends Component {
         </section>
 
         <section className="table-ordering__payment hide">
-          <header className="header border__botton-divider flex flex-middle flex-space-between">
+          <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
             </figure>
@@ -462,7 +462,7 @@ class App extends Component {
 
           <div>
             <ul className="payment__list">
-              <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+              <li className="payment__item border__bottom-divider flex flex-middle flex-space-between">
                 <figure className="payment__image-container">
                   <img src="/img/logo-grabpay.png"></img>
                 </figure>
@@ -471,7 +471,7 @@ class App extends Component {
                   <input type="radio"></input>
                 </div>
               </li>
-              <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+              <li className="payment__item border__bottom-divider flex flex-middle flex-space-between">
                 <figure className="payment__image-container">
                   <img src="/img/logo-boost.png"></img>
                 </figure>
@@ -480,7 +480,7 @@ class App extends Component {
                   <input type="radio"></input>
                 </div>
               </li>
-              <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+              <li className="payment__item border__bottom-divider flex flex-middle flex-space-between">
                 <figure className="payment__image-container">
                   <img src="/img/logo-bigpay.png"></img>
                 </figure>
@@ -489,7 +489,7 @@ class App extends Component {
                   <input type="radio"></input>
                 </div>
               </li>
-              <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+              <li className="payment__item border__bottom-divider flex flex-middle flex-space-between">
                 <figure className="payment__image-container">
                   <img src="/img/logo-maybank.png"></img>
                 </figure>
@@ -507,7 +507,7 @@ class App extends Component {
         </section>
 
         <section className="table-ordering__thanks hide">
-          <header className="header border__botton-divider flex flex-middle flex-space-between">
+          <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
             </figure>
@@ -518,6 +518,16 @@ class App extends Component {
             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
             <h2 className="thanks__title font-weight-bold">Thank You!</h2>
             <h4 className="thanks__subtitle gray-font-opacity font-weight-bold">Total paid RM 101.20</h4>
+
+            <button className="thanks__link link text-uppercase">Need a receipt?</button>
+
+            <div className="thanks__receipt-info">
+              <h4 className="thanks__receipt-title font-weight-bold">Ping the staff for a receipt</h4>
+              <div>
+                <label className="thanks__receipt-label">Receipt Number: </label>
+                <span className="thanks__receipt-number font-weight-bold">12345678</span>
+              </div>
+            </div>
 
             <form className="thanks__form form">
               <div className="input__group">
@@ -530,10 +540,22 @@ class App extends Component {
           </div>
         </section>
 
+        <section className="table-ordering__prompt-page">
+          <figure className="prompt-page__image-container text-center">
+            <img src="/img/matching-error.jpg"></img>
+          </figure>
+          <div className="prompt-page__content">
+            <h2 className="prompt-page__title text-center">Eep!</h2>
+            <div className="prompt-page__paragraphs">
+              <p>Looks like something went wrong. Please scan the QR again, or ask the staff for help.</p>
+            </div>
+          </div>
+        </section>
+
         {/* BO: /settings/account has a "Enable Pax" settings, if has pax, then use this step. */}
         <section className="customer-numbers__modal modal">
           <div className="modal__content">
-            <header className="modal__header border__botton-divider">
+            <header className="modal__header border__bottom-divider">
               <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
             </header>
             <div className="modal__body">

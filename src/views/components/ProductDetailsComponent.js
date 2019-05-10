@@ -4,6 +4,7 @@ import ItemComponent from './ItemComponent';
 import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
 import Constants from '../../Constants';
+import Aside from './Aside';
 
 export class ProductDetailsComponent extends Component {
   static propTypes = {
@@ -39,7 +40,7 @@ export class ProductDetailsComponent extends Component {
 
   displayPrice() {
     const { product } = this.props;
-    const { childrenMap, unitPrice } = product;
+    const { childrenMap, unitPrice, onlineUnitPrice } = product;
 
     const variationNames = this.getVariationNames();
 
@@ -48,10 +49,11 @@ export class ProductDetailsComponent extends Component {
     ));
 
     let displayPrice = childProduct ? childProduct.displayPrice : product.displayPrice;
+    const diffPriceArr = this.getVariationPriceDiffs();
 
-    if (!displayPrice) {
+    if (!displayPrice || diffPriceArr.length ) {
       // should be composite
-      displayPrice = unitPrice + this.getVariationPriceDiffs().reduce((total, diff) => total + diff, 0);
+      displayPrice = (onlineUnitPrice || unitPrice) + diffPriceArr.reduce((total, diff) => total + diff, 0);
     }
 
     return displayPrice;
@@ -145,81 +147,86 @@ export class ProductDetailsComponent extends Component {
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
-      <aside className={`aside aside__product-detail ${this.state.active ? 'active' : ''}`} onClick={(e) => {
+      <Aside active={this.state.active} className={`aside aside__product-detail`} onClick={(e) => {
         if (e.target === e.currentTarget) {
           this.hide();
         }
       }}>
-        <div className="product-detail">
-          {
-            this.getSingleChoiceVariations().length ? (
-              <ol className="product-detail__options-category border__botton-divider">
-              {
-                this.getSingleChoiceVariations().map(variation => (
-                  <VariationSelectorComponent
-                    key={variation.id}
-                    variation={variation}
-                    onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                  />
-                ))
-              }
-              </ol>
-            ) : null
-          }
+        <>
+          <div className="product-detail">
+            {
+              this.getSingleChoiceVariations().length ? (
+                <ol className="product-detail__options-category">
+                {
+                  this.getSingleChoiceVariations().map(variation => (
+                    <VariationSelectorComponent
+                      key={variation.id}
+                      variation={variation}
+                      onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                    />
+                  ))
+                }
+                </ol>
+              ) : null
+            }
 
-          {
-            this.getMultipleChoiceVariations().length ? (
-              <ol className="product-detail__options-category border__botton-divider">
-              {
-                this.getMultipleChoiceVariations().map(variation => (
-                  <VariationSelectorComponent
-                    key={variation.id}
-                    variation={variation}
-                    onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                  />
-                ))
-              }
-              </ol>
-            ) : null
-          }
-
-          <ItemComponent
-            image={imageUrl}
-            title={title}
-            price={this.displayPrice()}
-            quantity={cartQuantity}
-            decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
-            onDecrease={() => {
-              this.setState({ cartQuantity: cartQuantity - 1 });
-            }}
-            onIncrease={() => {
-              this.setState({ cartQuantity: cartQuantity + 1 });
-            }}
-          />
-
-          <div className="aside__fix-bottom aside__section-container">
-            <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
-              const variations = this.getVariationsValue();
-
-              if (this.isSubmitable()) {
-                const result = await this.props.addOrUpdateShoppingCartItem({
-                  variables: {
-                    action: 'edit',
-                    business: config.business,
-                    productId,
-                    quantity: cartQuantity,
-                    variations,
-                  }
-                });
-                console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
-              }
-
-              // close popup and go back home.
-              this.hide();
-            }}>OK</button>
+            {
+              this.getMultipleChoiceVariations().length ? (
+                <ol className="product-detail__options-category">
+                {
+                  this.getMultipleChoiceVariations().map(variation => (
+                    <VariationSelectorComponent
+                      key={variation.id}
+                      variation={variation}
+                      onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                    />
+                  ))
+                }
+                </ol>
+              ) : null
+            }
           </div>
-        </div>
-      </aside>
+          
+          <div className="aside__fix-bottom">
+            <ItemComponent
+              className="aside__section-container border__top-divider"
+              image={imageUrl}
+              title={title}
+              price={this.displayPrice()}
+              quantity={cartQuantity}
+              decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+              onDecrease={() => {
+                this.setState({ cartQuantity: cartQuantity - 1 });
+              }}
+              onIncrease={() => {
+                this.setState({ cartQuantity: cartQuantity + 1 });
+              }}
+            />
+
+            <div className="aside__section-container">
+              <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
+                const variations = this.getVariationsValue();
+
+                if (this.isSubmitable()) {
+                  const result = await this.props.addOrUpdateShoppingCartItem({
+                    variables: {
+                      action: 'edit',
+                      business: config.business,
+                      productId,
+                      quantity: cartQuantity,
+                      variations,
+                    }
+                  });
+                  console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
+                }
+
+                // close popup and go back home.
+                this.hide();
+              }}>OK</button>
+            </div>
+          </div>
+        </>
+      </Aside>
     )
   }
 }

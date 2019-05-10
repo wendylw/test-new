@@ -1,3 +1,5 @@
+const DOCUMENT_ROOT_ID = 'root';
+
 const ROUTER_PATHS = {
     INDEX: '/',
     HOME: '/home',
@@ -10,9 +12,19 @@ const ROUTER_PATHS = {
     ERROR: '/error',
 };
 
+const DOCUMENT_TITLE = {
+  HOME: 'Home',
+  CART: 'Cart',
+  PAYMENT: 'Payment',
+  THANK_YOU: 'Payment Success',
+  SORRY: 'Payment Failed',
+  ERROR: 'Error',
+  NOT_FOUND: '404 - Page Not Found',
+};
+
 const PAYMENT_METHODS = {
-  GRAB_PAY: 'grabpay',
-  BOOST_PAY: 'boost',
+  GRAB_PAY: 'GrabPay',
+  BOOST_PAY: 'Boost',
 };
 
 const ADD_TO_CART_MIN_QUANTITY = 1;
@@ -26,9 +38,11 @@ const PeopleCount = {
 }
 
 export default {
-    ROUTER_PATHS,
-    PAYMENT_METHODS,
-    ADD_TO_CART_MIN_QUANTITY,
-    BACKEND_PING_PATH,
-    PeopleCount,
+  DOCUMENT_ROOT_ID,
+  ROUTER_PATHS,
+  PAYMENT_METHODS,
+  ADD_TO_CART_MIN_QUANTITY,
+  BACKEND_PING_PATH,
+  DOCUMENT_TITLE,
+  PeopleCount,
 }

@@ -1,7 +1,10 @@
 import React from "react";
+import DocumentTitle from "../views/components/DocumentTitle";
+import Constants from "../Constants";
 
 export default () =>
-  <div className="NotFound">
-    <h3>Sorry, page not found!</h3>
-  </div>;
-
+  <DocumentTitle title={Constants.DOCUMENT_TITLE.NOT_FOUND}>
+    <div className="NotFound">
+      <h3>Sorry, page not found!</h3>
+    </div>
+  </DocumentTitle>;

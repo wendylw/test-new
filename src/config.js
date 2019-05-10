@@ -1,30 +1,29 @@
 const getTableId = () => {
-  const tableId = (m => m ? parseInt(m[1]) : null)(window.location.hash.match(/\btable\b=(\d+)/));
-  
-  if (tableId) {
-    localStorage.setItem('tableId', tableId);
-    return tableId;
+  try {
+    return document.cookie.split(';').find(s => s.includes('__t')).split('=')[1];
+  } catch(e) {
+    return null;
   }
-
-  return localStorage.getItem('tableId');
 };
 
 const getStoreId = () => {
-  const storeId = (m => m ? m[1] : null)(window.location.hash.match(/\bstoreId\b=([^&=?#]+)/));
-
-  if (storeId) {
-    localStorage.setItem('storeId', storeId);
-    return storeId;
+  try {
+    return document.cookie.split(';').find(s => s.includes('__s')).split('=')[1];
+  } catch(e) {
+    return null;
   }
-
-  return localStorage.getItem('storeId');
 };
+
+const business = (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.'));
 
 const config = {
   storehubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
-  business: (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.')),
+  imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
+  imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
+  isImageCompression: (whitelist => (!whitelist) || whitelist.split(',').includes(business))(process.env.REACT_APP_IMAGE_COMPRESSION_BUSINESS_WHITELIST),
+  business,
   table: getTableId(),
   storeId: getStoreId(),
 };

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import './App.scss';
-import { compose, Query } from 'react-apollo';
+import { compose } from 'react-apollo';
 import Routes from './Routes';
 import config from './config';
 import Constants from './Constants';
 import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
-import apiGql from './apiGql';
-import { clientCoreApi } from './apiClient';
+import withCoreApiBusiness from './libs/withCoreApiBusiness';
+import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
+import DocumentFavicon from './views/components/DocumentFavicon';
 
 class App extends Component {
   state = {
@@ -29,7 +30,7 @@ class App extends Component {
 
   check() {
     if (!config.storeId || !config.table) {
-      this.goToError('Invalid URL, please scan QR code to entry this page.');
+      this.goToError(); // use default message
       return;
     }
   }
@@ -45,65 +46,27 @@ class App extends Component {
     });
   }
 
-  tryPeopleCount(response) {
-    const { history } = this.props;
-    const { business } = response;
-
-    const { enablePax, subscriptionStatus, stores } = business;
-
-    if (subscriptionStatus === 'Expired') {
-      this.goToError('Account is expired.');
-      return;
-    }
-
-    if (!Array.isArray(stores) || !stores.length) {
-      this.goToError('Store is not found.');
-      return;
-    }
-
-    // Everytime reload /home page, will effects a Pax selector.
-    if (enablePax && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
-      if (history.location.pathname.indexOf('/modal/people-count') === -1) {
-        const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
-        history.push(peopleCountModalPath);
-      }
-    }
-  }
-
-  renderError(error) {
-
-    return null;
-  }
-
   render() {
-    const { history } = this.props;
+    const { gqlOnlineStoreInfo } = this.props;
+
+    if (gqlOnlineStoreInfo.loading) {
+      return null;
+    }
+
     const { sessionReady } = this.state;
 
     if (!sessionReady) {
       return null;
     }
 
+    const { onlineStoreInfo } = gqlOnlineStoreInfo;
+
     return (
-      <Query
-        query={apiGql.GET_CORE_BUSINESS}
-        client={clientCoreApi}
-        variables={{ business: config.business, storeId: config.storeId }}
-        onCompleted={this.tryPeopleCount.bind(this)}
-        onError={() => {
-          history.replace({
-            pathname: Constants.ROUTER_PATHS.ERROR,
-            state: { message: 'Account name is not found.' },
-          });
-        }}
-      >
-        {() => {
-          return (
-            <main className="table-ordering">
-              <Routes />
-            </main>
-          )
-        }}
-      </Query>
+      <DocumentFavicon icon={onlineStoreInfo.favicon}>
+        <main className="table-ordering">
+          <Routes />
+        </main>
+      </DocumentFavicon>
     );
   }
 }
@@ -111,4 +74,6 @@ class App extends Component {
 export default compose(
   withResizeWindowBlocker,
   withRouter,
+  withCoreApiBusiness,
+  withOnlineStoreInfo(),
 )(App);

@@ -7,9 +7,10 @@ import Constants from '../Constants';
 import apiGql from '../apiGql';
 import config from '../config';
 import RedirectForm from '../views/components/RedirectForm';
+import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example URL: http://nike.storehub.local:3002/#/payment
-export class Payment extends Component {
+class Payment extends Component {
   static propTypes = {
   }
 
@@ -59,7 +60,7 @@ export class Payment extends Component {
     }
   }
 
-  render() {
+  renderMain() {
     const { match, history } = this.props;
     const { paymentMethod, order } = this.state;
 
@@ -154,6 +155,14 @@ export class Payment extends Component {
         />
       </section>
     )
+  }
+
+  render() {
+    return (
+      <DocumentTitle title={Constants.DOCUMENT_TITLE.PAYMENT}>
+        {this.renderMain()}
+      </DocumentTitle>
+    );
   }
 }
 

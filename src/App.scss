@@ -10,6 +10,7 @@ $gray-3: #DEDEDF;
 $gray-4: #EFEFEF;
 $gray-5: #FAFAFA;
 $blue: #31728D;
+$link-blue: #2196F3;
 $theme-color: #FF9419;
 $font-weight-bold: 600;
 
@@ -71,8 +72,16 @@ button {
   }
 }
 
+img {
+  max-width: 100%;
+}
+
 .reset-font-size {
   font-size: 0;
+}
+
+.link {
+  color: $link-blue;
 }
 
 .warning {
@@ -268,7 +277,11 @@ button {
 }
 
 .container {
-  height: 100%;
+  &.fixed {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
 }
 
 .back-drop {
@@ -431,6 +444,13 @@ button {
       max-width: 64vw;
     }
   }
+
+  &__prompt-page {
+    @extend .main-section;
+
+    padding: 5vh 0;
+    background-color: $white;
+  }
 }
 
 .border {
@@ -438,7 +458,7 @@ button {
     border-top: 1px solid $gray-3;
   }
 
-  &__botton-divider {
+  &__bottom-divider {
     border-bottom: 1px solid $gray-3;
   }
 }
@@ -1065,10 +1085,6 @@ button {
 
   &__image-container {
     max-width: 80px;
-
-    img {
-      max-width: 100%;
-    }
   }
 
   &__pay-now-container {
@@ -1104,22 +1120,26 @@ button {
     margin: 8vw 0;
   }
 
-  &__link-label {
-    margin: 15vw 0;
-    color: #1E8CF0;
+  &__link,
+  &__receipt-info {
+    margin: 4vh 0;
   }
 
-  &__receipt-label {
-    margin: 15vw 0;
+  &__receipt-title,
+  &__receipt-label,
+  &__receipt-number {
+    margin: 5px 0;
+    font-size: 1.1rem;
+    line-height: 1.5em;
+  }
 
-    > * {
-      margin: 2vw 0;
-    }
+  &__receipt-title {
+    font-size: 1.2rem;
+  }
 
-    .receipt-number {
-      font-size: 18px;
-      font-weight: bold;
-    }
+  &__receipt-number {
+    margin-left: 5px;
+    letter-spacing: 0.05rem;
   }
 
   .input,
@@ -1127,6 +1147,34 @@ button {
     padding: 6px 12px;
     height: 40px;
     border-radius: 4px;
+  }
+}
+
+.prompt-page {
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
+  }
+
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__title {
+    margin: 3vh 0;
+    font-size: 2.2rem;
+    color: $gray-2;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    font-size: 1.2rem;
+    width: 75%;
+    max-width: 280px;
+
+    p {
+      font-size: inherit;
+    }
   }
 }
 

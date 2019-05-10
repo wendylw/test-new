@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Constants from '../../Constants';
 import CartItems from './CartItems';
 import ClearAll from './ClearAll';
+import Aside from './Aside';
 
 export class ProductsEditCartComponent extends Component {
   static propTypes = {
@@ -23,8 +24,8 @@ export class ProductsEditCartComponent extends Component {
     const { count } = shoppingCart;
 
     return (
-      <aside
-        className={`aside active`}
+      <Aside
+        active
         onClick={(e) => {
           if (e.currentTarget === e.target) {
             this.hide();
@@ -43,7 +44,7 @@ export class ProductsEditCartComponent extends Component {
             <CartItems />
           </div>
         </div>
-      </aside>
+      </Aside>
     )
   }
 }

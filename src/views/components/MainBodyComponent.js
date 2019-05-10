@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { onlineCategoryMergedShoppingCartType, onlineCategoryType, shoppingCartType } from '../propTypes';
-import { ScrollObservable, ScrollObserver } from './ScrollComponents';
+import { ScrollObservable, ScrollObserver, getCurrentScrollName } from './ScrollComponents';
 import ItemComponent from './ItemComponent';
 import config from '../../config';
 import Constants from '../../Constants';
@@ -26,7 +26,8 @@ export class MainBodyComponent extends Component {
     return (
       <React.Fragment>
         <ScrollObserver render={(scrollname => {
-          const category = onlineCategoryMergedShoppingCart.find(c => c.name === scrollname);
+          const currentScrollname = scrollname || getCurrentScrollName();
+          const category = onlineCategoryMergedShoppingCart.find(c => c.name === currentScrollname);
 
           if (!category) {
             return null;
