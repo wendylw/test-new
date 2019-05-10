@@ -4,6 +4,7 @@ import ItemComponent from './ItemComponent';
 import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
 import Constants from '../../Constants';
+import Aside from './Aside';
 
 export class ProductDetailsComponent extends Component {
   static propTypes = {
@@ -145,7 +146,7 @@ export class ProductDetailsComponent extends Component {
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
-      <aside className={`aside aside__product-detail ${this.state.active ? 'active' : ''}`} onClick={(e) => {
+      <Aside active={this.state.active} className={`aside aside__product-detail`} onClick={(e) => {
         if (e.target === e.currentTarget) {
           this.hide();
         }
@@ -219,7 +220,7 @@ export class ProductDetailsComponent extends Component {
             }}>OK</button>
           </div>
         </div>
-      </aside>
+      </Aside>
     )
   }
 }

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { onlineCategoryMergedShoppingCartType } from '../propTypes';
 import { ScrollObserver, getCurrentScrollName } from './ScrollComponents';
 import Constants from '../../Constants';
+import Aside from './Aside';
 
 class MainMenuComponent extends Component {
   static propTypes = {
@@ -26,7 +27,7 @@ class MainMenuComponent extends Component {
     }
 
     return (
-      <aside className="aside active" onClick={e => {
+      <Aside active onClick={e => {
         if (e.currentTarget === e.target) {
           this.toggleMenu();
         }
@@ -57,7 +58,7 @@ class MainMenuComponent extends Component {
           }
           </ul>
         </nav>
-      </aside>
+      </Aside>
     )
   }
 }

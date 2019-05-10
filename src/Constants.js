@@ -1,3 +1,5 @@
+const DOCUMENT_ROOT_ID = 'root';
+
 const ROUTER_PATHS = {
     INDEX: '/',
     HOME: '/home',
@@ -36,10 +38,11 @@ const PeopleCount = {
 }
 
 export default {
-    ROUTER_PATHS,
-    PAYMENT_METHODS,
-    ADD_TO_CART_MIN_QUANTITY,
-    BACKEND_PING_PATH,
-    DOCUMENT_TITLE,
-    PeopleCount,
+  DOCUMENT_ROOT_ID,
+  ROUTER_PATHS,
+  PAYMENT_METHODS,
+  ADD_TO_CART_MIN_QUANTITY,
+  BACKEND_PING_PATH,
+  DOCUMENT_TITLE,
+  PeopleCount,
 }
