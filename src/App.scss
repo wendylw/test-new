@@ -273,7 +273,9 @@ img {
 }
 
 .container {
-  height: 100%;
+  &.fixed {
+    overflow: hidden;
+  }
 }
 
 .back-drop {

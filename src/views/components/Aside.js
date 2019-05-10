@@ -38,10 +38,10 @@ class Aside extends Component {
   }
 
   render() {
-    const { className, active, children } = this.props;
+    const { className, active, children, ...props } = this.props;
 
     return (
-      <aside className={`aside ${active ? 'active' : ''} ${className}`}>
+      <aside className={`aside ${active ? 'active' : ''} ${className}`} {...props}>
         {children}
       </aside>
     );
