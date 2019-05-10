@@ -62,8 +62,9 @@ export class MainBodyComponent extends Component {
                         quantity={prod.cartQuantity}
                         decreaseDisabled={!prod.canDecreaseQuantity}
                         onDecrease={() => {
+                          const cartItem = prod.cartItems.find(item => item.productId === prod.id);
+
                           if (prod.cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
-                            const cartItem = prod.cartItems.find(item => item.productId === prod.id);
                             this.props.removeShoppingCartItem({
                               variables: {
                                 productId: cartItem.productId,
@@ -79,6 +80,7 @@ export class MainBodyComponent extends Component {
                               business: config.business,
                               productId: prod.id,
                               quantity: prod.cartQuantity - 1,
+                              variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : null, // product has only one child products in cart
                             }
                           });
                         }}
