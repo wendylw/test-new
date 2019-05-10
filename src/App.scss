@@ -367,6 +367,12 @@ button {
   }
 }
 
+.container {
+  &.fixed {
+    overflow: hidden;
+  }
+}
+
 .table-ordering {
   @extend .flex;
   @extend .flex-center;
@@ -423,8 +429,12 @@ button {
   }
 }
 
-.border-botton {
-  &__divider {
+.border {
+  &__top-divider {
+    border-top: 1px solid $gray-3;
+  }
+
+  &__botton-divider {
     border-bottom: 1px solid $gray-3;
   }
 }
@@ -814,16 +824,17 @@ button {
 
   position: absolute;
   bottom: 0;
-  padding: 0;
+  padding: 0 0 22vw + 26.8vw;
   width: 100%;
   max-height: 80%;
+  overflow-y: auto;
 
   &__options-category {
     padding: 4vw;
   }
 
-  &__options {
-    margin-bottom: 5vw;
+  &__options ~ &__options {
+    margin-top: 5vw;
   }
 
   &__options-title {
@@ -832,10 +843,6 @@ button {
 
   .button__fill {
     border-radius: 4px;
-  }
-
-  .item {
-    margin-bottom: 21.8vw;
   }
 }
 

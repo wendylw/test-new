@@ -38,7 +38,7 @@ export class ItemComponent extends Component {
     } = this.props;
 
     return (
-      <li className="item border-botton__divider flex flex-top">
+      <li className="item border__botton-divider flex flex-top">
         <figure className="item__image-container">
           {image ? <img src={image} alt={title} /> : null}
         </figure>

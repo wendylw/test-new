@@ -95,7 +95,7 @@ export class ProductDetailsComponent extends Component {
       variationsByIdMap: this.state.variationsByIdMap,
     };
 
-    // don't know why, but just found that set values to this.state 
+    // don't know why, but just found that set values to this.state
     // can avoid another call issue in an extremely shot time.
     // which case is about auto select first SingleChoice variations.
     newState.variationsByIdMap[variationId] = variationAndOptionById;
@@ -140,7 +140,7 @@ export class ProductDetailsComponent extends Component {
     }
 
     console.log('variationsByIdMap =>', variationsByIdMap);
-    
+
     const { id: productId, images, title } = product;
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
@@ -153,7 +153,7 @@ export class ProductDetailsComponent extends Component {
         <div className="product-detail">
           {
             this.getSingleChoiceVariations().length ? (
-              <ol className="product-detail__options-category border-botton__divider">
+              <ol className="product-detail__options-category border__botton-divider">
               {
                 this.getSingleChoiceVariations().map(variation => (
                   <VariationSelectorComponent
@@ -166,10 +166,10 @@ export class ProductDetailsComponent extends Component {
               </ol>
             ) : null
           }
-          
+
           {
             this.getMultipleChoiceVariations().length ? (
-              <ol className="product-detail__options-category border-botton__divider">
+              <ol className="product-detail__options-category border__botton-divider">
               {
                 this.getMultipleChoiceVariations().map(variation => (
                   <VariationSelectorComponent
@@ -196,7 +196,7 @@ export class ProductDetailsComponent extends Component {
               this.setState({ cartQuantity: cartQuantity + 1 });
             }}
           />
-          
+
           <div className="aside__fix-bottom aside__section-container">
             <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
               const variations = this.getVariationsValue();
