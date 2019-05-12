@@ -16,6 +16,11 @@ $gray-1-active: #4f515f;
 $theme-color-active: #DE8115;
 $font-weight-bold: 600;
 
+@mixin  link-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 // @import '~normalize.css';
 @import "~normalize.css/normalize.css";
 
@@ -1078,6 +1083,10 @@ img {
     text-align: center;
     line-height: 14vw;
     text-decoration: none;
+
+    &.disabled {
+      @include link-disabled()
+    }
   }
 }
 
