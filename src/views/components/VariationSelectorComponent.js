@@ -78,7 +78,9 @@ export class VariationSelectorComponent extends Component {
               onClick={() => this.setState({
                 selected: {
                   ...(this.isSingleChoice() ? null : this.state.selected),
-                  [id]: !this.state.selected[id],
+
+                  // prevent reverse select when SingleChoice
+                  [id]: this.isSingleChoice() ? this.state.selected : !this.state.selected[id],
                 }
               }, this.onSelected)}
             >{value}</li>
