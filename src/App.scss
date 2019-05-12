@@ -52,6 +52,10 @@ body {
   -webkit-font-smoothing: antialiased;
   touch-action: manipulation;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+  &.block-scroll {
+    overflow: hidden;
+  }
 }
 
 h1 {
@@ -276,14 +280,6 @@ img {
 
 .gray-font-opacity {
   opacity: 0.5;
-}
-
-.container {
-  &.fixed {
-    position: fixed;
-    width: 100%;
-    overflow: hidden;
-  }
 }
 
 .back-drop {

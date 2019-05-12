@@ -17,24 +17,19 @@ class Aside extends Component {
   rootEl =  document.getElementById(Constants.DOCUMENT_ROOT_ID);
 
   componentWillMount() {
-    this.toggleRootFixed(this.props.active);
+    this.toggleBodyScroll(this.props.active);
   }
 
   componentWillUnmount() {
-    this.toggleRootFixed(false);
+    this.toggleBodyScroll(false);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.toggleRootFixed(nextProps.active);
+    this.toggleBodyScroll(nextProps.active);
   }
 
-  toggleRootFixed(toState) {
-    if (!this.rootEl) {
-      console.warn('id %o is not found in document', Constants.DOCUMENT_ROOT_ID);
-      return;
-    }
-
-    this.rootEl.classList.toggle('fixed', toState);
+  toggleBodyScroll(canScroll) {
+    document.body.classList.toggle('block-scroll', canScroll);
   }
 
   render() {
