@@ -13,6 +13,10 @@ class Aside extends Component {
     active: false,
   };
 
+  state = {
+    blockScrollTop: 0
+  };
+
   // Important!! This .root class name is defined by index.js file, they should be the same.
   rootEl =  document.getElementById(Constants.DOCUMENT_ROOT_ID);
 
@@ -29,19 +33,23 @@ class Aside extends Component {
   }
 
   toggleBodyScroll(blockScroll = false) {
+    const { blockScrollTop } = this.state;
     const rootEl = document.getElementById('root');
     const homeEl = document.getElementById('table-ordering-home');
 
     if (rootEl && homeEl) {
-      const windowScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
       rootEl.classList.toggle('fixed', blockScroll);
 
       if (blockScroll) {
+        this.setState({
+          blockScrollTop: document.body.scrollTop || document.documentElement.scrollTop,
+        });
+
         homeEl.style.top = `-${windowScrollTop}px`;
       } else {
         homeEl.style.top = null;
-        document.body.scrollTop = windowScrollTop;
-        document.documentElement.scrollTop = windowScrollTop;
+        document.body.scrollTop = blockScrollTop;
+        document.documentElement.scrollTop = blockScrollTop;
       }
     }
   }
