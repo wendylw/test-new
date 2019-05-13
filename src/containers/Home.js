@@ -20,7 +20,6 @@ export class Home extends Component {
   hideAside() {
     const { history } = this.props;
     history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
-    
   }
 
   handleAsideClick(e) {
@@ -40,10 +39,10 @@ export class Home extends Component {
 
     return (
       <DocumentTitle title={Constants.DOCUMENT_TITLE.HOME}>
-        <section className={`table-ordering__home ${hideClassName}`}>
+        <section id="table-ordering-home" className={`table-ordering__home ${hideClassName}`}>
           <MainTop />
           <MainBody />
-          
+
           <Route
             path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`}
             exact

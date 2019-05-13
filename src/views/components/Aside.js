@@ -30,9 +30,13 @@ class Aside extends Component {
 
   toggleBodyScroll(canScroll = false) {
     const rootEl = document.getElementById('root');
-    
-    if (rootEl) {
+    const homeEl = document.getElementById('table-ordering-home');
+
+    if (rootEl && homeEl) {
+      const windowScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
       rootEl.classList.toggle('fixed', canScroll);
+      homeEl.style.top = !canScroll ? `-${windowScrollTop}px` : null;
     }
   }
 
@@ -46,5 +50,5 @@ class Aside extends Component {
     );
   }
 }
- 
+
 export default Aside;

@@ -120,6 +120,106 @@ class App extends Component {
                   </li>
                 </ul>
               </li>
+              <li>
+                <h2 className="category__header flex flex-middle flex-space-between">
+                  <label>I Want Eat</label>
+                  <span className="gray-font-opacity">45 items</span>
+                </h2>
+                <ul className="list">
+                  <li className="item border__bottom-divider flex flex-top">
+                    <figure className="item__image-container">
+                      <img src=""></img>
+                    </figure>
+                    <div className="item__content flex flex-middle flex-space-between">
+                      <div className="item__detail">
+                        <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
+                        <p className="item__description">Option 1, Option 2</p>
+                        <span className="gray-font-opacity">RM 25.80</span>
+                      </div>
+                      <div className="item__cart-ctrl flex flex-middle flex-space-between">
+                        <button className="cart__ctrl cart__minuts">
+                          <i className="cart__icon"></i>
+                        </button>
+                        <span className="font-weight-bold">3</span>
+                        <button className="cart__ctrl cart__add">
+                          <i className="cart__icon"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                  <li className="item border__bottom-divider flex flex-top">
+                    <figure className="item__image-container">
+                      <img src=""></img>
+                    </figure>
+                    <div className="item__content flex flex-middle flex-space-between">
+                      <div className="item__detail">
+                        <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
+                        <p className="item__description">Option 1, Option 2</p>
+                        <span className="gray-font-opacity">RM 25.80</span>
+                      </div>
+                      <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
+                        <button className="cart__ctrl cart__minuts">
+                          <i className="cart__icon"></i>
+                        </button>
+                        <span className="font-weight-bold">3</span>
+                        <button className="cart__ctrl cart__add">
+                          <i className="cart__icon"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <h2 className="category__header flex flex-middle flex-space-between">
+                  <label>Test</label>
+                  <span className="gray-font-opacity">45 items</span>
+                </h2>
+                <ul className="list">
+                  <li className="item border__bottom-divider flex flex-top">
+                    <figure className="item__image-container">
+                      <img src=""></img>
+                    </figure>
+                    <div className="item__content flex flex-middle flex-space-between">
+                      <div className="item__detail">
+                        <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
+                        <p className="item__description">Option 1, Option 2</p>
+                        <span className="gray-font-opacity">RM 25.80</span>
+                      </div>
+                      <div className="item__cart-ctrl flex flex-middle flex-space-between">
+                        <button className="cart__ctrl cart__minuts">
+                          <i className="cart__icon"></i>
+                        </button>
+                        <span className="font-weight-bold">3</span>
+                        <button className="cart__ctrl cart__add">
+                          <i className="cart__icon"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                  <li className="item border__bottom-divider flex flex-top">
+                    <figure className="item__image-container">
+                      <img src=""></img>
+                    </figure>
+                    <div className="item__content flex flex-middle flex-space-between">
+                      <div className="item__detail">
+                        <summary className="item__title font-weight-bold">Smoked Duck Plate</summary>
+                        <p className="item__description">Option 1, Option 2</p>
+                        <span className="gray-font-opacity">RM 25.80</span>
+                      </div>
+                      <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
+                        <button className="cart__ctrl cart__minuts">
+                          <i className="cart__icon"></i>
+                        </button>
+                        <span className="font-weight-bold">3</span>
+                        <button className="cart__ctrl cart__add">
+                          <i className="cart__icon"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </li>
             </ol>
           </div>
 
@@ -204,7 +304,7 @@ class App extends Component {
           </aside>
 
           <aside className="aside aside__product-detail">
-            <div className="product-detail">
+            <div className="product-detail" >
               <ol className="product-detail__options-category">
                 <li className="product-detail__options">
                   <h4 className="product-detail__options-title gray-font-opacity">Single choice</h4>
@@ -212,6 +312,36 @@ class App extends Component {
                     <li className="tag__card">Label</li>
                     <li className="tag__card">Label</li>
                     <li className="tag__card">Label</li>
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card active">Long label masonry</li>
+                  </ul>
+                </li>
+                <li className="product-detail__options">
+                  <h4 className="product-detail__options-title gray-font-opacity">Multi choice</h4>
+                  <ul className="tag__cards">
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card active">Label</li>
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card active">Long label masonry</li>
+                  </ul>
+                </li>
+                <li className="product-detail__options">
+                  <h4 className="product-detail__options-title gray-font-opacity">Multi choice</h4>
+                  <ul className="tag__cards">
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card active">Label</li>
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card active">Long label masonry</li>
+                  </ul>
+                </li>
+                <li className="product-detail__options">
+                  <h4 className="product-detail__options-title gray-font-opacity">Multi choice</h4>
+                  <ul className="tag__cards">
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card">Label</li>
+                    <li className="tag__card active">Label</li>
                     <li className="tag__card">Label</li>
                     <li className="tag__card active">Long label masonry</li>
                   </ul>
