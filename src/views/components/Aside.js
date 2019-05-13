@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Constants from '../../Constants';
 
+const localStore = {
+  blockScrollTop: 0,
+};
+
 class Aside extends Component {
   static propTypes = {
     className: PropTypes.string,
@@ -11,10 +15,6 @@ class Aside extends Component {
   static defaultProps = {
     className: '',
     active: false,
-  };
-
-  state = {
-    blockScrollTop: 0
   };
 
   // Important!! This .root class name is defined by index.js file, they should be the same.
@@ -29,11 +29,13 @@ class Aside extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.toggleBodyScroll(nextProps.active);
+    if (this.props.active !== nextProps.active) {
+      this.toggleBodyScroll(nextProps.active);
+    }
   }
 
   toggleBodyScroll(blockScroll = false) {
-    const { blockScrollTop } = this.state;
+    const { blockScrollTop } = localStore;
     const rootEl = document.getElementById('root');
     const homeEl = document.getElementById('table-ordering-home');
 
@@ -41,11 +43,13 @@ class Aside extends Component {
       rootEl.classList.toggle('fixed', blockScroll);
 
       if (blockScroll) {
-        this.setState({
-          blockScrollTop: document.body.scrollTop || document.documentElement.scrollTop,
+        const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+        Object.assign(localStore, {
+          blockScrollTop: currentScrollTop,
         });
 
-        homeEl.style.top = `-${windowScrollTop}px`;
+        homeEl.style.top = `-${currentScrollTop}px`;
       } else {
         homeEl.style.top = null;
         document.body.scrollTop = blockScrollTop;
