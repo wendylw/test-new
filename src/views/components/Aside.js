@@ -21,11 +21,15 @@ class Aside extends Component {
   rootEl =  document.getElementById(Constants.DOCUMENT_ROOT_ID);
 
   componentWillMount() {
-    this.toggleBodyScroll(this.props.active);
+    if (this.props.active) {
+      this.toggleBodyScroll(true);
+    }
   }
 
   componentWillUnmount() {
-    this.toggleBodyScroll(false);
+    if (this.props.active) {
+      this.toggleBodyScroll(false);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -53,8 +57,6 @@ class Aside extends Component {
         homeEl.style.top = null;
         document.body.scrollTop = blockScrollTop;
         document.documentElement.scrollTop = blockScrollTop;
-
-        Object.assign(localState, { blockScrollTop: 0 });
       }
     }
   }
