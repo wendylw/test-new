@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Constants from '../../Constants';
-import withOnlineStoreInfo from '../../libs/withOnlineStoreInfo';
 
 class Manifest extends Component {
   componentDidMount() {
@@ -19,15 +18,4 @@ class Manifest extends Component {
   }
 }
 
-export default withOnlineStoreInfo({
-  props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
-    if (loading) {
-      return null;
-    }
-    return {
-      onlineStoreInfo: {
-        
-      }
-    };
-  },
-})(Manifest);
+export default Manifest;
