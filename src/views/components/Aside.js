@@ -34,8 +34,14 @@ class Aside extends Component {
 
     if (rootEl && homeEl) {
       const windowScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-      homeEl.style.top = blockScroll ? `-${windowScrollTop}px` : null;
       rootEl.classList.toggle('fixed', blockScroll);
+
+      if (blockScroll) {
+        homeEl.style.top = `-${windowScrollTop}px`;
+      } else {
+        homeEl.scrollTop = windowScrollTop;
+        homeEl.style.top = null;
+      }
     }
   }
 
