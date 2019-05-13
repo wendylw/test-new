@@ -39,8 +39,9 @@ class Aside extends Component {
       if (blockScroll) {
         homeEl.style.top = `-${windowScrollTop}px`;
       } else {
-        homeEl.scrollTop = windowScrollTop;
         homeEl.style.top = null;
+        document.body.scrollTop = windowScrollTop;
+        document.documentElement.scrollTop = windowScrollTop;
       }
     }
   }

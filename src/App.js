@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <main className="table-ordering">
-        <section className="table-ordering__home">
+        <section id="table-ordering-home" className="table-ordering__home">
           <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
