@@ -28,15 +28,14 @@ class Aside extends Component {
     this.toggleBodyScroll(nextProps.active);
   }
 
-  toggleBodyScroll(canScroll = false) {
+  toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
     const homeEl = document.getElementById('table-ordering-home');
 
     if (rootEl && homeEl) {
       const windowScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-      rootEl.classList.toggle('fixed', canScroll);
-      homeEl.style.top = !canScroll ? `-${windowScrollTop}px` : null;
+      homeEl.style.top = blockScroll ? `-${windowScrollTop}px` : null;
+      rootEl.classList.toggle('fixed', blockScroll);
     }
   }
 
