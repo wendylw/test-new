@@ -28,8 +28,12 @@ class Aside extends Component {
     this.toggleBodyScroll(nextProps.active);
   }
 
-  toggleBodyScroll(canScroll) {
-    document.body.classList.toggle('block-scroll', canScroll);
+  toggleBodyScroll(canScroll = false) {
+    const rootEl = document.getElementById('root');
+    
+    if (rootEl) {
+      rootEl.classList.toggle('fixed', canScroll);
+    }
   }
 
   render() {
