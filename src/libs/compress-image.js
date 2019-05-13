@@ -2,8 +2,8 @@ import config from "../config";
 
 /* CONSTANTS variable */
 // --BEGIN-- different from marketplace
-const { imageS3Domain, imageCompressionDomain, isImageCompression } = config;
-window.storehub = window.storehub || { imageS3Domain, imageCompressionDomain, isImageCompression };
+const { imageS3Domain, imageCompressionDomain } = config;
+window.storehub = window.storehub || { imageS3Domain, imageCompressionDomain };
 // ---END--- different from marketplace
 
 const IMAGE_RESIZE_METHODS = {
@@ -175,17 +175,12 @@ const compressionImage = {
 
     // TODO: settings should be refactored
     const {
-      isImageCompression = true,
       imageS3Domain = '',
       imageCompressionDomain,
     } = window.storehub || {};
 
     if (!imageURL) {
       return null;
-    }
-
-    if (!isImageCompression) {
-      return imageURL;
     }
 
     const lastIndex = imageURL.lastIndexOf('/');

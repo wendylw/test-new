@@ -1,35 +1,107 @@
 import React from 'react';
-import compressionImage from '../../libs/compress-image';
 import placeholder from '../../images/item-placeholder.svg';
+import config from '../../config.js';
 
+
+/* CONSTANTS variable */
+// --BEGIN-- different from marketplace
+const { imageS3Domain, imageCompressionDomain } = config;
+window.storehub = window.storehub || { imageS3Domain, imageCompressionDomain };
+// ---END--- different from marketplace
+/**
+* Sharp toFormat options has quality.
+* toFormat doc url: https://sharp.dimens.io/en/stable/api-output/#toformat
+* */
+const IMAGE_QUALITY = [95, 85, 75, 65];
+/*
+* downlink [2.5, 1.5, 0.4, <0.4] MB/s
+*/
+const NETWORK_DOWNLINK = [2.5, 1.5, 0.4, 0];
+const DIM = {
+  w: 100,
+  h: 100
+};
+const FIT = 'outside';
 class Image extends React.Component {
   el = null;
 
-  componentDidMount = () => {
-    // TODO: I have to use className to match all images here, other wise only one placeholder is rendered in a list.
-    compressionImage.init('.my-product-image');
-	}
+  // componentDidMount = () => {
+  //   // TODO: I have to use className to match all images here, other wise only one placeholder is rendered in a list.
+  //   compressionImage.init('.my-product-image');
+	// }
 
-	componentDidUpdate = () => {
-    compressionImage.init('.my-product-image');
+	// componentDidUpdate = () => {
+  //   compressionImage.init('.my-product-image');
+  // }
+
+  /*
+  * downlink [2.5, 1.5, 0.4, <0.4] MB/s
+  */
+  getImageQuality() {
+    /*
+    * Get the device pixel ratio per our environment.
+    * Default to 1.
+    */
+    const dpr = Math.round(window.devicePixelRatio || 1);
+    let quality = IMAGE_QUALITY[1];
+
+    NETWORK_DOWNLINK.some((item, index) => {
+      const connection = navigator.connection
+        || navigator.mozConnection
+        || navigator.webkitConnection;
+      const downlink = connection && connection.downlink ? connection.downlink : NETWORK_DOWNLINK[1];
+
+      if (downlink >= item) {
+        quality = IMAGE_QUALITY[
+          (dpr < 2 && index !== IMAGE_QUALITY.length - 1) ? index + 1 : index
+        ];
+
+        return true;
+      }
+
+      return false;
+    });
+
+    return quality;
   }
-  
+
+  getImageURL() {
+    const { src: imageURL } = this.props;
+
+    if (!imageURL) {
+      return null;
+    }
+
+    const lastIndex = imageURL.lastIndexOf('/');
+    let path = imageURL.substring(0, lastIndex);
+
+    if (imageCompressionDomain) {
+      path = path.replace(imageS3Domain, imageCompressionDomain);
+    }
+
+    const imageObject = {
+      path,
+      dim: `${DIM.w}x${DIM.h}`,
+      quality: this.getImageQuality(),
+      fit: FIT,
+      name: imageURL.substring(lastIndex + 1, imageURL.length),
+    };
+
+    return Object.values(imageObject).join('/');
+  }
+
   render() {
     const {
 			className,
 			alt,
-			src,
-			type,
 		} = this.props;
 
     return (
       <figure
         ref={ref => this.el = ref}
         className={`my-product-image ${className}`}
-        data-src={src}
-				data-type={type}
       >
-        <img src={src || placeholder} alt={alt} />;
+        <img src={this.getImageURL() || placeholder} alt={alt} />;
       </figure>
     );
   }

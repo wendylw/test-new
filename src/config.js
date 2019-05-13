@@ -22,7 +22,6 @@ const config = {
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
   imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
-  isImageCompression: (whitelist => (!whitelist) || whitelist.split(',').includes(business))(process.env.REACT_APP_IMAGE_COMPRESSION_BUSINESS_WHITELIST),
   business,
   table: getTableId(),
   storeId: getStoreId(),
