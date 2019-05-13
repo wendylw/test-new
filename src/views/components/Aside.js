@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Constants from '../../Constants';
 
-const localStore = {
+const localState = {
   blockScrollTop: 0,
 };
 
@@ -35,7 +35,6 @@ class Aside extends Component {
   }
 
   toggleBodyScroll(blockScroll = false) {
-    const { blockScrollTop } = localStore;
     const rootEl = document.getElementById('root');
     const homeEl = document.getElementById('table-ordering-home');
 
@@ -45,15 +44,17 @@ class Aside extends Component {
       if (blockScroll) {
         const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
 
-        Object.assign(localStore, {
-          blockScrollTop: currentScrollTop,
-        });
-
         homeEl.style.top = `-${currentScrollTop}px`;
+
+        Object.assign(localState, { blockScrollTop: currentScrollTop });
       } else {
+        const { blockScrollTop } = localState;
+
         homeEl.style.top = null;
         document.body.scrollTop = blockScrollTop;
         document.documentElement.scrollTop = blockScrollTop;
+
+        Object.assign(localState, { blockScrollTop: 0 });
       }
     }
   }
