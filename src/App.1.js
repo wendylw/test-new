@@ -9,6 +9,7 @@ import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
 import withCoreApiBusiness from './libs/withCoreApiBusiness';
 import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
 import DocumentFavicon from './views/components/DocumentFavicon';
+import Manifest from './views/components/Manifest';
 
 class App extends Component {
   state = {
@@ -66,6 +67,7 @@ class App extends Component {
         <main className="table-ordering">
           <Routes />
         </main>
+        <Manifest />
       </DocumentFavicon>
     );
   }

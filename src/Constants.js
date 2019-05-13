@@ -1,5 +1,10 @@
 const DOCUMENT_ROOT_ID = 'root';
 
+const MANIFEST = {
+  PLACEHOLDER_ID: 'manifest-placeholder',
+  PATH: '/web/manifest.json',
+};
+
 const ROUTER_PATHS = {
     INDEX: '/',
     HOME: '/home',
@@ -39,6 +44,7 @@ const PeopleCount = {
 
 export default {
   DOCUMENT_ROOT_ID,
+  MANIFEST,
   ROUTER_PATHS,
   PAYMENT_METHODS,
   ADD_TO_CART_MIN_QUANTITY,
