@@ -15,6 +15,7 @@ $theme-color: #FF9419;
 $gray-1-active: #4f515f;
 $theme-color-active: #DE8115;
 $font-weight-bold: 600;
+$border-radius-base: 4px;
 
 @mixin  link-disabled {
   pointer-events: none;
@@ -253,6 +254,10 @@ img {
 
 .text-uppercase {
   text-transform: uppercase;
+}
+
+.border-radius-base {
+  border-radius: 4px;
 }
 
 .grid {
@@ -554,11 +559,11 @@ img {
 
   &__image-container {
     @extend .reset-font-size;
+    @extend .border-radius-base;
 
     position: relative;
     width: 20vw;
     background-color: $gray-5;
-    border-radius: 4px;
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center center;
@@ -763,8 +768,9 @@ img {
 }
 
 .aside-content {
+  @extend .border-radius-base;
+
   background-color: $white;
-  border-radius: 4px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -887,7 +893,7 @@ img {
   }
 
   .button__fill {
-    border-radius: 4px;
+    @extend .border-radius-base;
   }
 }
 
@@ -897,7 +903,7 @@ img {
     @extend .reset-font-size;
 
     display: block;
-    margin: 2px 0;
+    margin: 3px 0;
   }
 
   span:before,
@@ -915,9 +921,10 @@ img {
   }
 
   span:after {
+    @extend .border-radius-base;
+
     height: 2px;
-    width: 4vw;
-    border-radius: 4px;
+    width: 5vw;
   }
 }
 
@@ -939,12 +946,13 @@ img {
   }
 
   &__card {
+    @extend .border-radius-base;
+
     display: inline-block;
     padding: 2vw 4vw;
     border: 1px solid  $gray-3;
     margin: 2vw;
     background-color: transparent;
-    border-radius: 4px;
   }
 
   &__card.active {
@@ -960,7 +968,6 @@ img {
   position: relative;
   width: 14vw;
   height: 14vw;
-  background-color: $theme-color;
 }
 
 .footer-operation {
@@ -969,28 +976,24 @@ img {
   width: 100%;
   left: 0;
   bottom: 0;
-  background-color: rgba(37, 39, 44, 0.5);
+  background-color: $dark;
   z-index: 200;
 
   .button {
-    border-radius: 4px;
+    @extend .border-radius-base;
   }
 
   &__list {
     margin: 0 -1vw;
   }
-
-  &__item {
-    padding: 0 1vw;
-  }
 }
 
 .cart-bar {
-  padding: 0 2vw;
-  width: 76vw;
+  @extend .border-radius-base;
+
+  width: 78vw;
   height: 14vw;
   background-color: $dark;
-  border-radius: 4px;
 
   button {
     height: 12vw;
@@ -1000,9 +1003,8 @@ img {
     position: relative;
     display: inline-block;
 
-    svg {
+    img {
       transform: rotate(-5deg);
-      fill: $gray-2;
     }
 
     .tag__number {
@@ -1012,11 +1014,19 @@ img {
     }
   }
 
+  &__icon-container.empty {
+    img {
+      transform: rotate(0deg);
+      opacity: 0.5;
+    }
+  }
+
   &__money {
     @extend .font-weight-bold;
 
-    padding: 0 6px;
+    padding: 0 10px;
     display: inline-block;
+    font-size: 1.15rem;
     color: $gray-2;
   }
 
@@ -1027,15 +1037,18 @@ img {
   &__order-button {
     @extend .font-weight-bold;
     @extend .text-uppercase;
+    @extend .border-radius-base;
 
     display: none;
-    padding: 1vw;
+    padding: 2vw 4vw;
     height: 100%;
-    color: $theme-color;
+    color: $white;
+    background-color: $theme-color;
   }
 
   a.cart-bar__order-button {
-    line-height: 12vw;
+    line-height: 10vw;
+    font-size: 1.15rem;
     text-decoration: none;
   }
 
@@ -1120,7 +1133,7 @@ img {
     background-color: $white;
 
     .button {
-      border-radius: 4px;
+      @extend .border-radius-base;
     }
   }
 }
@@ -1169,9 +1182,10 @@ img {
 
   .input,
   .button {
+    @extend .border-radius-base;
+
     padding: 6px 12px;
     height: 40px;
-    border-radius: 4px;
   }
 }
 
@@ -1242,5 +1256,17 @@ body.loading {
   .nav-pane,
   .product-detail {
     display: none;
+  }
+}
+
+@media (max-width: 374px) {
+  html {
+    font-size: $font-size-base * 0.85;
+  }
+
+  .cart-bar {
+    &__icon-container img {
+      max-width: 35px;
+    }
   }
 }
