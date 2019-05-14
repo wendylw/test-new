@@ -1269,5 +1269,11 @@ body.loading {
     &__icon-container img {
       max-width: 35px;
     }
+
+    &__icon-container.empty {
+      img {
+        width: 30px;
+      }
+    }
   }
 }
