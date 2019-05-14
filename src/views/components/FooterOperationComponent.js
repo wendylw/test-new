@@ -48,8 +48,8 @@ export class FooterOperationComponent extends Component {
 
             this.props.history.push(path);
           }}>
-            <div className="cart-bar__icon-container text-middle">
-              <img src="/img/icon-cart.svg" />
+            <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
+              <img src="/img/icon-cart.svg" alt="cart" />
               <span className="tag__number">{count}</span>
             </div>
             <label className="cart-bar__money text-middle"><CurrencyNumber money={total} /></label>
