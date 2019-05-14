@@ -16,7 +16,7 @@ export class FooterOperationComponent extends Component {
       return null;
     }
 
-    const { total, count } = shoppingCart;
+    const { subtotal, count } = shoppingCart;
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
@@ -52,7 +52,7 @@ export class FooterOperationComponent extends Component {
               <img src="/img/icon-cart.svg" alt="cart" />
               <span className="tag__number">{count}</span>
             </div>
-            <label className="cart-bar__money text-middle"><CurrencyNumber money={total} /></label>
+            <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal} /></label>
           </button>
           <Link className="cart-bar__order-button" to="/cart">
             Order now
