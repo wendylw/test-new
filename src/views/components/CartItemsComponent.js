@@ -20,10 +20,16 @@ class CartItemsComponent extends Component {
       return null;
     }
 
+    const sortFn = (l, r) => {
+      if (l.id < r.id) return -1;
+      if (l.id > r.id) return 1;
+      return 0;
+    }
+
     return (
       <ul className="list">
         {
-          shoppingCart.items.map(({
+          shoppingCart.items.sort(sortFn).map(({
             id,
             title,
             productId,
