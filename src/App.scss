@@ -440,6 +440,7 @@ img {
   &__payment {
     @extend .main-section;
     padding-bottom: 43.2vw;
+    background-color: $white;
   }
 
   &__thanks {
