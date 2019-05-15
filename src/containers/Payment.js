@@ -146,7 +146,7 @@ class Payment extends Component {
             fields.push({ name: 'receiptNumber', value: order.orderId });
             fields.push({ name: 'businessName', value: config.business });
             fields.push({ name: 'redirectURL', value: config.storehubPaymentResponseURL.replace('{{business}}', config.business) });
-            fields.push({ name: 'webhookURL', value: config.storehubPaymentBackendResponseURL });
+            fields.push({ name: 'webhookURL', value: config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business) });
             fields.push({ name: 'paymentName', value: paymentMethod });
 
             return fields;
