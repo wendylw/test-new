@@ -609,13 +609,13 @@ img {
   }
 
   &__cart-ctrl {
-    width: 28.4vw;
+    width: 30vw;
 
     &::before {
       content: "";
       display: block;
-      width: 7vw;
-      height: 7vw;
+      width: 12vw;
+      height: 12vw;
     }
   }
 
@@ -627,6 +627,10 @@ img {
     .cart__minuts {
       display: block;
     }
+  }
+
+  &__amount {
+    min-width: 24px;
   }
 }
 
@@ -678,8 +682,27 @@ img {
 }
 
 .cart {
+  &__ctrl-container {
+    border: 0;
+
+    &:disabled {
+      background-color: transparent;
+
+      .cart__ctrl {
+        color: $white;
+        background-color: $gray-3;
+      }
+
+      .cart__add {
+        border-color: $gray-3;
+      }
+    }
+  }
+
   &__ctrl {
     position: relative;
+    display: block;
+    margin: 2.5vw;
     width: 7vw;
     border-width: 2px;
     border-style: solid;
@@ -736,12 +759,12 @@ img {
     }
 
     &::before {
-      width: 64%;
+      width: 65%;
       height: 2px;
     }
 
     &::after {
-      height: 64%;
+      height: 65%;
       width: 2px;
     }
   }

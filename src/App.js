@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <main className="table-ordering">
-        <section id="table-ordering-home" className="table-ordering__home hide">
+        <section id="table-ordering-home" className="table-ordering__home">
           <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <img src=""></img>
@@ -37,12 +37,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -58,12 +62,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -87,12 +95,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -108,12 +120,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container" disabled>
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container" disabled>
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -137,12 +153,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -158,12 +178,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -187,12 +211,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -208,12 +236,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -245,12 +277,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -263,12 +299,16 @@ class App extends Component {
                         <span className="gray-font-opacity">RM 25.80</span>
                       </div>
                       <div className="item__cart-ctrl is-minuts flex flex-middle flex-space-between">
-                        <button className="cart__ctrl cart__minuts">
-                          <i className="cart__icon"></i>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__minuts">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
-                        <span className="font-weight-bold">3</span>
-                        <button className="cart__ctrl cart__add">
-                          <i className="cart__icon"></i>
+                        <span className="item__amount font-weight-bold text-center">3</span>
+                        <button className="cart__ctrl-container">
+                          <i className="cart__ctrl cart__add">
+                            <span className="cart__icon"></span>
+                          </i>
                         </button>
                       </div>
                     </div>
@@ -374,7 +414,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -438,7 +478,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -459,7 +499,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -480,7 +520,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -501,7 +541,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -522,7 +562,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -543,7 +583,7 @@ class App extends Component {
                     <button className="cart__ctrl cart__minuts">
                       <i className="cart__icon"></i>
                     </button>
-                    <span className="font-weight-bold">3</span>
+                    <span className="item__amount font-weight-bold text-center">3</span>
                     <button className="cart__ctrl cart__add">
                       <i className="cart__icon"></i>
                     </button>
@@ -582,7 +622,7 @@ class App extends Component {
           </footer>
         </section>
 
-        <section className="table-ordering__payment">
+        <section className="table-ordering__payment hide">
           <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
