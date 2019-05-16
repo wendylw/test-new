@@ -17,7 +17,9 @@ class App extends Component {
   };
 
   async componentWillMount() {
-    await fetch(`${Constants.BACKEND_PING_PATH}`);
+    await fetch(`${Constants.BACKEND_PING_PATH}`, {
+      credentials: 'same-origin',
+    });
     this.setState({ sessionReady: true }, () => this.check());
   }
 

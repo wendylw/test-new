@@ -6,7 +6,10 @@ import cache from "./apiCache";
 import { resolvers, typeDefs } from "./apiResolvers";
 
 const uri = process.env.REACT_APP_GQL_ENTRY_MP;
-const httpLink = new HttpLink({ uri });
+const httpLink = new HttpLink({
+  uri,
+  credentials: 'same-origin',
+});
 export const client = new ApolloClient({
   link: from([
     httpLink,
@@ -14,11 +17,13 @@ export const client = new ApolloClient({
   cache,
   typeDefs,
   resolvers,
-  // credentials: 'include',
 });
 
 const uriCoreApi = process.env.REACT_APP_GQL_ENTRY_CO;
-const httpLinkCoreApi = new HttpLink({ uri: uriCoreApi });
+const httpLinkCoreApi = new HttpLink({
+  uri: uriCoreApi,
+  credentials: 'same-origin',
+});
 const basicRequest = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
   operation.setContext(({ headers = {} }) => ({
