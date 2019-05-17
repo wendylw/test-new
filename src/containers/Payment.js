@@ -138,7 +138,7 @@ class Payment extends Component {
             const { order, paymentMethod } = this.state;
             const fields = [];
             const { h } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-            const queryString = `?h=${h}`;
+            const queryString = `?h=${encodeURIComponent(h)}`;
 
             if (!onlineStoreInfo || !order || !paymentMethod) {
               return null;
