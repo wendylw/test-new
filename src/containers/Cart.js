@@ -74,7 +74,7 @@ export class Cart extends Component {
                   return (
                     <React.Fragment>
                       <li className="billing__item flex flex-middle flex-space-between">
-                        <label className="gray-font-opacity">{stores[0].receiptTemplateData.taxName || `Tax`}</label>
+                        <label className="gray-font-opacity">{(stores[0].receiptTemplateData || {}).taxName || `Tax`}</label>
                         <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
                       </li>
                       {(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
