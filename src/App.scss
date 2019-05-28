@@ -17,7 +17,7 @@ $theme-color-active: #DE8115;
 $font-weight-bold: 600;
 $border-radius-base: 4px;
 
-@mixin  link-disabled {
+@mixin link-disabled {
   pointer-events: none;
   opacity: 0.6;
 }
