@@ -24,45 +24,51 @@ const MyLoadingComponent = ({isLoading, error}) => {
   }
 };
 
-const AsyncHome = Loadable({
+const wrapQrOrderingPage = Page => () => (
+  <main className="table-ordering">
+    <Page />
+  </main>
+);
+
+const AsyncHome = wrapQrOrderingPage(Loadable({
   loader: () => import("./containers/Home"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncCart = Loadable({
+const AsyncCart = wrapQrOrderingPage(Loadable({
   loader: () => import("./containers/Cart"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncPayment = Loadable({
+const AsyncPayment = wrapQrOrderingPage(Loadable({
   loader: () => import("./containers/Payment"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncThankYou = Loadable({
+const AsyncThankYou = wrapQrOrderingPage(Loadable({
   loader: () => import("./containers/ThankYou"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncSorry = Loadable({
+const AsyncSorry = wrapQrOrderingPage(Loadable({
   loader: () => import("./containers/Sorry"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncNotFound = Loadable({
+const AsyncNotFound = wrapQrOrderingPage(Loadable({
   loader: () => import("./containers/NotFound"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncPeopleCountModal = Loadable({
+const AsyncPeopleCountModal = wrapQrOrderingPage(Loadable({
   loader: () => import("./views/components/PeopleCountModal"),
   loading: MyLoadingComponent,
-});
+}));
 
-const AsyncError = Loadable({
+const AsyncError = wrapQrOrderingPage(Loadable({
   loader: () => import("./views/components/Error"),
   loading: MyLoadingComponent,
-});
+}));
 
 export default () =>
   <React.Fragment>

@@ -1,5 +1,5 @@
 {
-  "name": "storehub-table-ordering",
+  "name": "beep",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://nike.storehub.local:7000",

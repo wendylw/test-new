@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 class DocumentFavicon extends React.Component {
   static propTypes = {
-    icon: PropTypes.string.isRequired,
+    icon: PropTypes.string,
   };
 
   static icon = '';
