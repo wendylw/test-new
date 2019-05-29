@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom';
 import { compose, graphql } from 'react-apollo';
+import qs from 'qs';
 import withShoppingCart from '../libs/withShoppingCart';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
@@ -137,17 +138,22 @@ class Payment extends Component {
             const { onlineStoreInfo } = this.props;
             const { order, paymentMethod } = this.state;
             const fields = [];
+            const { h } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+            const queryString = `?h=${encodeURIComponent(h)}`;
 
             if (!onlineStoreInfo || !order || !paymentMethod) {
               return null;
             }
 
+            const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
+            const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
+
             fields.push({ name: 'amount', value: order.total });
             fields.push({ name: 'currency', value: onlineStoreInfo.currency });
             fields.push({ name: 'receiptNumber', value: order.orderId });
             fields.push({ name: 'businessName', value: config.business });
-            fields.push({ name: 'redirectURL', value: config.storehubPaymentResponseURL.replace('{{business}}', config.business) });
-            fields.push({ name: 'webhookURL', value: config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business) });
+            fields.push({ name: 'redirectURL', value: redirectURL });
+            fields.push({ name: 'webhookURL', value: webhookURL });
             fields.push({ name: 'paymentName', value: paymentMethod });
 
             return fields;
