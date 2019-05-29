@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsMoney() {
-    const { money, storeInfo } = this.props;
-    const { locale, currency } = storeInfo || {};
+    const { money, onlineStoreInfo } = this.props;
+    const { locale, currency } = onlineStoreInfo || {};
 
     if (!locale || !currency) {
       return money;
@@ -20,7 +20,7 @@ class CurrencyNumber extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  storeInfo: state.home.storeInfo,
+  onlineStoreInfo: state.common.onlineStoreInfo,
 });
 
 export default connect(mapStateToProps)(CurrencyNumber);

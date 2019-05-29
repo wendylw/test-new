@@ -8,7 +8,7 @@ import Image from './Image';
 class HomeBody extends React.Component {
   componentDidMount() {
     // this api will only trigger once.
-    this.props.getHomeInfo();
+    // this.props.getHomeInfo();
   }
 
   render() {
@@ -26,18 +26,25 @@ class HomeBody extends React.Component {
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
             <path d="M0 0h24v24H0z" fill="none"/>
           </svg>
-          <span className="location__text text-middle">Polpetta Café, Petaling Jaya</span>
+          <span className="location__text text-middle">
+            {`${this.props.storeName}, ${this.props.street}`}
+          </span>
         </div>
       </section>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  amount: state.home.amount,
-  logo: (state.home.storeInfo || {}).logo,
-  storeName: (state.home.storeInfo || {}).storeName,
-});
+const mapStateToProps = (state) => {
+  const onlineStoreInfo = state.common.onlineStoreInfo || {};
+
+  return {
+    amount: state.home.amount, // TODO: get amount from new API
+    logo: onlineStoreInfo.logo,
+    storeName: onlineStoreInfo.storeName,
+    street: onlineStoreInfo.street,
+  };
+};
 const mapDispatchToProps = dispatch => bindActionCreators({
   getHomeInfo,
 }, dispatch);

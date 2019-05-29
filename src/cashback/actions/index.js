@@ -1,4 +1,4 @@
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY } from "./types";
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO } from "./types";
 import api from "../utils/api";
 import Constants from "../utils/Constants";
 
@@ -34,6 +34,11 @@ export const getHomeInfo = receiptNumber => async (dispatch) => {
     console.error(e);
   }
 };
+
+export const setOnlineStoreInfo = payload => ({
+  type: SET_ONLINE_STORE_NIFO,
+  payload,
+});
 
 export const setUserInfo = payload => ({
   type: SET_USER_INFO,
