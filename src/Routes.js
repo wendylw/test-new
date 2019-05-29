@@ -55,11 +55,6 @@ const AsyncSorry = wrapQrOrderingPage(Loadable({
   loading: MyLoadingComponent,
 }));
 
-const AsyncNotFound = wrapQrOrderingPage(Loadable({
-  loader: () => import("./containers/NotFound"),
-  loading: MyLoadingComponent,
-}));
-
 const AsyncPeopleCountModal = wrapQrOrderingPage(Loadable({
   loader: () => import("./views/components/PeopleCountModal"),
   loading: MyLoadingComponent,
@@ -72,21 +67,17 @@ const AsyncError = wrapQrOrderingPage(Loadable({
 
 export default () =>
   <React.Fragment>
-    <Switch>
-      <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.HOME} />
-      <Route path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
-      <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
-      <Route path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
-      <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
-      <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
-      <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
-      <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
-      <Route component={AsyncNotFound} />
-    </Switch>
+    <Route exact path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
+    <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
+    <Route exact path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
+    <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
+    <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
+    <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
+    <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
     <Route path={`*/modal/:modal`} render={({ match }) => {
       if (match.params.modal === 'people-count') return <AsyncPeopleCountModal />;
       // more modals can put here.
-      return <AsyncNotFound />;
+      return null;
     }} />
     {/*
       // TODO: can use react context + portal to do modal render/show/hide.

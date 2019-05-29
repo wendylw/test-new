@@ -7,12 +7,13 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
     INDEX: '/',
-    HOME: '/home',
-    PORDUCTS: '/products',
-    CART: '/cart',
-    PAYMENT: '/payment',
-    THANK_YOU: '/thank-you',
-    SORRY: '/sorry',
+    ORDERING: '/ordering',
+    HOME: '/ordering/',
+    PORDUCTS: '/ordering/products',
+    CART: '/ordering/cart',
+    PAYMENT: '/ordering/payment',
+    THANK_YOU: '/ordering/thank-you',
+    SORRY: '/ordering/sorry',
     PLAYGROUND: 'playground',
     ERROR: '/error',
 };

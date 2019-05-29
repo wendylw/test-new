@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom';
 import { compose, graphql } from 'react-apollo';
 import withShoppingCart from '../libs/withShoppingCart';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
@@ -168,6 +169,7 @@ class Payment extends Component {
 
 
 export default compose(
+  withRouter,
   withOnlinstStoreInfo({
     props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
       if (loading) {

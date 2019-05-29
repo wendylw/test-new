@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
 import './config'; // import here for globally init
 import { client as apiClient } from './apiClient';
 import './index.css';
-import App from './App';
+import Bootstrap from './Bootstrap';
 import * as serviceWorker from './serviceWorker';
 import HeapJS from './views/components/HeapJS';
 
@@ -13,7 +13,7 @@ ReactDOM.render(
   <HeapJS>
     <ApolloProvider client={apiClient}>
       <Router>
-        <App />
+        <Bootstrap />
       </Router>
     </ApolloProvider>
   </HeapJS>,
