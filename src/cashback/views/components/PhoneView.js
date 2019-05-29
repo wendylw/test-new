@@ -72,6 +72,7 @@ class PhoneView extends React.Component {
           <PhoneInput
             placeholder="Enter phone number"
             value={this.state.phone}
+            country={this.props.country}
             onChange={ phone => this.setState({ phone })}
           />
           <button
@@ -96,9 +97,14 @@ class PhoneView extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  locale: (state.home.storeInfo || {}).locale,
-});
+const mapStateToProps = state => {
+  const onlineStoreInfo = state.common.onlineStoreInfo || {};
+
+  return {
+    locale: onlineStoreInfo.locale,
+    country: onlineStoreInfo.country,
+  };
+};
 
 const mapDispathToProps = dispatch => bindActionCreators({
   setUserInfo,
