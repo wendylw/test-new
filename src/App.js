@@ -65,11 +65,11 @@ class App extends Component {
     const { onlineStoreInfo } = gqlOnlineStoreInfo;
 
     return (
-      <React.Fragment>
+      <main className="table-ordering">
         <Routes />
         <DocumentFavicon icon={onlineStoreInfo.favicon} />
         <Manifest />
-      </React.Fragment>
+      </main>
     );
   }
 }

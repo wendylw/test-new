@@ -1,0 +1,52 @@
+import { combineReducers } from 'redux';
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY } from '../actions/types';
+
+function standingCents(state = {}, action) {
+  switch (action.type) {
+    case GET_STANDING_CENTS:
+      return { ...state, ...action.payload }; // 假装 payload 这里是一个JSON对象
+    default:
+      return state;
+  }
+}
+
+function home(state = {}, action) {
+  switch (action.type) {
+    case SET_HOME_INFO:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    default:
+      return state;
+  }
+}
+
+function message(state = {}, action) {
+  switch (action.type) {
+    case SET_MESSAGE:
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
+
+function user(state = { loyaltyList: [] }, action) {
+  switch (action.type) {
+    case SET_USER_INFO:
+      return { ...state, ...action.payload };
+    case SET_USER_LOYALTY:
+      return { ...state, loyaltyList: state.loyaltyList.concat(action.payload) };
+    default:
+      return state;
+  }
+}
+
+const cashBackApp = combineReducers({
+  standingCents,
+  home,
+  message,
+  user,
+});
+
+export default cashBackApp;

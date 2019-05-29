@@ -10,6 +10,11 @@ const AsyncOrderingApp = Loadable({
   loading: Loading,
 })
 
+const AsyncCashbackApp = Loadable({
+  loader: () => import("./cashback/App"),
+  loading: Loading,
+})
+
 const AsyncNotFound = Loadable({
   loader: () => import("./containers/NotFound"),
   loading: Loading,
@@ -26,6 +31,7 @@ class Bootstrap extends Component {
             );
           }} />
           <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
+          <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
           <Route component={AsyncNotFound} />
         </Switch>
       </React.Fragment>

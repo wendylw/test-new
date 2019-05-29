@@ -7,7 +7,7 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
     INDEX: '/',
-    ORDERING: '/ordering',
+    ORDERING: '/ordering', // App basename
     HOME: '/ordering/',
     PORDUCTS: '/ordering/products',
     CART: '/ordering/cart',
@@ -16,6 +16,9 @@ const ROUTER_PATHS = {
     SORRY: '/ordering/sorry',
     PLAYGROUND: 'playground',
     ERROR: '/error',
+    CASHBACK: '/cashback', // App basename
+    CASHBACK_HOME: '/cashback/',
+    CASHBACK_CLAIM: '/cashback/claim',
 };
 
 const DOCUMENT_TITLE = {
