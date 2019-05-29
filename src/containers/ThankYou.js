@@ -72,7 +72,7 @@ export class ThankYou extends Component {
     const { history, match, order } = this.props;
 
     if (!order) {
-      return null;
+      return <div>Order Not Found</div>;
     }
 
     return (
