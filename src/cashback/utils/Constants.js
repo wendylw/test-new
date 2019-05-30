@@ -1,6 +1,9 @@
 const api = {};
 
-api.PREFIX = '/cash-back';
+api.PREFIX = '/api/cashback';
+
+api.getCashbackHashData = hash => `${api.PREFIX}/hash/${hash}/decode`;
+api.CASHBACK = `${api.PREFIX}`;
 
 api.HOME = `${api.PREFIX}/home`;
 api.USERS = `${api.PREFIX}/users`;

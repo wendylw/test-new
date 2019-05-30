@@ -1,4 +1,4 @@
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO } from "./types";
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA } from "./types";
 import api from "../utils/api";
 import Constants from "../utils/Constants";
 
@@ -16,14 +16,16 @@ export const getStandingCents = payload => async (dispatch) => {
   });
 }
 
-// TODO: should use receiptNumber field.
-export const getHomeInfo = receiptNumber => async (dispatch) => {
+export const getCashbackHashData = hash => async (dispatch) => {
   try {
-    const { ok, data } = await api(Constants.api.HOME);
+    const { ok, data } = await api({
+      url: Constants.api.getCashbackHashData(hash),
+      method: 'get',
+    });
 
     if (ok) {
       dispatch({
-        type: SET_HOME_INFO,
+        type: SET_HASH_DATA,
         payload: {
           ...data,
         },
@@ -33,6 +35,32 @@ export const getHomeInfo = receiptNumber => async (dispatch) => {
     // TODO: handle error
     console.error(e);
   }
+};
+
+export const getCashbackInfo = receiptNumber => async (dispatch) => {
+  try {
+    const { ok, data } = await api({
+      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}`,
+      method: 'get',
+    });
+
+    if (ok) {
+      dispatch({
+        type: SET_COMMON_DATA,
+        payload: {
+          ...data,
+        },
+      });
+    }
+  } catch (e) {
+    // TODO: handle error
+    console.error(e);
+  }
+};
+
+export const getCashbackAndHashData = hash => async (dispatch, getState) => {
+  await dispatch(getCashbackHashData(hash));
+  await dispatch(getCashbackInfo(getState().common.hashData.receiptNumber));
 };
 
 export const setOnlineStoreInfo = payload => ({

@@ -2,8 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Query } from 'react-apollo';
+import qs from 'qs';
 import Message from './components/Message';
-import { setOnlineStoreInfo } from '../actions';
+import { setOnlineStoreInfo, getCashbackAndHashData } from '../actions';
 import HomeBody from './components/HomeBody';
 import PhoneView from './components/PhoneView';
 import theImage from '../images/cash-back-bg-temp.png';
@@ -12,6 +13,12 @@ import config from '../../config';
 
 class PageClaim extends React.Component {
   state = {  }
+
+  componentWillMount() {
+    const { history, getCashbackAndHashData } = this.props;
+    const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    getCashbackAndHashData(encodeURIComponent(h));
+  }
 
   renderMainContents() {
     return (
@@ -40,8 +47,10 @@ class PageClaim extends React.Component {
 }
 
 const mapStateToProps = () => ({ });
+
 const mapDispatchToProps = dispatch => bindActionCreators({
   setOnlineStoreInfo,
+  getCashbackAndHashData,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(PageClaim);
