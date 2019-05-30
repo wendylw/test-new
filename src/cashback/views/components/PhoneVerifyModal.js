@@ -2,9 +2,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter } from "react-router";
 import OtpInput from 'react-otp-input';
-import Constants from '../../utils/Constants';
-import api from '../../utils/api';
 import iconSms from '../../images/icon-sms.svg';
 import { tryOtpAndSaveCashback, sendMessage } from '../../actions';
 
@@ -16,11 +15,11 @@ class PhoneVerifyModal extends React.Component {
 
   async submitOtp() {
     const { otp } = this.state;
-    const { phone, onSuccess, tryOtpAndSaveCashback, sendMessage } = this.props;
+    const { phone, /*onSuccess, */tryOtpAndSaveCashback, sendMessage, history } = this.props;
 
     try {
-      await tryOtpAndSaveCashback(phone, otp);
-      onSuccess();
+      await tryOtpAndSaveCashback(phone, otp, history);
+      // onSuccess();
     } catch (e) {
       await sendMessage('Oops! please retry again later.');
     }
@@ -81,5 +80,5 @@ const mapDispathToProps = dispatch => bindActionCreators({
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(
-  PhoneVerifyModal,
+  withRouter(PhoneVerifyModal),
 );

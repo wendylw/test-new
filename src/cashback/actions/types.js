@@ -10,6 +10,7 @@ export const SET_MESSAGE = 'SET_MESSAGE';
 
 // user
 export const SET_CUSTOMER_ID = 'SET_CUSTOMER_ID';
+export const SET_CASHBACK_HISTORY = 'SET_CASHBACK_HISTORY';
 
 export const SET_USER_INFO = 'SET_USER_INFO';
 export const SET_USER_LOYALTY = 'SET_USER_LOYALTY';

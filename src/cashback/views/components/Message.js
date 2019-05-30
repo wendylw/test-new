@@ -34,14 +34,18 @@ class Message extends React.Component {
   }
 
   render() {
-    const { message = '', show = false } = this.props;
+    const {
+      message = '',
+      show = false,
+      type = 'primary',
+    } = this.props;
 
     if (!show) {
       return null;
     }
 
     return (
-      <div className="top-message primary">
+      <div className={`top-message ${type}`}>
         <span className="top-message__text">{message}</span>
       </div>
     );
@@ -51,6 +55,7 @@ class Message extends React.Component {
 const mapStateToProps = state => {
   try {
     return {
+      type: state.message.type,
       message: state.message.message,
       show: state.message.show,
     };

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID } from '../actions/types';
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY } from '../actions/types';
 
 function standingCents(state = {}, action) {
   switch (action.type) {
@@ -19,14 +19,31 @@ function message(state = {}, action) {
   }
 }
 
-function user(state = { loyaltyList: [] }, action) {
+function user(
+  state = {
+    customerId: null,
+    cashbackHistory: {
+      filters: {},
+      totalCredits: null,
+      logs: [],
+      hasMore: true,
+    },
+  },
+  action,
+) {
   switch (action.type) {
     case SET_CUSTOMER_ID:
       return { ...state, customerId: action.payload.customerId };
-    case SET_USER_INFO:
-      return { ...state, ...action.payload };
-    case SET_USER_LOYALTY:
-      return { ...state, loyaltyList: state.loyaltyList.concat(action.payload) };
+    case SET_CASHBACK_HISTORY:
+      return {
+        ...state,
+        cashbackHistory: {
+          filters: action.payload.filters,
+          totalCredits: action.payload.totalCredits,
+          logs: state.cashbackHistory.logs.concat(action.payload.logs),
+          hasMore: action.payload.filters.size === action.payload.logs.length,
+        },
+      };
     default:
       return state;
   }

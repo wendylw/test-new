@@ -1,5 +1,7 @@
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID } from "./types";
+import qs from 'qs';
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY } from "./types";
 import api from "../utils/api";
+import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
 
 export const getStandingCents = payload => async (dispatch) => {
@@ -16,7 +18,11 @@ export const getStandingCents = payload => async (dispatch) => {
   });
 }
 
-export const getCashbackHashData = hash => async (dispatch) => {
+export const getCashbackHashData = hash => async (dispatch, getState) => {
+  const { hashData = {}} = getState().common;
+
+  if (hashData.h) return;
+
   try {
     const { ok, data } = await api({
       url: Constants.api.getCashbackHashData(hash),
@@ -37,6 +43,27 @@ export const getCashbackHashData = hash => async (dispatch) => {
   }
 };
 
+export const getCashbackHistory = ({ customerId, page, size }) => async (dispatch) => {
+  try {
+    const { ok, data } = await api({
+      url: `${Constants.api.HISTORY}/?customerId=${customerId}&page=${page}&size=${size}`,
+      method: 'get',
+    });
+
+    if (ok) {
+      dispatch({
+        type: SET_CASHBACK_HISTORY,
+        payload: {
+          filters: { customerId, page, size },
+          ...data,
+        },
+      })
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
   try {
     const { ok, data } = await api({
@@ -47,9 +74,7 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
     if (ok) {
       dispatch({
         type: SET_COMMON_DATA,
-        payload: {
-          ...data,
-        },
+        payload: data,
       });
     }
   } catch (e) {
@@ -57,6 +82,11 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
     console.error(e);
   }
 };
+
+export const setCustomerId = payload => ({
+  type: SET_CUSTOMER_ID,
+  payload,
+});
 
 // payload := { receiptNumber: xxx, phone: xxx, otp: xxx }
 export const saveCashback = payload => async (dispatch) => {
@@ -68,12 +98,7 @@ export const saveCashback = payload => async (dispatch) => {
     });
 
     if (ok) {
-      dispatch({
-        type: SET_CUSTOMER_ID,
-        payload: {
-          ...data,
-        },
-      });
+      dispatch(setCustomerId(data));
     }
   } catch (e) {
     // TODO: handle error
@@ -81,12 +106,21 @@ export const saveCashback = payload => async (dispatch) => {
   }
 };
 
-export const tryOtpAndSaveCashback = (phone, otp) => async (dispatch, getState) => {
+export const tryOtpAndSaveCashback = (phone, otp, history) => async (dispatch, getState) => {
   await dispatch(saveCashback({
     phone,
     otp,
     receiptNumber: getState().common.hashData.receiptNumber,
   }))
+
+  dispatch(sendMessage(`Awesome, you've collected your first cashback! To learn more about your rewards, tap the card below`));
+
+  const queryString = qs.stringify({
+    customerId: getState().user.customerId,
+    // h: getState().common.hashData.h,
+  }, { addQueryPrefix: true });
+
+  history.push(`${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}${queryString}`);
 };
 
 export const getCashbackAndHashData = hash => async (dispatch, getState) => {
