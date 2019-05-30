@@ -15,8 +15,6 @@ class PhoneVerifyModal extends React.Component {
     const { otp } = this.state;
     const { phone, onSuccess } = this.props;
 
-    console.log('otp => %o, phone => %o', otp, phone);
-
     const { ok, data } = await api({
       url: Constants.api.CODE_VERIFY(otp),
       method: 'get',
@@ -33,7 +31,7 @@ class PhoneVerifyModal extends React.Component {
   }
 
   render() {
-    const { show, onClose, phone } = this.props;
+    const { onClose, phone } = this.props;
 
     if (typeof onClose !== 'function') {
       console.error('onClose is required');
@@ -58,7 +56,7 @@ class PhoneVerifyModal extends React.Component {
 
         <section className="full-aside__content text-center">
           <figure>
-            <img src={iconSms} />
+            <img src={iconSms} alt="SMS" />
           </figure>
           <h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
           <div className="otp-input">

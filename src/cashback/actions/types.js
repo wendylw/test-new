@@ -5,9 +5,6 @@ export const SET_ONLINE_STORE_NIFO = 'SET_ONLINE_STORE_NIFO';
 export const SET_HASH_DATA = 'SET_HASH_DATA';
 export const SET_COMMON_DATA = 'SET_COMMON_DATA';
 
-// home
-export const SET_HOME_INFO = 'SET_HOME_INFO';
-
 // message
 export const SET_MESSAGE = 'SET_MESSAGE';
 

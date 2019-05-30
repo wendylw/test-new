@@ -10,18 +10,6 @@ function standingCents(state = {}, action) {
   }
 }
 
-function home(state = {}, action) {
-  switch (action.type) {
-    case SET_HOME_INFO:
-      return {
-        ...state,
-        ...action.payload,
-      };
-    default:
-      return state;
-  }
-}
-
 function message(state = {}, action) {
   switch (action.type) {
     case SET_MESSAGE:
@@ -60,7 +48,6 @@ function common(state = {
 const cashBackApp = combineReducers({
   common,
   standingCents,
-  home,
   message,
   user,
 });

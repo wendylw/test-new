@@ -32,7 +32,7 @@ class PhoneView extends React.Component {
       url: Constants.api.CODE,
       method: 'post',
       data: {
-        number: this.state.phone,
+        phone: this.state.phone,
       },
     });
 
