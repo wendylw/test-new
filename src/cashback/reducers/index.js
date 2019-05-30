@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA } from '../actions/types';
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID } from '../actions/types';
 
 function standingCents(state = {}, action) {
   switch (action.type) {
@@ -21,6 +21,8 @@ function message(state = {}, action) {
 
 function user(state = { loyaltyList: [] }, action) {
   switch (action.type) {
+    case SET_CUSTOMER_ID:
+      return { ...state, customerId: action.payload.customerId };
     case SET_USER_INFO:
       return { ...state, ...action.payload };
     case SET_USER_LOYALTY:

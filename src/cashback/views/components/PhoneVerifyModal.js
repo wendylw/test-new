@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import OtpInput from 'react-otp-input';
 import Constants from '../../utils/Constants';
 import api from '../../utils/api';
 import iconSms from '../../images/icon-sms.svg';
+import { tryOtpAndSaveCashback, sendMessage } from '../../actions';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class PhoneVerifyModal extends React.Component {
@@ -13,20 +16,13 @@ class PhoneVerifyModal extends React.Component {
 
   async submitOtp() {
     const { otp } = this.state;
-    const { phone, onSuccess } = this.props;
+    const { phone, onSuccess, tryOtpAndSaveCashback, sendMessage } = this.props;
 
-    const { ok, data } = await api({
-      url: Constants.api.CODE_VERIFY(otp),
-      method: 'get',
-      params: {
-        phone,
-      },
-    });
-
-    console.log(ok, data);
-
-    if (ok && data.verify && onSuccess) {
+    try {
+      await tryOtpAndSaveCashback(phone, otp);
       onSuccess();
+    } catch (e) {
+      await sendMessage('Oops! please retry again later.');
     }
   }
 
@@ -76,4 +72,14 @@ class PhoneVerifyModal extends React.Component {
   }
 }
 
-export default PhoneVerifyModal;
+const mapStateToProps = state => ({
+});
+
+const mapDispathToProps = dispatch => bindActionCreators({
+  tryOtpAndSaveCashback,
+  sendMessage,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispathToProps)(
+  PhoneVerifyModal,
+);

@@ -1,4 +1,4 @@
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA } from "./types";
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_HOME_INFO, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID } from "./types";
 import api from "../utils/api";
 import Constants from "../utils/Constants";
 
@@ -56,6 +56,37 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
     // TODO: handle error
     console.error(e);
   }
+};
+
+// payload := { receiptNumber: xxx, phone: xxx, otp: xxx }
+export const saveCashback = payload => async (dispatch) => {
+  try {
+    const { ok, data } = await api({
+      url: `${Constants.api.CASHBACK}`,
+      method: 'post',
+      data: payload,
+    });
+
+    if (ok) {
+      dispatch({
+        type: SET_CUSTOMER_ID,
+        payload: {
+          ...data,
+        },
+      });
+    }
+  } catch (e) {
+    // TODO: handle error
+    console.error(e);
+  }
+};
+
+export const tryOtpAndSaveCashback = (phone, otp) => async (dispatch, getState) => {
+  await dispatch(saveCashback({
+    phone,
+    otp,
+    receiptNumber: getState().common.hashData.receiptNumber,
+  }))
 };
 
 export const getCashbackAndHashData = hash => async (dispatch, getState) => {
