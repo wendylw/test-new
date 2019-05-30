@@ -38,13 +38,14 @@ class Payment extends Component {
 
     try {
       const { data } = await this.props.createOrder({
-        variables: {
+        variables: Object.assign({},{
           business: config.business,
           storeId: config.storeId,
-          tableId: config.table,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
-        },
+        }, config.table ? {
+          tableId: config.table
+        } : {}),
       });
 
       if (data.createOrder) {

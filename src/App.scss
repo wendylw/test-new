@@ -393,6 +393,8 @@ img {
 }
 
 .container {
+  height: 100%;
+
   &.fixed {
     position: fixed;
     overflow: hidden;
@@ -418,7 +420,7 @@ img {
     }
 
     .header__title {
-      max-width: 64vw;
+      max-width: 60vw;
       text-transform: none;
     }
   }
@@ -452,7 +454,11 @@ img {
     @extend .main-section;
 
     .header__title {
-      max-width: 64vw;
+      max-width: 55vw;
+    }
+
+    .header__title + span {
+      min-width: 32vw;
     }
   }
 
@@ -531,6 +537,14 @@ img {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  &.has-table::after,
+  &__title + span {
+    content: "";
+    text-align: right;
+    display: inline-block;
+    min-width: 24vw;
   }
 }
 
@@ -1218,7 +1232,7 @@ img {
 .prompt-page {
   &__image-container {
     margin: auto;
-    max-width: 50%;
+    max-width: 74%;
   }
 
   &__content {
@@ -1239,6 +1253,7 @@ img {
 
     p {
       font-size: inherit;
+      line-height: 1.4em;
     }
   }
 }

@@ -32,7 +32,7 @@ class App extends Component {
   }
 
   check() {
-    if (!config.storeId || !config.table) {
+    if (!config.storeId) {
       this.goToError(); // use default message
       return;
     }

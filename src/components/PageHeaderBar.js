@@ -17,8 +17,13 @@ const PageHeaderBar = ({ gqlOnlineStoreInfo, sessionId, config }) => {
     <div>
       <img src={logo} alt="STORE_LOGO" />
       <span>{storeName}</span>
-      |
-      <span>Table #{config.table}</span>
+      {
+        config.table
+        ? (
+          <span>| Table #{config.table}</span>
+        )
+        : null
+      }
       <hr />
     </div>
   );

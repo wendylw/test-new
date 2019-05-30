@@ -13,7 +13,7 @@ class Error extends React.Component {
       <DocumentTitle title={Constants.DOCUMENT_TITLE.ERROR}>
         <section className="table-ordering__prompt-page">
           <figure className="prompt-page__image-container text-center">
-            <img src="/img/matching-error.jpg" alt="error found" />
+            <img src="/img/beep-error.png" alt="error found" />
           </figure>
           <div className="prompt-page__content">
             <h2 className="prompt-page__title text-center">Eep!</h2>
