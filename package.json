@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://nike.storehub.net:7000",
+  "proxy": "http://nike.storehub.local:7000",
   "dependencies": {
     "apollo-boost": "^0.3.1",
     "axios": "^0.18.0",
