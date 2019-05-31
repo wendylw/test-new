@@ -46,7 +46,7 @@ export const getCashbackHashData = hash => async (dispatch, getState) => {
 export const getCashbackHistory = ({ customerId, page, size }) => async (dispatch) => {
   try {
     const { ok, data } = await api({
-      url: `${Constants.api.HISTORY}/?customerId=${customerId}&page=${page}&size=${size}`,
+      url: `${Constants.api.HISTORY}/?customerId=${customerId}&page=${page}&count=${size}`,
       method: 'get',
     });
 
