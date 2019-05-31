@@ -2,7 +2,6 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom';
 import { compose, graphql } from 'react-apollo';
-import qs from 'qs';
 import withShoppingCart from '../libs/withShoppingCart';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';

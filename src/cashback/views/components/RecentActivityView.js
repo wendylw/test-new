@@ -53,7 +53,7 @@ class RecentActivityView extends React.Component {
   }
 
   render() {
-    const { loyaltyList, customerId, fullScreen } = this.props;
+    const { loyaltyList, customerId } = this.props;
 
     if (!Array.isArray(loyaltyList) || !customerId) {
       return null;

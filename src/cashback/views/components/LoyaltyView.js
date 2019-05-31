@@ -1,10 +1,8 @@
 import React from 'react';
-import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setUserInfo } from '../../actions';
 import RecentActivityView from './RecentActivityView';
-import CurrencyNumber from './CurrencyNumber';
 
 class LoyaltyView extends React.Component {
   state = {

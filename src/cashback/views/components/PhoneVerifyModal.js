@@ -33,7 +33,7 @@ class PhoneVerifyModal extends React.Component {
   }
 
   render() {
-    const { show, onClose, phone } = this.props;
+    const { onClose, phone } = this.props;
 
     if (typeof onClose !== 'function') {
       console.error('onClose is required');
@@ -58,7 +58,7 @@ class PhoneVerifyModal extends React.Component {
 
         <section className="full-aside__content text-center">
           <figure>
-            <img src={iconSms} />
+            <img src={iconSms} alt="Beep sms" />
           </figure>
           <h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
           <div className="otp-input">

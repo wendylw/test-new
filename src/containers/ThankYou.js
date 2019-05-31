@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { compose } from 'react-apollo';
 import withOrderDetail from '../libs/withOrderDetail';
 import config from '../config';
-import CurrencyNumber from '../views/components/CurrencyNumber';
 import Constants from '../Constants';
 import DocumentTitle from '../views/components/DocumentTitle';
 
@@ -92,7 +91,7 @@ export class ThankYou extends Component {
           </span>
         </header>
         <div className="thanks text-center">
-          <img src="/img/beep-thank-you.png" />
+          <img src="/img/beep-thank-you.png" alt="Beep thank you" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
           {this.renderPickupInfo()}
           {this.renderNeedReceipt()}
