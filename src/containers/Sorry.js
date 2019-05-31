@@ -16,14 +16,15 @@ export class Sorry extends Component {
 
     console.log('receiptNumber => %o', receiptNumber);
 
-    const error = new Error('Payment Failed');
-    // eslint-disable-next-line no-useless-escape
-    error.description = 'We couldn\’t process your payment. The contents of your cart have been saved for you.';
-
     history.push({
       pathname: Constants.ROUTER_PATHS.CART,
       search: '?modal=message',
-      state: { error }
+      state: {
+        error: {
+          message: 'Payment Failed',
+          description: `We could not process your payment. The contents of your cart have been saved for you.`,
+        },
+      }
     });
   }
 
