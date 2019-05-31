@@ -58,7 +58,7 @@ class RecentActivityView extends React.Component {
     return (
       <div className="activity">
         <InfiniteScroll
-          pageStart={1}
+          pageStart={0}
           loadMore={this.fetch.bind(this)}
           hasMore={hasMore}
           loader={<div className="loader" key={0}>Loading...</div>}
