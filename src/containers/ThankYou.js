@@ -47,9 +47,9 @@ export class ThankYou extends Component {
   }
 
   renderPickupInfo() {
-    const { pickUpId } = this.props.order;
+    const { additionalComments, pickUpId } = this.props.order;
 
-    if (!pickUpId) {
+    if (!pickUpId || additionalComments) {
       return null;
     }
 
