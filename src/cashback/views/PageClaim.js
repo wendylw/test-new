@@ -33,7 +33,7 @@ class PageClaim extends React.Component {
   render() {
     return (
       <main className="cash-back flex-column" style={{
-        backgroundImage: `url(${theImage})`,
+        // backgroundImage: `url(${theImage})`,
       }}>
         <Query
           query={apiGql.GET_ONLINE_STORE_INFO}
