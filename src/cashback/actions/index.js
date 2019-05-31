@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_USER_INFO, SET_USER_LOYALTY, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY } from "./types";
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY } from "./types";
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
@@ -132,16 +132,6 @@ export const setOnlineStoreInfo = payload => ({
   type: SET_ONLINE_STORE_NIFO,
   payload,
 });
-
-export const setUserInfo = payload => ({
-  type: SET_USER_INFO,
-  payload,
-})
-
-export const setUserLoyalty = payload => ({
-  type: SET_USER_LOYALTY,
-  payload,
-})
 
 export const sendMessage = message => ({
   type: SET_MESSAGE,
