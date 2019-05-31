@@ -6,8 +6,8 @@ import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
 import PhoneVerifyModal from './PhoneVerifyModal';
 import api from '../../utils/api';
-import Constants from '../../utils/Constants';
-import { setUserInfo, sendMessage } from '../../actions';
+import { sendMessage } from '../../actions';
+import CashbackConstans from '../../utils/Constants';
 
 class PhoneView extends React.Component {
   state = {
@@ -26,13 +26,15 @@ class PhoneView extends React.Component {
   }
 
   async submitPhoneNumber() {
+    const { sendMessage } = this.props;
+
     this.setState({ disableSubmit: true });
 
     const { ok } = await api({
-      url: Constants.api.CODE,
+      url: CashbackConstans.api.CODE,
       method: 'post',
       data: {
-        number: this.state.phone,
+        phone: this.state.phone,
       },
     });
 
@@ -41,26 +43,8 @@ class PhoneView extends React.Component {
     if (ok) {
       this.toggleVerifyModal(true);
       return;
-    }
-  }
-
-  async onPhoneVerified() {
-    const { history } = this.props;
-
-    const { ok, data } = await api({
-      url: Constants.api.USERS,
-      method: 'post',
-      data: {
-        phone: this.state.phone,
-      }
-    });
-
-    if (ok) {
-      this.props.setUserInfo(data);
-      this.toggleVerifyModal(false);
-
-      this.props.sendMessage(`Awesome, you've collected your first cashback! To learn more about your rewards, tap the card below`);
-      history.push('/loyalty');
+    } else {
+      sendMessage('Oops! OTP not sent, please check your phone number and send again.');
     }
   }
 
@@ -87,7 +71,7 @@ class PhoneView extends React.Component {
             <PhoneVerifyModal
               phone={this.state.phone}
               onClose={this.toggleVerifyModal.bind(this, false)}
-              onSuccess={this.onPhoneVerified.bind(this)}
+              onSuccess={() => this.toggleVerifyModal(false)}
               show
             />
           ) : null
@@ -107,7 +91,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispathToProps = dispatch => bindActionCreators({
-  setUserInfo,
   sendMessage,
 }, dispatch);
 

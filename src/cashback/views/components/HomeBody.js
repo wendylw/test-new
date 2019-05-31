@@ -1,14 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getHomeInfo } from '../../actions';
 import CurrencyNumber from './CurrencyNumber';
 import Image from './Image';
 
 class HomeBody extends React.Component {
   componentDidMount() {
-    // this api will only trigger once.
-    // this.props.getHomeInfo();
   }
 
   render() {
@@ -17,8 +14,8 @@ class HomeBody extends React.Component {
         <Image className="logo-default__image-container" src={this.props.logo} alt={this.props.storeName} />
         <h5 className="logo-default__title">CASHBACK EARNED</h5>
         {
-          this.props.amount
-          ? <CurrencyNumber classList="cash-back__money" money={this.props.amount} />
+          this.props.cashback
+          ? <CurrencyNumber classList="cash-back__money" money={this.props.cashback} />
           : null
         }
         <div className="location">
@@ -39,14 +36,13 @@ const mapStateToProps = (state) => {
   const onlineStoreInfo = state.common.onlineStoreInfo || {};
 
   return {
-    amount: state.home.amount, // TODO: get amount from new API
+    cashback: state.common.cashback,
     logo: onlineStoreInfo.logo,
     storeName: onlineStoreInfo.storeName,
     street: onlineStoreInfo.street,
   };
 };
 const mapDispatchToProps = dispatch => bindActionCreators({
-  getHomeInfo,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeBody);

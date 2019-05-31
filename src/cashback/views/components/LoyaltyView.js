@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setUserInfo } from '../../actions';
+import { getCashbackHistory } from '../../actions';
 import RecentActivityView from './RecentActivityView';
 
 class LoyaltyView extends React.Component {
@@ -45,7 +45,7 @@ class LoyaltyView extends React.Component {
 const mapStateToProps = () => ({ });
 
 const mapDispathToProps = dispatch => bindActionCreators({
-  setUserInfo, // TODO: change to query loyalty list
+  getCashbackHistory,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(LoyaltyView);
