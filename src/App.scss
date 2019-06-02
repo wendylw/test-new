@@ -166,36 +166,23 @@ img {
   padding: 4vw;
 
   &__check-icon {
+    position: relative;
     display: block;
-    padding: 6% 0 0 26%;
-    border: 2px solid $gray-3;
-    width: 26px;
-    height: 26px;
+    padding: 0;
+    border: 3px solid $gray-2;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
 
-    &::before,
-    &::after {
-      display: inline-block;
-      content: "";
-      background-color: $white;
-      height: 8px;
-      width: 2px;
-      border-radius: 2px;
-      opacity: 1;
-
-      transform-origin: bottom;
-      -webkit-transform-origin: bottom;
-    }
-
     &::before {
-      transform: rotate(-45deg) translateY(2px);
-      -webkit-transform: rotate(-45deg) translateY(2px);
-    }
-
-    &::after {
-      height: 13px;
-      transform: rotate(45deg) translateY(2px);
-      -webkit-transform: rotate(45deg) translateY(2px);
+      content: "";
+      position: absolute;
+      display: block;
+      border: 4px solid $white;
+      width: 14px;
+      height: 14px;
+      background-color: transparent;
+      border-radius: 50%;
     }
   }
 
@@ -460,7 +447,7 @@ img {
   &__payment {
     @extend .main-section;
     padding-bottom: 43.2vw;
-    background-color: $white;
+    background-color: $gray-4;
   }
 
   &__thanks {
@@ -1173,31 +1160,20 @@ img {
 
 .payment {
   &__item {
-    padding: 3.6vw 0 3.6vw 3.6vw;
+    padding: 4vw 0 4vw 4vw;
+    margin: 0 -1px -1px;
+    border: 1px solid $gray-3;
     background-color: $white;
-
-    &::before {
-      content:  "";
-      display: block;
-      width: 26px;
-      height: 1px;
-    }
   }
 
   &__image-container {
-    max-width: 80px;
+    width: 15vw;
   }
 
-  &__pay-now-container {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 4vw;
-    background-color: $white;
-
-    .button {
-      @extend .border-radius-base;
-    }
+  &__name {
+    padding: 0 20px;
+    font-size: 1.3rem;
+    width: 60vw;
   }
 }
 

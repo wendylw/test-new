@@ -83,11 +83,22 @@ class Payment extends Component {
           <ul className="payment__list">
             <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
-                <img src="/img/logo-grabpay.png"></img>
+                <img src="/img/payment-grab.png"></img>
               </figure>
+              <label className="payment__name font-weight-bold">GrabPay</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.GRAB_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
                 <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}></input>
+              </div>
+            </li>
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+              <figure className="payment__image-container">
+                <img src="/img/payment-credit.png"></img>
+              </figure>
+              <label className="payment__name font-weight-bold">Credit/Debit Card</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
+                <i className="radio__check-icon"></i>
+                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}></input>
               </div>
             </li>
             {/*
@@ -122,9 +133,9 @@ class Payment extends Component {
           </ul>
         </div>
 
-        <div className="payment__pay-now-container">
+        <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase"
+            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={this.state.payNowLoading}
           >{this.state.payNowLoading ? 'Redirecting' : 'Pay now'}</button>

@@ -33,6 +33,7 @@ const DOCUMENT_TITLE = {
 
 const PAYMENT_METHODS = {
   GRAB_PAY: 'GrabPay',
+  CARD_PAY: '2P2C_PAY',
   BOOST_PAY: 'Boost',
 };
 
