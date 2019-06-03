@@ -16,9 +16,9 @@ const ROUTER_PATHS = {
     SORRY: '/ordering/sorry',
     PLAYGROUND: 'playground',
     ERROR: '/ordering/error',
-    CASHBACK: '/cashback', // App basename
-    CASHBACK_HOME: '/cashback/',
-    CASHBACK_CLAIM: '/cashback/claim',
+    CASHBACK: '/loyalty', // App basename
+    CASHBACK_HOME: '/loyalty/',
+    CASHBACK_CLAIM: '/loyalty/claim',
 };
 
 const DOCUMENT_TITLE = {
