@@ -21,6 +21,7 @@ class PhoneVerifyModal extends React.Component {
       await tryOtpAndSaveCashback(phone, otp, history);
       // onSuccess();
     } catch (e) {
+      console.error(e);
       await sendMessage('Oops! please retry again later.');
     }
   }
