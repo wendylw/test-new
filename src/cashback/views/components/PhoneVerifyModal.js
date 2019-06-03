@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
 import OtpInput from 'react-otp-input';
-import iconSms from '../../images/icon-sms.svg';
+import iconOTP from '../../images/beep-otp.png';
 import { tryOtpAndSaveCashback, sendMessage } from '../../actions';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
@@ -50,8 +50,8 @@ class PhoneVerifyModal extends React.Component {
         </header>
 
         <section className="full-aside__content text-center">
-          <figure>
-            <img src={iconSms} alt="Beep sms" />
+          <figure className="full-aside__image-container">
+            <img src={iconOTP} alt="Beep OTP" />
           </figure>
           <h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
           <div className="otp-input">

@@ -8,7 +8,6 @@ import { sendMessage, setOnlineStoreInfo, setCustomerId } from '../actions';
 import Image from './components/Image';
 import CurrencyNumber from './components/CurrencyNumber';
 import LoyaltyView from './components/LoyaltyView';
-import theImage from '../images/cash-back-bg-temp.png';
 import apiGql from '../../apiGql';
 import config from '../../config';
 
@@ -28,9 +27,7 @@ class PageLoyalty extends React.Component {
     const { onlineStoreInfo, cashbackHistory } = this.props;
 
     return (
-      <main className="loyalty flex-column" style={{
-        backgroundImage: `url(${theImage})`,
-      }}>
+      <main className="loyalty flex-column">
         <Message />
         <section className="loyalty__home text-center">
           {
