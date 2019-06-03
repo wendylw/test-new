@@ -10,6 +10,7 @@ import CurrencyNumber from './components/CurrencyNumber';
 import LoyaltyView from './components/LoyaltyView';
 import apiGql from '../../apiGql';
 import config from '../../config';
+import RedeemButton from './components/RedeemButton';
 
 class PageLoyalty extends React.Component {
   state = {  }
@@ -41,6 +42,9 @@ class PageLoyalty extends React.Component {
               <CurrencyNumber classList="loyalty__money" money={cashbackHistory.totalCredits} />
             ) : null
           }
+          <div className="loyalty_buttons">
+            <RedeemButton />
+          </div>
         </section>
         <LoyaltyView />
       </main>
