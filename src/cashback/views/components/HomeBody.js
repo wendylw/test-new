@@ -8,16 +8,29 @@ class HomeBody extends React.Component {
   componentDidMount() {
   }
 
+  renderCashback() {
+    const { cashback, loyaltyRatio } = this.props;
+    let [intPart, decimalPart] = ((1 * 100) / loyaltyRatio).toFixed(2).split('.');
+    const percentage = [intPart];
+
+    if (decimalPart) {
+      decimalPart = decimalPart.replace(/0+$/, '');
+      if (decimalPart) percentage.push(decimalPart);
+    }
+
+    if (!cashback) {
+      return <div className="cash-back__money">{`${percentage.join('.')}% Cashback`}</div>;
+    }
+
+    return <CurrencyNumber classList="cash-back__money" money={this.props.cashback} />;
+  }
+
   render() {
     return (
       <section className="cash-back__home text-center">
         <Image className="logo-default__image-container" src={this.props.logo} alt={this.props.storeName} />
         <h5 className="logo-default__title">CASHBACK EARNED</h5>
-        {
-          this.props.cashback
-          ? <CurrencyNumber classList="cash-back__money" money={this.props.cashback} />
-          : null
-        }
+        {this.renderCashback()}
         <div className="location">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
@@ -37,6 +50,7 @@ const mapStateToProps = (state) => {
 
   return {
     cashback: state.common.cashback,
+    loyaltyRatio: state.common.loyaltyRatio,
     logo: onlineStoreInfo.logo,
     storeName: onlineStoreInfo.storeName,
     street: onlineStoreInfo.street,
