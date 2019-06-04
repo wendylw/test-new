@@ -88,18 +88,35 @@ export const setCustomerId = payload => ({
   payload,
 });
 
+const saveCashbackSendMessage = response => dispatch => {
+  const { data } = response;
+  const messageMap = {
+    'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
+    'Claimed_NotFirstTime': `Great! You've earned more cashback! 🎉`,
+    'Claimed_SameUser': `Good news! You've already earned cashback for this receipt. 🎉`,
+    'Claimed_DifferentUser': `Sorry, someone else has already earned cashback for this receipt. 😅`,
+    'Claimed_Pending': `Great! You've earned more cashback! 🎉 We'll add it once it's been processed. 😉`,
+  };
+  const displayMessage = messageMap[data.status] || `Oops! Refresh the page and claim again.`;
+
+  dispatch(sendMessage(displayMessage))
+};
+
 // payload := { receiptNumber: xxx, phone: xxx, otp: xxx }
 export const saveCashback = payload => async (dispatch) => {
   try {
-    const { ok, data } = await api({
+    const response = await api({
       url: `${Constants.api.CASHBACK}`,
       method: 'post',
       data: payload,
     });
+    const { data } = response;
 
-    if (ok) {
-      dispatch(setCustomerId(data));
+    if (data.customerId) {
+      dispatch(setCustomerId({ customerId: data.customerId }));
     }
+
+    dispatch(saveCashbackSendMessage(response));
   } catch (e) {
     // TODO: handle error
     console.error(e);
@@ -112,8 +129,6 @@ export const tryOtpAndSaveCashback = (phone, otp, history) => async (dispatch, g
     otp,
     receiptNumber: getState().common.hashData.receiptNumber,
   }))
-
-  dispatch(sendMessage(`Awesome, you've collected your first cashback! To learn more about your rewards, tap the card below`));
 
   const queryString = qs.stringify({
     customerId: getState().user.customerId,
