@@ -638,14 +638,17 @@ img {
     }
   }
 
-  &__icon-checked {
+  &__icon {
     display: inline-block;
     height: 30px;
     width: 30px;
-    background-image: url(./images/icon-checked.svg);
     background-repeat: no-repeat;
     background-size: 100% auto;
     background-position: center center;
+
+    path {
+      fill: #ffb985;
+    }
   }
 
   &__title {

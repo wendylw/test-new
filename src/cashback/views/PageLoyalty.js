@@ -36,7 +36,7 @@ class PageLoyalty extends React.Component {
               <Image className="logo-default__image-container" src={onlineStoreInfo.logo} alt={onlineStoreInfo.storeName} />
             ) : null
           }
-          <h5 className="logo-default__title">CASHBACK EARNED</h5>
+          <h5 className="logo-default__title">TOTAL CASHBACK</h5>
           {
             cashbackHistory.totalCredits ? (
               <CurrencyNumber classList="loyalty__money" money={cashbackHistory.totalCredits} />

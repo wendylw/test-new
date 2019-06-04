@@ -29,7 +29,7 @@ class HomeBody extends React.Component {
     return (
       <section className="cash-back__home text-center">
         <Image className="logo-default__image-container" src={this.props.logo} alt={this.props.storeName} />
-        <h5 className="logo-default__title">CASHBACK EARNED</h5>
+        <h5 className="logo-default__title">EARN CASHBACK NOW</h5>
         {this.renderCashback()}
         <div className="location">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
