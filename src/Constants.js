@@ -47,8 +47,10 @@ const PeopleCount = {
 }
 
 const OTP_TIMEOUT = 60;
+const OTP_CODE_SIZE = 5;
 
 export default {
+  OTP_CODE_SIZE,
   OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
   MANIFEST,

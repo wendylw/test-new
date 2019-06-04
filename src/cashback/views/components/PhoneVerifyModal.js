@@ -6,6 +6,7 @@ import { withRouter } from "react-router";
 import OtpInput from 'react-otp-input';
 import iconOTP from '../../images/beep-otp.png';
 import { tryOtpAndSaveCashback, sendMessage, sendOtp } from '../../actions';
+import Constants from '../../../Constants';
 
 const OTP_COUNT_DOWN_MAX = 20; // seconds
 
@@ -13,6 +14,7 @@ const OTP_COUNT_DOWN_MAX = 20; // seconds
 class PhoneVerifyModal extends React.Component {
   state = {
     resendCountDown: OTP_COUNT_DOWN_MAX,
+    otp: '',
   };
 
   hide() {
@@ -21,11 +23,10 @@ class PhoneVerifyModal extends React.Component {
 
   async submitOtp() {
     const { otp } = this.state;
-    const { phone, /*onSuccess, */tryOtpAndSaveCashback, sendMessage, history } = this.props;
+    const { phone, tryOtpAndSaveCashback, sendMessage, history } = this.props;
 
     try {
       await tryOtpAndSaveCashback(phone, otp, history);
-      // onSuccess();
     } catch (e) {
       console.error(e);
       await sendMessage('Oops! please retry again later.');
@@ -33,13 +34,13 @@ class PhoneVerifyModal extends React.Component {
   }
 
   renderResendButton() {
-    const { otpCountDown, sendOtp } = this.props;
+    const { otpCountDown, sendOtp, phone } = this.props;
     const countLabel = otpCountDown > 0 ? `(${otpCountDown})` : '';
 
     return (
       <button
         className="otp-resend" disabled={otpCountDown > 0}
-        onClick={sendOtp}
+        onClick={() => sendOtp(phone)}
       >
         {`RESEND OTP? ${countLabel}`}
       </button>
@@ -77,8 +78,12 @@ class PhoneVerifyModal extends React.Component {
           <h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
           <div className="otp-input">
             <OtpInput
-              onChange={otp => this.setState({ otp })}
-              numInputs={5}
+              onChange={otp => this.setState({ otp }, () => {
+                if (otp.length === Constants.OTP_CODE_SIZE) {
+                  this.submitOtp();
+                }
+              })}
+              numInputs={Constants.OTP_CODE_SIZE}
               inputStyle={{ width: '1.15em' }}
             />
           </div>
