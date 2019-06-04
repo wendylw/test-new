@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY } from "./types";
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE } from "./types";
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
@@ -132,6 +132,71 @@ export const setOnlineStoreInfo = payload => ({
   type: SET_ONLINE_STORE_NIFO,
   payload,
 });
+
+export const sendOtp = phone => async (dispatch, getState) => {
+  try {
+    // not yet available to resend
+    if (getState().user.otpCountDown > 0) {
+      console.warn(`OTP can be sent after ${getState().user.otpCountDown} seconds.`);
+      return;
+    }
+
+    dispatch({
+      type: SEND_OTP,
+      payload: { otpStatus: 'sending' },
+    });
+
+    const { ok } = await api({
+      url: Constants.api.CODE,
+      method: 'post',
+      data: { phone },
+    });
+
+    if (ok) {
+      let otpCountDown = GlobalConstants.OTP_TIMEOUT;
+
+      dispatch({
+        type: SEND_OTP_SUCCESS,
+        payload: {
+          otpCountDown,
+          otpStatus: 'sent',
+        },
+      });
+
+      const timer = setInterval(() => {
+        if (otpCountDown <= 0) {
+          clearInterval(timer);
+          return;
+        }
+
+        otpCountDown = otpCountDown - 1;
+
+        dispatch({
+          type: SEND_OTP,
+          payload: { otpCountDown },
+        });
+      }, 1000);
+    } else {
+      dispatch(sendMessage('Oops! OTP not sent, please check your phone number and send again.'));
+      dispatch({
+        type: SEND_OTP_FAILURE,
+        payload: {
+          otpCountDown: 0,
+          otpStatus: 'readyToSend',
+        },
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    dispatch({
+      type: SEND_OTP_FAILURE,
+      payload: {
+        otpCountDown: 0,
+        otpStatus: 'readyToSend',
+      },
+    });
+  }
+};
 
 export const sendMessage = message => ({
   type: SET_MESSAGE,

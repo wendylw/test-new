@@ -9,5 +9,8 @@ export const SET_COMMON_DATA = 'SET_COMMON_DATA';
 export const SET_MESSAGE = 'SET_MESSAGE';
 
 // user
+export const SEND_OTP = 'SEND_OTP';
+export const SEND_OTP_SUCCESS = 'SEND_OTP_SUCCESS';
+export const SEND_OTP_FAILURE = 'SEND_OTP_FAILURE';
 export const SET_CUSTOMER_ID = 'SET_CUSTOMER_ID';
 export const SET_CASHBACK_HISTORY = 'SET_CASHBACK_HISTORY';

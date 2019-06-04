@@ -594,6 +594,17 @@ img {
   }
 }
 
+.otp-resend {
+  color: $link-blue;
+  font-weight: bold;
+  margin-top: 2rem;
+
+  &:disabled {
+    background-color: #fff;
+    color: $gray-2;
+  }
+}
+
 .otp-input {
   > div {
     padding: 0 2vw;

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY } from '../actions/types';
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE } from '../actions/types';
 
 function standingCents(state = {}, action) {
   switch (action.type) {
@@ -28,10 +28,18 @@ function user(
       logs: [],
       hasMore: true,
     },
+    otpCountDown: 0,
+    otpStatus: 'readyToSend',
   },
   action,
 ) {
   switch (action.type) {
+    case SEND_OTP:
+      return { ...state, ...action.payload };
+    case SEND_OTP_SUCCESS:
+      return { ...state, ...action.payload };
+    case SEND_OTP_FAILURE:
+        return { ...state, ...action.payload };
     case SET_CUSTOMER_ID:
       return { ...state, customerId: action.payload.customerId };
     case SET_CASHBACK_HISTORY:

@@ -46,7 +46,10 @@ const PeopleCount = {
   MAX_PLUS: -1,
 }
 
+const OTP_TIMEOUT = 60;
+
 export default {
+  OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
   MANIFEST,
   ROUTER_PATHS,

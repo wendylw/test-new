@@ -5,12 +5,18 @@ import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
 import OtpInput from 'react-otp-input';
 import iconOTP from '../../images/beep-otp.png';
-import { tryOtpAndSaveCashback, sendMessage } from '../../actions';
+import { tryOtpAndSaveCashback, sendMessage, sendOtp } from '../../actions';
+
+const OTP_COUNT_DOWN_MAX = 20; // seconds
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class PhoneVerifyModal extends React.Component {
+  state = {
+    resendCountDown: OTP_COUNT_DOWN_MAX,
+  };
+
   hide() {
-    this.setState({ show: false, otp: '' });
+    this.setState({ otp: '' });
   }
 
   async submitOtp() {
@@ -24,6 +30,20 @@ class PhoneVerifyModal extends React.Component {
       console.error(e);
       await sendMessage('Oops! please retry again later.');
     }
+  }
+
+  renderResendButton() {
+    const { otpCountDown, sendOtp } = this.props;
+    const countLabel = otpCountDown > 0 ? `(${otpCountDown})` : '';
+
+    return (
+      <button
+        className="otp-resend" disabled={otpCountDown > 0}
+        onClick={sendOtp}
+      >
+        {`RESEND OTP? ${countLabel}`}
+      </button>
+    );
   }
 
   render() {
@@ -62,6 +82,7 @@ class PhoneVerifyModal extends React.Component {
               inputStyle={{ width: '1.15em' }}
             />
           </div>
+          {this.renderResendButton()}
         </section>
 
         <footer className="footer-operation">
@@ -73,11 +94,13 @@ class PhoneVerifyModal extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  otpCountDown: state.user.otpCountDown,
 });
 
 const mapDispathToProps = dispatch => bindActionCreators({
   tryOtpAndSaveCashback,
   sendMessage,
+  sendOtp,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(

@@ -5,15 +5,12 @@ import { withRouter } from "react-router";
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
 import PhoneVerifyModal from './PhoneVerifyModal';
-import api from '../../utils/api';
-import { sendMessage } from '../../actions';
-import CashbackConstans from '../../utils/Constants';
+import { sendOtp } from '../../actions';
 
 class PhoneView extends React.Component {
   state = {
     phone: '',
     showVerify: false,
-    disableSubmit: false,
   }
 
   toggleVerifyModal(flag) {
@@ -26,29 +23,14 @@ class PhoneView extends React.Component {
   }
 
   async submitPhoneNumber() {
-    const { sendMessage } = this.props;
-
-    this.setState({ disableSubmit: true });
-
-    const { ok } = await api({
-      url: CashbackConstans.api.CODE,
-      method: 'post',
-      data: {
-        phone: this.state.phone,
-      },
-    });
-
-    this.setState({ disableSubmit: false });
-
-    if (ok) {
-      this.toggleVerifyModal(true);
-      return;
-    } else {
-      sendMessage('Oops! OTP not sent, please check your phone number and send again.');
-    }
+    const { sendOtp } = this.props;
+    sendOtp();
+    this.toggleVerifyModal(true);
   }
 
   render() {
+    const { otpStatus } = this.props;
+
     return (
       <section className="asdie-section">
         <aside className="aside-bottom">
@@ -62,7 +44,7 @@ class PhoneView extends React.Component {
           <button
             className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
             onClick={this.submitPhoneNumber.bind(this)}
-            disabled={this.state.disableSubmit}
+            disabled={otpStatus === 'sending'}
           >Continue</button>
         </aside>
 
@@ -72,7 +54,7 @@ class PhoneView extends React.Component {
               phone={this.state.phone}
               onClose={this.toggleVerifyModal.bind(this, false)}
               onSuccess={() => this.toggleVerifyModal(false)}
-              show
+              onResendClick={this.submitPhoneNumber.bind(this)}
             />
           ) : null
         }
@@ -87,11 +69,12 @@ const mapStateToProps = state => {
   return {
     locale: onlineStoreInfo.locale,
     country: onlineStoreInfo.country,
+    otpStatus: state.user.otpStatus,
   };
 };
 
 const mapDispathToProps = dispatch => bindActionCreators({
-  sendMessage,
+  sendOtp,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(
