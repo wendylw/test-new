@@ -16,11 +16,9 @@ class PageLoyalty extends React.Component {
   state = {  }
 
   componentWillMount() {
-    console.log('will mount');
     const { history, setCustomerId } = this.props;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    console.log('customerId', customerId);
     setCustomerId({ customerId });
   }
 

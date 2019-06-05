@@ -48,7 +48,7 @@ class PhoneVerifyModal extends React.Component {
   }
 
   render() {
-    const { onClose, phone } = this.props;
+    const { onClose, phone, otpRenderTime } = this.props;
 
     if (typeof onClose !== 'function') {
       console.error('onClose is required');
@@ -78,6 +78,7 @@ class PhoneVerifyModal extends React.Component {
           <h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
           <div className="otp-input">
             <OtpInput
+              key={`otp-${otpRenderTime}`}
               onChange={otp => this.setState({ otp }, () => {
                 if (otp.length === Constants.OTP_CODE_SIZE) {
                   this.submitOtp();
@@ -100,6 +101,7 @@ class PhoneVerifyModal extends React.Component {
 
 const mapStateToProps = state => ({
   otpCountDown: state.user.otpCountDown,
+  otpRenderTime: state.user.otpRenderTime,
 });
 
 const mapDispathToProps = dispatch => bindActionCreators({
