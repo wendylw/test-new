@@ -312,6 +312,21 @@ img {
     border-color: $white;
     color: $white;
   }
+
+  &__list {
+    display: block;
+    text-align: left;
+    padding-left: 20px;
+    margin: 0 auto;
+    text-align: left;
+    max-width: 270px;
+    list-style-type: decimal;
+  }
+
+  &__item {
+    margin: 5px 0;
+    line-height: 1.4em;
+  }
 }
 
 .cash-back-form {
@@ -586,18 +601,6 @@ img {
     margin: 15px 0;
     font-size: 1.4rem;
     line-height: 1.4em;
-  }
-
-  &__ordered-list {
-    list-style-type: decimal;
-    text-align: left;
-
-    padding-left: 6.5vw;
-    padding-right: 6.5vw;
-
-    > li {
-      margin-top: 0.5rem;
-    }
   }
 }
 

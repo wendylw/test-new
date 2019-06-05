@@ -36,9 +36,9 @@ class RedeemModal extends React.Component {
             <img src={IconRedeemed} alt="CashBack redeemed"/>
           </figure>
           <h2 className="full-aside__title">How to use your Cashback?</h2>
-          <ol className="full-aside__ordered-list">
-            <li>When paying your bill, tell the cashier your phone number.</li>
-	          <li>Your bill will be discounted based on your remaining cashback.</li>
+          <ol className="redeem__list">
+            <li className="redeem__item">When paying your bill, tell the cashier your phone number.</li>
+	          <li className="redeem__item">Your bill will be discounted based on your remaining cashback.</li>
           </ol>
         </section>
       </div>
