@@ -8,10 +8,15 @@ class RedeemButton extends Component {
 
   render() {
     const { wrapperClassName } = this.props;
+    const classList = ['redeem__button-container'];
+
+    if (wrapperClassName) {
+      classList.push(wrapperClassName);
+    }
 
     return (
-      <div className={`redeem-button-wrapper ${wrapperClassName || ''}`}>
-        <button className="redeem-button" onClick={() => this.setState({ showModal: true })}>HOW TO REDEEM?</button>
+      <div className={classList.join(' ')}>
+        <button className="redeem__button button__outline button__block border-radius-base font-weight-bold text-uppercase" onClick={() => this.setState({ showModal: true })}>How to redeem?</button>
         <RedeemModal
           show={this.state.showModal}
           onClose={() => this.setState({ showModal: false })}

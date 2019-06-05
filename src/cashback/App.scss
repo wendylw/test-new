@@ -122,6 +122,12 @@ img {
   &__block {
     width: 100%;
   }
+
+  &__outline {
+    border: 1px solid;
+    height: 14vw;
+    background-color: transparent;
+  }
 }
 
 .reset-button {
@@ -289,6 +295,8 @@ img {
   }
 
   &__money {
+    display: inline-block;
+    margin-bottom: 4vw;
     font-size: 3.5rem;
     font-weight: $font-weight-light;
     color: $white;
@@ -296,12 +304,12 @@ img {
 }
 
 .redeem {
-  &-button {
-    margin-top: 10vw;
-    border: 1px solid $gray-2;
-    border-radius: 3px;
-    width: 90vw;
-    padding: 4.5vw;
+  &__button-container {
+    padding: 4vw;
+  }
+
+  &__button {
+    border-color: $white;
     color: $white;
   }
 }
@@ -561,11 +569,10 @@ img {
   &__image-container {
     max-width: 45%;
     margin: 0 auto;
-  }
 
-  &__image-phone {
-    fill: #f4bf50;
-    width: 25vw;
+    img {
+      max-width: 100%;
+    }
   }
 
   &__content {
@@ -645,10 +652,8 @@ img {
     background-repeat: no-repeat;
     background-size: 100% auto;
     background-position: center center;
-
-    path {
-      fill: #ffb985;
-    }
+    fill: $theme-color;
+    opacity: 0.6;
   }
 
   &__title {

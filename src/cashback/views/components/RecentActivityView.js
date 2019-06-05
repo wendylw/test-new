@@ -5,7 +5,7 @@ import { withRouter } from "react-router";
 import InfiniteScroll from 'react-infinite-scroller';
 import { sendMessage, getCashbackHistory } from '../../actions';
 import CurrencyNumber from './CurrencyNumber';
-import { IconPending, IconRedeemed, IconEarned } from './Icons';
+import { IconPending, IconChecked, IconEarned } from './Icons';
 
 class RecentActivityView extends React.Component {
   pageSize = 10;
@@ -49,7 +49,7 @@ class RecentActivityView extends React.Component {
   renderIcon(eventType, props) {
     const eventTypesMap = {
       pending: IconPending,
-      redeemed: IconRedeemed,
+      redeemed: IconChecked,
       earned: IconEarned,
     };
 
