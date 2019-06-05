@@ -7,7 +7,6 @@ import Message from './components/Message';
 import { setOnlineStoreInfo, getCashbackAndHashData } from '../actions';
 import HomeBody from './components/HomeBody';
 import PhoneView from './components/PhoneView';
-import theImage from '../images/cash-back-bg-temp.png';
 import apiGql from '../../apiGql';
 import config from '../../config';
 

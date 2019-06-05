@@ -546,6 +546,11 @@ img {
     height: 100%;
   }
 
+  &__image-container {
+    max-width: 45%;
+    margin: 0 auto;
+  }
+
   &__content {
     padding: 4vh 5vw;
     margin: 50px 0;

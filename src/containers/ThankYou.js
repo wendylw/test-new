@@ -91,7 +91,7 @@ export class ThankYou extends Component {
           </span>
         </header>
         <div className="thanks text-center">
-          <img src="/img/beep-thank-you.png" alt="Beep thank you" />
+          <img src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
           {this.renderPickupInfo()}
           {this.renderNeedReceipt()}

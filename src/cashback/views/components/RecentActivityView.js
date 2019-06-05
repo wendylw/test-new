@@ -35,6 +35,32 @@ class RecentActivityView extends React.Component {
     }
   }
 
+  renderEventType(eventType) {
+    const eventTypesMap = {
+      earned: "You earned",
+      expense: "Expense",
+      return: "Return",
+      transactionCancelled: "Transaction cancelled",
+      refundAsLoyalty: "Refund as Loyalty",
+      imported: "Imported",
+    };
+
+    return eventTypesMap[eventType] || eventType;
+  }
+
+  renderEventTime(eventTime) {
+    // const { onlineStoreInfo: { locale } = {} } = this.props || {};
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const eventDateTime = new Date(Number.parseInt(eventTime, 10));
+    const locale = 'en'; // use English by now.
+
+    if (locale) {
+      return eventDateTime.toLocaleDateString(locale, dateOptions);
+    }
+
+    return eventDateTime.toDateString(dateOptions);
+  }
+
   render() {
     const { cashbackHistory, customerId } = this.props;
     const { logs, hasMore } = cashbackHistory;
@@ -48,9 +74,9 @@ class RecentActivityView extends React.Component {
         <i className="activity__icon-checked"></i>
         <summary>
           <h4 className="activity__title">
-            <label>{activity.eventType}</label> <CurrencyNumber money={activity.amount} />
+            <label>{this.renderEventType(activity.eventType)}</label> <CurrencyNumber money={activity.amount} />
           </h4>
-          <time className="activity__time">{activity.eventTime}</time>
+          <time className="activity__time">{this.renderEventTime(activity.eventTime)}</time>
         </summary>
       </div>
     ));
