@@ -7,7 +7,7 @@ import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
 import apiGql from '../apiGql';
 import config from '../config';
-import RedirectForm from '../views/components/RedirectForm';
+// import RedirectForm from '../views/components/RedirectForm';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -64,7 +64,7 @@ class BankCardPayment extends Component {
     console.log('order =>', order);
 
     return (
-      <section className={`table-ordering__payment ${match.isExact ? '' : 'hide'}`}>
+      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <header className="header border__botton-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => {
             history.replace(Constants.ROUTER_PATHS.PAYMENT, history.location.state);
@@ -74,8 +74,34 @@ class BankCardPayment extends Component {
           <h2 className="header__title font-weight-bold text-middle">Pay via Card</h2>
         </header>
 
-        <div>
+        <div className="payment-bank">
+					<figure
+						className="logo-default__image-container"
+					>
+						<img src="" alt="" />
+					</figure>
 
+					<span className="payment-bank__money font-weight-bold text-center">RM 20.00</span>
+					<form>
+						<div className="payment-bank__form-item">
+							<label className="payment-bank__label font-weight-bold">Card information</label>
+							<div>
+								<div className="input__list-top">
+									<input className="input input__block" type="text" placeholder="1234 1234 1234 1234" />
+								</div>
+								<div className="input__list-bottom flex flex-middle flex-space-between">
+									<input className="input input__block" type="text" placeholder="MM/YY" />
+									<input className="input input__block" type="number" placeholder="CVV" />
+								</div>
+							</div>
+						</div>
+						<div className="payment-bank__form-item">
+							<label className="payment-bank__label font-weight-bold">Name on card</label>
+							<div>
+								<input className="input input__block border-radius-base" type="text" />
+							</div>
+						</div>
+					</form>
         </div>
 
         <div className="footer-operation">
@@ -83,10 +109,10 @@ class BankCardPayment extends Component {
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={this.state.payNowLoading}
-          >{this.state.payNowLoading ? 'Redirecting' : 'Pay now'}</button>
+          >{this.state.payNowLoading ? 'Redirecting' : 'Pay RM 20.00'}</button>
         </div>
 
-        <RedirectForm
+        {/* <RedirectForm
           ref={ref => this.form = ref}
           action={config.storehubPaymentEntryURL}
           method="POST"
@@ -114,7 +140,7 @@ class BankCardPayment extends Component {
             return fields;
           }}
           fire={this.state.fire}
-        />
+        /> */}
       </section>
     )
   }

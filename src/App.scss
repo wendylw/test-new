@@ -135,6 +135,36 @@ img {
     margin: 10px 0;
     text-align: left;
   }
+
+  &__list-top {
+    input:first-child {
+      border-top-left-radius: 4px;
+    }
+
+    input:last-child {
+      border-top-right-radius: 4px;
+    }
+  }
+
+  &__list-bottom {
+    input ~ input {
+      border-left: 0;
+    }
+
+    input:first-child {
+      border-bottom-left-radius: 4px;
+    }
+
+    input:last-child {
+      border-bottom-right-radius: 4px;
+    }
+  }
+
+  &__list-top + &__list-bottom {
+    input {
+      border-top: 0;
+    }
+  }
 }
 
 .button {
@@ -447,7 +477,12 @@ img {
   &__payment {
     @extend .main-section;
     padding-bottom: 43.2vw;
-    background-color: $gray-4;
+  }
+
+  &__bank-payment {
+    @extend .main-section;
+    padding-bottom: 21.6vw;
+    background-color: $white;
   }
 
   &__thanks {
@@ -1035,6 +1070,40 @@ img {
   padding: 4vw;
 }
 
+.logo-default {
+  &__image-container {
+    @extend .reset-font-size;
+
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: $white;
+
+    &::before {
+      @extend .w-h-same;
+    }
+
+    svg,
+    img {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+      fill: $white;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  }
+}
+
 .cart-bar {
   @extend .border-radius-base;
 
@@ -1174,6 +1243,31 @@ img {
     padding: 0 20px;
     font-size: 1.3rem;
     width: 60vw;
+  }
+}
+
+.payment-bank {
+  padding: 4vw;
+
+  .logo-default__image-container {
+    display: block;
+    margin: 4vw auto;
+  }
+
+  &__money {
+    display: block;
+    padding: 2vw 0;
+    font-size: 2rem;
+  }
+
+  &__form-item {
+    padding: 4vw 0;
+  }
+
+  &__label {
+    display: block;
+    margin: 3vw 0;
+    font-size: 1.4rem;
   }
 }
 
