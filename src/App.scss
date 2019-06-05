@@ -1249,9 +1249,23 @@ img {
 .payment-bank {
   padding: 4vw;
 
+  .input {
+    height: 50px;
+    font-size: 1.4rem;
+  }
+
   .logo-default__image-container {
     display: block;
     margin: 4vw auto;
+  }
+
+  .input__list-top {
+    border: 1px solid $gray-3;
+    border-radius: 4px 4px 0 0;
+
+    .input {
+      border: 0;
+    }
   }
 
   &__money {
@@ -1268,6 +1282,26 @@ img {
     display: block;
     margin: 3vw 0;
     font-size: 1.4rem;
+  }
+
+  &__card-type-icon {
+    display: inline-block;
+    padding: 10px 0;
+    margin: 0 5px;
+    font-size: 0;
+
+    img {
+      margin: auto;
+      max-width: 100%;
+    }
+
+    &.visa {
+      width: 12vw;
+    }
+
+    &.mastercard {
+      width: 10vw;
+    }
   }
 }
 

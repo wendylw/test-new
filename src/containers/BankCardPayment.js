@@ -85,9 +85,15 @@ class BankCardPayment extends Component {
 					<form>
 						<div className="payment-bank__form-item">
 							<label className="payment-bank__label font-weight-bold">Card information</label>
-							<div>
-								<div className="input__list-top">
+							<div className="payment-bank__card-container">
+								<div className="input__list-top flex flex-middle flex-space-between">
 									<input className="input input__block" type="text" placeholder="1234 1234 1234 1234" />
+									<i className="payment-bank__card-type-icon visa text-middle">
+										<img src="/img/payment-visa.svg"/>
+									</i>
+									<i className="payment-bank__card-type-icon mastercard text-middle">
+										<img src="/img/payment-mastercard.svg"/>
+									</i>
 								</div>
 								<div className="input__list-bottom flex flex-middle flex-space-between">
 									<input className="input input__block" type="text" placeholder="MM/YY" />
