@@ -96,7 +96,7 @@ class BankCardPayment extends Component {
 									</i>
 								</div>
 								<div className="input__list-bottom flex flex-middle flex-space-between">
-									<input className="input input__block" type="text" placeholder="MM/YY" />
+									<input className="input input__block" type="text" placeholder="MM / YY" />
 									<input className="input input__block" type="number" placeholder="CVV" />
 								</div>
 							</div>

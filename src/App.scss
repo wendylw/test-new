@@ -1289,6 +1289,11 @@ img {
     padding: 10px 0;
     margin: 0 5px;
     font-size: 0;
+    opacity: 0.5;
+
+    &.active {
+      opacity: 1;
+    }
 
     img {
       margin: auto;
