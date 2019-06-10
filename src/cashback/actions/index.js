@@ -99,9 +99,6 @@ export const setCustomerId = payload => ({
 const saveCashbackSendMessage = response => dispatch => {
   const { data } = response;
 
-  console.log('data => %o', data);
-
-  // TODO: when logs is empty, then display: 
   const messageMap = {
     'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
     'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
@@ -122,7 +119,7 @@ export const resetOtpInput = () => ({
   },
 });
 
-export const tryOtpAndSaveCashback = (phone, otp, history) => async (dispatch, getState) => {
+export const tryOtpAndSaveCashback = (phone, otp, phoneCountryCode, history) => async (dispatch, getState) => {
   try {
     const response = await api({
       url: `${Constants.api.CASHBACK}`,
@@ -130,6 +127,7 @@ export const tryOtpAndSaveCashback = (phone, otp, history) => async (dispatch, g
       data: {
         phone,
         otp,
+        phoneCountryCode,
         receiptNumber: getState().common.hashData.receiptNumber,
       },
     });

@@ -23,10 +23,10 @@ class PhoneVerifyModal extends React.Component {
 
   async submitOtp() {
     const { otp } = this.state;
-    const { phone, tryOtpAndSaveCashback, sendMessage, history } = this.props;
+    const { phone, tryOtpAndSaveCashback, sendMessage, country, history } = this.props;
 
     try {
-      await tryOtpAndSaveCashback(phone, otp, history);
+      await tryOtpAndSaveCashback(phone, otp, country, history);
     } catch (e) {
       console.error(e);
       await sendMessage('Oops! please retry again later.');
@@ -100,6 +100,7 @@ class PhoneVerifyModal extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  country: (state.common.onlineStoreInfo || {}).country,
   otpCountDown: state.user.otpCountDown,
   otpRenderTime: state.user.otpRenderTime,
 });

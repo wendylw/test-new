@@ -24,7 +24,10 @@ class PhoneView extends React.Component {
 
   async submitPhoneNumber() {
     const { sendOtp } = this.props;
-    sendOtp();
+    const { phone } = this.state;
+
+    sendOtp(phone);
+    
     this.toggleVerifyModal(true);
   }
 
