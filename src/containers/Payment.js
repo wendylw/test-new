@@ -29,7 +29,8 @@ class Payment extends Component {
   }
 
   async payNow() {
-    const { shoppingCart } = this.props;
+    const { paymentMethod } = this.state;
+    const { shoppingCart, history } = this.props;
 
     this.setState({
       payNowLoading: true,
@@ -51,8 +52,15 @@ class Payment extends Component {
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
-          fire: true,
+          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CARD_PAY,
         });
+
+        if (paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY) {
+          history.push({
+            pathname: Constants.ROUTER_PATHS.BANK_CARD_PAYMENT,
+            search: `?orderId=${data.createOrder.orders[0].orderId || ''}`
+          });
+        }
       }
     } catch (e) {
       console.error('Fail to create order\n', e);
