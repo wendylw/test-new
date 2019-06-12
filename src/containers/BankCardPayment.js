@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { compose, graphql, Query } from 'react-apollo';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Utils from '../libs/utils';
+import FormValidate from '../libs/form-validate';
 import Constants from '../Constants';
 import { client } from '../apiClient';
 import apiGql from '../apiGql';
@@ -13,6 +14,7 @@ import CurrencyNumber from '../views/components/CurrencyNumber';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
+
 class BankCardPayment extends Component {
   static propTypes = {
   }
@@ -26,41 +28,17 @@ class BankCardPayment extends Component {
 		fire: false,
 		cardNumberSelectionStart: 0,
 		card: {},
-		validDate: ''
+		validDate: '',
+		inValidCardInfoFiedls: [],
+		cardInfoError: {
+			keys: [],
+			messages: [],
+		},
+		cardHolderNameError: {
+			key: null,
+			message: null,
+		},
 	};
-
-  async payNow() {
-
-    this.setState({
-      payNowLoading: true,
-    });
-
-    try {
-      // const { data } = await this.props.createOrder({
-      //   variables: Object.assign({},{
-      //     business: config.business,
-      //     storeId: config.storeId,
-      //     shoppingCartIds: shoppingCart.items.map(i => i.id),
-      //     pax: Number(config.peopleCount),
-      //   }, config.table ? {
-      //     tableId: config.table
-      //   } : {}),
-      // });
-
-      // if (data.createOrder) {
-      //   // config.peopleCount = null; // clear peopleCount for next order
-      //   this.setState({
-      //     order: data.createOrder.orders[0],
-      //     fire: true,
-      //   });
-      // }
-    } catch (e) {
-      console.error('Fail to create order\n', e);
-      this.setState({
-        payNowLoading: false,
-      });
-    }
-	}
 
 	getQueryObject(paramName) {
 		const { history } = this.props;
@@ -72,6 +50,168 @@ class BankCardPayment extends Component {
 		const params = new URLSearchParams(history.location.search);
 
 		return params.get(paramName);
+	}
+
+	getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
+		const nameList = {
+			cardNumber: 'number',
+			validDate: 'expiration',
+			cvv: 'security code'
+		};
+		const inValidNameList = [];
+
+		inValidFixedlengthFiedls.forEach(item => {
+			inValidNameList.push(nameList[item]);
+		});
+
+		let nameString = '';
+		const verb = inValidNameList.length > 1 ? 'are' : 'is';
+
+		inValidNameList.forEach((name, index) => {
+			if (index) {
+				nameString += ((index === inValidNameList.length - 1) ? ` and ${name}` : `, ${name}`);
+			} else {
+				nameString += name;
+			}
+		});
+
+		let rules = {
+			required: {
+				message: 'Required'
+			},
+			fixedLength: {
+				message: `Your card's ${nameString} ${verb} incomplete.`,
+				length: 19,
+			},
+			validCardNumber: {
+				message: 'Your card number isinvalid',
+			},
+		};
+
+		switch (id) {
+			case 'validDate':
+				rules.fixedLength.length = 7;
+				delete rules.validCardNumber;
+				break;
+			case 'cvv':
+				delete rules.fixedLength;
+				delete rules.validCardNumber;
+				break;
+			default:
+				break;
+		};
+
+		return {
+			rules,
+			validCardNumber: () => {
+				const { card } = this.state;
+
+				return Boolean(card.type);
+			},
+		};
+	}
+
+	getCardHolderNameValidationOpts() {
+		return {
+			rules: {
+				required: {
+					message: 'Required'
+				}
+			}
+		};
+	}
+
+	validCardInfo() {
+		let cardInfoResults = {};
+		const inValidCardInfoFiedls = ['cardNumber', 'validDate', 'cvv'].filter(id => {
+			const cardInfoItemResult = FormValidate.validate(id, this.getCardInfoValidationOpts(id, []));
+
+			if (!cardInfoItemResult.isValid) {
+				if(Object.keys(cardInfoResults).includes(cardInfoItemResult.validateKey)) {
+					cardInfoResults[cardInfoItemResult.validateKey].push(id);
+				} else {
+					cardInfoResults[cardInfoItemResult.validateKey] = [id];
+				}
+
+				return cardInfoItemResult.validateKey !== FormValidate.errorNames.required ? id : null;
+			}
+
+			return false;
+		});
+		const cardInfoError = {
+			messages: {}
+		};
+
+		cardInfoError.keys = Object.keys(cardInfoResults).filter(key => {
+			cardInfoResults[key].forEach(id => {
+				cardInfoError.messages[key] = FormValidate.getErrorMessage(
+					id,
+					this.getCardInfoValidationOpts(id, cardInfoResults.fixedLength || [])
+				);
+			});
+
+			if (key === FormValidate.errorNames.required) {
+				return null;
+			}
+
+			return key;
+		});
+
+		this.setState({
+			cardInfoError,
+			inValidCardInfoFiedls
+		});
+
+		return cardInfoResults.required;
+	}
+
+	validateForm() {
+		const cardHolderNameOptions = this.getCardHolderNameValidationOpts()
+		const holderNameResult = FormValidate.validate('cardHolderName', cardHolderNameOptions);
+		const { inValidCardInfoFiedls, cardInfoError } = this.state;
+		let newCardHolderNameError = {
+			key: null,
+			message: null,
+		};
+		let newCardInfoError = cardInfoError;
+
+		if (this.validCardInfo() && this.validCardInfo().length) {
+			newCardInfoError.keys.push(FormValidate.errorNames.required);
+			newCardInfoError.messages.required = this.getCardInfoValidationOpts().rules.required.message;
+		}
+
+		if (!holderNameResult.isValid) {
+			Object.assign(newCardHolderNameError, {
+				key: holderNameResult.validateKey,
+				message: FormValidate.getErrorMessage('cardHolderName', cardHolderNameOptions),
+			});
+		}
+
+		this.setState({
+			cardHolderNameError: newCardHolderNameError,
+			cardInfoError: newCardInfoError,
+			inValidCardInfoFiedls: Array.from(
+				[].concat(inValidCardInfoFiedls, this.validCardInfo() || [])
+			),
+		});
+	}
+
+	async payNow() {
+		this.validateForm();
+
+		const {
+			cardInfoError,
+			cardHolderNameError
+		} = this.state;
+
+		if (cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length)) {
+			return;
+		}
+
+    this.setState({
+			payNowLoading: true,
+			fire: true,
+    });
 	}
 
 	handleChangeCardNumber(e) {
@@ -100,8 +240,19 @@ class BankCardPayment extends Component {
 	}
 
   renderMain() {
-		const { match, history, onlineStoreInfo } = this.props;
-		const { payNowLoading, card, validDate } = this.state;
+		const {
+			match,
+			history,
+			onlineStoreInfo
+		} = this.props;
+		const {
+			payNowLoading,
+			card,
+			validDate,
+			inValidCardInfoFiedls,
+			cardInfoError,
+			cardHolderNameError
+		} = this.state;
 
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -133,19 +284,29 @@ class BankCardPayment extends Component {
 									</figure>
 									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total} />
 
-									<form>
+									<form className="form">
 										<div className="payment-bank__form-item">
-											<label className="payment-bank__label font-weight-bold">Card information</label>
+											<div className="flex flex-middle flex-space-between">
+												<label className="payment-bank__label font-weight-bold">Card information</label>
+												{
+													cardInfoError.keys.includes(FormValidate.errorNames.required)
+													? <span className="error-message font-weight-bold text-uppercase">
+															{cardInfoError.messages.required}
+														</span>
+													: null
+												}
+											</div>
 											<div className="payment-bank__card-container">
-												<div className="input__list-top flex flex-middle flex-space-between">
+												<div className={`input__list-top flex flex-middle flex-space-between ${inValidCardInfoFiedls.includes('cardNumber') ? 'has-error' : ''}`}>
 													<input
 														ref={ref => this.cardNumberEl = ref}
+														id="cardNumber"
 														className="input input__block"
 														type="tel"
 														placeholder="1234 1234 1234 1234"
-														onChange={this.handleChangeCardNumber.bind(this)}
 														value={card.formattedCardNumber || ''}
-														onFocus={this.inputOnFocus }
+														onChange={this.handleChangeCardNumber.bind(this)}
+														onBlur={this.validCardInfo.bind(this)}
 													/>
 													<div className="payment-bank__card-type-container flex flex-middle">
 														<i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
@@ -158,21 +319,59 @@ class BankCardPayment extends Component {
 												</div>
 												<div className="input__list-bottom flex flex-middle flex-space-between">
 													<input
-														className="input input__block"
+														id="validDate"
+														className={`input input__block ${inValidCardInfoFiedls.includes('validDate') ? 'has-error' : ''}`}
 														type="tel"
 														placeholder="MM / YY"
-														onChange={this.handleChangeValidaDate.bind(this)}
 														value={validDate || ''}
+														onChange={this.handleChangeValidaDate.bind(this)}
+														onBlur={this.validCardInfo.bind(this)}
 													/>
-													<input className="input input__block" type="password" placeholder="CVV" />
+													<input
+														id="cvv"
+														className={`input input__block ${inValidCardInfoFiedls.includes('cvv') ? 'has-error' : ''}`}
+														type="password"
+														placeholder="CVV"
+														onBlur={this.validCardInfo.bind(this)}
+													/>
 												</div>
+											</div>
+											<div className="error-message__container">
+												{
+													cardInfoError.keys.length
+													? (cardInfoError.keys.map(key => {
+														if (key === FormValidate.errorNames.required) {
+															return null;
+														}
+
+														return <span key={key} className="error-message">{cardInfoError.messages[key]}</span>
+													}))
+													: null
+												}
 											</div>
 										</div>
 										<div className="payment-bank__form-item">
-											<label className="payment-bank__label font-weight-bold">Name on card</label>
-											<div>
-												<input className="input input__block border-radius-base" type="text" />
+											<div className="flex flex-middle flex-space-between">
+												<label className="payment-bank__label font-weight-bold">Name on card</label>
+												{
+													cardHolderNameError.key === FormValidate.errorNames.required
+													?
+														<span className="error-message font-weight-bold text-uppercase">
+															{cardHolderNameError.message}
+														</span>
+													: null
+												}
 											</div>
+											<input
+												id="cardHolderName"
+												className={`input input__block border-radius-base ${cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''}`}
+												type="text"
+											/>
+											{
+												cardHolderNameError.key !== FormValidate.errorNames.required
+												? <span className="error-message">{cardHolderNameError.message}</span>
+												: null
+											}
 										</div>
 									</form>
 								</div>

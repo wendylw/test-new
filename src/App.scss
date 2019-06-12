@@ -113,6 +113,29 @@ img {
   }
 }
 
+form {
+  &.form .has-error {
+    position: relative;
+    border-color: $red;
+    color: $red;
+    z-index: 1;
+
+    input {
+      color: inherit;
+    }
+  }
+
+  .error-message {
+    display: inline-block;
+    line-height: 1.4em;
+    color: $red;
+
+    &__container {
+      margin: 10px 0;
+    }
+  }
+}
+
 .input {
   padding: 6px 12px;
   border: 1px solid $gray-3;

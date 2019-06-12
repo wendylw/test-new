@@ -1,5 +1,3 @@
-import { delimiter } from "upath";
-
 const Utils = {};
 
 Utils.debounce = function debounce(fn, timeout = 50) {
