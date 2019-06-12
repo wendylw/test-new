@@ -80,6 +80,7 @@ class PhoneVerifyModal extends React.Component {
             <OtpInput
               key={`otp-${otpRenderTime}`}
               onChange={otp => this.setState({ otp }, () => {
+                // auto submit OTP logic
                 if (otp.length === Constants.OTP_CODE_SIZE) {
                   this.submitOtp();
                 }
@@ -92,7 +93,11 @@ class PhoneVerifyModal extends React.Component {
         </section>
 
         <footer className="footer-operation">
-          <button className="button__fill button__block border-radius-base font-weight-bold text-uppercase" onClick={this.submitOtp.bind(this)}>Ok</button>
+          <button
+            className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+            disabled={!this.state.otp || this.state.otp.length !== Constants.OTP_CODE_SIZE}
+            onClick={this.submitOtp.bind(this)}
+          >Ok</button>
         </footer>
       </div>
     );

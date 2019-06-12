@@ -47,7 +47,7 @@ class PhoneView extends React.Component {
           <button
             className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
             onClick={this.submitPhoneNumber.bind(this)}
-            disabled={otpStatus === 'sending'}
+            disabled={otpStatus === 'sending' || !this.state.phone}
           >Continue</button>
         </aside>
 
