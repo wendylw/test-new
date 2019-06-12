@@ -26,6 +26,9 @@ class HomeBody extends React.Component {
   }
 
   render() {
+    const { storeName = '', street = '' } = this.props;
+    const addressInfo = [storeName, street].filter(v => v);
+
     return (
       <section className="cash-back__home text-center">
         <Image className="logo-default__image-container" src={this.props.logo} alt={this.props.storeName} />
@@ -37,7 +40,7 @@ class HomeBody extends React.Component {
             <path d="M0 0h24v24H0z" fill="none"/>
           </svg>
           <span className="location__text text-middle">
-            {`${this.props.storeName}, ${this.props.street}`}
+            {addressInfo.join(', ')}
           </span>
         </div>
       </section>
