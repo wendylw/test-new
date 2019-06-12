@@ -8,8 +8,8 @@ import FormValidate from '../libs/form-validate';
 import Constants from '../Constants';
 import { client } from '../apiClient';
 import apiGql from '../apiGql';
-// import config from '../config';
-// import RedirectForm from '../views/components/RedirectForm';
+import config from '../config';
+import RedirectForm from '../views/components/RedirectForm';
 import CurrencyNumber from '../views/components/CurrencyNumber';
 import DocumentTitle from '../views/components/DocumentTitle';
 
@@ -22,6 +22,7 @@ class BankCardPayment extends Component {
 	form = null;
 	cardNumberEl = null;
 	prevCardNumber = '';
+	order = {};
 
   state = {
     payNowLoading: false,
@@ -239,6 +240,12 @@ class BankCardPayment extends Component {
 		});
 	}
 
+	handleChangeCardHolderName(e) {
+		this.setState({
+			cardholderName: e.target.value
+		});
+	}
+
   renderMain() {
 		const {
 			match,
@@ -247,8 +254,10 @@ class BankCardPayment extends Component {
 		} = this.props;
 		const {
 			payNowLoading,
+			fire,
 			card,
 			validDate,
+			cardholderName,
 			inValidCardInfoFiedls,
 			cardInfoError,
 			cardHolderNameError
@@ -273,6 +282,8 @@ class BankCardPayment extends Component {
 				>
 					{({ data: { order = {} } = {} }) => {
 						const { total } = order;
+
+						this.order = order;
 
 						return (
 							<React.Fragment>
@@ -366,6 +377,8 @@ class BankCardPayment extends Component {
 												id="cardHolderName"
 												className={`input input__block border-radius-base ${cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''}`}
 												type="text"
+												value={cardholderName || ''}
+												onChange={this.handleChangeCardHolderName.bind(this)}
 											/>
 											{
 												cardHolderNameError.key !== FormValidate.errorNames.required
@@ -393,35 +406,39 @@ class BankCardPayment extends Component {
 					}}
 				</Query>
 
-        {/* <RedirectForm
-          ref={ref => this.form = ref}
-          action={config.storehubPaymentEntryURL}
-          method="POST"
-          fields={() => {
-            const { onlineStoreInfo } = this.props;
-            const { order } = this.state;
-            const fields = [];
-            const h = config.h();
-            const queryString = `?h=${encodeURIComponent(h)}`;
+				<RedirectForm
+					ref={ref => this.form = ref}
+					action={config.storehubPaymentEntryURL}
+					method="POST"
+					fields={() => {
+						const { onlineStoreInfo } = this.props;
+						const { cardholderName } = this.state;
+						const { total, orderId } = this.order;
+						const fields = [];
+						const h = config.h();
+						const queryString = `?h=${encodeURIComponent(h)}`;
 
-            if (!onlineStoreInfo || !order) {
-              return null;
-            }
+						if (!onlineStoreInfo || !this.order) {
+							return null;
+						}
 
-            const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
-            const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
+						const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
+						const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
 
-            fields.push({ name: 'amount', value: order.total });
-            fields.push({ name: 'currency', value: onlineStoreInfo.currency });
-            fields.push({ name: 'receiptNumber', value: order.orderId });
-            fields.push({ name: 'businessName', value: config.business });
-            fields.push({ name: 'redirectURL', value: redirectURL });
-            fields.push({ name: 'webhookURL', value: webhookURL });
+						fields.push({ name: 'amount', value: total });
+						fields.push({ name: 'currency', value: onlineStoreInfo.currency });
+						fields.push({ name: 'receiptNumber', value: orderId });
+						fields.push({ name: 'businessName', value: config.business });
+						fields.push({ name: 'redirectURL', value: redirectURL });
+						fields.push({ name: 'webhookURL', value: webhookURL });
+						fields.push({ name: 'paymentName', value: 'CCPP' });
+						fields.push({ name: 'cardholderName', value: cardholderName });
+						fields.push({ name: 'encCardData', value: '' });
 
-            return fields;
-          }}
-          fire={this.state.fire}
-        /> */}
+						return fields;
+					}}
+					fire={fire}
+				/>
       </section>
     )
   }
