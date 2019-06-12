@@ -41,6 +41,14 @@ class BankCardPayment extends Component {
 		},
 	};
 
+	componentDidMount(){
+
+		const script = document.createElement('script');
+
+    script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
+    document.body.appendChild(script);
+  }
+
 	getQueryObject(paramName) {
 		const { history } = this.props;
 
@@ -433,6 +441,15 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'webhookURL', value: webhookURL });
 						fields.push({ name: 'paymentName', value: 'CCPP' });
 						fields.push({ name: 'cardholderName', value: cardholderName });
+
+						My2c2p.getEncrypted("2c2p-payment-form", function(encryptedData,errCode,errDesc) {
+							if(errCode!=0){
+								alert(errDesc+" ("+errCode+")");
+							} else {
+								console.log(encryptedData.encryptedCardInfo);
+							}
+						});
+
 						fields.push({ name: 'encCardData', value: '' });
 
 						return fields;
