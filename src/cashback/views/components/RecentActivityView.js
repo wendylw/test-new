@@ -39,7 +39,8 @@ class RecentActivityView extends React.Component {
   renderEventType(eventType) {
     const eventTypesMap = {
       pending: "Cashback Pending",
-      redeemed: "Redeemed",
+      /* expense is same as redeemed */
+      expense: "Redeemed",
       earned: "You earned",
     };
 
@@ -49,7 +50,7 @@ class RecentActivityView extends React.Component {
   renderIcon(eventType, props) {
     const eventTypesMap = {
       pending: IconPending,
-      redeemed: IconChecked,
+      expense: IconChecked,
       earned: IconEarned,
     };
 
