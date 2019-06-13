@@ -119,15 +119,20 @@ export const resetOtpInput = () => ({
   },
 });
 
-export const tryOtpAndSaveCashback = (phone, otp, phoneCountryCode, history) => async (dispatch, getState) => {
+/**
+ * 
+ * @param {*} phone 
+ * @param {*} otp (removed)
+ * @param {*} phoneCountryCode  (removed)
+ * @param {*} history 
+ */
+export const tryOtpAndSaveCashback = (phone, history) => async (dispatch, getState) => {
   try {
     const response = await api({
       url: `${Constants.api.CASHBACK}`,
       method: 'post',
       data: {
         phone,
-        otp,
-        phoneCountryCode,
         receiptNumber: getState().common.hashData.receiptNumber,
       },
     });

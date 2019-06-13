@@ -5,7 +5,8 @@ import { withRouter } from "react-router";
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
 import PhoneVerifyModal from './PhoneVerifyModal';
-import { sendOtp } from '../../actions';
+import { tryOtpAndSaveCashback } from '../../actions';
+
 
 class PhoneView extends React.Component {
   state = {
@@ -23,12 +24,10 @@ class PhoneView extends React.Component {
   }
 
   async submitPhoneNumber() {
-    const { sendOtp } = this.props;
+    const { history, tryOtpAndSaveCashback } = this.props;
     const { phone } = this.state;
 
-    sendOtp(phone);
-    
-    this.toggleVerifyModal(true);
+    tryOtpAndSaveCashback(phone, history);
   }
 
   render() {
@@ -77,7 +76,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispathToProps = dispatch => bindActionCreators({
-  sendOtp,
+  tryOtpAndSaveCashback,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(
