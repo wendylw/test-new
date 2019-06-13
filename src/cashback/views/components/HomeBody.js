@@ -26,8 +26,8 @@ class HomeBody extends React.Component {
   }
 
   render() {
-    const { storeName = '', street = '' } = this.props;
-    const addressInfo = [storeName, street].filter(v => v);
+    const { store = {} } = this.props;
+    const addressInfo = [store.name, store.city].filter(v => v);
 
     return (
       <section className="cash-back__home text-center">
@@ -55,8 +55,7 @@ const mapStateToProps = (state) => {
     cashback: state.common.cashback,
     loyaltyRatio: state.common.loyaltyRatio,
     logo: onlineStoreInfo.logo,
-    storeName: onlineStoreInfo.storeName,
-    street: onlineStoreInfo.street,
+    store: state.common.store,
   };
 };
 const mapDispatchToProps = dispatch => bindActionCreators({
