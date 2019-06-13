@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE, RESET_OTP_INPUT } from "./types";
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE, RESET_OTP_INPUT, SET_PHONE } from "./types";
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
@@ -126,14 +126,16 @@ export const resetOtpInput = () => ({
  * @param {*} phoneCountryCode  (removed)
  * @param {*} history 
  */
-export const tryOtpAndSaveCashback = (phone, history) => async (dispatch, getState) => {
+export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   try {
+    const phone = getState().user.phone;
+    const receiptNumber = getState().common.hashData.receiptNumber;
     const response = await api({
       url: `${Constants.api.CASHBACK}`,
       method: 'post',
       data: {
         phone,
-        receiptNumber: getState().common.hashData.receiptNumber,
+        receiptNumber,
       },
     });
     const { ok, data, error } = response;
@@ -143,6 +145,9 @@ export const tryOtpAndSaveCashback = (phone, history) => async (dispatch, getSta
       dispatch(sendMessage(error.message));
       return;
     }
+
+    // save phone
+    await dispatch(savePhone(phone));
 
     if (data.customerId) {
       dispatch(setCustomerId({ customerId: data.customerId }));
@@ -235,6 +240,20 @@ export const sendOtp = phone => async (dispatch, getState) => {
       },
     });
   }
+};
+
+export const setPhone = phone => ({
+  type: SET_PHONE,
+  payload: { phone },
+});
+
+export const fetchPhone = () => async dispatch => {
+  const phone = localStorage.getItem('user.p');
+  await dispatch(setPhone(phone));
+}
+
+export const savePhone = phone => async dispatch => {
+  localStorage.setItem('user.p', phone);
 };
 
 export const sendMessage = message => ({

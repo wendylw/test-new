@@ -4,14 +4,17 @@ import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
-import PhoneVerifyModal from './PhoneVerifyModal';
-import { tryOtpAndSaveCashback } from '../../actions';
+import { tryOtpAndSaveCashback, fetchPhone, setPhone } from '../../actions';
 
 
 class PhoneView extends React.Component {
   state = {
-    phone: '',
     showVerify: false,
+  }
+
+  componentWillMount() {
+    const { fetchPhone } = this.props;
+    fetchPhone();
   }
 
   toggleVerifyModal(flag) {
@@ -25,13 +28,12 @@ class PhoneView extends React.Component {
 
   async submitPhoneNumber() {
     const { history, tryOtpAndSaveCashback } = this.props;
-    const { phone } = this.state;
 
-    tryOtpAndSaveCashback(phone, history);
+    tryOtpAndSaveCashback(history);
   }
 
   render() {
-    const { otpStatus } = this.props;
+    const { phone, setPhone, country } = this.props;
 
     return (
       <section className="asdie-section">
@@ -39,27 +41,16 @@ class PhoneView extends React.Component {
           <label className="cash-back-form__label text-center">Claim with your mobile number</label>
           <PhoneInput
             placeholder="Enter phone number"
-            value={this.state.phone}
-            country={this.props.country}
-            onChange={ phone => this.setState({ phone })}
+            value={phone}
+            country={country}
+            onChange={phone => setPhone(phone)}
           />
           <button
             className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
             onClick={this.submitPhoneNumber.bind(this)}
-            disabled={otpStatus === 'sending' || !this.state.phone}
+            disabled={!phone}
           >Continue</button>
         </aside>
-
-        {
-          this.state.showVerify ? (
-            <PhoneVerifyModal
-              phone={this.state.phone}
-              onClose={this.toggleVerifyModal.bind(this, false)}
-              onSuccess={() => this.toggleVerifyModal(false)}
-              onResendClick={this.submitPhoneNumber.bind(this)}
-            />
-          ) : null
-        }
       </section>
     );
   }
@@ -69,14 +60,15 @@ const mapStateToProps = state => {
   const onlineStoreInfo = state.common.onlineStoreInfo || {};
 
   return {
-    locale: onlineStoreInfo.locale,
+    phone: state.user.phone,
     country: onlineStoreInfo.country,
-    otpStatus: state.user.otpStatus,
   };
 };
 
 const mapDispathToProps = dispatch => bindActionCreators({
   tryOtpAndSaveCashback,
+  fetchPhone,
+  setPhone,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(
