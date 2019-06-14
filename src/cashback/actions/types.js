@@ -10,6 +10,9 @@ export const SET_MESSAGE = 'SET_MESSAGE';
 
 // user
 export const SEND_OTP = 'SEND_OTP';
+export const SAVE_PHONE = 'SAVE_PHONE';
+export const GET_PHONE = 'GET_PHONE';
+export const SET_PHONE = 'SET_PHONE';
 export const SEND_OTP_SUCCESS = 'SEND_OTP_SUCCESS';
 export const SEND_OTP_FAILURE = 'SEND_OTP_FAILURE';
 export const RESET_OTP_INPUT = 'RESET_OTP_INPUT';
