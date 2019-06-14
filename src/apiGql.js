@@ -255,7 +255,7 @@ apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,
     $storeId: String!,
-    $tableId: String!,
+    $tableId: String,
     $pax: Int!,
     $shoppingCartIds: [String]
   ) {
