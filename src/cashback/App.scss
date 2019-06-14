@@ -511,7 +511,7 @@ img {
     .activity {
       max-height: 100%;
       overflow: auto;
-      padding-bottom: 32px;
+      padding-bottom: 50px;
     }
   }
 }
@@ -676,6 +676,7 @@ img {
     * {
       @extend .font-weight-bold;
 
+      display: inline-block;
       font-size: 1.5rem;
     }
   }

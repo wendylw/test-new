@@ -52,7 +52,7 @@ function user(
           filters: action.payload.filters,
           totalCredits: action.payload.totalCredits,
           logs: state.cashbackHistory.logs.concat(action.payload.logs),
-          hasMore: action.payload.filters.size === action.payload.logs.length,
+          // hasMore: action.payload.filters.size === action.payload.logs.length,
         },
       };
     case SET_PHONE:
