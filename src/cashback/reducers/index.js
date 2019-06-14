@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE, RESET_OTP_INPUT } from '../actions/types';
+import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE, RESET_OTP_INPUT, SET_PHONE } from '../actions/types';
 
 function standingCents(state = {}, action) {
   switch (action.type) {
@@ -22,6 +22,7 @@ function message(state = {}, action) {
 function user(
   state = {
     customerId: null,
+    phone: '',
     cashbackHistory: {
       filters: {},
       totalCredits: null,
@@ -51,9 +52,11 @@ function user(
           filters: action.payload.filters,
           totalCredits: action.payload.totalCredits,
           logs: state.cashbackHistory.logs.concat(action.payload.logs),
-          hasMore: action.payload.filters.size === action.payload.logs.length,
+          // hasMore: action.payload.filters.size === action.payload.logs.length,
         },
       };
+    case SET_PHONE:
+      return { ...state, phone: action.payload.phone };
     default:
       return state;
   }

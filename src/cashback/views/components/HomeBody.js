@@ -10,8 +10,12 @@ class HomeBody extends React.Component {
 
   renderCashback() {
     const { cashback, loyaltyRatio } = this.props;
-    let [intPart, decimalPart] = ((1 * 100) / loyaltyRatio).toFixed(2).split('.');
+    let [intPart, decimalPart] = loyaltyRatio ? ((1 * 100) / loyaltyRatio).toFixed(2).split('.') : ['0'];
     const percentage = [intPart];
+
+    if (!cashback && !loyaltyRatio) {
+      return null;
+    }
 
     if (decimalPart) {
       decimalPart = decimalPart.replace(/0+$/, '');
@@ -19,10 +23,10 @@ class HomeBody extends React.Component {
     }
 
     if (!cashback) {
-      return <div className="cash-back__money">{`${percentage.join('.')}% Cashback`}</div>;
+      return <span className="cash-back__money">{`${percentage.join('.')}% Cashback`}</span>;
     }
 
-    return <CurrencyNumber classList="cash-back__money" money={this.props.cashback} />;
+    return <CurrencyNumber classList="cash-back__money" money={cashback} />;
   }
 
   render() {
