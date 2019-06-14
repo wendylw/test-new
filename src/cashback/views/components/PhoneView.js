@@ -35,7 +35,7 @@ class PhoneView extends React.Component {
 
     return (
       <section className="asdie-section">
-        <aside className="aside-bottom phone-view">
+        <aside className="aside-bottom not-full">
           <label className="cash-back-form__label text-center">Claim with your mobile number</label>
           <PhoneInput
             placeholder="Enter phone number"
