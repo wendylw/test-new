@@ -120,11 +120,11 @@ export const resetOtpInput = () => ({
 });
 
 /**
- * 
- * @param {*} phone 
+ *
+ * @param {*} phone
  * @param {*} otp (removed)
  * @param {*} phoneCountryCode  (removed)
- * @param {*} history 
+ * @param {*} history
  */
 export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   try {
@@ -136,6 +136,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       data: {
         phone,
         receiptNumber,
+        source: "RECEIPT" //options: REGISTER, RECEIPT, QR_ORDERING
       },
     });
     const { ok, data, error } = response;
