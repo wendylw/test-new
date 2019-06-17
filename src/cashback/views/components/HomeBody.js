@@ -12,6 +12,7 @@ class HomeBody extends React.Component {
     const { cashback, loyaltyRatio } = this.props;
     let [intPart, decimalPart] = loyaltyRatio ? ((1 * 100) / loyaltyRatio).toFixed(2).split('.') : ['0'];
     const percentage = [intPart];
+    const cashbackNumber = Number(cashback);
 
     if (!cashback && !loyaltyRatio) {
       return null;
@@ -22,11 +23,11 @@ class HomeBody extends React.Component {
       if (decimalPart) percentage.push(decimalPart);
     }
 
-    if (!cashback) {
-      return <span className="cash-back__money">{`${percentage.join('.')}% Cashback`}</span>;
+    if (!isNaN(cashbackNumber) && cashbackNumber) {
+      return <CurrencyNumber classList="cash-back__money" money={cashback} />;
     }
 
-    return <CurrencyNumber classList="cash-back__money" money={cashback} />;
+    return <span className="cash-back__money">{`${percentage.join('.')}% Cashback`}</span>;
   }
 
   render() {
