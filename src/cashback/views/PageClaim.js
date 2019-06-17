@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Query } from 'react-apollo';
 import qs from 'qs';
-import Message from './components/Message';
+// import Message from './components/Message';
 import { setOnlineStoreInfo, getCashbackAndHashData } from '../actions';
 import HomeBody from './components/HomeBody';
 import PhoneView from './components/PhoneView';
@@ -22,7 +22,7 @@ class PageClaim extends React.Component {
   renderMainContents() {
     return (
       <React.Fragment>
-        <Message />
+        {/* <Message /> */}
         <HomeBody />
         <PhoneView />
       </React.Fragment>
