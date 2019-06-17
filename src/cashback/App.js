@@ -22,7 +22,7 @@ function App() {
           <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.CASHBACK_HOME} />
           <Route exact path={Constants.ROUTER_PATHS.CASHBACK_CLAIM} render={props => <PageClaim {...props}/>} />
           <Route exact path={Constants.ROUTER_PATHS.CASHBACK_HOME} name="Loyalty" render={props => <PageHome {...props}/>} />
-          <Route exact path={Constants.ROUTER_PATHS.ERROR} name="Error" render={props => <ErrorPage {...props}/>} />
+          <Route exact path={Constants.ROUTER_PATHS.CASHBACK_ERROR} name="Error" render={props => <ErrorPage {...props}/>} />
         </Switch>
       </React.Suspense>
     </Provider>

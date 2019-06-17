@@ -1,17 +1,16 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
-// import DocumentTitle from './DocumentTitle';
-// import Constants from '../../../Constants';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 
 class Error extends React.Component {
   render() {
     const {
-      message = 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
-    } = this.props.location.state || {};
+      message = '',
+    } = this.props.pageMessage || {};
 
     return (
-      // <DocumentTitle title={Constants.DOCUMENT_TITLE.ERROR}>
+      <main className="table-ordering">
         <section className="table-ordering__prompt-page">
           <figure className="prompt-page__image-container text-center">
             <img src="/img/beep-error.png" alt="error found" />
@@ -23,10 +22,21 @@ class Error extends React.Component {
             </div>
           </div>
         </section>
-      // </DocumentTitle>
+      </main>
     );
   }
 }
 
+const mapStateToProps = state => {
+  try {
+    return {
+      pageMessage: state.pageMessage.message,
+    };
+  } catch(e) {
+    return {};
+  }
+};
 
-export default withRouter(Error);
+const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Error);
