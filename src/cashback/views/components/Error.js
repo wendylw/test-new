@@ -1,15 +1,12 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router-dom';
 
 
 class Error extends React.Component {
   render() {
     const {
-      message = '',
-    } = this.props.pageMessage || {};
-
-    console.log(this.props.pageMessage);
+      message = 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+    } = this.props.location.state || {};
 
     return (
       <main className="table-ordering">
@@ -29,16 +26,4 @@ class Error extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  try {
-    return {
-      pageMessage: state.pageMessage,
-    };
-  } catch(e) {
-    return {};
-  }
-};
-
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(Error);
+export default withRouter(Error);

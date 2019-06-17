@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import { GET_STANDING_CENTS,
   SET_MESSAGE,
-  SET_PAGE_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
   SET_COMMON_DATA,
@@ -25,15 +24,6 @@ function standingCents(state = {}, action) {
 function message(state = {}, action) {
   switch (action.type) {
     case SET_MESSAGE:
-      return { ...state, ...action.payload };
-    default:
-      return state;
-  }
-}
-
-function pageMessage(state = {}, action) {
-  switch (action.type) {
-    case SET_PAGE_MESSAGE:
       return { ...state, ...action.payload };
     default:
       return state;
@@ -102,7 +92,6 @@ const cashBackApp = combineReducers({
   common,
   standingCents,
   message,
-  pageMessage,
   user,
 });
 

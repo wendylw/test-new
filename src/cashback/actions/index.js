@@ -2,7 +2,6 @@ import qs from 'qs';
 import {
   GET_STANDING_CENTS,
   SET_MESSAGE,
-  SET_PAGE_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
   SET_COMMON_DATA,
@@ -17,8 +16,6 @@ import {
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
-
-const blockStatus = ['NotClaimed'];
 
 export const getStandingCents = payload => async (dispatch) => {
   // TODO: call the real api
@@ -84,7 +81,7 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
   }
 };
 
-const cashbackSendMessage = response => dispatch => {
+const cashbackSendMessage = (response, history) => dispatch => {
   const { data } = response;
 
   const messageMap = {
@@ -104,7 +101,7 @@ const cashbackSendMessage = response => dispatch => {
     'NotClaimed_Expired': `his cashback has expired and cannot be earned anymore. 😭`,
     'NotClaimed_Cancelled': 'This transaction has been cancelled.',
     /* Set page message */
-    'NotClaimed': 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+    // 'NotClaimed'
   };
   const errorStatus = ['NotClaimed_Cancelled'];
   let messageType = 'primary';
@@ -115,11 +112,7 @@ const cashbackSendMessage = response => dispatch => {
 
   let displayMessage = messageMap[data.status] || `Oops, please scan QR to claim again.`;
 
-  if (blockStatus.includes(data.status)) {
-    dispatch(setPageMessage(displayMessage, messageType));
-  } else {
-    dispatch(sendMessage(displayMessage, messageType));
-  }
+  dispatch(sendMessage(displayMessage, messageType));
 };
 
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
@@ -196,13 +189,15 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       dispatch(setCustomerId({ customerId: data.customerId }));
     }
 
-    await dispatch(cashbackSendMessage(response));
-
-    if (blockStatus.includes(data.status)) {
-      history.push(GlobalConstants.ROUTER_PATHS.CASHBACK_ERROR);
+    if (data.status === 'NotClaimed') {
+      history.push(GlobalConstants.ROUTER_PATHS.CASHBACK_ERROR, {
+        message: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+      });
 
       return;
     }
+
+    await dispatch(cashbackSendMessage(response, history));
   } catch (e) {
     // TODO: handle error
     console.error(e);
@@ -319,13 +314,5 @@ export const clearMessage = payload => ({
   payload: {
     message: '',
     show: false,
-  },
-});
-
-export const setPageMessage = (message, type) => ({
-  type: SET_PAGE_MESSAGE,
-  payload: {
-    type,
-    message,
   },
 });
