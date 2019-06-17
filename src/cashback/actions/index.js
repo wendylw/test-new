@@ -18,6 +18,8 @@ import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
 
+const blockStatus = ['NotClaimed'];
+
 export const getStandingCents = payload => async (dispatch) => {
   // TODO: call the real api
   const { data } = await api('/ping');
@@ -105,7 +107,6 @@ const cashbackSendMessage = response => dispatch => {
     'NotClaimed': 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
   };
   const errorStatus = ['NotClaimed_Cancelled'];
-  const blockStatus = ['NotClaimed'];
   let messageType = 'primary';
 
   if (errorStatus.includes(data.status)) {
@@ -196,6 +197,12 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     }
 
     await dispatch(cashbackSendMessage(response));
+
+    if (blockStatus.includes(data.status)) {
+      history.push(GlobalConstants.ROUTER_PATHS.CASHBACK_ERROR);
+
+      return;
+    }
   } catch (e) {
     // TODO: handle error
     console.error(e);

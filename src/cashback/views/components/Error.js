@@ -9,6 +9,8 @@ class Error extends React.Component {
       message = '',
     } = this.props.pageMessage || {};
 
+    console.log(this.props.pageMessage);
+
     return (
       <main className="table-ordering">
         <section className="table-ordering__prompt-page">
@@ -30,7 +32,7 @@ class Error extends React.Component {
 const mapStateToProps = state => {
   try {
     return {
-      pageMessage: state.pageMessage.message,
+      pageMessage: state.pageMessage,
     };
   } catch(e) {
     return {};
