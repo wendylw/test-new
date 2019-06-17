@@ -107,7 +107,7 @@ class RecentActivityView extends React.Component {
           pageStart={0}
           loadMore={this.fetch.bind(this)}
           hasMore={hasMore}
-          loader={<div className="loader" key={0}>Loading...</div>}
+          loader={<div className="loader theme" key={0}></div>}
           useWindow={false}
         >
           {items}

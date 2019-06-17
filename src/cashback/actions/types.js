@@ -7,6 +7,7 @@ export const SET_COMMON_DATA = 'SET_COMMON_DATA';
 
 // message
 export const SET_MESSAGE = 'SET_MESSAGE';
+export const SET_PAGE_MESSAGE = 'SET_PAGE_MESSAGE';
 
 // user
 export const SEND_OTP = 'SEND_OTP';

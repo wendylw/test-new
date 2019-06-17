@@ -1,5 +1,19 @@
 import qs from 'qs';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE, RESET_OTP_INPUT, SET_PHONE } from "./types";
+import {
+  GET_STANDING_CENTS,
+  SET_MESSAGE,
+  SET_PAGE_MESSAGE,
+  SET_ONLINE_STORE_NIFO,
+  SET_HASH_DATA,
+  SET_COMMON_DATA,
+  SET_CUSTOMER_ID,
+  SET_CASHBACK_HISTORY,
+  SEND_OTP,
+  SEND_OTP_SUCCESS,
+  SEND_OTP_FAILURE,
+  RESET_OTP_INPUT,
+  SET_PHONE
+} from "./types";
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
@@ -68,6 +82,45 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
   }
 };
 
+const cashbackSendMessage = response => dispatch => {
+  const { data } = response;
+
+  const messageMap = {
+    /* get Cash Back messages */
+    // 'Can_Claim': '',
+    // 'Expired': '',
+    // 'Invalid': '',
+    // 'Claimed': '',
+    /* save Cash Back messages */
+    'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
+    'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
+    'Claimed_SameUser': `You've already earned cashback for this receipt. `,
+    'Claimed_DifferentUser': `Someone else has already earned cashback for this receipt. 😅`,
+    'Claimed_Processing': `You've earned more cashback! We'll add it once it's been processed. 😉`,
+    'Claimed_Someone_Else': `Someone else has already earned cashback for this receipt. 😅`,
+    'Claimed_Repeat': `You've already earned cashback for this receipt. 👍`,
+    'NotClaimed_Expired': `his cashback has expired and cannot be earned anymore. 😭`,
+    'NotClaimed_Cancelled': 'This transaction has been cancelled.',
+    /* Set page message */
+    'NotClaimed': 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+  };
+  const errorStatus = ['NotClaimed_Cancelled'];
+  const blockStatus = ['NotClaimed'];
+  let messageType = 'primary';
+
+  if (errorStatus.includes(data.status)) {
+    messageType = 'error';
+  }
+
+  let displayMessage = messageMap[data.status] || `Oops, please scan QR to claim again.`;
+
+  if (blockStatus.includes(data.status)) {
+    dispatch(setPageMessage(displayMessage, messageType));
+  } else {
+    dispatch(sendMessage(displayMessage, messageType));
+  }
+};
+
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
   try {
     const { ok, data } = await api({
@@ -84,6 +137,10 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
       if (!data.cashback) {
         dispatch(sendMessage('After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!'));
       }
+
+      if (data.status) {
+        await dispatch(cashbackSendMessage({ data }));
+      }
     }
   } catch (e) {
     // TODO: handle error
@@ -95,22 +152,6 @@ export const setCustomerId = payload => ({
   type: SET_CUSTOMER_ID,
   payload,
 });
-
-const saveCashbackSendMessage = response => dispatch => {
-  const { data } = response;
-
-  const messageMap = {
-    'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
-    'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
-    'Claimed_SameUser': `You've already earned cashback for this receipt. `,
-    'Claimed_DifferentUser': `Someone else has already earned cashback for this receipt. 😅`,
-    'Claimed_Pending': `You've earned more cashback! We'll add it once it's been processed. 😉`,
-  };
-
-  let displayMessage = messageMap[data.status] || `Oops, please scan QR to claim again.`;
-
-  dispatch(sendMessage(displayMessage))
-};
 
 export const resetOtpInput = () => ({
   type: RESET_OTP_INPUT,
@@ -154,7 +195,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       dispatch(setCustomerId({ customerId: data.customerId }));
     }
 
-    await dispatch(saveCashbackSendMessage(response));
+    await dispatch(cashbackSendMessage(response));
   } catch (e) {
     // TODO: handle error
     console.error(e);
@@ -257,9 +298,10 @@ export const savePhone = phone => async dispatch => {
   localStorage.setItem('user.p', phone);
 };
 
-export const sendMessage = message => ({
+export const sendMessage = (message, type = 'primary') => ({
   type: SET_MESSAGE,
   payload: {
+    type, // Type includes 'primary', 'error'
     message,
     show: true,
   },
@@ -270,5 +312,13 @@ export const clearMessage = payload => ({
   payload: {
     message: '',
     show: false,
+  },
+});
+
+export const setPageMessage = (message, type) => ({
+  type: SET_PAGE_MESSAGE,
+  payload: {
+    type,
+    message,
   },
 });

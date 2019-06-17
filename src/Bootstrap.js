@@ -3,7 +3,7 @@ import Loadable from 'react-loadable';
 import { Route, Redirect, Switch } from "react-router-dom";
 import Constants from './Constants';
 
-const Loading = () => <div>Loading ...</div>;
+const Loading = () => <div className="loader theme page-loader"></div>;
 
 const AsyncOrderingApp = Loadable({
   loader: () => import("./App"),

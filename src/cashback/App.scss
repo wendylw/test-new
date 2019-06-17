@@ -201,6 +201,19 @@ img {
   transform: translateZ(0);
   -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+
+  &.theme {
+    color: $theme-color;
+  }
+
+  &.page-loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-size: 40px;
+  }
 }
 
 @-webkit-keyframes load6 {
@@ -426,6 +439,10 @@ img {
 
   &.primary {
     background-color: $theme-color;
+  }
+
+  &.error {
+    background-color: $red;
   }
 
   &__text {
