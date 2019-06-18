@@ -186,6 +186,12 @@ img {
   text-align: center;
 }
 
+.main-section {
+  position: relative;
+  width: 100%;
+  background-color: $gray-4;
+}
+
 .loader {
   color: #f6f6f6;
   font-size: 16px;
@@ -201,6 +207,19 @@ img {
   transform: translateZ(0);
   -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+
+  &.theme {
+    color: $theme-color;
+  }
+
+  &.page-loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-size: 40px;
+  }
 }
 
 @-webkit-keyframes load6 {
@@ -273,6 +292,21 @@ img {
 
 .container {
   min-height: 100%;
+}
+
+.table-ordering {
+  @extend .flex;
+  @extend .flex-center;
+
+  padding-top: 50px;
+  min-height: 100%;
+
+  &__prompt-page {
+    @extend .main-section;
+
+    padding: 5vh 0;
+    background-color: $white;
+  }
 }
 
 .cash-back,
@@ -417,6 +451,35 @@ img {
   }
 }
 
+.prompt-page {
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
+  }
+
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__title {
+    margin: 3vh 0;
+    font-size: 2.2rem;
+    color: $gray-2;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    font-size: 1.2rem;
+    width: 75%;
+    max-width: 280px;
+
+    p {
+      font-size: inherit;
+      line-height: 1.4em;
+    }
+  }
+}
+
 .top-message {
   display: block;
   padding: 9vw;
@@ -426,6 +489,10 @@ img {
 
   &.primary {
     background-color: $theme-color;
+  }
+
+  &.error {
+    background-color: $red;
   }
 
   &__text {

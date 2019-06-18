@@ -1,5 +1,18 @@
 import qs from 'qs';
-import { GET_STANDING_CENTS, SET_MESSAGE, SET_ONLINE_STORE_NIFO, SET_HASH_DATA, SET_COMMON_DATA, SET_CUSTOMER_ID, SET_CASHBACK_HISTORY, SEND_OTP, SEND_OTP_SUCCESS, SEND_OTP_FAILURE, RESET_OTP_INPUT, SET_PHONE } from "./types";
+import {
+  GET_STANDING_CENTS,
+  SET_MESSAGE,
+  SET_ONLINE_STORE_NIFO,
+  SET_HASH_DATA,
+  SET_COMMON_DATA,
+  SET_CUSTOMER_ID,
+  SET_CASHBACK_HISTORY,
+  SEND_OTP,
+  SEND_OTP_SUCCESS,
+  SEND_OTP_FAILURE,
+  RESET_OTP_INPUT,
+  SET_PHONE
+} from "./types";
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
@@ -68,7 +81,7 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
   }
 };
 
-const cashbackSendMessage = response => dispatch => {
+const cashbackSendMessage = (response) => dispatch => {
   const { data } = response;
 
   const messageMap = {
@@ -82,14 +95,24 @@ const cashbackSendMessage = response => dispatch => {
     'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
     'Claimed_SameUser': `You've already earned cashback for this receipt. `,
     'Claimed_DifferentUser': `Someone else has already earned cashback for this receipt. 😅`,
-    'Claimed_Pending': `You've earned more cashback! We'll add it once it's been processed. 😉`,
-    'NotClaimed_Expired': '',
-    'NotClaimed': '',
+    'Claimed_Processing': `You've earned more cashback! We'll add it once it's been processed. 😉`,
+    'Claimed_Someone_Else': `Someone else has already earned cashback for this receipt. 😅`,
+    'Claimed_Repeat': `You've already earned cashback for this receipt. 👍`,
+    'NotClaimed_Expired': `This cashback has expired and cannot be earned anymore. 😭`,
+    'NotClaimed_Cancelled': 'This transaction has been cancelled.',
+    /* Set page message */
+    // 'NotClaimed'
   };
+  const errorStatus = ['NotClaimed_Cancelled'];
+  let messageType = 'primary';
+
+  if (errorStatus.includes(data.status)) {
+    messageType = 'error';
+  }
 
   let displayMessage = messageMap[data.status] || `Oops, please scan QR to claim again.`;
 
-  dispatch(sendMessage(displayMessage))
+  dispatch(sendMessage(displayMessage, messageType));
 };
 
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
@@ -148,6 +171,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       data: {
         phone,
         receiptNumber,
+        source: "RECEIPT" //options: REGISTER, RECEIPT, QR_ORDERING
       },
     });
     const { ok, data, error } = response;
@@ -165,7 +189,15 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       dispatch(setCustomerId({ customerId: data.customerId }));
     }
 
-    await dispatch(cashbackSendMessage(response));
+    if (data.status === 'NotClaimed') {
+      history.push(GlobalConstants.ROUTER_PATHS.CASHBACK_ERROR, {
+        message: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+      });
+
+      return;
+    }
+
+    await dispatch(cashbackSendMessage(response, history));
   } catch (e) {
     // TODO: handle error
     console.error(e);
@@ -268,9 +300,10 @@ export const savePhone = phone => async dispatch => {
   localStorage.setItem('user.p', phone);
 };
 
-export const sendMessage = message => ({
+export const sendMessage = (message, type = 'primary') => ({
   type: SET_MESSAGE,
   payload: {
+    type, // Type includes 'primary', 'error'
     message,
     show: true,
   },

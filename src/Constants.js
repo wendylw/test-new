@@ -19,6 +19,7 @@ const ROUTER_PATHS = {
     CASHBACK: '/loyalty', // App basename
     CASHBACK_HOME: '/loyalty/',
     CASHBACK_CLAIM: '/loyalty/claim',
+    CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {

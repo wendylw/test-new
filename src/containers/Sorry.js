@@ -39,7 +39,7 @@ export class Sorry extends Component {
   render() {
     return (
       <DocumentTitle title={Constants.DOCUMENT_TITLE.SORRY}>
-        loading..
+        <div className="loader theme page-loader"></div>
       </DocumentTitle>
     )
   }
