@@ -89,7 +89,7 @@ class RecentActivityView extends React.Component {
         {this.renderIcon(activity.eventType, { className: 'activity__icon' })}
         <summary>
           <h4 className="activity__title">
-            <label>{`${this.renderEventType(activity.eventType)} `}</label>
+            <label>{this.renderEventType(activity.eventType)}&nbsp;</label>
             {
               activity.eventType !== 'pending'
               ? <CurrencyNumber money={activity.amount || 0} />
