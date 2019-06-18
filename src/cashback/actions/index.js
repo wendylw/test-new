@@ -98,7 +98,7 @@ const cashbackSendMessage = (response, history) => dispatch => {
     'Claimed_Processing': `You've earned more cashback! We'll add it once it's been processed. 😉`,
     'Claimed_Someone_Else': `Someone else has already earned cashback for this receipt. 😅`,
     'Claimed_Repeat': `You've already earned cashback for this receipt. 👍`,
-    'NotClaimed_Expired': `his cashback has expired and cannot be earned anymore. 😭`,
+    'NotClaimed_Expired': `This cashback has expired and cannot be earned anymore. 😭`,
     'NotClaimed_Cancelled': 'This transaction has been cancelled.',
     /* Set page message */
     // 'NotClaimed'
