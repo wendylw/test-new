@@ -4,30 +4,52 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
 import OtpInput from 'react-otp-input';
-import iconOTP from '../../images/beep-otp.png';
-import { tryOtpAndSaveCashback, sendMessage } from '../../actions';
+import { tryOtpAndSaveCashback, sendMessage, sendOtp } from '../../actions';
+import Constants from '../../../Constants';
+import { IconSms } from './Icons';
+
+const OTP_COUNT_DOWN_MAX = 20; // seconds
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class PhoneVerifyModal extends React.Component {
+  state = {
+    resendCountDown: OTP_COUNT_DOWN_MAX,
+    otp: '',
+  };
+
   hide() {
-    this.setState({ show: false, otp: '' });
+    this.setState({ otp: '' });
   }
 
   async submitOtp() {
     const { otp } = this.state;
-    const { phone, /*onSuccess, */tryOtpAndSaveCashback, sendMessage, history } = this.props;
+    const { phone, tryOtpAndSaveCashback, sendMessage, country, history } = this.props;
 
     try {
-      await tryOtpAndSaveCashback(phone, otp, history);
-      // onSuccess();
+      // Notice: this api has been updated, that: otp (removed), country (removed)
+      await tryOtpAndSaveCashback(phone, otp, country, history);
     } catch (e) {
       console.error(e);
       await sendMessage('Oops! please retry again later.');
     }
   }
 
+  renderResendButton() {
+    const { otpCountDown, sendOtp, phone } = this.props;
+    const countLabel = otpCountDown > 0 ? `(${otpCountDown})` : '';
+
+    return (
+      <button
+        className="otp-resend" disabled={otpCountDown > 0}
+        onClick={() => sendOtp(phone)}
+      >
+        {`RESEND OTP? ${countLabel}`}
+      </button>
+    );
+  }
+
   render() {
-    const { onClose, phone } = this.props;
+    const { onClose, phone, otpRenderTime } = this.props;
 
     if (typeof onClose !== 'function') {
       console.error('onClose is required');
@@ -52,20 +74,31 @@ class PhoneVerifyModal extends React.Component {
 
         <section className="full-aside__content text-center">
           <figure className="full-aside__image-container">
-            <img src={iconOTP} alt="Beep OTP" />
+            <IconSms />
           </figure>
           <h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
           <div className="otp-input">
             <OtpInput
-              onChange={otp => this.setState({ otp })}
-              numInputs={5}
+              key={`otp-${otpRenderTime}`}
+              onChange={otp => this.setState({ otp }, () => {
+                // auto submit OTP logic
+                if (otp.length === Constants.OTP_CODE_SIZE) {
+                  this.submitOtp();
+                }
+              })}
+              numInputs={Constants.OTP_CODE_SIZE}
               inputStyle={{ width: '1.15em' }}
             />
           </div>
+          {this.renderResendButton()}
         </section>
 
         <footer className="footer-operation">
-          <button className="button__fill button__block border-radius-base font-weight-bold text-uppercase" onClick={this.submitOtp.bind(this)}>Ok</button>
+          <button
+            className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+            disabled={!this.state.otp || this.state.otp.length !== Constants.OTP_CODE_SIZE}
+            onClick={this.submitOtp.bind(this)}
+          >Ok</button>
         </footer>
       </div>
     );
@@ -73,11 +106,15 @@ class PhoneVerifyModal extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  country: (state.common.onlineStoreInfo || {}).country,
+  otpCountDown: state.user.otpCountDown,
+  otpRenderTime: state.user.otpRenderTime,
 });
 
 const mapDispathToProps = dispatch => bindActionCreators({
   tryOtpAndSaveCashback,
   sendMessage,
+  sendOtp,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispathToProps)(

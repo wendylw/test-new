@@ -43,9 +43,8 @@ class Payment extends Component {
           storeId: config.storeId,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
-        }, config.table ? {
-          tableId: config.table
-        } : {}),
+          tableId: config.table || ''
+        }),
       });
 
       if (data.createOrder) {

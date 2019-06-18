@@ -20,6 +20,7 @@ const ROUTER_PATHS = {
     CASHBACK: '/loyalty', // App basename
     CASHBACK_HOME: '/loyalty/',
     CASHBACK_CLAIM: '/loyalty/claim',
+    CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {
@@ -49,7 +50,12 @@ const PeopleCount = {
   MAX_PLUS: -1,
 }
 
+const OTP_TIMEOUT = 60;
+const OTP_CODE_SIZE = 5;
+
 export default {
+  OTP_CODE_SIZE,
+  OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
   MANIFEST,
   ROUTER_PATHS,

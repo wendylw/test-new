@@ -7,7 +7,7 @@ import MessageModal from "./views/components/MessageModal";
 const MyLoadingComponent = ({isLoading, error}) => {
   // Handle the loading state
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="loader theme page-loader"></div>;
   }
   // Handle the error state
   else if (error) {

@@ -10,16 +10,15 @@ import CurrencyNumber from './components/CurrencyNumber';
 import LoyaltyView from './components/LoyaltyView';
 import apiGql from '../../apiGql';
 import config from '../../config';
+import RedeemButton from './components/RedeemButton';
 
 class PageLoyalty extends React.Component {
   state = {  }
 
   componentWillMount() {
-    console.log('will mount');
     const { history, setCustomerId } = this.props;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    console.log('customerId', customerId);
     setCustomerId({ customerId });
   }
 
@@ -35,12 +34,9 @@ class PageLoyalty extends React.Component {
               <Image className="logo-default__image-container" src={onlineStoreInfo.logo} alt={onlineStoreInfo.storeName} />
             ) : null
           }
-          <h5 className="logo-default__title">CASHBACK EARNED</h5>
-          {
-            cashbackHistory.totalCredits ? (
-              <CurrencyNumber classList="loyalty__money" money={cashbackHistory.totalCredits} />
-            ) : null
-          }
+          <h5 className="logo-default__title text-uppercase">Total cashback</h5>
+          <CurrencyNumber classList="loyalty__money" money={cashbackHistory.totalCredits || 0} />
+          <RedeemButton />
         </section>
         <LoyaltyView />
       </main>

@@ -5,6 +5,7 @@ import { withRouter } from "react-router";
 import InfiniteScroll from 'react-infinite-scroller';
 import { sendMessage, getCashbackHistory } from '../../actions';
 import CurrencyNumber from './CurrencyNumber';
+import { IconPending, IconChecked, IconEarned } from './Icons';
 
 class RecentActivityView extends React.Component {
   pageSize = 10;
@@ -37,15 +38,29 @@ class RecentActivityView extends React.Component {
 
   renderEventType(eventType) {
     const eventTypesMap = {
+      pending: "Cashback Pending",
+      /* expense is same as redeemed */
+      expense: "Redeemed",
       earned: "You earned",
-      expense: "Expense",
-      return: "Return",
-      transactionCancelled: "Transaction cancelled",
-      refundAsLoyalty: "Refund as Loyalty",
-      imported: "Imported",
     };
 
     return eventTypesMap[eventType] || eventType;
+  }
+
+  renderIcon(eventType, props) {
+    const eventTypesMap = {
+      pending: IconPending,
+      expense: IconChecked,
+      earned: IconEarned,
+    };
+
+    const IconComponent = eventTypesMap[eventType];
+
+    if (!IconComponent) return null;
+
+    return (
+      <IconComponent {...props} />
+    );
   }
 
   renderEventTime(eventTime) {
@@ -71,10 +86,15 @@ class RecentActivityView extends React.Component {
 
     const items = logs.map((activity, i) => (
       <div key={`${i}`} className="activity__item flex flex-middle">
-        <i className="activity__icon-checked"></i>
+        {this.renderIcon(activity.eventType, { className: 'activity__icon' })}
         <summary>
           <h4 className="activity__title">
-            <label>{this.renderEventType(activity.eventType)}</label> <CurrencyNumber money={activity.amount} />
+            <label>{this.renderEventType(activity.eventType)}&nbsp;</label>
+            {
+              activity.eventType !== 'pending'
+              ? <CurrencyNumber money={activity.amount || 0} />
+              : null
+            }
           </h4>
           <time className="activity__time">{this.renderEventTime(activity.eventTime)}</time>
         </summary>
@@ -87,7 +107,7 @@ class RecentActivityView extends React.Component {
           pageStart={0}
           loadMore={this.fetch.bind(this)}
           hasMore={hasMore}
-          loader={<div className="loader" key={0}>Loading...</div>}
+          loader={<div className="loader theme" key={0}></div>}
           useWindow={false}
         >
           {items}

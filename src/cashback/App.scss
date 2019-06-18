@@ -122,6 +122,12 @@ img {
   &__block {
     width: 100%;
   }
+
+  &__outline {
+    border: 1px solid;
+    height: 14vw;
+    background-color: transparent;
+  }
 }
 
 .reset-button {
@@ -180,6 +186,12 @@ img {
   text-align: center;
 }
 
+.main-section {
+  position: relative;
+  width: 100%;
+  background-color: $gray-4;
+}
+
 .loader {
   color: #f6f6f6;
   font-size: 16px;
@@ -195,6 +207,19 @@ img {
   transform: translateZ(0);
   -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+
+  &.theme {
+    color: $theme-color;
+  }
+
+  &.page-loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-size: 40px;
+  }
 }
 
 @-webkit-keyframes load6 {
@@ -269,6 +294,21 @@ img {
   min-height: 100%;
 }
 
+.table-ordering {
+  @extend .flex;
+  @extend .flex-center;
+
+  padding-top: 50px;
+  min-height: 100%;
+
+  &__prompt-page {
+    @extend .main-section;
+
+    padding: 5vh 0;
+    background-color: $white;
+  }
+}
+
 .cash-back,
 .loyalty {
   @extend .flex;
@@ -289,9 +329,37 @@ img {
   }
 
   &__money {
+    display: inline-block;
+    margin-bottom: 4vw;
     font-size: 3.5rem;
     font-weight: $font-weight-light;
     color: $white;
+  }
+}
+
+.redeem {
+  &__button-container {
+    padding: 4vw;
+  }
+
+  &__button {
+    border-color: $white;
+    color: $white;
+  }
+
+  &__list {
+    display: block;
+    text-align: left;
+    padding-left: 20px;
+    margin: 0 auto;
+    text-align: left;
+    max-width: 270px;
+    list-style-type: decimal;
+  }
+
+  &__item {
+    margin: 5px 0;
+    line-height: 1.4em;
   }
 }
 
@@ -383,6 +451,35 @@ img {
   }
 }
 
+.prompt-page {
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
+  }
+
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__title {
+    margin: 3vh 0;
+    font-size: 2.2rem;
+    color: $gray-2;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    font-size: 1.2rem;
+    width: 75%;
+    max-width: 280px;
+
+    p {
+      font-size: inherit;
+      line-height: 1.4em;
+    }
+  }
+}
+
 .top-message {
   display: block;
   padding: 9vw;
@@ -392,6 +489,10 @@ img {
 
   &.primary {
     background-color: $theme-color;
+  }
+
+  &.error {
+    background-color: $red;
   }
 
   &__text {
@@ -469,14 +570,15 @@ img {
     .aside-bottom {
       @extend .asdie-section.full;
 
-      top: 50px;
+      top: 0;
+      padding-top: 50px;
       border-radius: 0;
     }
 
     .activity {
       max-height: 100%;
       overflow: auto;
-      padding-bottom: 32px;
+      padding-bottom: 50px;
     }
   }
 }
@@ -484,11 +586,15 @@ img {
 .aside-bottom {
   @extend .asdie-section;
 
-  padding: 16px;
+  padding: 0 16px;
   width: 100%;
   background-color: $white;
   overflow-y: hidden;
   border-radius: 12px 12px 0 0;
+
+  &.not-full {
+    padding: 16px;
+  }
 
   &__slide-button {
     @extend .reset-font-size;
@@ -496,7 +602,7 @@ img {
     text-align: center;
     display: block;
     padding: 9px;
-    margin: -16px auto 8px;
+    margin: 0 auto;
 
     &::before {
       content: "";
@@ -509,6 +615,7 @@ img {
   }
 
   &__title {
+    padding: 16px 0;
     font-size: 1.3rem;
   }
 }
@@ -538,6 +645,7 @@ img {
   width: 100%;
   height: 100%;
   background-color: $white;
+  z-index: 30;
 
   .header::after {
     content: "";
@@ -549,6 +657,10 @@ img {
   &__image-container {
     max-width: 45%;
     margin: 0 auto;
+
+    img {
+      max-width: 100%;
+    }
   }
 
   &__content {
@@ -562,6 +674,17 @@ img {
     margin: 15px 0;
     font-size: 1.4rem;
     line-height: 1.4em;
+  }
+}
+
+.otp-resend {
+  color: $link-blue;
+  font-weight: bold;
+  margin-top: 2rem;
+
+  &:disabled {
+    background-color: #fff;
+    color: $gray-2;
   }
 }
 
@@ -581,8 +704,8 @@ img {
 }
 
 .activity {
-  margin: 0 -16px -16px;
-  padding: 16px;
+  margin: -4px -16px;
+  padding: 0 16px;
   max-height: 140px;
   overflow: hidden;
 
@@ -594,18 +717,24 @@ img {
     border: 1px solid $gray-3;
 
     summary {
-      padding: 0 8vw;
+      padding: 0 4vw;
+      width: 65vw;
     }
   }
 
-  &__icon-checked {
+  &__icon {
     display: inline-block;
     height: 30px;
     width: 30px;
-    background-image: url(./images/icon-checked.svg);
     background-repeat: no-repeat;
     background-size: 100% auto;
     background-position: center center;
+    fill: $theme-color;
+    opacity: 0.6;
+
+    svg {
+      width: 100%;
+    }
   }
 
   &__title {
@@ -614,6 +743,7 @@ img {
     * {
       @extend .font-weight-bold;
 
+      display: inline-block;
       font-size: 1.5rem;
     }
   }
