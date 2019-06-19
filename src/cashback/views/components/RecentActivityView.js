@@ -92,7 +92,7 @@ class RecentActivityView extends React.Component {
             <label>{this.renderEventType(activity.eventType)}&nbsp;</label>
             {
               activity.eventType !== 'pending'
-              ? <CurrencyNumber money={activity.amount || 0} />
+              ? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
               : null
             }
           </h4>
