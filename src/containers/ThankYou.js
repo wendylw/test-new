@@ -27,7 +27,7 @@ export class ThankYou extends Component {
     const { orderId } = this.props.order;
     let text = (
       <button className="thanks__link link font-weight-bold text-uppercase" onClick={() => this.setState({ needReceipt: 'detail' })}>
-        Need a receipt?
+        View Receipt
       </button>
     );
 
@@ -56,10 +56,9 @@ export class ThankYou extends Component {
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="gray-font-opacity font-weight-bold text-uppercase">Order Number</label>
+          <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
           <span className="thanks-pickup__id-number">{pickUpId}</span>
         </div>
-        <p className="thanks-pickup__prompt-text">Collect your order when your number is called/displayed</p>
       </div>
     );
   }
@@ -93,6 +92,7 @@ export class ThankYou extends Component {
         <div className="thanks text-center">
           <img src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
+          <p>Our kitchen's preparing up your order now. <span role="img" aria-label="Goofy">😋</span></p>
           {this.renderPickupInfo()}
           {this.renderNeedReceipt()}
         </div>

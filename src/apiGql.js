@@ -63,6 +63,7 @@ apiGql.GET_CORE_BUSINESS = gql`
       serviceChargeRate
       serviceChargeTax
       subscriptionStatus
+      enableQROrderingCashback
       stores(id: $storeId) {
         receiptTemplateData {
           taxName
