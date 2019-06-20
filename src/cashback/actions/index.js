@@ -56,16 +56,12 @@ export const getCashbackHashData = hash => async (dispatch, getState) => {
   }
 };
 
-export const getCashbackHistory = ({ customerId, page, size }) => async (dispatch) => {
+export const getCashbackHistory = ({ customerId, page, size }) => async (dispatch, getState) => {
   try {
     const { ok, data } = await api({
       url: `${Constants.api.HISTORY}/?customerId=${customerId}&page=${page}&count=${size}`,
       method: 'get',
     });
-
-    if (!Array.isArray(data.logs) || (!data.logs.length && page === 1)) {
-      dispatch(sendMessage('Your cashback will be tracked here after your first purchase.'));
-    }
 
     if (ok) {
       dispatch({
