@@ -10,7 +10,7 @@ class HomeBody extends React.Component {
 
   renderCashback() {
     const { cashback, defaultLoyaltyRatio } = this.props;
-    let [intPart, decimalPart] = defaultLoyaltyRatio ? ((1 * 100) / defaultLoyaltyRatio).toFixed(2).split('.') : ['0'];
+    let [intPart, decimalPart] = defaultLoyaltyRatio ? ((1 * 100) / defaultLoyaltyRatio).toFixed(2).split('.') : ['1'];
     const percentage = [intPart];
     const cashbackNumber = Number(cashback);
 
@@ -33,6 +33,8 @@ class HomeBody extends React.Component {
   render() {
     const { storeName = '', street = '' } = this.props;
     const addressInfo = [storeName, street].filter(v => v);
+
+    console.log(this.props);
 
     return (
       <section className="cash-back__home text-center">
