@@ -19,9 +19,9 @@ class PhoneView extends React.Component {
   }
 
   async submitPhoneNumber() {
-    const { history, tryOtpAndSaveCashback } = this.props;
+    const { history, saveCashback } = this.props;
 
-    tryOtpAndSaveCashback(history);
+    saveCashback(history);
   }
 
   render() {
@@ -51,7 +51,7 @@ PhoneView.propTypes = {
   label: PropTypes.string,
   phone: PropTypes.string,
   country: PropTypes.string,
-  tryOtpAndSaveCashback: PropTypes.func,
+  saveCashback: PropTypes.func,
   setPhone: PropTypes.func,
 };
 
