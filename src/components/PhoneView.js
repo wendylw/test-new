@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
 
@@ -24,35 +25,34 @@ class PhoneView extends React.Component {
   }
 
   render() {
-    const { label, phone, setPhone, country } = this.props;
+    const { className, label, phone, setPhone, country } = this.props;
 
     return (
-      <section className="asdie-section">
-        <aside className="aside-bottom not-full">
-          <label className="cash-back-form__label text-center">{label}</label>
-          <PhoneInput
-            placeholder="Enter phone number"
-            value={phone}
-            country={country}
-            onChange={phone => setPhone(phone)}
-          />
-          <button
-            className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
-            onClick={this.submitPhoneNumber.bind(this)}
-            disabled={!phone}
-          >Continue</button>
-        </aside>
-      </section>
+      <div className={className}>
+        <label className="phone-view-form__label text-center">{label}</label>
+        <PhoneInput
+          placeholder="Enter phone number"
+          value={phone}
+          country={country}
+          onChange={phone => setPhone(phone)}
+        />
+        <button
+          className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
+          onClick={this.submitPhoneNumber.bind(this)}
+          disabled={!phone}
+        >Continue</button>
+      </div>
     );
   }
 }
 
 PhoneView.propTypes = {
+  className: PropTypes.string,
   label: PropTypes.string,
-	phone: PropTypes.string,
+  phone: PropTypes.string,
   country: PropTypes.string,
   tryOtpAndSaveCashback: PropTypes.func,
-	setPhone: PropTypes.func,
+  setPhone: PropTypes.func,
 };
 
 export default PhoneView;

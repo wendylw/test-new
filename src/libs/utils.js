@@ -23,4 +23,12 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return (top + height) - window.pageYOffset - topAdjustment;
 }
 
+Utils.getPhoneNumber = function getPhoneNumber() {
+  return localStorage.getItem('user.p');
+}
+
+Utils.setPhoneNumber = function setPhoneNumber(phone) {
+  localStorage.setItem('user.p', phone);
+}
+
 export default Utils;

@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { compose } from 'react-apollo';
 import withOrderDetail from '../libs/withOrderDetail';
+import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
+import Utils from '../libs/utils';
 import config from '../config';
 import Constants from '../Constants';
 import DocumentTitle from '../views/components/DocumentTitle';
+import PhoneView from '../components/PhoneView';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
@@ -26,7 +29,7 @@ export class ThankYou extends Component {
   renderNeedReceipt() {
     const { orderId } = this.props.order;
     let text = (
-      <button className="thanks__link link font-weight-bold text-uppercase" onClick={() => this.setState({ needReceipt: 'detail' })}>
+      <button className="thanks__link link font-weight-bold text-uppercase button__block" onClick={() => this.setState({ needReceipt: 'detail' })}>
         View Receipt
       </button>
     );
@@ -57,9 +60,30 @@ export class ThankYou extends Component {
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
           <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
-          <span className="thanks-pickup__id-number">{pickUpId}</span>
+          {/* <span className="thanks-pickup__id-number">{pickUpId}</span> */}
+          <span className="thanks-pickup__id-number">{4325}</span>
         </div>
       </div>
+    );
+  }
+
+  renderPhoneView() {
+    const { gqlOnlineStoreInfo, enableQROrderingCashback } = this.props;
+    const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
+    const { country } = onlineStoreInfo;
+
+    if (!enableQROrderingCashback) {
+      return null;
+    }
+
+    return (
+      <PhoneView
+        className="thanks__phone-view"
+        label={`Earn RM5.00 Cashback with Your Mobile Number`}
+        phone={Utils.getPhoneNumber()}
+        country={country}
+        setPhone={Utils.setPhoneNumber}
+      />
     );
   }
 
@@ -72,29 +96,33 @@ export class ThankYou extends Component {
     }
 
     return (
-      <section className={`table-ordering__thanks ${match.isExact ? '' : 'hide'}`}>
+      <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
         <header className="header border__bottom-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => history.replace({
             pathname: `${Constants.ROUTER_PATHS.HOME}`,
             search: `?table=${order.additionalComments}&storeId=${order.storeId}`
           })}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
           </figure>
           <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
           <span className="gray-font-opacity text-uppercase">
             {
               order.additionalComments
-              ? `Table ${order.additionalComments}`
-              : 'Self pick-up'
+                ? `Table ${order.additionalComments}`
+                : 'Self pick-up'
             }
           </span>
         </header>
         <div className="thanks text-center">
-          <img src="/img/beep-success.png" alt="Beep Success" />
+          <img class="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
           <p>Our kitchen's preparing up your order now. <span role="img" aria-label="Goofy">😋</span></p>
-          {this.renderPickupInfo()}
-          {this.renderNeedReceipt()}
+
+          <div className="thanks__info-container">
+            {this.renderPickupInfo()}
+            {this.renderNeedReceipt()}
+            {this.renderPhoneView()}
+          </div>
         </div>
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
@@ -114,7 +142,7 @@ export class ThankYou extends Component {
   }
 }
 
-export default compose(withOrderDetail({
+export default compose(withOnlineStoreInfo(), withOrderDetail({
   options: ({ history }) => {
     const query = new URLSearchParams(history.location.search);
     const orderId = query.get('receiptNumber');

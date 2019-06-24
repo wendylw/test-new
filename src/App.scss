@@ -258,6 +258,12 @@ img {
   justify-content: space-between;
 }
 
+.flex-column {
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
 .font-weight-light {
   font-weight: $font-weight-light;
 }
@@ -499,6 +505,23 @@ img {
   display: block;
   padding: 50% 0;
   height: 0;
+}
+
+.phone-view-form {
+  &__label {
+    @extend .font-weight-bold;
+
+    display: block;
+    padding: 5px 0;
+    margin: auto;
+    max-width: 340px;
+    font-size: 1.3rem;
+    line-height: 1.7rem;
+  }
+
+  &__button {
+    font-size: 1.15rem;
+  }
 }
 
 .header {
@@ -1025,7 +1048,6 @@ img {
 
 .footer-operation,
 .footer-link {
-  position: fixed;
   width: 100%;
   left: 0;
   bottom: 0;
@@ -1204,8 +1226,9 @@ img {
 
 .thanks {
   padding: 3vh 4vw;
+  width: 100%;
 
-  img {
+  &__image {
     margin: 0 auto;
     max-width: 62%;
   }
@@ -1213,15 +1236,24 @@ img {
   &__title {
     margin: 4vw 0;
     font-size: 2.4rem;
+    color: $gray-1;
   }
 
-  &__form {
-    margin: 8vw 0;
+  &__info-container {
+    @extend .border-radius-base;
+
+    margin: 8vw 0 0;
+    background-color: $gray-5;
+    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, .1);
+
+  > * ~ * {
+      border-top: 1px solid $gray-3;
+    }
   }
 
   &__link,
   &__receipt-info {
-    margin: 2vh 0;
+    padding: 4vh 0;
   }
 
   &__receipt-title,
@@ -1248,18 +1280,18 @@ img {
     padding: 6px 12px;
     height: 40px;
   }
+
+  &__phone-view {
+    padding: 4vw;
+  }
 }
 
 .thanks-pickup {
-  margin: 3vh 0;
 
   &__id-container {
     @extend .border-radius-base;
 
-    padding: 7vw;
-    margin: 4vw auto;
-    border: 1px solid $gray-2;
-    background-color: $gray-4;
+    padding: 4vw;
     opacity: 0.7;
   }
 
@@ -1339,6 +1371,28 @@ body.loading {
   .nav-pane,
   .product-detail {
     display: none;
+  }
+}
+
+.react-phone-number-input {
+  margin: 8px 0;
+
+  .react-phone-number-input__country--native {
+    // display: none;
+  }
+
+  .react-phone-number-input__input,
+  .react-phone-number-input__input:focus {
+    @extend .input;
+    @extend .border-radius-base;
+    @extend .font-weight-bold;
+
+    text-align: center;
+    color: $main-color;
+  }
+
+  .react-phone-number-input__icon {
+    border: 0;
   }
 }
 

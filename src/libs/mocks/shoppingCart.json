@@ -11,7 +11,7 @@
           "productId": "5b43287d678e5590a0afc463",
           "business": "nike",
           "title": "Air Force 1(41/red)",
-          "displayPrice": 1,
+          "displayPrice": 0.01,
           "total": 2,
           "subtotal": 2,
           "variations": [
@@ -36,7 +36,7 @@
           "productId": "5b44788bbb36740d5975086b",
           "business": "nike",
           "title": "Blue_Heel",
-          "displayPrice": 1,
+          "displayPrice": 0.01,
           "total": 1,
           "subtotal": 1,
           "variations": [

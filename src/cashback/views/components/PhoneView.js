@@ -38,7 +38,7 @@ class PhoneView extends React.Component {
     return (
       <section className="asdie-section">
         <aside className="aside-bottom not-full">
-          <label className="cash-back-form__label text-center">Claim with your mobile number</label>
+          <label className="phone-view-form__label text-center">Claim with your mobile number</label>
           <PhoneInput
             placeholder="Enter phone number"
             value={phone}
@@ -46,7 +46,7 @@ class PhoneView extends React.Component {
             onChange={phone => setPhone(phone)}
           />
           <button
-            className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
+            className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
             onClick={this.submitPhoneNumber.bind(this)}
             disabled={!phone}
           >Continue</button>

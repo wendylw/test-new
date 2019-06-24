@@ -9,7 +9,7 @@
           {
             "id": "5b44788bbb36740d5975086b",
             "title": "Blue_Heel",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b44788bbb36740d5975086b/fe0d96a7-415a-44c6-d13c-f9083bf392bd",
@@ -59,7 +59,7 @@
           {
             "id": "5b43269e678e5590a0afc446",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -109,7 +109,7 @@
           {
             "id": "5b447930bb36740d597508a1",
             "title": "Wallace",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b447930bb36740d597508a1/a5ebdcbf-9508-4b03-e1f9-b44cf4420bc3",
@@ -209,7 +209,7 @@
           {
             "id": "5b43269e678e5590a0afc446-1",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -259,7 +259,7 @@
           {
             "id": "5b43269e678e5590a0afc446-2",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -309,7 +309,7 @@
           {
             "id": "5b43269e678e5590a0afc446-3",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -359,7 +359,7 @@
           {
             "id": "5b43269e678e5590a0afc446-4",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -409,7 +409,7 @@
           {
             "id": "5b43269e678e5590a0afc446-5",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -459,7 +459,7 @@
           {
             "id": "5b43269e678e5590a0afc446-6",
             "title": "Air Force 1",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
@@ -516,7 +516,7 @@
           {
             "id": "5b447930bb36740d597508a1",
             "title": "Wallace",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b447930bb36740d597508a1/a5ebdcbf-9508-4b03-e1f9-b44cf4420bc3",
@@ -573,7 +573,7 @@
           {
             "id": "5b44788bbb36740d5975086b",
             "title": "Blue_Heel",
-            "displayPrice": 1,
+            "displayPrice": 0.01,
             "trackInventory": true,
             "images": [
               "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b44788bbb36740d5975086b/fe0d96a7-415a-44c6-d13c-f9083bf392bd",
