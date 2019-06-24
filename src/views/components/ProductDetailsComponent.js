@@ -70,11 +70,17 @@ export class ProductDetailsComponent extends Component {
     const { cartQuantity, variationsByIdMap } = this.state;
     const singleChoiceVariations = this.getSingleChoiceVariations();
 
-    return cartQuantity > 0
-      && this.getVariationsValue().length > 0
-      && singleChoiceVariations.filter(
+    // check: cart should not empty
+    let submitable = cartQuantity > 0;
+
+    // check: if product has single variants, then they should be all selected.
+    if (singleChoiceVariations.length > 0) {
+      submitable = submitable && this.getVariationsValue().length > 0 && singleChoiceVariations.filter(
         v => (variationsByIdMap[v.id] || []).length > 0
       ).length === singleChoiceVariations.length;
+    }
+
+    return submitable;
   }
 
   getSingleChoiceVariations() {

@@ -10,29 +10,25 @@ class HomeBody extends React.Component {
 
   renderCashback() {
     const { cashback, defaultLoyaltyRatio } = this.props;
-    let [intPart, decimalPart] = defaultLoyaltyRatio ? ((1 * 100) / defaultLoyaltyRatio).toFixed(2).split('.') : ['0'];
-    const percentage = [intPart];
+    let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
     const cashbackNumber = Number(cashback);
 
     if (!cashback && !defaultLoyaltyRatio) {
       return null;
     }
 
-    if (decimalPart) {
-      decimalPart = decimalPart.replace(/0+$/, '');
-      if (decimalPart) percentage.push(decimalPart);
-    }
-
     if (!isNaN(cashbackNumber) && cashbackNumber) {
       return <CurrencyNumber classList="cash-back__money" money={cashback} />;
     }
 
-    return <span className="cash-back__money">{`${percentage.join('.')}% Cashback`}</span>;
+    return <span className="cash-back__money">{`${percentage}% Cashback`}</span>;
   }
 
   render() {
     const { storeName = '', street = '' } = this.props;
     const addressInfo = [storeName, street].filter(v => v);
+
+    console.log(this.props);
 
     return (
       <section className="cash-back__home text-center">

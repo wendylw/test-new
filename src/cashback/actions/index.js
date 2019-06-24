@@ -56,16 +56,12 @@ export const getCashbackHashData = hash => async (dispatch, getState) => {
   }
 };
 
-export const getCashbackHistory = ({ customerId, page, size }) => async (dispatch) => {
+export const getCashbackHistory = ({ customerId, page, size }) => async (dispatch, getState) => {
   try {
     const { ok, data } = await api({
       url: `${Constants.api.HISTORY}/?customerId=${customerId}&page=${page}&count=${size}`,
       method: 'get',
     });
-
-    if (!Array.isArray(data.logs) || (!data.logs.length && page === 1)) {
-      dispatch(sendMessage('Your cashback will be tracked here after your first purchase.'));
-    }
 
     if (ok) {
       dispatch({
@@ -93,8 +89,6 @@ const cashbackSendMessage = (response, history) => dispatch => {
     /* save Cash Back messages */
     'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
     'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
-    'Claimed_SameUser': `You've already earned cashback for this receipt. `,
-    'Claimed_DifferentUser': `Someone else has already earned cashback for this receipt. 😅`,
     'Claimed_Processing': `You've earned more cashback! We'll add it once it's been processed. 😉`,
     'Claimed_Someone_Else': `Someone else has already earned cashback for this receipt. 😅`,
     'Claimed_Repeat': `You've already earned cashback for this receipt. 👍`,
