@@ -24,12 +24,12 @@ class PhoneView extends React.Component {
   }
 
   render() {
-    const { phone, setPhone, country } = this.props;
+    const { label, phone, setPhone, country } = this.props;
 
     return (
       <section className="asdie-section">
         <aside className="aside-bottom not-full">
-          <label className="cash-back-form__label text-center">Claim with your mobile number</label>
+          <label className="cash-back-form__label text-center">{label}</label>
           <PhoneInput
             placeholder="Enter phone number"
             value={phone}
@@ -48,8 +48,10 @@ class PhoneView extends React.Component {
 }
 
 PhoneView.propTypes = {
+  label: PropTypes.string,
 	phone: PropTypes.string,
-	country: PropTypes.string,
+  country: PropTypes.string,
+  tryOtpAndSaveCashback: PropTypes.func,
 	setPhone: PropTypes.func,
 };
 

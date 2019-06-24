@@ -54,6 +54,7 @@ apiGql.TOGGLE_MENU = gql`
 `;
 
 // powered by core-api
+//TODO: enableQROrderingCashback
 apiGql.GET_CORE_BUSINESS = gql`
   query CoreBusiness($business: ID!, $storeId: ID!) {
     business(name: $business) {
@@ -63,7 +64,6 @@ apiGql.GET_CORE_BUSINESS = gql`
       serviceChargeRate
       serviceChargeTax
       subscriptionStatus
-      enableQROrderingCashback
       stores(id: $storeId) {
         receiptTemplateData {
           taxName
