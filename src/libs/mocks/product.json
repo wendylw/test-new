@@ -18,7 +18,8 @@
             {
               "id": "5b44788bbb36740d59750873",
               "value": "40",
-              "priceDiff": 1
+              "priceDiff": 1,
+              "markedSoldOut": true
             },
             {
               "id": "5b44788bbb36740d59750872",
