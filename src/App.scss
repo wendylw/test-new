@@ -97,6 +97,10 @@ img {
   &__non-underline {
     text-decoration: none;
   }
+
+  &__block {
+    display: block;
+  }
 }
 
 .warning {
@@ -146,6 +150,7 @@ img {
   &__fill {
     border: 0;
     height: 14vw;
+    line-height: 14vw;
     color: $white;
     background-color: $theme-color;
   }
@@ -517,6 +522,14 @@ img {
     max-width: 340px;
     font-size: 1.3rem;
     line-height: 1.7rem;
+
+    span {
+      font-size: inherit;
+    }
+
+    ~ .link__block {
+      margin: 10px 0;
+    }
   }
 
   &__button {
@@ -1244,9 +1257,9 @@ img {
 
     margin: 8vw 0 0;
     background-color: $gray-5;
-    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, .1);
+    box-shadow: 1px 1px 8px 1px rgba(0, 0, 0, 0.1);
 
-  > * ~ * {
+    > * ~ * {
       border-top: 1px solid $gray-3;
     }
   }

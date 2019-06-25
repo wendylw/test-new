@@ -373,6 +373,14 @@ img {
     max-width: 450px;
     font-size: 1.3rem;
     line-height: 1.7rem;
+
+    span {
+      font-size: inherit;
+    }
+
+    ~ .link__block {
+      margin: 10px 0;
+    }
   }
 
   &__button {

@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { compose } from 'react-apollo';
 import withOrderDetail from '../libs/withOrderDetail';
 import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
-import Utils from '../libs/utils';
 import config from '../config';
 import Constants from '../Constants';
 import DocumentTitle from '../views/components/DocumentTitle';
-import PhoneView from '../components/PhoneView';
+import PhoneViewContainer from '../ajax-containers/PhoneViewContainer';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
@@ -70,20 +69,13 @@ export class ThankYou extends Component {
   renderPhoneView() {
     const { gqlOnlineStoreInfo, enableQROrderingCashback } = this.props;
     const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
-    const { country } = onlineStoreInfo;
 
     if (!enableQROrderingCashback) {
       return null;
     }
 
     return (
-      <PhoneView
-        className="thanks__phone-view"
-        label={`Earn RM5.00 Cashback with Your Mobile Number`}
-        phone={Utils.getPhoneNumber()}
-        country={country}
-        setPhone={Utils.setPhoneNumber}
-      />
+      <PhoneViewContainer onlineStoreInfo={onlineStoreInfo} />
     );
   }
 
@@ -114,7 +106,7 @@ export class ThankYou extends Component {
           </span>
         </header>
         <div className="thanks text-center">
-          <img class="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
+          <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
           <p>Our kitchen's preparing up your order now. <span role="img" aria-label="Goofy">😋</span></p>
 

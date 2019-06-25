@@ -7,6 +7,15 @@ import PhoneInput from 'react-phone-number-input'
 class PhoneView extends React.Component {
   state = {
     showVerify: false,
+    isLoading: this.props.isLoading
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { isLoading } = nextProps;
+
+    if (isLoading !== this.state.isLoading) {
+      this.setState({ isLoading });
+    }
   }
 
   toggleVerifyModal(flag) {
@@ -18,18 +27,31 @@ class PhoneView extends React.Component {
     this.setState({ showVerify: !this.state.showVerify });
   }
 
-  async submitPhoneNumber() {
-    const { history, saveCashback } = this.props;
+  savePhoneNumber() {
+    const { submitPhoneNumber } = this.props;
 
-    saveCashback(history);
+    this.setState({ isLoading: true });
+
+    submitPhoneNumber();
   }
 
   render() {
-    const { className, label, phone, setPhone, country } = this.props;
+    const {
+      className,
+      phone,
+      setPhone,
+      country,
+      buttonText,
+    } = this.props;
+    const { isLoading } = this.state;
+    let buttonContent = buttonText;
+
+    if (isLoading) {
+      buttonContent = <div className="loader"></div>;
+    }
 
     return (
       <div className={className}>
-        <label className="phone-view-form__label text-center">{label}</label>
         <PhoneInput
           placeholder="Enter phone number"
           value={phone}
@@ -38,9 +60,11 @@ class PhoneView extends React.Component {
         />
         <button
           className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
-          onClick={this.submitPhoneNumber.bind(this)}
-          disabled={!phone}
-        >Continue</button>
+          onClick={this.savePhoneNumber.bind(this)}
+          disabled={!phone || isLoading}
+        >
+          {buttonContent}
+        </button>
       </div>
     );
   }
@@ -48,11 +72,16 @@ class PhoneView extends React.Component {
 
 PhoneView.propTypes = {
   className: PropTypes.string,
-  label: PropTypes.string,
   phone: PropTypes.string,
   country: PropTypes.string,
-  saveCashback: PropTypes.func,
+  submitPhoneNumber: PropTypes.func,
   setPhone: PropTypes.func,
+  isLoading: PropTypes.bool,
+  buttonText: PropTypes.string,
+};
+
+PhoneView.defaultProps = {
+  isLoading: false
 };
 
 export default PhoneView;

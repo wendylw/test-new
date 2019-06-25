@@ -6,20 +6,26 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-    INDEX: '/',
-    ORDERING: '/ordering', // App basename
-    HOME: '/ordering/',
-    PORDUCTS: '/ordering/products',
-    CART: '/ordering/cart',
-    PAYMENT: '/ordering/payment',
-    THANK_YOU: '/ordering/thank-you',
-    SORRY: '/ordering/sorry',
-    PLAYGROUND: 'playground',
-    ERROR: '/ordering/error',
-    CASHBACK: '/loyalty', // App basename
-    CASHBACK_HOME: '/loyalty/',
-    CASHBACK_CLAIM: '/loyalty/claim',
-    CASHBACK_ERROR: '/loyalty/error',
+  INDEX: '/',
+  ORDERING: '/ordering', // App basename
+  HOME: '/ordering/',
+  PORDUCTS: '/ordering/products',
+  CART: '/ordering/cart',
+  PAYMENT: '/ordering/payment',
+  THANK_YOU: '/ordering/thank-you',
+  SORRY: '/ordering/sorry',
+  PLAYGROUND: 'playground',
+  ERROR: '/ordering/error',
+  CASHBACK: '/loyalty', // App basename
+  CASHBACK_HOME: '/loyalty/',
+  CASHBACK_CLAIM: '/loyalty/claim',
+  CASHBACK_ERROR: '/loyalty/error',
+};
+
+const CASHBACK_SOURCE = {
+  REGISTER: 'REGISTER',
+  RECEIPT: 'RECEIPT',
+  QR_ORDERING: 'QR_ORDERING',
 };
 
 const DOCUMENT_TITLE = {
@@ -56,6 +62,7 @@ export default {
   DOCUMENT_ROOT_ID,
   MANIFEST,
   ROUTER_PATHS,
+  CASHBACK_SOURCE,
   PAYMENT_METHODS,
   ADD_TO_CART_MIN_QUANTITY,
   BACKEND_PING_PATH,

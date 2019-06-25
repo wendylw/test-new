@@ -32,7 +32,7 @@ export const getStandingCents = payload => async (dispatch) => {
 }
 
 export const getCashbackHashData = hash => async (dispatch, getState) => {
-  const { hashData = {}} = getState().common;
+  const { hashData = {} } = getState().common;
 
   if (hashData.h) return;
 
@@ -165,7 +165,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       data: {
         phone,
         receiptNumber,
-        source: "RECEIPT" //options: REGISTER, RECEIPT, QR_ORDERING
+        source: GlobalConstants.CASHBACK_SOURCE.RECEIPT
       },
     });
     const { ok, data, error } = response;

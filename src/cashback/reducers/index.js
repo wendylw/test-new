@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
-import { GET_STANDING_CENTS,
+import {
+  GET_STANDING_CENTS,
   SET_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
