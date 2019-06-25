@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CurrencyNumber from './CurrencyNumber';
 import Image from './Image';
+import SoldOutMark from './SoldOutMark';
 
 export class ItemComponent extends Component {
   static propTypes = {
@@ -12,6 +13,7 @@ export class ItemComponent extends Component {
     quantity: PropTypes.number,
     decreaseDisabled: PropTypes.bool,
     increaseDisabled: PropTypes.bool,
+    soldOut: PropTypes.bool,
     onDecrease: PropTypes.func,
     onIncrease: PropTypes.func,
   };
@@ -32,11 +34,6 @@ export class ItemComponent extends Component {
       title,
       variation,
       price,
-      quantity,
-      decreaseDisabled,
-      increaseDisabled,
-      onDecrease,
-      onIncrease,
     } = this.props;
 
     return (
@@ -48,7 +45,31 @@ export class ItemComponent extends Component {
             {variation ? <p className="item__description">{variation}</p> : null}
             <span className="gray-font-opacity"><CurrencyNumber money={price} /></span>
           </div>
-          <div className={`item__cart-ctrl ${quantity > 0 ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
+          
+          {this.renderOperators()}
+        </div>
+      </li>
+    )
+  }
+
+  renderOperators = () => {
+    const {
+      quantity,
+      decreaseDisabled,
+      increaseDisabled,
+      soldOut,
+      onDecrease,
+      onIncrease,
+    } = this.props;
+
+    if (soldOut) {
+      return (
+        <SoldOutMark />
+      )
+    }
+
+    return (
+      <div className={`item__cart-ctrl ${quantity > 0 ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
             <button
               className="cart__ctrl cart__minuts"
               disabled={decreaseDisabled}
@@ -71,8 +92,6 @@ export class ItemComponent extends Component {
               <i className="cart__icon"></i>
             </button>
           </div>
-        </div>
-      </li>
     )
   }
 }

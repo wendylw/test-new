@@ -35,6 +35,7 @@ class CartItemsComponent extends Component {
             productId,
             variations, // NOTICE: API returns null, not a [].
             variationTexts,
+            markedSoldOut,
             displayPrice,
             quantity,
             image,
@@ -47,6 +48,7 @@ class CartItemsComponent extends Component {
               price={displayPrice}
               quantity={quantity}
               decreaseDisabled={quantity === 0}
+              soldOut={markedSoldOut}
               onDecrease={() => {
                 if (quantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
                   this.props.removeShoppingCartItem({

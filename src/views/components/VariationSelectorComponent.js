@@ -29,7 +29,7 @@ export class VariationSelectorComponent extends Component {
 
     this.setState({
       selected: {
-        [optionValues[0].id]: true,
+        [optionValues.filter(v => !v.markedSoldOut)[0].id]: true,
       }
     }, this.onSelected);
   }
@@ -71,20 +71,32 @@ export class VariationSelectorComponent extends Component {
         <h4 className="product-detail__options-title gray-font-opacity">{variation.name}</h4>
         <ul className="tag__cards">
         {
-          variation.optionValues.map(({ id, value }) => (
-            <li
-              key={id}
-              className={`tag__card ${!!this.state.selected[id] ? 'active' : ''}`}
-              onClick={() => this.setState({
-                selected: {
-                  ...(this.isSingleChoice() ? null : this.state.selected),
+          variation.optionValues.map(({ id, value, markedSoldOut }) => {
+            const className = []
 
-                  // prevent reverse select when SingleChoice
-                  [id]: this.isSingleChoice() ? this.state.selected : !this.state.selected[id],
-                }
-              }, this.onSelected)}
-            >{value}</li>
-          ))
+            if (markedSoldOut) {
+              className.push('sold-out')
+            } else if (this.state.selected[id]) {
+              className.push('active')
+            } else {
+              className.push('')
+            }
+
+            return (
+              <li
+                key={id}
+                className={`tag__card ${className}`}
+                onClick={() => this.setState({
+                  selected: {
+                    ...(this.isSingleChoice() ? null : this.state.selected),
+  
+                    // prevent reverse select when SingleChoice
+                    [id]: this.isSingleChoice() ? this.state.selected : !this.state.selected[id],
+                  }
+                }, this.onSelected)}
+              >{value}</li>
+            )
+          })
         }
       </ul>
       </li>

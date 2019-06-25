@@ -985,6 +985,13 @@ img {
     color: $white;
     background-color: $theme-color;
   }
+
+  &__card.sold-out {
+    pointer-events: none;
+    border-color: $gray-3;
+    color: $gray-1;
+    background-color: $gray-3;
+  }
 }
 
 .menu-button {

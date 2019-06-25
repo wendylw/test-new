@@ -12,6 +12,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
       variationId
       optionId
     }
+    markedSoldOut
     displayPrice
     quantity
     image
@@ -110,6 +111,7 @@ apiGql.GET_PRODUCT_DETAIL = gql`
           id
           value
           priceDiff
+          markedSoldOut
         }
       }
       trackInventory

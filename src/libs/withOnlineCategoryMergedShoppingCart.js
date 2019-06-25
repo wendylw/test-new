@@ -18,6 +18,7 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
       if (results.length) {
         product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);
         product.cartItemIds = results.map(c => c.id);
+        product.soldOut = !!results.find(c => c.markedSoldOut);
         product.cartItems = results;
         product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
         product.canDecreaseQuantity = !product.hasSingleChoice || product.cartItemIds.length === 1;
@@ -25,8 +26,6 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
       }
     });
   });
-
-  // console.log('onlineCategory (cart merged) => %o', onlineCategory);
 
   return onlineCategory;
 }
@@ -37,9 +36,6 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
-        // mocked data
-        // gqlProducts.onlineCategory = require('./mocks/onlineCategory.json');
-
         Object.assign(props, { onlineCategory });
       }
 
@@ -51,9 +47,6 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
-        // mocked data
-        // return { shoppingCart: require('./mocks/shoppingCart.json').data.shoppingCart };
-
         Object.assign(props, { shoppingCart });
       }
 
@@ -61,8 +54,6 @@ const withOnlineCategoryMergedCart = compose(
     },
   }),
   TheComponent => ({ shoppingCart, onlineCategory, children, ...props }) => {
-    // onlineCategory = require('./mocks/onlineCategory.json').data.onlineCategory; // TODO: remove it
-
     const onlineCategoryMergedShoppingCart = mergeWithShoppingCart(onlineCategory, shoppingCart);
 
     return (
