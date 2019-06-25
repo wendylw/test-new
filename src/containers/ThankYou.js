@@ -59,8 +59,7 @@ export class ThankYou extends Component {
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
           <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
-          {/* <span className="thanks-pickup__id-number">{pickUpId}</span> */}
-          <span className="thanks-pickup__id-number">{4325}</span>
+          <span className="thanks-pickup__id-number">{pickUpId}</span>
         </div>
       </div>
     );
