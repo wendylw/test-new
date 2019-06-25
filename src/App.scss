@@ -554,6 +554,13 @@ img {
   }
 }
 
+.product-sold-out {
+  padding: 0.3rem 0.4rem;
+  color: $gray-5;
+  border-radius: 3px;
+  background-color: $gray-2;
+}
+
 .item {
   padding: 2.4vw;
   background-color: $white;

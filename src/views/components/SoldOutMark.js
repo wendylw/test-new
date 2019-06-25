@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class SoldOutMark extends Component {
   render() {
     return (
-      <div>
+      <div className="text-uppercase product-sold-out">
         Sold out
       </div>
     );
