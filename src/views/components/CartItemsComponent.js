@@ -26,10 +26,12 @@ class CartItemsComponent extends Component {
       return 0;
     }
 
+    const cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items];
+
     return (
       <ul className="list">
         {
-          shoppingCart.items.sort(sortFn).map(({
+          cartItems.sort(sortFn).map(({
             id,
             title,
             productId,
