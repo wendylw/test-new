@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
 import 'react-phone-number-input/style.css'
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { tryOtpAndSaveCashback, fetchPhone, setPhone } from '../../actions';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
