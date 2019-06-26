@@ -32,7 +32,7 @@ export const getStandingCents = payload => async (dispatch) => {
 }
 
 export const getCashbackHashData = hash => async (dispatch, getState) => {
-  const { hashData = {}} = getState().common;
+  const { hashData = {} } = getState().common;
 
   if (hashData.h) return;
 
@@ -291,7 +291,7 @@ export const fetchPhone = () => async dispatch => {
 }
 
 export const savePhone = phone => async dispatch => {
-  localStorage.setItem('user.p', phone);
+  localStorage.setItem('user.p', phone || '');
 };
 
 export const sendMessage = (message, type = 'primary') => ({
