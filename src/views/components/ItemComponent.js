@@ -23,6 +23,7 @@ export class ItemComponent extends Component {
     variation: '',
     decreaseDisabled: false,
     increaseDisabled: false,
+    soldOut: false,
     onDecrease: () => {},
     onIncrease: () => {},
   };

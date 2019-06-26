@@ -72,20 +72,18 @@ export class VariationSelectorComponent extends Component {
         <ul className="tag__cards">
         {
           variation.optionValues.map(({ id, value, markedSoldOut }) => {
-            const className = []
+            const className = ['tag__card']
 
             if (markedSoldOut) {
-              className.push('sold-out')
+              className.push('disabled')
             } else if (this.state.selected[id]) {
               className.push('active')
-            } else {
-              className.push('')
             }
 
             return (
               <li
                 key={id}
-                className={`tag__card ${className}`}
+                className={className.join(' ')}
                 onClick={() => this.setState({
                   selected: {
                     ...(this.isSingleChoice() ? null : this.state.selected),

@@ -554,13 +554,6 @@ img {
   }
 }
 
-.product-sold-out {
-  padding: 0.3rem 0.4rem;
-  color: $gray-5;
-  border-radius: 3px;
-  background-color: $gray-2;
-}
-
 .item {
   padding: 2.4vw;
   background-color: $white;
@@ -987,13 +980,20 @@ img {
     background-color: transparent;
   }
 
+  &__card.info {
+    padding: 3px;
+    color: $white;
+    border-color: $gray-1;
+    background-color: $gray-1;
+  }
+
   &__card.active {
     border-color: $theme-color;
     color: $white;
     background-color: $theme-color;
   }
 
-  &__card.sold-out {
+  &__card.disabled {
     pointer-events: none;
     border-color: $gray-3;
     color: $gray-1;
