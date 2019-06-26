@@ -26,10 +26,10 @@ class PhoneViewContainer extends React.Component {
 		const { history } = this.props;
 		const { phone } = this.state;
 		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-		let options = Object.assign({
+		let options = {
 			url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}` : ''}`,
 			method
-		});
+		};
 
 		if (method === 'post') {
 			options = Object.assign({}, options, {
