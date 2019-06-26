@@ -52,6 +52,7 @@ class PhoneViewContainer extends React.Component {
 			const { customerId } = data;
 
 			redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+			Utils.setPhoneNumber(phone);
 		}
 
 		this.setState({
@@ -62,8 +63,6 @@ class PhoneViewContainer extends React.Component {
 
 	handleUpdatePhoneNumber(phone) {
 		this.setState({ phone });
-
-		Utils.setPhoneNumber(phone);
 	}
 
 	renderCurrencyNumber() {
