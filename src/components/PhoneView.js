@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import 'react-phone-number-input/style.css'
-import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input';
 
 
 class PhoneView extends React.Component {
   state = {
     showVerify: false,
-    isLoading: this.props.isLoading
+    isLoading: this.props.isLoading,
+    errorMessage: {
+      phone: null
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -43,7 +46,10 @@ class PhoneView extends React.Component {
       country,
       buttonText,
     } = this.props;
-    const { isLoading } = this.state;
+    const {
+      isLoading,
+      errorMessage,
+    } = this.state;
     let buttonContent = buttonText;
 
     if (isLoading) {
@@ -54,10 +60,23 @@ class PhoneView extends React.Component {
       <div className={className}>
         <PhoneInput
           placeholder="Enter phone number"
-          value={phone}
+          value={formatPhoneNumberIntl(phone)}
           country={country}
-          onChange={phone => setPhone(phone)}
+          onChange={phone => {
+            console.log(phone);
+
+            console.log(isValidPhoneNumber(phone));
+
+            setPhone(phone);
+          }}
         />
+
+        {
+          errorMessage.phone
+            ? <span className="error">{errorMessage.phone}</span>
+            : null
+        }
+
         <button
           className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
           onClick={this.savePhoneNumber.bind(this)}

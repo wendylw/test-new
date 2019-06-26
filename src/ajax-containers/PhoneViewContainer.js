@@ -13,23 +13,25 @@ class PhoneViewContainer extends React.Component {
 
 	state = {
 		cashbackInfoResponse: {},
+		phone: null,
 		isSavingPhone: false,
 		redirectURL: null
 	}
 
 	componentWillMount() {
-		this.cashbackAjax('get');
+		this.handleCashbackAjax('get');
 	}
 
-	async cashbackAjax(method) {
+	async handleCashbackAjax(method) {
 		const { history } = this.props;
+		const { phone } = this.state;
 		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 		const options = Object.assign({
 			url: `${Constants.api.CASHBACK}${method === 'post' ? `?receiptNumber=${receiptNumber}` : ''}`,
 			method
 		}, method === 'post' ? {
 			data: {
-				phone: Utils.getPhoneNumber(),
+				phone,
 				receiptNumber,
 				source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
 			}
@@ -53,6 +55,12 @@ class PhoneViewContainer extends React.Component {
 		});
 	}
 
+	handleUpdatePhoneNumber(phone) {
+		this.setState({ phone });
+
+		Utils.setPhoneNumber(phone);
+	}
+
 	renderCurrencyNumber() {
 		const { onlineStoreInfo: {
 			locale,
@@ -71,7 +79,11 @@ class PhoneViewContainer extends React.Component {
 		const { onlineStoreInfo: {
 			country,
 		} } = this.props;
-		const { isSavingPhone, redirectURL } = this.state;
+		const {
+			isSavingPhone,
+			redirectURL,
+			phone,
+		} = this.state;
 
 		if (redirectURL) {
 			return (
@@ -84,10 +96,10 @@ class PhoneViewContainer extends React.Component {
 
 		return (
 			<PhoneView
-				phone={Utils.getPhoneNumber()}
+				phone={phone}
 				country={country}
-				setPhone={Utils.setPhoneNumber}
-				submitPhoneNumber={this.cashbackAjax.bind(this, 'post')}
+				setPhone={this.handleUpdatePhoneNumber.bind(this)}
+				submitPhoneNumber={this.handleCashbackAjax.bind(this, 'post')}
 				isLoading={isSavingPhone}
 				buttonText="Continue"
 			/>
