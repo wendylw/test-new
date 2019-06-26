@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input';
+import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input';
 
 
 class PhoneView extends React.Component {

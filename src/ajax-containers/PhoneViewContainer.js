@@ -26,16 +26,21 @@ class PhoneViewContainer extends React.Component {
 		const { history } = this.props;
 		const { phone } = this.state;
 		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-		const options = Object.assign({
-			url: `${Constants.api.CASHBACK}${method === 'post' ? `?receiptNumber=${receiptNumber}` : ''}`,
+		let options = Object.assign({
+			url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}` : ''}`,
 			method
-		}, method === 'post' ? {
-			data: {
-				phone,
-				receiptNumber,
-				source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
-			}
-		} : {});
+		});
+
+		if (method === 'post') {
+			options = Object.assign({}, options, {
+				data: {
+					phone,
+					receiptNumber,
+					source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
+				}
+			});
+		}
+
 		const { data } = await api(options);
 		let redirectURL = null;
 
@@ -51,7 +56,7 @@ class PhoneViewContainer extends React.Component {
 
 		this.setState({
 			isSavingPhone: false,
-			redirectURL
+			redirectURL,
 		});
 	}
 
@@ -62,23 +67,38 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	renderCurrencyNumber() {
-		const { onlineStoreInfo: {
-			locale,
-			currency,
-		} } = this.props;
-		const { cashbackInfoResponse: {
-			cashback
-		} } = this.state;
+		const {
+			onlineStoreInfo: {
+				locale,
+				currency,
+			}
+		} = this.props;
+		const {
+			cashbackInfoResponse: {
+				cashback,
+			},
+		} = this.state;
+
+		if (!cashback) {
+			return null;
+		}
 
 		return (
-			<CurrencyNumber locale={locale} currency={currency} classList="font-weight-bold" money={Math.abs(cashback || 0)} />
+			<CurrencyNumber
+				locale={locale}
+				currency={currency}
+				classList="font-weight-bold"
+				money={Math.abs(cashback || 0)}
+			/>
 		);
 	}
 
 	renderPhoneView() {
-		const { onlineStoreInfo: {
-			country,
-		} } = this.props;
+		const {
+			onlineStoreInfo: {
+				country,
+			},
+		} = this.props;
 		const {
 			isSavingPhone,
 			redirectURL,
@@ -107,12 +127,17 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	render() {
-		const { onlineStoreInfo: {
-			country,
-		} } = this.props;
-		const { cashbackInfoResponse: {
-			cashback
-		}, redirectURL } = this.state;
+		const {
+			onlineStoreInfo: {
+				country,
+			}
+		} = this.props;
+		const {
+			cashbackInfoResponse: {
+				cashback,
+			},
+			redirectURL,
+		} = this.state;
 
 		if (!country || !cashback) {
 			return null;

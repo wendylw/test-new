@@ -22,8 +22,10 @@ CurrencyNumber.propTypes = {
 	classList: PropTypes.string,
 	locale: PropTypes.string,
 	currency: PropTypes.string,
-	/* Other props */
-	/* money */
+	money: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number
+	]),
 };
 
 export default CurrencyNumber;

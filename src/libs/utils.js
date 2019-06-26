@@ -31,8 +31,4 @@ Utils.setPhoneNumber = function setPhoneNumber(phone) {
   localStorage.setItem('user.p', phone);
 }
 
-Utils.formatPhoneNumber = function formatPhoneNumber(phone, countryCode) {
-
-}
-
 export default Utils;
