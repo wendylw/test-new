@@ -21,7 +21,7 @@ export class VariationSelectorComponent extends Component {
   }
 
   selectDefault() {
-    if (Object.keys(this.state.selected).lenght || !this.isSingleChoice()) {
+    if (Object.keys(this.state.selected).length || !this.isSingleChoice()) {
       return;
     }
 
