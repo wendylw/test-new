@@ -62,13 +62,7 @@ class PhoneView extends React.Component {
           placeholder="Enter phone number"
           value={formatPhoneNumberIntl(phone)}
           country={country}
-          onChange={phone => {
-            console.log(phone);
-
-            console.log(isValidPhoneNumber(phone));
-
-            setPhone(phone);
-          }}
+          onChange={phone => setPhone(phone)}
         />
 
         {
