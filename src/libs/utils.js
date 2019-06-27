@@ -31,4 +31,19 @@ Utils.setPhoneNumber = function setPhoneNumber(phone) {
   localStorage.setItem('user.p', phone);
 }
 
+Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
+  if (!countryCode) {
+    return phone;
+  }
+
+  const startIndex = countryCode.length + ((phone || '')[0] === '+' ? 1 : 0);
+  const currentPhone = (phone || '').substring(startIndex);
+
+  if (countryCode && !currentPhone.indexOf(countryCode)) {
+    phone = '+' + countryCode + currentPhone.substring(countryCode.length);
+  }
+
+  return phone;
+}
+
 export default Utils;

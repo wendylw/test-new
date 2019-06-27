@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
-import 'react-phone-number-input/style.css'
+import 'react-phone-number-input/style.css';
+import Utils from '../../../libs/utils';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { tryOtpAndSaveCashback, fetchPhone, setPhone } from '../../actions';
 
@@ -55,7 +56,11 @@ class PhoneView extends React.Component {
             value={formatPhoneNumberIntl(phone)}
             country={country}
             metadata={metadataMobile}
-            onChange={phone => setPhone(phone)}
+            onChange={phone => {
+              const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+              setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+            }}
           />
           <button
             className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
