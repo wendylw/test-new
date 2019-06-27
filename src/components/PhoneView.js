@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css';
-import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 
+const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class PhoneView extends React.Component {
   state = {
@@ -62,7 +63,12 @@ class PhoneView extends React.Component {
           placeholder="Enter phone number"
           value={formatPhoneNumberIntl(phone)}
           country={country}
-          onChange={phone => setPhone(phone)}
+          metadata={metadataMobile}
+          onChange={phone => {
+            const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+            setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+          }}
         />
 
         {
