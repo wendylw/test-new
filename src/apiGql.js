@@ -11,6 +11,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     variations {
       variationId
       optionId
+      markedSoldOut
     }
     markedSoldOut
     displayPrice
