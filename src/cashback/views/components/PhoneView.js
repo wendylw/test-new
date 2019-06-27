@@ -56,7 +56,11 @@ class PhoneView extends React.Component {
             value={formatPhoneNumberIntl(phone)}
             country={country}
             metadata={metadataMobile}
-            onChange={phone => setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[country][0]))}
+            onChange={phone => {
+              const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+              setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+            }}
           />
           <button
             className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
