@@ -26,12 +26,15 @@ export class VariationSelectorComponent extends Component {
     }
 
     const { optionValues } = this.props.variation;
+    const selectedOptionValue = optionValues.filter(v => !v.markedSoldOut)[0]
 
-    this.setState({
-      selected: {
-        [optionValues.filter(v => !v.markedSoldOut)[0].id]: true,
-      }
-    }, this.onSelected);
+    if (selectedOptionValue) {
+      this.setState({
+        selected: {
+          [selectedOptionValue.id]: true,
+        }
+      }, this.onSelected);
+    }
   }
 
   isSingleChoice() {

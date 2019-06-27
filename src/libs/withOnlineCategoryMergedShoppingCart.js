@@ -2,16 +2,8 @@ import React from 'react';
 import { compose } from "react-apollo";
 import withOnlineCategory from "./withOnlineCategory";
 import withShoppingCart from "./withShoppingCart";
+import Utils from './utils';
 
-const isProductSoldOut = (product) => {
-  const { markedSoldOut } = product;
-
-  if (markedSoldOut) {
-    return true;
-  }
-
-  return false;
-}
 
 const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
   if (!shoppingCart || !Array.isArray(onlineCategory)) {
@@ -24,7 +16,7 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     category.cartQuantity = 0;
     products.forEach(product => {
       product.cartQuantity = 0;
-      product.soldOut = isProductSoldOut(product);
+      product.soldOut = Utils.isProductSoldOut(product);
       const results = shoppingCart.items.filter(item => item.productId === product.id);
       if (results.length) {
         product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);

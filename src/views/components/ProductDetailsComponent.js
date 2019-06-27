@@ -5,6 +5,7 @@ import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
 import Constants from '../../Constants';
 import Aside from './Aside';
+import Utils from '../../libs/utils';
 
 export class ProductDetailsComponent extends Component {
   static propTypes = {
@@ -209,25 +210,30 @@ export class ProductDetailsComponent extends Component {
             />
 
             <div className="aside__section-container">
-              <button className="button__fill button__block font-weight-bold" type="button" onClick={async () => {
-                const variations = this.getVariationsValue();
+              <button
+                className="button__fill button__block font-weight-bold"
+                type="button"
+                disabled={!this.isSubmitable() || Utils.isProductSoldOut(product)}
+                onClick={async () => {
+                  const variations = this.getVariationsValue();
 
-                if (this.isSubmitable()) {
-                  const result = await this.props.addOrUpdateShoppingCartItem({
-                    variables: {
-                      action: 'add',
-                      business: config.business,
-                      productId,
-                      quantity: cartQuantity,
-                      variations,
-                    }
-                  });
-                  console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
-                }
+                  if (this.isSubmitable()) {
+                    const result = await this.props.addOrUpdateShoppingCartItem({
+                      variables: {
+                        action: 'add',
+                        business: config.business,
+                        productId,
+                        quantity: cartQuantity,
+                        variations,
+                      }
+                    });
+                    console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
+                  }
 
-                // close popup and go back home.
-                this.hide();
-              }}>OK</button>
+                  // close popup and go back home.
+                  this.hide();
+                }}
+              >OK</button>
             </div>
           </div>
         </>

@@ -23,4 +23,32 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return (top + height) - window.pageYOffset - topAdjustment;
 }
 
+Utils.isProductSoldOut = (product) => {
+  const { markedSoldOut, variations } = product;
+
+  if (markedSoldOut) {
+    return true;
+  }
+
+  if (Array.isArray(variations) && variations.length > 0) {
+    let soldOut = false;
+
+    const firstVariation = variations[0];
+
+    if (firstVariation && firstVariation.variationType === 'SingleChoice') {
+      const soldOutOptions = firstVariation.optionValues.filter(optionValue => {
+        return optionValue.markedSoldOut;
+      });
+
+      if (soldOutOptions.length === firstVariation.optionValues.length) {
+        soldOut = true;
+      }
+    }
+
+    return soldOut;
+  }
+
+  return false;
+}
+
 export default Utils;
