@@ -226,6 +226,7 @@ apiGql.EMPTY_SHOPPING_CART = gql`
   }
 `;
 
+// [source] critirial: { ECOMMERCE: 1, QR: 2 }
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
     $action: String!,
@@ -240,7 +241,8 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       productId: $productId,
       userId: "",
       quantity: $quantity,
-      variations: $variations
+      variations: $variations,
+      source: 2
     }) {
       shoppingCartItem {
         id
