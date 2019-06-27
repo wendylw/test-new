@@ -159,6 +159,7 @@ apiGql.GET_ONLINE_CATEGORY = gql`
             value
           }
         }
+        markedSoldOut
       }
     }
   }
