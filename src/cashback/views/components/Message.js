@@ -26,15 +26,33 @@ class Message extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.message !== this.props.message) {
+    if ((nextProps.message !== this.props.message)
+      || nextProps.errorMessageKey !== this.props.errorMessageKey) {
       return true;
     }
 
     return false;
   }
 
+  getMessageType() {
+    const { errorMessageKey } = this.props;
+    const errorStatus = ['NotClaimed_Cancelled'];
+    let messageType = 'primary';
+
+    if (errorStatus.includes(errorMessageKey)) {
+      messageType = 'error';
+    }
+
+    /* Type includes 'primary', 'error' */
+    return messageType;
+  }
+
   getMessage() {
-    const { message, key } = this.props;
+    const { message, errorMessageKey } = this.props;
+
+    if (!errorMessageKey) {
+      return message;
+    }
 
     const messageMap = {
       /* get Cash Back messages */
@@ -61,25 +79,21 @@ class Message extends React.Component {
       Activity_Incorrect: 'Activity incorrect, need retry.'
     };
 
-    let displayMessage = messageMap[key] || `Oops, please scan QR to claim again.`;
+    let displayMessage = messageMap[errorMessageKey] || `Oops, please scan QR to claim again.`;
 
     return displayMessage;
   }
 
   render() {
-    const {
-      message = '',
-      show = false,
-      type = 'primary',
-    } = this.props;
+    const { show = false } = this.props;
 
     if (!show) {
       return null;
     }
 
     return (
-      <div className={`top - message ${type} `}>
-        <span className="top-message__text">{message}</span>
+      <div className={`top-message ${this.getMessageType()}`}>
+        <span className="top-message__text">{this.getMessage()}</span>
       </div>
     );
   }
@@ -88,8 +102,8 @@ class Message extends React.Component {
 const mapStateToProps = state => {
   try {
     return {
-      type: state.message.type,
       message: state.message.message,
+      errorMessageKey: state.message.errorStatus,
       show: state.message.show,
     };
   } catch (e) {

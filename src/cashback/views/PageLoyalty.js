@@ -13,7 +13,7 @@ import config from '../../config';
 import RedeemButton from './components/RedeemButton';
 
 class PageLoyalty extends React.Component {
-  state = {  }
+  state = {}
 
   componentWillMount() {
     const { history, setCustomerId } = this.props;
@@ -49,7 +49,7 @@ class PageLoyalty extends React.Component {
         query={apiGql.GET_ONLINE_STORE_INFO}
         variables={{ business: config.business }}
         onCompleted={({ onlineStoreInfo }) => this.props.setOnlineStoreInfo(onlineStoreInfo)}>
-          {this.renderMain.bind(this)}
+        {this.renderMain.bind(this)}
       </Query>
     );
   }
