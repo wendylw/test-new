@@ -24,7 +24,8 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
 }
 
 Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
-  let currentPhone = (phone || '').substring(3);
+  const startIndex = (phone || '')[0] === '+' ? 3 : 2;
+  const currentPhone = (phone || '').substring(startIndex);
 
   if (countryCode && !currentPhone.indexOf(countryCode)) {
     phone = '+' + countryCode + currentPhone.substring(countryCode.length);
