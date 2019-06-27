@@ -69,9 +69,9 @@ export class ThankYou extends Component {
     const { gqlOnlineStoreInfo, enableQROrderingCashback } = this.props;
     const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
 
-    if (!enableQROrderingCashback) {
-      return null;
-    }
+    // if (!enableQROrderingCashback) {
+    //   return null;
+    // }
 
     return (
       <PhoneViewContainer onlineStoreInfo={onlineStoreInfo} />

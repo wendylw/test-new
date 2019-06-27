@@ -77,7 +77,7 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
   }
 };
 
-const cashbackSendMessage = (response, history) => dispatch => {
+const cashbackSendMessage = (response) => dispatch => {
   const { data } = response;
 
   const messageMap = {
@@ -191,7 +191,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       return;
     }
 
-    await dispatch(cashbackSendMessage(response, history));
+    await dispatch(cashbackSendMessage(response));
   } catch (e) {
     // TODO: handle error
     console.error(e);
@@ -294,10 +294,11 @@ export const savePhone = phone => async dispatch => {
   localStorage.setItem('user.p', phone);
 };
 
-export const sendMessage = (message, type = 'primary') => ({
+export const sendMessage = (message, type = 'primary', key) => ({
   type: SET_MESSAGE,
   payload: {
-    type, // Type includes 'primary', 'error'
+    key: key || '',
+    type, // Type includes 'primary', 'error',
     message,
     show: true,
   },
@@ -306,6 +307,7 @@ export const sendMessage = (message, type = 'primary') => ({
 export const clearMessage = payload => ({
   type: SET_MESSAGE,
   payload: {
+    key: '',
     message: '',
     show: false,
   },
