@@ -63,6 +63,8 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
       method: 'get',
     });
 
+    console.log(data);
+
     if (ok) {
       dispatch({
         type: SET_CASHBACK_HISTORY,

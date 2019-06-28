@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { compose } from 'react-apollo';
+import { Query, compose } from 'react-apollo';
+import apiGql from '../apiGql';
+import { clientCoreApi } from '../apiClient';
 import withOrderDetail from '../libs/withOrderDetail';
 import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
 import config from '../config';
@@ -66,15 +68,31 @@ export class ThankYou extends Component {
   }
 
   renderPhoneView() {
-    const { gqlOnlineStoreInfo, enableQROrderingCashback } = this.props;
+    const { history, gqlOnlineStoreInfo } = this.props;
     const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
 
-    // if (!enableQROrderingCashback) {
-    //   return null;
-    // }
-
     return (
-      <PhoneViewContainer onlineStoreInfo={onlineStoreInfo} />
+      <Query
+        query={apiGql.GET_CORE_BUSINESS}
+        client={clientCoreApi}
+        variables={{ business: config.business, storeId: config.storeId }}
+        onError={() => {
+          history.replace({
+            pathname: Constants.ROUTER_PATHS.ERROR,
+            state: { message: 'Account name is not found.' },
+          });
+        }}
+      >
+        {({ data: { business = {} } = {} }) => {
+          const { enableQROrderingCashback } = business;
+
+          if (!enableQROrderingCashback) {
+            return null;
+          }
+
+          return (<PhoneViewContainer onlineStoreInfo={onlineStoreInfo} />);
+        }}
+      </Query>
     );
   }
 
