@@ -1,21 +1,21 @@
 const Utils = {};
 
 Utils.debounce = function debounce(fn, timeout = 50) {
-	let timer = null;
-	return function newFn(...args) {
-		if (timer) {
-			clearTimeout(timer);
-		}
+  let timer = null;
+  return function newFn(...args) {
+    if (timer) {
+      clearTimeout(timer);
+    }
 
-		timer = setTimeout(() => fn.apply(fn, args), timeout);
-	};
+    timer = setTimeout(() => fn.apply(fn, args), timeout);
+  };
 };
 
 Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustment = 0) {
   var top = el.offsetTop;
   var height = el.offsetHeight;
 
-  while(el.offsetParent) {
+  while (el.offsetParent) {
     el = el.offsetParent;
     top += el.offsetTop;
   }
@@ -49,6 +49,21 @@ Utils.isProductSoldOut = (product) => {
   }
 
   return false;
+}
+
+Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
+  if (!countryCode) {
+    return phone;
+  }
+
+  const startIndex = countryCode.length + ((phone || '')[0] === '+' ? 1 : 0);
+  const currentPhone = (phone || '').substring(startIndex);
+
+  if (countryCode && !currentPhone.indexOf(countryCode)) {
+    phone = '+' + countryCode + currentPhone.substring(countryCode.length);
+  }
+
+  return phone;
 }
 
 export default Utils;

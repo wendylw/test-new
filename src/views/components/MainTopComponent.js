@@ -12,12 +12,21 @@ class MainTopComponent extends Component {
   render() {
     const { logo, title } = this.props;
     const { table } = config;
+    const classList = ['header border__bottom-divider flex flex-middle flex-space-between'];
+
+    if (!table) {
+      classList.push('has-table')
+    }
 
     return (
-      <header className="header border__bottom-divider flex flex-middle flex-space-between">
+      <header className={classList.join(' ')}>
         <Image className="header__image-container text-middle" src={logo} alt={title} />
         <h1 className="header__title font-weight-bold text-middle">{title}</h1>
-        <span className="gray-font-opacity">Table {table} </span>
+        {
+          table
+          ? <span className="gray-font-opacity text-uppercase">Table {table}</span>
+          : null
+        }
       </header>
     )
   }

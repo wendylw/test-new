@@ -72,11 +72,13 @@ export class ItemComponent extends Component {
     return (
       <div className={`item__cart-ctrl ${quantity > 0 ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
             <button
-              className="cart__ctrl cart__minuts"
+              className="cart__ctrl-container"
               disabled={decreaseDisabled}
               onClick={onDecrease}
             >
-              <i className="cart__icon"></i>
+              <i className="cart__ctrl cart__minuts">
+                <span className="cart__icon"></span>
+              </i>
             </button>
 
             {
@@ -86,11 +88,13 @@ export class ItemComponent extends Component {
             }
 
             <button
-              className="cart__ctrl cart__add"
+              className="cart__ctrl-container"
               onClick={onIncrease}
               disabled={increaseDisabled}
             >
-              <i className="cart__icon"></i>
+              <i className="cart__ctrl cart__add">
+                <span className="cart__icon"></span>
+              </i>
             </button>
           </div>
     )

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { compose, Query } from 'react-apollo';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
 import { shoppingCartType } from '../views/propTypes';
 import CartItems from '../views/components/CartItems';
@@ -20,7 +20,7 @@ export class Cart extends Component {
 
   backToHome() {
     const { history } = this.props;
-    history.replace('/', history.location.state);
+    history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
   }
 
   render() {
@@ -101,7 +101,7 @@ export class Cart extends Component {
             <div className="footer-operation__item width-2-3">
               <Link
                 className={`billing__link button button__fill button__block font-weight-bold ${count > 0 ? '' : 'disabled'}`}
-                to="/payment"
+                to={Constants.ROUTER_PATHS.PAYMENT}
               >Pay</Link>
             </div>
           </footer>
@@ -111,7 +111,7 @@ export class Cart extends Component {
   }
 }
 
-export default compose(withShoppingCart({
+export default compose(withRouter, withShoppingCart({
   props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
     if (loading) {
       return null;

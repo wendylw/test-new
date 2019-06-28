@@ -7,14 +7,19 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
     INDEX: '/',
-    HOME: '/home',
-    PORDUCTS: '/products',
-    CART: '/cart',
-    PAYMENT: '/payment',
-    THANK_YOU: '/thank-you',
-    SORRY: '/sorry',
+    ORDERING: '/ordering', // App basename
+    HOME: '/ordering/',
+    PORDUCTS: '/ordering/products',
+    CART: '/ordering/cart',
+    PAYMENT: '/ordering/payment',
+    THANK_YOU: '/ordering/thank-you',
+    SORRY: '/ordering/sorry',
     PLAYGROUND: 'playground',
-    ERROR: '/error',
+    ERROR: '/ordering/error',
+    CASHBACK: '/loyalty', // App basename
+    CASHBACK_HOME: '/loyalty/',
+    CASHBACK_CLAIM: '/loyalty/claim',
+    CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {
@@ -42,7 +47,12 @@ const PeopleCount = {
   MAX_PLUS: -1,
 }
 
+const OTP_TIMEOUT = 60;
+const OTP_CODE_SIZE = 5;
+
 export default {
+  OTP_CODE_SIZE,
+  OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
   MANIFEST,
   ROUTER_PATHS,

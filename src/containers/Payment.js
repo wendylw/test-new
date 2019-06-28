@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom';
 import { compose, graphql } from 'react-apollo';
-import qs from 'qs';
 import withShoppingCart from '../libs/withShoppingCart';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
@@ -37,13 +37,13 @@ class Payment extends Component {
 
     try {
       const { data } = await this.props.createOrder({
-        variables: {
+        variables: Object.assign({},{
           business: config.business,
           storeId: config.storeId,
-          tableId: config.table,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
-        },
+          tableId: config.table || ''
+        }),
       });
 
       if (data.createOrder) {
@@ -137,7 +137,7 @@ class Payment extends Component {
             const { onlineStoreInfo } = this.props;
             const { order, paymentMethod } = this.state;
             const fields = [];
-            const { h } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+            const h = config.h();
             const queryString = `?h=${encodeURIComponent(h)}`;
 
             if (!onlineStoreInfo || !order || !paymentMethod) {
@@ -174,6 +174,7 @@ class Payment extends Component {
 
 
 export default compose(
+  withRouter,
   withOnlinstStoreInfo({
     props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
       if (loading) {

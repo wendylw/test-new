@@ -84,6 +84,9 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
       locale
       currency
       currencySymbol
+      country
+      state
+      street
     }
   }
 `;
@@ -208,6 +211,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       total
       storeId
       additionalComments
+      pickUpId
     }
   }
 `;
@@ -257,7 +261,7 @@ apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,
     $storeId: String!,
-    $tableId: String!,
+    $tableId: String,
     $pax: Int!,
     $shoppingCartIds: [String]
   ) {

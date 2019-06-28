@@ -54,7 +54,7 @@ export class FooterOperationComponent extends Component {
             </div>
             <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal} /></label>
           </button>
-          <Link className="cart-bar__order-button" to="/cart">
+          <Link className="cart-bar__order-button" to={Constants.ROUTER_PATHS.CART}>
             Order now
           </Link>
         </div>

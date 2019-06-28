@@ -1,0 +1,20 @@
+export const GET_STANDING_CENTS = 'GET_STANDING_CENTS';
+
+// common
+export const SET_ONLINE_STORE_NIFO = 'SET_ONLINE_STORE_NIFO';
+export const SET_HASH_DATA = 'SET_HASH_DATA';
+export const SET_COMMON_DATA = 'SET_COMMON_DATA';
+
+// message
+export const SET_MESSAGE = 'SET_MESSAGE';
+
+// user
+export const SEND_OTP = 'SEND_OTP';
+export const SAVE_PHONE = 'SAVE_PHONE';
+export const GET_PHONE = 'GET_PHONE';
+export const SET_PHONE = 'SET_PHONE';
+export const SEND_OTP_SUCCESS = 'SEND_OTP_SUCCESS';
+export const SEND_OTP_FAILURE = 'SEND_OTP_FAILURE';
+export const RESET_OTP_INPUT = 'RESET_OTP_INPUT';
+export const SET_CUSTOMER_ID = 'SET_CUSTOMER_ID';
+export const SET_CASHBACK_HISTORY = 'SET_CASHBACK_HISTORY';
