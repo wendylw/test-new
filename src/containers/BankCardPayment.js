@@ -16,16 +16,16 @@ import DocumentTitle from '../views/components/DocumentTitle';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class BankCardPayment extends Component {
-  static propTypes = {
-  }
+	static propTypes = {
+	}
 
 	form = null;
 	cardNumberEl = null;
 	prevCardNumber = '';
 	order = {};
 
-  state = {
-    payNowLoading: false,
+	state = {
+		payNowLoading: false,
 		fire: false,
 		cardNumberSelectionStart: 0,
 		card: {},
@@ -41,18 +41,27 @@ class BankCardPayment extends Component {
 		},
 	};
 
-	componentDidMount(){
+	componentDidMount() {
 
 		const script = document.createElement('script');
 
-    script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
-    document.body.appendChild(script);
-  }
+		script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
+		script.onload = function () {
+			window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
+				if (!errCode) {
+					window.encryptedCardInfo = encryptedData.encryptedCardInfo;
+				} else {
+					console.log(errDesc + "(" + errCode + ")");
+				}
+			});
+		};
+		document.body.appendChild(script);
+	}
 
 	getQueryObject(paramName) {
 		const { history } = this.props;
 
-		if(!history.location.search) {
+		if (!history.location.search) {
 			return null;
 		}
 
@@ -136,7 +145,7 @@ class BankCardPayment extends Component {
 			const cardInfoItemResult = FormValidate.validate(id, this.getCardInfoValidationOpts(id, []));
 
 			if (!cardInfoItemResult.isValid) {
-				if(Object.keys(cardInfoResults).includes(cardInfoItemResult.validateKey)) {
+				if (Object.keys(cardInfoResults).includes(cardInfoItemResult.validateKey)) {
 					cardInfoResults[cardInfoItemResult.validateKey].push(id);
 				} else {
 					cardInfoResults[cardInfoItemResult.validateKey] = [id];
@@ -217,10 +226,10 @@ class BankCardPayment extends Component {
 			return;
 		}
 
-    this.setState({
+		this.setState({
 			payNowLoading: true,
 			fire: true,
-    });
+		});
 	}
 
 	handleChangeCardNumber(e) {
@@ -233,7 +242,7 @@ class BankCardPayment extends Component {
 		this.setState({
 			card: Utils.creditCardDetector(e.target.value)
 		}, () => {
-      if (this.cardNumberEl !== null){
+			if (this.cardNumberEl !== null) {
 				this.cardNumberEl.selectionEnd = cursor;
 			}
 		});
@@ -254,7 +263,7 @@ class BankCardPayment extends Component {
 		});
 	}
 
-  renderMain() {
+	renderMain() {
 		const {
 			match,
 			history,
@@ -271,16 +280,16 @@ class BankCardPayment extends Component {
 			cardHolderNameError
 		} = this.state;
 
-    return (
-      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
-        <header className="header border__botton-divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle" onClick={() => {
-            history.replace(Constants.ROUTER_PATHS.PAYMENT, history.location.state);
-          }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
-          </figure>
-          <h2 className="header__title font-weight-bold text-middle">Pay via Card</h2>
-        </header>
+		return (
+			<section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+				<header className="header border__botton-divider flex flex-middle flex-space-between">
+					<figure className="header__image-container text-middle" onClick={() => {
+						history.replace(Constants.ROUTER_PATHS.PAYMENT, history.location.state);
+					}}>
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
+					</figure>
+					<h2 className="header__title font-weight-bold text-middle">Pay via Card</h2>
+				</header>
 
 				<Query
 					query={apiGql.GET_ORDER_DETAIL}
@@ -303,16 +312,16 @@ class BankCardPayment extends Component {
 									</figure>
 									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total} />
 
-									<form className="form">
+									<form id="bank-2c2p-form" className="form">
 										<div className="payment-bank__form-item">
 											<div className="flex flex-middle flex-space-between">
 												<label className="payment-bank__label font-weight-bold">Card information</label>
 												{
 													cardInfoError.keys.includes(FormValidate.errorNames.required)
-													? <span className="error-message font-weight-bold text-uppercase">
+														? <span className="error-message font-weight-bold text-uppercase">
 															{cardInfoError.messages.required}
 														</span>
-													: null
+														: null
 												}
 											</div>
 											<div className="payment-bank__card-container">
@@ -329,10 +338,10 @@ class BankCardPayment extends Component {
 													/>
 													<div className="payment-bank__card-type-container flex flex-middle">
 														<i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-															<img src="/img/payment-visa.svg"/>
+															<img src="/img/payment-visa.svg" />
 														</i>
 														<i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === 'mastercard' ? 'active' : ''}`}>
-															<img src="/img/payment-mastercard.svg"/>
+															<img src="/img/payment-mastercard.svg" />
 														</i>
 													</div>
 												</div>
@@ -358,14 +367,14 @@ class BankCardPayment extends Component {
 											<div className="error-message__container">
 												{
 													cardInfoError.keys.length
-													? (cardInfoError.keys.map(key => {
-														if (key === FormValidate.errorNames.required) {
-															return null;
-														}
+														? (cardInfoError.keys.map(key => {
+															if (key === FormValidate.errorNames.required) {
+																return null;
+															}
 
-														return <span key={key} className="error-message">{cardInfoError.messages[key]}</span>
-													}))
-													: null
+															return <span key={key} className="error-message">{cardInfoError.messages[key]}</span>
+														}))
+														: null
 												}
 											</div>
 										</div>
@@ -374,11 +383,11 @@ class BankCardPayment extends Component {
 												<label className="payment-bank__label font-weight-bold">Name on card</label>
 												{
 													cardHolderNameError.key === FormValidate.errorNames.required
-													?
+														?
 														<span className="error-message font-weight-bold text-uppercase">
 															{cardHolderNameError.message}
 														</span>
-													: null
+														: null
 												}
 											</div>
 											<input
@@ -390,10 +399,11 @@ class BankCardPayment extends Component {
 											/>
 											{
 												cardHolderNameError.key !== FormValidate.errorNames.required
-												? <span className="error-message">{cardHolderNameError.message}</span>
-												: null
+													? <span className="error-message">{cardHolderNameError.message}</span>
+													: null
 											}
 										</div>
+										<input type="hidden" value="" name="encryptedCardInfo"></input>
 									</form>
 								</div>
 
@@ -404,8 +414,8 @@ class BankCardPayment extends Component {
 										disabled={payNowLoading}
 									>{
 											payNowLoading
-											? 'Redirecting'
-											: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total} />
+												? 'Redirecting'
+												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total} />
 										}
 									</button>
 								</div>
@@ -426,7 +436,7 @@ class BankCardPayment extends Component {
 						const h = config.h();
 						const queryString = `?h=${encodeURIComponent(h)}`;
 
-						if (!onlineStoreInfo || !this.order) {
+						if (!onlineStoreInfo || !this.order || !fire) {
 							return null;
 						}
 
@@ -441,46 +451,37 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'webhookURL', value: webhookURL });
 						fields.push({ name: 'paymentName', value: 'CCPP' });
 						fields.push({ name: 'cardholderName', value: cardholderName });
-
-						My2c2p.getEncrypted("2c2p-payment-form", function(encryptedData,errCode,errDesc) {
-							if(errCode!=0){
-								alert(errDesc+" ("+errCode+")");
-							} else {
-								console.log(encryptedData.encryptedCardInfo);
-							}
-						});
-
-						fields.push({ name: 'encCardData', value: '' });
+						fields.push({ name: 'encryptedCardData', value: window.encryptedCardInfo });
 
 						return fields;
 					}}
-					fire={fire}
+					fire={false}
 				/>
-      </section>
-    )
-  }
+			</section>
+		)
+	}
 
-  render() {
-    return (
-      <DocumentTitle title={Constants.DOCUMENT_TITLE.BANK_CARD_PAYMENT}>
-        {this.renderMain()}
-      </DocumentTitle>
-    );
-  }
+	render() {
+		return (
+			<DocumentTitle title={Constants.DOCUMENT_TITLE.BANK_CARD_PAYMENT}>
+				{this.renderMain()}
+			</DocumentTitle>
+		);
+	}
 }
 
 
 export default compose(
-  withRouter,
-  withOnlinstStoreInfo({
-    props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
-      if (loading) {
-        return null;
-      }
-      return { onlineStoreInfo };
-    },
-  }),
-  graphql(apiGql.CREATE_ORDER, {
-    name: 'createOrder',
-  }),
+	withRouter,
+	withOnlinstStoreInfo({
+		props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
+			if (loading) {
+				return null;
+			}
+			return { onlineStoreInfo };
+		},
+	}),
+	graphql(apiGql.CREATE_ORDER, {
+		name: 'createOrder',
+	}),
 )(BankCardPayment);
