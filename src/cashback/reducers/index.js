@@ -23,6 +23,8 @@ function standingCents(state = {}, action) {
 }
 
 function message(state = {}, action) {
+  console.log(action);
+
   switch (action.type) {
     case SET_MESSAGE:
       return { ...state, ...action.payload };

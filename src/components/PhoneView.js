@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css';
+import Utils from '../libs/utils';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
@@ -32,7 +33,11 @@ class PhoneView extends React.Component {
   }
 
   savePhoneNumber() {
-    const { submitPhoneNumber } = this.props;
+    const { submitPhoneNumber, phone } = this.props;
+
+    if (!isValidPhoneNumber(phone)) {
+      return;
+    }
 
     this.setState({ isLoading: true });
 
@@ -80,7 +85,7 @@ class PhoneView extends React.Component {
         <button
           className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
           onClick={this.savePhoneNumber.bind(this)}
-          disabled={!phone || isLoading}
+          disabled={!phone || isLoading || !isValidPhoneNumber(phone)}
         >
           {buttonContent}
         </button>
