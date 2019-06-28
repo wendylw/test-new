@@ -46,15 +46,6 @@ class BankCardPayment extends Component {
 		const script = document.createElement('script');
 
 		script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
-		script.onload = function () {
-			window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
-				if (!errCode) {
-					window.encryptedCardInfo = encryptedData.encryptedCardInfo;
-				} else {
-					console.log(errDesc + "(" + errCode + ")");
-				}
-			});
-		};
 		document.body.appendChild(script);
 	}
 
@@ -279,6 +270,7 @@ class BankCardPayment extends Component {
 			cardInfoError,
 			cardHolderNameError
 		} = this.state;
+		const cardNumber = card.formattedCardNumber;
 
 		return (
 			<section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -357,6 +349,7 @@ class BankCardPayment extends Component {
 													/>
 													<input
 														id="cvv"
+														data-encrypt="cvv"
 														className={`input input__block ${inValidCardInfoFiedls.includes('cvv') ? 'has-error' : ''}`}
 														type="password"
 														placeholder="CVV"
@@ -403,7 +396,11 @@ class BankCardPayment extends Component {
 													: null
 											}
 										</div>
-										<input type="hidden" value="" name="encryptedCardInfo"></input>
+
+										<input type="hidden" data-encrypt="cardnumber" value={(cardNumber || '').replace(/[^\d]/g, '')}></input>
+										<input type="hidden" data-encrypt="month" value={(validDate || '').substring(0, 2)}></input>
+										<input type="hidden" data-encrypt="year" value={`20${(validDate || '').substring(5, 7)}`}></input>
+										<input type="hidden" name="encryptedCardInfo" value=""></input>
 									</form>
 								</div>
 
@@ -451,11 +448,20 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'webhookURL', value: webhookURL });
 						fields.push({ name: 'paymentName', value: 'CCPP' });
 						fields.push({ name: 'cardholderName', value: cardholderName });
+
+						window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
+							if (!errCode) {
+								window.encryptedCardInfo = encryptedData.encryptedCardInfo;
+							} else {
+								console.log(errDesc + "(" + errCode + ")");
+							}
+						});
+
 						fields.push({ name: 'encryptedCardData', value: window.encryptedCardInfo });
 
 						return fields;
 					}}
-					fire={false}
+					fire={fire}
 				/>
 			</section>
 		)
