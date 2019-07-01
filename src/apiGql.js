@@ -195,7 +195,7 @@ apiGql.GET_SHOPPING_CART = gql`
 apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   mutation RemoveShoppingCartItem($productId: String!, $variations: [inputVariation]) {
     removeShoppingCartItem(input: {
-      productId: $productId,
+			productId: $productId,
       variations: $variations
     }) {
       productId

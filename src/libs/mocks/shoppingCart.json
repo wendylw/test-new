@@ -1,62 +1,62 @@
 {
-  "data": {
-    "shoppingCart": {
-      "total": 3.2,
-      "subtotal": 3,
-      "count": 3,
-      "tax": 0.2,
-      "items": [
-        {
-          "id": "6c495f147a769e0c85aa0dfd403be4aa",
-          "productId": "5b43287d678e5590a0afc463",
-          "business": "nike",
-          "title": "Air Force 1(41/red)",
-          "displayPrice": 0.01,
-          "total": 2,
-          "subtotal": 2,
-          "variations": [
-            {
-              "optionId": "5b43287d678e5590a0afc451",
-              "variationId": "5b43287d678e5590a0afc44f"
-            },
-            {
-              "optionId": "5b43287d678e5590a0afc455",
-              "variationId": "5b43287d678e5590a0afc453"
-            }
-          ],
-          "variationTexts": [
-            "41",
-            "red"
-          ],
-          "image": "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
-          "quantity": 2
-        },
-        {
-          "id": "a88422baf51a9e7857a740841605bbdd",
-          "productId": "5b44788bbb36740d5975086b",
-          "business": "nike",
-          "title": "Blue_Heel",
-          "displayPrice": 0.01,
-          "total": 1,
-          "subtotal": 1,
-          "variations": [
-            {
-              "optionId": "5b44788bbb36740d59750873",
-              "variationId": "5b44788bbb36740d5975086f"
-            },
-            {
-              "optionId": "5b44788bbb36740d5975086e",
-              "variationId": "5b44788bbb36740d5975086c"
-            }
-          ],
-          "variationTexts": [
-            "40",
-            "bulue/white"
-          ],
-          "image": "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b44788bbb36740d5975086b/fe0d96a7-415a-44c6-d13c-f9083bf392bd",
-          "quantity": 1
-        }
-      ]
-    }
-  }
+	"data": {
+		"shoppingCart": {
+			"total": 3.2,
+			"subtotal": 3,
+			"count": 3,
+			"tax": 0.2,
+			"items": [
+				{
+					"id": "6c495f147a769e0c85aa0dfd403be4aa",
+					"productId": "5b43287d678e5590a0afc463",
+					"business": "nike",
+					"title": "Air Force 1(41/red)",
+					"displayPrice": 0.01,
+					"total": 2,
+					"subtotal": 2,
+					"variations": [
+						{
+							"optionId": "5b43287d678e5590a0afc451",
+							"variationId": "5b43287d678e5590a0afc44f"
+						},
+						{
+							"optionId": "5b43287d678e5590a0afc455",
+							"variationId": "5b43287d678e5590a0afc453"
+						}
+					],
+					"variationTexts": [
+						"41",
+						"red"
+					],
+					"image": "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b43269e678e5590a0afc446/0a81b030-5e15-42b9-82d7-475dbc9396ae",
+					"quantity": 2
+				},
+				{
+					"id": "a88422baf51a9e7857a740841605bbdd",
+					"productId": "5b44788bbb36740d5975086b",
+					"business": "nike",
+					"title": "Blue_Heel",
+					"displayPrice": 0.01,
+					"total": 1,
+					"subtotal": 1,
+					"variations": [
+						{
+							"optionId": "5b44788bbb36740d59750873",
+							"variationId": "5b44788bbb36740d5975086f"
+						},
+						{
+							"optionId": "5b44788bbb36740d5975086e",
+							"variationId": "5b44788bbb36740d5975086c"
+						}
+					],
+					"variationTexts": [
+						"40",
+						"bulue/white"
+					],
+					"image": "https://s3-ap-southeast-1.amazonaws.com/storehub-development-userfiles-online/nike/product/5b44788bbb36740d5975086b/fe0d96a7-415a-44c6-d13c-f9083bf392bd",
+					"quantity": 1
+				}
+			]
+		}
+	}
 }
