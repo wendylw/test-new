@@ -11,9 +11,5 @@ export default options => compose(
       }
     }),
     ...options,
-    // mocked data
-    // props: () => {
-    //   return require('./mocks/shoppingCart.json').data;
-    // }
   }),
 );
