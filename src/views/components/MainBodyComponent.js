@@ -61,7 +61,6 @@ export class MainBodyComponent extends Component {
                         price={prod.displayPrice}
                         quantity={prod.cartQuantity}
                         decreaseDisabled={!prod.canDecreaseQuantity}
-                        soldOut={prod.soldOut}
                         onDecrease={() => {
                           const cartItem = prod.cartItems.find(item => item.productId === prod.id);
 

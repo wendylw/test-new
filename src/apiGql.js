@@ -11,9 +11,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     variations {
       variationId
       optionId
-      markedSoldOut
     }
-    markedSoldOut
     displayPrice
     quantity
     image
@@ -115,7 +113,6 @@ apiGql.GET_PRODUCT_DETAIL = gql`
           id
           value
           priceDiff
-          markedSoldOut
         }
       }
       trackInventory
@@ -163,7 +160,6 @@ apiGql.GET_ONLINE_CATEGORY = gql`
             value
           }
         }
-        markedSoldOut
       }
     }
   }
@@ -230,7 +226,6 @@ apiGql.EMPTY_SHOPPING_CART = gql`
   }
 `;
 
-// [source] critirial: { ECOMMERCE: 1, QR: 2 }
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
     $action: String!,
@@ -245,8 +240,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       productId: $productId,
       userId: "",
       quantity: $quantity,
-      variations: $variations,
-      source: 2
+      variations: $variations
     }) {
       shoppingCartItem {
         id

@@ -10,6 +10,8 @@ export default compose(
     props: ({ gqlProductDetail: { loading, product } }) => ({
       loading,
       product,
+      // mocked data.
+      // product: require('../../libs/mocks/product.json').data.product,
     }),
   }),
   graphql(apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM, {

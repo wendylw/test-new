@@ -2,8 +2,6 @@ import React from 'react';
 import { compose } from "react-apollo";
 import withOnlineCategory from "./withOnlineCategory";
 import withShoppingCart from "./withShoppingCart";
-import Utils from './utils';
-
 
 const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
   if (!shoppingCart || !Array.isArray(onlineCategory)) {
@@ -16,7 +14,6 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     category.cartQuantity = 0;
     products.forEach(product => {
       product.cartQuantity = 0;
-      product.soldOut = Utils.isProductSoldOut(product);
       const results = shoppingCart.items.filter(item => item.productId === product.id);
       if (results.length) {
         product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);
@@ -29,6 +26,8 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     });
   });
 
+  // console.log('onlineCategory (cart merged) => %o', onlineCategory);
+
   return onlineCategory;
 }
 
@@ -38,6 +37,9 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
+        // mocked data
+        // gqlProducts.onlineCategory = require('./mocks/onlineCategory.json');
+
         Object.assign(props, { onlineCategory });
       }
 
@@ -49,6 +51,9 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
+        // mocked data
+        // return { shoppingCart: require('./mocks/shoppingCart.json').data.shoppingCart };
+
         Object.assign(props, { shoppingCart });
       }
 
@@ -56,6 +61,8 @@ const withOnlineCategoryMergedCart = compose(
     },
   }),
   TheComponent => ({ shoppingCart, onlineCategory, children, ...props }) => {
+    // onlineCategory = require('./mocks/onlineCategory.json').data.onlineCategory; // TODO: remove it
+
     const onlineCategoryMergedShoppingCart = mergeWithShoppingCart(onlineCategory, shoppingCart);
 
     return (

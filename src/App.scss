@@ -1051,24 +1051,10 @@ form {
     background-color: transparent;
   }
 
-  &__card.info {
-    padding: 3px;
-    color: $white;
-    border-color: $gray-1;
-    background-color: $gray-1;
-  }
-
   &__card.active {
     border-color: $theme-color;
     color: $white;
     background-color: $theme-color;
-  }
-
-  &__card.disabled {
-    pointer-events: none;
-    border-color: $gray-3;
-    color: $gray-1;
-    background-color: $gray-3;
   }
 }
 
