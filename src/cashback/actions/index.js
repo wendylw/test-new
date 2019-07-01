@@ -291,7 +291,7 @@ export const fetchPhone = () => async dispatch => {
 }
 
 export const savePhone = phone => async dispatch => {
-	localStorage.setItem('user.p', phone);
+	localStorage.setItem('user.p', phone || '');
 };
 
 export const sendMessage = (message, type = 'primary') => ({
