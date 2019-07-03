@@ -50,8 +50,6 @@ const withOnlineCategoryMergedCart = compose(
     props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
       const props = { loading };
 
-      console.log(shoppingCart);
-
       if (!loading) {
         Object.assign(props, { shoppingCart });
       }
