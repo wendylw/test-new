@@ -98,7 +98,7 @@ class Payment extends Component {
                 <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}></input>
               </div>
             </li>
-            <li className="payment__item border__botton-divider flex flex-middle flex-space-between" style={{ display: 'none' }}>
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/payment-credit.png"></img>
               </figure>

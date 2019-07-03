@@ -203,7 +203,6 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
 `;
 
 // Field [additionalComments] stores table id here.
-// TODO: pickUpId
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
@@ -212,6 +211,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       total
       storeId
       additionalComments
+      pickUpId
     }
   }
 `;
