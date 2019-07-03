@@ -10,8 +10,8 @@ export class FooterOperationComponent extends Component {
   }
 
   render() {
-    const { shoppingCart = {}, history } = this.props;
-    const { subtotal, count } = shoppingCart;
+    const { shoppingCart, history } = this.props;
+    const { subtotal, count } = shoppingCart || {};
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
