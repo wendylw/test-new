@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom';
 import { compose, graphql } from 'react-apollo';
-import qs from 'qs';
 import withShoppingCart from '../libs/withShoppingCart';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
@@ -29,7 +29,8 @@ class Payment extends Component {
   }
 
   async payNow() {
-    const { shoppingCart } = this.props;
+    const { paymentMethod } = this.state;
+    const { shoppingCart, history } = this.props;
 
     this.setState({
       payNowLoading: true,
@@ -37,21 +38,28 @@ class Payment extends Component {
 
     try {
       const { data } = await this.props.createOrder({
-        variables: {
+        variables: Object.assign({}, {
           business: config.business,
           storeId: config.storeId,
-          tableId: config.table,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
-        },
+          tableId: config.table || ''
+        }),
       });
 
       if (data.createOrder) {
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
-          fire: true,
+          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CARD_PAY,
         });
+
+        if (paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY) {
+          history.push({
+            pathname: Constants.ROUTER_PATHS.BANK_CARD_PAYMENT,
+            search: `?orderId=${data.createOrder.orders[0].orderId || ''}`
+          });
+        }
       }
     } catch (e) {
       console.error('Fail to create order\n', e);
@@ -73,7 +81,7 @@ class Payment extends Component {
           <figure className="header__image-container text-middle" onClick={() => {
             history.replace(Constants.ROUTER_PATHS.CART, history.location.state);
           }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
           </figure>
           <h2 className="header__title font-weight-bold text-middle">Select Payment</h2>
         </header>
@@ -82,11 +90,22 @@ class Payment extends Component {
           <ul className="payment__list">
             <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
-                <img src="/img/logo-grabpay.png"></img>
+                <img src="/img/payment-grab.png"></img>
               </figure>
+              <label className="payment__name font-weight-bold">GrabPay</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.GRAB_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
                 <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}></input>
+              </div>
+            </li>
+            <li className="payment__item border__botton-divider flex flex-middle flex-space-between" style={{ display: 'none' }}>
+              <figure className="payment__image-container">
+                <img src="/img/payment-credit.png"></img>
+              </figure>
+              <label className="payment__name font-weight-bold">Credit/Debit Card</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
+                <i className="radio__check-icon"></i>
+                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}></input>
               </div>
             </li>
             {/*
@@ -121,9 +140,9 @@ class Payment extends Component {
           </ul>
         </div>
 
-        <div className="payment__pay-now-container">
+        <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase"
+            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={this.state.payNowLoading}
           >{this.state.payNowLoading ? 'Redirecting' : 'Pay now'}</button>
@@ -137,7 +156,7 @@ class Payment extends Component {
             const { onlineStoreInfo } = this.props;
             const { order, paymentMethod } = this.state;
             const fields = [];
-            const { h } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+            const h = config.h();
             const queryString = `?h=${encodeURIComponent(h)}`;
 
             if (!onlineStoreInfo || !order || !paymentMethod) {
@@ -174,6 +193,7 @@ class Payment extends Component {
 
 
 export default compose(
+  withRouter,
   withOnlinstStoreInfo({
     props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
       if (loading) {

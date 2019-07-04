@@ -11,12 +11,7 @@ export class FooterOperationComponent extends Component {
 
   render() {
     const { shoppingCart, history } = this.props;
-
-    if (!shoppingCart) {
-      return null;
-    }
-
-    const { subtotal, count } = shoppingCart;
+    const { subtotal, count } = shoppingCart || {};
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
@@ -50,11 +45,11 @@ export class FooterOperationComponent extends Component {
           }}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
               <img src="/img/icon-cart.svg" alt="cart" />
-              <span className="tag__number">{count}</span>
+              <span className="tag__number">{count || 0}</span>
             </div>
-            <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal} /></label>
+            <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal || 0} /></label>
           </button>
-          <Link className="cart-bar__order-button" to="/cart">
+          <Link className="cart-bar__order-button" to={Constants.ROUTER_PATHS.CART}>
             Order now
           </Link>
         </div>

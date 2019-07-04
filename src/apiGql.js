@@ -82,6 +82,9 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
       locale
       currency
       currencySymbol
+      country
+      state
+      street
     }
   }
 `;
@@ -196,6 +199,7 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
 `;
 
 // Field [additionalComments] stores table id here.
+// TODO: pickUpId
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
@@ -251,7 +255,7 @@ apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,
     $storeId: String!,
-    $tableId: String!,
+    $tableId: String,
     $pax: Int!,
     $shoppingCartIds: [String]
   ) {

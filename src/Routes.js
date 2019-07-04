@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Redirect, Switch } from "react-router-dom";
+import { Route } from "react-router-dom";
 import Loadable from 'react-loadable';
 import Constants from "./Constants";
 import MessageModal from "./views/components/MessageModal";
@@ -7,7 +7,7 @@ import MessageModal from "./views/components/MessageModal";
 const MyLoadingComponent = ({isLoading, error}) => {
   // Handle the loading state
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="loader theme page-loader"></div>;
   }
   // Handle the error state
   else if (error) {
@@ -39,6 +39,11 @@ const AsyncPayment = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncBankCardPayment = Loadable({
+  loader: () => import("./containers/BankCardPayment"),
+  loading: MyLoadingComponent,
+});
+
 const AsyncThankYou = Loadable({
   loader: () => import("./containers/ThankYou"),
   loading: MyLoadingComponent,
@@ -46,11 +51,6 @@ const AsyncThankYou = Loadable({
 
 const AsyncSorry = Loadable({
   loader: () => import("./containers/Sorry"),
-  loading: MyLoadingComponent,
-});
-
-const AsyncNotFound = Loadable({
-  loader: () => import("./containers/NotFound"),
   loading: MyLoadingComponent,
 });
 
@@ -66,21 +66,18 @@ const AsyncError = Loadable({
 
 export default () =>
   <React.Fragment>
-    <Switch>
-      <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.HOME} />
-      <Route path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
-      <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
-      <Route path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
-      <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
-      <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
-      <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
-      <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
-      <Route component={AsyncNotFound} />
-    </Switch>
+    <Route exact path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
+    <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
+    <Route exact path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
+    <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
+    <Route path={Constants.ROUTER_PATHS.BANK_CARD_PAYMENT} exact component={AsyncBankCardPayment} />
+    <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
+    <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
+    <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
     <Route path={`*/modal/:modal`} render={({ match }) => {
       if (match.params.modal === 'people-count') return <AsyncPeopleCountModal />;
       // more modals can put here.
-      return <AsyncNotFound />;
+      return null;
     }} />
     {/*
       // TODO: can use react context + portal to do modal render/show/hide.
