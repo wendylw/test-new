@@ -179,6 +179,8 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     // save phone
     await dispatch(savePhone(phone));
 
+    console.log(data.customerId);
+
     if (data.customerId) {
       dispatch(setCustomerId({ customerId: data.customerId }));
     }

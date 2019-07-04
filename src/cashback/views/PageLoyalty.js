@@ -1,29 +1,35 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Query } from 'react-apollo';
 import qs from 'qs';
 import Message from './components/Message';
 import { sendMessage, setOnlineStoreInfo, setCustomerId } from '../actions';
 import Image from './components/Image';
 import CurrencyNumber from './components/CurrencyNumber';
 import LoyaltyView from './components/LoyaltyView';
-import apiGql from '../../apiGql';
-import config from '../../config';
 import RedeemButton from './components/RedeemButton';
 
 class PageLoyalty extends React.Component {
-  state = {  }
+  state = {}
 
   componentWillMount() {
-    const { history, setCustomerId } = this.props;
+    const {
+      history,
+      setCustomerId,
+      onlineStoreInfo,
+      setOnlineStoreInfo
+    } = this.props;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     setCustomerId({ customerId });
+    setOnlineStoreInfo(onlineStoreInfo);
   }
 
-  renderMain() {
-    const { onlineStoreInfo, cashbackHistory } = this.props;
+  render() {
+    const {
+      onlineStoreInfo,
+      cashbackHistory,
+    } = this.props;
 
     return (
       <main className="loyalty flex-column">
@@ -42,21 +48,9 @@ class PageLoyalty extends React.Component {
       </main>
     );
   }
-
-  render() {
-    return (
-      <Query
-        query={apiGql.GET_ONLINE_STORE_INFO}
-        variables={{ business: config.business }}
-        onCompleted={({ onlineStoreInfo }) => this.props.setOnlineStoreInfo(onlineStoreInfo)}>
-          {this.renderMain.bind(this)}
-      </Query>
-    );
-  }
 }
 
 const mapStateToProps = state => ({
-  onlineStoreInfo: state.common.onlineStoreInfo,
   cashbackHistory: state.user.cashbackHistory,
 });
 

@@ -1,4 +1,5 @@
 const DOCUMENT_ROOT_ID = 'root';
+const DEFAULT_FAVICON = '/img/favicon.ico';
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
@@ -6,21 +7,21 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-    INDEX: '/',
-    ORDERING: '/ordering', // App basename
-    HOME: '/ordering/',
-    PORDUCTS: '/ordering/products',
-    CART: '/ordering/cart',
-    PAYMENT: '/ordering/payment',
-    BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
-    THANK_YOU: '/ordering/thank-you',
-    SORRY: '/ordering/sorry',
-    PLAYGROUND: 'playground',
-    ERROR: '/ordering/error',
-    CASHBACK: '/loyalty', // App basename
-    CASHBACK_HOME: '/loyalty/',
-    CASHBACK_CLAIM: '/loyalty/claim',
-    CASHBACK_ERROR: '/loyalty/error',
+  INDEX: '/',
+  ORDERING: '/ordering', // App basename
+  HOME: '/ordering/',
+  PORDUCTS: '/ordering/products',
+  CART: '/ordering/cart',
+  PAYMENT: '/ordering/payment',
+  BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
+  THANK_YOU: '/ordering/thank-you',
+  SORRY: '/ordering/sorry',
+  PLAYGROUND: 'playground',
+  ERROR: '/ordering/error',
+  CASHBACK: '/loyalty', // App basename
+  CASHBACK_HOME: '/loyalty/',
+  CASHBACK_CLAIM: '/loyalty/claim',
+  CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {
@@ -57,6 +58,7 @@ export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
+  DEFAULT_FAVICON,
   MANIFEST,
   ROUTER_PATHS,
   PAYMENT_METHODS,
