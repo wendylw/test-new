@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+const DEFAULT_FAVICON = '/img/favicon.ico';
+
 class DocumentFavicon extends React.Component {
   static propTypes = {
     icon: PropTypes.string,
@@ -42,11 +44,11 @@ class DocumentFavicon extends React.Component {
   displayName = 'DocumentFavicon';
 
   componentWillMount() {
-    DocumentFavicon.setIcon(this.props.icon);
+    DocumentFavicon.setIcon(this.props.icon || DEFAULT_FAVICON);
   }
 
   componentWillReceiveProps(nextProps) {
-    DocumentFavicon.setIcon(nextProps.icon);
+    DocumentFavicon.setIcon(nextProps.icon || DEFAULT_FAVICON);
   }
 
   render() {

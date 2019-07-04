@@ -4,6 +4,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import './App.scss';
 import store from './store';
 import Constants from '../Constants';
+import DocumentFavicon from '../components/DocumentFavicon';
 
 const loading = () => <div className="loader theme page-loader"></div>;
 
@@ -16,16 +17,18 @@ const ErrorPage = React.lazy(() => import('./views/components/Error'));
 
 function App() {
   return (
-    <Provider store={store}>
-      <React.Suspense fallback={loading()}>
-        <Switch>
-          <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.CASHBACK_HOME} />
-          <Route exact path={Constants.ROUTER_PATHS.CASHBACK_CLAIM} render={props => <PageClaim {...props} />} />
-          <Route exact path={Constants.ROUTER_PATHS.CASHBACK_HOME} name="Loyalty" render={props => <PageHome {...props} />} />
-          <Route exact path={Constants.ROUTER_PATHS.CASHBACK_ERROR} name="Error" render={props => <ErrorPage {...props} />} />
-        </Switch>
-      </React.Suspense>
-    </Provider>
+    <DocumentFavicon>
+      <Provider store={store}>
+        <React.Suspense fallback={loading()}>
+          <Switch>
+            <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.CASHBACK_HOME} />
+            <Route exact path={Constants.ROUTER_PATHS.CASHBACK_CLAIM} render={props => <PageClaim {...props} />} />
+            <Route exact path={Constants.ROUTER_PATHS.CASHBACK_HOME} name="Loyalty" render={props => <PageHome {...props} />} />
+            <Route exact path={Constants.ROUTER_PATHS.CASHBACK_ERROR} name="Error" render={props => <ErrorPage {...props} />} />
+          </Switch>
+        </React.Suspense>
+      </Provider>
+    </DocumentFavicon>
   );
 }
 

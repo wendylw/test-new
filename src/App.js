@@ -8,7 +8,7 @@ import Constants from './Constants';
 import withResizeWindowBlocker from './libs/withResizeWindowBlocker';
 import withCoreApiBusiness from './libs/withCoreApiBusiness';
 import withOnlineStoreInfo from './libs/withOnlineStoreInfo';
-import DocumentFavicon from './views/components/DocumentFavicon';
+import DocumentFavicon from './components/DocumentFavicon';
 import Manifest from './views/components/Manifest';
 
 class App extends Component {
@@ -62,7 +62,7 @@ class App extends Component {
       return null;
     }
 
-    const { onlineStoreInfo } = gqlOnlineStoreInfo;
+    const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
 
     return (
       <main className="table-ordering">
