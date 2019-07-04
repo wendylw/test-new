@@ -17,6 +17,7 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     products.forEach(product => {
       product.cartQuantity = 0;
       product.soldOut = Utils.isProductSoldOut(product);
+      product.variations = product.variations || [];
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
 
       if (shoppingCart) {
