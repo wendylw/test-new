@@ -202,6 +202,7 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
+// Field [additionalComments] stores table id here.
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
