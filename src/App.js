@@ -62,7 +62,11 @@ class App extends Component {
       return null;
     }
 
+<<<<<<< HEAD
     const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
+=======
+    const { onlineStoreInfo } = gqlOnlineStoreInfo;
+>>>>>>> origin/master
 
     return (
       <main className="table-ordering">
