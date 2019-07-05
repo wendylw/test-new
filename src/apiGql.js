@@ -211,7 +211,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       storeId
       tableId
       pickUpId
-      additiionalComments
+      additionalComments
     }
   }
 `;
