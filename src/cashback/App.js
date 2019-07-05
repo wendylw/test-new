@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import rootReducers from './reducers';
 import { Provider } from 'react-redux';
 import './App.scss';
-import Routes from './routes';
+import Routes from './Routes';
 
 const store = createStore(
   rootReducers,
