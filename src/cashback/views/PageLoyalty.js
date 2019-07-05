@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import qs from 'qs';
 import Message from './components/Message';
-import { sendMessage, setOnlineStoreInfo, setCustomerId } from '../actions';
+import { sendMessage, setCustomerId } from '../actions';
 import Image from './components/Image';
 import CurrencyNumber from './components/CurrencyNumber';
 import LoyaltyView from './components/LoyaltyView';
@@ -16,13 +16,10 @@ class PageLoyalty extends React.Component {
     const {
       history,
       setCustomerId,
-      onlineStoreInfo,
-      setOnlineStoreInfo
     } = this.props;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     setCustomerId({ customerId });
-    setOnlineStoreInfo(onlineStoreInfo);
   }
 
   render() {
@@ -56,7 +53,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   setCustomerId,
-  setOnlineStoreInfo,
   sendMessage,
 }, dispatch);
 

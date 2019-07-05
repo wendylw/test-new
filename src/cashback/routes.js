@@ -19,7 +19,12 @@ function Routes() {
   return (
     <Query
       query={apiGql.GET_ONLINE_STORE_INFO}
-      variables={{ business: config.business }}>
+      variables={{ business: config.business }}
+      onCompleted={(data) => {
+        const { onlineStoreInfo } = data;
+        this.props.setOnlineStoreInfo(onlineStoreInfo);
+      }}
+    >
       {({ data }) => {
         const { onlineStoreInfo = {} } = data;
 

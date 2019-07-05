@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import qs from 'qs';
 // import Message from './components/Message';
-import { setOnlineStoreInfo, getCashbackAndHashData } from '../actions';
+import { getCashbackAndHashData } from '../actions';
 import HomeBody from './components/HomeBody';
 import PhoneView from './components/PhoneView';
 
@@ -15,13 +15,10 @@ class PageClaim extends React.Component {
     const {
       history,
       getCashbackAndHashData,
-      onlineStoreInfo,
-      setOnlineStoreInfo
     } = this.props;
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     getCashbackAndHashData(encodeURIComponent(h));
-    setOnlineStoreInfo(onlineStoreInfo);
   }
 
   render() {
@@ -39,7 +36,6 @@ class PageClaim extends React.Component {
 const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  setOnlineStoreInfo,
   getCashbackAndHashData,
 }, dispatch);
 
