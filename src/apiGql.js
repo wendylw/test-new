@@ -208,7 +208,6 @@ apiGql.GET_ORDER_DETAIL = gql`
       total
       storeId
       additionalComments
-      pickUpId
     }
   }
 `;

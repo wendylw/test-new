@@ -6,21 +6,21 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-  INDEX: '/',
-  ORDERING: '/ordering', // App basename
-  HOME: '/ordering/',
-  PORDUCTS: '/ordering/products',
-  CART: '/ordering/cart',
-  PAYMENT: '/ordering/payment',
-  BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
-  THANK_YOU: '/ordering/thank-you',
-  SORRY: '/ordering/sorry',
-  PLAYGROUND: 'playground',
-  ERROR: '/ordering/error',
-  CASHBACK: '/loyalty', // App basename
-  CASHBACK_HOME: '/loyalty/',
-  CASHBACK_CLAIM: '/loyalty/claim',
-  CASHBACK_ERROR: '/loyalty/error',
+    INDEX: '/',
+    ORDERING: '/ordering', // App basename
+    HOME: '/ordering/',
+    PORDUCTS: '/ordering/products',
+    CART: '/ordering/cart',
+    PAYMENT: '/ordering/payment',
+    BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
+    THANK_YOU: '/ordering/thank-you',
+    SORRY: '/ordering/sorry',
+    PLAYGROUND: 'playground',
+    ERROR: '/ordering/error',
+    CASHBACK: '/loyalty', // App basename
+    CASHBACK_HOME: '/loyalty/',
+    CASHBACK_CLAIM: '/loyalty/claim',
+    CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {

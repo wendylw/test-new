@@ -4,7 +4,7 @@ import Loadable from 'react-loadable';
 import Constants from "./Constants";
 import MessageModal from "./views/components/MessageModal";
 
-const MyLoadingComponent = ({ isLoading, error }) => {
+const MyLoadingComponent = ({isLoading, error}) => {
   // Handle the loading state
   if (isLoading) {
     return <div className="loader theme page-loader"></div>;
