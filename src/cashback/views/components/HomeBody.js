@@ -25,10 +25,8 @@ class HomeBody extends React.Component {
   }
 
   render() {
-    const { storeName = '', street = '' } = this.props;
-    const addressInfo = [storeName, street].filter(v => v);
-
-    console.log(this.props);
+    const { storeName, displayBusinessName, store = {} } = this.props;
+    const addressInfo = [displayBusinessName || storeName, store.city].filter(v => v);
 
     return (
       <section className="cash-back__home text-center">
@@ -38,7 +36,7 @@ class HomeBody extends React.Component {
         <div className="location">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M0 0h24v24H0z" fill="none" />
           </svg>
           <span className="location__text text-middle">
             {addressInfo.join(', ')}
@@ -55,6 +53,8 @@ const mapStateToProps = (state) => {
   return {
     cashback: state.common.cashback,
     defaultLoyaltyRatio: state.common.defaultLoyaltyRatio,
+    displayBusinessName: state.common.displayBusinessName || '',
+    store: state.common.store || {},
     logo: onlineStoreInfo.logo,
     storeName: onlineStoreInfo.storeName,
     street: onlineStoreInfo.street,
