@@ -10,29 +10,25 @@ class HomeBody extends React.Component {
 
   renderCashback() {
     const { cashback, defaultLoyaltyRatio } = this.props;
-    let [intPart, decimalPart] = defaultLoyaltyRatio ? ((1 * 100) / defaultLoyaltyRatio).toFixed(2).split('.') : ['0'];
-    const percentage = [intPart];
+    let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
     const cashbackNumber = Number(cashback);
 
     if (!cashback && !defaultLoyaltyRatio) {
       return null;
     }
 
-    if (decimalPart) {
-      decimalPart = decimalPart.replace(/0+$/, '');
-      if (decimalPart) percentage.push(decimalPart);
-    }
-
     if (!isNaN(cashbackNumber) && cashbackNumber) {
       return <CurrencyNumber classList="cash-back__money" money={cashback} />;
     }
 
-    return <span className="cash-back__money">{`${percentage.join('.')}% Cashback`}</span>;
+    return <span className="cash-back__money">{`${percentage}% Cashback`}</span>;
   }
 
   render() {
-    const { store = {} } = this.props;
-    const addressInfo = [store.name, store.city].filter(v => v);
+    const { storeName = '', street = '' } = this.props;
+    const addressInfo = [storeName, street].filter(v => v);
+
+    console.log(this.props);
 
     return (
       <section className="cash-back__home text-center">
@@ -42,7 +38,7 @@ class HomeBody extends React.Component {
         <div className="location">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M0 0h24v24H0z" fill="none" />
           </svg>
           <span className="location__text text-middle">
             {addressInfo.join(', ')}
@@ -60,7 +56,8 @@ const mapStateToProps = (state) => {
     cashback: state.common.cashback,
     defaultLoyaltyRatio: state.common.defaultLoyaltyRatio,
     logo: onlineStoreInfo.logo,
-    store: state.common.store,
+    storeName: onlineStoreInfo.storeName,
+    street: onlineStoreInfo.street,
   };
 };
 const mapDispatchToProps = dispatch => bindActionCreators({

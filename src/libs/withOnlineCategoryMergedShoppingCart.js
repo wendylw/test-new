@@ -4,7 +4,7 @@ import withOnlineCategory from "./withOnlineCategory";
 import withShoppingCart from "./withShoppingCart";
 
 const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
-  if (!shoppingCart || !Array.isArray(onlineCategory)) {
+  if (!Array.isArray(onlineCategory)) {
     return null;
   }
 
@@ -14,19 +14,21 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     category.cartQuantity = 0;
     products.forEach(product => {
       product.cartQuantity = 0;
-      const results = shoppingCart.items.filter(item => item.productId === product.id);
-      if (results.length) {
-        product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);
-        product.cartItemIds = results.map(c => c.id);
-        product.cartItems = results;
-        product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
-        product.canDecreaseQuantity = !product.hasSingleChoice || product.cartItemIds.length === 1;
-        category.cartQuantity += product.cartQuantity;
+      product.variations = product.variations || [];
+      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
+
+      if (shoppingCart) {
+        const results = shoppingCart.items.filter(item => item.productId === product.id);
+        if (results.length) {
+          product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);
+          product.cartItemIds = results.map(c => c.id);
+          product.cartItems = results;
+          product.canDecreaseQuantity = !product.hasSingleChoice || product.cartItemIds.length === 1;
+          category.cartQuantity += product.cartQuantity;
+        }
       }
     });
   });
-
-  // console.log('onlineCategory (cart merged) => %o', onlineCategory);
 
   return onlineCategory;
 }

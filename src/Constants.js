@@ -6,26 +6,28 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-    INDEX: '/',
-    ORDERING: '/ordering', // App basename
-    HOME: '/ordering/',
-    PORDUCTS: '/ordering/products',
-    CART: '/ordering/cart',
-    PAYMENT: '/ordering/payment',
-    THANK_YOU: '/ordering/thank-you',
-    SORRY: '/ordering/sorry',
-    PLAYGROUND: 'playground',
-    ERROR: '/ordering/error',
-    CASHBACK: '/loyalty', // App basename
-    CASHBACK_HOME: '/loyalty/',
-    CASHBACK_CLAIM: '/loyalty/claim',
-    CASHBACK_ERROR: '/loyalty/error',
+  INDEX: '/',
+  ORDERING: '/ordering', // App basename
+  HOME: '/ordering/',
+  PORDUCTS: '/ordering/products',
+  CART: '/ordering/cart',
+  PAYMENT: '/ordering/payment',
+  BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
+  THANK_YOU: '/ordering/thank-you',
+  SORRY: '/ordering/sorry',
+  PLAYGROUND: 'playground',
+  ERROR: '/ordering/error',
+  CASHBACK: '/loyalty', // App basename
+  CASHBACK_HOME: '/loyalty/',
+  CASHBACK_CLAIM: '/loyalty/claim',
+  CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {
   HOME: 'Home',
   CART: 'Cart',
   PAYMENT: 'Payment',
+  BANK_CARD_PAYMENT: 'Payment via Card',
   THANK_YOU: 'Payment Success',
   SORRY: 'Payment Failed',
   ERROR: 'Error',
@@ -34,6 +36,7 @@ const DOCUMENT_TITLE = {
 
 const PAYMENT_METHODS = {
   GRAB_PAY: 'GrabPay',
+  CARD_PAY: '2P2C_PAY',
   BOOST_PAY: 'Boost',
 };
 

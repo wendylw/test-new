@@ -16,8 +16,13 @@ class CurrencyNumber extends React.Component {
 	}
 
 	render() {
-		const { classList } = this.props;
-		return <span className={classList}>{this.formatChildrenAsMoney()}</span>;
+		const { classList, money, addonBefore } = this.props;
+
+		if (!money) {
+			return null;
+		}
+
+		return <span className={classList}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
 	}
 }
 

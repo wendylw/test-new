@@ -2,10 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
-import 'react-phone-number-input/style.css'
-import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css';
+import Utils from '../../../libs/utils';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { tryOtpAndSaveCashback, fetchPhone, setPhone } from '../../actions';
 
+const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class PhoneView extends React.Component {
   state = {
@@ -27,13 +29,23 @@ class PhoneView extends React.Component {
   }
 
   async submitPhoneNumber() {
-    const { history, tryOtpAndSaveCashback } = this.props;
+    const {
+      phone,
+      history,
+      tryOtpAndSaveCashback,
+    } = this.props;
 
-    tryOtpAndSaveCashback(history);
+    if (isValidPhoneNumber(phone)) {
+      tryOtpAndSaveCashback(history);
+    }
   }
 
   render() {
-    const { phone, setPhone, country } = this.props;
+    const {
+      phone,
+      setPhone,
+      country,
+    } = this.props;
 
     return (
       <section className="asdie-section">
@@ -41,14 +53,21 @@ class PhoneView extends React.Component {
           <label className="cash-back-form__label text-center">Claim with your mobile number</label>
           <PhoneInput
             placeholder="Enter phone number"
-            value={phone}
+            value={formatPhoneNumberIntl(phone)}
             country={country}
-            onChange={phone => setPhone(phone)}
+            metadata={metadataMobile}
+            onChange={phone => {
+              const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+              if (metadataMobile.countries[selectedCountry]) {
+                setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+              }
+            }}
           />
           <button
             className="cash-back-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
             onClick={this.submitPhoneNumber.bind(this)}
-            disabled={!phone}
+            disabled={!phone || !isValidPhoneNumber(phone)}
           >Continue</button>
         </aside>
       </section>

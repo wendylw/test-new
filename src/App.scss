@@ -114,6 +114,29 @@ img {
   }
 }
 
+form {
+  &.form .has-error {
+    position: relative;
+    border-color: $red;
+    color: $red;
+    z-index: 1;
+
+    input {
+      color: inherit;
+    }
+  }
+
+  .error-message {
+    display: inline-block;
+    line-height: 1.4em;
+    color: $red;
+
+    &__container {
+      margin: 10px 0;
+    }
+  }
+}
+
 .input {
   padding: 6px 12px;
   border: 1px solid $gray-3;
@@ -135,6 +158,34 @@ img {
     display: block;
     margin: 10px 0;
     text-align: left;
+  }
+
+  &__list-top {
+    input:first-child {
+      border-top-left-radius: 4px;
+    }
+
+    input:last-child {
+      border-top-right-radius: 4px;
+    }
+  }
+
+  &__list-bottom {
+    input ~ input {
+      margin-left: -1px;
+    }
+
+    input:first-child {
+      border-bottom-left-radius: 4px;
+    }
+
+    input:last-child {
+      border-bottom-right-radius: 4px;
+    }
+  }
+
+  &__list-top + &__list-bottom {
+    margin-top: -1px;
   }
 }
 
@@ -167,36 +218,23 @@ img {
   padding: 4vw;
 
   &__check-icon {
+    position: relative;
     display: block;
-    padding: 6% 0 0 26%;
-    border: 2px solid $gray-3;
-    width: 26px;
-    height: 26px;
+    padding: 0;
+    border: 3px solid $gray-2;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
 
-    &::before,
-    &::after {
-      display: inline-block;
-      content: "";
-      background-color: $white;
-      height: 8px;
-      width: 2px;
-      border-radius: 2px;
-      opacity: 1;
-
-      transform-origin: bottom;
-      -webkit-transform-origin: bottom;
-    }
-
     &::before {
-      transform: rotate(-45deg) translateY(2px);
-      -webkit-transform: rotate(-45deg) translateY(2px);
-    }
-
-    &::after {
-      height: 13px;
-      transform: rotate(45deg) translateY(2px);
-      -webkit-transform: rotate(45deg) translateY(2px);
+      content: "";
+      position: absolute;
+      display: block;
+      border: 4px solid $white;
+      width: 14px;
+      height: 14px;
+      background-color: transparent;
+      border-radius: 50%;
     }
   }
 
@@ -461,6 +499,11 @@ img {
   &__payment {
     @extend .main-section;
     padding-bottom: 43.2vw;
+  }
+
+  &__bank-payment {
+    @extend .main-section;
+    padding-bottom: 21.6vw;
     background-color: $white;
   }
 
@@ -1049,6 +1092,40 @@ img {
   padding: 4vw;
 }
 
+.logo-default {
+  &__image-container {
+    @extend .reset-font-size;
+
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: $white;
+
+    &::before {
+      @extend .w-h-same;
+    }
+
+    svg,
+    img {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+      fill: $white;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+}
+
 .cart-bar {
   @extend .border-radius-base;
 
@@ -1174,30 +1251,87 @@ img {
 
 .payment {
   &__item {
-    padding: 3.6vw 0 3.6vw 3.6vw;
+    padding: 4vw 0 4vw 4vw;
+    margin: 0 -1px -1px;
+    border: 1px solid $gray-3;
     background-color: $white;
-
-    &::before {
-      content:  "";
-      display: block;
-      width: 26px;
-      height: 1px;
-    }
   }
 
   &__image-container {
-    max-width: 80px;
+    width: 15vw;
   }
 
-  &__pay-now-container {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 4vw;
-    background-color: $white;
+  &__name {
+    padding: 0 20px;
+    font-size: 1.3rem;
+    width: 60vw;
+  }
+}
 
-    .button {
-      @extend .border-radius-base;
+.payment-bank {
+  padding: 4vw;
+
+  .input {
+    height: 50px;
+    font-size: 1.4rem;
+  }
+
+  .logo-default__image-container {
+    display: block;
+    margin: 4vw auto;
+  }
+
+  .input__list-top {
+    border: 1px solid $gray-3;
+    border-radius: 4px 4px 0 0;
+
+    .input {
+      border: 0;
+    }
+  }
+
+  &__money {
+    display: block;
+    padding: 2vw 0;
+    font-size: 2rem;
+  }
+
+  &__form-item {
+    padding: 4vw 0;
+  }
+
+  &__label {
+    display: block;
+    margin: 3vw 0;
+    font-size: 1.4rem;
+  }
+
+  &__card-type-container {
+    padding: 3px;
+  }
+
+  &__card-type-icon {
+    display: inline-block;
+    padding: 10px 0;
+    margin: 0 6px;
+    font-size: 0;
+    opacity: 0.5;
+
+    &.active {
+      opacity: 1;
+    }
+
+    img {
+      margin: auto;
+      max-width: 100%;
+    }
+
+    &.visa {
+      width: 12vw;
+    }
+
+    &.mastercard {
+      width: 10vw;
     }
   }
 }
