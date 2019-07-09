@@ -69,7 +69,7 @@ export class ThankYou extends Component {
     const date = new Date();
 
     if (!order) {
-      return <div>Order Not Found</div>;
+      return null;
     }
 
     return (
