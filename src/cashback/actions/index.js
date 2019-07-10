@@ -163,7 +163,17 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       return;
     }
 
-    await dispatch(sendMessage({ errorStatus: data.status }));
+    const errorOptions = {
+      errorStatus: data.status,
+    };
+
+    if (data.claimCashbackCountPerDay) {
+      Object.assign(errorOptions, {
+        message: data.claimCashbackCountPerDay
+      });
+    }
+
+    await dispatch(sendMessage(errorOptions));
   } catch (e) {
     // TODO: handle error
     console.error(e);

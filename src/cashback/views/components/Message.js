@@ -69,7 +69,7 @@ class Message extends React.Component {
       Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
       NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
       NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
-      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today (Limit: 111 time).`,
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today (Limit: ${message} time).`,
       /* set page message */
       // 'NotClaimed'
       /* set Otp */
