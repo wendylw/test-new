@@ -3,27 +3,23 @@ import { compose } from 'react-apollo';
 import withOnlineStoreInfo from '../../libs/withOnlineStoreInfo';
 
 class CurrencyNumber extends React.Component {
-	formatChildrenAsMoney() {
+  formatChildrenAsMoney() {
     const { gqlOnlineStoreInfo, money } = this.props;
     const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
-		const { locale, currency } = onlineStoreInfo;
+    const { locale, currency } = onlineStoreInfo;
 
-		if (!locale || !currency) {
-			return money;
-		}
+    if (!locale || !currency) {
+      return money;
+    }
 
-		return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
-	}
+    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
+  }
 
-	render() {
-		const { classList, money, addonBefore } = this.props;
+  render() {
+    const { classList, addonBefore } = this.props;
 
-		if (!money) {
-			return null;
-		}
-
-		return <span className={classList}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
-	}
+    return <span className={classList}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
+  }
 }
 
 export default compose(

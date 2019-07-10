@@ -12,6 +12,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
       variationId
       optionId
       markedSoldOut
+      platform
     }
     markedSoldOut
     displayPrice
@@ -231,7 +232,7 @@ apiGql.EMPTY_SHOPPING_CART = gql`
   }
 `;
 
-// [source] critirial: { ECOMMERCE: 1, QR: 2 }
+// [platform] critirial: { ECOMMERCE: 1, QR: 2 }
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
     $action: String!,
@@ -247,7 +248,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      source: 2
+      platform: 2
     }) {
       shoppingCartItem {
         id
