@@ -29,7 +29,7 @@ export class ProductDetailsComponent extends Component {
   static defaultProps = {
     product: null,
     shoppingCart: null,
-    addOrUpdateShoppingCartItem: () => {},
+    addOrUpdateShoppingCartItem: () => { },
   }
 
   state = {
@@ -163,15 +163,15 @@ export class ProductDetailsComponent extends Component {
             {
               this.getSingleChoiceVariations().length ? (
                 <ol className="product-detail__options-category">
-                {
-                  this.getSingleChoiceVariations().map(variation => (
-                    <VariationSelectorComponent
-                      key={variation.id}
-                      variation={variation}
-                      onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                    />
-                  ))
-                }
+                  {
+                    this.getSingleChoiceVariations().map(variation => (
+                      <VariationSelectorComponent
+                        key={variation.id}
+                        variation={variation}
+                        onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                      />
+                    ))
+                  }
                 </ol>
               ) : null
             }
@@ -179,20 +179,20 @@ export class ProductDetailsComponent extends Component {
             {
               this.getMultipleChoiceVariations().length ? (
                 <ol className="product-detail__options-category">
-                {
-                  this.getMultipleChoiceVariations().map(variation => (
-                    <VariationSelectorComponent
-                      key={variation.id}
-                      variation={variation}
-                      onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                    />
-                  ))
-                }
+                  {
+                    this.getMultipleChoiceVariations().map(variation => (
+                      <VariationSelectorComponent
+                        key={variation.id}
+                        variation={variation}
+                        onChange={this.setVariationsByIdMap.bind(this, variation.id)}
+                      />
+                    ))
+                  }
                 </ol>
               ) : null
             }
           </div>
-          
+
           <div className="aside__fix-bottom">
             <ItemComponent
               className="aside__section-container border__top-divider"
@@ -218,7 +218,7 @@ export class ProductDetailsComponent extends Component {
                   const variations = this.getVariationsValue();
 
                   if (this.isSubmitable()) {
-                    const result = await this.props.addOrUpdateShoppingCartItem({
+                    await this.props.addOrUpdateShoppingCartItem({
                       variables: {
                         action: 'add',
                         business: config.business,
@@ -227,7 +227,6 @@ export class ProductDetailsComponent extends Component {
                         variations,
                       }
                     });
-                    console.debug('result (addOrUpdateShoppingCartItem) => %o', result);
                   }
 
                   // close popup and go back home.

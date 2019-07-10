@@ -51,9 +51,9 @@ export class ThankYou extends Component {
   }
 
   renderPickupInfo() {
-    const { additionalComments, pickUpId } = this.props.order;
+    const { tableId, pickUpId } = this.props.order;
 
-    if (!pickUpId || additionalComments) {
+    if (!pickUpId || tableId) {
       return null;
     }
 
@@ -109,15 +109,15 @@ export class ThankYou extends Component {
         <header className="header border__bottom-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => history.replace({
             pathname: `${Constants.ROUTER_PATHS.HOME}`,
-            search: `?table=${order.additionalComments}&storeId=${order.storeId}`
+            search: `?table=${order.tableId}&storeId=${order.storeId}`
           })}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
           </figure>
           <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
           <span className="gray-font-opacity text-uppercase">
             {
-              order.additionalComments
-                ? `Table ${order.additionalComments}`
+              order.tableId
+                ? `Table ${order.tableId}`
                 : 'Self pick-up'
             }
           </span>

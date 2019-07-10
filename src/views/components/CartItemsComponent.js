@@ -78,7 +78,6 @@ class CartItemsComponent extends Component {
                     });
                     return;
                   }
-  
                   this.props.addOrUpdateShoppingCartItem({
                     variables: {
                       action: 'edit',
