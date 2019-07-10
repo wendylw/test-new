@@ -73,7 +73,7 @@ export class ThankYou extends Component {
     }
 
     return (
-      <section className={`table-ordering__thanks ${match.isExact ? '' : 'hide'}`}>
+      <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
         <header className="header border__bottom-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => history.replace({
             pathname: `${Constants.ROUTER_PATHS.HOME}`,
