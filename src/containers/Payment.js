@@ -95,7 +95,7 @@ class Payment extends Component {
               <figure className="payment__image-container">
                 <img src="/img/payment-credit.png"></img>
               </figure>
-              <label className="payment__name font-weight-bold">Online Banking</label>
+              <label className="payment__name font-weight-bold">Credit/Debit Card</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
                 <input type="radio"></input>
