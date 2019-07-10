@@ -88,24 +88,30 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+            <li
+              className="payment__item border__botton-divider flex flex-middle flex-space-between"
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}
+            >
+              <figure className="payment__image-container">
+                <img src="/img/payment-credit.png"></img>
+              </figure>
+              <label className="payment__name font-weight-bold">Online Banking</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
+                <i className="radio__check-icon"></i>
+                <input type="radio"></input>
+              </div>
+            </li>
+            <li
+              className="payment__item border__botton-divider flex flex-middle flex-space-between"
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}
+            >
               <figure className="payment__image-container">
                 <img src="/img/payment-grab.png"></img>
               </figure>
               <label className="payment__name font-weight-bold">GrabPay</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.GRAB_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
-                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.GRAB_PAY)}></input>
-              </div>
-            </li>
-            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
-              <figure className="payment__image-container">
-                <img src="/img/payment-credit.png"></img>
-              </figure>
-              <label className="payment__name font-weight-bold">Credit/Debit Card</label>
-              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
-                <i className="radio__check-icon"></i>
-                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}></input>
+                <input type="radio"></input>
               </div>
             </li>
             {/*
