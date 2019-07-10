@@ -28,7 +28,7 @@ Utils.getPhoneNumber = function getPhoneNumber() {
 }
 
 Utils.setPhoneNumber = function setPhoneNumber(phone) {
-  localStorage.setItem('user.p', phone);
+  localStorage.setItem('user.p', phone || '');
 }
 
 Utils.isProductSoldOut = (product) => {

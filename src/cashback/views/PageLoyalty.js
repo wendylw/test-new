@@ -52,7 +52,6 @@ class PageLoyalty extends React.Component {
         variables={{ business: config.business }}
       >
         {({ data: { onlineStoreInfo = {} } = {} }) => {
-          console.log(cashbackHistory);
 
           return (
             <main className="loyalty flex-column">
