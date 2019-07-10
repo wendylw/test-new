@@ -296,6 +296,12 @@ form {
   justify-content: space-between;
 }
 
+.flex-column {
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
 .font-weight-light {
   font-weight: $font-weight-light;
 }
@@ -1082,8 +1088,7 @@ form {
   height: 14vw;
 }
 
-.footer-operation,
-.footer-link {
+.footer-operation {
   position: fixed;
   width: 100%;
   left: 0;
@@ -1353,7 +1358,8 @@ form {
 }
 
 .thanks {
-  padding: 3vh 4vw;
+  width: 100%;
+  padding: 3vh 4vw 9vh;
 
   img {
     margin: 0 auto;
@@ -1371,7 +1377,8 @@ form {
 
   &__link,
   &__receipt-info {
-    margin: 2vh 0;
+    padding: 3vh 0;
+    margin: -1vh 0;
   }
 
   &__receipt-title,
