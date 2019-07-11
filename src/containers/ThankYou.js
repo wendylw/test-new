@@ -84,9 +84,9 @@ export class ThankYou extends Component {
         }}
       >
         {({ data: { business = {} } = {} }) => {
-          const { enableQROrderingCashback } = business;
+          const { enableCashback } = business;
 
-          if (!enableQROrderingCashback) {
+          if (!enableCashback) {
             return null;
           }
 

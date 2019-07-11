@@ -56,13 +56,13 @@ apiGql.TOGGLE_MENU = gql`
 `;
 
 // powered by core-api
-//TODO: enableQROrderingCashback
 apiGql.GET_CORE_BUSINESS = gql`
   query CoreBusiness($business: ID!, $storeId: ID!) {
     business(name: $business) {
       name
       enablePax
       enableServiceCharge
+      enableCashback
       serviceChargeRate
       serviceChargeTax
       subscriptionStatus
