@@ -31,6 +31,7 @@ class Payment extends Component {
   async payNow() {
     const { paymentMethod } = this.state;
     const { shoppingCart, history } = this.props;
+    const { additionalComments } = history.location.state || {};
 
     this.setState({
       payNowLoading: true,
@@ -43,7 +44,8 @@ class Payment extends Component {
           storeId: config.storeId,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
-          tableId: config.table || ''
+          tableId: config.table || '',
+          additionalComments,
         }),
       });
 
@@ -71,9 +73,7 @@ class Payment extends Component {
 
   renderMain() {
     const { match, history } = this.props;
-    const { paymentMethod, order } = this.state;
-
-    console.log('order =>', order);
+    const { paymentMethod } = this.state;
 
     return (
       <section className={`table-ordering__payment ${match.isExact ? '' : 'hide'}`}>
