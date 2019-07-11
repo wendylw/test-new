@@ -6,21 +6,21 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-    INDEX: '/',
-    ORDERING: '/ordering', // App basename
-    HOME: '/ordering/',
-    PORDUCTS: '/ordering/products',
-    CART: '/ordering/cart',
-    PAYMENT: '/ordering/payment',
-    BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
-    THANK_YOU: '/ordering/thank-you',
-    SORRY: '/ordering/sorry',
-    PLAYGROUND: 'playground',
-    ERROR: '/ordering/error',
-    CASHBACK: '/loyalty', // App basename
-    CASHBACK_HOME: '/loyalty/',
-    CASHBACK_CLAIM: '/loyalty/claim',
-    CASHBACK_ERROR: '/loyalty/error',
+  INDEX: '/',
+  ORDERING: '/ordering', // App basename
+  HOME: '/ordering/',
+  PORDUCTS: '/ordering/products',
+  CART: '/ordering/cart',
+  PAYMENT: '/ordering/payment',
+  BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
+  THANK_YOU: '/ordering/thank-you',
+  SORRY: '/ordering/sorry',
+  PLAYGROUND: 'playground',
+  ERROR: '/ordering/error',
+  CASHBACK: '/loyalty', // App basename
+  CASHBACK_HOME: '/loyalty/',
+  CASHBACK_CLAIM: '/loyalty/claim',
+  CASHBACK_ERROR: '/loyalty/error',
 };
 
 const DOCUMENT_TITLE = {
@@ -40,6 +40,11 @@ const PAYMENT_METHODS = {
   BOOST_PAY: 'Boost',
 };
 
+const PLATFORMS_CODE = {
+  ECOMMERCE: 1,
+  BEEP: 2,
+};
+
 const ADD_TO_CART_MIN_QUANTITY = 1;
 
 const BACKEND_PING_PATH = '/ping';
@@ -48,7 +53,7 @@ const PeopleCount = {
   DEFAULT: 1,
   MAX: 12,
   MAX_PLUS: -1,
-}
+};
 
 const OTP_TIMEOUT = 60;
 const OTP_CODE_SIZE = 5;
@@ -60,8 +65,9 @@ export default {
   MANIFEST,
   ROUTER_PATHS,
   PAYMENT_METHODS,
+  PLATFORMS_CODE,
   ADD_TO_CART_MIN_QUANTITY,
   BACKEND_PING_PATH,
   DOCUMENT_TITLE,
   PeopleCount,
-}
+};

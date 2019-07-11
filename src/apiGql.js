@@ -1,4 +1,5 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
+import Constants from './Constants';
 
 const apiGql = {};
 
@@ -232,7 +233,6 @@ apiGql.EMPTY_SHOPPING_CART = gql`
   }
 `;
 
-// [platform] critirial: { ECOMMERCE: 1, QR: 2 }
 apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   mutation AddOrUpdateShoppingCartItem(
     $action: String!,
@@ -248,7 +248,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      platform: 2
+      platform: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       shoppingCartItem {
         id
