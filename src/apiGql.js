@@ -9,11 +9,11 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     productId
     title
     variationTexts
+    platform
     variations {
       variationId
       optionId
       markedSoldOut
-      platform
     }
     markedSoldOut
     displayPrice
