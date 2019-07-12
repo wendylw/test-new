@@ -35,7 +35,8 @@ class PhoneViewContainer extends React.Component {
       options = Object.assign({}, options, {
         data: {
           phone,
-          receiptNumber
+          receiptNumber,
+          source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
         }
       });
     }
