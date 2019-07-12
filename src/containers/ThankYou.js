@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { compose } from 'react-apollo';
+import { Query, compose } from 'react-apollo';
+import apiGql from '../apiGql';
+import { clientCoreApi } from '../apiClient';
 import withOrderDetail from '../libs/withOrderDetail';
+import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
 import config from '../config';
 import Constants from '../Constants';
 import DocumentTitle from '../views/components/DocumentTitle';
+import PhoneViewContainer from '../ajax-containers/PhoneViewContainer';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
@@ -26,8 +30,8 @@ export class ThankYou extends Component {
   renderNeedReceipt() {
     const { orderId } = this.props.order;
     let text = (
-      <button className="thanks__link link font-weight-bold text-uppercase" onClick={() => this.setState({ needReceipt: 'detail' })}>
-        Need a receipt?
+      <button className="thanks__link link font-weight-bold text-uppercase button__block" onClick={() => this.setState({ needReceipt: 'detail' })}>
+        View Receipt
       </button>
     );
 
@@ -56,11 +60,39 @@ export class ThankYou extends Component {
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="gray-font-opacity font-weight-bold text-uppercase">Order Number</label>
+          <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
           <span className="thanks-pickup__id-number">{pickUpId}</span>
         </div>
-        <p className="thanks-pickup__prompt-text">Collect your order when your number is called/displayed</p>
       </div>
+    );
+  }
+
+  renderPhoneView() {
+    const { history, gqlOnlineStoreInfo } = this.props;
+    const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
+
+    return (
+      <Query
+        query={apiGql.GET_CORE_BUSINESS}
+        client={clientCoreApi}
+        variables={{ business: config.business, storeId: config.storeId }}
+        onError={() => {
+          history.replace({
+            pathname: Constants.ROUTER_PATHS.ERROR,
+            state: { message: 'Account name is not found.' },
+          });
+        }}
+      >
+        {({ data: { business = {} } = {} }) => {
+          const { enableQROrderingCashback } = business;
+
+          if (!enableQROrderingCashback) {
+            return null;
+          }
+
+          return (<PhoneViewContainer onlineStoreInfo={onlineStoreInfo} />);
+        }}
+      </Query>
     );
   }
 
@@ -91,10 +123,15 @@ export class ThankYou extends Component {
           </span>
         </header>
         <div className="thanks text-center">
-          <img src="/img/beep-success.png" alt="Beep Success" />
+          <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
-          {this.renderPickupInfo()}
-          {this.renderNeedReceipt()}
+          <p>Our kitchen's preparing up your order now. <span role="img" aria-label="Goofy">😋</span></p>
+
+          <div className="thanks__info-container">
+            {this.renderPickupInfo()}
+            {this.renderNeedReceipt()}
+            {this.renderPhoneView()}
+          </div>
         </div>
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
@@ -114,7 +151,7 @@ export class ThankYou extends Component {
   }
 }
 
-export default compose(withOrderDetail({
+export default compose(withOnlineStoreInfo(), withOrderDetail({
   options: ({ history }) => {
     const query = new URLSearchParams(history.location.search);
     const orderId = query.get('receiptNumber');
