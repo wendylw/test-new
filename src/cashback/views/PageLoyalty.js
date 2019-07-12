@@ -63,7 +63,7 @@ class PageLoyalty extends React.Component {
                   ) : null
                 }
                 <h5 className="logo-default__title text-uppercase">Total cashback</h5>
-                <CurrencyNumber classList="loyalty__money" money={cashbackHistory.totalCredits || 0} />
+                <CurrencyNumber classList="loyalty__money" onlineStoreInfo={onlineStoreInfo} money={cashbackHistory.totalCredits || 0} />
                 <RedeemButton />
               </section>
               <LoyaltyView />
