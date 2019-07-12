@@ -27,16 +27,15 @@ class PhoneViewContainer extends React.Component {
     const { phone } = this.state;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let options = {
-      url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}` : ''}`,
-      method
+      url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}&source=${GlobalConstants.CASHBACK_SOURCE.QR_ORDERING}` : ''}`,
+      method,
     };
 
     if (method === 'post') {
       options = Object.assign({}, options, {
         data: {
           phone,
-          receiptNumber,
-          source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
+          receiptNumber
         }
       });
     }
@@ -44,7 +43,7 @@ class PhoneViewContainer extends React.Component {
     const { data } = await api(options);
     let redirectURL = null;
 
-    if (method === 'get') {
+    if (method === 'get' && data) {
       this.setState({
         cashbackInfoResponse: data
       });

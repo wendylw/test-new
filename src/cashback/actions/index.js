@@ -80,7 +80,7 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
   try {
     const { ok, data } = await api({
-      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}`,
+      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}&srouce=${GlobalConstants.CASHBACK_SOURCE.RECEIPT}`,
       method: 'get',
     });
 
