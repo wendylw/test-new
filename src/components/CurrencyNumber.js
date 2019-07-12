@@ -1,12 +1,9 @@
 import React from 'react';
-import { compose } from 'react-apollo';
-import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
+import PropTypes from 'prop-types';
 
 class CurrencyNumber extends React.Component {
 	formatChildrenAsMoney() {
-    const { gqlOnlineStoreInfo, money } = this.props;
-    const { onlineStoreInfo = {} } = gqlOnlineStoreInfo;
-		const { locale, currency } = onlineStoreInfo;
+		const { locale, currency, money } = this.props;
 
 		if (!locale || !currency) {
 			return money;
@@ -21,4 +18,14 @@ class CurrencyNumber extends React.Component {
 	}
 }
 
-export default compose(withOnlineStoreInfo)(CurrencyNumber);
+CurrencyNumber.propTypes = {
+	classList: PropTypes.string,
+	locale: PropTypes.string,
+	currency: PropTypes.string,
+	money: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number
+	]),
+};
+
+export default CurrencyNumber;

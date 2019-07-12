@@ -15,7 +15,9 @@ class RecentActivityView extends React.Component {
 
     if (!customerId) {
       console.error(new Error('custom id is required in RecentActivityView'));
-      this.props.sendMessage('Activity incorrect, need retry.');
+      this.props.sendMessage({
+        errorStatus: 'Activity_Incorrect',
+      });
       history.push('/');
       return;
     }
@@ -92,8 +94,8 @@ class RecentActivityView extends React.Component {
             <label>{this.renderEventType(activity.eventType)}&nbsp;</label>
             {
               activity.eventType !== 'pending'
-              ? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
-              : null
+                ? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
+                : null
             }
           </h4>
           <time className="activity__time">{this.renderEventTime(activity.eventTime)}</time>

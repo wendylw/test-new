@@ -1,8 +1,8 @@
 const DOCUMENT_ROOT_ID = 'root';
 
 const MANIFEST = {
-  PLACEHOLDER_ID: 'manifest-placeholder',
-  PATH: '/web/manifest.json',
+	PLACEHOLDER_ID: 'manifest-placeholder',
+	PATH: '/web/manifest.json',
 };
 
 const ROUTER_PATHS = {
@@ -23,21 +23,27 @@ const ROUTER_PATHS = {
   CASHBACK_ERROR: '/loyalty/error',
 };
 
+const CASHBACK_SOURCE = {
+	REGISTER: 'REGISTER',
+	RECEIPT: 'RECEIPT',
+	QR_ORDERING: 'QR_ORDERING',
+};
+
 const DOCUMENT_TITLE = {
-  HOME: 'Home',
-  CART: 'Cart',
-  PAYMENT: 'Payment',
-  BANK_CARD_PAYMENT: 'Payment via Card',
-  THANK_YOU: 'Payment Success',
-  SORRY: 'Payment Failed',
-  ERROR: 'Error',
-  NOT_FOUND: '404 - Page Not Found',
+	HOME: 'Home',
+	CART: 'Cart',
+	PAYMENT: 'Payment',
+	BANK_CARD_PAYMENT: 'Payment via Card',
+	THANK_YOU: 'Payment Success',
+	SORRY: 'Payment Failed',
+	ERROR: 'Error',
+	NOT_FOUND: '404 - Page Not Found',
 };
 
 const PAYMENT_METHODS = {
-  GRAB_PAY: 'GrabPay',
-  CARD_PAY: '2P2C_PAY',
-  BOOST_PAY: 'Boost',
+	GRAB_PAY: 'GrabPay',
+	CARD_PAY: '2P2C_PAY',
+	BOOST_PAY: 'Boost',
 };
 
 const PLATFORMS_CODE = {
@@ -64,6 +70,7 @@ export default {
   DOCUMENT_ROOT_ID,
   MANIFEST,
   ROUTER_PATHS,
+  CASHBACK_SOURCE,
   PAYMENT_METHODS,
   PLATFORMS_CODE,
   ADD_TO_CART_MIN_QUANTITY,
