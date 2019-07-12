@@ -24,8 +24,8 @@ export class ItemComponent extends Component {
     decreaseDisabled: false,
     increaseDisabled: false,
     soldOut: false,
-    onDecrease: () => {},
-    onIncrease: () => {},
+    onDecrease: () => { },
+    onIncrease: () => { },
   };
 
   render() {
@@ -44,9 +44,9 @@ export class ItemComponent extends Component {
           <div className="item__detail">
             <summary className="item__title font-weight-bold">{title}</summary>
             {variation ? <p className="item__description">{variation}</p> : null}
-            <span className="gray-font-opacity"><CurrencyNumber money={price} /></span>
+            <span className="gray-font-opacity"><CurrencyNumber money={price || 0} /></span>
           </div>
-          
+
           {this.renderOperators()}
         </div>
       </li>
@@ -71,32 +71,32 @@ export class ItemComponent extends Component {
 
     return (
       <div className={`item__cart-ctrl ${quantity > 0 ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
-            <button
-              className="cart__ctrl-container"
-              disabled={decreaseDisabled}
-              onClick={onDecrease}
-            >
-              <i className="cart__ctrl cart__minuts">
-                <span className="cart__icon"></span>
-              </i>
-            </button>
+        <button
+          className="cart__ctrl-container"
+          disabled={decreaseDisabled}
+          onClick={onDecrease}
+        >
+          <i className="cart__ctrl cart__minuts">
+            <span className="cart__icon"></span>
+          </i>
+        </button>
 
-            {
-              quantity > 0 ? (
-                <span className="font-weight-bold">{quantity}</span>
-              ) : null
-            }
+        {
+          quantity > 0 ? (
+            <span className="font-weight-bold">{quantity}</span>
+          ) : null
+        }
 
-            <button
-              className="cart__ctrl-container"
-              onClick={onIncrease}
-              disabled={increaseDisabled}
-            >
-              <i className="cart__ctrl cart__add">
-                <span className="cart__icon"></span>
-              </i>
-            </button>
-          </div>
+        <button
+          className="cart__ctrl-container"
+          onClick={onIncrease}
+          disabled={increaseDisabled}
+        >
+          <i className="cart__ctrl cart__add">
+            <span className="cart__icon"></span>
+          </i>
+        </button>
+      </div>
     )
   }
 }

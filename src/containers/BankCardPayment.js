@@ -302,7 +302,7 @@ class BankCardPayment extends Component {
 									>
 										<img src={onlineStoreInfo.logo} alt="" />
 									</figure>
-									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total} />
+									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total || 0} />
 
 									<form id="bank-2c2p-form" className="form">
 										<div className="payment-bank__form-item">
@@ -412,7 +412,7 @@ class BankCardPayment extends Component {
 									>{
 											payNowLoading
 												? 'Redirecting'
-												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total} />
+												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
 										}
 									</button>
 								</div>

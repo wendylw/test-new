@@ -24,11 +24,7 @@ export class Cart extends Component {
   }
 
   render() {
-    const { shoppingCart } = this.props;
-
-    if (!shoppingCart) {
-      return null;
-    }
+    const { shoppingCart = {} } = this.props;
 
     const {
       count,
@@ -44,9 +40,9 @@ export class Cart extends Component {
         <section className={`table-ordering__order` /* hide */}>
           <header className="header border__bottom-divider flex flex-middle flex-space-between">
             <figure className="header__image-container text-middle" onClick={this.backToHome.bind(this)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
             </figure>
-            <h2 className="header__title font-weight-bold text-middle">{`Order ${count} Items`}</h2>
+            <h2 className="header__title font-weight-bold text-middle">{`Order ${count || 0} Items`}</h2>
             <ClearAll onClearedAll={() => { this.backToHome(); }} />
           </header>
           <div className="list__container">
@@ -56,7 +52,7 @@ export class Cart extends Component {
             <ul className="billing__list">
               <li className="billing__item flex flex-middle flex-space-between">
                 <label className="gray-font-opacity">Subtotal</label>
-                <span className="gray-font-opacity"><CurrencyNumber money={subtotal} /></span>
+                <span className="gray-font-opacity"><CurrencyNumber money={subtotal || 0} /></span>
               </li>
               <Query
                 query={apiGql.GET_CORE_BUSINESS}
@@ -75,7 +71,7 @@ export class Cart extends Component {
                     <React.Fragment>
                       <li className="billing__item flex flex-middle flex-space-between">
                         <label className="gray-font-opacity">{(stores[0].receiptTemplateData || {}).taxName || `Tax`}</label>
-                        <span className="gray-font-opacity"><CurrencyNumber money={tax} /></span>
+                        <span className="gray-font-opacity"><CurrencyNumber money={tax || 0} /></span>
                       </li>
                       {(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
                         <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
@@ -87,7 +83,7 @@ export class Cart extends Component {
               </Query>
               <li className="billing__item flex flex-middle flex-space-between">
                 <label className="font-weight-bold">Total</label>
-                <span className="font-weight-bold"><CurrencyNumber money={total} /></span>
+                <span className="font-weight-bold"><CurrencyNumber money={total || 0} /></span>
               </li>
             </ul>
           </section>
