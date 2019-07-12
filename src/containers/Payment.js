@@ -91,6 +91,7 @@ class Payment extends Component {
             <li
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
               onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}
+              style={{ display: 'none' }}
             >
               <figure className="payment__image-container">
                 <img src="/img/payment-credit.png"></img>
