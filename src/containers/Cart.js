@@ -31,6 +31,7 @@ export class Cart extends Component {
       subtotal,
       total,
       tax,
+      items,
       serviceCharge,  // TODO: Needs API
     } = shoppingCart;
 
@@ -96,7 +97,7 @@ export class Cart extends Component {
             </div>
             <div className="footer-operation__item width-2-3">
               <Link
-                className={`billing__link button button__fill button__block font-weight-bold ${count > 0 ? '' : 'disabled'}`}
+                className={`billing__link button button__fill button__block font-weight-bold ${items && items.length > 0 ? '' : 'disabled'}`}
                 to={Constants.ROUTER_PATHS.PAYMENT}
               >Pay</Link>
             </div>

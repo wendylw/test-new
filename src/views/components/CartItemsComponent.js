@@ -6,9 +6,9 @@ import config from '../../config';
 import Constants from '../../Constants';
 
 const isCartItemSoldOut = cartItem => {
-  const { marketSoldOut, variations } = cartItem;
+  const { markedSoldOut, variations } = cartItem;
 
-  if (marketSoldOut) {
+  if (markedSoldOut) {
     return true;
   }
 
