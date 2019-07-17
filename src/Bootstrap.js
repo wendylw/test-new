@@ -15,6 +15,11 @@ const AsyncCashbackApp = Loadable({
   loading: Loading,
 })
 
+const AsyncQRScanner = Loadable({
+  loader: () => import("./qr-scanner"),
+  loading: Loading,
+})
+
 const AsyncNotFound = Loadable({
   loader: () => import("./containers/NotFound"),
   loading: Loading,
@@ -26,17 +31,28 @@ class Bootstrap extends Component {
       <React.Fragment>
         <Switch>
           <Route exact path={Constants.ROUTER_PATHS.INDEX} render={() => {
+            if (isQRScannerApp()) {
+              return (
+                <Redirect to={Constants.ROUTER_PATHS.QRSCANNER} />
+              );
+            }
+
             return (
               <Redirect to={Constants.ROUTER_PATHS.ORDERING} />
             );
           }} />
           <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
           <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
+          <Route path={Constants.ROUTER_PATHS.QRSCANNER} component={AsyncQRScanner} />
           <Route component={AsyncNotFound} />
         </Switch>
       </React.Fragment>
     );
   }
+}
+
+const isQRScannerApp = () => {
+  return ['beepit.co', 'www.beepit.co'].includes(document.location.hostname);
 }
 
 export default Bootstrap;
