@@ -188,12 +188,11 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
 };
 
 export const getCashbackAndHashData = hash => async (dispatch, getState) => {
-  const { hashData = {} } = getState().common;
-
   await dispatch(getCashbackHashData(hash));
 
-  if (hashData.receiptNumber) {
+  const { hashData } = getState().common;
 
+  if (hashData && hashData.receiptNumber) {
     try {
       await dispatch(getCashbackInfo(hashData.receiptNumber));
     } catch (e) {
