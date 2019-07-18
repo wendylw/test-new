@@ -110,6 +110,7 @@ class PhoneViewContainer extends React.Component {
         <Link
           className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
           to={redirectURL}
+          target="_blank"
         >Check My Balance</Link>
       );
     }
