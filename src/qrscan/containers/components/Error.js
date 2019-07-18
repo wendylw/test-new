@@ -15,7 +15,7 @@ class Error extends Component {
   componentDidMount = () => {
     this.timer = setTimeout(() => {
       this.props.clearError();
-    });
+    }, 3000);
   }
 
   componentWillUnmount = () => {
