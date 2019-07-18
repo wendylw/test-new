@@ -1,4 +1,5 @@
 const DOCUMENT_ROOT_ID = 'root';
+const DEFAULT_FAVICON = '/img/favicon.ico';
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
@@ -24,9 +25,9 @@ const ROUTER_PATHS = {
 };
 
 const CASHBACK_SOURCE = {
-	REGISTER: 'REGISTER',
-	RECEIPT: 'RECEIPT',
-	QR_ORDERING: 'QR_ORDERING',
+  REGISTER: 'REGISTER',
+  RECEIPT: 'RECEIPT',
+  QR_ORDERING: 'QR_ORDERING',
 };
 
 const DOCUMENT_TITLE = {
@@ -68,6 +69,7 @@ export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
+  DEFAULT_FAVICON,
   MANIFEST,
   ROUTER_PATHS,
   CASHBACK_SOURCE,

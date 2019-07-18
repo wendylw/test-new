@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import GlobalConstans from '../Constants';
+
+const { DEFAULT_FAVICON } = GlobalConstans;
 
 class DocumentFavicon extends React.Component {
   static propTypes = {
@@ -9,7 +12,9 @@ class DocumentFavicon extends React.Component {
   static icon = '';
 
   static setIcon(icon) {
-    if (icon && icon !== DocumentFavicon.icon) {
+    icon = icon || DEFAULT_FAVICON;
+
+    if (icon !== DocumentFavicon.icon) {
 
       let link1 = document.querySelector('link[rel=apple-touch-icon-precomposed]');
       let link2 = document.querySelector('link[rel="shortcut icon"]');
@@ -42,11 +47,11 @@ class DocumentFavicon extends React.Component {
   displayName = 'DocumentFavicon';
 
   componentWillMount() {
-    DocumentFavicon.setIcon(this.props.icon);
+    DocumentFavicon.setIcon(this.props.icon || DEFAULT_FAVICON);
   }
 
   componentWillReceiveProps(nextProps) {
-    DocumentFavicon.setIcon(nextProps.icon);
+    DocumentFavicon.setIcon(nextProps.icon || DEFAULT_FAVICON);
   }
 
   render() {
