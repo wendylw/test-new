@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Query } from 'react-apollo';
 import apiGql from '../apiGql';
 import config from '../config';
-import { setOnlineStoreInfo } from './actions';
+import { setOnlineStoreInfo, getBusiness } from './actions';
 
 import Constants from '../Constants';
 
@@ -22,8 +22,16 @@ const ErrorPage = React.lazy(() => import('./views/components/Error'));
 class Routes extends React.Component {
   state = {}
 
+  componentWillMount() {
+    const { getBusiness } = this.props;
+
+    getBusiness(config.storeId);
+  }
+
   render() {
-    const { setOnlineStoreInfo } = this.props;
+    const { setOnlineStoreInfo, business } = this.props;
+
+    console.log(business);
 
     return (
       <Query
@@ -64,9 +72,12 @@ class Routes extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+  business: state.common.business,
+});
 
 const mapDispatchToProps = dispatch => bindActionCreators({
+  getBusiness,
   setOnlineStoreInfo,
 }, dispatch);
 
