@@ -363,13 +363,24 @@ img {
   }
 }
 
-.cash-back-form {
+.phone-view-form {
   &__label {
     @extend .font-weight-bold;
 
     display: block;
     padding: 5px 0;
+    margin: auto;
+    max-width: 450px;
     font-size: 1.3rem;
+    line-height: 1.7rem;
+
+    span {
+      font-size: inherit;
+    }
+
+    ~ .link__block {
+      margin: 10px 0;
+    }
   }
 
   &__button {
@@ -644,6 +655,10 @@ img {
 
     text-align: center;
     color: $main-color;
+  }
+
+  .react-phone-number-input__icon {
+    border: 0;
   }
 
   ~ .form__error-message {

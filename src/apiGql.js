@@ -1,4 +1,5 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
+import Constants from './Constants';
 
 const apiGql = {};
 
@@ -11,7 +12,9 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     variations {
       variationId
       optionId
+      markedSoldOut
     }
+    markedSoldOut
     displayPrice
     quantity
     image
@@ -60,6 +63,7 @@ apiGql.GET_CORE_BUSINESS = gql`
       name
       enablePax
       enableServiceCharge
+      enableCashback
       serviceChargeRate
       serviceChargeTax
       subscriptionStatus
@@ -113,6 +117,7 @@ apiGql.GET_PRODUCT_DETAIL = gql`
           id
           value
           priceDiff
+          markedSoldOut
         }
       }
       trackInventory
@@ -160,6 +165,7 @@ apiGql.GET_ONLINE_CATEGORY = gql`
             value
           }
         }
+        markedSoldOut
       }
     }
   }
@@ -199,7 +205,6 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
 `;
 
 // Field [additionalComments] stores table id here.
-// TODO: pickUpId
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
@@ -207,6 +212,8 @@ apiGql.GET_ORDER_DETAIL = gql`
       status
       total
       storeId
+      tableId
+      pickUpId
       additionalComments
     }
   }
@@ -240,7 +247,8 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       productId: $productId,
       userId: "",
       quantity: $quantity,
-      variations: $variations
+      variations: $variations,
+      platform: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       shoppingCartItem {
         id

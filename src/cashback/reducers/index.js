@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
-import { GET_STANDING_CENTS,
+import {
+  GET_STANDING_CENTS,
   SET_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
@@ -22,6 +23,8 @@ function standingCents(state = {}, action) {
 }
 
 function message(state = {}, action) {
+  console.log(action);
+
   switch (action.type) {
     case SET_MESSAGE:
       return { ...state, ...action.payload };

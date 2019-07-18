@@ -10,7 +10,7 @@ const withCoreApiBusiness = TheComponent =>
   class WithCoreApiBusiness extends React.Component {
     goToError(message) {
       const { history } = this.props;
-  
+
       history.replace({
         pathname: Constants.ROUTER_PATHS.ERROR,
         state: {
@@ -22,19 +22,19 @@ const withCoreApiBusiness = TheComponent =>
     tryPeopleCount(response) {
       const { history } = this.props;
       const { business } = response;
-  
-      const { enablePax, subscriptionStatus, stores } = business;
-  
+
+      const { enablePax, subscriptionStatus, stores } = business || {};
+
       if (subscriptionStatus === 'Expired') {
         this.goToError('Account is expired.');
         return;
       }
-  
+
       if (!Array.isArray(stores) || !stores.length) {
         this.goToError('Store is not found.');
         return;
       }
-  
+
       // Everytime reload /home page, will effects a Pax selector.
       if (enablePax && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
         if (history.location.pathname.indexOf('/modal/people-count') === -1) {

@@ -2,6 +2,8 @@ import React from 'react';
 import { compose } from "react-apollo";
 import withOnlineCategory from "./withOnlineCategory";
 import withShoppingCart from "./withShoppingCart";
+import Utils from './utils';
+
 
 const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
   if (!Array.isArray(onlineCategory)) {
@@ -14,6 +16,7 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
     category.cartQuantity = 0;
     products.forEach(product => {
       product.cartQuantity = 0;
+      product.soldOut = Utils.isProductSoldOut(product);
       product.variations = product.variations || [];
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
 
@@ -32,16 +35,12 @@ const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
 
   return onlineCategory;
 }
-
 const withOnlineCategoryMergedCart = compose(
   withOnlineCategory({
     props: ({ gqlProducts: { loading, onlineCategory } }) => {
       const props = { loading };
 
       if (!loading) {
-        // mocked data
-        // gqlProducts.onlineCategory = require('./mocks/onlineCategory.json');
-
         Object.assign(props, { onlineCategory });
       }
 
@@ -53,9 +52,6 @@ const withOnlineCategoryMergedCart = compose(
       const props = { loading };
 
       if (!loading) {
-        // mocked data
-        // return { shoppingCart: require('./mocks/shoppingCart.json').data.shoppingCart };
-
         Object.assign(props, { shoppingCart });
       }
 
@@ -63,8 +59,6 @@ const withOnlineCategoryMergedCart = compose(
     },
   }),
   TheComponent => ({ shoppingCart, onlineCategory, children, ...props }) => {
-    // onlineCategory = require('./mocks/onlineCategory.json').data.onlineCategory; // TODO: remove it
-
     const onlineCategoryMergedShoppingCart = mergeWithShoppingCart(onlineCategory, shoppingCart);
 
     return (

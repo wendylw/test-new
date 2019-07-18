@@ -13,7 +13,7 @@ import config from '../../config';
 import RedeemButton from './components/RedeemButton';
 
 class PageLoyalty extends React.Component {
-  state = {  }
+  state = {}
 
   componentWillMount() {
     const { history, setCustomerId } = this.props;
@@ -44,12 +44,32 @@ class PageLoyalty extends React.Component {
   }
 
   render() {
+    const { cashbackHistory } = this.props;
+
     return (
       <Query
         query={apiGql.GET_ONLINE_STORE_INFO}
         variables={{ business: config.business }}
-        onCompleted={({ onlineStoreInfo }) => this.props.setOnlineStoreInfo(onlineStoreInfo)}>
-          {this.renderMain.bind(this)}
+      >
+        {({ data: { onlineStoreInfo = {} } = {} }) => {
+
+          return (
+            <main className="loyalty flex-column">
+              <Message />
+              <section className="loyalty__home text-center">
+                {
+                  onlineStoreInfo ? (
+                    <Image className="logo-default__image-container" src={onlineStoreInfo.logo} alt={onlineStoreInfo.storeName} />
+                  ) : null
+                }
+                <h5 className="logo-default__title text-uppercase">Total cashback</h5>
+                <CurrencyNumber classList="loyalty__money" onlineStoreInfo={onlineStoreInfo} money={cashbackHistory.totalCredits || 0} />
+                <RedeemButton />
+              </section>
+              <LoyaltyView />
+            </main>
+          );
+        }}
       </Query>
     );
   }

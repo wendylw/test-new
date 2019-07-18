@@ -77,42 +77,10 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
   }
 };
 
-const cashbackSendMessage = (response, history) => dispatch => {
-  const { data } = response;
-
-  const messageMap = {
-    /* get Cash Back messages */
-    // 'Can_Claim': '',
-    // 'Expired': '',
-    // 'Invalid': '',
-    // 'Claimed': '',
-    /* save Cash Back messages */
-    'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
-    'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
-    'Claimed_Processing': `You've earned more cashback! We'll add it once it's been processed. 😉`,
-    'Claimed_Someone_Else': `Someone else has already earned cashback for this receipt. 😅`,
-    'Claimed_Repeat': `You've already earned cashback for this receipt. 👍`,
-    'NotClaimed_Expired': `This cashback has expired and cannot be earned anymore. 😭`,
-    'NotClaimed_Cancelled': 'This transaction has been cancelled/refunded.',
-    /* Set page message */
-    // 'NotClaimed'
-  };
-  const errorStatus = ['NotClaimed_Cancelled'];
-  let messageType = 'primary';
-
-  if (errorStatus.includes(data.status)) {
-    messageType = 'error';
-  }
-
-  let displayMessage = messageMap[data.status] || `Oops, please scan QR to claim again.`;
-
-  dispatch(sendMessage(displayMessage, messageType));
-};
-
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
   try {
     const { ok, data } = await api({
-      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}`,
+      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}&source=${GlobalConstants.CASHBACK_SOURCE.RECEIPT}`,
       method: 'get',
     });
 
@@ -123,11 +91,13 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
       });
 
       if (!data.cashback) {
-        dispatch(sendMessage('After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!'));
+        dispatch(sendMessage({
+          errorStatus: 'Invalid',
+        }));
       }
 
       if (data.status) {
-        await dispatch(cashbackSendMessage({ data }));
+        await dispatch(sendMessage({ errorStatus: data.status }));
       }
     }
   } catch (e) {
@@ -165,14 +135,16 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       data: {
         phone,
         receiptNumber,
-        source: "RECEIPT" //options: REGISTER, RECEIPT, QR_ORDERING
+        source: GlobalConstants.CASHBACK_SOURCE.RECEIPT
       },
     });
     const { ok, data, error } = response;
 
     if (!ok) {
       dispatch(resetOtpInput());
-      dispatch(sendMessage(error.message));
+      dispatch(sendMessage({
+        message: error.message
+      }));
       return;
     }
 
@@ -191,7 +163,17 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       return;
     }
 
-    await dispatch(cashbackSendMessage(response, history));
+    const errorOptions = {
+      errorStatus: data.status,
+    };
+
+    if (data.claimCashbackCountPerDay) {
+      Object.assign(errorOptions, {
+        message: data.claimCashbackCountPerDay
+      });
+    }
+
+    await dispatch(sendMessage(errorOptions));
   } catch (e) {
     // TODO: handle error
     console.error(e);
@@ -259,7 +241,9 @@ export const sendOtp = phone => async (dispatch, getState) => {
         });
       }, 1000);
     } else {
-      dispatch(sendMessage('Oops! OTP not sent, please check your phone number and send again.'));
+      dispatch(sendMessage({
+        errorStatus: 'NotSent_OTP',
+      }));
       dispatch({
         type: SEND_OTP_FAILURE,
         payload: {
@@ -294,10 +278,10 @@ export const savePhone = phone => async dispatch => {
   localStorage.setItem('user.p', phone || '');
 };
 
-export const sendMessage = (message, type = 'primary') => ({
+export const sendMessage = ({ errorStatus, message = '' }) => ({
   type: SET_MESSAGE,
   payload: {
-    type, // Type includes 'primary', 'error'
+    errorStatus: errorStatus || '',
     message,
     show: true,
   },
@@ -306,6 +290,7 @@ export const sendMessage = (message, type = 'primary') => ({
 export const clearMessage = payload => ({
   type: SET_MESSAGE,
   payload: {
+    errorStatus: '',
     message: '',
     show: false,
   },
