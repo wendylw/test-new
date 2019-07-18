@@ -188,10 +188,6 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
 };
 
 export const getCashbackAndHashData = hash => async (dispatch, getState) => {
-<<<<<<< HEAD
-	await dispatch(getCashbackHashData(hash));
-	await dispatch(getCashbackInfo(getState().common.hashData.receiptNumber));
-=======
 	const { hashData = {} } = getState().common;
 
 	await dispatch(getCashbackHashData(hash));
@@ -204,7 +200,6 @@ export const getCashbackAndHashData = hash => async (dispatch, getState) => {
 			console.log(e);
 		}
 	}
->>>>>>> origin/master
 };
 
 export const setOnlineStoreInfo = payload => ({
