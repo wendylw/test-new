@@ -29,9 +29,7 @@ class Routes extends React.Component {
   }
 
   render() {
-    const { setOnlineStoreInfo, business } = this.props;
-
-    console.log(business);
+    const { setOnlineStoreInfo } = this.props;
 
     return (
       <Query
@@ -45,6 +43,8 @@ class Routes extends React.Component {
       >
         {({ data }) => {
           const { onlineStoreInfo = {} } = data;
+
+          setOnlineStoreInfo(onlineStoreInfo);
 
           return (
             <React.Suspense fallback={loading()}>
@@ -72,9 +72,7 @@ class Routes extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  business: state.common.business,
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getBusiness,

@@ -76,11 +76,11 @@ class PhoneView extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const onlineStoreInfo = state.common.onlineStoreInfo || {};
+  const business = state.common.business || {};
 
   return {
     phone: state.user.phone,
-    country: onlineStoreInfo.country,
+    country: business.country,
   };
 };
 
