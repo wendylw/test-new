@@ -2,8 +2,8 @@ const DOCUMENT_ROOT_ID = 'root';
 const DEFAULT_FAVICON = '/img/favicon.ico';
 
 const MANIFEST = {
-  PLACEHOLDER_ID: 'manifest-placeholder',
-  PATH: '/web/manifest.json',
+	PLACEHOLDER_ID: 'manifest-placeholder',
+	PATH: '/web/manifest.json',
 };
 
 const ROUTER_PATHS = {
@@ -22,23 +22,37 @@ const ROUTER_PATHS = {
   CASHBACK_HOME: '/loyalty/',
   CASHBACK_CLAIM: '/loyalty/claim',
   CASHBACK_ERROR: '/loyalty/error',
+<<<<<<< HEAD
+=======
+};
+
+const CASHBACK_SOURCE = {
+	REGISTER: 'REGISTER',
+	RECEIPT: 'RECEIPT',
+	QR_ORDERING: 'QR_ORDERING',
+>>>>>>> origin/master
 };
 
 const DOCUMENT_TITLE = {
-  HOME: 'Home',
-  CART: 'Cart',
-  PAYMENT: 'Payment',
-  BANK_CARD_PAYMENT: 'Payment via Card',
-  THANK_YOU: 'Payment Success',
-  SORRY: 'Payment Failed',
-  ERROR: 'Error',
-  NOT_FOUND: '404 - Page Not Found',
+	HOME: 'Home',
+	CART: 'Cart',
+	PAYMENT: 'Payment',
+	BANK_CARD_PAYMENT: 'Payment via Card',
+	THANK_YOU: 'Payment Success',
+	SORRY: 'Payment Failed',
+	ERROR: 'Error',
+	NOT_FOUND: '404 - Page Not Found',
 };
 
 const PAYMENT_METHODS = {
-  GRAB_PAY: 'GrabPay',
-  CARD_PAY: '2P2C_PAY',
-  BOOST_PAY: 'Boost',
+	GRAB_PAY: 'GrabPay',
+	CARD_PAY: '2P2C_PAY',
+	BOOST_PAY: 'Boost',
+};
+
+const PLATFORMS_CODE = {
+  ECOMMERCE: 1,
+  BEEP: 2,
 };
 
 const ADD_TO_CART_MIN_QUANTITY = 1;
@@ -49,7 +63,7 @@ const PeopleCount = {
   DEFAULT: 1,
   MAX: 12,
   MAX_PLUS: -1,
-}
+};
 
 const OTP_TIMEOUT = 60;
 const OTP_CODE_SIZE = 5;
@@ -61,9 +75,11 @@ export default {
   DEFAULT_FAVICON,
   MANIFEST,
   ROUTER_PATHS,
+  CASHBACK_SOURCE,
   PAYMENT_METHODS,
+  PLATFORMS_CODE,
   ADD_TO_CART_MIN_QUANTITY,
   BACKEND_PING_PATH,
   DOCUMENT_TITLE,
   PeopleCount,
-}
+};

@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import Constants from '../Constants';
 import DocumentTitle from '../views/components/DocumentTitle';
 
-// Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
+// Example1 URL: http://nike.storehub.local:3000/#/sorry?receiptNumber=811588925877567
 export class Sorry extends Component {
   static propTypes = {
 
