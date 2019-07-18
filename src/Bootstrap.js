@@ -16,7 +16,7 @@ const AsyncCashbackApp = Loadable({
 })
 
 const AsyncQRScanner = Loadable({
-  loader: () => import("./qr-scanner"),
+  loader: () => import("./qrscan"),
   loading: Loading,
 })
 
@@ -33,7 +33,7 @@ class Bootstrap extends Component {
           <Route exact path={Constants.ROUTER_PATHS.INDEX} render={() => {
             if (isQRScannerApp()) {
               return (
-                <Redirect to={Constants.ROUTER_PATHS.QRSCANNER} />
+                <Redirect to={Constants.ROUTER_PATHS.QRSCAN} />
               );
             }
 
@@ -43,7 +43,7 @@ class Bootstrap extends Component {
           }} />
           <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
           <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
-          <Route path={Constants.ROUTER_PATHS.QRSCANNER} component={AsyncQRScanner} />
+          <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
           <Route component={AsyncNotFound} />
         </Switch>
       </React.Fragment>
