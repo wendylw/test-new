@@ -1,6 +1,7 @@
 import qs from 'qs';
 import {
   GET_STANDING_CENTS,
+  GET_BUSINESS,
   SET_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
@@ -105,6 +106,25 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
     console.error(e);
   }
 };
+
+export const getBusiness = storeId => async (dispatch) => {
+  try {
+    const { ok, data } = await api({
+      url: `${Constants.api.BUSINESS}?storeId=${storeId}`,
+      method: 'get',
+    });
+
+    if (ok) {
+      dispatch({
+        type: GET_BUSINESS,
+        payload: data,
+      });
+    }
+  } catch (e) {
+    // TODO: handle error
+    console.error(e);
+  }
+}
 
 export const setCustomerId = payload => ({
   type: SET_CUSTOMER_ID,
