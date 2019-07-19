@@ -43,13 +43,13 @@ class Routes extends React.Component {
       >
         {({ data }) => {
           const { onlineStoreInfo } = data;
-          const { icon } = onlineStoreInfo || {};
+          const { favicon } = onlineStoreInfo || {};
 
           setOnlineStoreInfo(onlineStoreInfo);
 
           return (
             <React.Suspense fallback={loading()}>
-              <DocumentFavicon icon={icon || Constants.DEFAULT_FAVICON} />
+              <DocumentFavicon icon={favicon || Constants.DEFAULT_FAVICON} />
               <Switch>
                 <Redirect exact from={Constants.ROUTER_PATHS.INDEX} to={Constants.ROUTER_PATHS.CASHBACK_HOME} />
                 <Route
