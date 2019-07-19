@@ -26,7 +26,9 @@ class HomeBody extends React.Component {
 
   render() {
     const { business, store = {} } = this.props;
-    const addressInfo = [business.displayBusinessName || business.name, store.city].filter(v => v);
+    const { displayBusinessName, name } = business || {};
+    const { city } = store || {};
+    const addressInfo = [displayBusinessName || name, city].filter(v => v);
 
     return (
       <section className="cash-back__home text-center">
