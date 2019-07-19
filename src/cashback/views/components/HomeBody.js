@@ -25,14 +25,18 @@ class HomeBody extends React.Component {
   }
 
   render() {
-    const { business, store = {} } = this.props;
+    const { logo, business, store = {} } = this.props;
     const { displayBusinessName, name } = business || {};
     const { city } = store || {};
     const addressInfo = [displayBusinessName || name, city].filter(v => v);
 
     return (
       <section className="cash-back__home text-center">
-        <Image className="logo-default__image-container" src={this.props.logo} alt={displayBusinessName || name} />
+        {
+          logo
+            ? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+            : null
+        }
         <h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
         {this.renderCashback()}
         <div className="location">

@@ -45,8 +45,6 @@ class Routes extends React.Component {
           const { onlineStoreInfo } = data;
           const { favicon } = onlineStoreInfo || {};
 
-          setOnlineStoreInfo(onlineStoreInfo);
-
           return (
             <React.Suspense fallback={loading()}>
               <DocumentFavicon icon={favicon || Constants.DEFAULT_FAVICON} />

@@ -36,7 +36,7 @@ class PageLoyalty extends React.Component {
         <Message />
         <section className="loyalty__home text-center">
           {
-            onlineStoreInfo ? (
+            logo ? (
               <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
             ) : null
           }
