@@ -22,8 +22,13 @@ class StoreList extends Component {
             const {
               id,
               name,
+              isDeleted,
             } = store;
             const { ADDRESS_RANGE } = Constants;
+
+            if (isDeleted) {
+              return null;
+            }
 
             return (
               <li
