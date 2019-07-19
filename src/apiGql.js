@@ -77,7 +77,6 @@ apiGql.GET_CORE_BUSINESS = gql`
 `;
 
 // powered by core-api
-// isDeleted waiting for release merged
 apiGql.GET_CORE_STORES = gql`
   query CoreStores($business: ID!) {
     business(name: $business) {
@@ -86,6 +85,7 @@ apiGql.GET_CORE_STORES = gql`
         id
         name
         isOnline
+        isDeleted
         street1
         street2
         city
