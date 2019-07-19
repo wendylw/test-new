@@ -2,15 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
-import InfiniteScroll from 'react-infinite-scroller';
 import { sendMessage, getCashbackHistory } from '../../actions';
 import CurrencyNumber from './CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from './Icons';
 
 class RecentActivityView extends React.Component {
-  pageSize = 10;
 
-  async fetch(pageNum) {
+  async fetch() {
     const { customerId, history, getCashbackHistory } = this.props;
 
     if (!customerId) {
@@ -23,19 +21,15 @@ class RecentActivityView extends React.Component {
     }
 
     try {
-      await getCashbackHistory({
-        customerId,
-        page: pageNum,
-        size: this.pageSize,
-      });
-
-      if (pageNum > 200) {
-        console.warn('code failure? ui component container needs maxHeight');
-      }
+      await getCashbackHistory({ customerId });
     } catch (e) {
       console.error(e);
     } finally {
     }
+  }
+
+  componentWillMount() {
+    this.fetch();
   }
 
   renderEventType(eventType) {
@@ -80,7 +74,7 @@ class RecentActivityView extends React.Component {
 
   render() {
     const { cashbackHistory, customerId } = this.props;
-    const { logs, hasMore } = cashbackHistory;
+    const { logs } = cashbackHistory;
 
     if (!Array.isArray(logs) || !customerId) {
       return null;
@@ -105,15 +99,7 @@ class RecentActivityView extends React.Component {
 
     return (
       <div className="activity">
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={this.fetch.bind(this)}
-          hasMore={hasMore}
-          loader={<div className="loader theme" key={0}></div>}
-          useWindow={false}
-        >
-          {items}
-        </InfiniteScroll>
+        {items}
       </div>
     );
   }
