@@ -28,7 +28,7 @@ class PageLoyalty extends React.Component {
       onlineStoreInfo,
       cashbackHistory,
     } = this.props;
-    const { displayBusinessName, name } = business;
+    const { displayBusinessName, name } = business || {};
 
     return (
       <main className="loyalty flex-column">
