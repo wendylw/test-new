@@ -76,6 +76,24 @@ apiGql.GET_CORE_BUSINESS = gql`
   }
 `;
 
+// powered by core-api
+apiGql.GET_CORE_STORES = gql`
+  query CoreStores($business: ID!) {
+    business(name: $business) {
+      name
+      stores {
+        id
+        name
+        isOnline
+        street1
+        street2
+        city
+        state
+      }
+    }
+  }
+`;
+
 apiGql.GET_ONLINE_STORE_INFO = gql`
   query OnlineStoreInfo($business: String!) {
     onlineStoreInfo(business: $business) {
