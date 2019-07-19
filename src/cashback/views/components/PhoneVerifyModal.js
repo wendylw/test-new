@@ -26,7 +26,7 @@ class PhoneVerifyModal extends React.Component {
     const { phone, tryOtpAndSaveCashback, sendMessage, country, history } = this.props;
 
     try {
-      // Notice: this api has been updated, that: otp (removed), country (removed)
+      // Notice: this api has been updated, that: otp (removed), v82 (removed)
       await tryOtpAndSaveCashback(phone, otp, country, history);
     } catch (e) {
       console.error(e);
@@ -108,7 +108,7 @@ class PhoneVerifyModal extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  country: (state.common.onlineStoreInfo || {}).country,
+  country: (state.common.business || {}).country,
   otpCountDown: state.user.otpCountDown,
   otpRenderTime: state.user.otpRenderTime,
 });

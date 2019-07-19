@@ -24,17 +24,20 @@ class PageLoyalty extends React.Component {
 
   render() {
     const {
+      business,
       onlineStoreInfo,
       cashbackHistory,
     } = this.props;
+    const { logo } = onlineStoreInfo || {};
+    const { displayBusinessName, name } = business || {};
 
     return (
       <main className="loyalty flex-column">
         <Message />
         <section className="loyalty__home text-center">
           {
-            onlineStoreInfo ? (
-              <Image className="logo-default__image-container" src={onlineStoreInfo.logo} alt={onlineStoreInfo.storeName} />
+            logo ? (
+              <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
             ) : null
           }
           <h5 className="logo-default__title text-uppercase">Total cashback</h5>
@@ -48,6 +51,7 @@ class PageLoyalty extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  business: state.common.business,
   cashbackHistory: state.user.cashbackHistory,
 });
 

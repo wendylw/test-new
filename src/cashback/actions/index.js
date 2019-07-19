@@ -1,6 +1,7 @@
 import qs from 'qs';
 import {
   GET_STANDING_CENTS,
+  GET_BUSINESS,
   SET_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
@@ -63,8 +64,6 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
       method: 'get',
     });
 
-    console.log(data);
-
     if (ok) {
       dispatch({
         type: SET_CASHBACK_HISTORY,
@@ -79,42 +78,10 @@ export const getCashbackHistory = ({ customerId, page, size }) => async (dispatc
   }
 };
 
-const cashbackSendMessage = (response, history) => dispatch => {
-  const { data } = response;
-
-  const messageMap = {
-    /* get Cash Back messages */
-    // 'Can_Claim': '',
-    // 'Expired': '',
-    // 'Invalid': '',
-    // 'Claimed': '',
-    /* save Cash Back messages */
-    'Claimed_FirstTime': `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
-    'Claimed_NotFirstTime': `You've earned more cashback! 🎉`,
-    'Claimed_Processing': `You've earned more cashback! We'll add it once it's been processed. 😉`,
-    'Claimed_Someone_Else': `Someone else has already earned cashback for this receipt. 😅`,
-    'Claimed_Repeat': `You've already earned cashback for this receipt. 👍`,
-    'NotClaimed_Expired': `This cashback has expired and cannot be earned anymore. 😭`,
-    'NotClaimed_Cancelled': 'This transaction has been cancelled/refunded.',
-    /* Set page message */
-    // 'NotClaimed'
-  };
-  const errorStatus = ['NotClaimed_Cancelled'];
-  let messageType = 'primary';
-
-  if (errorStatus.includes(data.status)) {
-    messageType = 'error';
-  }
-
-  let displayMessage = messageMap[data.status] || `Oops, please scan QR to claim again.`;
-
-  dispatch(sendMessage(displayMessage, messageType));
-};
-
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
   try {
     const { ok, data } = await api({
-      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}`,
+      url: `${Constants.api.CASHBACK}?receiptNumber=${receiptNumber}&source=${GlobalConstants.CASHBACK_SOURCE.RECEIPT}`,
       method: 'get',
     });
 
@@ -139,6 +106,25 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
     console.error(e);
   }
 };
+
+export const getBusiness = storeId => async (dispatch) => {
+  try {
+    const { ok, data } = await api({
+      url: `${Constants.api.BUSINESS}?storeId=${storeId}`,
+      method: 'get',
+    });
+
+    if (ok) {
+      dispatch({
+        type: GET_BUSINESS,
+        payload: data,
+      });
+    }
+  } catch (e) {
+    // TODO: handle error
+    console.error(e);
+  }
+}
 
 export const setCustomerId = payload => ({
   type: SET_CUSTOMER_ID,
@@ -197,7 +183,17 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       return;
     }
 
-    await dispatch(sendMessage({ errorStatus: data.status }));
+    const errorOptions = {
+      errorStatus: data.status,
+    };
+
+    if (data.claimCashbackCountPerDay) {
+      Object.assign(errorOptions, {
+        message: data.claimCashbackCountPerDay
+      });
+    }
+
+    await dispatch(sendMessage(errorOptions));
   } catch (e) {
     // TODO: handle error
     console.error(e);

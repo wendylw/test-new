@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import {
   GET_STANDING_CENTS,
+  GET_BUSINESS,
   SET_MESSAGE,
   SET_ONLINE_STORE_NIFO,
   SET_HASH_DATA,
@@ -23,8 +24,6 @@ function standingCents(state = {}, action) {
 }
 
 function message(state = {}, action) {
-  console.log(action);
-
   switch (action.type) {
     case SET_MESSAGE:
       return { ...state, ...action.payload };
@@ -78,10 +77,13 @@ function user(
 
 function common(state = {
   onlineStoreInfo: null,
+  business: null,
 }, action) {
   switch (action.type) {
     case SET_ONLINE_STORE_NIFO:
       return { ...state, onlineStoreInfo: action.payload };
+    case GET_BUSINESS:
+      return { ...state, business: action.payload };
     case SET_HASH_DATA:
       return { ...state, hashData: action.payload };
     case SET_COMMON_DATA:
