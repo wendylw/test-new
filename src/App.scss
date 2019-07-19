@@ -538,6 +538,36 @@ form {
   }
 }
 
+.store-list {
+  @extend .flex;
+  @extend .flex-center;
+
+  padding-top: 50px;
+  min-height: 100%;
+
+  .item {
+    margin: 5vw 0;
+  }
+
+  .item__content {
+    padding: 2.4vw;
+  }
+
+  .item__detail {
+    max-width: none;
+  }
+
+  .item__title {
+    font-size: 1.2rem;
+  }
+
+  &__content {
+    @extend .main-section;
+
+    padding: 5vw;
+  }
+}
+
 .border {
   &__top-divider {
     border-top: 1px solid $gray-3;

@@ -8,6 +8,7 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
   INDEX: '/',
+  STORES: '/ordering/stores',
   ORDERING: '/ordering', // App basename
   HOME: '/ordering/',
   PORDUCTS: '/ordering/products',
@@ -52,6 +53,13 @@ const PLATFORMS_CODE = {
   BEEP: 2,
 };
 
+const ADDRESS_RANGE = {
+  STREET: 2,
+  CITY: 4,
+  STATE: 5,
+  COUNTRY: 6,
+};
+
 const ADD_TO_CART_MIN_QUANTITY = 1;
 
 const BACKEND_PING_PATH = '/ping';
@@ -74,6 +82,7 @@ export default {
   ROUTER_PATHS,
   CASHBACK_SOURCE,
   PAYMENT_METHODS,
+  ADDRESS_RANGE,
   PLATFORMS_CODE,
   ADD_TO_CART_MIN_QUANTITY,
   BACKEND_PING_PATH,

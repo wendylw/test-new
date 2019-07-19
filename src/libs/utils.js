@@ -1,4 +1,16 @@
+import qs from 'qs';
+
 const Utils = {};
+
+Utils.getQueryString = key => {
+  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+  if (key) {
+    return queries[key] || null;
+  }
+
+  return queries;
+}
 
 Utils.debounce = function debounce(fn, timeout = 50) {
 	let timer = null;
@@ -165,6 +177,26 @@ Utils.creditCardDetector = function creditCardDetector(cardNumberString) {
 	}
 
 	return card;
+}
+
+Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
+  const addressList = [];
+  const addressKeys = [
+    'street1',
+    'street2',
+    'postalCode',
+    'city',
+    'state',
+    'country',
+  ];
+
+  addressKeys.forEach((item, index) => {
+    if (addressInfo[item] && index < splitLength) {
+      addressList.push(addressInfo[item]);
+    }
+  });
+
+  return addressList.join(', ');
 }
 
 export default Utils;
