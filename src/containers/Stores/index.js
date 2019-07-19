@@ -40,7 +40,7 @@ class Stores extends Component {
                   }
 
                   if (!business || !business.stores) {
-                    return 'something wrong, please try again later.';
+                    return <h3 className="text-center">something wrong, please try again later.</h3>;
                   }
 
                   return (
