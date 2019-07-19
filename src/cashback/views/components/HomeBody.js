@@ -32,7 +32,7 @@ class HomeBody extends React.Component {
 
     return (
       <section className="cash-back__home text-center">
-        <Image className="logo-default__image-container" src={this.props.logo} alt={this.props.storeName} />
+        <Image className="logo-default__image-container" src={this.props.logo} alt={displayBusinessName || name} />
         <h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
         {this.renderCashback()}
         <div className="location">
@@ -57,7 +57,6 @@ const mapStateToProps = (state) => {
     defaultLoyaltyRatio: state.common.defaultLoyaltyRatio,
     store: state.common.store || {},
     logo: onlineStoreInfo.logo,
-    street: onlineStoreInfo.street,
     business: state.common.business,
   };
 };
