@@ -44,7 +44,7 @@ class Stores extends Component {
                   }
 
                   return (
-                    <StoreList data={business.stores.filter(store => store.isOnline)} onSelect={this.handleSelectStore} />
+                    <StoreList data={business.stores.filter(store => store.isOnline && !store.isDeleted)} onSelect={this.handleSelectStore} />
                   );
                 }
               }
