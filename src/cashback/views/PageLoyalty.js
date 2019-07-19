@@ -28,6 +28,7 @@ class PageLoyalty extends React.Component {
       onlineStoreInfo,
       cashbackHistory,
     } = this.props;
+    const { logo } = onlineStoreInfo || {};
     const { displayBusinessName, name } = business || {};
 
     return (
@@ -36,7 +37,7 @@ class PageLoyalty extends React.Component {
         <section className="loyalty__home text-center">
           {
             onlineStoreInfo ? (
-              <Image className="logo-default__image-container" src={onlineStoreInfo.logo} alt={displayBusinessName || name} />
+              <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
             ) : null
           }
           <h5 className="logo-default__title text-uppercase">Total cashback</h5>
