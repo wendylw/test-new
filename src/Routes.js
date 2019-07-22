@@ -4,7 +4,7 @@ import Loadable from 'react-loadable';
 import Constants from "./Constants";
 import MessageModal from "./views/components/MessageModal";
 
-const MyLoadingComponent = ({isLoading, error}) => {
+const MyLoadingComponent = ({ isLoading, error }) => {
   // Handle the loading state
   if (isLoading) {
     return <div className="loader theme page-loader"></div>;
@@ -49,6 +49,11 @@ const AsyncThankYou = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncReceiptDetail = Loadable({
+  loader: () => import("./containers/ReceiptDetail"),
+  loading: MyLoadingComponent,
+});
+
 const AsyncSorry = Loadable({
   loader: () => import("./containers/Sorry"),
   loading: MyLoadingComponent,
@@ -66,12 +71,13 @@ const AsyncError = Loadable({
 
 export default () =>
   <React.Fragment>
-    <Route exact path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
+    <Route path={Constants.ROUTER_PATHS.HOME} exact component={AsyncHome} />
     <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
-    <Route exact path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
+    <Route path={Constants.ROUTER_PATHS.CART} exact component={AsyncCart} />
     <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
     <Route path={Constants.ROUTER_PATHS.BANK_CARD_PAYMENT} exact component={AsyncBankCardPayment} />
     <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
+    <Route path={Constants.ROUTER_PATHS.RECEIPT_DETAIL} exact component={AsyncReceiptDetail} />
     <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
     <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
     <Route path={`*/modal/:modal`} render={({ match }) => {
