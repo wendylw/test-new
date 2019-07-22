@@ -10,18 +10,39 @@ import PhoneView from '../components/PhoneView';
 import CurrencyNumber from '../components/CurrencyNumber';
 
 const ORDER_CAN_CLAIM = 'Can_Claim';
+const ANIMATION_TIME = 3600;
+const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
 class PhoneViewContainer extends React.Component {
+  animationSetTimeout = null;
 
   state = {
     cashbackInfoResponse: {},
     phone: Utils.getPhoneNumber(),
     isSavingPhone: false,
-    redirectURL: null
+    redirectURL: null,
+    firstClaimedCashback: true,
+    claimedAnimationGifSrc: null
+  }
+
+  componentDidMount() {
+    this.setState({
+      claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
+    });
   }
 
   componentWillMount() {
     this.handleCashbackAjax('get');
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.firstClaimedCashback && nextState.redirectURL) {
+      this.animationSetTimeout = setTimeout(() => {
+        this.setState({ firstClaimedCashback: false });
+
+        clearTimeout(this.animationSetTimeout);
+      }, ANIMATION_TIME);
+    }
   }
 
   async handleCashbackAjax(method) {
@@ -46,23 +67,29 @@ class PhoneViewContainer extends React.Component {
     }
 
     const { data } = await api(options);
+    let {
+      cashbackInfoResponse,
+      firstClaimedCashback,
+    } = this.state;
     let redirectURL = null;
 
-    if (method === 'get' && data) {
-      this.setState({
-        cashbackInfoResponse: data
-      });
+    if (method === 'get' && data && data.status !== ORDER_CAN_CLAIM) {
+      firstClaimedCashback = false;
+      this.handleCashbackAjax('post');
+    }
 
-      if (data.status !== ORDER_CAN_CLAIM) {
-        this.handleCashbackAjax('post');
-      }
-    } if (method === 'post') {
+    if (method === 'post') {
       const { customerId } = data || {};
 
       redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
     }
 
     this.setState({
+      cashbackInfoResponse: Object.assign({},
+        cashbackInfoResponse,
+        data,
+      ),
+      firstClaimedCashback,
       isSavingPhone: false,
       redirectURL,
     });
@@ -114,14 +141,16 @@ class PhoneViewContainer extends React.Component {
       },
     } = this.state;
 
-    if (redirectURL && status !== ORDER_CAN_CLAIM) {
-      return (
-        <Link
-          className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
-          to={redirectURL}
-          target="_blank"
-        >Check My Balance</Link>
-      );
+    if (status !== ORDER_CAN_CLAIM) {
+      return redirectURL
+        ? (
+          <Link
+            className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+            to={redirectURL}
+            target="_blank"
+          >Check My Balance</Link>
+        )
+        : null;
     }
 
     return (
@@ -145,7 +174,10 @@ class PhoneViewContainer extends React.Component {
     const {
       cashbackInfoResponse: {
         cashback,
+        status,
       },
+      claimedAnimationGifSrc,
+      firstClaimedCashback,
       redirectURL,
     } = this.state;
 
@@ -154,9 +186,9 @@ class PhoneViewContainer extends React.Component {
     }
 
     return (
-      <div className="thanks__phone-view">
+      <div className={`thanks__phone-view ${firstClaimedCashback && redirectURL ? 'active' : ''}`}>
         {
-          redirectURL
+          status !== ORDER_CAN_CLAIM
             ? (
               <label className="phone-view-form__label text-center">
                 You’ve earned {this.renderCurrencyNumber()} Cashback!
@@ -169,6 +201,9 @@ class PhoneViewContainer extends React.Component {
             )
         }
         {this.renderPhoneView()}
+        <div className="thanks__suceed-animation">
+          <img src={claimedAnimationGifSrc} />
+        </div>
       </div>
     );
   }

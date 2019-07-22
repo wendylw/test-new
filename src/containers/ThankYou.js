@@ -11,9 +11,10 @@ import PhoneViewContainer from '../ajax-containers/PhoneViewContainer';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
+
   static propTypes = {
 
-  }
+  };
 
   state = {
     needReceipt: 'remind'

@@ -1475,8 +1475,22 @@ form {
   }
 
   &__phone-view {
+    position: relative;
     padding: 4vw;
   }
+
+  &__suceed-animation {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+
+  &__phone-view.active &__suceed-animation {
+    display: block;
+  }
+
 }
 
 .thanks-pickup {
