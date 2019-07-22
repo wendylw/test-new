@@ -85,6 +85,7 @@ apiGql.GET_CORE_STORES = gql`
         id
         name
         isOnline
+        isDeleted
         street1
         street2
         city

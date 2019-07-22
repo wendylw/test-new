@@ -40,11 +40,11 @@ class Stores extends Component {
                   }
 
                   if (!business || !business.stores) {
-                    return 'something wrong, please try again later.';
+                    return <h3 className="text-center">something wrong, please try again later.</h3>;
                   }
 
                   return (
-                    <StoreList data={business.stores.filter(store => store.isOnline)} onSelect={this.handleSelectStore} />
+                    <StoreList data={business.stores.filter(store => store.isOnline && !store.isDeleted)} onSelect={this.handleSelectStore} />
                   );
                 }
               }

@@ -12,7 +12,10 @@ import {
   SEND_OTP_SUCCESS,
   SEND_OTP_FAILURE,
   RESET_OTP_INPUT,
-  SET_PHONE
+  SET_PHONE,
+  SEND_PHONE_REQUEST,
+  SEND_PHONE_SUCCESS,
+  SEND_PHONE_FAILURE,
 } from "./types";
 import api from "../utils/api";
 import GlobalConstants from '../../Constants';
@@ -149,6 +152,8 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   try {
     const phone = getState().user.phone;
     const receiptNumber = getState().common.hashData.receiptNumber;
+
+    dispatch(sendPhoneRequest());
     const response = await api({
       url: `${Constants.api.CASHBACK}`,
       method: 'post',
@@ -161,12 +166,15 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     const { ok, data, error } = response;
 
     if (!ok) {
+      dispatch(sendPhoneFailure());
       dispatch(resetOtpInput());
       dispatch(sendMessage({
         message: error.message
       }));
       return;
     }
+
+    dispatch(sendPhoneSuccess());
 
     // save phone
     await dispatch(savePhone(phone));
@@ -197,6 +205,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   } catch (e) {
     // TODO: handle error
     console.error(e);
+    dispatch(sendPhoneFailure());
   }
 
   const queryString = qs.stringify({
@@ -206,6 +215,18 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
 
   history.push(`${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}${queryString}`);
 };
+
+const sendPhoneRequest = () => ({
+  type: SEND_PHONE_REQUEST,
+})
+
+const sendPhoneSuccess = () => ({
+  type: SEND_PHONE_SUCCESS,
+})
+
+const sendPhoneFailure = () => ({
+  type: SEND_PHONE_FAILURE,
+})
 
 export const getCashbackAndHashData = hash => async (dispatch, getState) => {
   await dispatch(getCashbackHashData(hash));

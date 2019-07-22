@@ -11,7 +11,11 @@ import {
   SEND_OTP,
   SEND_OTP_SUCCESS,
   SEND_OTP_FAILURE,
-  RESET_OTP_INPUT, SET_PHONE
+  RESET_OTP_INPUT,
+  SET_PHONE,
+  SEND_PHONE_REQUEST,
+  SEND_PHONE_SUCCESS,
+  SEND_PHONE_FAILURE,
 } from '../actions/types';
 
 function standingCents(state = {}, action) {
@@ -36,6 +40,7 @@ function user(
   state = {
     customerId: null,
     phone: '',
+    isLoading: false,
     cashbackHistory: {
       filters: {},
       totalCredits: null,
@@ -54,6 +59,11 @@ function user(
       return { ...state, ...action.payload };
     case SEND_OTP_FAILURE:
       return { ...state, ...action.payload };
+    case SEND_PHONE_REQUEST:
+      return { ...state, isLoading: true };
+    case SEND_PHONE_SUCCESS:
+    case SEND_PHONE_FAILURE:
+      return { ...state, isLoading: false };
     case RESET_OTP_INPUT:
       return { ...state, otpRenderTime: action.payload.otpRenderTime };
     case SET_CUSTOMER_ID:
