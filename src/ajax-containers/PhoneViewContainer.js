@@ -202,7 +202,7 @@ class PhoneViewContainer extends React.Component {
         }
         {this.renderPhoneView()}
         <div className="thanks__suceed-animation">
-          <img src={claimedAnimationGifSrc} />
+          <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>
     );
