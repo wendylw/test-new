@@ -9,11 +9,13 @@ import Constants from '../cashback/utils/Constants';
 import PhoneView from '../components/PhoneView';
 import CurrencyNumber from '../components/CurrencyNumber';
 
+const ORDER_CAN_CLAIM = 'Can_Claim';
+
 class PhoneViewContainer extends React.Component {
 
   state = {
     cashbackInfoResponse: {},
-    phone: null,
+    phone: Utils.getPhoneNumber(),
     isSavingPhone: false,
     redirectURL: null
   }
@@ -39,6 +41,8 @@ class PhoneViewContainer extends React.Component {
           source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
         }
       });
+
+      Utils.setPhoneNumber(phone);
     }
 
     const { data } = await api(options);
@@ -48,12 +52,14 @@ class PhoneViewContainer extends React.Component {
       this.setState({
         cashbackInfoResponse: data
       });
-    } else if (method === 'post') {
-      const { customerId } = data;
+
+      if (data.status !== ORDER_CAN_CLAIM) {
+        this.handleCashbackAjax('post');
+      }
+    } if (method === 'post') {
+      const { customerId } = data || {};
 
       redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-
-      Utils.setPhoneNumber(phone);
     }
 
     this.setState({
@@ -103,9 +109,12 @@ class PhoneViewContainer extends React.Component {
       isSavingPhone,
       redirectURL,
       phone,
+      cashbackInfoResponse: {
+        status,
+      },
     } = this.state;
 
-    if (redirectURL) {
+    if (redirectURL && status !== ORDER_CAN_CLAIM) {
       return (
         <Link
           className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
