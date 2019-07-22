@@ -147,7 +147,7 @@ class Scanner extends Component {
         <div id="contentHolder">
           <video className="viedo-player" id="video" autoPlay playsInline></video>
           <canvas className="canvas-content" id="canvas"></canvas>
-          <div class="viedo-cover">
+          <div className="viedo-cover">
             <div className="qrcode">
               <div></div>
               <div></div>
@@ -171,7 +171,7 @@ class Scanner extends Component {
           </div>
 
           <div className="content-footer">
-            <button className="text-center button-fill button-shadow button-main" onClick={this.getCamera()}>
+            <button className="text-center button-fill button-shadow button-main" onClick={this.getCamera}>
               SCAN QR CODE
             </button>
           </div>
