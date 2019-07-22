@@ -57,13 +57,13 @@ apiGql.TOGGLE_MENU = gql`
 `;
 
 // powered by core-api
-//TODO: enableQROrderingCashback
 apiGql.GET_CORE_BUSINESS = gql`
   query CoreBusiness($business: ID!, $storeId: ID!) {
     business(name: $business) {
       name
       enablePax
       enableServiceCharge
+      enableCashback
       serviceChargeRate
       serviceChargeTax
       subscriptionStatus
@@ -215,7 +215,7 @@ apiGql.GET_SHOPPING_CART = gql`
 apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   mutation RemoveShoppingCartItem($productId: String!, $variations: [inputVariation]) {
     removeShoppingCartItem(input: {
-			productId: $productId,
+      productId: $productId,
       variations: $variations
     }) {
       productId

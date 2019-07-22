@@ -9,167 +9,177 @@ import Constants from '../cashback/utils/Constants';
 import PhoneView from '../components/PhoneView';
 import CurrencyNumber from '../components/CurrencyNumber';
 
+const ORDER_CAN_CLAIM = 'Can_Claim';
+
 class PhoneViewContainer extends React.Component {
 
-	state = {
-		cashbackInfoResponse: {},
-		phone: null,
-		isSavingPhone: false,
-		redirectURL: null
-	}
+  state = {
+    cashbackInfoResponse: {},
+    phone: Utils.getPhoneNumber(),
+    isSavingPhone: false,
+    redirectURL: null
+  }
 
-	componentWillMount() {
-		this.handleCashbackAjax('get');
-	}
+  componentWillMount() {
+    this.handleCashbackAjax('get');
+  }
 
-	async handleCashbackAjax(method) {
-		const { history } = this.props;
-		const { phone } = this.state;
-		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-		let options = {
-			url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}` : ''}`,
-			method
-		};
+  async handleCashbackAjax(method) {
+    const { history } = this.props;
+    const { phone } = this.state;
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let options = {
+      url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}&source=${GlobalConstants.CASHBACK_SOURCE.QR_ORDERING}` : ''}`,
+      method,
+    };
 
-		if (method === 'post') {
-			options = Object.assign({}, options, {
-				data: {
-					phone,
-					receiptNumber,
-					source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
-				}
-			});
-		}
+    if (method === 'post') {
+      options = Object.assign({}, options, {
+        data: {
+          phone,
+          receiptNumber,
+          source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
+        }
+      });
 
-		const { data } = await api(options);
-		let redirectURL = null;
+      Utils.setPhoneNumber(phone);
+    }
 
-		if (method === 'get') {
-			this.setState({
-				cashbackInfoResponse: data
-			});
-		} else if (method === 'post') {
-			const { customerId } = data;
+    const { data } = await api(options);
+    let redirectURL = null;
 
-			redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    if (method === 'get' && data) {
+      this.setState({
+        cashbackInfoResponse: data
+      });
 
-			Utils.setPhoneNumber(phone);
-		}
+      if (data.status !== ORDER_CAN_CLAIM) {
+        this.handleCashbackAjax('post');
+      }
+    } if (method === 'post') {
+      const { customerId } = data || {};
 
-		this.setState({
-			isSavingPhone: false,
-			redirectURL,
-		});
-	}
+      redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    }
 
-	handleUpdatePhoneNumber(phone) {
-		this.setState({ phone });
-	}
+    this.setState({
+      isSavingPhone: false,
+      redirectURL,
+    });
+  }
 
-	renderCurrencyNumber() {
-		const {
-			onlineStoreInfo: {
-				locale,
-				currency,
-			}
-		} = this.props;
-		const {
-			cashbackInfoResponse: {
-				cashback,
-			},
-		} = this.state;
+  handleUpdatePhoneNumber(phone) {
+    this.setState({ phone });
+  }
 
-		if (!cashback) {
-			return null;
-		}
+  renderCurrencyNumber() {
+    const {
+      onlineStoreInfo: {
+        locale,
+        currency,
+      }
+    } = this.props;
+    const {
+      cashbackInfoResponse: {
+        cashback,
+      },
+    } = this.state;
 
-		return (
-			<CurrencyNumber
-				locale={locale}
-				currency={currency}
-				classList="font-weight-bold"
-				money={Math.abs(cashback || 0)}
-			/>
-		);
-	}
+    if (!cashback) {
+      return null;
+    }
 
-	renderPhoneView() {
-		const {
-			onlineStoreInfo: {
-				country,
-			},
-		} = this.props;
-		const {
-			isSavingPhone,
-			redirectURL,
-			phone,
-		} = this.state;
+    return (
+      <CurrencyNumber
+        locale={locale}
+        currency={currency}
+        classList="font-weight-bold"
+        money={Math.abs(cashback || 0)}
+      />
+    );
+  }
 
-		if (redirectURL) {
-			return (
-				<Link
-					className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
-					to={redirectURL}
-				>Check My Balance</Link>
-			);
-		}
+  renderPhoneView() {
+    const {
+      onlineStoreInfo: {
+        country,
+      },
+    } = this.props;
+    const {
+      isSavingPhone,
+      redirectURL,
+      phone,
+      cashbackInfoResponse: {
+        status,
+      },
+    } = this.state;
 
-		return (
-			<PhoneView
-				phone={phone}
-				country={country}
-				setPhone={this.handleUpdatePhoneNumber.bind(this)}
-				submitPhoneNumber={this.handleCashbackAjax.bind(this, 'post')}
-				isLoading={isSavingPhone}
-				buttonText="Continue"
-			/>
-		);
-	}
+    if (redirectURL && status !== ORDER_CAN_CLAIM) {
+      return (
+        <Link
+          className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+          to={redirectURL}
+          target="_blank"
+        >Check My Balance</Link>
+      );
+    }
 
-	render() {
-		const {
-			onlineStoreInfo: {
-				country,
-			}
-		} = this.props;
-		const {
-			cashbackInfoResponse: {
-				cashback,
-			},
-			redirectURL,
-		} = this.state;
+    return (
+      <PhoneView
+        phone={phone}
+        country={country}
+        setPhone={this.handleUpdatePhoneNumber.bind(this)}
+        submitPhoneNumber={this.handleCashbackAjax.bind(this, 'post')}
+        isLoading={isSavingPhone}
+        buttonText="Continue"
+      />
+    );
+  }
 
-		if (!country || !cashback) {
-			return null;
-		}
+  render() {
+    const {
+      onlineStoreInfo: {
+        country,
+      }
+    } = this.props;
+    const {
+      cashbackInfoResponse: {
+        cashback,
+      },
+      redirectURL,
+    } = this.state;
 
-		return (
-			<div className="thanks__phone-view">
-				{
-					redirectURL
-						? (
-							<label className="phone-view-form__label text-center">
-								You’ve earned {this.renderCurrencyNumber()} Cashback!
+    if (!country || !cashback) {
+      return null;
+    }
+
+    return (
+      <div className="thanks__phone-view">
+        {
+          redirectURL
+            ? (
+              <label className="phone-view-form__label text-center">
+                You’ve earned {this.renderCurrencyNumber()} Cashback!
 							</label>
-						)
-						: (
-							<label className="phone-view-form__label text-center">
-								Earn {this.renderCurrencyNumber()} Cashback with Your Mobile Number
+            )
+            : (
+              <label className="phone-view-form__label text-center">
+                Earn {this.renderCurrencyNumber()} Cashback with Your Mobile Number
 							</label>
-						)
-				}
-				{this.renderPhoneView()}
-			</div>
-		);
-	}
+            )
+        }
+        {this.renderPhoneView()}
+      </div>
+    );
+  }
 }
 
 PhoneView.propTypes = {
-	onlineStoreInfo: PropTypes.object,
+  onlineStoreInfo: PropTypes.object,
 };
 
 PhoneView.defaultProps = {
-	onlineStoreInfo: {},
+  onlineStoreInfo: {},
 };
 
 export default withRouter(PhoneViewContainer);
