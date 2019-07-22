@@ -1,0 +1,58 @@
+*{
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.content-contenter {
+  width: 100vw;
+  height: 100vh;
+  padding-top: 50px;
+  display: flex;
+}
+
+.content-header {
+  height: 50px;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+}
+
+.content-body {
+  padding: 3vh 4vw 9vh;
+  width: 100vw;
+}
+
+.content-footer {
+  padding: 3.8vw;
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  box-sizing: border-box;
+
+  button{
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .button-fill {
+    height: 14vw;
+    border: 0;
+    line-height: 14vw;
+  }
+
+  .button-shadow {
+    -moz-box-shadow: 0px 1px 1px #777777;
+    -webkit-box-shadow: 0px 1px 1px #777777;
+    box-shadow: 0px 1px 1px #777777;
+  }
+
+  .button-main {
+    background-color: #FF9419;
+    color: white;
+    width: 100%;
+  }
+}
+
+.text-center {
+  text-align: center;
+}

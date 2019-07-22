@@ -2,104 +2,185 @@ import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 
 class Scanner extends Component {
-  componentDidMount(){
-    var canvas=null,context=null,video=null;
-    //开启摄像头
-    try{
-      canvas = document.getElementById("canvas");
-      context = canvas.getContext("2d");
-      video = document.getElementById("video");
-      
-      var videoObj = { video: true, audio:false },
-      flag=true,
-      MediaErr = function (error)
-      {
-        flag=false;
-        if (error.PERMISSION_DENIED)
-        {
-          alert('用户拒绝了浏览器请求媒体的权限', '提示');
-        } else if (error.NOT_SUPPORTED_ERROR) {
-          alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器', '提示');
-        } else if (error.MANDATORY_UNSATISFIED_ERROR) {
-          alert('指定的媒体类型未接收到媒体流', '提示');
-        } else {
-          alert('系统未能获取到摄像头，请确保摄像头已正确安装。或尝试刷新页面，重试', '提示');
-        }
-      };
-      
-      //获取媒体的兼容代码，目前只支持（Firefox,Chrome,Opera）
+  state = {
+    getPermission: false
+  }
+
+  componentDidMount() {
+    this.getCamera();
+  }
+
+  getCamera() {
+    //turn on the camera
+    try {
+      var videoObj = { video: true, audio: false },
+        MediaErr = function (error) {
+          if (error.PERMISSION_DENIED) {
+            alert('You denied the camera permission');
+          } else if (error.NOT_SUPPORTED_ERROR) {
+            alert("Sorry, your browser doesn't support this feature");
+          } else if (error.MANDATORY_UNSATISFIED_ERROR) {
+            alert('Did not get the media stream');
+          } else {
+            alert('Please make sure you have a camera');
+          }
+        };
+
+      let that = this;
+      //get mediaDevices, only for（Firefox, Chrome, Opera）
       if (navigator.mediaDevices.getUserMedia) {
-        //qq浏览器不支持
+        //QQ browser do not support
         if (navigator.userAgent.indexOf('MQQBrowser') > -1) {
-          alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器', '提示');
+          alert("Sorry, your browser doesn't support this feature");
           return false;
         }
-        
-        navigator.mediaDevices.getUserMedia(videoObj)
-        .then(function(stream) {
-          console.log(stream);
-          video.srcObject = stream;
-          video.onloadedmetadata = function(e) {
-            video.play();
-          };
-        })
-        .catch(function(err) {
-          MediaErr(err);
-        });
 
-      }else if (navigator.mediaDevices.webkitGetUserMedia) {
-        navigator.webkitGetUserMedia(videoObj, function (stream)
-        {          
-          video.src = window.webkitURL.createObjectURL(stream);           
-          video.play();           
-        }, MediaErr);           
-      }else if (navigator.mediaDevices.mozGetUserMedia) {
-        navigator.mozGetUserMedia(videoObj, function (stream) {
-          video.src = window.URL.createObjectURL(stream);
-          video.play();
-        }, MediaErr);
-      } else if (navigator.mediaDevices.msGetUserMedia) { 
-        navigator.msGetUserMedia(videoObj, function (stream) {
-          // $(document).scrollTop($(window).height());
-          video.src = window.URL.createObjectURL(stream);
-          video.play();
-        }, MediaErr);
-      }else {
-        console.log(123);
-        alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器');
+        navigator.mediaDevices.getUserMedia(videoObj)
+          .then(function (stream) {
+            that.setState({
+              getPermission: true
+            });
+            let canvas = null, context = null, video = null;
+            canvas = document.getElementById("canvas");
+            context = canvas.getContext("2d");
+            video = document.getElementById("video");
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+            that.getQRCode(video, canvas, context);
+          })
+          .catch(function (err) {
+            MediaErr(err);
+          });
+
+      } else if (navigator.mediaDevices.webkitGetUserMedia) {
+        navigator.webkitGetUserMedia(videoObj)
+          .then(function (stream) {
+            that.setState({
+              getPermission: true
+            });
+            let canvas = null, context = null, video = null;
+            canvas = document.getElementById("canvas");
+            context = canvas.getContext("2d");
+            video = document.getElementById("video");
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+            that.getQRCode(video, canvas, context);
+          })
+          .catch(function (err) {
+            MediaErr(err);
+          });
+      } else if (navigator.mediaDevices.mozGetUserMedia) {
+        navigator.mozGetUserMedia(videoObj)
+          .then(function (stream) {
+            that.setState({
+              getPermission: true
+            });
+            let canvas = null, context = null, video = null;
+            canvas = document.getElementById("canvas");
+            context = canvas.getContext("2d");
+            video = document.getElementById("video");
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+            that.getQRCode(video, canvas, context);
+          })
+          .catch(function (err) {
+            MediaErr(err);
+          });
+      } else if (navigator.mediaDevices.msGetUserMedia) {
+        navigator.msGetUserMedia(videoObj)
+          .then(function (stream) {
+            that.setState({
+              getPermission: true
+            });
+            let canvas = null, context = null, video = null;
+            canvas = document.getElementById("canvas");
+            context = canvas.getContext("2d");
+            video = document.getElementById("video");
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+            that.getQRCode(video, canvas, context);
+          })
+          .catch(function (err) {
+            MediaErr(err);
+          });
+      } else {
+        alert("Sorry, your browser doesn't support this feature");
         return false;
       }
 
-      if(flag) {
-        alert('为了获得更准确的测试结果，请尽量将二维码置于框中，然后进行拍摄、扫描。 请确保浏览器有权限使用摄像功能');
-      }
-      //这个是拍照按钮的事件，          
-      // $("#snap").click(function () {startPat();}).show();
-    }catch(e){      
-      alert('不支持', '提示');
+    } catch (e) {
+      alert('Not support');
     }
+  }
 
-    setInterval(function() {
-      context.drawImage(video, 0, 0, 640, 480);
+  getQRCode(video, canvas, context) {
+    let QRgetter = setInterval(function () {
+      const imageWidth = video.videoWidth;
+      const imageHeight = video.videoHeight;
 
-      var qr = new QrcodeDecoder();
+      canvas.width = imageWidth;
+      canvas.height = imageWidth;
+      context.drawImage(video, 0, 0, imageWidth, imageHeight);
+
+      let qr = new QrcodeDecoder();
 
       qr.decodeFromImage(canvas.toDataURL("image/png")).then((res) => {
-        console.log(res);
+        if (res.data) {
+          console.log(res.data);
+        }
       });
-    },2000)
+    }, 1000)
   }
 
   render() {
+    let main = null;
+    if (this.state.getPermission) {
+      main =
+        <div id="contentHolder">
+          <video className="viedo-player" id="video" autoPlay playsInline></video>
+          <canvas className="canvas-content" id="canvas"></canvas>
+          <div class="viedo-cover">
+            <div className="qrcode">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <br />
+        </div>
+    } else {
+      main =
+        <div className="content-contenter">
+          <div className="content-header">
+
+          </div>
+
+          <div className="content-body text-center">
+            <div>
+              Beep
+            </div>
+          </div>
+
+          <div className="content-footer">
+            <button className="text-center button-fill button-shadow button-main" onClick={this.getCamera()}>
+              SCAN QR CODE
+            </button>
+          </div>
+        </div>
+    }
+
     return (
       <div>
-        <div id="support"></div>
-        <div id="contentHolder">       
-          <video id="video" width="100%" height="100%" autoPlay playsInline></video>       
-          <canvas id="canvas" width="320" height="320"></canvas>
-          <br/>
-          <button id="snap">开始扫描</button>  
-        </div>
+        {main}
       </div>
     );
   }
