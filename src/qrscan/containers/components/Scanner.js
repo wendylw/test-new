@@ -135,6 +135,8 @@ class Scanner extends Component {
       qr.decodeFromImage(canvas.toDataURL("image/png")).then((res) => {
         if (res.data) {
           console.log(res.data);
+          window.clearInterval(QRgetter);
+          window.location.href = res.data;
         }
       });
     }, 1000)
