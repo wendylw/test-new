@@ -2,34 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import CurrencyNumber from './CurrencyNumber';
 import Image from './Image';
-import SoldOutMark from './SoldOutMark';
+import Tag from './Tag';
 
 export class Item extends Component {
-	render() {
-		const {
-			className = '',
-			image,
-			title,
-			variation,
-			price,
-		} = this.props;
-
-		return (
-			<li className={`item border__bottom-divider flex flex-top ${className}`}>
-				<Image className="item__image-container" src={image} />
-				<div className="item__content flex flex-middle flex-space-between">
-					<div className="item__detail">
-						<summary className="item__title font-weight-bold">{title}</summary>
-						{variation ? <p className="item__description">{variation}</p> : null}
-						<span className="gray-font-opacity"><CurrencyNumber money={price || 0} /></span>
-					</div>
-
-					{this.renderOperators()}
-				</div>
-			</li>
-		)
-	}
-
 	renderOperators = () => {
 		const {
 			quantity,
@@ -42,9 +17,7 @@ export class Item extends Component {
 
 		if (soldOut) {
 			return (
-				<i className="text-uppercase tag__card info font-weight-bold">
-					Sold out
-				</i>
+				<Tag />
 			)
 		}
 
@@ -76,6 +49,31 @@ export class Item extends Component {
 					</i>
 				</button>
 			</div>
+		)
+	}
+
+	render() {
+		const {
+			className = '',
+			image,
+			title,
+			variation,
+			price,
+		} = this.props;
+
+		return (
+			<li className={`item border__bottom-divider flex flex-top ${className}`}>
+				<Image className="item__image-container" src={image} />
+				<div className="item__content flex flex-middle flex-space-between">
+					<div className="item__detail">
+						<summary className="item__title font-weight-bold">{title}</summary>
+						{variation ? <p className="item__description">{variation}</p> : null}
+						<span className="gray-font-opacity"><CurrencyNumber money={price || 0} /></span>
+					</div>
+
+					{this.renderOperators()}
+				</div>
+			</li>
 		)
 	}
 }
