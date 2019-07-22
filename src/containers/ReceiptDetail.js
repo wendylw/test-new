@@ -23,14 +23,13 @@ export class ReceiptDetail extends Component {
 
 	render() {
 		const { shoppingCart = {} } = this.props;
+
 		const {
 			subtotal,
 			total,
 			tax,
-			serviceCharge,
+			serviceCharge,  // TODO: Needs API
 		} = shoppingCart;
-
-		console.log(111);
 
 		return (
 			<section className="table-ordering__order">

@@ -16,7 +16,7 @@ const ROUTER_PATHS = {
   PAYMENT: '/ordering/payment',
   BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
   THANK_YOU: '/ordering/thank-you',
-  RECEIPT_DETAIL: 'ordering/receipt',
+  RECEIPT_DETAIL: '/ordering/receipt',
   SORRY: '/ordering/sorry',
   PLAYGROUND: 'playground',
   ERROR: '/ordering/error',
