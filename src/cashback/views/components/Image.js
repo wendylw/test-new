@@ -83,14 +83,14 @@ class Image extends React.Component {
 
   render() {
     const {
-			className = '',
-			alt,
-		} = this.props;
+      className = '',
+      alt,
+    } = this.props;
 
     return (
       <figure
         ref={ref => this.el = ref}
-        className={`my-product-image ${className}`}
+        className={className}
       >
         <img src={this.getImageURL() || placeholder} alt={alt} />
       </figure>

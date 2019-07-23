@@ -3,6 +3,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { shoppingCartType } from '../propTypes';
 import CurrencyNumber from './CurrencyNumber';
 import Constants from '../../Constants';
+import config from '../../config';
 
 export class FooterOperationComponent extends Component {
   static propTypes = {
@@ -12,6 +13,7 @@ export class FooterOperationComponent extends Component {
   render() {
     const { shoppingCart, history } = this.props;
     const { subtotal, count } = shoppingCart || {};
+    const { table } = config;
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
@@ -49,9 +51,16 @@ export class FooterOperationComponent extends Component {
             </div>
             <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal || 0} /></label>
           </button>
-          <Link className="cart-bar__order-button" to={Constants.ROUTER_PATHS.CART}>
-            Order now
-          </Link>
+          {
+            table !== 'DEMO'
+              ? (
+                <Link className="cart-bar__order-button" to={Constants.ROUTER_PATHS.CART}>
+                  Order now
+                </Link>
+              )
+              : null
+          }
+
         </div>
       </footer>
     )

@@ -25,20 +25,24 @@ class HomeBody extends React.Component {
   }
 
   render() {
-    const { storeName = '', street = '' } = this.props;
-    const addressInfo = [storeName, street].filter(v => v);
-
-    console.log(this.props);
+    const { logo, business, store = {} } = this.props;
+    const { displayBusinessName, name } = business || {};
+    const { city } = store || {};
+    const addressInfo = [displayBusinessName || name, city].filter(v => v);
 
     return (
       <section className="cash-back__home text-center">
-        <Image className="logo-default__image-container" src={this.props.logo} alt={this.props.storeName} />
+        {
+          logo
+            ? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+            : null
+        }
         <h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
         {this.renderCashback()}
         <div className="location">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M0 0h24v24H0z" fill="none" />
           </svg>
           <span className="location__text text-middle">
             {addressInfo.join(', ')}
@@ -55,9 +59,9 @@ const mapStateToProps = (state) => {
   return {
     cashback: state.common.cashback,
     defaultLoyaltyRatio: state.common.defaultLoyaltyRatio,
+    store: state.common.store || {},
     logo: onlineStoreInfo.logo,
-    storeName: onlineStoreInfo.storeName,
-    street: onlineStoreInfo.street,
+    business: state.common.business,
   };
 };
 const mapDispatchToProps = dispatch => bindActionCreators({

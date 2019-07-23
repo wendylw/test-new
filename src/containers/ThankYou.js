@@ -11,9 +11,10 @@ import PhoneViewContainer from '../ajax-containers/PhoneViewContainer';
 
 // Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
 export class ThankYou extends Component {
+
   static propTypes = {
 
-  }
+  };
 
   state = {
     needReceipt: 'remind'
@@ -84,9 +85,9 @@ export class ThankYou extends Component {
         }}
       >
         {({ data: { business = {} } = {} }) => {
-          const { enableQROrderingCashback } = business;
+          const { enableCashback } = business;
 
-          if (!enableQROrderingCashback) {
+          if (!enableCashback) {
             return null;
           }
 
@@ -125,7 +126,7 @@ export class ThankYou extends Component {
         <div className="thanks text-center">
           <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
-          <p>Our kitchen's preparing up your order now. <span role="img" aria-label="Goofy">😋</span></p>
+          <p>We're preparing your order now. <span role="img" aria-label="Goofy">😋</span></p>
 
           <div className="thanks__info-container">
             {this.renderPickupInfo()}

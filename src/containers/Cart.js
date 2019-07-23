@@ -35,8 +35,6 @@ export class Cart extends Component {
       serviceCharge,  // TODO: Needs API
     } = shoppingCart;
 
-    console.log(shoppingCart);
-
     // TODO: concern animation of hide or not.
     return (
       <DocumentTitle title={Constants.DOCUMENT_TITLE.CART}>

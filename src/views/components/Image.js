@@ -25,15 +25,6 @@ const FIT = 'outside';
 class Image extends React.Component {
   el = null;
 
-  // componentDidMount = () => {
-  //   // TODO: I have to use className to match all images here, other wise only one placeholder is rendered in a list.
-  //   compressionImage.init('.my-product-image');
-	// }
-
-	// componentDidUpdate = () => {
-  //   compressionImage.init('.my-product-image');
-  // }
-
   /*
   * downlink [2.5, 1.5, 0.4, <0.4] MB/s
   */
@@ -92,14 +83,14 @@ class Image extends React.Component {
 
   render() {
     const {
-			className,
-			alt,
-		} = this.props;
+      className,
+      alt,
+    } = this.props;
 
     return (
       <figure
         ref={ref => this.el = ref}
-        className={`my-product-image ${className}`}
+        className={className}
       >
         <img src={this.getImageURL() || placeholder} alt={alt} />;
       </figure>

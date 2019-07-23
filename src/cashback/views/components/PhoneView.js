@@ -45,6 +45,7 @@ class PhoneView extends React.Component {
       phone,
       setPhone,
       country,
+      isLoading,
     } = this.props;
 
     return (
@@ -67,7 +68,7 @@ class PhoneView extends React.Component {
           <button
             className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
             onClick={this.submitPhoneNumber.bind(this)}
-            disabled={!phone || !isValidPhoneNumber(phone)}
+            disabled={!phone || !isValidPhoneNumber(phone) || isLoading}
           >Continue</button>
         </aside>
       </section>
@@ -76,11 +77,12 @@ class PhoneView extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const onlineStoreInfo = state.common.onlineStoreInfo || {};
+  const business = state.common.business || {};
 
   return {
     phone: state.user.phone,
-    country: onlineStoreInfo.country,
+    isLoading: state.user.isLoading,
+    country: business.country,
   };
 };
 
