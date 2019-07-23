@@ -76,6 +76,7 @@ class BankCardPayment extends Component {
 
 	state = {
 		payNowLoading: false,
+		brainTreeDOMLoaded: false,
 		fire: false,
 		card: {
 			type: null,
@@ -262,6 +263,10 @@ class BankCardPayment extends Component {
 					return;
 				}
 
+				that.setState({
+					brainTreeDOMLoaded: true
+				});
+
 				hostedFieldsInstance.on('blur', function (e) {
 					const isReset = e.fields[e.emittedBy].isValid;
 
@@ -371,6 +376,7 @@ class BankCardPayment extends Component {
 			fire,
 			card,
 			invalidCardInfoFields,
+			brainTreeDOMLoaded,
 			errorTyoes,
 		} = this.state;
 
@@ -416,9 +422,9 @@ class BankCardPayment extends Component {
 														: null
 												}
 											</div>
-											<div className="payment-bank__card-container">
+											<div className={`payment-bank__card-container ${brainTreeDOMLoaded ? 'loaded' : ''}`}>
 												<div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.number) ? 'has-error' : ''}`}>
-													<div id="card-number"></div>
+													<div id="card-number" className="card-info__wrapper"></div>
 													<div className="payment-bank__card-type-container flex flex-middle">
 														<i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
 															<img src="/img/payment-visa.svg" />
@@ -429,8 +435,8 @@ class BankCardPayment extends Component {
 													</div>
 												</div>
 												<div className="input__list-bottom flex flex-middle flex-space-between">
-													<div id="expiration-date" className={`${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.expirationDate) ? 'has-error' : ''}`}></div>
-													<div id="cardCvv" className={`${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.cvv) ? 'has-error' : ''}`}></div>
+													<div id="expiration-date" className={`card-info__wrapper ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.expirationDate) ? 'has-error' : ''}`}></div>
+													<div id="cardCvv" className={`card-info__wrapper ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.cvv) ? 'has-error' : ''}`}></div>
 												</div>
 											</div>
 											<div className="error-message__container">
@@ -475,7 +481,7 @@ class BankCardPayment extends Component {
 										ref={ref => this.submitButton = ref}
 										id="submitButton"
 										className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
-										disabled={payNowLoading}
+										disabled={payNowLoading || !brainTreeDOMLoaded}
 									>{
 											payNowLoading
 												? 'Redirecting'
@@ -521,6 +527,21 @@ class BankCardPayment extends Component {
 					}}
 					fire={fire}
 				/>
+
+				{
+					!brainTreeDOMLoaded
+						? (
+							<div className="loading-cover">
+								<div class="loader-wave">
+									<i class="dot" id="d1"></i>
+									<i class="dot" id="d2"></i>
+									<i class="dot" id="d3"></i>
+									<i class="dot" id="d4"></i>
+								</div>
+							</div>
+						)
+						: null
+				}
 			</section>
 		)
 	}
