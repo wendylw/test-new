@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 
 const processQR = (qrData) => new Promise((resolve, reject) => {
-  if(/^https?:/.test(qrData)) {
-   window.location.href = qrData;
-   resolve(qrData)
+  if (/^https?:/.test(qrData)) {
+    window.location.href = qrData;
+    resolve(qrData)
   } else {
-   reject('Not Identified') 
+    reject('Not Identified')
   }
 })
 
@@ -22,7 +22,7 @@ class Scanner extends Component {
   getCamera() {
     //turn on the camera
     try {
-      let videoObj = { video: true, audio: false },
+      const videoObj = { video: true, audio: false },
         MediaErr = function (error) {
           if (error.PERMISSION_DENIED) {
             alert('You denied the camera permission');
@@ -47,7 +47,7 @@ class Scanner extends Component {
 
         navigator.mediaDevices.getUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that,stream);
+            let play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -57,7 +57,7 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.webkitGetUserMedia) {
         navigator.webkitGetUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that,stream);
+            let play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -66,7 +66,7 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.mozGetUserMedia) {
         navigator.mozGetUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that,stream);
+            let play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -75,7 +75,7 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.msGetUserMedia) {
         navigator.msGetUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that,stream);
+            let play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -129,7 +129,7 @@ class Scanner extends Component {
 
   render() {
     let main = null;
-    if (this.state.getPermission) {
+    if (0) {
       main =
         <div id="contentHolder">
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
@@ -152,8 +152,10 @@ class Scanner extends Component {
           </div>
 
           <div className="content-body text-center">
-            <div>
-              Beep
+            <div className="img-content">
+              <img className="logo-img" src="/img/beep-logo.png" alt="" />
+              <br />
+              <img className="qr-scanner-img" src="/img/beep-qrscan.png" alt="" />
             </div>
           </div>
 
