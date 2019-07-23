@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { compose, Query } from 'react-apollo';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
 import { shoppingCartType } from '../views/propTypes';
 import CartItems from '../views/components/CartItems';
