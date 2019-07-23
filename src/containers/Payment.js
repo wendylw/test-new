@@ -32,7 +32,6 @@ class Payment extends Component {
   async payNow() {
     const { paymentMethod } = this.state;
     const { shoppingCart, history } = this.props;
-    const { additionalComments } = history.location.state || {};
 
     this.setState({
       payNowLoading: true,
@@ -46,7 +45,7 @@ class Payment extends Component {
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
           tableId: config.table || '',
-          additionalComments,
+          additionalComments: Utils.getAdditionalComments(),
         }),
       });
 
