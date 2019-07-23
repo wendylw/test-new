@@ -62,7 +62,7 @@ class Bootstrap extends Component {
 }
 
 const isQRScannerApp = () => {
-  return [process.env.REACT_APP_QR_SCAN_DOMAINS].includes(document.location.hostname);
+  return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
 }
 
 export default Bootstrap;

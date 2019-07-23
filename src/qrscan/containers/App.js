@@ -3,15 +3,15 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError } from "../redux/modules/app";
 import Error from "./components/Error";
-import Router from "../Routes.js"
+import Routes from "../Routes.js"
 import "../styles.scss";
 
 class App extends Component {
   render() {
     return (
       <div className="qr-scanner-app">
-        {/* Router */}
-        <Router />
+        {/* Routes */}
+        <Routes />
         {this.renderError()}
       </div>
     );
