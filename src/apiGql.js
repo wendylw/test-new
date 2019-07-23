@@ -238,6 +238,14 @@ apiGql.GET_ORDER_DETAIL = gql`
   }
 `;
 
+apiGql.GET_BRAINTREE_TOKEN = gql`
+  query BrainTree {
+    brainTree {
+      token
+    }
+  }
+`;
+
 apiGql.SET_CURRENT_CATEGORY = gql`
   mutation SetCurrentCategory($category: Object!) {
     setCurrentCategory(category: $category) @client

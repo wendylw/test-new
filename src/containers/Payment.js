@@ -51,19 +51,15 @@ class Payment extends Component {
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
-          fire: !!paymentMethod
-          /* Card payment will revert when we can scan image get card info
-          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
-          */
+          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
         });
 
-        /* Card payment will revert when we can scan image get card info
-        if (paymentMethod === Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY) {
+        if (paymentMethod === Constants.PAYMENT_METHODS.CREDIT_CARD_PAY) {
           history.push({
             pathname: Constants.ROUTER_PATHS.BANK_CARD_PAYMENT,
             search: `?orderId=${data.createOrder.orders[0].orderId || ''}`
           });
-        }*/
+        }
       }
     } catch (e) {
       console.error('Fail to create order\n', e);
@@ -99,8 +95,21 @@ class Payment extends Component {
               <figure className="payment__image-container">
                 <img src="/img/payment-credit.png"></img>
               </figure>
-              <label className="payment__name font-weight-bold">Online Banking</label>
+              <label className="payment__name font-weight-bold">Visa / MasterCard</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CREDIT_CARD_PAY ? 'active' : ''}`}>
+                <i className="radio__check-icon"></i>
+                <input type="radio"></input>
+              </div>
+            </li>
+            <li
+              className="payment__item border__botton-divider flex flex-middle flex-space-between"
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY)}
+            >
+              <figure className="payment__image-container">
+                <img src="/img/payment-banking.png"></img>
+              </figure>
+              <label className="payment__name font-weight-bold">Online Banking</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
                 <input type="radio"></input>
               </div>

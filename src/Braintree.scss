@@ -1,0 +1,28 @@
+.input__list-top,
+.input__list-bottom {
+	position: relative;
+	height: 50px;
+
+	> div {
+		height: 100%;
+	}
+}
+
+.input__list-bottom {
+	> div {
+		border: 1px solid #DEDEDF;
+		width: 100%;
+
+		&:first-child {
+			border-bottom-left-radius: 4px;
+		}
+
+		&:last-child {
+			border-bottom-right-radius: 4px;
+		}
+	}
+
+	> div ~ div {
+		margin-left: -1px;
+	}
+}
