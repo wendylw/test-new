@@ -469,7 +469,7 @@ class BankCardPayment extends Component {
 
 	render() {
 		return (
-			<DocumentTitle title={Constants.DOCUMENT_TITLE.BANK_CARD_PAYMENT}>
+			<DocumentTitle title={Constants.DOCUMENT_TITLE.CREDIT_CARD_PAYMENT}>
 				{this.renderMain()}
 			</DocumentTitle>
 		);

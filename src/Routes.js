@@ -70,7 +70,7 @@ export default () =>
     <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
     <Route exact path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
     <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
-    <Route path={Constants.ROUTER_PATHS.BANK_CARD_PAYMENT} exact component={AsyncBankCardPayment} />
+    <Route path={Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT} exact component={AsyncBankCardPayment} />
     <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
     <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
     <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />

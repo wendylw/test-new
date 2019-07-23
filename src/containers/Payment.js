@@ -56,7 +56,7 @@ class Payment extends Component {
 
         if (paymentMethod === Constants.PAYMENT_METHODS.CREDIT_CARD_PAY) {
           history.push({
-            pathname: Constants.ROUTER_PATHS.BANK_CARD_PAYMENT,
+            pathname: Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT,
             search: `?orderId=${data.createOrder.orders[0].orderId || ''}`
           });
         }
@@ -127,16 +127,20 @@ class Payment extends Component {
                 <input type="radio"></input>
               </div>
             </li>
-            {/*
-            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+            <li
+              className="payment__item border__botton-divider flex flex-middle flex-space-between"
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}
+            >
               <figure className="payment__image-container">
-                <img src="/img/logo-boost.png"></img>
+                <img src="/img/payment-boost.png"></img>
               </figure>
+              <label className="payment__name font-weight-bold">Boost</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.BOOST_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
-                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}></input>
+                <input type="radio"></input>
               </div>
             </li>
+            {/*
             <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-bigpay.png"></img>
