@@ -41,7 +41,7 @@ class Bootstrap extends Component {
               return (
                 <Redirect to={Constants.ROUTER_PATHS.QRSCAN} />
               );
-
+            }
             // goto stores when visit home page without scaning QR Code.
             if (!Utils.getQueryString('h')) {
               return <AsyncStoresApp />
@@ -62,7 +62,7 @@ class Bootstrap extends Component {
 }
 
 const isQRScannerApp = () => {
-  return ['beepit.co', 'www.beepit.co'].includes(document.location.hostname);
+  return [process.env.REACT_APP_QR_SCAN_DOMAINS].includes(document.location.hostname);
 }
 
 export default Bootstrap;

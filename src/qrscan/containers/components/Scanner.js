@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 
+const processQR = (qrData) => new Promise((resolve, reject) => {
+  if(/^https?:/.test(qrData)) {
+   window.location.href = qrData;
+   resolve(qrData)
+  } else {
+   reject('Not Identified') 
+  }
+})
+
 class Scanner extends Component {
   state = {
     getPermission: false
@@ -13,7 +22,7 @@ class Scanner extends Component {
   getCamera() {
     //turn on the camera
     try {
-      var videoObj = { video: true, audio: false },
+      let videoObj = { video: true, audio: false },
         MediaErr = function (error) {
           if (error.PERMISSION_DENIED) {
             alert('You denied the camera permission');
@@ -22,6 +31,7 @@ class Scanner extends Component {
           } else if (error.MANDATORY_UNSATISFIED_ERROR) {
             alert('Did not get the media stream');
           } else {
+            console.log(error);
             alert('Please make sure you have a camera');
           }
         };
@@ -37,18 +47,8 @@ class Scanner extends Component {
 
         navigator.mediaDevices.getUserMedia(videoObj)
           .then(function (stream) {
-            that.setState({
-              getPermission: true
-            });
-            let canvas = null, context = null, video = null;
-            canvas = document.getElementById("canvas");
-            context = canvas.getContext("2d");
-            video = document.getElementById("video");
-            video.srcObject = stream;
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-            that.getQRCode(video, canvas, context);
+            let play = that.getViedoStream.bind(that,stream);
+            play();
           })
           .catch(function (err) {
             MediaErr(err);
@@ -57,18 +57,8 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.webkitGetUserMedia) {
         navigator.webkitGetUserMedia(videoObj)
           .then(function (stream) {
-            that.setState({
-              getPermission: true
-            });
-            let canvas = null, context = null, video = null;
-            canvas = document.getElementById("canvas");
-            context = canvas.getContext("2d");
-            video = document.getElementById("video");
-            video.srcObject = stream;
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-            that.getQRCode(video, canvas, context);
+            let play = that.getViedoStream.bind(that,stream);
+            play();
           })
           .catch(function (err) {
             MediaErr(err);
@@ -76,18 +66,8 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.mozGetUserMedia) {
         navigator.mozGetUserMedia(videoObj)
           .then(function (stream) {
-            that.setState({
-              getPermission: true
-            });
-            let canvas = null, context = null, video = null;
-            canvas = document.getElementById("canvas");
-            context = canvas.getContext("2d");
-            video = document.getElementById("video");
-            video.srcObject = stream;
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-            that.getQRCode(video, canvas, context);
+            let play = that.getViedoStream.bind(that,stream);
+            play();
           })
           .catch(function (err) {
             MediaErr(err);
@@ -95,18 +75,8 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.msGetUserMedia) {
         navigator.msGetUserMedia(videoObj)
           .then(function (stream) {
-            that.setState({
-              getPermission: true
-            });
-            let canvas = null, context = null, video = null;
-            canvas = document.getElementById("canvas");
-            context = canvas.getContext("2d");
-            video = document.getElementById("video");
-            video.srcObject = stream;
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-            that.getQRCode(video, canvas, context);
+            let play = that.getViedoStream.bind(that,stream);
+            play();
           })
           .catch(function (err) {
             MediaErr(err);
@@ -122,7 +92,7 @@ class Scanner extends Component {
   }
 
   getQRCode(video, canvas, context) {
-    let QRgetter = setInterval(function () {
+    let timer = setInterval(function () {
       const imageWidth = video.videoWidth;
       const imageHeight = video.videoHeight;
 
@@ -134,12 +104,27 @@ class Scanner extends Component {
 
       qr.decodeFromImage(canvas.toDataURL("image/png")).then((res) => {
         if (res.data) {
-          console.log(res.data);
-          window.clearInterval(QRgetter);
-          window.location.href = res.data;
+          processQR(res.data).then(() => {
+            window.clearInterval(timer);
+          })
         }
       });
     }, 1000)
+  }
+
+  getViedoStream(stream) {
+    this.setState({
+      getPermission: true
+    });
+    let canvas = null, context = null, video = null;
+    canvas = this.refs.canvas;
+    context = canvas.getContext("2d");
+    video = this.refs.video;
+    video.srcObject = stream;
+    video.onloadedmetadata = function (e) {
+      video.play();
+    };
+    this.getQRCode(video, canvas, context);
   }
 
   render() {
@@ -147,8 +132,8 @@ class Scanner extends Component {
     if (this.state.getPermission) {
       main =
         <div id="contentHolder">
-          <video className="viedo-player" id="video" autoPlay playsInline></video>
-          <canvas className="canvas-content" id="canvas"></canvas>
+          <video className="viedo-player" ref="video" autoPlay playsInline></video>
+          <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
             <div className="qrcode">
               <div></div>

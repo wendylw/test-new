@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError } from "../redux/modules/app";
 import Error from "./components/Error";
-import Router from "../Router.js"
+import Router from "../Routes.js"
 import "../styles.scss";
 
 class App extends Component {

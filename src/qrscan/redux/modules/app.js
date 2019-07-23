@@ -3,7 +3,7 @@ const initialState = {
 };
 
 export const types = {
-  CLEAR_ERROR: "QR_SCANNER/APP/CLEAR_ERROR"
+  CLEAR_ERROR: "QR_SCAN/APP/CLEAR_ERROR"
 };
 
 // action creators
