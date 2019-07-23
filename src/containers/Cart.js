@@ -62,7 +62,7 @@ export class Cart extends Component {
             <div className="cart__note flex flex-middle flex-space-between">
               <textarea
                 rows="4"
-                placeholder="Add a not to your order?"
+                placeholder="Add a note to your order?"
                 value={additionalComments || ''}
                 onChange={this.handleChangeAdditionalComments.bind(this)}
               ></textarea>
