@@ -43,8 +43,9 @@ const DOCUMENT_TITLE = {
 };
 
 const PAYMENT_METHODS = {
+  CREDIT_CARD_PAY: 'CCPP',
+  ONLINE_BANKING_PAY: 'BrainTree',
   GRAB_PAY: 'GrabPay',
-  CARD_PAY: '2P2C_PAY',
   BOOST_PAY: 'Boost',
 };
 

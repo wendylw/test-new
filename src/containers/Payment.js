@@ -18,7 +18,7 @@ class Payment extends Component {
   form = null;
 
   state = {
-    paymentMethod: Constants.PAYMENT_METHODS.GRAB_PAY,
+    paymentMethod: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
     payNowLoading: false,
     order: null,
     fire: false,
@@ -51,15 +51,19 @@ class Payment extends Component {
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
-          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CARD_PAY,
+          fire: !!paymentMethod
+          /* Card payment will revert when we can scan image get card info
+          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+          */
         });
 
-        if (paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY) {
+        /* Card payment will revert when we can scan image get card info
+        if (paymentMethod === Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY) {
           history.push({
             pathname: Constants.ROUTER_PATHS.BANK_CARD_PAYMENT,
             search: `?orderId=${data.createOrder.orders[0].orderId || ''}`
           });
-        }
+        }*/
       }
     } catch (e) {
       console.error('Fail to create order\n', e);
@@ -90,14 +94,13 @@ class Payment extends Component {
           <ul className="payment__list">
             <li
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
-              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}
-              style={{ display: 'none' }}
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CREDIT_CARD_PAY)}
             >
               <figure className="payment__image-container">
                 <img src="/img/payment-credit.png"></img>
               </figure>
-              <label className="payment__name font-weight-bold">Credit/Debit Card</label>
-              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
+              <label className="payment__name font-weight-bold">Online Banking</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CREDIT_CARD_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
                 <input type="radio"></input>
               </div>
