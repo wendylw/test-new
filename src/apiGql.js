@@ -292,12 +292,14 @@ apiGql.CREATE_ORDER = gql`
     $storeId: String!,
     $tableId: String,
     $pax: Int!,
+    $additionalComments: String,
     $shoppingCartIds: [String]
   ) {
     createOrder(input: {
       business: $business,
       storeId: $storeId,
       shoppingCartIds: $shoppingCartIds,
+      additionalComments: $additionalComments,
       tableId: $tableId,
       pax: $pax,
       channel: 3

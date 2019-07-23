@@ -920,6 +920,29 @@ form {
       background-color: $white;
     }
   }
+
+  &__note {
+    background-color: $white;
+
+    textarea {
+      padding: 3vw;
+      width: 100%;
+      resize: none;
+    }
+  }
+
+  &__close-button {
+    display: block;
+    padding: 5px;
+    width: 42px;
+    height: 42px;
+    fill: $gray-1;
+
+    svg {
+      width: 100%;
+      height: 100%; 
+    }
+  }
 }
 
 .animation__slide-up {
