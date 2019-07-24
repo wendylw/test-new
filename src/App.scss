@@ -682,7 +682,7 @@ form {
     content: "";
     text-align: right;
     display: inline-block;
-    min-width: 24vw;
+    min-width: 26vw;
   }
 }
 
@@ -772,6 +772,12 @@ form {
       display: block;
       width: 12vw;
       height: 12vw;
+    }
+
+    &.exhibit {
+      display: block;
+      padding: 0 2.4vw;
+      text-align: right;
     }
   }
 
@@ -1548,6 +1554,25 @@ form {
       font-size: inherit;
       line-height: 1.4em;
     }
+  }
+}
+
+.receipt {
+  &__content {
+    padding: 8vw 4vw;
+    background-color: $gray-4;
+    border-bottom: 1px solid $gray-3;
+  }
+
+  &__label,
+  &__id-number {
+    display: block;
+    padding: 8px 0;
+  }
+
+  &__id-number {
+    font-size: 1.7rem;
+    letter-spacing: 0.25rem;
   }
 }
 

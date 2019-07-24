@@ -181,6 +181,7 @@ export class ProductDetailsComponent extends Component {
           <div className="aside__fix-bottom">
             <Item
               className="aside__section-container border__top-divider"
+              contentClassName="flex-middle"
               image={imageUrl}
               title={title}
               detail={

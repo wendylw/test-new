@@ -106,6 +106,7 @@ export class MainBodyComponent extends Component {
                       {
                         category.products.map(prod => (
                           <Item
+                            contentClassName="flex-middle"
                             key={prod.id}
                             image={prod.images[0]}
                             title={prod.title}

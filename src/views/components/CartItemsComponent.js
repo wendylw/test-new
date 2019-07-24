@@ -55,6 +55,7 @@ class CartItemsComponent extends Component {
 
   render() {
     const {
+      exhibit,
       shoppingCart,
       onlineStoreInfo
     } = this.props;
@@ -90,6 +91,7 @@ class CartItemsComponent extends Component {
 
             return (
               <Item
+                contentClassName={`flex-${exhibit ? 'top' : 'middle'}`}
                 key={id}
                 image={image}
                 title={title}
@@ -108,11 +110,11 @@ class CartItemsComponent extends Component {
                     ? <Tag text="Sold Out" className="tag__card" />
                     : (
                       <ItemOperator
-                        className="flex-middle"
+                        className={`flex-middle ${exhibit ? 'exhibit' : ''}`}
                         quantity={quantity}
                         decreaseDisabled={quantity === 0}
-                        onDecrease={this.handleUpdateProductQuantity.bind(this, cartItem, true)}
-                        onIncrease={this.handleUpdateProductQuantity.bind(this, cartItem, false)}
+                        onDecrease={exhibit ? null : this.handleUpdateProductQuantity.bind(this, cartItem, true)}
+                        onIncrease={exhibit ? null : this.handleUpdateProductQuantity.bind(this, cartItem, false)}
                       />
                     )
                 }
@@ -126,6 +128,7 @@ class CartItemsComponent extends Component {
 }
 
 CartItemsComponent.propTypes = {
+  exhibit: PropTypes.bool,
   shoppingCart: shoppingCartType,
   config: PropTypes.shape({
     business: PropTypes.string,
@@ -135,6 +138,7 @@ CartItemsComponent.propTypes = {
 };
 
 CartItemsComponent.defaultProps = {
+  exhibit: false,
   removeShoppingCartItem: () => { },
   addOrUpdateShoppingCartItem: () => { },
 };

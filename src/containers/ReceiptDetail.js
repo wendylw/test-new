@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { compose } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
+import withOrderDetail from '../libs/withOrderDetail';
 import withShoppingCart from '../libs/withShoppingCart';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import { shoppingCartType } from '../views/propTypes';
@@ -24,6 +25,7 @@ export class ReceiptDetail extends Component {
 
 	render() {
 		const {
+			order = {},
 			onlineStoreInfo,
 			shoppingCart = {}
 		} = this.props;
@@ -36,15 +38,19 @@ export class ReceiptDetail extends Component {
 					</figure>
 					<h2 className="header__title font-weight-bold text-middle">View Receipt</h2>
 					<span className="gray-font-opacity text-uppercase">
-						{/* {
+						{
 							order.tableId
 								? `Table ${order.tableId}`
 								: 'Self pick-up'
-						} */}
+						}
 					</span>
 				</header>
+				<div className="receipt__content text-center">
+					<label className="receipt__label gray-font-opacity font-weight-bold text-uppercase">Receipt Number</label>
+					<span className="receipt__id-number">{order.orderId}</span>
+				</div>
 				<div className="list__container">
-					<CartItems />
+					<CartItems exhibit={true} />
 				</div>
 				<Billing
 					shoppingCart={shoppingCart}
@@ -76,4 +82,25 @@ export default compose(withRouter,
 
 			return { shoppingCart };
 		},
-	}))(ReceiptDetail);
+	}),
+	withOrderDetail({
+		options: ({ history }) => {
+			const query = new URLSearchParams(history.location.search);
+			const orderId = query.get('receiptNumber');
+
+			return ({
+				variables: {
+					business: config.business,
+					orderId,
+				}
+			});
+		},
+		props: ({ gqlOrderDetail: { loading, order } }) => {
+			if (loading) {
+				return null;
+			}
+
+			return { order };
+		}
+	}),
+)(ReceiptDetail);
