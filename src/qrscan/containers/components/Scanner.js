@@ -117,9 +117,9 @@ class Scanner extends Component {
       getPermission: true
     });
     let canvas = null, context = null, video = null;
-    canvas = this.refs.canvas.current;
+    canvas = this.refs.canvas;
     context = canvas.getContext("2d");
-    video = this.refs.video.current;
+    video = this.refs.video;
     video.srcObject = stream;
     video.onloadedmetadata = function (e) {
       video.play();
@@ -129,7 +129,7 @@ class Scanner extends Component {
 
   render() {
     let main = null;
-    if (0) {
+    if (this.state.getPermission) {
       main =
         <div id="contentHolder">
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
