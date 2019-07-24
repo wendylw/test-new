@@ -24,15 +24,10 @@ class Scanner extends Component {
     try {
       const videoObj = { video: {facingMode: "environment"}, audio: false },
         MediaErr = function (error) {
-          if (error.PERMISSION_DENIED) {
-            alert('You denied the camera permission');
-          } else if (error.NOT_SUPPORTED_ERROR) {
-            alert("Sorry, your browser doesn't support this feature");
-          } else if (error.MANDATORY_UNSATISFIED_ERROR) {
-            alert('Did not get the media stream');
-          } else {
-            console.log(error);
-            alert('Please make sure you have a camera');
+          if (error.name === 'NotAllowedError') {
+            console.log(error.message);
+          }else {
+            alert(error.message);
           }
         };
 
@@ -127,6 +122,10 @@ class Scanner extends Component {
     this.getQRCode(video, canvas, context);
   }
 
+  getPermissionAgain() {
+    window.location.reload();
+  }
+
   render() {
     let main = null;
     if (this.state.getPermission) {
@@ -160,7 +159,7 @@ class Scanner extends Component {
           </div>
 
           <div className="content-footer">
-            <button className="text-center button-fill button-shadow button-main" onClick={this.getCamera}>
+            <button className="text-center button-fill button-shadow button-main" onClick={this.getPermissionAgain}>
               SCAN QR CODE
             </button>
           </div>
