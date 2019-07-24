@@ -451,11 +451,15 @@ img {
 .footer-operation {
   position: fixed;
   padding: 3.8vw;
-  width: 100%;
   left: 0;
   bottom: 0;
-  background-color: $gray-4;
   z-index: 200;
+  width: 100%;
+  background-color: $dark;
+
+  &.opt {
+    background-color: $gray-4;
+  }
 
   .button {
     @extend .border-radius-base;
@@ -663,8 +667,8 @@ img {
 
   ~ .form__error-message {
     margin-top: 0;
-    margin-left: 3.4em; 
-    margin-right: 3.4em; 
+    margin-left: 3.4em;
+    margin-right: 3.4em;
   }
 }
 

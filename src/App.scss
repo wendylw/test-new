@@ -1150,14 +1150,11 @@ form {
 
 .footer-operation {
   position: fixed;
-  width: 100%;
+  padding: 3.8vw;
   left: 0;
   bottom: 0;
   z-index: 200;
-}
-
-.footer-operation {
-  padding: 3.8vw;
+  width: 100%;
   background-color: $dark;
 
   .button {
