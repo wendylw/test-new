@@ -27,7 +27,11 @@ class Scanner extends Component {
           if (error.name === 'NotAllowedError') {
             console.log(error.message);
           }else {
-            alert(error.message);
+            if(/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+              alert('Please use Safari');
+            }else if(/android/i.test(navigator.userAgent)) {
+              alert('Please use Chrome');
+            }
           }
         };
 
