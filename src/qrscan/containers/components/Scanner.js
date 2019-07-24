@@ -86,7 +86,6 @@ class Scanner extends Component {
       }
 
     } catch (e) {
-      alert(e);
       if(/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
         alert('Please use Safari');
       }else if(/android/i.test(navigator.userAgent)) {
