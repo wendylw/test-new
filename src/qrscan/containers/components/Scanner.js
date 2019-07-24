@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 
 const processQR = (qrData) => new Promise((resolve, reject) => {
-  if (/^https?:/.test(qrData).trim()) {
+  if (/^https?:/.trim().test(qrData)) {
     window.location.href = qrData;
     resolve(qrData)
   } else {
