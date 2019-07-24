@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 
 const processQR = (qrData) => new Promise((resolve, reject) => {
-  if (/^https?:/.trim().test(qrData)) {
-    window.location.href = qrData;
-    resolve(qrData)
+  const data = qrData.trim();
+  if (/^https?:/.test(data)) {
+    window.location.href = data;
+    resolve(data)
   } else {
     reject('Not Identified')
   }
