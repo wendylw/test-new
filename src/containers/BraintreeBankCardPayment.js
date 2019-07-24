@@ -532,11 +532,11 @@ class BankCardPayment extends Component {
 					!brainTreeDOMLoaded
 						? (
 							<div className="loading-cover">
-								<div class="loader-wave">
-									<i class="dot" id="d1"></i>
-									<i class="dot" id="d2"></i>
-									<i class="dot" id="d3"></i>
-									<i class="dot" id="d4"></i>
+								<div className="loader-wave">
+									<i className="dot" id="d1"></i>
+									<i className="dot" id="d2"></i>
+									<i className="dot" id="d3"></i>
+									<i className="dot" id="d4"></i>
 								</div>
 							</div>
 						)
