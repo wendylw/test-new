@@ -117,9 +117,9 @@ class Scanner extends Component {
       getPermission: true
     });
     let canvas = null, context = null, video = null;
-    canvas = this.refs.canvas;
+    canvas = this.refs.canvas.current;
     context = canvas.getContext("2d");
-    video = this.refs.video;
+    video = this.refs.video.current;
     video.srcObject = stream;
     video.onloadedmetadata = function (e) {
       video.play();
