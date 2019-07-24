@@ -3,8 +3,8 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom';
 import { compose, graphql, Query } from 'react-apollo';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
-import withBraintreeToken from '../libs/withBraintreeToken';
 import Constants from '../Constants';
+import api from '../cashback/utils/api';
 import { client } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';
@@ -16,6 +16,7 @@ import '../Braintree.scss';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
+const API_BRAINTREE_TOKEN = `/payment/initToken?paymentName=${Constants.PAYMENT_METHODS.CREDIT_CARD_PAY}`;
 const INVALID_CARDINFO_FIELDS = {
 	number: 'number',
 	expirationDate: 'expirationDate',
@@ -94,34 +95,25 @@ class BankCardPayment extends Component {
 		},
 	};
 
-	async componentDidMount() {
+	componentDidMount() {
 		const braintreeSources = {
 			client: 'https://js.braintreegateway.com/web/3.47.0/js/client.min.js',
 			hostedFields: 'https://js.braintreegateway.com/web/3.47.0/js/hosted-fields.min.js',
 		};
 
-		await Object.keys(braintreeSources).forEach(key => {
+		Object.keys(braintreeSources).forEach(key => {
 			const script = document.createElement('script');
 
 			script.src = braintreeSources[key];
+
+			script.onload = () => {
+				if (window.braintree && window.braintree.client && window.braintree.hostedFields) {
+					this.braintreeSetting();
+				}
+			}
+
 			document.body.appendChild(script);
 		});
-
-		this.initBraintreeToken(this.props.gqlBraintreeToken);
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const { gqlBraintreeToken } = nextProps;
-
-		this.initBraintreeToken(gqlBraintreeToken);
-	}
-
-	initBraintreeToken(gqlBraintreeToken) {
-		const { brainTree } = gqlBraintreeToken;
-
-		if (brainTree && window.braintree && window.braintree.client && window.braintree.hostedFields) {
-			this.braintreeSetting(brainTree.token || '');
-		}
 	}
 
 	getQueryObject(paramName) {
@@ -240,12 +232,17 @@ class BankCardPayment extends Component {
 		});
 	}
 
-	braintreeSetting(brainTreeToken) {
+	async braintreeSetting() {
 		const that = this;
 		const submitButtonEl = document.getElementById('submitButton');
+		const data = await api({
+			url: API_BRAINTREE_TOKEN,
+			method: 'get',
+		});
+		const { token } = data || {};
 
 		window.braintree.client.create({
-			authorization: brainTreeToken,
+			authorization: token || null,
 		}, function (err, clientInstance) {
 			if (err) {
 				return;
@@ -558,7 +555,6 @@ class BankCardPayment extends Component {
 
 export default compose(
 	withRouter,
-	withBraintreeToken(),
 	withOnlinstStoreInfo({
 		props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
 			if (loading) {
