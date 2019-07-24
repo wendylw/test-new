@@ -48,7 +48,7 @@ class Message extends React.Component {
   }
 
   getMessage() {
-    const { message, errorMessageKey, claimCashbackCountPerDay } = this.props;
+    const { message, errorMessageKey } = this.props;
 
     if (!errorMessageKey) {
       return message;
@@ -69,7 +69,7 @@ class Message extends React.Component {
       Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
       NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
       NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
-      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today (Limit: ${claimCashbackCountPerDay || 0} time).`,
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today (Limit: ${message} time).`,
       /* set page message */
       // 'NotClaimed'
       /* set Otp */
@@ -101,11 +101,8 @@ class Message extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const business = state.common.business || {};
-
   try {
     return {
-      claimCashbackCountPerDay: business.claimCashbackCountPerDay,
       message: state.message.message,
       errorMessageKey: state.message.errorStatus,
       show: state.message.show,
