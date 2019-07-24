@@ -9,167 +9,212 @@ import Constants from '../cashback/utils/Constants';
 import PhoneView from '../components/PhoneView';
 import CurrencyNumber from '../components/CurrencyNumber';
 
+const ORDER_CAN_CLAIM = 'Can_Claim';
+const ANIMATION_TIME = 3600;
+const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
+
 class PhoneViewContainer extends React.Component {
+  animationSetTimeout = null;
 
-	state = {
-		cashbackInfoResponse: {},
-		phone: null,
-		isSavingPhone: false,
-		redirectURL: null
-	}
+  state = {
+    cashbackInfoResponse: {},
+    phone: Utils.getPhoneNumber(),
+    isSavingPhone: false,
+    redirectURL: null,
+    firstClaimedCashback: true,
+    claimedAnimationGifSrc: null
+  }
 
-	componentWillMount() {
-		this.handleCashbackAjax('get');
-	}
+  componentDidMount() {
+    this.setState({
+      claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
+    });
+  }
 
-	async handleCashbackAjax(method) {
-		const { history } = this.props;
-		const { phone } = this.state;
-		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-		let options = {
-			url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}` : ''}`,
-			method
-		};
+  componentWillMount() {
+    this.handleCashbackAjax('get');
+  }
 
-		if (method === 'post') {
-			options = Object.assign({}, options, {
-				data: {
-					phone,
-					receiptNumber,
-					source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
-				}
-			});
-		}
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.firstClaimedCashback && nextState.redirectURL) {
+      this.animationSetTimeout = setTimeout(() => {
+        this.setState({ firstClaimedCashback: false });
 
-		const { data } = await api(options);
-		let redirectURL = null;
+        clearTimeout(this.animationSetTimeout);
+      }, ANIMATION_TIME);
+    }
+  }
 
-		if (method === 'get') {
-			this.setState({
-				cashbackInfoResponse: data
-			});
-		} else if (method === 'post') {
-			const { customerId } = data;
+  async handleCashbackAjax(method) {
+    const { history } = this.props;
+    const { phone } = this.state;
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let options = {
+      url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}&source=${GlobalConstants.CASHBACK_SOURCE.QR_ORDERING}` : ''}`,
+      method,
+    };
 
-			redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    if (method === 'post') {
+      options = Object.assign({}, options, {
+        data: {
+          phone,
+          receiptNumber,
+          source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
+        }
+      });
 
-			Utils.setPhoneNumber(phone);
-		}
+      Utils.setPhoneNumber(phone);
+    }
 
-		this.setState({
-			isSavingPhone: false,
-			redirectURL,
-		});
-	}
+    const { data } = await api(options);
+    let {
+      cashbackInfoResponse,
+      firstClaimedCashback,
+    } = this.state;
+    let redirectURL = null;
 
-	handleUpdatePhoneNumber(phone) {
-		this.setState({ phone });
-	}
+    if (method === 'get' && data && data.status !== ORDER_CAN_CLAIM) {
+      firstClaimedCashback = false;
+      this.handleCashbackAjax('post');
+    }
 
-	renderCurrencyNumber() {
-		const {
-			onlineStoreInfo: {
-				locale,
-				currency,
-			}
-		} = this.props;
-		const {
-			cashbackInfoResponse: {
-				cashback,
-			},
-		} = this.state;
+    if (method === 'post') {
+      const { customerId } = data || {};
 
-		if (!cashback) {
-			return null;
-		}
+      redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    }
 
-		return (
-			<CurrencyNumber
-				locale={locale}
-				currency={currency}
-				classList="font-weight-bold"
-				money={Math.abs(cashback || 0)}
-			/>
-		);
-	}
+    this.setState({
+      cashbackInfoResponse: Object.assign({},
+        cashbackInfoResponse,
+        data,
+      ),
+      firstClaimedCashback,
+      isSavingPhone: false,
+      redirectURL,
+    });
+  }
 
-	renderPhoneView() {
-		const {
-			onlineStoreInfo: {
-				country,
-			},
-		} = this.props;
-		const {
-			isSavingPhone,
-			redirectURL,
-			phone,
-		} = this.state;
+  handleUpdatePhoneNumber(phone) {
+    this.setState({ phone });
+  }
 
-		if (redirectURL) {
-			return (
-				<Link
-					className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
-					to={redirectURL}
-				>Check My Balance</Link>
-			);
-		}
+  renderCurrencyNumber() {
+    const {
+      onlineStoreInfo: {
+        locale,
+        currency,
+      }
+    } = this.props;
+    const {
+      cashbackInfoResponse: {
+        cashback,
+      },
+    } = this.state;
 
-		return (
-			<PhoneView
-				phone={phone}
-				country={country}
-				setPhone={this.handleUpdatePhoneNumber.bind(this)}
-				submitPhoneNumber={this.handleCashbackAjax.bind(this, 'post')}
-				isLoading={isSavingPhone}
-				buttonText="Continue"
-			/>
-		);
-	}
+    if (!cashback) {
+      return null;
+    }
 
-	render() {
-		const {
-			onlineStoreInfo: {
-				country,
-			}
-		} = this.props;
-		const {
-			cashbackInfoResponse: {
-				cashback,
-			},
-			redirectURL,
-		} = this.state;
+    return (
+      <CurrencyNumber
+        locale={locale}
+        currency={currency}
+        classList="font-weight-bold"
+        money={Math.abs(cashback || 0)}
+      />
+    );
+  }
 
-		if (!country || !cashback) {
-			return null;
-		}
+  renderPhoneView() {
+    const {
+      onlineStoreInfo: {
+        country,
+      },
+    } = this.props;
+    const {
+      isSavingPhone,
+      redirectURL,
+      phone,
+      cashbackInfoResponse: {
+        status,
+      },
+    } = this.state;
 
-		return (
-			<div className="thanks__phone-view">
-				{
-					redirectURL
-						? (
-							<label className="phone-view-form__label text-center">
-								You’ve earned {this.renderCurrencyNumber()} Cashback!
+    if (status !== ORDER_CAN_CLAIM) {
+      return redirectURL
+        ? (
+          <Link
+            className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+            to={redirectURL}
+            target="_blank"
+          >Check My Balance</Link>
+        )
+        : null;
+    }
+
+    return (
+      <PhoneView
+        phone={phone}
+        country={country}
+        setPhone={this.handleUpdatePhoneNumber.bind(this)}
+        submitPhoneNumber={this.handleCashbackAjax.bind(this, 'post')}
+        isLoading={isSavingPhone}
+        buttonText="Continue"
+      />
+    );
+  }
+
+  render() {
+    const {
+      onlineStoreInfo: {
+        country,
+      }
+    } = this.props;
+    const {
+      cashbackInfoResponse: {
+        cashback,
+        status,
+      },
+      claimedAnimationGifSrc,
+      firstClaimedCashback,
+      redirectURL,
+    } = this.state;
+
+    if (!country || !cashback) {
+      return null;
+    }
+
+    return (
+      <div className={`thanks__phone-view ${firstClaimedCashback && redirectURL ? 'active' : ''}`}>
+        {
+          status !== ORDER_CAN_CLAIM
+            ? (
+              <label className="phone-view-form__label text-center">
+                You’ve earned {this.renderCurrencyNumber()} Cashback!
 							</label>
-						)
-						: (
-							<label className="phone-view-form__label text-center">
-								Earn {this.renderCurrencyNumber()} Cashback with Your Mobile Number
+            )
+            : (
+              <label className="phone-view-form__label text-center">
+                Earn {this.renderCurrencyNumber()} Cashback with Your Mobile Number
 							</label>
-						)
-				}
-				{this.renderPhoneView()}
-			</div>
-		);
-	}
+            )
+        }
+        {this.renderPhoneView()}
+        <div className="thanks__suceed-animation">
+          <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
+        </div>
+      </div>
+    );
+  }
 }
 
 PhoneView.propTypes = {
-	onlineStoreInfo: PropTypes.object,
+  onlineStoreInfo: PropTypes.object,
 };
 
 PhoneView.defaultProps = {
-	onlineStoreInfo: {},
+  onlineStoreInfo: {},
 };
 
 export default withRouter(PhoneViewContainer);
