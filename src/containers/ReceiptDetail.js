@@ -12,13 +12,13 @@ import config from '../config';
 import Constants from '../Constants';
 
 export class ReceiptDetail extends Component {
-	static propTypes = {
-		shoppingCart: shoppingCartType,
-	}
-
-	backToHome() {
+	backToThankYou() {
 		const { history } = this.props;
-		history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
+		const h = config.h();
+		const query = new URLSearchParams(history.location.search);
+		const receiptNumber = query.get('receiptNumber');
+
+		history.replace(`${Constants.ROUTER_PATHS.THANK_YOU}?h=${h}&receiptNumber=${receiptNumber}`, history.location.state);
 	}
 
 	render() {
@@ -34,7 +34,7 @@ export class ReceiptDetail extends Component {
 		return (
 			<section className="table-ordering__receipt">
 				<header className="header border__bottom-divider flex flex-middle flex-space-between">
-					<figure className="header__image-container text-middle" onClick={this.backToHome.bind(this)}>
+					<figure className="header__image-container text-middle" onClick={this.backToThankYou.bind(this)}>
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
 					</figure>
 					<h2 className="header__title font-weight-bold text-middle">View Receipt</h2>
@@ -92,6 +92,10 @@ export class ReceiptDetail extends Component {
 		)
 	}
 }
+
+ReceiptDetail.propTypes = {
+	shoppingCart: shoppingCartType,
+};
 
 export default compose(withRouter, withShoppingCart({
 	props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {

@@ -2,12 +2,35 @@ import React, { Component } from 'react';
 
 class Tag extends Component {
 	render() {
+		const {
+			text,
+			className,
+		} = this.props;
+		const classList = ['text-uppercase info font-weight-bold'];
+
+		if (className) {
+			classList.push(className);
+		}
+
+		if (!text) {
+			return null;
+		}
+
 		return (
-			<i className="text-uppercase tag__card info font-weight-bold">
-				Sold out
-      </i>
+			<i className={classList.join(' ')}>
+				{text}
+			</i>
 		);
 	}
 }
+
+Tag.propTypes = {
+	className: PropTypes.string,
+	text: PropTypes.string,
+};
+
+Tag.defaultProps = {
+	text: '',
+};
 
 export default Tag;

@@ -22,13 +22,6 @@ const isCartItemSoldOut = cartItem => {
 }
 
 class CartItemsComponent extends Component {
-  static propTypes = {
-    shoppingCart: shoppingCartType,
-    config: PropTypes.shape({
-      business: PropTypes.string,
-    }),
-  }
-
   render() {
     const { shoppingCart } = this.props;
 
@@ -107,5 +100,12 @@ class CartItemsComponent extends Component {
     )
   }
 }
+
+CartItemsComponent.propTypes = {
+  shoppingCart: shoppingCartType,
+  config: PropTypes.shape({
+    business: PropTypes.string,
+  }),
+};
 
 export default CartItemsComponent;
