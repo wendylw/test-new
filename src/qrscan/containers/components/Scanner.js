@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 
 const processQR = (qrData) => new Promise((resolve, reject) => {
-  if (/^https?:/.test(qrData)) {
+  if (/^https?:/.test(qrData).trim()) {
     window.location.href = qrData;
     resolve(qrData)
   } else {
@@ -112,7 +112,7 @@ class Scanner extends Component {
           })
         }
       });
-    }, 1000)
+    }, 300)
   }
 
   getViedoStream(stream) {
