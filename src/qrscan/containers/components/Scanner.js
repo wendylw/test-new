@@ -90,6 +90,8 @@ class Scanner extends Component {
         alert('Please use Safari');
       }else if(/android/i.test(navigator.userAgent)) {
         alert('Please use Chrome');
+      }else {
+        alert('Please use Chrome');
       }
     }
   }
