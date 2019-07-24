@@ -22,7 +22,7 @@ class Scanner extends Component {
   getCamera() {
     //turn on the camera
     try {
-      const videoObj = { video: true, audio: false },
+      const videoObj = { video: {facingMode: "environment"}, audio: false },
         MediaErr = function (error) {
           if (error.PERMISSION_DENIED) {
             alert('You denied the camera permission');
