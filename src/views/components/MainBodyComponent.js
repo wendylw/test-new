@@ -1,23 +1,74 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { onlineCategoryMergedShoppingCartType, onlineCategoryType, shoppingCartType } from '../propTypes';
 import { ScrollObservable, ScrollObserver, getCurrentScrollName } from './ScrollComponents';
-import ItemComponent from './ItemComponent';
+import Tag from '../../components/Tag';
+import Item from '../../components/Item';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import ItemOperator from '../../components/ItemOperator';
 import config from '../../config';
 import Constants from '../../Constants';
 
-export class MainBodyComponent extends Component {
-  static propTypes = {
-    onlineCategory: onlineCategoryType,
-    shoppingCart: shoppingCartType,
-    onlineCategoryMergedShoppingCart: onlineCategoryMergedShoppingCartType,
-  }
 
+export class MainBodyComponent extends Component {
   state = {
     mergedItems: null,
   };
 
+  handleDecreaseProduct(prod) {
+    const cartItem = prod.cartItems.find(item => item.productId === prod.id);
+
+    if (prod.cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
+      this.props.removeShoppingCartItem({
+        variables: {
+          productId: cartItem.productId,
+          variations: cartItem.variations,
+        }
+      });
+
+      return;
+    }
+
+    this.props.addOrUpdateShoppingCartItem({
+      variables: {
+        action: 'edit',
+        business: config.business,
+        productId: prod.id,
+        quantity: prod.cartQuantity - 1,
+        variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [], // product has only one child products in cart
+      }
+    });
+  }
+
+  handleIncreaseProduct(prod) {
+    const { history } = this.props;
+    const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id);
+
+    if (prod.variations && prod.variations.length) {
+      history.push(`${Constants.ROUTER_PATHS.PORDUCTS}/${prod.id}`);
+      return;
+    }
+
+    this.props.addOrUpdateShoppingCartItem({
+      variables: {
+        action: 'edit',
+        business: config.business,
+        productId: prod.id,
+        quantity: prod.cartQuantity + 1,
+        variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [],
+      }
+    });
+  }
+
   render() {
-    const { onlineCategoryMergedShoppingCart, history } = this.props;
+    const {
+      onlineCategoryMergedShoppingCart,
+      onlineStoreInfo,
+    } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
 
     if (!Array.isArray(onlineCategoryMergedShoppingCart)) {
       return null;
@@ -54,56 +105,33 @@ export class MainBodyComponent extends Component {
                     <ScrollObservable name={category.name} key={category.id}>
                       {
                         category.products.map(prod => (
-                          <ItemComponent
+                          <Item
                             key={prod.id}
                             image={prod.images[0]}
                             title={prod.title}
-                            price={prod.displayPrice}
-                            quantity={prod.cartQuantity}
-                            decreaseDisabled={!prod.canDecreaseQuantity}
-                            soldOut={prod.soldOut}
-                            onDecrease={() => {
-                              const cartItem = prod.cartItems.find(item => item.productId === prod.id);
+                            detail={
+                              <CurrencyNumber
+                                money={prod.displayPrice || 0}
+                                locale={locale}
+                                currency={currency}
+                              />
+                            }
+                          >
 
-                              if (prod.cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
-                                this.props.removeShoppingCartItem({
-                                  variables: {
-                                    productId: cartItem.productId,
-                                    variations: cartItem.variations,
-                                  }
-                                });
-                                return;
-                              }
-
-                              this.props.addOrUpdateShoppingCartItem({
-                                variables: {
-                                  action: 'edit',
-                                  business: config.business,
-                                  productId: prod.id,
-                                  quantity: prod.cartQuantity - 1,
-                                  variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [], // product has only one child products in cart
-                                }
-                              });
-                            }}
-                            onIncrease={() => {
-                              const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id);
-
-                              if (prod.variations && prod.variations.length) {
-                                history.push(`${Constants.ROUTER_PATHS.PORDUCTS}/${prod.id}`);
-                                return;
-                              }
-
-                              this.props.addOrUpdateShoppingCartItem({
-                                variables: {
-                                  action: 'edit',
-                                  business: config.business,
-                                  productId: prod.id,
-                                  quantity: prod.cartQuantity + 1,
-                                  variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [],
-                                }
-                              });
-                            }}
-                          />
+                            {
+                              prod.soldOut
+                                ? <Tag text="Sold Out" className="tag__card" />
+                                : (
+                                  <ItemOperator
+                                    className="flex-middle"
+                                    quantity={prod.cartQuantity}
+                                    decreaseDisabled={!prod.canDecreaseQuantity}
+                                    onDecrease={this.handleDecreaseProduct.bind(this, prod)}
+                                    onIncrease={this.handleIncreaseProduct.bind(this, prod)}
+                                  />
+                                )
+                            }
+                          </Item>
                         ))
                       }
                     </ScrollObservable>
@@ -117,5 +145,18 @@ export class MainBodyComponent extends Component {
     )
   }
 }
+
+MainBodyComponent.propTypes = {
+  onlineCategory: onlineCategoryType,
+  shoppingCart: shoppingCartType,
+  onlineCategoryMergedShoppingCart: onlineCategoryMergedShoppingCartType,
+  removeShoppingCartItem: PropTypes.func,
+  addOrUpdateShoppingCartItem: PropTypes.func,
+};
+
+MainBodyComponent.defaultProps = {
+  removeShoppingCartItem: () => { },
+  addOrUpdateShoppingCartItem: () => { },
+};
 
 export default MainBodyComponent

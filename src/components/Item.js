@@ -6,20 +6,21 @@ export class Item extends Component {
 	render() {
 		const {
 			children,
-			className = '',
+			className,
 			image,
 			title,
 			variation,
 			detail,
 		} = this.props;
+		const classList = ['item border__bottom-divider flex flex-top'];
+
+		if (className) {
+			classList.push(className);
+		}
 
 		return (
-			<li className={`item border__bottom-divider flex flex-top ${className}`}>
-				{
-					image
-						? <Image className="item__image-container" src={image} />
-						: null
-				}
+			<li className={classList.join(' ')}>
+				<Image className="item__image-container" src={image} />
 				<div className="item__content flex flex-middle flex-space-between">
 					<div className="item__detail">
 						<summary className="item__title font-weight-bold">{title}</summary>

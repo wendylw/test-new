@@ -1,13 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import { compose, Query } from 'react-apollo';
+import { compose } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
+import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import { shoppingCartType } from '../views/propTypes';
+
+import Billing from '../views/components/Billing';
 import CartItems from '../views/components/CartItems';
-import CurrencyNumber from '../views/components/CurrencyNumber';
-import { clientCoreApi } from '../apiClient';
-import apiGql from '../apiGql';
+
 import config from '../config';
 import Constants from '../Constants';
 
@@ -22,14 +23,10 @@ export class ReceiptDetail extends Component {
 	}
 
 	render() {
-		const { shoppingCart = {} } = this.props;
-
 		const {
-			subtotal,
-			total,
-			tax,
-			serviceCharge,  // TODO: Needs API
-		} = shoppingCart;
+			onlineStoreInfo,
+			shoppingCart = {}
+		} = this.props;
 
 		return (
 			<section className="table-ordering__receipt">
@@ -49,45 +46,10 @@ export class ReceiptDetail extends Component {
 				<div className="list__container">
 					<CartItems />
 				</div>
-				<section className="billing">
-					<ul className="billing__list">
-						<li className="billing__item flex flex-middle flex-space-between">
-							<label className="gray-font-opacity">Subtotal</label>
-							<span className="gray-font-opacity"><CurrencyNumber money={subtotal || 0} /></span>
-						</li>
-						<Query
-							query={apiGql.GET_CORE_BUSINESS}
-							client={clientCoreApi}
-							variables={{ business: config.business, storeId: config.storeId }}
-							onError={err => console.error('Can not get business.stores from core-api\n', err)}
-						>
-							{({ data: { business = {} } = {} }) => {
-								if (!Array.isArray(business.stores) || !business.stores.length) {
-									return null;
-								}
-
-								const { stores, enableServiceCharge, serviceChargeRate/*, serviceChargeTax*/ } = business;
-
-								return (
-									<React.Fragment>
-										<li className="billing__item flex flex-middle flex-space-between">
-											<label className="gray-font-opacity">{(stores[0].receiptTemplateData || {}).taxName || `Tax`}</label>
-											<span className="gray-font-opacity"><CurrencyNumber money={tax || 0} /></span>
-										</li>
-										{(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
-											<label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
-											<span className="gray-font-opacity">{serviceCharge}</span>
-										</li> : null}
-									</React.Fragment>
-								);
-							}}
-						</Query>
-						<li className="billing__item flex flex-middle flex-space-between">
-							<label className="font-weight-bold">Total</label>
-							<span className="font-weight-bold"><CurrencyNumber money={total || 0} /></span>
-						</li>
-					</ul>
-				</section>
+				<Billing
+					shoppingCart={shoppingCart}
+					onlineStoreInfo={onlineStoreInfo}
+				/>
 			</section>
 		)
 	}
@@ -97,12 +59,21 @@ ReceiptDetail.propTypes = {
 	shoppingCart: shoppingCartType,
 };
 
-export default compose(withRouter, withShoppingCart({
-	props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
-		if (loading) {
-			return null;
-		}
+export default compose(withRouter,
+	withOnlinstStoreInfo({
+		props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
+			if (loading) {
+				return null;
+			}
+			return { onlineStoreInfo };
+		},
+	}),
+	withShoppingCart({
+		props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
+			if (loading) {
+				return null;
+			}
 
-		return { shoppingCart };
-	},
-}))(ReceiptDetail);
+			return { shoppingCart };
+		},
+	}))(ReceiptDetail);

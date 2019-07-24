@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom';
 import { compose, graphql, Query } from 'react-apollo';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
+
 import Utils from '../libs/utils';
 import FormValidate from '../libs/form-validate';
 import Constants from '../Constants';
@@ -10,7 +11,7 @@ import { client } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';
 import RedirectForm from '../views/components/RedirectForm';
-import CurrencyNumber from '../views/components/CurrencyNumber';
+import CurrencyNumber from '../components/CurrencyNumber';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -261,6 +262,10 @@ class BankCardPayment extends Component {
 			onlineStoreInfo
 		} = this.props;
 		const {
+			locale,
+			currency,
+		} = onlineStoreInfo || {};
+		const {
 			payNowLoading,
 			fire,
 			card,
@@ -302,7 +307,11 @@ class BankCardPayment extends Component {
 									>
 										<img src={onlineStoreInfo.logo} alt="" />
 									</figure>
-									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total || 0} />
+									<CurrencyNumber
+										classList="payment-bank__money font-weight-bold text-center" money={total || 0}
+										locale={locale}
+										currency={currency}
+									/>
 
 									<form id="bank-2c2p-form" className="form">
 										<div className="payment-bank__form-item">
@@ -412,7 +421,13 @@ class BankCardPayment extends Component {
 									>{
 											payNowLoading
 												? 'Redirecting'
-												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
+												: (
+													<CurrencyNumber
+														classList="font-weight-bold text-center" addonBefore="Pay" money={total || 0}
+														locale={locale}
+														currency={currency}
+													/>
+												)
 										}
 									</button>
 								</div>

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import ItemComponent from './ItemComponent';
+import Item from '../../components/Item';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import ItemOperator from '../../components/ItemOperator';
 import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
 import Constants from '../../Constants';
@@ -8,30 +10,6 @@ import Aside from './Aside';
 import Utils from '../../libs/utils';
 
 export class ProductDetailsComponent extends Component {
-  static propTypes = {
-    product: PropTypes.shape({
-      id: PropTypes.string,
-      title: PropTypes.string,
-      displayPrice: PropTypes.number,
-      variations: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string,
-        name: PropTypes.string,
-        variationType: PropTypes.string,
-        optionValues: PropTypes.arrayOf(PropTypes.shape({
-          id: PropTypes.string,
-          value: PropTypes.string,
-        })),
-      })),
-    }),
-    addOrUpdateShoppingCartItem: PropTypes.func,
-  }
-
-  static defaultProps = {
-    product: null,
-    shoppingCart: null,
-    addOrUpdateShoppingCartItem: () => { },
-  }
-
   state = {
     active: false,
     mergedProduct: null,
@@ -140,8 +118,15 @@ export class ProductDetailsComponent extends Component {
   }
 
   render() {
-    const { product } = this.props;
+    const {
+      product,
+      onlineStoreInfo,
+    } = this.props;
     const { cartQuantity, variationsByIdMap } = this.state;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
 
     if (!product) {
       return null;
@@ -194,21 +179,31 @@ export class ProductDetailsComponent extends Component {
           </div>
 
           <div className="aside__fix-bottom">
-            <ItemComponent
+            <Item
               className="aside__section-container border__top-divider"
               image={imageUrl}
               title={title}
-              price={this.displayPrice()}
-              quantity={cartQuantity}
-              decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
-              onDecrease={() => {
-                this.setState({ cartQuantity: cartQuantity - 1 });
-              }}
-              onIncrease={() => {
-                this.setState({ cartQuantity: cartQuantity + 1 });
-              }}
-            />
+              detail={
+                <CurrencyNumber
+                  money={this.displayPrice() || 0}
+                  locale={locale}
+                  currency={currency}
+                />
+              }
+            >
 
+              <ItemOperator
+                className="flex-middle"
+                quantity={cartQuantity}
+                decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+                onDecrease={() => {
+                  this.setState({ cartQuantity: cartQuantity - 1 });
+                }}
+                onIncrease={() => {
+                  this.setState({ cartQuantity: cartQuantity + 1 });
+                }}
+              />
+            </Item>
             <div className="aside__section-container">
               <button
                 className="button__fill button__block font-weight-bold"
@@ -239,6 +234,30 @@ export class ProductDetailsComponent extends Component {
       </Aside>
     )
   }
+}
+
+ProductDetailsComponent.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.string,
+    title: PropTypes.string,
+    displayPrice: PropTypes.number,
+    variations: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+      variationType: PropTypes.string,
+      optionValues: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string,
+        value: PropTypes.string,
+      })),
+    })),
+  }),
+  addOrUpdateShoppingCartItem: PropTypes.func,
+}
+
+ProductDetailsComponent.defaultProps = {
+  product: null,
+  shoppingCart: null,
+  addOrUpdateShoppingCartItem: () => { },
 }
 
 export default ProductDetailsComponent;

@@ -54,7 +54,14 @@ class CartItemsComponent extends Component {
   }
 
   render() {
-    const { shoppingCart } = this.props;
+    const {
+      shoppingCart,
+      onlineStoreInfo
+    } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
 
     if (!shoppingCart) {
       return null;
@@ -87,7 +94,13 @@ class CartItemsComponent extends Component {
                 image={image}
                 title={title}
                 variation={variationTexts.join(', ')}
-                detail={<CurrencyNumber money={displayPrice || 0} />}
+                detail={
+                  <CurrencyNumber
+                    money={displayPrice || 0}
+                    locale={locale}
+                    currency={currency}
+                  />
+                }
               >
 
                 {

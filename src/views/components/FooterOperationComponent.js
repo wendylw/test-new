@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { shoppingCartType } from '../propTypes';
-import CurrencyNumber from './CurrencyNumber';
+import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../Constants';
 import config from '../../config';
 
@@ -11,7 +11,15 @@ export class FooterOperationComponent extends Component {
   }
 
   render() {
-    const { shoppingCart, history } = this.props;
+    const {
+      onlineStoreInfo,
+      shoppingCart,
+      history,
+    } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
     const { subtotal, count } = shoppingCart || {};
     const { table } = config;
 
@@ -49,7 +57,13 @@ export class FooterOperationComponent extends Component {
               <img src="/img/icon-cart.svg" alt="cart" />
               <span className="tag__number">{count || 0}</span>
             </div>
-            <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal || 0} /></label>
+            <label className="cart-bar__money text-middle">
+              <CurrencyNumber
+                money={subtotal || 0}
+                locale={locale}
+                currency={currency}
+              />
+            </label>
           </button>
           {
             table !== 'DEMO'
