@@ -47,7 +47,7 @@ class Scanner extends Component {
 
         navigator.mediaDevices.getUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that, stream);
+            const play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -57,7 +57,7 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.webkitGetUserMedia) {
         navigator.webkitGetUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that, stream);
+            const play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -66,7 +66,7 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.mozGetUserMedia) {
         navigator.mozGetUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that, stream);
+            const play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
@@ -75,7 +75,7 @@ class Scanner extends Component {
       } else if (navigator.mediaDevices.msGetUserMedia) {
         navigator.msGetUserMedia(videoObj)
           .then(function (stream) {
-            let play = that.getViedoStream.bind(that, stream);
+            const play = that.getViedoStream.bind(that, stream);
             play();
           })
           .catch(function (err) {
