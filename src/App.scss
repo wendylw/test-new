@@ -1486,26 +1486,8 @@ form {
     }
   }
 
-  &__link,
-  &__receipt-info {
+  &__link {
     padding: 4vh 0;
-  }
-
-  &__receipt-title,
-  &__receipt-label,
-  &__receipt-number {
-    margin: 5px 0;
-    font-size: 1.1rem;
-    line-height: 1.5em;
-  }
-
-  &__receipt-title {
-    font-size: 1.2rem;
-  }
-
-  &__receipt-number {
-    margin-left: 5px;
-    letter-spacing: 0.05rem;
   }
 
   .input,
