@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'react-apollo';
+import { withRouter } from 'react-router-dom';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import withShoppingCart from '../libs/withShoppingCart';
 
@@ -19,16 +19,28 @@ export class Cart extends Component {
     shoppingCart: shoppingCartType,
   }
 
+  state = {
+    additionalComments: null,
+  }
+
   backToHome() {
     const { history } = this.props;
     history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
   }
 
+  handleChangeAdditionalComments(e) {
+    this.setState({
+      additionalComments: e.target.value
+    });
+  }
+
   render() {
     const {
       onlineStoreInfo,
-      shoppingCart = {}
+      shoppingCart = {},
+      history
     } = this.props;
+    const { additionalComments } = this.state;
     const {
       count,
       items,
@@ -47,6 +59,29 @@ export class Cart extends Component {
           </header>
           <div className="list__container">
             <CartItems />
+            <div className="cart__note flex flex-middle flex-space-between">
+              <textarea
+                rows="4"
+                placeholder="Add a not to your order?"
+                value={additionalComments || ''}
+                onChange={this.handleChangeAdditionalComments.bind(this)}
+              ></textarea>
+              {
+                additionalComments
+                  ? (
+                    <i
+                      className="cart__close-button"
+                      onClick={() => this.setState({ additionalComments: null })}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                        <path d="M0 0h24v24H0z" fill="none" />
+                      </svg>
+                    </i>
+                  )
+                  : null
+              }
+            </div>
           </div>
           <Billing
             shoppingCart={shoppingCart}
@@ -60,10 +95,12 @@ export class Cart extends Component {
               >Back</button>
             </div>
             <div className="footer-operation__item width-2-3">
-              <Link
+              <button
                 className={`billing__link button button__fill button__block font-weight-bold ${items && items.length > 0 ? '' : 'disabled'}`}
-                to={Constants.ROUTER_PATHS.PAYMENT}
-              >Pay</Link>
+                onClick={() => history.push(Constants.ROUTER_PATHS.PAYMENT, {
+                  additionalComments
+                })}
+              >Pay</button>
             </div>
           </footer>
         </section>

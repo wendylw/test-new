@@ -31,7 +31,7 @@ class BankCardPayment extends Component {
 		cardNumberSelectionStart: 0,
 		card: {},
 		validDate: '',
-		inValidCardInfoFiedls: [],
+		invalidCardInfoFields: [],
 		cardInfoError: {
 			keys: [],
 			messages: [],
@@ -133,7 +133,7 @@ class BankCardPayment extends Component {
 
 	validCardInfo() {
 		let cardInfoResults = {};
-		const inValidCardInfoFiedls = ['cardNumber', 'validDate', 'cvv'].filter(id => {
+		const invalidCardInfoFields = ['cardNumber', 'validDate', 'cvv'].filter(id => {
 			const cardInfoItemResult = FormValidate.validate(id, this.getCardInfoValidationOpts(id, []));
 
 			if (!cardInfoItemResult.isValid) {
@@ -169,7 +169,7 @@ class BankCardPayment extends Component {
 
 		this.setState({
 			cardInfoError,
-			inValidCardInfoFiedls
+			invalidCardInfoFields
 		});
 
 		return cardInfoResults.required;
@@ -178,7 +178,7 @@ class BankCardPayment extends Component {
 	validateForm() {
 		const cardHolderNameOptions = this.getCardHolderNameValidationOpts()
 		const holderNameResult = FormValidate.validate('cardHolderName', cardHolderNameOptions);
-		const { inValidCardInfoFiedls, cardInfoError } = this.state;
+		const { invalidCardInfoFields, cardInfoError } = this.state;
 		let newCardHolderNameError = {
 			key: null,
 			message: null,
@@ -200,8 +200,8 @@ class BankCardPayment extends Component {
 		this.setState({
 			cardHolderNameError: newCardHolderNameError,
 			cardInfoError: newCardInfoError,
-			inValidCardInfoFiedls: Array.from(
-				[].concat(inValidCardInfoFiedls, this.validCardInfo() || [])
+			invalidCardInfoFields: Array.from(
+				[].concat(invalidCardInfoFields, this.validCardInfo() || [])
 			),
 		});
 	}
@@ -271,7 +271,7 @@ class BankCardPayment extends Component {
 			card,
 			validDate,
 			cardholderName,
-			inValidCardInfoFiedls,
+			invalidCardInfoFields,
 			cardInfoError,
 			cardHolderNameError
 		} = this.state;
@@ -326,7 +326,7 @@ class BankCardPayment extends Component {
 												}
 											</div>
 											<div className="payment-bank__card-container">
-												<div className={`input__list-top flex flex-middle flex-space-between ${inValidCardInfoFiedls.includes('cardNumber') ? 'has-error' : ''}`}>
+												<div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes('cardNumber') ? 'has-error' : ''}`}>
 													<input
 														ref={ref => this.cardNumberEl = ref}
 														id="cardNumber"
@@ -349,7 +349,7 @@ class BankCardPayment extends Component {
 												<div className="input__list-bottom flex flex-middle flex-space-between">
 													<input
 														id="validDate"
-														className={`input input__block ${inValidCardInfoFiedls.includes('validDate') ? 'has-error' : ''}`}
+														className={`input input__block ${invalidCardInfoFields.includes('validDate') ? 'has-error' : ''}`}
 														type="tel"
 														placeholder="MM / YY"
 														value={validDate || ''}
@@ -359,7 +359,7 @@ class BankCardPayment extends Component {
 													<input
 														id="cvv"
 														data-encrypt="cvv"
-														className={`input input__block ${inValidCardInfoFiedls.includes('cvv') ? 'has-error' : ''}`}
+														className={`input input__block ${invalidCardInfoFields.includes('cvv') ? 'has-error' : ''}`}
 														type="password"
 														placeholder="CVV"
 														onBlur={this.validCardInfo.bind(this)}
@@ -484,7 +484,7 @@ class BankCardPayment extends Component {
 
 	render() {
 		return (
-			<DocumentTitle title={Constants.DOCUMENT_TITLE.BANK_CARD_PAYMENT}>
+			<DocumentTitle title={Constants.DOCUMENT_TITLE.CREDIT_CARD_PAYMENT}>
 				{this.renderMain()}
 			</DocumentTitle>
 		);

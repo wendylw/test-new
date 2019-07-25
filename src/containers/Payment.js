@@ -15,7 +15,7 @@ class Payment extends Component {
   form = null;
 
   state = {
-    paymentMethod: Constants.PAYMENT_METHODS.GRAB_PAY,
+    paymentMethod: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
     payNowLoading: false,
     order: null,
     fire: false,
@@ -28,6 +28,7 @@ class Payment extends Component {
   async payNow() {
     const { paymentMethod } = this.state;
     const { shoppingCart, history } = this.props;
+    const { additionalComments } = history.location.state || {};
 
     this.setState({
       payNowLoading: true,
@@ -40,7 +41,8 @@ class Payment extends Component {
           storeId: config.storeId,
           shoppingCartIds: shoppingCart.items.map(i => i.id),
           pax: Number(config.peopleCount),
-          tableId: config.table || ''
+          tableId: config.table || '',
+          additionalComments,
         }),
       });
 
@@ -48,12 +50,12 @@ class Payment extends Component {
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
-          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CARD_PAY,
+          fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
         });
 
-        if (paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY) {
+        if (paymentMethod === Constants.PAYMENT_METHODS.CREDIT_CARD_PAY) {
           history.push({
-            pathname: Constants.ROUTER_PATHS.BANK_CARD_PAYMENT,
+            pathname: Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT,
             search: `?orderId=${data.createOrder.orders[0].orderId || ''}`
           });
         }
@@ -68,9 +70,7 @@ class Payment extends Component {
 
   renderMain() {
     const { match, history } = this.props;
-    const { paymentMethod, order } = this.state;
-
-    console.log('order =>', order);
+    const { paymentMethod } = this.state;
 
     return (
       <section className={`table-ordering__payment ${match.isExact ? '' : 'hide'}`}>
@@ -87,14 +87,26 @@ class Payment extends Component {
           <ul className="payment__list">
             <li
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
-              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CARD_PAY)}
-              style={{ display: 'none' }}
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.CREDIT_CARD_PAY)}
             >
               <figure className="payment__image-container">
                 <img src="/img/payment-credit.png"></img>
               </figure>
-              <label className="payment__name font-weight-bold">Credit/Debit Card</label>
-              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CARD_PAY ? 'active' : ''}`}>
+              <label className="payment__name font-weight-bold">Visa / MasterCard</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.CREDIT_CARD_PAY ? 'active' : ''}`}>
+                <i className="radio__check-icon"></i>
+                <input type="radio"></input>
+              </div>
+            </li>
+            <li
+              className="payment__item border__botton-divider flex flex-middle flex-space-between"
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY)}
+            >
+              <figure className="payment__image-container">
+                <img src="/img/payment-banking.png"></img>
+              </figure>
+              <label className="payment__name font-weight-bold">Online Banking</label>
+              <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
                 <input type="radio"></input>
               </div>
@@ -112,16 +124,20 @@ class Payment extends Component {
                 <input type="radio"></input>
               </div>
             </li>
-            {/*
-            <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
+            <li
+              className="payment__item border__botton-divider flex flex-middle flex-space-between"
+              onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}
+            >
               <figure className="payment__image-container">
-                <img src="/img/logo-boost.png"></img>
+                <img src="/img/payment-boost.png"></img>
               </figure>
+              <label className="payment__name font-weight-bold">Boost</label>
               <div className={`radio ${paymentMethod === Constants.PAYMENT_METHODS.BOOST_PAY ? 'active' : ''}`}>
                 <i className="radio__check-icon"></i>
-                <input type="radio" onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.BOOST_PAY)}></input>
+                <input type="radio"></input>
               </div>
             </li>
+            {/*
             <li className="payment__item border__botton-divider flex flex-middle flex-space-between">
               <figure className="payment__image-container">
                 <img src="/img/logo-bigpay.png"></img>
