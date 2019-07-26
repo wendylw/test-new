@@ -51,8 +51,10 @@ class Scanner extends Component {
       if (navigator.mediaDevices.getUserMedia) {
         //QQ browser do not support
         if (navigator.userAgent.indexOf('MQQBrowser') > -1) {
-          alert("Sorry, your browser doesn't support this feature");
+          MediaErr('Browser error');
           return false;
+        } else if (navigator.userAgent.indexOf('Xiaomi') > -1) {
+          MediaErr('Browser error')
         }
 
         navigator.mediaDevices.getUserMedia(videoObj)
