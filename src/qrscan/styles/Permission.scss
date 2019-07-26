@@ -9,18 +9,44 @@
   display: flex;
 }
 
+//header style start
 .content-header {
   height: 50px;
   position: fixed;
   top: 0;
   width: 100vw;
 }
+//header style end
 
+//body style start
 .content-body {
   padding: 3vh 4vw 9vh;
   width: 100vw;
-}
 
+  .img-content {
+    image {
+      margin: 0 auto;
+      max-width: 62%;
+    }
+  }
+
+  .logo-img {
+    display: inline-block;
+    margin: 20px 0;
+  }
+  
+  .qr-scanner-img {
+    display: inline-block;
+  }
+
+  .content-body-title {
+    margin: 4vw 0;
+    font-size: 2.4rem;
+  }
+}
+//body style end
+
+//footer style start
 .content-footer {
   padding: 3.8vw;
   position: fixed;
@@ -28,13 +54,12 @@
   width: 100vw;
   box-sizing: border-box;
 
-  button{
+  .button-fill {
+    display: block;
+    text-decoration: none;
     border-radius: 4px;
     font-size: 14px;
     font-weight: 600;
-  }
-
-  .button-fill {
     height: 14vw;
     border: 0;
     line-height: 14vw;
@@ -52,6 +77,7 @@
     width: 100%;
   }
 }
+//footer style end
 
 .text-center {
   text-align: center;

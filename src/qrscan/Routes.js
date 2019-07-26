@@ -1,16 +1,15 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import Constants from './Constants';
 import Scan from './containers/Scan';
-
-
-const BASE_URL = "/qrscan/";
-const ALL_ROUTER = {
-  scan: BASE_URL
-}
+import Permission from './containers/Permission';
+import NotSupport from './containers/NotSupport';
 
 const BasicRoute = () => (
   <Switch>
-    <Route exact path={ALL_ROUTER.scan} component={Scan} />
+    <Route exact path={Constants.ALL_ROUTER.scan} component={Scan} />
+    <Route path={Constants.ALL_ROUTER.permission} component={Permission} />
+    <Route path={Constants.ALL_ROUTER.notSupport} component={NotSupport} />
   </Switch>
 );
 

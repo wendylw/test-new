@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
+import { withRouter } from 'react-router-dom';
+import Constants from '../../Constants';
 
 const processQR = (qrData) => new Promise((resolve, reject) => {
   const data = qrData.trim();
@@ -12,10 +14,6 @@ const processQR = (qrData) => new Promise((resolve, reject) => {
 })
 
 class Scanner extends Component {
-  state = {
-    getPermission: false
-  }
-
   componentDidMount() {
     this.getCamera();
   }
@@ -23,20 +21,32 @@ class Scanner extends Component {
   getCamera() {
     //turn on the camera
     try {
-      const videoObj = { video: {facingMode: "environment"}, audio: false },
+      let that = this;
+
+      const videoObj = { video: { facingMode: "environment" }, audio: false },
         MediaErr = function (error) {
           if (error.name === 'NotAllowedError') {
-            console.log(error.message);
-          }else {
-            if(/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-              alert('Please use Safari');
-            }else if(/android/i.test(navigator.userAgent)) {
-              alert('Please use Chrome');
+            that.props.history.push(Constants.ALL_ROUTER.permission);
+          } else {
+            if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+              this.props.history.push({
+                pathname: Constants.ALL_ROUTER.notSupport,
+                query: { isIOS: true }
+              })
+            } else if (/android/i.test(navigator.userAgent)) {
+              this.props.history.push({
+                pathname: Constants.ALL_ROUTER.notSupport,
+                query: { isIOS: false }
+              })
+            } else {
+              this.props.history.push({
+                pathname: Constants.ALL_ROUTER.notSupport,
+                query: { isIOS: false }
+              })
             }
           }
         };
 
-      let that = this;
       //get mediaDevices, only for（Firefox, Chrome, Opera）
       if (navigator.mediaDevices.getUserMedia) {
         //QQ browser do not support
@@ -87,12 +97,21 @@ class Scanner extends Component {
       }
 
     } catch (e) {
-      if(/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-        alert('Please use Safari');
-      }else if(/android/i.test(navigator.userAgent)) {
-        alert('Please use Chrome');
-      }else {
-        alert('Please use Chrome');
+      if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+        this.props.history.push({
+          pathname: Constants.ALL_ROUTER.notSupport,
+          query: { isIOS: true }
+        })
+      } else if (/android/i.test(navigator.userAgent)) {
+        this.props.history.push({
+          pathname: Constants.ALL_ROUTER.notSupport,
+          query: { isIOS: false }
+        })
+      } else {
+        this.props.history.push({
+          pathname: Constants.ALL_ROUTER.notSupport,
+          query: { isIOS: false }
+        })
       }
     }
   }
@@ -133,14 +152,9 @@ class Scanner extends Component {
     this.getQRCode(video, canvas, context);
   }
 
-  getPermissionAgain() {
-    window.location.reload();
-  }
-
   render() {
-    let main = null;
-    if (this.state.getPermission) {
-      main =
+    return (
+      <div>
         <div id="contentHolder">
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
           <canvas className="canvas-content" ref="canvas"></canvas>
@@ -154,35 +168,9 @@ class Scanner extends Component {
           </div>
           <br />
         </div>
-    } else {
-      main =
-        <div className="content-contenter">
-          <div className="content-header">
-
-          </div>
-
-          <div className="content-body text-center">
-            <div className="img-content">
-              <img className="logo-img" src="/img/beep-logo.png" alt="" />
-              <br />
-              <img className="qr-scanner-img" src="/img/beep-qrscan.png" alt="" />
-            </div>
-          </div>
-
-          <div className="content-footer">
-            <button className="text-center button-fill button-shadow button-main" onClick={this.getPermissionAgain}>
-              SCAN QR CODE
-            </button>
-          </div>
-        </div>
-    }
-
-    return (
-      <div>
-        {main}
       </div>
     );
   }
 }
 
-export default Scanner;
+export default withRouter(Scanner);
