@@ -15,6 +15,10 @@ const processQR = (qrData) => new Promise((resolve, reject) => {
 
 class Scanner extends Component {
   componentDidMount() {
+    this.props.history.push({
+      pathname: Constants.ALL_ROUTER.notSupport,
+      state: { isIOS: true }
+    })
     this.getCamera();
   }
 
@@ -26,22 +30,22 @@ class Scanner extends Component {
       const videoObj = { video: { facingMode: "environment" }, audio: false },
         MediaErr = function (error) {
           if (error.name === 'NotAllowedError') {
-            that.props.history.push(Constants.ALL_ROUTER.permission);
+            // that.props.history.push(Constants.ALL_ROUTER.permission);
           } else {
             if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
               this.props.history.push({
                 pathname: Constants.ALL_ROUTER.notSupport,
-                query: { isIOS: true }
+                state: { isIOS: true }
               })
             } else if (/android/i.test(navigator.userAgent)) {
               this.props.history.push({
                 pathname: Constants.ALL_ROUTER.notSupport,
-                query: { isIOS: false }
+                state: { isIOS: false }
               })
             } else {
               this.props.history.push({
                 pathname: Constants.ALL_ROUTER.notSupport,
-                query: { isIOS: false }
+                state: { isIOS: false }
               })
             }
           }
@@ -100,17 +104,17 @@ class Scanner extends Component {
       if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
-          query: { isIOS: true }
+          state: { isIOS: true }
         })
       } else if (/android/i.test(navigator.userAgent)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
-          query: { isIOS: false }
+          state: { isIOS: false }
         })
       } else {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
-          query: { isIOS: false }
+          state: { isIOS: false }
         })
       }
     }

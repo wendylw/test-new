@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 
 class Sorry extends Component {
-  state = {
-    isIOS: this.props.location.query.isIOS,
-  }
-
-
-
   render() {
     let sorryText;
-    if (this.state.isIOS) {
-      sorryText = <p>Please open beepit.co in Safari</p>;
+    if (this.props.location.state.isIOS) {
+      sorryText = <p>Please open beepit.co in <span className="text-bold">Safari</span></p>;
     } else {
-      sorryText = <p>Please open beepit.co in Google Chrome</p>
+      sorryText = <p>Please open beepit.co in <span className="text-bold">Google Chrome</span></p>
     }
 
     return (
@@ -23,19 +18,16 @@ class Sorry extends Component {
           <div className="content-body text-center">
             <div className="img-content">
               <img className="logo-img" src="/img/beep-warning.png" alt="" />
-              <h2>Unsupported Browser</h2>
-              {this.props.location.query.isIOS}
-
+              <h2 className="body-title">Unsupported Browser</h2>
+              {sorryText}
             </div>
           </div>
 
-          <div className="content-footer">
-            {sorryText}
-          </div>
+          <div className="content-footer"></div>
         </div>
       </div>
     );
   }
 }
 
-export default Sorry;
+export default withRouter(Sorry);

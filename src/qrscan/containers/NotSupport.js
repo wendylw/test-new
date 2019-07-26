@@ -5,9 +5,7 @@ class NotSupport extends Component {
   render() {
     return (
       <div>
-        <div className="img-content">
-          <Sorry />
-        </div>
+        <Sorry />
       </div>
     );
   }
