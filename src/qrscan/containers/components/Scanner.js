@@ -53,8 +53,6 @@ class Scanner extends Component {
         if (navigator.userAgent.indexOf('MQQBrowser') > -1) {
           MediaErr('Browser error');
           return false;
-        } else if (navigator.userAgent.indexOf('Xiaomi') > -1) {
-          MediaErr('Browser error')
         }
 
         navigator.mediaDevices.getUserMedia(videoObj)

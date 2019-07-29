@@ -1,7 +1,7 @@
 const BASE_URL = "/qrscan/";
 const ALL_ROUTER = {
-  scan: BASE_URL,
-  permission: BASE_URL + 'permission',
+  scan: BASE_URL + 'scan',
+  permission: BASE_URL,
   notSupport: BASE_URL + 'notsupport',
 }
 
