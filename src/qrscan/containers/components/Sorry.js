@@ -5,12 +5,15 @@ import Constants from '../../Constants';
 class Sorry extends Component {
   render() {
     let sorryText;
-    if (this.props.location.state.isIOS) {
-      sorryText = <p>Please open beepit.co in <span className="text-bold">Safari</span></p>;
-    } else if(this.props.location.state.isIOS === false){
-      sorryText = <p>Please open beepit.co in <span className="text-bold">Google Chrome</span></p>
-    } else{
-      this.props.history.push(Constants.ALL_ROUTER.scan)
+
+    if(this.props.location.state) {
+      if (this.props.location.state.isIOS) {
+        sorryText = <p>Please open beepit.co in <span className="text-bold">Safari</span></p>;
+      } else {
+        sorryText = <p>Please open beepit.co in <span className="text-bold">Google Chrome</span></p>
+      }
+    }else{
+      this.props.history.push(Constants.ALL_ROUTER.permission)
     }
 
     return (
