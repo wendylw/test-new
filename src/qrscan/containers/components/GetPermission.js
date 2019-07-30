@@ -17,7 +17,7 @@ class GetPermission extends Component {
           </div>
 
           <div className="content-footer">
-            <a className="text-center content-footer__button-fill content-footer__button-shadow content-footer__button-main" href={Constants.ALL_ROUTER.scan}>
+            <a className="text-center content-footer__button-fill content-footer__button-shadow content-footer__button-main" href={Constants.BASE_URL + Constants.ALL_ROUTER.scan}>
               SCAN QR CODE
             </a>
           </div>
