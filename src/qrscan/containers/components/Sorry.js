@@ -19,9 +19,9 @@ class Sorry extends Component {
           <div className="content-header"></div>
 
           <div className="content-body text-center">
-            <div className="img-content">
-              <img className="logo-img" src="/img/beep-warning.png" alt="" />
-              <h2 className="body-title">Unsupported Browser</h2>
+            <div className="content-body__img-content">
+              <img className="content-body__logo-img" src="/img/beep-warning.png" alt="" />
+              <h2 className="content-body__body-title">Unsupported Browser</h2>
               {sorryText}
             </div>
           </div>

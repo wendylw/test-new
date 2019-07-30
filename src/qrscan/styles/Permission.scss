@@ -23,28 +23,23 @@
   padding: 3vh 4vw 9vh;
   width: 100vw;
 
-  .img-content {
+  &__img-content {
     image {
       margin: 0 auto;
       max-width: 62%;
     }
   }
 
-  .logo-img {
+  &__logo-img {
     display: inline-block;
     margin: 20px 0;
   }
   
-  .qr-scanner-img {
+  &__qr-scanner-img {
     display: inline-block;
   }
 
-  .content-body-title {
-    margin: 4vw 0;
-    font-size: 2.4rem;
-  }
-
-  .body-title{
+  &__body-title {
     font-size: 30px;
     font-weight: 200;
   }
@@ -59,7 +54,7 @@
   width: 100vw;
   box-sizing: border-box;
 
-  .button-fill {
+  &__button-fill {
     display: block;
     text-decoration: none;
     border-radius: 4px;
@@ -70,13 +65,13 @@
     line-height: 14vw;
   }
 
-  .button-shadow {
+  &__button-shadow {
     -moz-box-shadow: 0px 1px 1px #777777;
     -webkit-box-shadow: 0px 1px 1px #777777;
     box-shadow: 0px 1px 1px #777777;
   }
 
-  .button-main {
+  &__button-main {
     background-color: #FF9419;
     color: white;
     width: 100%;

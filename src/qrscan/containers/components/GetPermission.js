@@ -9,15 +9,15 @@ class GetPermission extends Component {
           <div className="content-header"></div>
 
           <div className="content-body text-center">
-            <div className="img-content">
-              <img className="logo-img" src="/img/beep-logo.png" alt="" />
+            <div className="content-body__img-content">
+              <img className="content-body__logo-img" src="/img/beep-logo.png" alt="" />
               <br />
-              <img className="qr-scanner-img" src="/img/beep-qrscan.png" alt="" />
+              <img className="content-body__qr-scanner-img" src="/img/beep-qrscan.png" alt="" />
             </div>
           </div>
 
           <div className="content-footer">
-            <a className="text-center button-fill button-shadow button-main" href={Constants.ALL_ROUTER.scan}>
+            <a className="text-center content-footer__button-fill content-footer__button-shadow content-footer__button-main" href={Constants.ALL_ROUTER.scan}>
               SCAN QR CODE
             </a>
           </div>
