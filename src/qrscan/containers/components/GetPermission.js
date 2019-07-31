@@ -6,7 +6,7 @@ class GetPermission extends Component {
   render() {
     let ua = navigator.userAgent.toLowerCase();
     if (/(iphone|ipad|ipod|ios)/i.test(ua)) {
-      if (/chrome/i.test(ua) && /webkit/i.test(ua) && /mozilla/i.test(ua)) {
+      if (/chrome/i.test(ua) && /safari/i.test(ua)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
           state: { isIOS: true }
