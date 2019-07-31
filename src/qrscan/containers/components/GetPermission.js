@@ -5,12 +5,13 @@ import { withRouter } from 'react-router-dom';
 class GetPermission extends Component {
   componentWillMount() {
     let ua = navigator.userAgent.toLowerCase();
-    console.log('changed');
     if (/(iphone|ipad|ipod|ios)/i.test(ua)) {
-      this.props.history.push({
-        pathname: Constants.ALL_ROUTER.notSupport,
-        state: { isIOS: true }
-      })
+      if (ua.includes('chrome')) {
+        this.props.history.push({
+          pathname: Constants.ALL_ROUTER.notSupport,
+          state: { isIOS: true }
+        })
+      }
     }
   }
 
