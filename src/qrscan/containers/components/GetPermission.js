@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 class GetPermission extends Component {
   render() {
     let ua = navigator.userAgent.toLowerCase();
-    if (/(iPhone|iPad|iPod|iOS)/i.test(ua)) {
+    if (/(iphone|ipad|ipod|ios)/i.test(ua)) {
       if (/chrome/i.test(ua) && /webkit/i.test(ua) && /mozilla/i.test(ua)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
