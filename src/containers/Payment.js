@@ -18,7 +18,7 @@ class Payment extends Component {
   form = null;
 
   state = {
-    paymentMethod: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
+    paymentMethod: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
     payNowLoading: false,
     order: null,
     fire: false,
@@ -95,7 +95,6 @@ class Payment extends Component {
             <li
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
               onClick={this.savePaymentMethod.bind(this, Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY)}
-              style={{ display: 'none' }}
             >
               <figure className="payment__image-container">
                 <img src="/img/payment-banking.png"></img>
