@@ -14,7 +14,7 @@ const ROUTER_PATHS = {
   PORDUCTS: '/ordering/products',
   CART: '/ordering/cart',
   PAYMENT: '/ordering/payment',
-  BANK_CARD_PAYMENT: '/ordering/payment/bankcard',
+  CREDIT_CARD_PAYMENT: '/ordering/payment/creditcard',
   THANK_YOU: '/ordering/thank-you',
   SORRY: '/ordering/sorry',
   PLAYGROUND: 'playground',
@@ -23,6 +23,7 @@ const ROUTER_PATHS = {
   CASHBACK_HOME: '/loyalty/',
   CASHBACK_CLAIM: '/loyalty/claim',
   CASHBACK_ERROR: '/loyalty/error',
+  QRSCAN: '/qrscan', // App basename
 };
 
 const CASHBACK_SOURCE = {
@@ -35,7 +36,7 @@ const DOCUMENT_TITLE = {
   HOME: 'Home',
   CART: 'Cart',
   PAYMENT: 'Payment',
-  BANK_CARD_PAYMENT: 'Payment via Card',
+  CREDIT_CARD_PAYMENT: 'Payment via Card',
   THANK_YOU: 'Payment Success',
   SORRY: 'Payment Failed',
   ERROR: 'Error',
@@ -43,8 +44,9 @@ const DOCUMENT_TITLE = {
 };
 
 const PAYMENT_METHODS = {
+  CREDIT_CARD_PAY: 'BrainTree',
+  ONLINE_BANKING_PAY: 'CCPP',
   GRAB_PAY: 'GrabPay',
-  CARD_PAY: '2P2C_PAY',
   BOOST_PAY: 'Boost',
 };
 

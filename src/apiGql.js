@@ -278,6 +278,11 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
+/* revert
+* $additionalComments: String,
+* additionalComments: $additionalComments,
+* when release BEEP-1
+*/
 apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,
