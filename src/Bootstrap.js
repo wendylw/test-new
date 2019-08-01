@@ -16,6 +16,11 @@ const AsyncCashbackApp = Loadable({
   loading: Loading,
 })
 
+const AsyncQRScanner = Loadable({
+  loader: () => import("./qrscan"),
+  loading: Loading,
+})
+
 const AsyncStoresApp = Loadable({
   loader: () => import("./containers/Stores/index"),
   loading: Loading,
@@ -31,9 +36,12 @@ class Bootstrap extends Component {
     return (
       <React.Fragment>
         <Switch>
-          <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
-          <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
           <Route exact path={Constants.ROUTER_PATHS.INDEX} render={(...args) => {
+            if (isQRScannerApp()) {
+              return (
+                <Redirect to={Constants.ROUTER_PATHS.QRSCAN} />
+              );
+            }
             // goto stores when visit home page without scaning QR Code.
             if (!Utils.getQueryString('h')) {
               return <AsyncStoresApp />
@@ -43,11 +51,18 @@ class Bootstrap extends Component {
               <Redirect to={Constants.ROUTER_PATHS.ORDERING} />
             );
           }} />
+          <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
+          <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
+          <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
           <Route component={AsyncNotFound} />
         </Switch>
       </React.Fragment>
     );
   }
+}
+
+const isQRScannerApp = () => {
+  return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
 }
 
 export default Bootstrap;
