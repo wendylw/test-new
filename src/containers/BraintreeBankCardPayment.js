@@ -334,10 +334,11 @@ class BankCardPayment extends Component {
 
 					hostedFieldsInstance.tokenize(function (err, payload) {
 						that.checkFieldsEmpty();
+						const { card } = that.state;
 
 						if (err) {
 							console.error(err);
-						} else {
+						} else if (Boolean(card.cardHolderName)) {
 							that.setState({
 								nonce: payload.nonce,
 								payNowLoading: true,
@@ -354,12 +355,33 @@ class BankCardPayment extends Component {
 	handleChangeCardHolderName(e) {
 		const { card } = this.state;
 		let newCard = card;
+		let invalidTypeOptions = { field: INVALID_CARDINFO_FIELDS.cardHolderName };
+
+		if (!Boolean(e.target.value)) {
+			invalidTypeOptions = Object.assign({},
+				invalidTypeOptions,
+				{ type: 'required' }
+			);
+		}
+
+		this.setCardInfoInvalidTypes(invalidTypeOptions, Boolean(e.target.value));
+		this.setCardInfoInvalidField(INVALID_CARDINFO_FIELDS.cardHolderName, Boolean(e.target.value));
 
 		this.setState({
 			card: Object.assign({}, newCard, {
 				cardHolderName: e.target.value
 			}),
 		});
+	}
+
+	handleSubmitForm(e) {
+		e.preventDefault();
+
+		const event = document.createEvent('HTMLEvents');
+		const submitButtonEl = document.getElementById('submitButton');
+
+		event.initEvent('click', true, false);
+		submitButtonEl.dispatchEvent(event);
 	}
 
 	renderMain() {
@@ -418,7 +440,7 @@ class BankCardPayment extends Component {
 										currency={currency}
 									/>
 
-									<form id="bank-2c2p-form" className="form">
+									<form id="bank-2c2p-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
 										<div className="payment-bank__form-item">
 											<div className="flex flex-middle flex-space-between">
 												<label className="payment-bank__label font-weight-bold">Card information</label>
