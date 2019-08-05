@@ -122,8 +122,8 @@ class Scanner extends Component {
       const imageHeight = video.videoHeight;
 
       canvas.width = imageWidth;
-      canvas.height = imageWidth;
-      context.drawImage(video, 0, 0, imageWidth, imageHeight);
+      canvas.height = imageHeight;
+      context.drawImage(video, imageWidth/2 - 100, imageHeight/2 - 100, 200, 200, 0, 0, imageWidth, imageHeight);
 
       let qr = new QrcodeDecoder();
 
@@ -174,3 +174,4 @@ class Scanner extends Component {
 }
 
 export default withRouter(Scanner);
+
