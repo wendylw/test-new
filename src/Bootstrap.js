@@ -26,6 +26,11 @@ const AsyncStoresApp = Loadable({
   loading: Loading,
 })
 
+const AsyncReduxDemo = Loadable({
+  loader: () => import("./ordering-demo/index"),
+  loading: Loading,
+})
+
 const AsyncNotFound = Loadable({
   loader: () => import("./containers/NotFound"),
   loading: Loading,
@@ -36,6 +41,7 @@ class Bootstrap extends Component {
     return (
       <React.Fragment>
         <Switch>
+          <Route path='/ordering-demo' component={AsyncReduxDemo} />
           <Route exact path={Constants.ROUTER_PATHS.INDEX} render={(...args) => {
             if (isQRScannerApp()) {
               return (
