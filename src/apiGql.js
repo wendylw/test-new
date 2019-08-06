@@ -7,6 +7,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
   fragment ShoppingCartItem on shoppingCartItem {
     id
     productId
+    parentProductId
     title
     variationTexts
     variations {

@@ -15,7 +15,7 @@ export default compose(
   graphql(apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM, {
     name: 'addOrUpdateShoppingCartItem',
     options: {
-      refetchQueries: [ 'ShoppingCart' ],
+      refetchQueries: ['ShoppingCart'],
     },
   }),
 )(ProductDetailsComponent);
