@@ -159,6 +159,8 @@ class Scanner extends Component {
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
           <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
+            <img className="viedo-cover__logo" src="/img/Shape.png" alt=""/>
+            <span className="viedo-cover__tips">Align the QR code within the frame to scan</span>
             <div className="qrcode">
               <div></div>
               <div></div>
