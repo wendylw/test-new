@@ -44,6 +44,7 @@
   height: 200px;
   background-color: transparent;
   position: relative;
+  //use border to make a transparency scanner area square and marsk aroung the square
   border-bottom: solid calc(50vh - 100px) rgba(77,77,77,0.5);
   border-top: solid calc(50vh - 100px) rgba(77,77,77,0.5);
   border-right: solid calc(50vw - 100px) rgba(77,77,77,0.5);
