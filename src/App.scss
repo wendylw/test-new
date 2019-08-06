@@ -302,6 +302,12 @@ form {
   justify-content: space-between;
 }
 
+.flex-end {
+  -ms-flex-pack: justify;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
 .flex-column {
   -ms-flex-direction: column;
   -webkit-flex-direction: column;
@@ -706,7 +712,6 @@ form {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center center;
-    overflow: hidden;
 
     &:before {
       @extend .w-h-same;
@@ -949,8 +954,8 @@ form {
   transform: translateY(100%);
   -webkit-transform: translateY(100%);
 
-  transition: transform 0.4s;
-  -webkit-transition: -webkit-transform 0.4s;
+  transition: transform 0.3s;
+  -webkit-transition: transform 0.3s;
 }
 
 .aside-content {
@@ -964,31 +969,30 @@ form {
 .aside {
   @extend .back-drop;
 
+  display: block;
   top: 50px;
+  bottom: 21.6vw;
+  opacity: 0;
+  z-index: -100;
 
-  > .cart-pane,
-  > .nav-pane,
-  > .product-detail {
-    transition: transform 0.4s;
-  }
-
-  &__product-detail {
-    z-index: 300;
-  }
+  transition: opacity 0.01s 0.3s, z-index 0.01s 0.3s;
+  -webkit-transition: opacity 0.01s 0.3s, z-index 0.01s 0.3s;
 
   &__section-container {
     padding: 4vw;
   }
 
-  &__fix-bottom {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: $white;
+  &__product-detail {
+    display: -webkit-flex;
+    display: flex;
   }
 
   &.active {
-    display: block;
+    opacity: 1;
+    z-index: 100;
+
+    transition: opacity 0.01s, z-index 0.01s;
+    -webkit-transition: opacity 0.01s, z-index 0.01s;
 
     > .cart-pane,
     > .nav-pane,
@@ -1004,7 +1008,6 @@ form {
   @extend .animation__slide-up;
 
   position: absolute;
-  padding: 0 0 21.6vw;
   bottom: 0;
   width: 100%;
   max-height: 60%;
@@ -1035,7 +1038,7 @@ form {
 
   position: absolute;
   bottom: 0;
-  padding: 15px 0 21.6vw;
+  padding: 15px 0;
   max-height: 80%;
   width: 100%;
 
@@ -1058,16 +1061,16 @@ form {
   @extend .aside-content;
   @extend .animation__slide-up;
 
-  position: absolute;
   bottom: 0;
-  padding: 0 0 22vw + 26.8vw;
   width: 100%;
-  max-height: 80%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  max-height: 90%;
+  overflow-y: hidden;
 
-  &__options-category {
+  &__options-container {
     padding: 4vw;
+    max-height: 30vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   &__options ~ &__options {
@@ -1599,6 +1602,7 @@ main > section.hide {
 }
 
 body.loading {
+  .aside,
   .cartpane,
   .nav-pane,
   .product-detail {
