@@ -122,8 +122,8 @@ class Scanner extends Component {
       const imageHeight = video.videoHeight;
 
       canvas.width = imageWidth;
-      canvas.height = imageWidth;
-      context.drawImage(video, 0, 0, imageWidth, imageHeight);
+      canvas.height = imageHeight;
+      context.drawImage(video, imageWidth/2 - 100, imageHeight/2 - 100, 200, 200, 0, 0, imageWidth, imageHeight);
 
       let qr = new QrcodeDecoder();
 
@@ -159,6 +159,8 @@ class Scanner extends Component {
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
           <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
+            <img className="viedo-cover__logo" src="/img/Shape.png" alt=""/>
+            <span className="viedo-cover__tips">Align the QR code within the frame to scan</span>
             <div className="qrcode">
               <div></div>
               <div></div>
@@ -174,3 +176,4 @@ class Scanner extends Component {
 }
 
 export default withRouter(Scanner);
+

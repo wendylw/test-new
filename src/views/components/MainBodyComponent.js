@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { onlineCategoryMergedShoppingCartType, onlineCategoryType, shoppingCartType } from '../propTypes';
-import { ScrollObservable, ScrollObserver, getCurrentScrollName } from './ScrollComponents';
+import {
+  onlineCategoryMergedShoppingCartType,
+  onlineCategoryType,
+  shoppingCartType,
+} from '../propTypes';
+import {
+  ScrollObservable,
+  ScrollObserver,
+  getCurrentScrollName,
+} from './ScrollComponents';
 import Tag from '../../components/Tag';
 import Item from '../../components/Item';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -9,6 +17,7 @@ import ItemOperator from '../../components/ItemOperator';
 import config from '../../config';
 import Constants from '../../Constants';
 
+const { PRODUCT } = Constants.HOME_ASIDE_NAMES;
 
 export class MainBodyComponent extends Component {
   state = {
@@ -16,7 +25,13 @@ export class MainBodyComponent extends Component {
   };
 
   handleDecreaseProduct(prod) {
-    const cartItem = prod.cartItems.find(item => item.productId === prod.id);
+    const { shoppingCart } = this.props;
+
+    if (!shoppingCart) {
+      return;
+    }
+
+    const cartItem = (shoppingCart.items || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
 
     if (prod.cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
       this.props.removeShoppingCartItem({
@@ -25,7 +40,6 @@ export class MainBodyComponent extends Component {
           variations: cartItem.variations,
         }
       });
-
       return;
     }
 
@@ -33,19 +47,23 @@ export class MainBodyComponent extends Component {
       variables: {
         action: 'edit',
         business: config.business,
-        productId: prod.id,
+        productId: cartItem.productId,
         quantity: prod.cartQuantity - 1,
-        variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [], // product has only one child products in cart
+        variations: cartItem.variations || [], // product has only one child products in cart
       }
     });
   }
 
   handleIncreaseProduct(prod) {
-    const { history } = this.props;
-    const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id);
+    const { toggleAside } = this.props;
+    const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
 
     if (prod.variations && prod.variations.length) {
-      history.push(`${Constants.ROUTER_PATHS.PORDUCTS}/${prod.id}`);
+      toggleAside({
+        asideName: PRODUCT,
+        product: prod
+      });
+
       return;
     }
 
@@ -148,6 +166,7 @@ export class MainBodyComponent extends Component {
 }
 
 MainBodyComponent.propTypes = {
+  toggleAside: PropTypes.func,
   onlineCategory: onlineCategoryType,
   shoppingCart: shoppingCartType,
   onlineCategoryMergedShoppingCart: onlineCategoryMergedShoppingCartType,
@@ -156,6 +175,7 @@ MainBodyComponent.propTypes = {
 };
 
 MainBodyComponent.defaultProps = {
+  toggleAside: () => { },
   removeShoppingCartItem: () => { },
   addOrUpdateShoppingCartItem: () => { },
 };

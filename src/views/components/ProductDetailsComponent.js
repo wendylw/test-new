@@ -1,5 +1,8 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
+import { shoppingCartType } from '../propTypes';
+
 import Item from '../../components/Item';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import ItemOperator from '../../components/ItemOperator';
@@ -9,176 +12,228 @@ import Constants from '../../Constants';
 import Aside from './Aside';
 import Utils from '../../libs/utils';
 
+const { PRODUCT } = Constants.HOME_ASIDE_NAMES;
+const VARIATION_TYPES = {
+  SINGLE_CHOICE: 'SingleChoice',
+  MULTIPLE_CHOICE: 'MultipleChoice',
+};
+const EXECLUDE_KEYS = ['variationType'];
+
 export class ProductDetailsComponent extends Component {
+  currentProductId = null;
+  productEl = null;
+  asideEl = null;
+
   state = {
-    active: false,
-    mergedProduct: null,
-    variationsByIdMap: {}, // Object<VariationId, Array<[VariationId, OptionId]>>
+    variationsByIdMap: {}, // Object<VariationId: Object<variationType, OptionId:option >>
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
   };
 
-  displayPrice() {
-    const { product } = this.props;
-    const { childrenMap, unitPrice, onlineUnitPrice } = product;
+  componentWillReceiveProps(nextProps) {
+    const { product } = nextProps;
+    let newMap = {};
 
-    const variationNames = this.getVariationNames();
-
-    const childProduct = childrenMap.find(({ variation }) => (
-      variation.sort().toString() === variationNames.sort().toString()
-    ));
-
-    let displayPrice = childProduct ? childProduct.displayPrice : product.displayPrice;
-    const diffPriceArr = this.getVariationPriceDiffs();
-
-    if (diffPriceArr.length) {
-      displayPrice = (displayPrice || onlineUnitPrice || unitPrice) + diffPriceArr.reduce((total, diff) => total + diff, 0);
+    if (!product || !product.variations) {
+      return;
     }
 
-    return displayPrice;
+    if ((!this.product && product) || (product.id !== this.product.id)) {
+
+      product.variations.forEach(variation => {
+        if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+          newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, variation.optionValues[0]));
+        }
+      });
+
+      this.currentProductId = product.id
+
+      this.setState({
+        variationsByIdMap: newMap,
+        cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
+      });
+    }
   }
 
-  componentDidMount() {
-    this.setState({ active: true });
+  getVariationsMaxHeight() {
+    if (!this.asideEl || !this.productEl) {
+      return null;
+    }
+
+    const asideHeight = ReactDOM.findDOMNode(this.asideEl).clientHeight;
+    const productHeight = ReactDOM.findDOMNode(this.productEl).clientHeight;
+
+    return `${(asideHeight * 0.9 - productHeight).toFixed(4)}px`;
   }
 
-  componentWillUnmount() {
-    this.setState({ active: false });
+  shouldComponentUpdate(nextProps) {
+    const { currentAside } = nextProps;
+
+    return currentAside === PRODUCT;
+  }
+
+  displayPrice() {
+    const { product } = this.props;
+    const {
+      childrenMap,
+      unitPrice,
+      onlineUnitPrice,
+      displayPrice
+    } = product || {};
+    const { variationsByIdMap } = this.state;
+    const selectedValues = [];
+    let totalPriceDiff = 0;
+
+    Object.values(variationsByIdMap).forEach(function (options) {
+      Object.values(options).forEach(item => {
+        if (item.value) {
+          totalPriceDiff += item.priceDiff;
+
+          selectedValues.push(item.value);
+        }
+      });
+    });
+
+    const childProduct = (childrenMap || []).find(({ variation }) => (
+      variation.sort().toString() === selectedValues.sort().toString()
+    ));
+
+    if (childProduct) {
+      this.currentProductId = childProduct.childId;
+
+      return childProduct.displayPrice;
+    }
+
+    let price = displayPrice || unitPrice || onlineUnitPrice;
+
+    return price + totalPriceDiff;
   }
 
   isSubmitable() {
-    const { cartQuantity, variationsByIdMap } = this.state;
-    const singleChoiceVariations = this.getSingleChoiceVariations();
+    const {
+      cartQuantity,
+      variationsByIdMap,
+    } = this.state;
+    const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
 
     // check: cart should not empty
     let submitable = cartQuantity > 0;
 
     // check: if product has single variants, then they should be all selected.
     if (singleChoiceVariations.length > 0) {
-      submitable = submitable && this.getVariationsValue().length > 0 && singleChoiceVariations.filter(
-        v => (variationsByIdMap[v.id] || []).length > 0
-      ).length === singleChoiceVariations.length;
+      const selectedAllSingleChoice = !singleChoiceVariations.find(variation => !Object.keys(variationsByIdMap).includes(variation.id));
+
+      submitable = submitable && Object.values(variationsByIdMap).length > 0 && selectedAllSingleChoice;
     }
 
     return submitable;
   }
 
-  getSingleChoiceVariations() {
-    const { variations } = this.props.product || {};
-    return Array.isArray(variations)
-      ? variations.filter(v => v.variationType === 'SingleChoice')
-      : [];
+  getNewVariationsByIdMap(variation, option) {
+    const newMap = {};
+
+    if (!newMap[variation.id] || variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+      newMap[variation.id] = {
+        variationType: variation.variationType
+      }
+    }
+
+    if (!newMap[variation.id][option.id]) {
+      newMap[variation.id][option.id] = {
+        priceDiff: option.priceDiff,
+        value: option.value,
+      };
+    }
+
+    return newMap;
   }
 
-  getMultipleChoiceVariations() {
-    const { variations } = this.props.product || {};
-    return Array.isArray(variations)
-      ? variations.filter(v => v.variationType === 'MultipleChoice')
-      : [];
-  }
-
-  setVariationsByIdMap(variationId, variationAndOptionById) {
-    const newState = {
-      variationsByIdMap: this.state.variationsByIdMap,
-    };
-
-    // don't know why, but just found that set values to this.state
-    // can avoid another call issue in an extremely shot time.
-    // which case is about auto select first SingleChoice variations.
-    newState.variationsByIdMap[variationId] = variationAndOptionById;
-
-    this.setState(newState);
-  }
-
-  getVariationsValue() {
+  setVariationsByIdMap(variation, option) {
     const { variationsByIdMap } = this.state;
-    return Object.values(variationsByIdMap).reduce((ret, arr) => [...ret, ...arr], []);
+    const newMap = Object.assign({}, variationsByIdMap, this.getNewVariationsByIdMap(variation, option));
+
+    this.setState({ variationsByIdMap: newMap });
   }
 
-  getVariationOptionValuesWithFieldOnly(field) {
-    const { product } = this.props;
-    const variations = this.getVariationsValue();
-    return variations.map(({ variationId, optionId }) => {
-      const variation = product.variations.find(v => v.id === variationId);
-      const optionValue = variation.optionValues.find(o => o.id === optionId);
-      return optionValue[field];
-    })
+  getChoiceVariations(type) {
+    const { variations } = this.props.product || {};
+
+    return Array.isArray(variations)
+      ? variations.filter(v => v.variationType === type)
+      : [];
   }
 
-  getVariationNames() {
-    return this.getVariationOptionValuesWithFieldOnly('value');
-  }
+  renderVriations() {
+    const { variations } = this.props.product || {};
 
-  getVariationPriceDiffs() {
-    return this.getVariationOptionValuesWithFieldOnly('priceDiff');
-  }
+    if (!variations || !variations.length) {
+      return null;
+    }
 
-  hide() {
-    const { history } = this.props;
-    history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);;
+    const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
+    const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
+
+    return (
+      <ol className="product-detail__options-category">
+        {
+          singleChoiceVariations.map(variation => (
+            <VariationSelectorComponent
+              key={variation.id}
+              variation={variation}
+              onChange={this.setVariationsByIdMap.bind(this)}
+            />
+          ))
+        }
+        {
+          multipleChoiceVariations.map(variation => (
+            <VariationSelectorComponent
+              key={variation.id}
+              variation={variation}
+              onChange={this.setVariationsByIdMap.bind(this)}
+            />
+          ))
+        }
+      </ol>
+    );
   }
 
   render() {
     const {
+      active,
       product,
+      toggleAside,
       onlineStoreInfo,
     } = this.props;
-    const { cartQuantity, variationsByIdMap } = this.state;
     const {
       locale,
       currency,
     } = onlineStoreInfo || {};
-
-    if (!product) {
-      return null;
-    }
-
-    console.log('variationsByIdMap =>', variationsByIdMap);
-
-    const { id: productId, images, title } = product;
+    const { cartQuantity } = this.state;
+    const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
     return (
-      <Aside active={this.state.active} className={`aside aside__product-detail`} onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          this.hide();
-        }
-      }}>
-        <>
-          <div className="product-detail">
-            {
-              this.getSingleChoiceVariations().length ? (
-                <ol className="product-detail__options-category">
-                  {
-                    this.getSingleChoiceVariations().map(variation => (
-                      <VariationSelectorComponent
-                        key={variation.id}
-                        variation={variation}
-                        onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                      />
-                    ))
-                  }
-                </ol>
-              ) : null
-            }
-
-            {
-              this.getMultipleChoiceVariations().length ? (
-                <ol className="product-detail__options-category">
-                  {
-                    this.getMultipleChoiceVariations().map(variation => (
-                      <VariationSelectorComponent
-                        key={variation.id}
-                        variation={variation}
-                        onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                      />
-                    ))
-                  }
-                </ol>
-              ) : null
-            }
+      <Aside
+        ref={ref => this.asideEl = ref}
+        active={active}
+        className="aside__product-detail flex flex-column flex-end"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            toggleAside({ asideName: PRODUCT });
+          }
+        }}
+      >
+        <div className="product-detail">
+          <div
+            className="product-detail__options-container"
+            style={{ maxHeight: this.getVariationsMaxHeight() || '30vh' }}
+          >
+            {this.renderVriations()}
           </div>
 
-          <div className="aside__fix-bottom">
+          <div
+            ref={ref => this.productEl = ref}
+            className="aside__fix-bottom"
+          >
             <Item
               className="aside__section-container border__top-divider"
               contentClassName="flex-middle"
@@ -209,35 +264,48 @@ export class ProductDetailsComponent extends Component {
               <button
                 className="button__fill button__block font-weight-bold"
                 type="button"
-                disabled={!this.isSubmitable() || Utils.isProductSoldOut(product)}
+                disabled={!this.isSubmitable() || Utils.isProductSoldOut(product || {})}
                 onClick={async () => {
-                  const variations = this.getVariationsValue();
+                  const { variationsByIdMap } = this.state;
+                  let variations = [];
+
+                  Object.keys(variationsByIdMap).forEach(function (variationId) {
+                    Object.keys(variationsByIdMap[variationId]).forEach(key => {
+                      if (!EXECLUDE_KEYS.includes(key)) {
+                        variations.push({
+                          variationId,
+                          optionId: key,
+                        });
+                      }
+                    });
+                  });
 
                   if (this.isSubmitable()) {
                     await this.props.addOrUpdateShoppingCartItem({
                       variables: {
                         action: 'add',
                         business: config.business,
-                        productId,
+                        productId: this.currentProductId || productId,
                         quantity: cartQuantity,
                         variations,
                       }
                     });
                   }
 
-                  // close popup and go back home.
-                  this.hide();
+                  toggleAside({ asideName: PRODUCT });
                 }}
               >OK</button>
             </div>
           </div>
-        </>
-      </Aside>
+        </div>
+      </Aside >
     )
   }
 }
 
 ProductDetailsComponent.propTypes = {
+  active: PropTypes.bool,
+  currentAside: PropTypes.string,
   product: PropTypes.shape({
     id: PropTypes.string,
     title: PropTypes.string,
@@ -252,12 +320,16 @@ ProductDetailsComponent.propTypes = {
       })),
     })),
   }),
+  shoppingCart: shoppingCartType,
+  toggleAside: PropTypes.func,
   addOrUpdateShoppingCartItem: PropTypes.func,
 }
 
 ProductDetailsComponent.defaultProps = {
+  active: false,
   product: null,
   shoppingCart: null,
+  toggleAside: () => { },
   addOrUpdateShoppingCartItem: () => { },
 }
 

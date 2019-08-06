@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import { withRouter, Route } from "react-router";
+import { withRouter } from "react-router";
 import { compose } from 'react-apollo';
 import MainTop from '../views/components/MainTop';
 import MainBody from '../views/components/MainBody';
@@ -13,13 +13,21 @@ import MainMenu from '../views/components/MainMenu';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 export class Home extends Component {
-  static propTypes = {
+  state = {
+    asidesStatus: {
+      menu: false,
+      edit: false,
+      product: false,
+    },
+    loaded: false,
+    activeProduct: {},
+    currentAside: null,
+  };
 
-  }
-
-  hideAside() {
-    const { history } = this.props;
-    history.replace(Constants.ROUTER_PATHS.HOME, history.location.state);
+  componentDidMount() {
+    this.setState({
+      loaded: true
+    });
   }
 
   handleAsideClick(e) {
@@ -28,8 +36,30 @@ export class Home extends Component {
     }
   }
 
+  handleToggleAside(options) {
+    const { asidesStatus } = this.state;
+    const newStatus = {
+      menu: false,
+      edit: false,
+      product: false,
+    };
+
+    newStatus[options.asideName] = !asidesStatus[options.asideName];
+    this.setState({
+      asidesStatus: newStatus,
+      activeProduct: options.product || {},
+      currentAside: options.asideName
+    });
+  }
+
   render() {
     const { match } = this.props;
+    const {
+      loaded,
+      currentAside,
+      asidesStatus,
+      activeProduct,
+    } = this.state;
     const hideClassName = [
       Constants.ROUTER_PATHS.HOME,
       Constants.ROUTER_PATHS.PORDUCTS,
@@ -38,28 +68,45 @@ export class Home extends Component {
     return (
       <DocumentTitle title={Constants.DOCUMENT_TITLE.HOME}>
         <section id="table-ordering-home" className={`table-ordering__home ${hideClassName}`}>
-          <MainTop />
-          <MainBody />
+          <MainTop ref={ref => this.header = ref} />
+          <MainBody toggleAside={this.handleToggleAside.bind(this)} />
 
-          <Route
-            path={`${Constants.ROUTER_PATHS.PORDUCTS}/:productId`}
-            exact
-            component={ProductDetails}
-          />
+          {
+            loaded
+              ? (
+                <ProductDetails
+                  active={asidesStatus.product}
+                  currentAside={currentAside}
+                  productId={activeProduct.id}
+                  toggleAside={this.handleToggleAside.bind(this)}
+                />
+              )
+              : null
+          }
 
-          <Route
-            path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/edit`}
-            exact
-            component={ProductsEditCart}
-          />
+          {
+            loaded
+              ? (
+                <ProductsEditCart
+                  active={asidesStatus.edit}
+                  toggleAside={this.handleToggleAside.bind(this)}
+                />
+              )
+              : null
+          }
 
-          <Route
-            path={`${Constants.ROUTER_PATHS.PORDUCTS}/all/menu`}
-            exact
-            component={MainMenu}
-          />
+          {
+            loaded
+              ? (
+                <MainMenu
+                  active={asidesStatus.menu}
+                  toggleAside={this.handleToggleAside.bind(this)}
+                />
+              )
+              : null
+          }
 
-          <FooterOperation />
+          <FooterOperation toggleAside={this.handleToggleAside.bind(this)} />
         </section>
       </DocumentTitle>
     )

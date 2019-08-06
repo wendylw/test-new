@@ -7,11 +7,12 @@ export default options => compose(
   withRouter,
   graphql(apiGql.GET_PRODUCT_DETAIL, {
     name: 'gqlProductDetail',
-    options: ({ match }) => {
+    skip: ownProps => !ownProps.productId,
+    options: ({ productId }) => {
       return ({
         variables: {
           business: config.business,
-          productId: match.params.productId,
+          productId,
         }
       });
     },
