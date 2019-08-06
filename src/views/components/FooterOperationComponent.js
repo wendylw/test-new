@@ -1,33 +1,31 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { shoppingCartType } from '../propTypes';
 import CurrencyNumber from './CurrencyNumber';
 import Constants from '../../Constants';
 import config from '../../config';
 
+const {
+  MENU,
+  EDIT,
+} = Constants.HOME_ASIDE_NAMES;
+
 export class FooterOperationComponent extends Component {
-  static propTypes = {
-    shoppingCart: shoppingCartType,
+  handleToggleAside(asideName) {
+    const { toggleAside } = this.props;
+
+    toggleAside({ asideName });
   }
 
   render() {
-    const { shoppingCart, history } = this.props;
+    const { shoppingCart } = this.props;
     const { subtotal, count } = shoppingCart || {};
     const { table } = config;
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
-        <button className="button menu-button" onClick={() => {
-          const path = `${Constants.ROUTER_PATHS.PORDUCTS}/all/menu`;
-
-          if (history.location.pathname === path) {
-            this.props.history.replace(Constants.ROUTER_PATHS.HOME);
-            return;
-          }
-
-          this.props.history.push(path);
-
-        }}>
+        <button className="button menu-button" onClick={this.handleToggleAside.bind(this, MENU)}>
           <i className="menu">
             <span></span>
             <span></span>
@@ -35,16 +33,7 @@ export class FooterOperationComponent extends Component {
           </i>
         </button>
         <div className="cart-bar has-products flex flex-middle flex-space-between">
-          <button onClick={() => {
-            const path = `${Constants.ROUTER_PATHS.PORDUCTS}/all/edit`;
-
-            if (history.location.pathname === path) {
-              this.props.history.replace(Constants.ROUTER_PATHS.HOME);
-              return;
-            }
-
-            this.props.history.push(path);
-          }}>
+          <button onClick={this.handleToggleAside.bind(this, EDIT)}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
               <img src="/img/icon-cart.svg" alt="cart" />
               <span className="tag__number">{count || 0}</span>
@@ -65,6 +54,11 @@ export class FooterOperationComponent extends Component {
       </footer>
     )
   }
+}
+
+FooterOperationComponent.propTypes = {
+  toggleAside: PropTypes.func,
+  shoppingCart: shoppingCartType,
 }
 
 export default withRouter(FooterOperationComponent);

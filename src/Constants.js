@@ -50,6 +50,12 @@ const PAYMENT_METHODS = {
   BOOST_PAY: 'Boost',
 };
 
+const HOME_ASIDE_NAMES = {
+  MENU: 'menu',
+  EDIT: 'edit',
+  PRODUCT: 'product',
+};
+
 const PLATFORMS_CODE = {
   ECOMMERCE: 1,
   BEEP: 2,
@@ -84,6 +90,7 @@ export default {
   ROUTER_PATHS,
   CASHBACK_SOURCE,
   PAYMENT_METHODS,
+  HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
   PLATFORMS_CODE,
   ADD_TO_CART_MIN_QUANTITY,

@@ -7,18 +7,8 @@ const localState = {
 };
 
 class Aside extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-    active: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    className: '',
-    active: false,
-  };
-
   // Important!! This .root class name is defined by index.js file, they should be the same.
-  rootEl =  document.getElementById(Constants.DOCUMENT_ROOT_ID);
+  rootEl = document.getElementById(Constants.DOCUMENT_ROOT_ID);
 
   componentWillMount() {
     if (this.props.active) {
@@ -63,13 +53,31 @@ class Aside extends Component {
 
   render() {
     const { className, active, children, ...props } = this.props;
+    const classList = [`aside`];
+
+    if (active) {
+      classList.push('active');
+    }
+
+    if (className) {
+      classList.push(className);
+    }
 
     return (
-      <aside className={`aside ${active ? 'active' : ''} ${className}`} {...props}>
+      <aside className={classList.join(' ')} {...props}>
         {children}
       </aside>
     );
   }
 }
+
+Aside.propTypes = {
+  className: PropTypes.string,
+  active: PropTypes.bool,
+};
+
+Aside.defaultProps = {
+  active: false,
+};
 
 export default Aside;

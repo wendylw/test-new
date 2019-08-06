@@ -5,35 +5,53 @@ import withShoppingCart from "./withShoppingCart";
 import Utils from './utils';
 
 
-const mergeWithShoppingCart = (onlineCategory, shoppingCart) => {
+function mergeWithShoppingCart(onlineCategory, shoppingCart) {
   if (!Array.isArray(onlineCategory)) {
     return null;
   }
 
-  onlineCategory.forEach((category) => {
+  const shoppingCartNewSet = {};
+
+  if (shoppingCart) {
+    (shoppingCart.items || []).forEach(item => {
+      const newItem = shoppingCartNewSet[item.parentProductId || item.productId] || {
+        quantity: 0,
+        ids: [],
+        products: [],
+      };
+
+      newItem.quantity += item.quantity;
+      newItem.ids.push(item.id);
+      newItem.products.push(item);
+
+      shoppingCartNewSet[item.parentProductId || item.productId] = newItem;
+    });
+  }
+
+  return onlineCategory.map((category) => {
     const { products } = category;
 
     category.cartQuantity = 0;
-    products.forEach(product => {
-      product.cartQuantity = 0;
-      product.soldOut = Utils.isProductSoldOut(product);
-      product.variations = product.variations || [];
-      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
 
-      if (shoppingCart) {
-        const results = shoppingCart.items.filter(item => item.productId === product.id);
-        if (results.length) {
-          product.cartQuantity = results.reduce((r, c) => r + c.quantity, 0);
-          product.cartItemIds = results.map(c => c.id);
-          product.cartItems = results;
-          product.canDecreaseQuantity = !product.hasSingleChoice || product.cartItemIds.length === 1;
-          category.cartQuantity += product.cartQuantity;
-        }
+    products.forEach(function (product) {
+      product.variations = product.variations || [];
+      product.soldOut = Utils.isProductSoldOut(product);
+      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
+      product.cartQuantity = 0;
+
+      const result = shoppingCartNewSet[product.id];
+
+      if (result) {
+        category.cartQuantity += result.quantity;
+        product.cartQuantity += result.quantity;
+        product.cartItemIds = result.ids;
+        product.cartItems = result.products;
+        product.canDecreaseQuantity = result.quantity > 0 && result.ids.length === 1;
       }
     });
-  });
 
-  return onlineCategory;
+    return category;
+  });
 }
 const withOnlineCategoryMergedCart = compose(
   withOnlineCategory({

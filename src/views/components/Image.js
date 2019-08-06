@@ -25,6 +25,14 @@ const FIT = 'outside';
 class Image extends React.Component {
   el = null;
 
+  state = {};
+
+  shouldComponentUpdate(nextProps) {
+    const { src } = nextProps;
+
+    return src !== this.props.src;
+  }
+
   /*
   * downlink [2.5, 1.5, 0.4, <0.4] MB/s
   */
@@ -86,13 +94,14 @@ class Image extends React.Component {
       className,
       alt,
     } = this.props;
+    const imageURL = this.getImageURL();
 
     return (
       <figure
         ref={ref => this.el = ref}
         className={className}
       >
-        <img src={this.getImageURL() || placeholder} alt={alt} />;
+        <img src={imageURL || placeholder} alt={alt} />;
       </figure>
     );
   }
