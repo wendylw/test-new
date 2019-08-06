@@ -6,10 +6,9 @@ import Constants from '../../Constants';
 const processQR = (qrData) => new Promise((resolve, reject) => {
   let data = qrData.trim();
   if (/^https?:/.test(data)) {
-    if (data.indexOf('?') === -1){
-      data += '?utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
-    }else{
-      data += '&utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner'
+    if (data.includes('beepit.co')) {
+      const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
+      data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
     }
     window.location.href = data;
     resolve(data)
