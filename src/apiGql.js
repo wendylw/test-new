@@ -203,6 +203,7 @@ apiGql.GET_SHOPPING_CART = gql`
       count
       discount
       tax
+      serviceCharge
       items {
         ...ShoppingCartItem
       }
