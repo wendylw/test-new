@@ -20,10 +20,10 @@ const withCoreApiBusiness = TheComponent =>
     }
 
     tryPeopleCount(response) {
-      const { history } = this.props;
+      // const { history } = this.props;
       const { business } = response;
 
-      const { enablePax, subscriptionStatus, stores } = business || {};
+      const { /*enablePax, */subscriptionStatus, stores } = business || {};
 
       if (subscriptionStatus === 'Expired') {
         this.goToError('Account is expired.');
