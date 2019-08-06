@@ -107,10 +107,15 @@ export class Cart extends Component {
                         <label className="gray-font-opacity">{(stores[0].receiptTemplateData || {}).taxName || `Tax`}</label>
                         <span className="gray-font-opacity"><CurrencyNumber money={tax || 0} /></span>
                       </li>
-                      {(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
-                        <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
-                        <span className="gray-font-opacity">{serviceCharge}</span>
-                      </li> : null}
+                      {enableServiceCharge
+                        ? (
+                          <li className="billing__item flex flex-middle flex-space-between">
+                            <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
+                            <span className="gray-font-opacity">{serviceCharge}</span>
+                          </li>
+                        )
+                        : null
+                      }
                     </React.Fragment>
                   );
                 }}
