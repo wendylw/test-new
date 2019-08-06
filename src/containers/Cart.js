@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { compose, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
+import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
 import { shoppingCartType } from '../views/propTypes';
 import CartItems from '../views/components/CartItems';
 import CurrencyNumber from '../components/CurrencyNumber';
@@ -170,7 +171,7 @@ export class Cart extends Component {
 }
 
 export default compose(withRouter,
-  withOnlinstStoreInfo({
+  withOnlineStoreInfo({
     props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
       if (loading) {
         return null;
