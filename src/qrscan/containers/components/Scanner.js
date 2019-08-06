@@ -4,8 +4,12 @@ import { withRouter } from 'react-router-dom';
 import Constants from '../../Constants';
 
 const processQR = (qrData) => new Promise((resolve, reject) => {
-  const data = qrData.trim();
+  let data = qrData.trim();
   if (/^https?:/.test(data)) {
+    if (data.includes('beepit.co')) {
+      const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
+      data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
+    }
     window.location.href = data;
     resolve(data)
   } else {
@@ -123,7 +127,7 @@ class Scanner extends Component {
 
       canvas.width = imageWidth;
       canvas.height = imageHeight;
-      context.drawImage(video, imageWidth/2 - 100, imageHeight/2 - 100, 200, 200, 0, 0, imageWidth, imageHeight);
+      context.drawImage(video, 0, 0, imageWidth, imageHeight);
 
       let qr = new QrcodeDecoder();
 
