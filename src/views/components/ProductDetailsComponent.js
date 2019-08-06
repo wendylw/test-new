@@ -298,7 +298,7 @@ export class ProductDetailsComponent extends Component {
             </div>
           </div>
         </div>
-      </Aside >
+      </Aside>
     )
   }
 }
