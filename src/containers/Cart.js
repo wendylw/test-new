@@ -51,7 +51,7 @@ export class Cart extends Component {
       total,
       tax,
       items,
-      serviceCharge,  // TODO: Needs API
+      serviceCharge,
     } = shoppingCart;
 
     // TODO: concern animation of hide or not.

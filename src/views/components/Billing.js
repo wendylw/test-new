@@ -33,7 +33,7 @@ export class Billing extends Component {
       subtotal,
       total,
       tax,
-      serviceCharge,  // TODO: Needs API
+      serviceCharge,
     } = shoppingCart;
 
     return (
