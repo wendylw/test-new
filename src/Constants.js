@@ -15,6 +15,7 @@ const ROUTER_PATHS = {
   CART: '/ordering/cart',
   PAYMENT: '/ordering/payment',
   CREDIT_CARD_PAYMENT: '/ordering/payment/creditcard',
+  ONLINE_BANKING_PAYMENT: '/ordering/payment/online-banking',
   THANK_YOU: '/ordering/thank-you',
   SORRY: '/ordering/sorry',
   PLAYGROUND: 'playground',
@@ -44,8 +45,8 @@ const DOCUMENT_TITLE = {
 };
 
 const PAYMENT_METHODS = {
-  CREDIT_CARD_PAY: 'BrainTree',
   ONLINE_BANKING_PAY: 'CCPP',
+  CREDIT_CARD_PAY: 'BrainTree',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
 };
