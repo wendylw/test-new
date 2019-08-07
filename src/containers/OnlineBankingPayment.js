@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { compose, graphql, Query } from 'react-apollo';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
+import api from '../cashback/utils/api';
 import { client } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';
@@ -13,31 +14,22 @@ import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-class OnlineBankingPayment extends Component {
-	static propTypes = {
-	}
+const API_ONLINE_BANKING_LIST = '/online/ccpp/onlineBankingLists';
 
-	form = null;
-	cardNumberEl = null;
-	prevCardNumber = '';
+class OnlineBankingPayment extends Component {
 	order = {};
 
 	state = {
 		payNowLoading: false,
 		fire: false,
-		cardNumberSelectionStart: 0,
-		card: {},
-		validDate: '',
-		invalidCardInfoFields: [],
-		cardInfoError: {
-			keys: [],
-			messages: [],
-		},
-		cardHolderNameError: {
-			key: null,
-			message: null,
-		},
 	};
+
+	componentWillMount() {
+		const data = await api({
+			url: API_ONLINE_BANKING_LIST,
+			method: 'get',
+		});
+	}
 
 	getQueryObject(paramName) {
 		const { history } = this.props;
@@ -114,7 +106,14 @@ class OnlineBankingPayment extends Component {
 
 									<form id="bank-2c2p-form" className="form">
 										<div className="payment-bank__form-item">
+											<div className="flex flex-middle flex-space-between">
+												<label className="payment-bank__label font-weight-bold">Select a bank</label>
+												<span className="font-weight-bold text-uppercase">3m20s</span>
+											</div>
 											<div className="payment-bank__card-container">
+												<select title="Select one">
+													<option></option>
+												</select>
 											</div>
 										</div>
 									</form>
@@ -138,7 +137,6 @@ class OnlineBankingPayment extends Component {
 				</Query>
 
 				<RedirectForm
-					ref={ref => this.form = ref}
 					action={config.storehubPaymentEntryURL}
 					method="POST"
 					fields={() => {
