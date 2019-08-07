@@ -22,16 +22,17 @@ class OnlineBankingPayment extends Component {
 	state = {
 		payNowLoading: false,
 		fire: false,
-		bankList: [],
+		bankingList: [],
 	};
 
-	componentWillMount() {
+	async componentWillMount() {
 		const data = await api({
 			url: API_ONLINE_BANKING_LIST,
 			method: 'get',
 		});
+		const { bankingList } = data || {};
 
-		this.setState({ bankList });
+		this.setState({ bankingList });
 	}
 
 	getQueryObject(paramName) {
@@ -115,7 +116,13 @@ class OnlineBankingPayment extends Component {
 											</div>
 											<div className="payment-bank__card-container">
 												<select title="Select one">
-													<option></option>
+													{
+														bankingList.map(banking => {
+															return (
+																<option value={banking.agentCode}>{banking.name}</option>
+															);
+														})
+													}
 												</select>
 											</div>
 										</div>
