@@ -22,6 +22,7 @@ class OnlineBankingPayment extends Component {
 	state = {
 		payNowLoading: false,
 		fire: false,
+		bankList: [],
 	};
 
 	componentWillMount() {
@@ -29,6 +30,8 @@ class OnlineBankingPayment extends Component {
 			url: API_ONLINE_BANKING_LIST,
 			method: 'get',
 		});
+
+		this.setState({ bankList });
 	}
 
 	getQueryObject(paramName) {
