@@ -210,6 +210,25 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   history.push(`${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}${queryString}`);
 };
 
+export const sendVerificationMessage = history => async (dispatch, getState) => {
+  try {
+    const phone = getState().user.phone;
+
+    const response = await api({
+      url: '/api/otp',
+      method: 'post',
+      data: {
+        phone,
+      },
+    });
+
+    console.log(response);
+  } catch (e) {
+    console.error(e);
+    dispatch(sendPhoneFailure());
+  }
+};
+
 const sendPhoneRequest = () => ({
   type: SEND_PHONE_REQUEST,
 })
