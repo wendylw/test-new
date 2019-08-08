@@ -191,6 +191,7 @@ apiGql.GET_ONLINE_CATEGORY = gql`
   }
 `;
 
+// revert serviceCharge when BEEP-163 is released
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
   query ShoppingCart($business: String!) {
@@ -203,7 +204,6 @@ apiGql.GET_SHOPPING_CART = gql`
       count
       discount
       tax
-      serviceCharge
       items {
         ...ShoppingCartItem
       }
