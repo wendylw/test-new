@@ -58,7 +58,7 @@ const HOME_ASIDE_NAMES = {
 
 const PLATFORMS_CODE = {
   ECOMMERCE: 1,
-  BEEP: 2,
+  BEEP: 3,
 };
 
 const ADDRESS_RANGE = {

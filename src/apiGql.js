@@ -196,7 +196,8 @@ apiGql.GET_SHOPPING_CART = gql`
   query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: ""
+      userId: "",
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     ) {
       total
       subtotal
@@ -269,7 +270,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      platform: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       shoppingCartItem {
         id
@@ -299,7 +300,7 @@ apiGql.CREATE_ORDER = gql`
       shoppingCartIds: $shoppingCartIds,
       tableId: $tableId,
       pax: $pax,
-      channel: 3
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       orders {
         id
