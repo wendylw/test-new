@@ -139,7 +139,7 @@ export class MainBodyComponent extends Component {
                           >
 
                             {
-                              Utils.isProductSoldOut(prod.soldOut)
+                              prod.soldOut
                                 ? <Tag text="Sold Out" className="tag__card" />
                                 : (
                                   <ItemOperator
