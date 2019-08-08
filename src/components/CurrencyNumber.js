@@ -14,6 +14,7 @@ class CurrencyNumber extends React.Component {
 
 	render() {
 		const { classList } = this.props;
+
 		return <span className={classList}>{this.formatChildrenAsMoney()}</span>;
 	}
 }

@@ -512,6 +512,15 @@ form {
     .header__title {
       max-width: 54vw;
     }
+
+    .billing {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid $gray-3;
+      background-color: $gray-5;
+    }
   }
 
   &__payment {
@@ -535,6 +544,12 @@ form {
     .header__title + span {
       min-width: 32vw;
     }
+  }
+
+  &__receipt {
+    @extend .main-section;
+
+    background-color: $white;
   }
 
   &__prompt-page {
@@ -674,7 +689,7 @@ form {
     content: "";
     text-align: right;
     display: inline-block;
-    min-width: 24vw;
+    min-width: 26vw;
   }
 }
 
@@ -742,6 +757,9 @@ form {
 
     > * {
       display: block;
+    }
+
+    > * ~ * {
       margin-top: 5px;
     }
   }
@@ -760,6 +778,12 @@ form {
       display: block;
       width: 12vw;
       height: 12vw;
+    }
+
+    &.exhibit {
+      display: block;
+      padding: 0 2.4vw;
+      text-align: right;
     }
   }
 
@@ -1326,13 +1350,7 @@ form {
 }
 
 .billing {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
   padding: 10px 4.8vw 21.6vw;
-  border-top: 1px solid $gray-3;
-  background-color: $gray-5;
   z-index: 200;
 
   &__item {
@@ -1471,26 +1489,8 @@ form {
     }
   }
 
-  &__link,
-  &__receipt-info {
+  &__link {
     padding: 4vh 0;
-  }
-
-  &__receipt-title,
-  &__receipt-label,
-  &__receipt-number {
-    margin: 5px 0;
-    font-size: 1.1rem;
-    line-height: 1.5em;
-  }
-
-  &__receipt-title {
-    font-size: 1.2rem;
-  }
-
-  &__receipt-number {
-    margin-left: 5px;
-    letter-spacing: 0.05rem;
   }
 
   .input,
@@ -1567,6 +1567,25 @@ form {
       font-size: inherit;
       line-height: 1.4em;
     }
+  }
+}
+
+.receipt {
+  &__content {
+    padding: 8vw 4vw;
+    background-color: $gray-4;
+    border-bottom: 1px solid $gray-3;
+  }
+
+  &__label,
+  &__id-number {
+    display: block;
+    padding: 8px 0;
+  }
+
+  &__id-number {
+    font-size: 1.7rem;
+    letter-spacing: 0.25rem;
   }
 }
 
