@@ -431,7 +431,7 @@ class BankCardPayment extends Component {
 									</figure>
 									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total} />
 
-									<form id="bank-2c2p-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
+									<form id="bank-braintree-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
 										<div className="payment-bank__form-item">
 											<div className="flex flex-middle flex-space-between">
 												<label className="payment-bank__label font-weight-bold">Card information</label>

@@ -14,7 +14,7 @@ import DocumentTitle from '../views/components/DocumentTitle';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const API_ONLINE_BANKING_LIST = '/online/ccpp/onlineBankingLists';
+const API_ONLINE_BANKING_LIST = '/payment/onlineBanking';
 
 class OnlineBankingPayment extends Component {
 	order = {};
@@ -74,6 +74,7 @@ class OnlineBankingPayment extends Component {
 		const {
 			payNowLoading,
 			fire,
+			bankingList,
 		} = this.state;
 
 		return (
@@ -115,15 +116,17 @@ class OnlineBankingPayment extends Component {
 												<span className="font-weight-bold text-uppercase">3m20s</span>
 											</div>
 											<div className="payment-bank__card-container">
-												<select title="Select one">
-													{
-														bankingList.map(banking => {
-															return (
-																<option value={banking.agentCode}>{banking.name}</option>
-															);
-														})
-													}
-												</select>
+												<div className="input">
+													<select>
+														{
+															bankingList.map((banking, key) => {
+																return (
+																	<option key={`banking-${key}`} value={banking.agentCode}>{banking.name}</option>
+																);
+															})
+														}
+													</select>
+												</div>
 											</div>
 										</div>
 									</form>

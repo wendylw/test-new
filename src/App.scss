@@ -119,6 +119,13 @@ img {
 }
 
 form {
+  select {
+    border: 0;
+    -webkit-appearance: none;
+    box-shadow: none;
+    outline: none;
+  }
+
   &.form .has-error {
     position: relative;
     border-color: $red;
@@ -142,6 +149,8 @@ form {
 }
 
 .input {
+  @extend .border-radius-base;
+
   padding: 6px 12px;
   border: 1px solid $gray-3;
   line-height: 24px;
@@ -149,6 +158,10 @@ form {
   outline: none;
   box-shadow: none;
   -webkit-appearance: none;
+
+  > * {
+    line-height: 36px;
+  }
 
   &__block {
     display: block;
