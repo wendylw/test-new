@@ -59,10 +59,10 @@ const AsyncSorry = Loadable({
   loading: MyLoadingComponent,
 });
 
-const AsyncPeopleCountModal = Loadable({
-  loader: () => import("./views/components/PeopleCountModal"),
-  loading: MyLoadingComponent,
-});
+// const AsyncPeopleCountModal = Loadable({
+//   loader: () => import("./views/components/PeopleCountModal"),
+//   loading: MyLoadingComponent,
+// });
 
 const AsyncError = Loadable({
   loader: () => import("./views/components/Error"),
@@ -80,13 +80,8 @@ export default () =>
     <Route path={Constants.ROUTER_PATHS.RECEIPT_DETAIL} exact component={AsyncReceiptDetail} />
     <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
     <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
-    <Route path={`*/modal/:modal`} render={({ match }) => {
-      if (match.params.modal === 'people-count') return <AsyncPeopleCountModal />;
-      // more modals can put here.
+    <Route path={`*/modal/:modal`} render={() => {
       return null;
     }} />
-    {/*
-      // TODO: can use react context + portal to do modal render/show/hide.
-    */}
     <MessageModal />
   </React.Fragment>;
