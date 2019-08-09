@@ -15,7 +15,6 @@ import Item from '../../components/Item';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import ItemOperator from '../../components/ItemOperator';
 import config from '../../config';
-import Utils from '../../libs/utils';
 import Constants from '../../Constants';
 
 const { PRODUCT } = Constants.HOME_ASIDE_NAMES;
