@@ -176,16 +176,17 @@ apiGql.GET_ONLINE_CATEGORY = gql`
         displayPrice
         trackInventory
         images
+        markedSoldOut
         variations {
           id
           name
           variationType
           optionValues {
+            markedSoldOut
             id
             value
           }
         }
-        markedSoldOut
       }
     }
   }
