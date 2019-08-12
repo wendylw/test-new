@@ -75,6 +75,12 @@ class OnlineBankingPayment extends Component {
 		this.setState(payState);
 	}
 
+	handleSelectBank(e) {
+		this.setState({
+			agentCode: e.target.value,
+		});
+	}
+
 	renderBankingList() {
 		const { bankingList } = this.state;
 
@@ -87,14 +93,13 @@ class OnlineBankingPayment extends Component {
 		}
 
 		return (
-			<select className="input__block">
+			<select className="input__block" onChange={this.handleSelectBank.bind(this)}>
 				{
 					bankingList.map((banking, key) => {
 						return (
 							<option
 								key={`banking-${key}`}
 								value={banking.agentCode}
-								onClick={() => this.setState({ agentCode: banking.agentCode })}
 							>
 								{banking.name}
 							</option>

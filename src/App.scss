@@ -120,11 +120,13 @@ img {
 
 form {
   select {
+    position: relative;
     border: 0;
     background-color: transparent;
     -webkit-appearance: none;
     box-shadow: none;
     outline: none;
+    z-index: 1;
   }
 
   select + svg {
