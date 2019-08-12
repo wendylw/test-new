@@ -552,10 +552,10 @@ class BankCardPayment extends Component {
 						? (
 							<div className="loading-cover">
 								<div className="loader-wave">
-									<i className="dot" id="d1"></i>
-									<i className="dot" id="d2"></i>
-									<i className="dot" id="d3"></i>
-									<i className="dot" id="d4"></i>
+									<i className="dot dot1"></i>
+									<i className="dot dot2"></i>
+									<i className="dot dot3"></i>
+									<i className="dot dot4"></i>
 								</div>
 							</div>
 						)

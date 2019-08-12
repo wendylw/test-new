@@ -24,98 +24,8 @@ class OnlineBankingPayment extends Component {
 		agentCode: null,
 		payNowLoading: false,
 		fire: false,
-		bankingList: [
-			{
-				"id": "1",
-				"name": "Affin Bank",
-				"agentCode": "FPX_ABB"
-			},
-			{
-				"id": "2",
-				"name": "Alliance Bank",
-				"agentCode": "FPX_ABMB"
-			},
-			{
-				"id": "3",
-				"name": "AmBank",
-				"agentCode": "FPX_AMB"
-			},
-			{
-				"id": "4",
-				"name": "Bank Islam",
-				"agentCode": "FPX_BIMB"
-			},
-			{
-				"id": "5",
-				"name": "Bank Rakyat",
-				"agentCode": "FPX_BKRM"
-			},
-			{
-				"id": "6",
-				"name": "Bank Muamalat",
-				"agentCode": "FPX_BMMB"
-			},
-			{
-				"id": "7",
-				"name": "BSN",
-				"agentCode": "FPX_BSN"
-			},
-			{
-				"id": "8",
-				"name": "CIMB Clicks",
-				"agentCode": "FPX_CIMB"
-			},
-			{
-				"id": "9",
-				"name": "Hong Leong Bank",
-				"agentCode": "FPX_HLB"
-			},
-			{
-				"id": "10",
-				"name": "HSBC Bank",
-				"agentCode": "FPX_HSBC"
-			},
-			{
-				"id": "11",
-				"name": "KFH",
-				"agentCode": "FPX_KFH"
-			},
-			{
-				"id": "12",
-				"name": "Maybank2U",
-				"agentCode": "FPX_M2U"
-			},
-			{
-				"id": "13",
-				"name": "OCBC Bank",
-				"agentCode": "FPX_OCBC"
-			},
-			{
-				"id": "14",
-				"name": "Public Bank",
-				"agentCode": "FPX_PBB"
-			},
-			{
-				"id": "15",
-				"name": "RHB Bank",
-				"agentCode": "FPX_RHB"
-			},
-			{
-				"id": "16",
-				"name": "Standard Chartered",
-				"agentCode": "FPX_SCB"
-			},
-			{
-				"id": "17",
-				"name": "UOB Bank",
-				"agentCode": "FPX_UOB"
-			},
-			{
-				"id": "18",
-				"name": "EPAY",
-				"agentCode": "EPAY"
-			}
-		],
+		loadedBankingList: false,
+		bankingList: [],
 	};
 
 	async componentWillMount() {
@@ -124,15 +34,18 @@ class OnlineBankingPayment extends Component {
 			method: 'get',
 		});
 		const { bankingList } = data || {};
+		let newStates = {
+			loadedBankingList: true,
+		};
 
-		if (!bankingList || !bankingList.length) {
-			return;
+		if (bankingList && bankingList.length) {
+			newStates = Object.assign({}, newStates, {
+				agentCode: bankingList[0].agentCode,
+				bankingList: bankingList
+			});
 		}
 
-		this.setState({
-			agentCode: bankingList[0].agentCode,
-			bankingList
-		});
+		this.setState(newStates);
 	}
 
 	getQueryObject(paramName) {
@@ -148,10 +61,48 @@ class OnlineBankingPayment extends Component {
 	}
 
 	async payNow() {
-		this.setState({
-			payNowLoading: true,
-			fire: true,
-		});
+		const { agentCode } = this.state;
+		let payState = {
+			payNowLoading: true
+		};
+
+		if (agentCode) {
+			payState = {
+				fire: true,
+			};
+		}
+
+		this.setState(payState);
+	}
+
+	renderBankingList() {
+		const { bankingList } = this.state;
+
+		if (!bankingList || !bankingList.length) {
+			return (
+				<select className="input__block" disabled>
+					<option>Select one</option>
+				</select>
+			);
+		}
+
+		return (
+			<select className="input__block">
+				{
+					bankingList.map((banking, key) => {
+						return (
+							<option
+								key={`banking-${key}`}
+								value={banking.agentCode}
+								onClick={() => this.setState({ agentCode: banking.agentCode })}
+							>
+								{banking.name}
+							</option>
+						);
+					})
+				}
+			</select>
+		);
 	}
 
 	renderMain() {
@@ -161,9 +112,10 @@ class OnlineBankingPayment extends Component {
 			onlineStoreInfo
 		} = this.props;
 		const {
+			agentCode,
 			payNowLoading,
+			loadedBankingList,
 			fire,
-			bankingList,
 		} = this.state;
 
 		return (
@@ -204,27 +156,22 @@ class OnlineBankingPayment extends Component {
 												<label className="payment-bank__label font-weight-bold">Select a bank</label>
 											</div>
 											<div className="payment-bank__card-container">
-												<div className="input">
-													<select className="input__block">
-														{
-															bankingList.map((banking, key) => {
-																return (
-																	<option
-																		key={`banking-${key}`}
-																		value={banking.agentCode}
-																		onClick={() => this.setState({ agentCode: banking.agentCode })}
-																	>
-																		{banking.name}
-																	</option>
-																);
-															})
-														}
-													</select>
+												<div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
+													{this.renderBankingList()}
 													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
 														<path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" />
 														<path d="M0 0h24v24H0z" fill="none" />
 													</svg>
 												</div>
+												{
+													payNowLoading && !agentCode
+														? (
+															<div className="error-message__container">
+																<span className="error-message">Please select a bank to continue</span>
+															</div>
+														)
+														: null
+												}
 											</div>
 										</div>
 									</form>
@@ -234,9 +181,9 @@ class OnlineBankingPayment extends Component {
 									<button
 										className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
 										onClick={this.payNow.bind(this)}
-										disabled={payNowLoading}
+										disabled={payNowLoading && agentCode}
 									>{
-											payNowLoading
+											payNowLoading && !agentCode
 												? 'Redirecting'
 												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
 										}
@@ -277,6 +224,20 @@ class OnlineBankingPayment extends Component {
 					}}
 					fire={fire}
 				/>
+				{
+					!loadedBankingList
+						? (
+							<div className="loading-cover">
+								<div className="loader-wave">
+									<i className="dot dot1"></i>
+									<i className="dot dot2"></i>
+									<i className="dot dot3"></i>
+									<i className="dot dot4"></i>
+								</div>
+							</div>
+						)
+						: null
+				}
 			</section>
 		)
 	}
