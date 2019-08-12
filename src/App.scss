@@ -121,9 +121,19 @@ img {
 form {
   select {
     border: 0;
+    background-color: transparent;
     -webkit-appearance: none;
     box-shadow: none;
     outline: none;
+  }
+
+  select + svg {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    margin: 8px;
   }
 
   &.form .has-error {
@@ -151,6 +161,7 @@ form {
 .input {
   @extend .border-radius-base;
 
+  position: relative;
   padding: 6px 12px;
   border: 1px solid $gray-3;
   line-height: 24px;
