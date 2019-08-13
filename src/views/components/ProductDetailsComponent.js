@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { shoppingCartType } from '../propTypes';
-import ItemComponent from './ItemComponent';
+
+import Item from '../../components/Item';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import ItemOperator from '../../components/ItemOperator';
 import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
 import Constants from '../../Constants';
@@ -197,8 +200,13 @@ export class ProductDetailsComponent extends Component {
     const {
       active,
       product,
-      toggleAside
+      toggleAside,
+      onlineStoreInfo,
     } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
     const { cartQuantity } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
@@ -222,22 +230,36 @@ export class ProductDetailsComponent extends Component {
             {this.renderVriations()}
           </div>
 
-          <div ref={ref => this.productEl = ref}>
-            <ItemComponent
+          <div
+            ref={ref => this.productEl = ref}
+            className="aside__fix-bottom"
+          >
+            <Item
               className="aside__section-container border__top-divider"
+              contentClassName="flex-middle"
               image={imageUrl}
               title={title}
-              price={this.displayPrice()}
-              quantity={cartQuantity}
-              decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
-              onDecrease={() => {
-                this.setState({ cartQuantity: cartQuantity - 1 });
-              }}
-              onIncrease={() => {
-                this.setState({ cartQuantity: cartQuantity + 1 });
-              }}
-            />
+              detail={
+                <CurrencyNumber
+                  money={this.displayPrice() || 0}
+                  locale={locale}
+                  currency={currency}
+                />
+              }
+            >
 
+              <ItemOperator
+                className="flex-middle"
+                quantity={cartQuantity}
+                decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+                onDecrease={() => {
+                  this.setState({ cartQuantity: cartQuantity - 1 });
+                }}
+                onIncrease={() => {
+                  this.setState({ cartQuantity: cartQuantity + 1 });
+                }}
+              />
+            </Item>
             <div className="aside__section-container">
               <button
                 className="button__fill button__block font-weight-bold"

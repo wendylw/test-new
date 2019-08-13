@@ -176,21 +176,23 @@ apiGql.GET_ONLINE_CATEGORY = gql`
         displayPrice
         trackInventory
         images
+        markedSoldOut
         variations {
           id
           name
           variationType
           optionValues {
+            markedSoldOut
             id
             value
           }
         }
-        markedSoldOut
       }
     }
   }
 `;
 
+// revert serviceCharge when BEEP-163 is released
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
   query ShoppingCart($business: String!) {
@@ -292,12 +294,14 @@ apiGql.CREATE_ORDER = gql`
     $storeId: String!,
     $tableId: String,
     $pax: Int!,
+    $additionalComments: String,
     $shoppingCartIds: [String]
   ) {
     createOrder(input: {
       business: $business,
       storeId: $storeId,
       shoppingCartIds: $shoppingCartIds,
+      additionalComments: $additionalComments,
       tableId: $tableId,
       pax: $pax,
       channel: ${Constants.PLATFORMS_CODE.BEEP}
