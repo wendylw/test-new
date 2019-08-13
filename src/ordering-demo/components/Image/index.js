@@ -24,6 +24,12 @@ const FIT = 'outside';
 class Image extends React.Component {
   el = null;
 
+  shouldComponentUpdate(nextProps) {
+    const { src } = nextProps;
+
+    return src !== this.props.src;
+  }
+
   /*
   * downlink [2.5, 1.5, 0.4, <0.4] MB/s
   */

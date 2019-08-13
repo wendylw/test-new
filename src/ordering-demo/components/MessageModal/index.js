@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 class MessageModal extends Component {
   render() {
     const { message, description } = this.props.data;
+
     return (
       <section
         className="emodal__align-middle modal flex flex-middle flex-space-betwen"

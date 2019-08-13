@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 
@@ -17,11 +18,22 @@ class CurrencyNumber extends React.Component {
   }
 
   render() {
-    const { classList, addonBefore } = this.props;
+    const { className, addonBefore } = this.props;
 
-    return <span className={classList}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
+    return <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
   }
 }
+
+CurrencyNumber.propTypes = {
+  className: PropTypes.string,
+  addonBefore: PropTypes.string,
+  locale: PropTypes.string,
+  currency: PropTypes.string,
+  money: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+};
 
 export default connect(
   (state) => {
