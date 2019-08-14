@@ -5,7 +5,7 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 export class Footer extends Component {
   render() {
     const { cartSummary, tableId } = this.props;
-    const { subtotal, count } = cartSummary || {};
+    const { total, count } = cartSummary || {};
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
@@ -24,7 +24,7 @@ export class Footer extends Component {
               <img src="/img/icon-cart.svg" alt="cart" />
               <span className="tag__number">{count || 0}</span>
             </div>
-            <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal || 0} /></label>
+            <label className="cart-bar__money text-middle"><CurrencyNumber money={total || 0} /></label>
           </button>
           {
             tableId !== 'DEMO'

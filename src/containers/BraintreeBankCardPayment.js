@@ -9,7 +9,7 @@ import { client } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';
 import RedirectForm from '../views/components/RedirectForm';
-import CurrencyNumber from '../views/components/CurrencyNumber';
+import CurrencyNumber from '../components/CurrencyNumber';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 import '../Braintree.scss';
@@ -391,6 +391,10 @@ class BankCardPayment extends Component {
 			onlineStoreInfo
 		} = this.props;
 		const {
+			locale,
+			currency,
+		} = onlineStoreInfo || {};
+		const {
 			payNowLoading,
 			fire,
 			card,
@@ -429,7 +433,12 @@ class BankCardPayment extends Component {
 									>
 										<img src={onlineStoreInfo.logo} alt="" />
 									</figure>
-									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total} />
+									<CurrencyNumber
+										classList="payment-bank__money font-weight-bold text-center"
+										money={total}
+										locale={locale}
+										currency={currency}
+									/>
 
 									<form id="bank-2c2p-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
 										<div className="payment-bank__form-item">
@@ -504,7 +513,15 @@ class BankCardPayment extends Component {
 									>{
 											payNowLoading
 												? 'Redirecting'
-												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total} />
+												: (
+													<CurrencyNumber
+														classList="font-weight-bold text-center"
+														addonBefore="Pay"
+														money={total}
+														locale={locale}
+														currency={currency}
+													/>
+												)
 										}
 									</button>
 								</div>

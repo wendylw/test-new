@@ -9,16 +9,10 @@ import Constants from '../Constants';
 import DocumentTitle from '../views/components/DocumentTitle';
 import PhoneViewContainer from '../ajax-containers/PhoneViewContainer';
 
-// Example1 URL: http://nike.storehub.local:3000/#/thank-you?receiptNumber=811588925877567
+// Example1 URL: http://nike.storehub.local:3000/#/thank-you?h=xxxxx&receiptNumber=811588925877567
+
 export class ThankYou extends Component {
-
-  static propTypes = {
-
-  };
-
-  state = {
-    needReceipt: 'remind'
-  };
+  state = {};
 
   shouldComponentUpdate(nextProps) {
     if (!nextProps.order) {
@@ -29,26 +23,23 @@ export class ThankYou extends Component {
   }
 
   renderNeedReceipt() {
-    const { orderId } = this.props.order;
-    let text = (
-      <button className="thanks__link link font-weight-bold text-uppercase button__block" onClick={() => this.setState({ needReceipt: 'detail' })}>
+    const {
+      history,
+      order,
+    } = this.props;
+    const { orderId } = order || {};
+
+    return (
+      <button
+        className="thanks__link link font-weight-bold text-uppercase button__block"
+        onClick={() => history.push({
+          pathname: Constants.ROUTER_PATHS.RECEIPT_DETAIL,
+          search: `?receiptNumber=${orderId || ''}`
+        })}
+      >
         View Receipt
       </button>
     );
-
-    if (this.state.needReceipt === 'detail') {
-      text = (
-        <div className="thanks__receipt-info">
-          <h4 className="thanks__receipt-title font-weight-bold">Ping the staff for a receipt</h4>
-          <div>
-            <label className="thanks__receipt-label">Receipt Number: </label>
-            <span className="thanks__receipt-number font-weight-bold">{orderId}</span>
-          </div>
-        </div>
-      );
-    }
-
-    return (text);
   }
 
   renderPickupInfo() {

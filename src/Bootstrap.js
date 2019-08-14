@@ -26,6 +26,11 @@ const AsyncStoresApp = Loadable({
   loading: Loading,
 })
 
+const AsyncTermsPrivacy = Loadable({
+  loader: () => import("./containers/TermsPrivacy"),
+  loading: Loading,
+})
+
 const AsyncReduxDemo = Loadable({
   loader: () => import("./ordering-demo/index"),
   loading: Loading,
@@ -60,6 +65,14 @@ class Bootstrap extends Component {
           <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
           <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
           <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
+          <Route
+            path={Constants.ROUTER_PATHS.TERMS_OF_USE}
+            render={props => <AsyncTermsPrivacy {...props} pageName='terms' />}
+          />
+          <Route
+            path={Constants.ROUTER_PATHS.PRIVACY}
+            render={props => <AsyncTermsPrivacy {...props} pageName='privacy' />}
+          />
           <Route component={AsyncNotFound} />
         </Switch>
       </React.Fragment>
