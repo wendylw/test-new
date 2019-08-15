@@ -13,13 +13,15 @@ class CurrencyNumber extends React.Component {
 	}
 
 	render() {
-		const { classList } = this.props;
-		return <span className={classList}>{this.formatChildrenAsMoney()}</span>;
+		const { classList, addonBefore } = this.props;
+
+		return <span className={classList}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
 	}
 }
 
 CurrencyNumber.propTypes = {
 	classList: PropTypes.string,
+	addonBefore: PropTypes.string,
 	locale: PropTypes.string,
 	currency: PropTypes.string,
 	money: PropTypes.oneOfType([

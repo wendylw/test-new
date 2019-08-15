@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { shoppingCartType } from '../propTypes';
-import ItemComponent from './ItemComponent';
+
+import Item from '../../components/Item';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import ItemOperator from '../../components/ItemOperator';
 import VariationSelectorComponent from './VariationSelectorComponent';
 import config from '../../config';
 import Constants from '../../Constants';
@@ -38,7 +41,11 @@ export class ProductDetailsComponent extends Component {
 
       product.variations.forEach(variation => {
         if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
-          newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, variation.optionValues[0]));
+          const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
+
+          if (defaultOption) {
+            newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
+          }
         }
       });
 
@@ -100,9 +107,9 @@ export class ProductDetailsComponent extends Component {
       return childProduct.displayPrice;
     }
 
-    let price = displayPrice || unitPrice || onlineUnitPrice;
+    const price = displayPrice || unitPrice || onlineUnitPrice;
 
-    return price + totalPriceDiff;
+    return (price + totalPriceDiff).toFixed(2);
   }
 
   isSubmitable() {
@@ -146,7 +153,18 @@ export class ProductDetailsComponent extends Component {
 
   setVariationsByIdMap(variation, option) {
     const { variationsByIdMap } = this.state;
-    const newMap = Object.assign({}, variationsByIdMap, this.getNewVariationsByIdMap(variation, option));
+    const newVariation = this.getNewVariationsByIdMap(variation, option);
+    let newMap = variationsByIdMap;
+
+    if (!newMap[variation.id] || newMap[variation.id].variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+      newMap = Object.assign({}, newMap, newVariation);
+    } else {
+      if (newMap[variation.id][option.id]) {
+        delete newMap[variation.id][option.id];
+      } else {
+        newMap[variation.id][option.id] = newVariation[variation.id][option.id];
+      }
+    }
 
     this.setState({ variationsByIdMap: newMap });
   }
@@ -197,8 +215,13 @@ export class ProductDetailsComponent extends Component {
     const {
       active,
       product,
-      toggleAside
+      toggleAside,
+      onlineStoreInfo,
     } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
     const { cartQuantity } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
@@ -222,22 +245,36 @@ export class ProductDetailsComponent extends Component {
             {this.renderVriations()}
           </div>
 
-          <div ref={ref => this.productEl = ref}>
-            <ItemComponent
+          <div
+            ref={ref => this.productEl = ref}
+            className="aside__fix-bottom"
+          >
+            <Item
               className="aside__section-container border__top-divider"
+              contentClassName="flex-middle"
               image={imageUrl}
               title={title}
-              price={this.displayPrice()}
-              quantity={cartQuantity}
-              decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
-              onDecrease={() => {
-                this.setState({ cartQuantity: cartQuantity - 1 });
-              }}
-              onIncrease={() => {
-                this.setState({ cartQuantity: cartQuantity + 1 });
-              }}
-            />
+              detail={
+                <CurrencyNumber
+                  money={this.displayPrice() || 0}
+                  locale={locale}
+                  currency={currency}
+                />
+              }
+            >
 
+              <ItemOperator
+                className="flex-middle"
+                quantity={cartQuantity}
+                decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+                onDecrease={() => {
+                  this.setState({ cartQuantity: cartQuantity - 1 });
+                }}
+                onIncrease={() => {
+                  this.setState({ cartQuantity: cartQuantity + 1 });
+                }}
+              />
+            </Item>
             <div className="aside__section-container">
               <button
                 className="button__fill button__block font-weight-bold"
