@@ -1,11 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from "react-router";
-import 'react-phone-number-input/style.css';
 import Utils from '../../../libs/utils';
+import Constants from '../../../Constants';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { tryOtpAndSaveCashback, fetchPhone, setPhone } from '../../actions';
+
+import 'react-phone-number-input/style.css';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -70,6 +73,12 @@ class PhoneView extends React.Component {
             onClick={this.submitPhoneNumber.bind(this)}
             disabled={!phone || !isValidPhoneNumber(phone) || isLoading}
           >Continue</button>
+
+          <p className="terms-privacy text-center gray-font-opacity">
+            By tapping to continue, you agree to our
+            <br />
+            <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+          </p>
         </aside>
       </section>
     );

@@ -16,6 +16,7 @@ const ROUTER_PATHS = {
   PAYMENT: '/ordering/payment',
   CREDIT_CARD_PAYMENT: '/ordering/payment/creditcard',
   THANK_YOU: '/ordering/thank-you',
+  RECEIPT_DETAIL: '/ordering/receipt',
   SORRY: '/ordering/sorry',
   PLAYGROUND: 'playground',
   ERROR: '/ordering/error',
@@ -24,6 +25,8 @@ const ROUTER_PATHS = {
   CASHBACK_CLAIM: '/loyalty/claim',
   CASHBACK_ERROR: '/loyalty/error',
   QRSCAN: '/qrscan', // App basename
+  TERMS_OF_USE: '/terms-conditions',
+  PRIVACY: '/privacy',
 };
 
 const CASHBACK_SOURCE = {
@@ -41,6 +44,8 @@ const DOCUMENT_TITLE = {
   SORRY: 'Payment Failed',
   ERROR: 'Error',
   NOT_FOUND: '404 - Page Not Found',
+  TERMS_OF_USE: 'Terms Conditions',
+  PRIVACY: 'Privacy',
 };
 
 const PAYMENT_METHODS = {

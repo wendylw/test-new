@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { shoppingCartType } from '../propTypes';
-import CurrencyNumber from './CurrencyNumber';
+import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../Constants';
 import config from '../../config';
 
@@ -12,6 +12,18 @@ const {
 } = Constants.HOME_ASIDE_NAMES;
 
 export class FooterOperationComponent extends Component {
+  getDisplayPrice() {
+    const { shoppingCart } = this.props;
+    const { items } = shoppingCart || {};
+    let totalPrice = 0;
+
+    (items || []).forEach(item => {
+      totalPrice += item.displayPrice * item.quantity;
+    });
+
+    return totalPrice;
+  }
+
   handleToggleAside(asideName) {
     const { toggleAside } = this.props;
 
@@ -19,8 +31,15 @@ export class FooterOperationComponent extends Component {
   }
 
   render() {
-    const { shoppingCart } = this.props;
-    const { subtotal, count } = shoppingCart || {};
+    const {
+      onlineStoreInfo,
+      shoppingCart,
+    } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
+    const { count } = shoppingCart || {};
     const { table } = config;
 
     return (
@@ -38,7 +57,13 @@ export class FooterOperationComponent extends Component {
               <img src="/img/icon-cart.svg" alt="cart" />
               <span className="tag__number">{count || 0}</span>
             </div>
-            <label className="cart-bar__money text-middle"><CurrencyNumber money={subtotal || 0} /></label>
+            <label className="cart-bar__money text-middle">
+              <CurrencyNumber
+                money={this.getDisplayPrice() || 0}
+                locale={locale}
+                currency={currency}
+              />
+            </label>
           </button>
           {
             table !== 'DEMO'

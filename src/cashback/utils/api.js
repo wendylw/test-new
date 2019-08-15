@@ -4,8 +4,6 @@ const api = async (...args) => {
   try {
     const { data } = await axios(...args);
 
-    console.log('api(%o) => %o', args, data);
-
     return data;
   } catch (e) {
     console.log('api(%o) => Error', args);

@@ -95,7 +95,7 @@ class PhoneVerifyModal extends React.Component {
           {this.renderResendButton()}
         </section>
 
-        <footer className="footer-operation">
+        <footer className="footer-operation opt">
           <button
             className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
             disabled={!this.state.otp || this.state.otp.length !== Constants.OTP_CODE_SIZE}
