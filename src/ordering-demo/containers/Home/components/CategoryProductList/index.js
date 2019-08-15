@@ -1,12 +1,33 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ProductList from '../ProductList';
 import { ScrollObservable } from '../../../../../views/components/ScrollComponents';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from "redux";
+import { actions as homeActions, getCategoryProductList } from "../../../../redux/modules/home";
+
 class CategoryProductList extends Component {
+  handleDecreaseProductInCart = async (product) => {
+    try {
+      await this.props.homeActions.decreaseProductInCart(product);
+      await this.props.homeActions.loadShoppingCart();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  handleIncreaseProductInCart = async (product) => {
+    try {
+      await this.props.homeActions.increaseProductInCart(product);
+      await this.props.homeActions.loadShoppingCart();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   render() {
     const { categories } = this.props;
-
-    console.log('--> categories => %o', categories);
 
     return (
       <div className="list__container">
@@ -16,13 +37,13 @@ class CategoryProductList extends Component {
               <li key={category.id}>
                 <h2 className="category__header flex flex-middle flex-space-between">
                   <label>{category.name}</label>
-                  <span className="gray-font-opacity">{category.cartQuantity}</span>
+                  <span className="gray-font-opacity">{`${category.cartQuantity || 0} Items`}</span>
                 </h2>
                 <ScrollObservable name={category.name} key={category.id}>
                   <ProductList
                     products={category.products}
-                    onDecreaseItem={this.handleDecreaseItem}
-                    onIncreaseItem={this.handleIncreaseItem}
+                    onDecreaseItem={this.handleDecreaseProductInCart}
+                    onIncreaseItem={this.handleIncreaseProductInCart}
                   />
                 </ScrollObservable>
               </li>
@@ -32,14 +53,21 @@ class CategoryProductList extends Component {
       </div>
     );
   }
-
-  handleDecreaseItem = (product) => {
-    this.props.onDecreaseItem(product);
-  }
-
-  handleIncreaseItem = (product) => {
-    this.props.onIncreaseItem(product);
-  }
 }
 
-export default CategoryProductList;
+CategoryProductList.propTypes = {
+};
+
+CategoryProductList.defaultProps = {
+};
+
+export default connect(
+  state => {
+    return {
+      categories: getCategoryProductList(state),
+    };
+  },
+  dispatch => ({
+    homeActions: bindActionCreators(homeActions, dispatch),
+  }),
+)(CategoryProductList);

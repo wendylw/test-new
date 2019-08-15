@@ -11,6 +11,7 @@ const onlineStoreInfo = {
     state: null,
     street: null,
   },
+
   updateOnlinStoreInfo(options) {
     if (typeof options === 'object' || Array.isArray(options)) {
 

@@ -1,36 +1,72 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { actions as homeActions, getShoppingCart, getCategoryProductList, getCurrentProduct, getViewCart, getViewMenu } from "../../redux/modules/home";
+import { actions as homeActions, getCurrentProduct, getCategoryProductList } from "../../redux/modules/home";
 import { actions as cartActions } from "../../redux/modules/cart";
 import Header from "../../components/Header";
 import { getOnlineStoreInfo, getRequestInfo } from "../../redux/modules/app";
 import CategoryProductList from "./components/CategoryProductList";
-import ProductDetailModal from "./components/ProductDetailModal";
+import ProductDetail from "./components/Product";
 import Footer from "./components/Footer";
 import MiniCartListModal from "./components/MiniCartListModal";
-import { getProductById } from "../../../redux/modules/entities/products";
-import MenuModal from "./components/MenuModal";
+import Menu from "./components/Menu";
 import CurrentCategoryBar from "./components/CurrentCategoryBar";
 
 class Home extends Component {
-  componentDidMount() {
+  state = {
+    viewProductDetail: false,
+    viewMenu: false,
+    viewCart: false,
+    domLoaded: false,
+  };
+
+  componentWillMount() {
     const { homeActions } = this.props;
+
     homeActions.loadProductList();
   }
 
+  componentDidMount() {
+    this.setState({ domLoaded: true });
+  }
+
+  handleToggleProductDetail() {
+    const { viewProductDetail } = this.state;
+
+    this.setState({
+      viewProductDetail: !viewProductDetail
+    });
+  }
+
+  handleToggleCart() {
+    const { viewCart } = this.state;
+
+    this.setState({
+      viewCart: !viewCart
+    });
+  }
+
+  handleToggleMenu() {
+    const { viewMenu } = this.state;
+
+    this.setState({
+      viewMenu: !viewMenu
+    });
+  }
+
   render() {
-    console.log('_Home.render()');
     const {
       categories,
       onlineStoreInfo,
-      shoppingCart,
       requestInfo,
-      currentProduct,
-      showCart,
-      showMenu,
-      homeActions,
     } = this.props;
+    const {
+      viewProductDetail,
+      viewMenu,
+      viewCart,
+      domLoaded,
+    } = this.state;
+    const { tableId } = requestInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -41,118 +77,60 @@ class Home extends Component {
         <Header
           logo={onlineStoreInfo.logo}
           title={onlineStoreInfo.storeName}
-          table={requestInfo.tableId}
+          table={tableId}
         />
         <CurrentCategoryBar
           categories={categories}
         />
-        <CategoryProductList
-          categories={categories}
-          onDecreaseItem={this.handleDecreaseProductInCart}
-          onIncreaseItem={this.handleIncreaseProductInCart}
-        />
+        <CategoryProductList />
         {
-          (currentProduct && currentProduct.id && !currentProduct._needMore)
+          domLoaded
             ? (
-              <ProductDetailModal
-                product={currentProduct}
-                addOrUpdateShoppingCartItem={async (variables) => {
-                  await homeActions.addOrUpdateShoppingCartItem(variables);
-                  this.handleHideProductDetailModal();
-                  await homeActions.loadShoppingCart();
-                }}
-                onHide={this.handleHideProductDetailModal}
+              <ProductDetail
+                viewProductDetail={viewProductDetail}
+                onToggle={this.handleToggleProductDetail.bind(this)}
               />
             )
             : null
         }
         {
-          showCart
+          domLoaded
             ? (
               <MiniCartListModal
-                shoppingCart={shoppingCart}
-                onHide={this.handleHideMiniCartListModal}
-                onClearAll={this.handleClearAll}
+                viewCart={viewCart}
+                onToggle={this.handleToggleCart.bind(this)}
               />
             )
             : null
         }
         {
-          showMenu
+          domLoaded
             ? (
-              <MenuModal
-                categories={categories}
-                onHide={this.handleHideMenuModal}
+              <Menu
+                viewMenu={viewMenu}
+                onToggle={this.handleToggleMenu.bind(this)}
               />
             )
             : null
         }
         <Footer
-          categories={categories}
-          tableId={requestInfo.tableId}
-          cartSummary={shoppingCart.summary}
-          onClickCart={this.handleShowMiniCartModal}
-          onClickMenu={this.handleShopMenuModal}
+          tableId={tableId}
+          onlineStoreInfo={onlineStoreInfo}
+          onClickCart={this.handleToggleCart.bind(this)}
+          onClickMenu={this.handleToggleMenu.bind(this)}
         />
       </section>
     );
-  }
-
-  handleDecreaseProductInCart = async (product) => {
-    try {
-      await this.props.homeActions.decreaseProductInCart(product);
-      await this.props.homeActions.loadShoppingCart();
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  handleIncreaseProductInCart = async (product) => {
-    try {
-      await this.props.homeActions.increaseProductInCart(product);
-      await this.props.homeActions.loadShoppingCart();
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  handleHideProductDetailModal = () => {
-    this.props.homeActions.closeProduct();
-  }
-
-  handleShopMenuModal = () => {
-    this.props.homeActions.viewMenu();
-  }
-
-  handleHideMenuModal = () => {
-    this.props.homeActions.closeMenu();
-  }
-
-  handleHideMiniCartListModal = () => {
-    this.props.homeActions.closeCart();
-  }
-
-  handleShowMiniCartModal = () => {
-    this.props.homeActions.viewCart();
-  }
-
-  handleClearAll = async () => {
-    await this.props.cartActions.clearAll();
-    await this.props.homeActions.closeCart();
   }
 }
 
 export default connect(
   state => {
-    const currentProductInfo = getCurrentProduct(state);
     return {
-      showCart: getViewCart(state),
-      showMenu: getViewMenu(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
-      shoppingCart: getShoppingCart(state),
-      categories: getCategoryProductList(state),
       requestInfo: getRequestInfo(state),
-      currentProduct: currentProductInfo && getProductById(state, currentProductInfo.id),
+
+      categories: getCategoryProductList(state),
     };
   },
   dispatch => ({

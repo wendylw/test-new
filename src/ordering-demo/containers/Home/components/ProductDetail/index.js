@@ -1,44 +1,20 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import ProductItem from "../ProductItem";
-import VariationSelector from "../VariationSelector";
+import PropTypes from 'prop-types';
+import ProductItem from '../ProductItem';
+import VariationSelector from '../VariationSelector';
 import config from "../../../../../config";
-import Utils from "../../../../../libs/utils";
+import Utils from '../../../../libs/utils';
+import Constants from '../../../../libs/constants';
 
-export class ProductDetail extends Component {
-  static propTypes = {
-    product: PropTypes.shape({
-      id: PropTypes.string,
-      title: PropTypes.string,
-      displayPrice: PropTypes.number,
-      variations: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string,
-          name: PropTypes.string,
-          variationType: PropTypes.string,
-          optionValues: PropTypes.arrayOf(
-            PropTypes.shape({
-              id: PropTypes.string,
-              value: PropTypes.string
-            })
-          )
-        })
-      )
-    }),
-    addOrUpdateShoppingCartItem: PropTypes.func
-  };
+import { connect } from 'react-redux';
+import { bindActionCreators } from "redux";
+import { getProductById } from "../../../../../redux/modules/entities/products";
+import { actions as homeActions, getCurrentProduct } from "../../../../redux/modules/home";
 
-  static defaultProps = {
-    product: null,
-    shoppingCart: null,
-    addOrUpdateShoppingCartItem: () => {}
-  };
-
+class ProductDetail extends Component {
   state = {
-    active: false,
-    mergedProduct: null,
-    variationsByIdMap: {}, // Object<VariationId, Array<[VariationId, OptionId]>>
-    cartQuantity: 1
+    variationsByIdMap: {}, // Object<VariationId: Object<variationType, OptionId:option >>
+    cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
   };
 
   displayPrice() {
@@ -93,11 +69,15 @@ export class ProductDetail extends Component {
   getVariationsByType = (type) => {
     const { product } = this.props;
 
-      if (!type) {
-          return product.variations;
-      }
+    if (!product) {
+      return [];
+    }
 
-      return product.variations.filter((variation) => variation.variationType === type);
+    if (!type) {
+      return product.variations;
+    }
+
+    return product.variations.filter((variation) => variation.variationType === type);
   }
 
   getSingleChoiceVariations() {
@@ -147,21 +127,72 @@ export class ProductDetail extends Component {
     return this.getVariationOptionValuesWithFieldOnly("priceDiff");
   }
 
-  render() {
+  handleAddOrUpdateShoppingCartItem = async (variables) => {
+    await homeActions.addOrUpdateShoppingCartItem(variables);
+    await homeActions.loadShoppingCart();
+    this.handleHideProductDetail();
+  }
+
+  renderProductItem() {
     const { product } = this.props;
-    const { cartQuantity, variationsByIdMap } = this.state;
+    const { cartQuantity } = this.state;
+    const { id: productId, images, title } = product || {};
+    const imageUrl = Array.isArray(images) ? images[0] : null;
 
     if (!product) {
       return null;
     }
 
-    console.log("variationsByIdMap =>", variationsByIdMap);
+    return (
+      <div className="aside__fix-bottom">
+        <ProductItem
+          className="aside__section-container border__top-divider"
+          image={imageUrl}
+          title={title}
+          price={this.displayPrice()}
+          quantity={cartQuantity}
+          decreaseDisabled={cartQuantity === 1}
+          onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+          onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
+        />
 
-    const { id: productId, images, title } = product;
-    const imageUrl = Array.isArray(images) ? images[0] : null;
+        <div className="aside__section-container">
+          <button
+            className="button__fill button__block font-weight-bold"
+            type="button"
+            disabled={!this.isSubmitable() || Utils.isProductSoldOut(product)}
+            onClick={async () => {
+              const variations = this.getVariationsValue();
+
+              if (this.isSubmitable()) {
+                await this.props.addOrUpdateShoppingCartItem({
+                  action: "add",
+                  business: config.business,
+                  productId,
+                  quantity: cartQuantity,
+                  variations
+                });
+              }
+            }}
+          >OK</button>
+        </div>
+      </div>
+    );
+  }
+
+  render() {
+    const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
+    const {
+      product,
+      viewProductDetail,
+    } = this.props;
+
+    if (viewProductDetail && product && product.id && !product._needMore) {
+      className.push('active');
+    }
 
     return (
-      <>
+      <aside className={className.join(" ")} onClick={this.handleClickOverlay}>
         <div className="product-detail">
           {this.getSingleChoiceVariations().length ? (
             <ol className="product-detail__options-category">
@@ -186,44 +217,33 @@ export class ProductDetail extends Component {
               ))}
             </ol>
           ) : null}
+
+          {this.renderProductItem()}
         </div>
-
-        <div className="aside__fix-bottom">
-          <ProductItem
-            className="aside__section-container border__top-divider"
-            image={imageUrl}
-            title={title}
-            price={this.displayPrice()}
-            quantity={cartQuantity}
-            decreaseDisabled={cartQuantity === 1}
-            onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-            onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
-          />
-
-          <div className="aside__section-container">
-            <button
-              className="button__fill button__block font-weight-bold"
-              type="button"
-              disabled={!this.isSubmitable() || Utils.isProductSoldOut(product)}
-              onClick={async () => {
-                const variations = this.getVariationsValue();
-
-                if (this.isSubmitable()) {
-                  await this.props.addOrUpdateShoppingCartItem({
-                    action: "add",
-                    business: config.business,
-                    productId,
-                    quantity: cartQuantity,
-                    variations
-                  });
-                }
-              }}
-            >OK</button>
-          </div>
-        </div>
-      </>
+      </aside>
     );
   }
 }
 
-export default ProductDetail;
+ProductDetail.propTypes = {
+  viewProductDetail: PropTypes.bool,
+  onToggle: PropTypes.func,
+};
+
+ProductDetail.defaultProps = {
+  viewProductDetail: false,
+  onToggle: () => { }
+};
+
+export default connect(
+  state => {
+    const currentProductInfo = getCurrentProduct(state);
+
+    return {
+      product: currentProductInfo && getProductById(state, currentProductInfo.id),
+    };
+  },
+  dispatch => ({
+    homeActions: bindActionCreators(homeActions, dispatch),
+  }),
+)(ProductDetail);

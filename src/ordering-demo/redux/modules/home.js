@@ -14,8 +14,6 @@ const initialState = {
     cartId: '',
     isFetching: false,
   },
-  viewCart: false,
-  viewMenu: false,
   shoppingCart: {
     isFetching: false,
     itemIds: [],
@@ -56,19 +54,6 @@ export const types = {
   // - or + on home page product item
   DECREASE_PRODUCT_IN_CART: 'REDUX_DEMO/HOME/DECREASE_PRODUCT_IN_CART',
   INCREASE_PRODUCT_IN_CART: 'REDUX_DEMO/HOME/INCREASE_PRODUCT_IN_CART',
-
-  // view or hide product modal
-  VIEW_PRODUCT: 'REDUX_DEMO/HOME/VIEW_PRODUCT',
-  CLOSE_PRODUCT: 'REDUX_DEMO/HOME/CLOSE_PRODUCT',
-
-  // view or hide cart modal
-  VIEW_CART: 'REDUX_DEMO/HOME/VIEW_CART',
-  CLOSE_CART: 'REDUX_DEMO/HOME/CLOSE_CART',
-
-  // view or hide menu modal
-  VIEW_MENU: 'REDUX_DEMO/HOME/VIEW_MENU',
-  CLOSE_MENU: 'REDUX_DEMO/HOME/CLOSE_MENU',
-
 };
 
 // actions
@@ -140,35 +125,6 @@ export const actions = {
       variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [],
     }));
   },
-
-  // user view product details and want to add to cart.
-  viewProduct: (id, cartId) => ({
-    type: types.VIEW_PRODUCT,
-    id,
-    cartId,
-  }),
-
-  closeProduct: () => ({
-    type: types.CLOSE_PRODUCT,
-  }),
-
-  // user view cart modal.
-  viewCart: () => ({
-    type: types.VIEW_CART,
-  }),
-
-  closeCart: () => ({
-    type: types.CLOSE_CART,
-  }),
-
-  // user view menu modal.
-  viewMenu: () => ({
-    type: types.VIEW_MENU,
-  }),
-
-  closeMenu: () => ({
-    type: types.CLOSE_MENU,
-  })
 };
 
 const fetchShoppingCart = () => {
@@ -246,11 +202,7 @@ const fetchProductDetail = (variables) => {
 
 // reducers
 const currentProduct = (state = initialState.currentProduct, action) => {
-  if (action.type === types.VIEW_PRODUCT) {
-    return { ...state, id: action.id, cartId: action.cartId }
-  } else if (action.type === types.CLOSE_PRODUCT) {
-    return { ...initialState.currentProduct };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true };
   } else if ([
     types.FETCH_PRODUCTDETAIL_SUCCESS,
@@ -269,7 +221,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     }
   }
 
-  switch(action.type) {
+  switch (action.type) {
     case types.FETCH_SHOPPINGCART_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_SHOPPINGCART_SUCCESS: {
@@ -289,7 +241,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
 }
 
 const onlineCategory = (state = initialState.onlineCategory, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.FETCH_ONLINECATEGORY_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_ONLINECATEGORY_SUCCESS:
@@ -306,29 +258,7 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
   }
 }
 
-const viewCart = (state = initialState.viewCart, action) => {
-  if (action.type === types.VIEW_CART) {
-    return true;
-  } else if (action.type === types.CLOSE_CART) {
-    return false;
-  } else {
-    return state;
-  }
-}
-
-const viewMenu = (state = initialState.viewMenu, action) => {
-  if (action.type === types.VIEW_MENU) {
-    return true;
-  } else if (action.type === types.CLOSE_MENU) {
-    return false;
-  } else {
-    return state;
-  }
-}
-
 export default combineReducers({
-  viewCart,
-  viewMenu,
   currentProduct,
   shoppingCart,
   onlineCategory,
@@ -413,7 +343,3 @@ export const getCategoryProductList = createSelector(
 );
 
 export const getCurrentProduct = (state) => state.home.currentProduct;
-
-export const getViewCart = (state) => state.home.viewCart;
-
-export const getViewMenu = (state) => state.home.viewMenu;
