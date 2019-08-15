@@ -201,6 +201,12 @@ class PhoneViewContainer extends React.Component {
             )
         }
         {this.renderPhoneView()}
+
+        <p className="terms-privacy text-center gray-font-opacity">
+          By tapping to continue, you agree to our
+          <br />
+          <Link target="_blank" to={GlobalConstants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={GlobalConstants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+        </p>
         <div className="thanks__suceed-animation">
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>

@@ -176,16 +176,17 @@ apiGql.GET_ONLINE_CATEGORY = gql`
         displayPrice
         trackInventory
         images
+        markedSoldOut
         variations {
           id
           name
           variationType
           optionValues {
+            markedSoldOut
             id
             value
           }
         }
-        markedSoldOut
       }
     }
   }
@@ -226,17 +227,28 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
-// Field [additionalComments] stores table id here.
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
+      tax
       orderId
       status
+      subtotal
       total
       storeId
       tableId
       pickUpId
+      serviceCharge
       additionalComments
+      items {
+        id
+        title
+        productId
+        quantity
+        unitPrice
+        image
+        variationTexts
+      }
     }
   }
 `;
@@ -292,12 +304,14 @@ apiGql.CREATE_ORDER = gql`
     $storeId: String!,
     $tableId: String,
     $pax: Int!,
+    $additionalComments: String,
     $shoppingCartIds: [String]
   ) {
     createOrder(input: {
       business: $business,
       storeId: $storeId,
       shoppingCartIds: $shoppingCartIds,
+      additionalComments: $additionalComments,
       tableId: $tableId,
       pax: $pax,
       channel: ${Constants.PLATFORMS_CODE.BEEP}
