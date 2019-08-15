@@ -49,15 +49,20 @@ const AsyncThankYou = Loadable({
   loading: MyLoadingComponent,
 });
 
+const AsyncReceiptDetail = Loadable({
+  loader: () => import("./containers/ReceiptDetail"),
+  loading: MyLoadingComponent,
+});
+
 const AsyncSorry = Loadable({
   loader: () => import("./containers/Sorry"),
   loading: MyLoadingComponent,
 });
 
-const AsyncPeopleCountModal = Loadable({
-  loader: () => import("./views/components/PeopleCountModal"),
-  loading: MyLoadingComponent,
-});
+// const AsyncPeopleCountModal = Loadable({
+//   loader: () => import("./views/components/PeopleCountModal"),
+//   loading: MyLoadingComponent,
+// });
 
 const AsyncError = Loadable({
   loader: () => import("./views/components/Error"),
@@ -66,21 +71,17 @@ const AsyncError = Loadable({
 
 export default () =>
   <React.Fragment>
-    <Route exact path={Constants.ROUTER_PATHS.HOME} component={AsyncHome} />
+    <Route path={Constants.ROUTER_PATHS.HOME} exact component={AsyncHome} />
     <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
-    <Route exact path={Constants.ROUTER_PATHS.CART} component={AsyncCart} />
+    <Route path={Constants.ROUTER_PATHS.CART} exact component={AsyncCart} />
     <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
     <Route path={Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT} exact component={AsyncBankCardPayment} />
     <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
+    <Route path={Constants.ROUTER_PATHS.RECEIPT_DETAIL} exact component={AsyncReceiptDetail} />
     <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
     <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
-    <Route path={`*/modal/:modal`} render={({ match }) => {
-      if (match.params.modal === 'people-count') return <AsyncPeopleCountModal />;
-      // more modals can put here.
+    <Route path={`*/modal/:modal`} render={() => {
       return null;
     }} />
-    {/*
-      // TODO: can use react context + portal to do modal render/show/hide.
-    */}
     <MessageModal />
   </React.Fragment>;
