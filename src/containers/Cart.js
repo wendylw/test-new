@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import { compose, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import withShoppingCart from '../libs/withShoppingCart';
+import withOnlineStoreInfo from '../libs/withOnlineStoreInfo';
 import { shoppingCartType } from '../views/propTypes';
 import CartItems from '../views/components/CartItems';
-import CurrencyNumber from '../views/components/CurrencyNumber';
+import CurrencyNumber from '../components/CurrencyNumber';
 import ClearAll from '../views/components/ClearAll';
 import { clientCoreApi } from '../apiClient';
 import apiGql from '../apiGql';
@@ -34,15 +35,23 @@ export class Cart extends Component {
   }
 
   render() {
-    const { shoppingCart = {}, history } = this.props;
+    const {
+      shoppingCart = {},
+      onlineStoreInfo,
+      history,
+    } = this.props;
     const { additionalComments } = this.state;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
     const {
       count,
       subtotal,
       total,
       tax,
       items,
-      serviceCharge,  // TODO: Needs API
+      serviceCharge,
     } = shoppingCart;
 
     // TODO: concern animation of hide or not.
@@ -86,7 +95,13 @@ export class Cart extends Component {
             <ul className="billing__list">
               <li className="billing__item flex flex-middle flex-space-between">
                 <label className="gray-font-opacity">Subtotal</label>
-                <span className="gray-font-opacity"><CurrencyNumber money={subtotal || 0} /></span>
+                <span className="gray-font-opacity">
+                  <CurrencyNumber
+                    money={subtotal || 0}
+                    locale={locale}
+                    currency={currency}
+                  />
+                </span>
               </li>
               <Query
                 query={apiGql.GET_CORE_BUSINESS}
@@ -105,7 +120,13 @@ export class Cart extends Component {
                     <React.Fragment>
                       <li className="billing__item flex flex-middle flex-space-between">
                         <label className="gray-font-opacity">{(stores[0].receiptTemplateData || {}).taxName || `Tax`}</label>
-                        <span className="gray-font-opacity"><CurrencyNumber money={tax || 0} /></span>
+                        <span className="gray-font-opacity">
+                          <CurrencyNumber
+                            money={tax || 0}
+                            locale={locale}
+                            currency={currency}
+                          />
+                        </span>
                       </li>
                       {(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
                         <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
@@ -117,7 +138,13 @@ export class Cart extends Component {
               </Query>
               <li className="billing__item flex flex-middle flex-space-between">
                 <label className="font-weight-bold">Total</label>
-                <span className="font-weight-bold"><CurrencyNumber money={total || 0} /></span>
+                <span className="font-weight-bold">
+                  <CurrencyNumber
+                    money={total || 0}
+                    locale={locale}
+                    currency={currency}
+                  />
+                </span>
               </li>
             </ul>
           </section>
@@ -143,11 +170,21 @@ export class Cart extends Component {
   }
 }
 
-export default compose(withRouter, withShoppingCart({
-  props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
-    if (loading) {
-      return null;
-    }
-    return { shoppingCart };
-  },
-}))(Cart);
+export default compose(withRouter,
+  withOnlineStoreInfo({
+    props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
+      if (loading) {
+        return null;
+      }
+      return { onlineStoreInfo };
+    },
+  }),
+  withShoppingCart({
+    props: ({ gqlShoppingCart: { loading, shoppingCart } }) => {
+      if (loading) {
+        return null;
+      }
+      return { shoppingCart };
+    },
+  })
+)(Cart);

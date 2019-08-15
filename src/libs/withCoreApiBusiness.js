@@ -20,10 +20,10 @@ const withCoreApiBusiness = TheComponent =>
     }
 
     tryPeopleCount(response) {
-      const { history } = this.props;
+      // const { history } = this.props;
       const { business } = response;
 
-      const { enablePax, subscriptionStatus, stores } = business || {};
+      const { /*enablePax, */subscriptionStatus, stores } = business || {};
 
       if (subscriptionStatus === 'Expired') {
         this.goToError('Account is expired.');
@@ -36,12 +36,12 @@ const withCoreApiBusiness = TheComponent =>
       }
 
       // Everytime reload /home page, will effects a Pax selector.
-      if (enablePax && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
-        if (history.location.pathname.indexOf('/modal/people-count') === -1) {
-          const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
-          history.push(peopleCountModalPath);
-        }
-      }
+      // if (enablePax && history.location.pathname === Constants.ROUTER_PATHS.HOME) {
+      //   if (history.location.pathname.indexOf('/modal/people-count') === -1) {
+      //     const peopleCountModalPath = `${history.location.pathname}/modal/people-count`;
+      //     history.push(peopleCountModalPath);
+      //   }
+      // }
     }
 
     render() {

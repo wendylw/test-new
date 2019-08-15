@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import { shoppingCartType } from '../propTypes';
-import ItemComponent from './ItemComponent';
+import Tag from '../../components/Tag';
+import Item from '../../components/Item';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import ItemOperator from '../../components/ItemOperator';
 import config from '../../config';
 import Constants from '../../Constants';
 
@@ -22,15 +25,43 @@ const isCartItemSoldOut = cartItem => {
 }
 
 class CartItemsComponent extends Component {
-  static propTypes = {
-    shoppingCart: shoppingCartType,
-    config: PropTypes.shape({
-      business: PropTypes.string,
-    }),
+  handleUpdateProductQuantity(cartItem, isDecreased) {
+    const {
+      productId,
+      variations, // NOTICE: API returns null, not a [].
+      quantity,
+    } = cartItem;
+
+    if (isDecreased && quantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
+      this.props.removeShoppingCartItem({
+        variables: {
+          productId,
+          variations,
+        }
+      });
+      return;
+    }
+
+    this.props.addOrUpdateShoppingCartItem({
+      variables: {
+        action: 'edit',
+        business: config.business,
+        productId,
+        quantity: quantity + (isDecreased ? -1 : 1),
+        variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
+      }
+    });
   }
 
   render() {
-    const { shoppingCart } = this.props;
+    const {
+      shoppingCart,
+      onlineStoreInfo
+    } = this.props;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
 
     if (!shoppingCart) {
       return null;
@@ -47,65 +78,66 @@ class CartItemsComponent extends Component {
     return (
       <ul className="list">
         {
-          cartItems.sort(sortFn).map((cartItem) => {
+          cartItems.sort(sortFn).map(cartItem => {
             const {
               id,
               title,
-              productId,
-              variations, // NOTICE: API returns null, not a [].
               variationTexts,
               displayPrice,
               quantity,
               image,
             } = cartItem;
+
             return (
-              <ItemComponent
+              <Item
+                contentClassName="flex-middle"
                 key={id}
                 image={image}
                 title={title}
                 variation={variationTexts.join(', ')}
-                price={displayPrice}
-                quantity={quantity}
-                decreaseDisabled={quantity === 0}
-                soldOut={isCartItemSoldOut(cartItem)}
-                onDecrease={() => {
-                  if (quantity === Constants.ADD_TO_CART_MIN_QUANTITY) {
-                    this.props.removeShoppingCartItem({
-                      variables: {
-                        productId,
-                        variations,
-                      }
-                    });
-                    return;
-                  }
-                  this.props.addOrUpdateShoppingCartItem({
-                    variables: {
-                      action: 'edit',
-                      business: config.business,
-                      productId,
-                      quantity: quantity - 1,
-                      variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
-                    }
-                  });
-                }}
-                onIncrease={() => {
-                  this.props.addOrUpdateShoppingCartItem({
-                    variables: {
-                      action: 'edit',
-                      business: config.business,
-                      productId,
-                      quantity: quantity + 1,
-                      variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
-                    }
-                  });
-                }}
-              />
-            )
+                detail={
+                  <CurrencyNumber
+                    money={displayPrice || 0}
+                    locale={locale}
+                    currency={currency}
+                  />
+                }
+              >
+
+                {
+                  isCartItemSoldOut(cartItem)
+                    ? <Tag text="Sold Out" className="tag__card" />
+                    : (
+                      <ItemOperator
+                        className="flex-middle"
+                        quantity={quantity}
+                        decreaseDisabled={quantity === 0}
+                        onDecrease={this.handleUpdateProductQuantity.bind(this, cartItem, true)}
+                        onIncrease={this.handleUpdateProductQuantity.bind(this, cartItem, false)}
+                      />
+                    )
+                }
+              </Item>
+            );
           })
         }
       </ul>
     )
   }
 }
+
+CartItemsComponent.propTypes = {
+  shoppingCart: shoppingCartType,
+  config: PropTypes.shape({
+    business: PropTypes.string,
+  }),
+  removeShoppingCartItem: PropTypes.func,
+  addOrUpdateShoppingCartItem: PropTypes.func,
+};
+
+CartItemsComponent.defaultProps = {
+  removeShoppingCartItem: () => { },
+  addOrUpdateShoppingCartItem: () => { },
+};
 
 export default CartItemsComponent;

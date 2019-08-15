@@ -23,9 +23,6 @@ const {
 
 // Example URL: http://nike.storehub.local:3002/#/payment
 class Payment extends Component {
-  static propTypes = {
-  }
-
   form = null;
 
   state = {
