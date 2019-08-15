@@ -6,7 +6,7 @@ import { actions as cartActions } from "../../redux/modules/cart";
 import Header from "../../components/Header";
 import { getOnlineStoreInfo, getRequestInfo } from "../../redux/modules/app";
 import CategoryProductList from "./components/CategoryProductList";
-import ProductDetail from "./components/Product";
+import ProductDetail from "./components/ProductDetail";
 import Footer from "./components/Footer";
 import MiniCartListModal from "./components/MiniCartListModal";
 import Menu from "./components/Menu";

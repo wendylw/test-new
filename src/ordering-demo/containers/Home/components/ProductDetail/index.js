@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
+import ReactDOM from 'react-dom';
 import ProductItem from '../ProductItem';
 import VariationSelector from '../VariationSelector';
 import config from "../../../../../config";
@@ -11,126 +12,207 @@ import { bindActionCreators } from "redux";
 import { getProductById } from "../../../../../redux/modules/entities/products";
 import { actions as homeActions, getCurrentProduct } from "../../../../redux/modules/home";
 
+const VARIATION_TYPES = {
+  SINGLE_CHOICE: 'SingleChoice',
+  MULTIPLE_CHOICE: 'MultipleChoice',
+};
+
 class ProductDetail extends Component {
+  currentProductId = null;
+  productEl = null;
+  asideEl = null;
+
   state = {
     variationsByIdMap: {}, // Object<VariationId: Object<variationType, OptionId:option >>
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
   };
 
-  displayPrice() {
-    const { product } = this.props;
-    const { childrenMap, unitPrice, onlineUnitPrice } = product;
+  componentWillReceiveProps(nextProps) {
+    const { product } = nextProps;
+    let newMap = {};
 
-    const variationNames = this.getVariationNames();
-
-    const childProduct = childrenMap.find(
-      ({ variation }) =>
-        variation.sort().toString() === variationNames.sort().toString()
-    );
-
-    let displayPrice = childProduct ? childProduct.displayPrice : product.displayPrice;
-    const diffPriceArr = this.getVariationPriceDiffs();
-
-    if (diffPriceArr.length) {
-      displayPrice = (displayPrice || onlineUnitPrice || unitPrice) + diffPriceArr.reduce((total, diff) => total + diff, 0);
+    if (!product || !product.variations) {
+      return;
     }
 
-    return displayPrice;
+    if ((!this.product && product) || (product.id !== this.product.id)) {
+
+      product.variations.forEach(variation => {
+        if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+          const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
+
+          if (defaultOption) {
+            newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
+          }
+        }
+      });
+
+      this.currentProductId = product.id
+
+      this.setState({
+        variationsByIdMap: newMap,
+        cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
+      });
+    }
   }
 
-  componentDidMount() {
-    this.setState({ active: true });
+  getVariationsMaxHeight() {
+    if (!this.asideEl || !this.productEl) {
+      return null;
+    }
+
+    const asideHeight = ReactDOM.findDOMNode(this.asideEl).clientHeight;
+    const productHeight = ReactDOM.findDOMNode(this.productEl).clientHeight;
+
+    return `${(asideHeight * 0.9 - productHeight).toFixed(4)}px`;
   }
 
-  componentWillUnmount() {
-    this.setState({ active: false });
+  shouldComponentUpdate(nextProps) {
+    const { viewProductDetail } = nextProps;
+
+    return viewProductDetail !== this.props.viewProductDetail;
+  }
+
+  displayPrice() {
+    const { product } = this.props;
+    const {
+      childrenMap,
+      unitPrice,
+      onlineUnitPrice,
+      displayPrice
+    } = product || {};
+    const { variationsByIdMap } = this.state;
+    const selectedValues = [];
+    let totalPriceDiff = 0;
+
+    Object.values(variationsByIdMap).forEach(function (options) {
+      Object.values(options).forEach(item => {
+        if (item.value) {
+          totalPriceDiff += item.priceDiff;
+
+          selectedValues.push(item.value);
+        }
+      });
+    });
+
+    const childProduct = (childrenMap || []).find(({ variation }) => (
+      variation.sort().toString() === selectedValues.sort().toString()
+    ));
+
+    if (childProduct) {
+      this.currentProductId = childProduct.childId;
+
+      return childProduct.displayPrice;
+    }
+
+    const price = displayPrice || unitPrice || onlineUnitPrice;
+
+    return (price + totalPriceDiff).toFixed(2);
   }
 
   isSubmitable() {
-    const { cartQuantity, variationsByIdMap } = this.state;
-    const singleChoiceVariations = this.getSingleChoiceVariations();
+    const {
+      cartQuantity,
+      variationsByIdMap,
+    } = this.state;
+    const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
 
     // check: cart should not empty
     let submitable = cartQuantity > 0;
 
     // check: if product has single variants, then they should be all selected.
     if (singleChoiceVariations.length > 0) {
-      submitable =
-        submitable &&
-        this.getVariationsValue().length > 0 &&
-        singleChoiceVariations.filter(
-          v => (variationsByIdMap[v.id] || []).length > 0
-        ).length === singleChoiceVariations.length;
+      const selectedAllSingleChoice = !singleChoiceVariations.find(variation => !Object.keys(variationsByIdMap).includes(variation.id));
+
+      submitable = submitable && Object.values(variationsByIdMap).length > 0 && selectedAllSingleChoice;
     }
 
     return submitable;
   }
 
-  getVariationsByType = (type) => {
-    const { product } = this.props;
+  getNewVariationsByIdMap(variation, option) {
+    const newMap = {};
 
-    if (!product) {
-      return [];
+    if (!newMap[variation.id] || variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+      newMap[variation.id] = {
+        variationType: variation.variationType
+      }
     }
 
-    if (!type) {
-      return product.variations;
+    if (!newMap[variation.id][option.id]) {
+      newMap[variation.id][option.id] = {
+        priceDiff: option.priceDiff,
+        value: option.value,
+      };
     }
 
-    return product.variations.filter((variation) => variation.variationType === type);
+    return newMap;
   }
 
-  getSingleChoiceVariations() {
-    return this.getVariationsByType('SingleChoice');
-  }
-
-  getMultipleChoiceVariations() {
-    return this.getVariationsByType('MultipleChoice');
-  }
-
-  setVariationsByIdMap(variationId, variationAndOptionById) {
-    const newState = {
-      variationsByIdMap: this.state.variationsByIdMap
-    };
-
-    // don't know why, but just found that set values to this.state
-    // can avoid another call issue in an extremely shot time.
-    // which case is about auto select first SingleChoice variations.
-    newState.variationsByIdMap[variationId] = variationAndOptionById;
-
-    this.setState(newState);
-  }
-
-  getVariationsValue() {
+  setVariationsByIdMap(variation, option) {
     const { variationsByIdMap } = this.state;
-    return Object.values(variationsByIdMap).reduce(
-      (ret, arr) => [...ret, ...arr],
-      []
-    );
+    const newVariation = this.getNewVariationsByIdMap(variation, option);
+    let newMap = variationsByIdMap;
+
+    if (!newMap[variation.id] || newMap[variation.id].variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+      newMap = Object.assign({}, newMap, newVariation);
+    } else {
+      if (newMap[variation.id][option.id]) {
+        delete newMap[variation.id][option.id];
+      } else {
+        newMap[variation.id][option.id] = newVariation[variation.id][option.id];
+      }
+    }
+
+    this.setState({ variationsByIdMap: newMap });
   }
 
-  getVariationOptionValuesWithFieldOnly(field) {
-    const { product } = this.props;
-    const variations = this.getVariationsValue();
-    return variations.map(({ variationId, optionId }) => {
-      const variation = product.variations.find(v => v.id === variationId);
-      const optionValue = variation.optionValues.find(o => o.id === optionId);
-      return optionValue[field];
-    });
-  }
+  getChoiceVariations(type) {
+    const { variations } = this.props.product || {};
 
-  getVariationNames() {
-    return this.getVariationOptionValuesWithFieldOnly("value");
-  }
-
-  getVariationPriceDiffs() {
-    return this.getVariationOptionValuesWithFieldOnly("priceDiff");
+    return Array.isArray(variations)
+      ? variations.filter(v => v.variationType === type)
+      : [];
   }
 
   handleAddOrUpdateShoppingCartItem = async (variables) => {
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
     this.handleHideProductDetail();
+  }
+
+  renderVriations() {
+    const { variations } = this.props.product || {};
+
+    if (!variations || !variations.length) {
+      return null;
+    }
+
+    const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
+    const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
+
+    return (
+      <ol className="product-detail__options-category">
+        {
+          singleChoiceVariations.map(variation => (
+            <VariationSelector
+              key={variation.id}
+              variation={variation}
+              onChange={this.setVariationsByIdMap.bind(this)}
+            />
+          ))
+        }
+        {
+          multipleChoiceVariations.map(variation => (
+            <VariationSelector
+              key={variation.id}
+              variation={variation}
+              onChange={this.setVariationsByIdMap.bind(this)}
+            />
+          ))
+        }
+      </ol>
+    );
   }
 
   renderProductItem() {
@@ -194,29 +276,12 @@ class ProductDetail extends Component {
     return (
       <aside className={className.join(" ")} onClick={this.handleClickOverlay}>
         <div className="product-detail">
-          {this.getSingleChoiceVariations().length ? (
-            <ol className="product-detail__options-category">
-              {this.getSingleChoiceVariations().map(variation => (
-                <VariationSelector
-                  key={variation.id}
-                  variation={variation}
-                  onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                />
-              ))}
-            </ol>
-          ) : null}
-
-          {this.getMultipleChoiceVariations().length ? (
-            <ol className="product-detail__options-category">
-              {this.getMultipleChoiceVariations().map(variation => (
-                <VariationSelector
-                  key={variation.id}
-                  variation={variation}
-                  onChange={this.setVariationsByIdMap.bind(this, variation.id)}
-                />
-              ))}
-            </ol>
-          ) : null}
+          <div
+            className="product-detail__options-container"
+            style={{ maxHeight: this.getVariationsMaxHeight() || '30vh' }}
+          >
+            {this.renderVriations()}
+          </div>
 
           {this.renderProductItem()}
         </div>
