@@ -16,6 +16,7 @@ const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
   MULTIPLE_CHOICE: 'MultipleChoice',
 };
+const EXECLUDE_KEYS = ['variationType'];
 
 class ProductDetail extends Component {
   currentProductId = null;
@@ -175,6 +176,16 @@ class ProductDetail extends Component {
       : [];
   }
 
+  handleHideProductDetail(e) {
+    const { onToggle } = this.props;
+
+    if (e && e.target !== e.currentTarget) {
+      return;
+    }
+
+    onToggle();
+  }
+
   handleAddOrUpdateShoppingCartItem = async (variables) => {
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
@@ -215,9 +226,16 @@ class ProductDetail extends Component {
     );
   }
 
-  renderProductItem() {
-    const { product } = this.props;
+  renderProductOperator() {
+    const {
+      onlineStoreInfo,
+      product,
+    } = this.props;
     const { cartQuantity } = this.state;
+    const {
+      locale,
+      currency,
+    } = onlineStoreInfo || {};
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
@@ -226,14 +244,18 @@ class ProductDetail extends Component {
     }
 
     return (
-      <div className="aside__fix-bottom">
+      <div
+        ref={ref => this.productEl = ref}
+        className="aside__fix-bottom"
+      >
         <ProductItem
           className="aside__section-container border__top-divider"
           image={imageUrl}
           title={title}
           price={this.displayPrice()}
-          quantity={cartQuantity}
-          decreaseDisabled={cartQuantity === 1}
+          cartQuantity={cartQuantity}
+          locale={locale}
+          currency={currency}
           onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />
@@ -242,17 +264,29 @@ class ProductDetail extends Component {
           <button
             className="button__fill button__block font-weight-bold"
             type="button"
-            disabled={!this.isSubmitable() || Utils.isProductSoldOut(product)}
+            disabled={!this.isSubmitable() || Utils.isProductSoldOut(product || {})}
             onClick={async () => {
-              const variations = this.getVariationsValue();
+              const { variationsByIdMap } = this.state;
+              let variations = [];
+
+              Object.keys(variationsByIdMap).forEach(function (variationId) {
+                Object.keys(variationsByIdMap[variationId]).forEach(key => {
+                  if (!EXECLUDE_KEYS.includes(key)) {
+                    variations.push({
+                      variationId,
+                      optionId: key,
+                    });
+                  }
+                });
+              });
 
               if (this.isSubmitable()) {
-                await this.props.addOrUpdateShoppingCartItem({
-                  action: "add",
+                this.handleAddOrUpdateShoppingCartItem({
+                  action: 'add',
                   business: config.business,
-                  productId,
+                  productId: this.currentProductId || productId,
                   quantity: cartQuantity,
-                  variations
+                  variations,
                 });
               }
             }}
@@ -269,12 +303,18 @@ class ProductDetail extends Component {
       viewProductDetail,
     } = this.props;
 
+    console.log(product)
+
     if (viewProductDetail && product && product.id && !product._needMore) {
       className.push('active');
     }
 
     return (
-      <aside className={className.join(" ")} onClick={this.handleClickOverlay}>
+      <aside
+        ref={ref => this.asideEl = ref}
+        className={className.join(" ")}
+        onClick={(e) => this.handleHideProductDetail(e)}
+      >
         <div className="product-detail">
           <div
             className="product-detail__options-container"
@@ -283,7 +323,7 @@ class ProductDetail extends Component {
             {this.renderVriations()}
           </div>
 
-          {this.renderProductItem()}
+          {this.renderProductOperator()}
         </div>
       </aside>
     );

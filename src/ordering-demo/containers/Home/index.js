@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { actions as homeActions, getCurrentProduct, getCategoryProductList } from "../../redux/modules/home";
+import { actions as homeActions, getCategoryProductList } from "../../redux/modules/home";
 import { actions as cartActions } from "../../redux/modules/cart";
 import Header from "../../components/Header";
 import { getOnlineStoreInfo, getRequestInfo } from "../../redux/modules/app";
@@ -82,11 +82,12 @@ class Home extends Component {
         <CurrentCategoryBar
           categories={categories}
         />
-        <CategoryProductList />
+        <CategoryProductList onToggle={this.handleToggleProductDetail.bind(this)} />
         {
           domLoaded
             ? (
               <ProductDetail
+                onlineStoreInfo={onlineStoreInfo}
                 viewProductDetail={viewProductDetail}
                 onToggle={this.handleToggleProductDetail.bind(this)}
               />

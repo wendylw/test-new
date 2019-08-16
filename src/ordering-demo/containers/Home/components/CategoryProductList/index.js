@@ -18,9 +18,15 @@ class CategoryProductList extends Component {
   }
 
   handleIncreaseProductInCart = async (product) => {
+    const { onToggle } = this.props;
+
     try {
       await this.props.homeActions.increaseProductInCart(product);
       await this.props.homeActions.loadShoppingCart();
+
+      if (product.variations && product.variations.length) {
+        onToggle();
+      }
     } catch (e) {
       console.error(e);
     }
@@ -56,9 +62,11 @@ class CategoryProductList extends Component {
 }
 
 CategoryProductList.propTypes = {
+  onToggle: PropTypes.func,
 };
 
 CategoryProductList.defaultProps = {
+  onToggle: () => { },
 };
 
 export default connect(

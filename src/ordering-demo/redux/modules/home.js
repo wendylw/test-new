@@ -110,9 +110,8 @@ export const actions = {
     const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id);
 
     if (prod.variations && prod.variations.length) {
-      dispatch(actions.viewProduct(prod.id, cartItem ? cartItem.id : ''));
       if (prod._needMore) {
-        dispatch(fetchProductDetail({ productId: prod.id }));
+        return dispatch(fetchProductDetail({ productId: prod.id }));
       }
       return Promise.reject(new Error('Show product detail page instead'));
     }

@@ -1,104 +1,80 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import Tag from '../../../../components/Tag';
+import Item from '../../../../components/Item';
+import ItemOperator from '../../../../components/ItemOperator';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import Image from '../../../../components/Image';
-import SoldOutMark from '../../../../components/SoldOutMark';
+import Constants from '../../../../libs/constants';
 
 export class ProductItem extends Component {
-  static propTypes = {
-    image: PropTypes.string,
-    title: PropTypes.string,
-    variation: PropTypes.string,
-    price: PropTypes.number,
-    quantity: PropTypes.number,
-    decreaseDisabled: PropTypes.bool,
-    increaseDisabled: PropTypes.bool,
-    soldOut: PropTypes.bool,
-    onDecrease: PropTypes.func,
-    onIncrease: PropTypes.func,
-  };
-
-  static defaultProps = {
-    image: '',
-    variation: '',
-    decreaseDisabled: false,
-    increaseDisabled: false,
-    soldOut: false,
-    onDecrease: () => { },
-    onIncrease: () => { },
-  };
-
   render() {
     const {
-      className = '',
+      className,
+      locale,
+      currency,
       image,
       title,
-      variation,
       price,
-    } = this.props;
-
-    return (
-      <li className={`item border__bottom-divider flex flex-top ${className}`}>
-        <Image className="item__image-container" src={image} />
-        <div className="item__content flex flex-middle flex-space-between">
-          <div className="item__detail">
-            <summary className="item__title font-weight-bold">{title}</summary>
-            {variation ? <p className="item__description">{variation}</p> : null}
-            <span className="gray-font-opacity"><CurrencyNumber money={price || 0} /></span>
-          </div>
-
-          {this.renderOperators()}
-        </div>
-      </li>
-    )
-  }
-
-  renderOperators = () => {
-    const {
-      quantity,
-      decreaseDisabled,
-      increaseDisabled,
       soldOut,
+      cartQuantity,
       onDecrease,
       onIncrease,
     } = this.props;
 
-    if (soldOut) {
-      return (
-        <SoldOutMark />
-      )
-    }
-
     return (
-      <div className={`item__cart-ctrl ${quantity > 0 ? 'is-minuts' : ''} flex flex-middle flex-space-between`}>
-        <button
-          className="cart__ctrl-container"
-          disabled={decreaseDisabled}
-          onClick={onDecrease}
-        >
-          <i className="cart__ctrl cart__minuts">
-            <span className="cart__icon"></span>
-          </i>
-        </button>
-
-        {
-          quantity > 0 ? (
-            <span className="font-weight-bold">{quantity}</span>
-          ) : null
+      <Item
+        className={className}
+        contentClassName="flex-middle"
+        image={image}
+        title={title}
+        detail={
+          <CurrencyNumber
+            money={price || 0}
+            locale={locale}
+            currency={currency}
+          />
         }
-
-        <button
-          className="cart__ctrl-container"
-          onClick={onIncrease}
-          disabled={increaseDisabled}
-        >
-          <i className="cart__ctrl cart__add">
-            <span className="cart__icon"></span>
-          </i>
-        </button>
-      </div>
+      >
+        {
+          soldOut
+            ? <Tag text="Sold Out" className="tag__card" />
+            : (
+              <ItemOperator
+                className="flex-middle"
+                quantity={cartQuantity}
+                decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+                onDecrease={onDecrease}
+                onIncrease={onIncrease}
+              />
+            )
+        }
+      </Item>
     )
   }
 }
 
-export default ProductItem
+ProductItem.propTypes = {
+  locale: PropTypes.string,
+  currency: PropTypes.string,
+  className: PropTypes.string,
+  soldOut: PropTypes.bool,
+  image: PropTypes.string,
+  title: PropTypes.string,
+  price: PropTypes.number,
+  cartQuantity: PropTypes.number,
+  onDecrease: PropTypes.func,
+  onIncrease: PropTypes.func,
+};
+
+ProductItem.defaultProps = {
+  className: '',
+  soldOut: false,
+  image: '',
+  title: '',
+  price: 0,
+  cartQuantity: 0,
+  onDecrease: () => { },
+  onIncrease: () => { },
+};
+
+export default ProductItem;

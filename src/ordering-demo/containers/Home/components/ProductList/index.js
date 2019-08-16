@@ -14,11 +14,10 @@ class ProductList extends Component {
               image={product.images[0]}
               title={product.title}
               price={product.displayPrice}
-              quantity={product.cartQuantity}
+              cartQuantity={product.cartQuantity}
               soldOut={product.soldOut}
               onDecrease={this.handleItemDecrease.bind(this, product)}
               onIncrease={this.handleItemIncrease.bind(this, product)}
-              decreaseDisabled={!product.canDecreaseQuantity}
             />
           ))
         }
