@@ -5,6 +5,7 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
+import { getCartSummary } from "../../../../../redux/modules/entities/carts";
 import { actions as homeActions, getShoppingCart, getCategoryProductList } from "../../../../redux/modules/home";
 
 export class Footer extends Component {
@@ -89,7 +90,9 @@ Footer.defaultProps = {
 
 export default connect(
   state => {
+
     return {
+      cartSummary: getCartSummary(state),
       shoppingCart: getShoppingCart(state),
       categories: getCategoryProductList(state),
     };

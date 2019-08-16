@@ -2,6 +2,14 @@ import React, { Component } from 'react';
 import ProductItem from '../ProductItem';
 
 class ProductList extends Component {
+  handleItemDecrease = (product) => {
+    this.props.onDecreaseItem(product);
+  }
+
+  handleItemIncrease = (product) => {
+    this.props.onIncreaseItem(product);
+  }
+
   render() {
     const { products } = this.props;
 
@@ -23,14 +31,6 @@ class ProductList extends Component {
         }
       </ul>
     );
-  }
-
-  handleItemDecrease = (product) => {
-    this.props.onDecreaseItem(product);
-  }
-
-  handleItemIncrease = (product) => {
-    this.props.onIncreaseItem(product);
   }
 }
 

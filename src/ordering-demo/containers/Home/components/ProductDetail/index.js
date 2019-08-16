@@ -36,8 +36,7 @@ class ProductDetail extends Component {
       return;
     }
 
-    if ((!this.product && product) || (product.id !== this.product.id)) {
-
+    if ((!this.props.product && product) || (product.id !== this.props.product.id)) {
       product.variations.forEach(variation => {
         if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
           const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
@@ -68,19 +67,13 @@ class ProductDetail extends Component {
     return `${(asideHeight * 0.9 - productHeight).toFixed(4)}px`;
   }
 
-  shouldComponentUpdate(nextProps) {
-    const { viewProductDetail } = nextProps;
-
-    return viewProductDetail !== this.props.viewProductDetail;
-  }
-
   displayPrice() {
     const { product } = this.props;
     const {
       childrenMap,
-      unitPrice,
-      onlineUnitPrice,
-      displayPrice
+      unitPrice = 0,
+      onlineUnitPrice = 0,
+      displayPrice = 0
     } = product || {};
     const { variationsByIdMap } = this.state;
     const selectedValues = [];
@@ -140,7 +133,7 @@ class ProductDetail extends Component {
       }
     }
 
-    if (!newMap[variation.id][option.id]) {
+    if (newMap[variation.id] && !newMap[variation.id][option.id]) {
       newMap[variation.id][option.id] = {
         priceDiff: option.priceDiff,
         value: option.value,
@@ -187,6 +180,8 @@ class ProductDetail extends Component {
   }
 
   handleAddOrUpdateShoppingCartItem = async (variables) => {
+    const { homeActions } = this.props;
+
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
     this.handleHideProductDetail();
@@ -252,7 +247,7 @@ class ProductDetail extends Component {
           className="aside__section-container border__top-divider"
           image={imageUrl}
           title={title}
-          price={this.displayPrice()}
+          price={Number(this.displayPrice())}
           cartQuantity={cartQuantity}
           locale={locale}
           currency={currency}
@@ -303,8 +298,6 @@ class ProductDetail extends Component {
       viewProductDetail,
     } = this.props;
 
-    console.log(product)
-
     if (viewProductDetail && product && product.id && !product._needMore) {
       className.push('active');
     }
@@ -345,7 +338,7 @@ export default connect(
     const currentProductInfo = getCurrentProduct(state);
 
     return {
-      product: currentProductInfo && getProductById(state, currentProductInfo.id),
+      product: getProductById(state, currentProductInfo.id),
     };
   },
   dispatch => ({

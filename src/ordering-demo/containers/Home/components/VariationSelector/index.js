@@ -9,7 +9,7 @@ export class VariationSelector extends Component {
   }
 
   static defaultProps = {
-    onChange: () => {},
+    onChange: () => { },
   };
 
   state = {
@@ -18,48 +18,6 @@ export class VariationSelector extends Component {
 
   componentDidMount() {
     this.selectDefault();
-  }
-
-  render() {
-    const { variation } = this.props;
-
-    if (!variation) {
-      return null;
-    }
-
-    return (
-      <li className="product-detail__options" key={variation.id}>
-        <h4 className="product-detail__options-title gray-font-opacity">{variation.name}</h4>
-        <ul className="tag__cards">
-        {
-          variation.optionValues.map(({ id, value, markedSoldOut }) => {
-            const className = ['tag__card']
-
-            if (markedSoldOut) {
-              className.push('disabled')
-            } else if (this.state.selected[id]) {
-              className.push('active')
-            }
-
-            return (
-              <li
-                key={id}
-                className={className.join(' ')}
-                onClick={() => this.setState({
-                  selected: {
-                    ...(this.isSingleChoice() ? null : this.state.selected),
-  
-                    // prevent reverse select when SingleChoice
-                    [id]: this.isSingleChoice() ? this.state.selected : !this.state.selected[id],
-                  }
-                }, this.onSelected)}
-              >{value}</li>
-            )
-          })
-        }
-      </ul>
-      </li>
-    )
   }
 
   selectDefault() {
@@ -75,7 +33,7 @@ export class VariationSelector extends Component {
         selected: {
           [selectedOptionValue.id]: true,
         }
-      }, this.onSelected);
+      });
     }
   }
 
@@ -92,6 +50,7 @@ export class VariationSelector extends Component {
   getAllVariationAndOptionById() {
     const { variation } = this.props;
     const { selected } = this.state;
+
     return Object.keys(selected)
       .filter(id => selected[id])
       .map(id => ({
@@ -100,8 +59,56 @@ export class VariationSelector extends Component {
       }));
   }
 
-  onSelected() {
-    this.props.onChange(this.getAllVariationAndOptionById());
+  hanldeSelectedOption(option) {
+    const { id } = option;
+    const { variation } = this.props;
+
+    this.setState({
+      selected: {
+        ...(this.isSingleChoice() ? null : this.state.selected),
+
+        // prevent reverse select when SingleChoice
+        [id]: this.isSingleChoice() ? this.state.selected : !this.state.selected[id],
+      }
+    });
+
+    this.props.onChange(variation, option);
+  }
+
+  render() {
+    const { variation } = this.props;
+
+    if (!variation) {
+      return null;
+    }
+
+    return (
+      <li className="product-detail__options" key={variation.id} >
+        <h4 className="product-detail__options-title gray-font-opacity">{variation.name}</h4>
+        <ul className="tag__cards">
+          {
+            (variation.optionValues || []).map((option) => {
+              const { id, value, markedSoldOut } = option;
+              const className = ['tag__card']
+
+              if (markedSoldOut) {
+                className.push('disabled');
+              } else if (this.state.selected[id]) {
+                className.push('active');
+              }
+
+              return (
+                <li
+                  key={id}
+                  className={className.join(' ')}
+                  onClick={this.hanldeSelectedOption.bind(this, option)}
+                >{value}</li>
+              )
+            })
+          }
+        </ul>
+      </li>
+    )
   }
 }
 

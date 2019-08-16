@@ -57,8 +57,7 @@ class CartList extends Component {
                 title={title}
                 variation={variationTexts.join(', ')}
                 price={displayPrice}
-                quantity={quantity}
-                decreaseDisabled={quantity === 0}
+                cartQuantity={quantity}
                 soldOut={isCartItemSoldOut(cartItem)}
                 onDecrease={async () => {
                   if (quantity === 1) {

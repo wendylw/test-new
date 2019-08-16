@@ -113,7 +113,8 @@ export const actions = {
       if (prod._needMore) {
         return dispatch(fetchProductDetail({ productId: prod.id }));
       }
-      return Promise.reject(new Error('Show product detail page instead'));
+
+      return;
     }
 
     return dispatch(addOrUpdateShoppingCartItem({
@@ -203,10 +204,16 @@ const fetchProductDetail = (variables) => {
 const currentProduct = (state = initialState.currentProduct, action) => {
   if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true };
-  } else if ([
-    types.FETCH_PRODUCTDETAIL_SUCCESS,
-    types.FETCH_PRODUCTDETAIL_FAILURE,
-  ].includes(action.type)) {
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+    const { product } = action.responseGql.data;
+
+    return {
+      ...state,
+      isFetching: false,
+      id: product.id,
+    };
+  }
+  else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
     return { ...state, isFetching: false };
   }
   return state;
@@ -225,6 +232,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       return { ...state, isFetching: true };
     case types.FETCH_SHOPPINGCART_SUCCESS: {
       const { shoppingCart } = action.responseGql.data;
+
       return {
         ...state,
         isFetching: false,
