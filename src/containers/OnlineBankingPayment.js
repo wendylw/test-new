@@ -9,8 +9,8 @@ import { client } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';
 import RedirectForm from '../views/components/RedirectForm';
-import CurrencyNumber from '../views/components/CurrencyNumber';
 import DocumentTitle from '../views/components/DocumentTitle';
+import CurrencyNumber from '../components/CurrencyNumber';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -117,6 +117,10 @@ class OnlineBankingPayment extends Component {
 			onlineStoreInfo
 		} = this.props;
 		const {
+			locale,
+			currency,
+		} = onlineStoreInfo;
+		const {
 			agentCode,
 			payNowLoading,
 			loadedBankingList,
@@ -153,7 +157,12 @@ class OnlineBankingPayment extends Component {
 									>
 										<img src={onlineStoreInfo.logo} alt="" />
 									</figure>
-									<CurrencyNumber classList="payment-bank__money font-weight-bold text-center" money={total || 0} />
+									<CurrencyNumber
+										classList="payment-bank__money font-weight-bold text-center"
+										locale={locale}
+										currency={currency}
+										money={total || 0}
+									/>
 
 									<form id="bank-2c2p-form" className="form">
 										<div className="payment-bank__form-item">
@@ -190,7 +199,15 @@ class OnlineBankingPayment extends Component {
 									>{
 											payNowLoading && !agentCode
 												? 'Redirecting'
-												: <CurrencyNumber classList="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
+												: (
+													<CurrencyNumber
+														classList="font-weight-bold text-center"
+														addonBefore="Pay"
+														money={total || 0}
+														locale={locale}
+														currency={currency}
+													/>
+												)
 										}
 									</button>
 								</div>
