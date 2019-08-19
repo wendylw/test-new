@@ -28,32 +28,51 @@ class ProductDetail extends Component {
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
   };
 
+  componentDidMount() {
+    const { product } = this.props;
+
+    this.initVariationsByIdMap(product);
+  }
+
   componentWillReceiveProps(nextProps) {
     const { product } = nextProps;
+    const {
+      variations,
+      id,
+    } = product || {};
+
+    if (!id || !variations) {
+      return;
+    }
+
+    if ((!this.props.product && id) || (id !== this.props.product.id)) {
+      this.initVariationsByIdMap(product);
+    }
+  }
+
+  initVariationsByIdMap(product) {
     let newMap = {};
 
     if (!product || !product.variations) {
       return;
     }
 
-    if ((!this.props.product && product) || (product.id !== this.props.product.id)) {
-      product.variations.forEach(variation => {
-        if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
-          const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
+    product.variations.forEach(variation => {
+      if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
+        const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
 
-          if (defaultOption) {
-            newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
-          }
+        if (defaultOption) {
+          newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
         }
-      });
+      }
+    });
 
-      this.currentProductId = product.id
+    this.currentProductId = product.id
 
-      this.setState({
-        variationsByIdMap: newMap,
-        cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
-      });
-    }
+    this.setState({
+      variationsByIdMap: newMap,
+      cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
+    });
   }
 
   getVariationsMaxHeight() {
@@ -257,6 +276,8 @@ class ProductDetail extends Component {
     if (!product) {
       return null;
     }
+
+    console.log(this.state.variationsByIdMap);
 
     return (
       <div

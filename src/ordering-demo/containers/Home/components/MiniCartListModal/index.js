@@ -12,7 +12,6 @@ import { actions as homeActions, getShoppingCart } from '../../../../redux/modul
 class MiniCartListModal extends Component {
   handleClearAll = async () => {
     await this.props.cartActions.clearAll();
-    await this.props.homeActions.closeCart();
   }
 
   handleHideCart(e) {
