@@ -21,6 +21,18 @@ const isCartItemSoldOut = cartItem => {
 }
 
 class CartList extends Component {
+  handleRemoveCartItem = (variables) => {
+    this.props.homeActions.removeShoppingCartItem(variables).then(() => {
+      this.props.homeActions.loadShoppingCart();
+    });
+  }
+
+  handleAddOrUpdateShoppingCartItem = (variables) => {
+    this.props.homeActions.addOrUpdateShoppingCartItem(variables).then(() => {
+      this.props.homeActions.loadShoppingCart();
+    });
+  }
+
   render() {
     const { shoppingCart } = this.props;
 
@@ -61,28 +73,26 @@ class CartList extends Component {
                 soldOut={isCartItemSoldOut(cartItem)}
                 onDecrease={async () => {
                   if (quantity === 1) {
-                    await this.props.homeActions.removeShoppingCartItem({
+                    this.handleRemoveCartItem({
                       productId,
                       variations,
                     });
                   } else {
-                    await this.props.homeActions.addOrUpdateShoppingCartItem({
+                    this.handleAddOrUpdateShoppingCartItem({
                       action: 'edit',
                       productId,
                       quantity: quantity - 1,
                       variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
                     });
                   }
-                  await this.props.homeActions.loadShoppingCart();
                 }}
-                onIncrease={async () => {
-                  await this.props.homeActions.addOrUpdateShoppingCartItem({
+                onIncrease={() => {
+                  this.handleAddOrUpdateShoppingCartItem({
                     action: 'edit',
                     productId,
                     quantity: quantity + 1,
                     variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
                   });
-                  await this.props.homeActions.loadShoppingCart();
                 }}
               />
             )
@@ -94,9 +104,7 @@ class CartList extends Component {
 }
 
 export default connect(
-  state => ({
-    shoppingCart: getShoppingCart(state),
-  }),
+  () => ({}),
   dispatch => ({
     homeActions: bindActionCreators(homeActions, dispatch),
   }),

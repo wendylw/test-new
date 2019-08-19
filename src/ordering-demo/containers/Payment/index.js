@@ -1,27 +1,28 @@
 import React, { Component } from 'react';
+import RedirectForm from './components/RedirectForm';
+import Constants from '../../libs/constants';
+import config from '../../../config';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Constants from '../../../Constants';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from '../../redux/modules/payment';
-import RedirectForm from './components/RedirectForm';
-import config from '../../../config';
 import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from '../../redux/modules/payment';
 
 const dataSource = [
   {
-    name: Constants.PAYMENT_METHODS.BOOST_PAY,
-    logo: '/img/logo-boost.png',
-    label: 'Boost',
+    name: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+    logo: '/img/payment-banking.png',
+    label: 'Online Banking',
   },
   {
-    name: 'MayBank',
-    logo: '/img/logo-maybank.png',
-    label: 'MayBank',
-  },
-  {
-    name: Constants.PAYMENT_METHODS.CARD_PAY,
+    name: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: '/img/payment-credit.png',
-    label: 'Credit/Debit Card',
+    label: 'Visa / MasterCard',
+  },
+  {
+    name: Constants.PAYMENT_METHODS.BOOST_PAY,
+    logo: '/img/payment-boost.png',
+    label: 'Boost',
   },
   {
     name: Constants.PAYMENT_METHODS.GRAB_PAY,
@@ -34,6 +35,49 @@ class Payment extends Component {
   state = {
     payNowLoading: false,
   };
+
+  getPaymentEntryRequestData = () => {
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const h = config.h();
+    const queryString = `?h=${encodeURIComponent(h)}`;
+
+    if (!onlineStoreInfo || !currentOrder || !currentPayment) {
+      return null;
+    }
+
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
+    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
+
+    return {
+      amount: currentOrder.total,
+      currency: onlineStoreInfo.currency,
+      receiptNumber: currentOrder.orderId,
+      businessName: business,
+      redirectURL: redirectURL,
+      webhookURL: webhookURL,
+      paymentName: currentPayment,
+    };
+  }
+
+  handleClickBack = () => {
+    this.props.history.replace('/cart');
+  };
+
+  setCurrentPayment = (paymentName) => {
+    this.props.paymentActions.setCurrentPayment(paymentName);
+  }
+
+  handleClickPayNow = () => {
+    this.setState({
+      payNowLoading: true,
+    });
+
+    this.props.paymentActions.createOrder().then(() => {
+      this.setState({
+        payNowLoading: false,
+      });
+    });
+  }
 
   render() {
     const { currentPayment } = this.props;
@@ -95,49 +139,6 @@ class Payment extends Component {
 
       </section>
     );
-  }
-
-  getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
-    const h = config.h();
-    const queryString = `?h=${encodeURIComponent(h)}`;
-
-    if (!onlineStoreInfo || !currentOrder || !currentPayment) {
-      return null;
-    }
-
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
-
-    return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
-      redirectURL: redirectURL,
-      webhookURL: webhookURL,
-      paymentName: currentPayment,
-    };
-  }
-
-  handleClickBack = () => {
-    this.props.history.replace('/cart');
-  };
-
-  setCurrentPayment = (paymentName) => {
-    this.props.paymentActions.setCurrentPayment(paymentName);
-  }
-
-  handleClickPayNow = () => {
-    this.setState({
-      payNowLoading: true,
-    });
-
-    this.props.paymentActions.createOrder().then(() => {
-      this.setState({
-        payNowLoading: false,
-      });
-    });
   }
 }
 

@@ -6,7 +6,7 @@ import { getCartItemIds } from './home';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 
 const initialState = {
-  currentPayment: Constants.PAYMENT_METHODS.GRAB_PAY,
+  currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
   orderId: '',
 };
 

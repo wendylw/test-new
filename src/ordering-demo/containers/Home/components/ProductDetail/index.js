@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
 import config from '../../../../../config';
-import Utils from '../../../../libs/utils';
-import Constants from '../../../../libs/constants';
+import Utils from '../../../../../utils/utils';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
