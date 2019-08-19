@@ -13,6 +13,7 @@ class RedirectForm extends React.Component {
 
   getFields = () => {
     const { data } = this.props;
+
     return Object.keys(data).map(name => ({
       name,
       value: data[name]

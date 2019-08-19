@@ -23,9 +23,6 @@ export const types = {
 // action creators
 export const actions = {
   createOrder: () => (dispatch, getState) => {
-    // TODO: check
-    console.error(new Error('Why not use payment method here?'));
-
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const { storeId, tableId } = getRequestInfo(getState());
@@ -35,8 +32,10 @@ export const actions = {
       tableId,
       shoppingCartIds
     };
+
     return dispatch(createOrder(variables));
   },
+
   setCurrentPayment: paymentName => ({
     type: types.SET_CURRENT_PAYMENT,
     paymentName
@@ -45,6 +44,7 @@ export const actions = {
 
 const createOrder = variables => {
   const endpoint = url.apiGql('CreateOrder');
+
   return {
     [FETCH_GRAPHQL]: {
       types: [

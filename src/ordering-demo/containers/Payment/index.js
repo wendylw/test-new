@@ -13,11 +13,13 @@ const dataSource = [
     name: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
     logo: '/img/payment-banking.png',
     label: 'Online Banking',
+    pathname: Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT,
   },
   {
     name: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: '/img/payment-credit.png',
     label: 'Visa / MasterCard',
+    pathname: Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT,
   },
   {
     name: Constants.PAYMENT_METHODS.BOOST_PAY,
@@ -45,8 +47,8 @@ class Payment extends Component {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', business)}${queryString}`;
+    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', business)}${queryString}`;
 
     return {
       amount: currentOrder.total,
@@ -72,10 +74,12 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    this.props.paymentActions.createOrder().then(() => {
+    this.props.paymentActions.createOrder().then((data) => {
       this.setState({
         payNowLoading: false,
       });
+
+      console.log(data);
     });
   }
 

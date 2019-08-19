@@ -51,7 +51,6 @@ class Payment extends Component {
       const { data } = await this.props.createOrder({ variables });
 
       if (data.createOrder) {
-        // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
           fire: paymentMethod && paymentMethod !== Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
