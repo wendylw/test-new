@@ -277,8 +277,6 @@ class ProductDetail extends Component {
       return null;
     }
 
-    console.log(this.state.variationsByIdMap);
-
     return (
       <div
         ref={ref => this.productEl = ref}
