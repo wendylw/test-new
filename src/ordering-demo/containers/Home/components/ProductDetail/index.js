@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import ProductItem from '../ProductItem';
 import VariationSelector from '../VariationSelector';
+import ProductItem from '../../../../components/ProductItem';
 import config from "../../../../../config";
 import Utils from '../../../../libs/utils';
 import Constants from '../../../../libs/constants';
@@ -102,6 +102,26 @@ class ProductDetail extends Component {
     const price = displayPrice || unitPrice || onlineUnitPrice;
 
     return (price + totalPriceDiff).toFixed(2);
+  }
+
+  getVariationText() {
+    const { variationsByIdMap } = this.state;
+
+    if (!variationsByIdMap && !Object.values(variationsByIdMap).length) {
+      return '';
+    }
+
+    let variationText = [];
+
+    Object.values(variationsByIdMap).forEach(function (variation) {
+      Object.values(variation).forEach(option => {
+        if (option.value) {
+          variationText.push(option.value);
+        }
+      });
+    });
+
+    return variationText.join(',');
   }
 
   isSubmitable() {
@@ -247,6 +267,7 @@ class ProductDetail extends Component {
           className="aside__section-container border__top-divider"
           image={imageUrl}
           title={title}
+          variation={this.getVariationText()}
           price={Number(this.displayPrice())}
           cartQuantity={cartQuantity}
           locale={locale}

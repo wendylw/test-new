@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Tag from '../../../../components/Tag';
-import Item from '../../../../components/Item';
-import ItemOperator from '../../../../components/ItemOperator';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import Constants from '../../../../libs/constants';
+import Tag from '../Tag';
+import Item from '../Item';
+import ItemOperator from '../ItemOperator';
+import CurrencyNumber from '../CurrencyNumber';
+import Constants from '../../libs/constants';
 
 export class ProductItem extends Component {
   render() {
     const {
       className,
+      variation,
       locale,
       currency,
       image,
@@ -27,6 +28,7 @@ export class ProductItem extends Component {
         contentClassName="flex-middle"
         image={image}
         title={title}
+        variation={variation}
         detail={
           <CurrencyNumber
             money={price || 0}
@@ -57,6 +59,7 @@ ProductItem.propTypes = {
   locale: PropTypes.string,
   currency: PropTypes.string,
   className: PropTypes.string,
+  variation: PropTypes.string,
   soldOut: PropTypes.bool,
   image: PropTypes.string,
   title: PropTypes.string,
@@ -68,6 +71,7 @@ ProductItem.propTypes = {
 
 ProductItem.defaultProps = {
   className: '',
+  variation: '',
   soldOut: false,
   image: '',
   title: '',
