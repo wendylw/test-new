@@ -1,11 +1,11 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Constants from "../../../Constants";
-import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from "../../redux/modules/payment";
-import RedirectForm from "./components/RedirectForm";
-import config from "../../../config";
-import { getOnlineStoreInfo, getBusiness } from "../../redux/modules/app";
+import Constants from '../../../Constants';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from '../../redux/modules/payment';
+import RedirectForm from './components/RedirectForm';
+import config from '../../../config';
+import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
 
 const dataSource = [
   {

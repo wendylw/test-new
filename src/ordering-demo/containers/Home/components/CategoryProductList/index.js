@@ -5,7 +5,7 @@ import { ScrollObservable } from '../../../../../views/components/ScrollComponen
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { actions as homeActions, getCategoryProductList } from "../../../../redux/modules/home";
+import { actions as homeActions, getCategoryProductList } from '../../../../redux/modules/home';
 
 class CategoryProductList extends Component {
   handleDecreaseProductInCart = async (product) => {

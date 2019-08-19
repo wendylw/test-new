@@ -1,5 +1,5 @@
-import url from "../../../utils/url";
-import { FETCH_GRAPHQL } from "../../../redux/middlewares/apiGql";
+import url from '../../../utils/url';
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
 };

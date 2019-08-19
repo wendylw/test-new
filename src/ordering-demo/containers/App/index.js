@@ -1,11 +1,11 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-import { actions as appActions, getOnlineStoreInfo, getError, getMessageModal } from '../../redux/modules/app'
-import Routes from "../Routes";
-import "../../App.scss";
-import ErrorToast from "./components/ErrorToast";
-import MessageModal from "../../components/MessageModal";
+import { bindActionCreators } from 'redux';
+import { actions as appActions, getOnlineStoreInfo, getError, getMessageModal } from '../../redux/modules/app';
+import Routes from '../Routes';
+import '../../App.scss';
+import ErrorToast from './components/ErrorToast';
+import MessageModal from '../../components/MessageModal';
 
 class App extends Component {
   render() {

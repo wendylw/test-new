@@ -6,8 +6,8 @@ import {
 } from '../../../../../views/components/ScrollComponents';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-import { actions as homeActions, getCategoryProductList } from "../../../../redux/modules/home";
+import { bindActionCreators } from 'redux';
+import { actions as homeActions, getCategoryProductList } from '../../../../redux/modules/home';
 
 class Menu extends Component {
   state = {

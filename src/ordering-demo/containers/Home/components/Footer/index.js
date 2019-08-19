@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-import { getCartSummary } from "../../../../../redux/modules/entities/carts";
-import { actions as homeActions, getShoppingCart, getCategoryProductList } from "../../../../redux/modules/home";
+import { bindActionCreators } from 'redux';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { actions as homeActions, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
 export class Footer extends Component {
   getDisplayPrice() {

@@ -1,7 +1,7 @@
-import { combineReducers } from "redux";
-import config from "../../../config";
-import { FETCH_GRAPHQL } from "../../../redux/middlewares/apiGql";
-import url from '../../../utils/url'
+import { combineReducers } from 'redux';
+import config from '../../../config';
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import url from '../../../utils/url';
 
 const initialState = {
   error: null, // network error
@@ -80,7 +80,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
     return state;
   }
 
-  switch(type) {
+  switch (type) {
     case types.FETCH_ONLINESTOREINFO_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
@@ -93,7 +93,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 }
 
 const messageModal = (state = initialState.messageModal, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.SHOW_MESSAGE_MODAL: {
       const { message, description } = action;
       return { ...state, show: true, message, description };

@@ -1,16 +1,16 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
-import config from "../../../../../config";
+import config from '../../../../../config';
 import Utils from '../../../../libs/utils';
 import Constants from '../../../../libs/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-import { getProductById } from "../../../../../redux/modules/entities/products";
-import { actions as homeActions, getCurrentProduct } from "../../../../redux/modules/home";
+import { bindActionCreators } from 'redux';
+import { getProductById } from '../../../../../redux/modules/entities/products';
+import { actions as homeActions, getCurrentProduct } from '../../../../redux/modules/home';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',

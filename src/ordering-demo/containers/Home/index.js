@@ -1,16 +1,16 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-import { actions as homeActions, getCategoryProductList } from "../../redux/modules/home";
-import { actions as cartActions } from "../../redux/modules/cart";
-import Header from "../../components/Header";
-import { getOnlineStoreInfo, getRequestInfo } from "../../redux/modules/app";
-import CategoryProductList from "./components/CategoryProductList";
-import ProductDetail from "./components/ProductDetail";
-import Footer from "./components/Footer";
-import MiniCartListModal from "./components/MiniCartListModal";
-import Menu from "./components/Menu";
-import CurrentCategoryBar from "./components/CurrentCategoryBar";
+import { bindActionCreators } from 'redux';
+import { actions as homeActions, getCategoryProductList } from '../../redux/modules/home';
+import { actions as cartActions } from '../../redux/modules/cart';
+import Header from '../../components/Header';
+import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import CategoryProductList from './components/CategoryProductList';
+import ProductDetail from './components/ProductDetail';
+import Footer from './components/Footer';
+import MiniCartListModal from './components/MiniCartListModal';
+import Menu from './components/Menu';
+import CurrentCategoryBar from './components/CurrentCategoryBar';
 
 class Home extends Component {
   state = {

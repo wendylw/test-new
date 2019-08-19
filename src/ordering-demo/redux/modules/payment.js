@@ -1,30 +1,30 @@
-import url from "../../../utils/url";
-import { FETCH_GRAPHQL } from "../../../redux/middlewares/apiGql";
-import Constants from "../../../Constants";
-import { getBusiness, getRequestInfo } from "./app";
-import { getCartItemIds } from "./home";
-import { getOrderByOrderId } from "../../../redux/modules/entities/orders";
+import url from '../../../utils/url';
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import Constants from '../../../Constants';
+import { getBusiness, getRequestInfo } from './app';
+import { getCartItemIds } from './home';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.GRAB_PAY,
-  orderId: "",
+  orderId: '',
 };
 
 export const types = {
   // createOrder
-  CREATEORDER_REQUEST: "REDUX_DEMO/PAYMENT/CREATEORDER_REQUEST",
-  CREATEORDER_SUCCESS: "REDUX_DEMO/PAYMENT/CREATEORDER_SUCCESS",
-  CREATEORDER_FAILURE: "REDUX_DEMO/PAYMENT/CREATEORDER_FAILURE",
+  CREATEORDER_REQUEST: 'REDUX_DEMO/PAYMENT/CREATEORDER_REQUEST',
+  CREATEORDER_SUCCESS: 'REDUX_DEMO/PAYMENT/CREATEORDER_SUCCESS',
+  CREATEORDER_FAILURE: 'REDUX_DEMO/PAYMENT/CREATEORDER_FAILURE',
 
   // setCurrentPayment
-  SET_CURRENT_PAYMENT: "REDUX_DEMOPAYMENTT/SET_CURRENT_PAYMENT"
+  SET_CURRENT_PAYMENT: 'REDUX_DEMOPAYMENTT/SET_CURRENT_PAYMENT'
 };
 
 // action creators
 export const actions = {
   createOrder: () => (dispatch, getState) => {
     // TODO: check
-    console.error(new Error("Why not use payment method here?"));
+    console.error(new Error('Why not use payment method here?'));
 
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
@@ -44,7 +44,7 @@ export const actions = {
 };
 
 const createOrder = variables => {
-  const endpoint = url.apiGql("CreateOrder");
+  const endpoint = url.apiGql('CreateOrder');
   return {
     [FETCH_GRAPHQL]: {
       types: [

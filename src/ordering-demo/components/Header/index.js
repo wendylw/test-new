@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Image from '../Image';
 
 class Header extends Component {
@@ -22,8 +22,8 @@ class Header extends Component {
         <h1 className="header__title font-weight-bold text-middle">{title}</h1>
         {
           table
-          ? <span className="gray-font-opacity text-uppercase">Table {table}</span>
-          : null
+            ? <span className="gray-font-opacity text-uppercase">Table {table}</span>
+            : null
         }
       </header>
     )

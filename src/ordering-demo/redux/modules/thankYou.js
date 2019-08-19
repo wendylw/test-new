@@ -1,8 +1,8 @@
-import { FETCH_GRAPHQL } from "../../../redux/middlewares/apiGql";
-import url from "../../../utils/url";
-import { getOrderByOrderId } from "../../../redux/modules/entities/orders";
-import { getBusinessByName } from "../../../redux/modules/entities/businesses";
-import { getBusiness, getRequestInfo } from "./app";
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import url from '../../../utils/url';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getBusiness, getRequestInfo } from './app';
 
 const initialState = {
   orderId: null,

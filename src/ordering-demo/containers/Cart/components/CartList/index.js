@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProductItem from '../../../../components/ProductItem';
-import { actions as homeActions, getShoppingCart } from "../../../../redux/modules/home";
+import { actions as homeActions, getShoppingCart } from '../../../../redux/modules/home';
 
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;

@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Tag from '../Tag';
 import Item from '../Item';
 import ItemOperator from '../ItemOperator';
