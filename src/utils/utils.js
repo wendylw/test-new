@@ -199,4 +199,14 @@ Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   return addressList.join(', ');
 }
 
+Utils.getQueryObject = function getQueryObject(history, paramName) {
+  if (!history.location.search) {
+    return null;
+  }
+
+  const params = new URLSearchParams(history.location.search);
+
+  return params.get(paramName);
+}
+
 export default Utils;

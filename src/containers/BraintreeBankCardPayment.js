@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { compose, graphql, Query } from 'react-apollo';
 import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
-import api from '../cashback/utils/api';
+import api from '../utils/api';
 import { client } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';

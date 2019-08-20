@@ -1,13 +1,16 @@
 import url from '../../../utils/url';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Constants from '../../../Constants';
-import { getBusiness, getRequestInfo } from './app';
+
+import api from '../../../utils/api';
+
 import { getCartItemIds } from './home';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { getBusiness, getRequestInfo } from './app';
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
   orderId: '',
+  braintreeToken: '',
 };
 
 export const types = {
@@ -16,8 +19,18 @@ export const types = {
   CREATEORDER_SUCCESS: 'REDUX_DEMO/PAYMENT/CREATEORDER_SUCCESS',
   CREATEORDER_FAILURE: 'REDUX_DEMO/PAYMENT/CREATEORDER_FAILURE',
 
+  // getOrder
+  FETCH_ORDER_REQUEST: 'REDUX_DEMO/PAYMENT/FETCH_ORDER_REQUEST',
+  FETCH_ORDER_SUCCESS: 'REDUX_DEMO/PAYMENT/FETCH_ORDER_SUCCESS',
+  FETCH_ORDER_FAILURE: 'REDUX_DEMO/PAYMENT/FETCH_ORDER_FAILURE',
+
   // setCurrentPayment
-  SET_CURRENT_PAYMENT: 'REDUX_DEMOPAYMENTT/SET_CURRENT_PAYMENT'
+  SET_CURRENT_PAYMENT: 'REDUX_DEMOPAYMENTT/SET_CURRENT_PAYMENT',
+
+  // getBraintreeToken
+  FETCH_BRAINTREE_TOKEN_REQUEST: 'FETCH_BRAINTREE_TOKEN_REQUEST',
+  FETCH_BRAINTREE_TOKEN_SUCCESS: 'FETCH_BRAINTREE_TOKEN_SUCCESS',
+  FETCH_BRAINTREE_TOKEN_FAILURE: 'FETCH_BRAINTREE_TOKEN_FAILURE',
 };
 
 // action creators
@@ -36,10 +49,34 @@ export const actions = {
     return dispatch(createOrder(variables));
   },
 
+  fetchOrder: (orderId) => (dispatch) => {
+    return dispatch(fetchOrder({ orderId }));
+  },
+
   setCurrentPayment: paymentName => ({
     type: types.SET_CURRENT_PAYMENT,
     paymentName
-  })
+  }),
+
+  fetchBraintreeToken: (paymentName) => async (dispatch) => {
+    try {
+      const data = await api({
+        url: `/payment/initToken?paymentName=${paymentName}`,
+        method: 'get',
+      });
+      const { token } = data || {};
+
+      if (token) {
+        dispatch({
+          type: types.FETCH_BRAINTREE_TOKEN_SUCCESS,
+          token,
+        });
+      }
+    } catch (e) {
+      // TODO: handle error
+      console.error(e);
+    }
+  },
 };
 
 const createOrder = variables => {
@@ -58,6 +95,22 @@ const createOrder = variables => {
   };
 };
 
+const fetchOrder = variables => {
+  const endpoint = url.apiGql('Order');
+
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ORDER_REQUEST,
+        types.FETCH_ORDER_SUCCESS,
+        types.FETCH_ORDER_FAILURE
+      ],
+      endpoint,
+      variables
+    }
+  };
+};
+
 // reducers
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -66,10 +119,22 @@ const reducer = (state = initialState, action) => {
     case types.CREATEORDER_SUCCESS: {
       const { createOrder } = action.responseGql.data || {};
       const [order] = createOrder.orders;
+
       if (order) {
         return { ...state, orderId: order.orderId };
       }
       return state;
+    }
+    case types.FETCH_ORDER_SUCCESS: {
+      const { order } = action.responseGql.data || {};
+
+      if (order) {
+        return { ...state, orderId: order.orderId };
+      }
+      return state;
+    }
+    case types.FETCH_BRAINTREE_TOKEN_SUCCESS: {
+      return { ...state, braintreeToken: action.token };
     }
     default:
       return state;
@@ -81,6 +146,6 @@ export default reducer;
 // selectors
 export const getCurrentPayment = state => state.payment.currentPayment;
 
-export const getCurrentOrder = (state) => {
-  return getOrderByOrderId(state, state.payment.orderId);
-}
+export const getCurrentOrderId = (state) => state.payment.orderId;
+
+export const getBraintreeToken = state => state.payment.braintreeToken;

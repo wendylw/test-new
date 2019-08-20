@@ -37,7 +37,8 @@ CurrencyNumber.propTypes = {
 
 export default connect(
   (state) => {
-    const { locale, currency } = getOnlineStoreInfo(state);
+    const { locale, currency } = getOnlineStoreInfo(state) || {};
+
     return {
       locale,
       currency,

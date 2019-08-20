@@ -1,29 +1,21 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { withRouter } from 'react-router-dom';
-import { compose, graphql, Query } from 'react-apollo';
-import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
-import Constants from '../Constants';
-import api from '../cashback/utils/api';
-import { client } from '../apiClient';
-import apiGql from '../apiGql';
-import DocumentTitle from '../views/components/DocumentTitle';
-
 import React, { Component } from 'react';
 import RedirectForm from './components/RedirectForm';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
 import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from '../../redux/modules/payment';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBraintreeToken } from '../../redux/modules/payment';
 
-import '../Braintree.scss';
+import './braintree.scss';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const API_BRAINTREE_TOKEN = `/payment/initToken?paymentName=${Constants.PAYMENT_METHODS.CREDIT_CARD_PAY}`;
 const INVALID_CARDINFO_FIELDS = {
 	number: 'number',
 	expirationDate: 'expirationDate',
@@ -109,10 +101,14 @@ class BankCardPayment extends Component {
 			currentPayment,
 			business,
 		} = this.props;
+		const {
+			cardHolderName,
+			nonce,
+		} = this.state;
 		const h = config.h();
 		const queryString = `?h=${encodeURIComponent(h)}`;
 
-		if (!onlineStoreInfo || !currentOrder || !currentPayment) {
+		if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardHolderName || !nonce) {
 			return null;
 		}
 
@@ -127,7 +123,19 @@ class BankCardPayment extends Component {
 			redirectURL: redirectURL,
 			webhookURL: webhookURL,
 			paymentName: currentPayment,
+			cardHolderName,
+			nonce,
 		};
+	}
+
+	componentWillMount() {
+		const {
+			history,
+			paymentActions,
+		} = this.props;
+
+		paymentActions.fetchOrder(Utils.getQueryObject(history, 'orderId'));
+		paymentActions.fetchBraintreeToken(Constants.PAYMENT_METHODS.CREDIT_CARD_PAY);
 	}
 
 	componentDidMount() {
@@ -138,17 +146,26 @@ class BankCardPayment extends Component {
 
 		Object.keys(braintreeSources).forEach(key => {
 			const script = document.createElement('script');
+			const { token } = this.props;
 
 			script.src = braintreeSources[key];
 
 			script.onload = () => {
 				if (window.braintree && window.braintree.client && window.braintree.hostedFields) {
-					this.braintreeSetting();
+					this.braintreeSetting(token);
 				}
 			}
 
 			document.body.appendChild(script);
 		});
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { token } = nextProps;
+
+		if (token && !this.props.token) {
+			this.braintreeSetting(token);
+		}
 	}
 
 	getQueryObject(paramName) {
@@ -267,14 +284,9 @@ class BankCardPayment extends Component {
 		});
 	}
 
-	async braintreeSetting() {
+	braintreeSetting(token) {
 		const that = this;
 		const submitButtonEl = document.getElementById('submitButton');
-		const data = await api({
-			url: API_BRAINTREE_TOKEN,
-			method: 'get',
-		});
-		const { token } = data || {};
 
 		window.braintree.client.create({
 			authorization: token || null,
@@ -419,24 +431,117 @@ class BankCardPayment extends Component {
 		submitButtonEl.dispatchEvent(event);
 	}
 
-	renderMain() {
+	renderLoader() {
+		const { brainTreeDOMLoaded } = this.state;
+
+		if (brainTreeDOMLoaded) {
+			return null;
+		}
+
+		return (
+			<div className="loading-cover">
+				<div className="loader-wave">
+					<i className="dot" id="d1"></i>
+					<i className="dot" id="d2"></i>
+					<i className="dot" id="d3"></i>
+					<i className="dot" id="d4"></i>
+				</div>
+			</div>
+		)
+	}
+
+	renderForm() {
 		const {
-			match,
-			history,
-			onlineStoreInfo
-		} = this.props;
-		const {
-			locale,
-			currency,
-		} = onlineStoreInfo || {};
-		const {
-			payNowLoading,
-			fire,
 			card,
 			invalidCardInfoFields,
 			brainTreeDOMLoaded,
 			errorTyoes,
 		} = this.state;
+
+		return (
+			<form id="bank-2c2p-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
+				<div className="payment-bank__form-item">
+					<div className="flex flex-middle flex-space-between">
+						<label className="payment-bank__label font-weight-bold">Card information</label>
+						{
+							errorTyoes.required.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
+								? (<span className="error-message font-weight-bold text-uppercase">{this.getCardInfoInvalidMessage('required')}</span>)
+								: null
+						}
+					</div>
+					<div className={`payment-bank__card-container ${brainTreeDOMLoaded ? 'loaded' : ''}`}>
+						<div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.number) ? 'has-error' : ''}`}>
+							<div id="card-number" className="card-info__wrapper"></div>
+							<div className="payment-bank__card-type-container flex flex-middle">
+								<i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
+									<img src="/img/payment-visa.svg" />
+								</i>
+								<i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === 'master-card' ? 'active' : ''}`}>
+									<img src="/img/payment-mastercard.svg" />
+								</i>
+							</div>
+						</div>
+						<div className="input__list-bottom flex flex-middle flex-space-between">
+							<div id="expiration-date" className={`card-info__wrapper ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.expirationDate) ? 'has-error' : ''}`}></div>
+							<div id="cardCvv" className={`card-info__wrapper ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.cvv) ? 'has-error' : ''}`}></div>
+						</div>
+					</div>
+					<div className="error-message__container">
+						{
+							errorTyoes.invalidFields.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
+								? (Object.keys(errorTyoes).map(key => {
+									if (key === 'required') {
+										return null;
+									}
+
+									return <span key={key} className="error-message">{this.getCardInfoInvalidMessage(key)}</span>
+								}))
+								: null
+						}
+					</div>
+				</div>
+				<div className="payment-bank__form-item">
+					<div className="flex flex-middle flex-space-between">
+						<label className="payment-bank__label font-weight-bold">Name on card</label>
+						{
+							errorTyoes.required.includes(INVALID_CARDINFO_FIELDS.cardHolderName)
+								?
+								<span className="error-message font-weight-bold text-uppercase">
+									{this.getCardInfoInvalidMessage('required')}
+								</span>
+								: null
+						}
+					</div>
+					<input
+						id="cardHolderName"
+						className={`input input__block border-radius-base ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.cardHolderName) ? 'has-error' : ''}`}
+						type="text"
+						value={card.cardHolderName || ''}
+						onChange={this.handleChangeCardHolderName.bind(this)}
+					/>
+				</div>
+			</form>
+		);
+	}
+
+	render() {
+		const {
+			match,
+			history,
+			onlineStoreInfo,
+			currentOrder,
+		} = this.props;
+		const {
+			logo,
+			locale,
+			currency,
+		} = onlineStoreInfo || {};
+		const {
+			payNowLoading,
+			brainTreeDOMLoaded,
+		} = this.state;
+		const { total } = currentOrder || {};
+		const paymentData = this.getPaymentEntryRequestData();
 
 		return (
 			<section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -449,190 +554,75 @@ class BankCardPayment extends Component {
 					<h2 className="header__title font-weight-bold text-middle">Pay via Card</h2>
 				</header>
 
-				<Query
-					query={apiGql.GET_ORDER_DETAIL}
-					client={client}
-					variables={{ orderId: this.getQueryObject('orderId') }}
-					onError={err => console.error('Can not get order detail from core-api\n', err)}
-				>
-					{({ data: { order = {} } = {} }) => {
-						const { total } = order;
+				<div className="payment-bank">
+					<figure
+						className="logo-default__image-container"
+					>
+						<img src={logo} alt="" />
+					</figure>
+					<CurrencyNumber
+						className="payment-bank__money font-weight-bold text-center"
+						money={total}
+						locale={locale}
+						currency={currency}
+					/>
 
-						this.order = order;
+					{this.renderForm()}
+				</div>
 
-						return (
-							<React.Fragment>
-								<div className="payment-bank">
-									<figure
-										className="logo-default__image-container"
-									>
-										<img src={onlineStoreInfo.logo} alt="" />
-									</figure>
+				<div className="footer-operation">
+					<button
+						ref={ref => this.submitButton = ref}
+						id="submitButton"
+						className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+						disabled={payNowLoading || !brainTreeDOMLoaded}
+					>{
+							payNowLoading
+								? 'Redirecting'
+								: (
 									<CurrencyNumber
-										classList="payment-bank__money font-weight-bold text-center"
+										classList="font-weight-bold text-center"
+										addonBefore="Pay"
 										money={total}
 										locale={locale}
 										currency={currency}
 									/>
-
-									<form id="bank-2c2p-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
-										<div className="payment-bank__form-item">
-											<div className="flex flex-middle flex-space-between">
-												<label className="payment-bank__label font-weight-bold">Card information</label>
-												{
-													errorTyoes.required.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
-														? (<span className="error-message font-weight-bold text-uppercase">{this.getCardInfoInvalidMessage('required')}</span>)
-														: null
-												}
-											</div>
-											<div className={`payment-bank__card-container ${brainTreeDOMLoaded ? 'loaded' : ''}`}>
-												<div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.number) ? 'has-error' : ''}`}>
-													<div id="card-number" className="card-info__wrapper"></div>
-													<div className="payment-bank__card-type-container flex flex-middle">
-														<i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-															<img src="/img/payment-visa.svg" />
-														</i>
-														<i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === 'master-card' ? 'active' : ''}`}>
-															<img src="/img/payment-mastercard.svg" />
-														</i>
-													</div>
-												</div>
-												<div className="input__list-bottom flex flex-middle flex-space-between">
-													<div id="expiration-date" className={`card-info__wrapper ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.expirationDate) ? 'has-error' : ''}`}></div>
-													<div id="cardCvv" className={`card-info__wrapper ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.cvv) ? 'has-error' : ''}`}></div>
-												</div>
-											</div>
-											<div className="error-message__container">
-												{
-													errorTyoes.invalidFields.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
-														? (Object.keys(errorTyoes).map(key => {
-															if (key === 'required') {
-																return null;
-															}
-
-															return <span key={key} className="error-message">{this.getCardInfoInvalidMessage(key)}</span>
-														}))
-														: null
-												}
-											</div>
-										</div>
-										<div className="payment-bank__form-item">
-											<div className="flex flex-middle flex-space-between">
-												<label className="payment-bank__label font-weight-bold">Name on card</label>
-												{
-													errorTyoes.required.includes(INVALID_CARDINFO_FIELDS.cardHolderName)
-														?
-														<span className="error-message font-weight-bold text-uppercase">
-															{this.getCardInfoInvalidMessage('required')}
-														</span>
-														: null
-												}
-											</div>
-											<input
-												id="cardHolderName"
-												className={`input input__block border-radius-base ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.cardHolderName) ? 'has-error' : ''}`}
-												type="text"
-												value={card.cardHolderName || ''}
-												onChange={this.handleChangeCardHolderName.bind(this)}
-											/>
-										</div>
-									</form>
-								</div>
-
-								<div className="footer-operation">
-									<button
-										ref={ref => this.submitButton = ref}
-										id="submitButton"
-										className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
-										disabled={payNowLoading || !brainTreeDOMLoaded}
-									>{
-											payNowLoading
-												? 'Redirecting'
-												: (
-													<CurrencyNumber
-														classList="font-weight-bold text-center"
-														addonBefore="Pay"
-														money={total}
-														locale={locale}
-														currency={currency}
-													/>
-												)
-										}
-									</button>
-								</div>
-							</React.Fragment>
-						);
-					}}
-				</Query>
-
-				<RedirectForm
-					ref={ref => this.form = ref}
-					action={config.storehubPaymentEntryURL}
-					method="POST"
-					fields={() => {
-						const { onlineStoreInfo } = this.props;
-						const { cardHolderName, nonce } = this.state;
-						const { total, orderId } = this.order;
-						const fields = [];
-						const h = config.h();
-						const queryString = `?h=${encodeURIComponent(h)}`;
-
-						if (!onlineStoreInfo || !this.order || !fire) {
-							return null;
+								)
 						}
-
-						const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
-						const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
-
-						fields.push({ name: 'amount', value: total });
-						fields.push({ name: 'currency', value: onlineStoreInfo.currency });
-						fields.push({ name: 'receiptNumber', value: orderId });
-						fields.push({ name: 'businessName', value: config.business });
-						fields.push({ name: 'redirectURL', value: redirectURL });
-						fields.push({ name: 'webhookURL', value: webhookURL });
-						fields.push({ name: 'paymentName', value: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY });
-						fields.push({ name: 'cardholderName', value: cardHolderName });
-						fields.push({ name: 'nonce', value: nonce });
-
-						return fields;
-					}}
-					fire={fire}
-				/>
+					</button>
+				</div>
 
 				{
-					!brainTreeDOMLoaded
+					paymentData
 						? (
-							<div className="loading-cover">
-								<div className="loader-wave">
-									<i className="dot" id="d1"></i>
-									<i className="dot" id="d2"></i>
-									<i className="dot" id="d3"></i>
-									<i className="dot" id="d4"></i>
-								</div>
-							</div>
+							<RedirectForm
+								ref={ref => this.form = ref}
+								action={config.storehubPaymentEntryURL}
+								method="POST"
+								data={paymentData}
+							/>
 						)
 						: null
 				}
-			</section>
-		)
-	}
 
-	render() {
-		return (
-			<DocumentTitle title={Constants.DOCUMENT_TITLE.CREDIT_CARD_PAYMENT}>
-				{this.renderMain()}
-			</DocumentTitle>
+				{this.renderLoader()}
+			</section>
 		);
 	}
 }
 
 export default connect(
-	(state) => ({
-		business: getBusiness(state),
-		currentPayment: getCurrentPayment(state),
-		onlineStoreInfo: getOnlineStoreInfo(state),
-		currentOrder: getCurrentOrder(state),
-	}),
+	state => {
+		const currentOrderId = getCurrentOrderId(state);
+
+		return {
+			token: getBraintreeToken(state),
+			business: getBusiness(state),
+			currentPayment: getCurrentPayment(state),
+			onlineStoreInfo: getOnlineStoreInfo(state),
+			currentOrder: getOrderByOrderId(state, currentOrderId),
+		};
+	},
 	dispatch => ({
 		paymentActions: bindActionCreators(paymentActions, dispatch),
 	}),

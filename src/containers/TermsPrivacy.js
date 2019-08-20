@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import config from '../config';
-import api from '../cashback/utils/api';
+import api from '../utils/api';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 import '../Common.scss';

@@ -17,7 +17,7 @@ import {
   SEND_PHONE_SUCCESS,
   SEND_PHONE_FAILURE,
 } from "./types";
-import api from "../utils/api";
+import api from "../../utils/api";
 import GlobalConstants from '../../Constants';
 import Constants from "../utils/Constants";
 

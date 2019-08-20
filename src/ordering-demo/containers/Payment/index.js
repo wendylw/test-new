@@ -6,7 +6,8 @@ import config from '../../../config';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from '../../redux/modules/payment';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 
 const {
   PAYMENT_METHODS,
@@ -79,32 +80,32 @@ class Payment extends Component {
     this.props.paymentActions.setCurrentPayment(paymentName);
   }
 
-  handleClickPayNow = () => {
+  handleClickPayNow = async () => {
     this.setState({
       payNowLoading: true,
     });
 
-    this.props.paymentActions.createOrder().then(() => {
-      const {
-        history,
-        currentPayment,
-        currentOrder,
-      } = this.props;
+    await this.props.paymentActions.createOrder();
 
-      if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-        const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
+    const {
+      history,
+      currentPayment,
+      currentOrder
+    } = this.props;
 
-        history.push({
-          pathname,
-          search: `?orderId=${currentOrder.orderId || ''}`
-        });
+    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
+      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
 
-        return;
-      }
-
-      this.setState({
-        payNowLoading: false,
+      history.push({
+        pathname,
+        search: `?orderId=${currentOrder.orderId || ''}`
       });
+
+      return;
+    }
+
+    this.setState({
+      payNowLoading: false,
     });
   }
 
@@ -172,12 +173,16 @@ class Payment extends Component {
 }
 
 export default connect(
-  (state) => ({
-    business: getBusiness(state),
-    currentPayment: getCurrentPayment(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    currentOrder: getCurrentOrder(state),
-  }),
+  (state) => {
+    const currentOrderId = getCurrentOrderId(state);
+
+    return {
+      business: getBusiness(state),
+      currentPayment: getCurrentPayment(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      currentOrder: getOrderByOrderId(state, currentOrderId),
+    };
+  },
   dispatch => ({
     paymentActions: bindActionCreators(paymentActions, dispatch),
   }),

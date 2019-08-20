@@ -4,7 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import qs from 'qs';
 import Utils from '../libs/utils';
 import GlobalConstants from '../Constants';
-import api from '../cashback/utils/api';
+import api from '../utils/api';
 import Constants from '../cashback/utils/Constants';
 import PhoneView from '../components/PhoneView';
 import CurrencyNumber from '../components/CurrencyNumber';
