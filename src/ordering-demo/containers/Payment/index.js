@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import RedirectForm from './components/RedirectForm';
-import Constants from '../../libs/constants';
+import Constants from '../../../utils/constants';
 import config from '../../../config';
 
 import { connect } from 'react-redux';
@@ -8,30 +8,35 @@ import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrder } from '../../redux/modules/payment';
 
+const {
+  PAYMENT_METHODS,
+  ROUTER_PATHS,
+} = Constants;
 const dataSource = [
   {
-    name: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
     logo: '/img/payment-banking.png',
     label: 'Online Banking',
-    pathname: Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT,
+    pathname: ROUTER_PATHS.ONLINE_BANKING_PAYMENT,
   },
   {
-    name: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY,
+    name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: '/img/payment-credit.png',
     label: 'Visa / MasterCard',
-    pathname: Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT,
+    pathname: ROUTER_PATHS.CREDIT_CARD_PAYMENT,
   },
   {
-    name: Constants.PAYMENT_METHODS.BOOST_PAY,
+    name: PAYMENT_METHODS.BOOST_PAY,
     logo: '/img/payment-boost.png',
     label: 'Boost',
   },
   {
-    name: Constants.PAYMENT_METHODS.GRAB_PAY,
+    name: PAYMENT_METHODS.GRAB_PAY,
     logo: '/img/payment-grab.png',
     label: 'GrabPay',
   }
 ];
+const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
   state = {
@@ -39,11 +44,16 @@ class Payment extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const {
+      onlineStoreInfo,
+      currentOrder,
+      currentPayment,
+      business,
+    } = this.props;
     const h = config.h();
     const queryString = `?h=${encodeURIComponent(h)}`;
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment) {
+    if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
     }
 
@@ -74,12 +84,27 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    this.props.paymentActions.createOrder().then((data) => {
+    this.props.paymentActions.createOrder().then(() => {
+      const {
+        history,
+        currentPayment,
+        currentOrder,
+      } = this.props;
+
+      if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
+        const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
+
+        history.push({
+          pathname,
+          search: `?orderId=${currentOrder.orderId || ''}`
+        });
+
+        return;
+      }
+
       this.setState({
         payNowLoading: false,
       });
-
-      console.log(data);
     });
   }
 

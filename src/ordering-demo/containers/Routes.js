@@ -4,6 +4,7 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 const Home = lazy(() => import('./Home'));
 const Cart = lazy(() => import('./Cart'));
 const Payment = lazy(() => import('./Payment'));
+const BraintreePayment = lazy(() => import('./Payment/braintree'));
 const ThankYou = lazy(() => import('./ThankYou'));
 const Sorry = lazy(() => import('./Sorry'));
 
@@ -17,6 +18,7 @@ class Routes extends Component {
             <Route exact path="/" component={Home} />
             <Route exact path="/cart" component={Cart} />
             <Route exact path="/payment" component={Payment} />
+            <Route exact path="/payment/creditcard" component={BraintreePayment} />
             <Route exact path="/thank-you" component={ThankYou} />
             <Route exact path="/sorry" component={Sorry} />
           </Switch>

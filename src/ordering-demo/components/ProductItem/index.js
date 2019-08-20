@@ -4,7 +4,7 @@ import Tag from '../Tag';
 import Item from '../Item';
 import ItemOperator from '../ItemOperator';
 import CurrencyNumber from '../CurrencyNumber';
-import Constants from '../../libs/constants';
+import Constants from '../../../utils/constants';
 
 export class ProductItem extends Component {
   render() {
