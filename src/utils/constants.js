@@ -12,12 +12,12 @@ const ROUTER_PATHS = {
   ORDERING: '/ordering', // App basename
   HOME: '/ordering/',
   PORDUCTS: '/ordering/products',
-  CART: '/ordering/cart',
-  PAYMENT: '/ordering/payment',
-  CREDIT_CARD_PAYMENT: '/ordering/payment/creditcard',
-  THANK_YOU: '/ordering/thank-you',
-  RECEIPT_DETAIL: '/ordering/receipt',
-  SORRY: '/ordering/sorry',
+  CART: '/cart',
+  PAYMENT: '/payment',
+  CREDIT_CARD_PAYMENT: '/payment/creditcard',
+  THANK_YOU: '/thank-you',
+  RECEIPT_DETAIL: '/receipt',
+  SORRY: '/sorry',
   PLAYGROUND: 'playground',
   ERROR: '/ordering/error',
   CASHBACK: '/loyalty', // App basename
