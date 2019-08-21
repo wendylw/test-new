@@ -11,8 +11,6 @@ export class ProductItem extends Component {
     const {
       className,
       variation,
-      locale,
-      currency,
       image,
       title,
       price,
@@ -30,11 +28,7 @@ export class ProductItem extends Component {
         title={title}
         variation={variation}
         detail={
-          <CurrencyNumber
-            money={price || 0}
-            locale={locale}
-            currency={currency}
-          />
+          <CurrencyNumber money={price || 0} />
         }
       >
         {
@@ -56,8 +50,6 @@ export class ProductItem extends Component {
 }
 
 ProductItem.propTypes = {
-  locale: PropTypes.string,
-  currency: PropTypes.string,
   className: PropTypes.string,
   variation: PropTypes.string,
   soldOut: PropTypes.bool,

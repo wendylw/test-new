@@ -27,12 +27,7 @@ export class Footer extends Component {
       onClickCart,
       cartSummary,
       tableId,
-      onlineStoreInfo,
     } = this.props;
-    const {
-      locale,
-      currency,
-    } = onlineStoreInfo || {};
     const { count } = cartSummary || {};
 
     return (
@@ -53,11 +48,7 @@ export class Footer extends Component {
               <span className="tag__number">{count || 0}</span>
             </div>
             <label className="cart-bar__money text-middle">
-              <CurrencyNumber
-                money={this.getDisplayPrice() || 0}
-                locale={locale}
-                currency={currency}
-              />
+              <CurrencyNumber money={this.getDisplayPrice() || 0} />
             </label>
           </button>
           {
@@ -78,7 +69,6 @@ export class Footer extends Component {
 
 Footer.propTypes = {
   tableId: PropTypes.string,
-  onlineStoreInfo: PropTypes.object,
   onClickMenu: PropTypes.func,
   onClickCart: PropTypes.func,
 };

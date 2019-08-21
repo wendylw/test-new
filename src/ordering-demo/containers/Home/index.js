@@ -87,7 +87,6 @@ class Home extends Component {
           domLoaded
             ? (
               <ProductDetail
-                onlineStoreInfo={onlineStoreInfo}
                 viewProductDetail={viewProductDetail}
                 onToggle={this.handleToggleProductDetail.bind(this)}
               />

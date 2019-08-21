@@ -27,12 +27,14 @@ class CurrencyNumber extends React.Component {
 CurrencyNumber.propTypes = {
   className: PropTypes.string,
   addonBefore: PropTypes.string,
-  locale: PropTypes.string,
-  currency: PropTypes.string,
   money: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.number
+    PropTypes.number,
   ]),
+};
+
+CurrencyNumber.defaultProps = {
+  money: 0,
 };
 
 export default connect(

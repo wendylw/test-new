@@ -75,7 +75,6 @@ class BankCardPayment extends Component {
 	state = {
 		payNowLoading: false,
 		brainTreeDOMLoaded: false,
-		fire: false,
 		card: {
 			type: null,
 			number: null,
@@ -387,7 +386,6 @@ class BankCardPayment extends Component {
 							that.setState({
 								nonce: payload.nonce,
 								payNowLoading: true,
-								fire: true,
 							});
 						}
 
@@ -510,11 +508,7 @@ class BankCardPayment extends Component {
 			onlineStoreInfo,
 			currentOrder,
 		} = this.props;
-		const {
-			logo,
-			locale,
-			currency,
-		} = onlineStoreInfo || {};
+		const { logo } = onlineStoreInfo || {};
 		const {
 			payNowLoading,
 			brainTreeDOMLoaded,
@@ -542,8 +536,6 @@ class BankCardPayment extends Component {
 					<CurrencyNumber
 						className="payment-bank__money font-weight-bold text-center"
 						money={total}
-						locale={locale}
-						currency={currency}
 					/>
 
 					{this.renderForm()}
@@ -563,8 +555,6 @@ class BankCardPayment extends Component {
 										classList="font-weight-bold text-center"
 										addonBefore="Pay"
 										money={total}
-										locale={locale}
-										currency={currency}
 									/>
 								)
 						}

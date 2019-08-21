@@ -261,15 +261,8 @@ class ProductDetail extends Component {
   }
 
   renderProductOperator() {
-    const {
-      onlineStoreInfo,
-      product,
-    } = this.props;
+    const { product } = this.props;
     const { cartQuantity } = this.state;
-    const {
-      locale,
-      currency,
-    } = onlineStoreInfo || {};
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
 
@@ -289,8 +282,6 @@ class ProductDetail extends Component {
           variation={this.getVariationText()}
           price={Number(this.displayPrice())}
           cartQuantity={cartQuantity}
-          locale={locale}
-          currency={currency}
           onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />

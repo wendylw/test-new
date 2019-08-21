@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import Loader from './components/Loader';
 import RedirectForm from './components/RedirectForm';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
@@ -28,6 +29,36 @@ class OnlineBankingPayment extends Component {
 		bankingList: [],
 	};
 
+	getPaymentEntryRequestData = () => {
+		const {
+			onlineStoreInfo,
+			currentOrder,
+			currentPayment,
+			business,
+		} = this.props;
+		const { agentCode } = this.state;
+		const h = config.h();
+		const queryString = `?h=${encodeURIComponent(h)}`;
+
+		if (!onlineStoreInfo || !currentOrder || !currentPayment || !agentCode) {
+			return null;
+		}
+
+		const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', business)}${queryString}`;
+		const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', business)}${queryString}`;
+
+		return {
+			amount: currentOrder.total,
+			currency: onlineStoreInfo.currency,
+			receiptNumber: currentOrder.orderId,
+			businessName: business,
+			redirectURL: redirectURL,
+			webhookURL: webhookURL,
+			paymentName: currentPayment,
+			agentCode,
+		};
+	}
+
 	async componentWillMount() {
 		const data = await api({
 			url: API_ONLINE_BANKING_LIST,
@@ -46,18 +77,6 @@ class OnlineBankingPayment extends Component {
 		}
 
 		this.setState(newStates);
-	}
-
-	getQueryObject(paramName) {
-		const { history } = this.props;
-
-		if (!history.location.search) {
-			return null;
-		}
-
-		const params = new URLSearchParams(history.location.search);
-
-		return params.get(paramName);
 	}
 
 	async payNow() {
@@ -110,22 +129,21 @@ class OnlineBankingPayment extends Component {
 		);
 	}
 
-	renderMain() {
+	render() {
 		const {
 			match,
 			history,
 			onlineStoreInfo
 		} = this.props;
-		const {
-			locale,
-			currency,
-		} = onlineStoreInfo;
+		const { logo } = onlineStoreInfo || {};
 		const {
 			agentCode,
 			payNowLoading,
 			loadedBankingList,
 			fire,
 		} = this.state;
+		const paymentData = this.getPaymentEntryRequestData();
+
 
 		return (
 			<section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -138,153 +156,95 @@ class OnlineBankingPayment extends Component {
 					<h2 className="header__title font-weight-bold text-middle">Pay via Online Banking</h2>
 				</header>
 
-				<Query
-					query={apiGql.GET_ORDER_DETAIL}
-					client={client}
-					variables={{ orderId: this.getQueryObject('orderId') }}
-					onError={err => console.error('Can not get order detail from core-api\n', err)}
-				>
-					{({ data: { order = {} } = {} }) => {
-						const { total } = order;
+				<div className="payment-bank">
+					<figure
+						className="logo-default__image-container"
+					>
+						<img src={logo} alt="" />
+					</figure>
+					<CurrencyNumber
+						className="payment-bank__money font-weight-bold text-center"
+						money={total || 0}
+					/>
 
-						this.order = order;
+					<form id="bank-2c2p-form" className="form">
+						<div className="payment-bank__form-item">
+							<div className="flex flex-middle flex-space-between">
+								<label className="payment-bank__label font-weight-bold">Select a bank</label>
+							</div>
+							<div className="payment-bank__card-container">
+								<div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
+									{this.renderBankingList()}
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+										<path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" />
+										<path d="M0 0h24v24H0z" fill="none" />
+									</svg>
+								</div>
+								{
+									payNowLoading && !agentCode
+										? (
+											<div className="error-message__container">
+												<span className="error-message">Please select a bank to continue</span>
+											</div>
+										)
+										: null
+								}
+							</div>
+						</div>
+					</form>
+				</div>
 
-						return (
-							<React.Fragment>
-								<div className="payment-bank">
-									<figure
-										className="logo-default__image-container"
-									>
-										<img src={onlineStoreInfo.logo} alt="" />
-									</figure>
+				<div className="footer-operation">
+					<button
+						className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+						onClick={this.payNow.bind(this)}
+						disabled={payNowLoading && agentCode}
+					>{
+							payNowLoading && !agentCode
+								? 'Redirecting'
+								: (
 									<CurrencyNumber
-										classList="payment-bank__money font-weight-bold text-center"
-										locale={locale}
-										currency={currency}
+										classList="font-weight-bold text-center"
+										addonBefore="Pay"
 										money={total || 0}
 									/>
-
-									<form id="bank-2c2p-form" className="form">
-										<div className="payment-bank__form-item">
-											<div className="flex flex-middle flex-space-between">
-												<label className="payment-bank__label font-weight-bold">Select a bank</label>
-											</div>
-											<div className="payment-bank__card-container">
-												<div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
-													{this.renderBankingList()}
-													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-														<path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" />
-														<path d="M0 0h24v24H0z" fill="none" />
-													</svg>
-												</div>
-												{
-													payNowLoading && !agentCode
-														? (
-															<div className="error-message__container">
-																<span className="error-message">Please select a bank to continue</span>
-															</div>
-														)
-														: null
-												}
-											</div>
-										</div>
-									</form>
-								</div>
-
-								<div className="footer-operation">
-									<button
-										className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
-										onClick={this.payNow.bind(this)}
-										disabled={payNowLoading && agentCode}
-									>{
-											payNowLoading && !agentCode
-												? 'Redirecting'
-												: (
-													<CurrencyNumber
-														classList="font-weight-bold text-center"
-														addonBefore="Pay"
-														money={total || 0}
-														locale={locale}
-														currency={currency}
-													/>
-												)
-										}
-									</button>
-								</div>
-							</React.Fragment>
-						);
-					}}
-				</Query>
-
-				<RedirectForm
-					action={config.storehubPaymentEntryURL}
-					method="POST"
-					fields={() => {
-						const { agentCode } = this.state;
-						const { total, orderId } = this.order;
-						const fields = [];
-						const h = config.h();
-						const queryString = `?h=${encodeURIComponent(h)}`;
-
-						if (!onlineStoreInfo || !this.order || !fire) {
-							return null;
+								)
 						}
+					</button>
+				</div>
 
-						const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', config.business)}${queryString}`;
-						const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', config.business)}${queryString}`;
-
-						fields.push({ name: 'amount', value: total });
-						fields.push({ name: 'currency', value: onlineStoreInfo.currency });
-						fields.push({ name: 'receiptNumber', value: orderId });
-						fields.push({ name: 'businessName', value: config.business });
-						fields.push({ name: 'redirectURL', value: redirectURL });
-						fields.push({ name: 'webhookURL', value: webhookURL });
-						fields.push({ name: 'paymentName', value: PAYMENT_METHODS.ONLINE_BANKING_PAY });
-						fields.push({ name: 'agentCode', value: agentCode });
-
-						return fields;
-					}}
-					fire={fire}
-				/>
 				{
-					!loadedBankingList
+					paymentData
 						? (
-							<div className="loading-cover">
-								<div className="loader-wave">
-									<i className="dot dot1"></i>
-									<i className="dot dot2"></i>
-									<i className="dot dot3"></i>
-									<i className="dot dot4"></i>
-								</div>
-							</div>
+							<RedirectForm
+								ref={ref => this.form = ref}
+								action={config.storehubPaymentEntryURL}
+								method="POST"
+								data={paymentData}
+							/>
 						)
 						: null
 				}
-			</section>
-		)
-	}
 
-	render() {
-		return (
-			<DocumentTitle title={Constants.DOCUMENT_TITLE.CREDIT_CARD_PAYMENT}>
-				{this.renderMain()}
-			</DocumentTitle>
+				<Loader loaded={loadedBankingList} />
+			</section>
 		);
 	}
 }
 
+export default connect(
+	state => {
+		const currentOrderId = getCurrentOrderId(state);
 
-export default compose(
-	withRouter,
-	withOnlinstStoreInfo({
-		props: ({ gqlOnlineStoreInfo: { loading, onlineStoreInfo } }) => {
-			if (loading) {
-				return null;
-			}
-			return { onlineStoreInfo };
-		},
-	}),
-	graphql(apiGql.CREATE_ORDER, {
-		name: 'createOrder',
+		return {
+			token: getBraintreeToken(state),
+			business: getBusiness(state),
+			currentPayment: getCurrentPayment(state),
+			onlineStoreInfo: getOnlineStoreInfo(state),
+			currentOrder: getOrderByOrderId(state, currentOrderId),
+		};
+	},
+	dispatch => ({
+		paymentActions: bindActionCreators(paymentActions, dispatch),
 	}),
 )(OnlineBankingPayment);
