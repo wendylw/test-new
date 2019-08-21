@@ -44,11 +44,6 @@ const AsyncBankCardPayment = Loadable({
   loading: MyLoadingComponent,
 });
 
-const AsyncOnlineBankingPayment = Loadable({
-  loader: () => import("./containers/OnlineBankingPayment"),
-  loading: MyLoadingComponent,
-});
-
 const AsyncThankYou = Loadable({
   loader: () => import("./containers/ThankYou"),
   loading: MyLoadingComponent,
@@ -81,7 +76,6 @@ export default () =>
     <Route path={Constants.ROUTER_PATHS.CART} exact component={AsyncCart} />
     <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
     <Route path={Constants.ROUTER_PATHS.CREDIT_CARD_PAYMENT} exact component={AsyncBankCardPayment} />
-    <Route path={Constants.ROUTER_PATHS.ONLINE_BANKING_PAYMENT} exact component={AsyncOnlineBankingPayment} />
     <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
     <Route path={Constants.ROUTER_PATHS.RECEIPT_DETAIL} exact component={AsyncReceiptDetail} />
     <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />

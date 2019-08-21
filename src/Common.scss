@@ -120,16 +120,6 @@ img {
 }
 
 form {
-  select {
-    position: relative;
-    border: 0;
-    background-color: transparent;
-    -webkit-appearance: none;
-    box-shadow: none;
-    outline: none;
-    z-index: 1;
-  }
-
   &.form .has-error {
     position: relative;
     border-color: $red;
@@ -153,9 +143,6 @@ form {
 }
 
 .input {
-  @extend .border-radius-base;
-
-  position: relative;
   padding: 6px 12px;
   border: 1px solid $gray-3;
   line-height: 24px;
@@ -163,17 +150,6 @@ form {
   outline: none;
   box-shadow: none;
   -webkit-appearance: none;
-
-  select + svg {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin: 12px;
-  }
-
-  > * {
-    line-height: 36px;
-  }
 
   &__block {
     display: block;
