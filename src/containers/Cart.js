@@ -114,7 +114,7 @@ export class Cart extends Component {
                     return null;
                   }
 
-                  const { stores, enableServiceCharge, serviceChargeRate/*, serviceChargeTax*/ } = business;
+                  const { stores, enableServiceCharge, serviceChargeRate } = business;
 
                   return (
                     <React.Fragment>
@@ -128,10 +128,16 @@ export class Cart extends Component {
                           />
                         </span>
                       </li>
-                      {(/* TODO: open this false */ false && enableServiceCharge) ? <li className="billing__item flex flex-middle flex-space-between">
-                        <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
-                        <span className="gray-font-opacity">{serviceCharge}</span>
-                      </li> : null}
+                      {
+                        enableServiceCharge
+                          ? (
+                            <li className="billing__item flex flex-middle flex-space-between">
+                              <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
+                              <CurrencyNumber classList="gray-font-opacity" money={serviceCharge || 0} />
+                            </li>
+                          )
+                          : null
+                      }
                     </React.Fragment>
                   );
                 }}
