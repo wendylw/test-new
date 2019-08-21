@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import Loader from './components/Loader';
 import RedirectForm from './components/RedirectForm';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
@@ -67,9 +68,6 @@ const BRAINTREE_FIELDS = {
 };
 
 class BankCardPayment extends Component {
-	static propTypes = {
-	}
-
 	form = null;
 	submitButton = null;
 	order = {};
@@ -431,25 +429,6 @@ class BankCardPayment extends Component {
 		submitButtonEl.dispatchEvent(event);
 	}
 
-	renderLoader() {
-		const { brainTreeDOMLoaded } = this.state;
-
-		if (brainTreeDOMLoaded) {
-			return null;
-		}
-
-		return (
-			<div className="loading-cover">
-				<div className="loader-wave">
-					<i className="dot" id="d1"></i>
-					<i className="dot" id="d2"></i>
-					<i className="dot" id="d3"></i>
-					<i className="dot" id="d4"></i>
-				</div>
-			</div>
-		)
-	}
-
 	renderForm() {
 		const {
 			card,
@@ -605,7 +584,7 @@ class BankCardPayment extends Component {
 						: null
 				}
 
-				{this.renderLoader()}
+				<Loader loaded={brainTreeDOMLoaded} />
 			</section>
 		);
 	}
