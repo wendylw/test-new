@@ -17,6 +17,10 @@ import './braintree.scss';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
+const VALID_CARDTYPES = {
+	VISA: 'visa',
+	MASTER_CARD: 'master-card',
+};
 const INVALID_CARDINFO_FIELDS = {
 	number: 'number',
 	expirationDate: 'expirationDate',
@@ -69,7 +73,6 @@ const BRAINTREE_FIELDS = {
 
 class BankCardPayment extends Component {
 	form = null;
-	submitButton = null;
 	order = {};
 
 	state = {
@@ -85,7 +88,7 @@ class BankCardPayment extends Component {
 		validDate: '',
 		invalidCardInfoFields: [],
 		nonce: null,
-		errorTyoes: {
+		errorTypes: {
 			required: [],
 			invalidFields: []
 		},
@@ -183,7 +186,7 @@ class BankCardPayment extends Component {
 			expirationDate: 'expiration date',
 			cvv: 'CVV'
 		};
-		const { errorTyoes } = this.state;
+		const { errorTypes } = this.state;
 		let nameString = '';
 		let verb = '';
 		let message = '';
@@ -193,15 +196,15 @@ class BankCardPayment extends Component {
 				message = 'Required';
 				break;
 			case 'invalidFields':
-				if (errorTyoes.invalidFields.length > 2) {
+				if (errorTypes.invalidFields.length > 2) {
 					verb = 'are';
 				} else {
 					verb = 'is';
 				}
 
-				errorTyoes.invalidFields.forEach((f, index) => {
+				errorTypes.invalidFields.forEach((f, index) => {
 					if (index) {
-						nameString += `${(index === errorTyoes.invalidFields.length - 1) ? ' and ' : ', '}`;
+						nameString += `${(index === errorTypes.invalidFields.length - 1) ? ' and ' : ', '}`;
 					}
 
 					nameString += fieldsName[f];
@@ -217,9 +220,9 @@ class BankCardPayment extends Component {
 	}
 
 	setCardInfoInvalidTypes(options, isReset) {
-		const { errorTyoes } = this.state;
+		const { errorTypes } = this.state;
 		const { type, field } = options;
-		let newTypes = errorTyoes;
+		let newTypes = errorTypes;
 
 		if (isReset) {
 			Object.keys(newTypes).forEach(t => {
@@ -236,7 +239,7 @@ class BankCardPayment extends Component {
 		}
 
 		this.setState({
-			errorTyoes: newTypes,
+			errorTypes: newTypes,
 		});
 	}
 
@@ -274,7 +277,7 @@ class BankCardPayment extends Component {
 			if (!card[key]) {
 				this.setCardInfoInvalidTypes({ type: 'required', field: key });
 				this.setCardInfoInvalidField(key);
-			} else if (card[key] === 'valid') {
+			} else if (card[key] === 'valid' || Object.values(VALID_CARDTYPES).includes(card[key])) {
 				this.setCardInfoInvalidTypes({ field: key }, true);
 				this.setCardInfoInvalidField(key, true);
 			}
@@ -355,7 +358,7 @@ class BankCardPayment extends Component {
 				hostedFieldsInstance.on('cardTypeChange', function (e) {
 					let type = null;
 					const validtionCardType = (e.cards || []).find(c => {
-						return c.type === 'visa' || c.type === 'master-card'
+						return Object.values(VALID_CARDTYPES).includes(c.type);
 					});
 
 					const isReset = (e.fields.number.isPotentiallyValid || e.fields.number.isValid) && !!validtionCardType;
@@ -432,7 +435,7 @@ class BankCardPayment extends Component {
 			card,
 			invalidCardInfoFields,
 			brainTreeDOMLoaded,
-			errorTyoes,
+			errorTypes,
 		} = this.state;
 
 		return (
@@ -441,7 +444,7 @@ class BankCardPayment extends Component {
 					<div className="flex flex-middle flex-space-between">
 						<label className="payment-bank__label font-weight-bold">Card information</label>
 						{
-							errorTyoes.required.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
+							errorTypes.required.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
 								? (<span className="error-message font-weight-bold text-uppercase">{this.getCardInfoInvalidMessage('required')}</span>)
 								: null
 						}
@@ -450,10 +453,10 @@ class BankCardPayment extends Component {
 						<div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes(INVALID_CARDINFO_FIELDS.number) ? 'has-error' : ''}`}>
 							<div id="card-number" className="card-info__wrapper"></div>
 							<div className="payment-bank__card-type-container flex flex-middle">
-								<i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
+								<i className={`payment-bank__card-type-icon visa text-middle ${card.type === VALID_CARDTYPES.VISA ? 'active' : ''}`}>
 									<img src="/img/payment-visa.svg" />
 								</i>
-								<i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === 'master-card' ? 'active' : ''}`}>
+								<i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === VALID_CARDTYPES.MASTER_CARD ? 'active' : ''}`}>
 									<img src="/img/payment-mastercard.svg" />
 								</i>
 							</div>
@@ -465,8 +468,8 @@ class BankCardPayment extends Component {
 					</div>
 					<div className="error-message__container">
 						{
-							errorTyoes.invalidFields.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
-								? (Object.keys(errorTyoes).map(key => {
+							errorTypes.invalidFields.filter(field => field !== INVALID_CARDINFO_FIELDS.cardHolderName).length
+								? (Object.keys(errorTypes).map(key => {
 									if (key === 'required') {
 										return null;
 									}
@@ -481,7 +484,7 @@ class BankCardPayment extends Component {
 					<div className="flex flex-middle flex-space-between">
 						<label className="payment-bank__label font-weight-bold">Name on card</label>
 						{
-							errorTyoes.required.includes(INVALID_CARDINFO_FIELDS.cardHolderName)
+							errorTypes.required.includes(INVALID_CARDINFO_FIELDS.cardHolderName)
 								?
 								<span className="error-message font-weight-bold text-uppercase">
 									{this.getCardInfoInvalidMessage('required')}
@@ -543,7 +546,6 @@ class BankCardPayment extends Component {
 
 				<div className="footer-operation">
 					<button
-						ref={ref => this.submitButton = ref}
 						id="submitButton"
 						className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
 						disabled={payNowLoading || !brainTreeDOMLoaded}

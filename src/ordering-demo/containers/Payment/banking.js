@@ -8,8 +8,6 @@ import config from '../../../config';
 
 
 import api from '../cashback/utils/api';
-import { client } from '../apiClient';
-import apiGql from '../apiGql';
 import config from '../config';
 import RedirectForm from '../views/components/RedirectForm';
 
@@ -24,7 +22,6 @@ class OnlineBankingPayment extends Component {
 	state = {
 		agentCode: null,
 		payNowLoading: false,
-		fire: false,
 		loadedBankingList: false,
 		bankingList: [],
 	};
@@ -85,12 +82,6 @@ class OnlineBankingPayment extends Component {
 			payNowLoading: true
 		};
 
-		if (agentCode) {
-			payState = {
-				fire: true,
-			};
-		}
-
 		this.setState(payState);
 	}
 
@@ -140,7 +131,6 @@ class OnlineBankingPayment extends Component {
 			agentCode,
 			payNowLoading,
 			loadedBankingList,
-			fire,
 		} = this.state;
 		const paymentData = this.getPaymentEntryRequestData();
 
