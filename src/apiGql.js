@@ -192,19 +192,20 @@ apiGql.GET_ONLINE_CATEGORY = gql`
   }
 `;
 
-// revert serviceCharge when BEEP-163 is released
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
   query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: ""
+      userId: "",
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     ) {
       total
       subtotal
       count
       discount
       tax
+      serviceCharge
       items {
         ...ShoppingCartItem
       }
@@ -226,7 +227,6 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
-// revert serviceCharge when BEEP-163 is released
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
@@ -238,6 +238,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       storeId
       tableId
       pickUpId
+      serviceCharge
       additionalComments
       items {
         id
@@ -281,7 +282,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      platform: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       shoppingCartItem {
         id
@@ -313,7 +314,7 @@ apiGql.CREATE_ORDER = gql`
       additionalComments: $additionalComments,
       tableId: $tableId,
       pax: $pax,
-      channel: 3
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       orders {
         id
