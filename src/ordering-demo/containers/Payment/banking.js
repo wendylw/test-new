@@ -6,10 +6,11 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 
-
-import api from '../cashback/utils/api';
-import config from '../config';
-import RedirectForm from '../views/components/RedirectForm';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBankList } from '../../redux/modules/payment';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 

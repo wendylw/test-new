@@ -92,7 +92,7 @@ export const actions = {
       });
       const { bankingList } = data || {};
 
-      if (token) {
+      if (bankingList && bankingList.length) {
         dispatch({
           type: types.FETCH_BANKLIST_SUCCESS,
           bankingList,

@@ -15,6 +15,7 @@ const ROUTER_PATHS = {
   CART: '/cart',
   PAYMENT: '/payment',
   CREDIT_CARD_PAYMENT: '/payment/creditcard',
+  ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   THANK_YOU: '/thank-you',
   RECEIPT_DETAIL: '/receipt',
   SORRY: '/sorry',
