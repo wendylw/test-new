@@ -11,6 +11,7 @@ const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
   orderId: '',
   braintreeToken: '',
+  bankingList: [],
 };
 
 export const types = {
@@ -31,6 +32,11 @@ export const types = {
   FETCH_BRAINTREE_TOKEN_REQUEST: 'FETCH_BRAINTREE_TOKEN_REQUEST',
   FETCH_BRAINTREE_TOKEN_SUCCESS: 'FETCH_BRAINTREE_TOKEN_SUCCESS',
   FETCH_BRAINTREE_TOKEN_FAILURE: 'FETCH_BRAINTREE_TOKEN_FAILURE',
+
+  // getBankList
+  FETCH_BANKLIST_REQUEST: 'FETCH_BANKLIST_REQUEST',
+  FETCH_BANKLIST_SUCCESS: 'FETCH_BANKLIST_SUCCESS',
+  FETCH_BANKLIST_FAILURE: 'FETCH_BANKLIST_FAILURE',
 };
 
 // action creators
@@ -77,6 +83,26 @@ export const actions = {
       console.error(e);
     }
   },
+
+  fetchBankList: () => async (dispatch) => {
+    try {
+      const data = await api({
+        url: '/payment/onlineBanking',
+        method: 'get',
+      });
+      const { bankingList } = data || {};
+
+      if (token) {
+        dispatch({
+          type: types.FETCH_BANKLIST_SUCCESS,
+          bankingList,
+        });
+      }
+    } catch (e) {
+      // TODO: handle error
+      console.error(e);
+    }
+  }
 };
 
 const createOrder = variables => {
@@ -136,6 +162,9 @@ const reducer = (state = initialState, action) => {
     case types.FETCH_BRAINTREE_TOKEN_SUCCESS: {
       return { ...state, braintreeToken: action.token };
     }
+    case types.FETCH_BANKLIST_SUCCESS: {
+      return { ...state, braintreeToken: action.bankingList };
+    }
     default:
       return state;
   }
@@ -149,3 +178,5 @@ export const getCurrentPayment = state => state.payment.currentPayment;
 export const getCurrentOrderId = (state) => state.payment.orderId;
 
 export const getBraintreeToken = state => state.payment.braintreeToken;
+
+export const getBankList = state => state.payment.bankingList;

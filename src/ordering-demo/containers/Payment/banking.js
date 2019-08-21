@@ -13,7 +13,6 @@ import RedirectForm from '../views/components/RedirectForm';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const { PAYMENT_METHODS } = Constants;
 const API_ONLINE_BANKING_LIST = '/payment/onlineBanking';
 
 class OnlineBankingPayment extends Component {
@@ -56,24 +55,29 @@ class OnlineBankingPayment extends Component {
 		};
 	}
 
-	async componentWillMount() {
-		const data = await api({
-			url: API_ONLINE_BANKING_LIST,
-			method: 'get',
-		});
-		const { bankingList } = data || {};
-		let newStates = {
-			loadedBankingList: true,
-		};
+	componentWillMount() {
+		const { paymentActions } = this.props;
 
-		if (bankingList && bankingList.length) {
-			newStates = Object.assign({}, newStates, {
-				agentCode: bankingList[0].agentCode,
-				bankingList: bankingList
-			});
+		paymentActions.fetchBankList();
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { bankingList } = nextProps;
+
+		if (bankingList.length && !this.props.bankingList.length) {
+			let newStates = {
+				loadedBankingList: true,
+			};
+
+			if (bankingList && bankingList.length) {
+				newStates = Object.assign({}, newStates, {
+					agentCode: bankingList[0].agentCode,
+					bankingList: bankingList
+				});
+			}
+
+			this.setState(newStates);
 		}
-
-		this.setState(newStates);
 	}
 
 	async payNow() {
@@ -227,7 +231,7 @@ export default connect(
 		const currentOrderId = getCurrentOrderId(state);
 
 		return {
-			token: getBraintreeToken(state),
+			bankingList: getBankList(state),
 			business: getBusiness(state),
 			currentPayment: getCurrentPayment(state),
 			onlineStoreInfo: getOnlineStoreInfo(state),
