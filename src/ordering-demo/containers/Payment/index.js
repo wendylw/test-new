@@ -92,13 +92,14 @@ class Payment extends Component {
       currentPayment,
       currentOrder
     } = this.props;
+    const { orderId } = currentOrder || {};
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
 
       history.push({
         pathname,
-        search: `?orderId=${currentOrder.orderId || ''}`
+        search: `?orderId=${orderId || ''}`
       });
 
       return;
