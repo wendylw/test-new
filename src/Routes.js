@@ -76,7 +76,7 @@ const AsyncError = Loadable({
 
 export default () =>
   <React.Fragment>
-    <Route path={Constants.ROUTER_PATHS.HOME} exact component={AsyncHome} />
+    {/* <Route path={Constants.ROUTER_PATHS.HOME} exact component={AsyncHome} />
     <Route path={Constants.ROUTER_PATHS.PORDUCTS} component={AsyncHome} />
     <Route path={Constants.ROUTER_PATHS.CART} exact component={AsyncCart} />
     <Route path={Constants.ROUTER_PATHS.PAYMENT} exact component={AsyncPayment} />
@@ -85,7 +85,7 @@ export default () =>
     <Route path={Constants.ROUTER_PATHS.THANK_YOU} exact component={AsyncThankYou} />
     <Route path={Constants.ROUTER_PATHS.RECEIPT_DETAIL} exact component={AsyncReceiptDetail} />
     <Route path={Constants.ROUTER_PATHS.SORRY} exact component={AsyncSorry} />
-    <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} />
+    <Route path={Constants.ROUTER_PATHS.ERROR} exact component={AsyncError} /> */}
     <Route path={`*/modal/:modal`} render={() => {
       return null;
     }} />

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Image from '../Image';
+import Image from '../../../components/Image';
 
 export class Item extends Component {
   render() {
@@ -26,7 +26,11 @@ export class Item extends Component {
 
     return (
       <li className={classList.join(' ')}>
-        <Image className="item__image-container" src={image} />
+        <Image
+          className="item__image-container"
+          src={image}
+          alt={title}
+        />
         <div className={contentClassList.join(' ')}>
           <div className="item__detail">
             <summary className="item__title font-weight-bold">{title}</summary>

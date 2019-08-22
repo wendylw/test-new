@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class OrderInfo extends Component {
 	render() {

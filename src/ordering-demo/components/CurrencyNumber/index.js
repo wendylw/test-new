@@ -4,46 +4,46 @@ import { connect } from 'react-redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
-  formatChildrenAsMoney() {
-    const { locale, currency, money } = this.props;
+	formatChildrenAsMoney() {
+		const { locale, currency, money } = this.props;
 
-    if (!(locale && currency)) {
-      return money;
-    }
+		if (!(locale && currency)) {
+			return money;
+		}
 
-    return Intl.NumberFormat(
-      locale,
-      { style: 'currency', currency }
-    ).format(parseFloat(money));
-  }
+		return Intl.NumberFormat(
+			locale,
+			{ style: 'currency', currency }
+		).format(parseFloat(money));
+	}
 
-  render() {
-    const { className, addonBefore } = this.props;
+	render() {
+		const { className, addonBefore } = this.props;
 
-    return <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
-  }
+		return <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
+	}
 }
 
 CurrencyNumber.propTypes = {
-  className: PropTypes.string,
-  addonBefore: PropTypes.string,
-  money: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
+	className: PropTypes.string,
+	addonBefore: PropTypes.string,
+	money: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number,
+	]),
 };
 
 CurrencyNumber.defaultProps = {
-  money: 0,
+	money: 0,
 };
 
 export default connect(
-  (state) => {
-    const { locale, currency } = getOnlineStoreInfo(state) || {};
+	(state) => {
+		const { locale, currency } = getOnlineStoreInfo(state) || {};
 
-    return {
-      locale,
-      currency,
-    };
-  }
+		return {
+			locale,
+			currency,
+		};
+	}
 )(CurrencyNumber);

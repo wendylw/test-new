@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import Loader from './components/Loader';
+import Image from '../../../components/Image';
 import RedirectForm from './components/RedirectForm';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
@@ -151,11 +152,10 @@ class OnlineBankingPayment extends Component {
 				</header>
 
 				<div className="payment-bank">
-					<figure
+					<Image
 						className="logo-default__image-container"
-					>
-						<img src={logo} alt="" />
-					</figure>
+						src={logo}
+					/>
 					<CurrencyNumber
 						className="payment-bank__money font-weight-bold text-center"
 						money={total || 0}

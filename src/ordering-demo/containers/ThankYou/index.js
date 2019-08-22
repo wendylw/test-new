@@ -1,62 +1,45 @@
 import React, { Component } from 'react';
+import PhoneViewContainer from '../../../ajax-containers/PhoneViewContainer';
+import Constants from '../../../utils/constants';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { getOrder, actions as thankYouActions, getBusinessInfo } from '../../redux/modules/thankYou';
-import PhoneViewContainer from '../../../ajax-containers/PhoneViewContainer';
 
 class ThankYou extends Component {
-  state = {
-    needReceipt: 'remind'
-  };
+  state = {};
 
-  render() {
-    const { order, onlineStoreInfo, businessInfo, match, history } = this.props;
-
-    if (!(order && onlineStoreInfo && businessInfo)) {
-      return 'Loading...';
-    }
-
-    return (
-      <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
-        <header className="header border__bottom-divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle" onClick={() => history.replace({
-            pathname: '/',
-            search: `?table=${order.tableId}&storeId=${order.storeId}`
-          })}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
-          </figure>
-          <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
-          <span className="gray-font-opacity text-uppercase">
-            {
-              order.tableId
-                ? `Table ${order.tableId}`
-                : 'Self pick-up'
-            }
-          </span>
-        </header>
-        <div className="thanks text-center">
-          <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
-          <h2 className="thanks__title font-weight-light">Thank You!</h2>
-          <p>We're preparing your order now. <span role="img" aria-label="Goofy">😋</span></p>
-
-          <div className="thanks__info-container">
-            {this.renderPickupInfo()}
-            {this.renderNeedReceipt()}
-            {this.renderPhoneView()}
-          </div>
-        </div>
-        <footer className="footer-link">
-          <ul className="flex flex-middle flex-space-between">
-            <li><span>&copy; {new Date().getFullYear()} </span><a className="link link__non-underline" href="https://www.storehub.com/">StoreHub</a></li>
-          </ul>
-        </footer>
-      </section>
-    );
+  componentDidMount() {
+    this.props.thankYouActions.loadOrder(this.getReceiptNumber());
+    this.props.thankYouActions.loadCoreBusiness();
   }
 
+  getReceiptNumber = () => {
+    const { history } = this.props;
+    const query = new URLSearchParams(history.location.search);
+
+    return query.get('receiptNumber');
+  }
+
+  handleClickViewReceipt = () => {
+    const {
+      history,
+      order,
+    } = this.props;
+    const { orderId } = order || {};
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.RECEIPT_DETAIL,
+      search: `?receiptNumber=${orderId || ''}`
+    });
+  };
+
   renderPickupInfo() {
-    const { tableId, pickUpId } = this.props.order;
+    const {
+      tableId,
+      pickUpId,
+    } = this.props.order;
 
     if (!pickUpId || tableId) {
       return null;
@@ -111,20 +94,50 @@ class ThankYou extends Component {
     );
   }
 
-  componentDidMount() {
-    this.props.thankYouActions.loadOrder(this.getReceiptNumber());
-    this.props.thankYouActions.loadCoreBusiness();
-  }
+  render() {
+    const { order, onlineStoreInfo, businessInfo, match, history } = this.props;
 
-  getReceiptNumber = () => {
-    const { history } = this.props;
-    const query = new URLSearchParams(history.location.search);
-    return query.get('receiptNumber');
-  }
+    if (!(order && onlineStoreInfo && businessInfo)) {
+      return 'Loading...';
+    }
 
-  handleClickViewReceipt = () => this.setState({
-    needReceipt: 'detail',
-  });
+    return (
+      <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
+        <header className="header border__bottom-divider flex flex-middle flex-space-between">
+          <figure className="header__image-container text-middle" onClick={() => history.replace({
+            pathname: '/',
+            search: `?table=${order.tableId}&storeId=${order.storeId}`
+          })}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
+          </figure>
+          <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
+          <span className="gray-font-opacity text-uppercase">
+            {
+              order.tableId
+                ? `Table ${order.tableId}`
+                : 'Self pick-up'
+            }
+          </span>
+        </header>
+        <div className="thanks text-center">
+          <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
+          <h2 className="thanks__title font-weight-light">Thank You!</h2>
+          <p>We're preparing your order now. <span role="img" aria-label="Goofy">😋</span></p>
+
+          <div className="thanks__info-container">
+            {this.renderPickupInfo()}
+            {this.renderNeedReceipt()}
+            {this.renderPhoneView()}
+          </div>
+        </div>
+        <footer className="footer-link">
+          <ul className="flex flex-middle flex-space-between">
+            <li><span>&copy; {new Date().getFullYear()} </span><a className="link link__non-underline" href="https://www.storehub.com/">StoreHub</a></li>
+          </ul>
+        </footer>
+      </section>
+    );
+  }
 }
 
 export default connect(

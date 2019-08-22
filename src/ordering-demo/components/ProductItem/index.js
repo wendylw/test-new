@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Tag from '../Tag';
 import Item from '../Item';
+import Tag from '../../../components/Tag';
 import ItemOperator from '../ItemOperator';
-import CurrencyNumber from '../CurrencyNumber';
+import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 
 export class ProductItem extends Component {
