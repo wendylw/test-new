@@ -14,8 +14,6 @@ import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBan
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const API_ONLINE_BANKING_LIST = '/payment/onlineBanking';
-
 class OnlineBankingPayment extends Component {
 	order = {};
 
@@ -82,7 +80,6 @@ class OnlineBankingPayment extends Component {
 	}
 
 	async payNow() {
-		const { agentCode } = this.state;
 		let payState = {
 			payNowLoading: true
 		};
@@ -129,8 +126,10 @@ class OnlineBankingPayment extends Component {
 		const {
 			match,
 			history,
+			currentOrder,
 			onlineStoreInfo
 		} = this.props;
+		const { total } = currentOrder || {};
 		const { logo } = onlineStoreInfo || {};
 		const {
 			agentCode,

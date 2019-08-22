@@ -163,7 +163,7 @@ const reducer = (state = initialState, action) => {
       return { ...state, braintreeToken: action.token };
     }
     case types.FETCH_BANKLIST_SUCCESS: {
-      return { ...state, braintreeToken: action.bankingList };
+      return { ...state, bankingList: action.bankingList };
     }
     default:
       return state;
