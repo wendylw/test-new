@@ -7,7 +7,7 @@ import GlobalConstants from '../Constants';
 import api from '../utils/api';
 import Constants from '../cashback/utils/Constants';
 import PhoneView from '../components/PhoneView';
-import CurrencyNumber from '../components/CurrencyNumber';
+import CurrencyNumber from '../components/CurrencyNumbers';
 
 const ORDER_CAN_CLAIM = 'Can_Claim';
 const ANIMATION_TIME = 3600;
