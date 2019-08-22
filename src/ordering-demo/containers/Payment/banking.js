@@ -198,7 +198,7 @@ class OnlineBankingPayment extends Component {
 								? 'Redirecting'
 								: (
 									<CurrencyNumber
-										classList="font-weight-bold text-center"
+										className="font-weight-bold text-center"
 										addonBefore="Pay"
 										money={total || 0}
 									/>
@@ -208,7 +208,7 @@ class OnlineBankingPayment extends Component {
 				</div>
 
 				{
-					paymentData
+					payNowLoading && paymentData
 						? (
 							<RedirectForm
 								ref={ref => this.form = ref}
