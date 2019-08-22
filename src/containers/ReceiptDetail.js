@@ -66,7 +66,7 @@ export class ReceiptDetail extends Component {
                 id,
                 title,
                 variationTexts,
-                unitPrice,
+                displayPrice,
                 quantity,
                 image,
               } = item;
@@ -84,7 +84,7 @@ export class ReceiptDetail extends Component {
                   variation={variationTexts.join(', ')}
                   detail={
                     <CurrencyNumber
-                      money={unitPrice || 0}
+                      money={displayPrice || 0}
                       locale={locale}
                       currency={currency}
                     />

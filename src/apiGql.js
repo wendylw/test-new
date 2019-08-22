@@ -245,6 +245,7 @@ apiGql.GET_ORDER_DETAIL = gql`
         title
         productId
         quantity
+        displayPrice
         unitPrice
         image
         variationTexts
