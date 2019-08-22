@@ -6,10 +6,10 @@ import Utils from './libs/utils';
 
 const Loading = () => <div className="loader theme page-loader"></div>;
 
-const AsyncOrderingApp = Loadable({
-  loader: () => import("./App"),
-  loading: Loading,
-})
+// const AsyncOrderingApp = Loadable({
+//   loader: () => import("./App"),
+//   loading: Loading,
+// })
 
 const AsyncCashbackApp = Loadable({
   loader: () => import("./cashback/App"),
@@ -46,7 +46,7 @@ class Bootstrap extends Component {
     return (
       <React.Fragment>
         <Switch>
-          <Route path='/ordering-demo' component={AsyncReduxDemo} />
+          <Route path='/ordering' component={AsyncReduxDemo} />
           <Route exact path={Constants.ROUTER_PATHS.INDEX} render={(...args) => {
             if (isQRScannerApp()) {
               return (
@@ -62,7 +62,7 @@ class Bootstrap extends Component {
               <Redirect to={Constants.ROUTER_PATHS.ORDERING} />
             );
           }} />
-          <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
+          {/* <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} /> */}
           <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
           <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
           <Route

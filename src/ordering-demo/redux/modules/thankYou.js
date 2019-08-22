@@ -1,11 +1,17 @@
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import url from '../../../utils/url';
+import Constants from '../../../utils/constants';
+
+import api from '../../../utils/api';
+
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness, getRequestInfo } from './app';
 
+
 const initialState = {
   orderId: null,
+  cashInfo: null,
 };
 
 export const types = {
@@ -18,16 +24,41 @@ export const types = {
   FETCH_COREBUSINESS_REQUEST: 'REDUX_DEMO/THANK_YOU/FETCH_COREBUSINESS_REQUEST',
   FETCH_COREBUSINESS_SUCCESS: 'REDUX_DEMO/THANK_YOU/FETCH_COREBUSINESS_SUCCESS',
   FETCH_COREBUSINESS_FAILURE: 'REDUX_DEMO/THANK_YOU/FETCH_COREBUSINESS_FAILURE',
+
+  // fetch CashbackInfo
+  FETCH_CASHBACKINFO_REQUEST: 'REDUX_DEMO/THANK_YOU/FETCH_CASHBACKINFO_REQUEST',
+  FETCH_CASHBACKINFO_SUCCESS: 'REDUX_DEMO/THANK_YOU/FETCH_CASHBACKINFO_SUCCESS',
+  FETCH_CASHBACKINFO_FAILURE: 'REDUX_DEMO/THANK_YOU/FETCH_CASHBACKINFO_FAILURE',
 }
 
 export const actions = {
   loadOrder: (orderId) => (dispatch, getState) => {
     return dispatch(fetchOrder({ orderId }));
   },
+
   loadCoreBusiness: () => (dispatch, getState) => {
     const { storeId } = getRequestInfo(getState());
     const business = getBusiness(getState());
     return dispatch(fetchCoreBusiness({ business, storeId }));
+  },
+
+  getCashbackInfo: (receiptNumber) => async (dispatch) => {
+    try {
+      const { ok, data } = await api({
+        url: `/api/cashback?receiptNumber=${receiptNumber}&source=${Constants.CASHBACK_SOURCE.RECEIPT}`,
+        method: 'get',
+      });
+
+      if (ok) {
+        dispatch({
+          type: types.FETCH_CASHBACKINFO_SUCCESS,
+          cashbackInfo: data,
+        });
+      }
+    } catch (e) {
+      // TODO: handle error
+      console.error(e);
+    }
   },
 };
 
@@ -57,11 +88,18 @@ const fetchCoreBusiness = variables => ({
 
 // reducer
 const reducer = (state = initialState, action) => {
-  if (action.type === types.FETCH_ORDER_SUCCESS) {
-    const { data } = action.responseGql;
-    return { ...state, orderId: data.order.orderId };
+  switch (action.type) {
+    case types.FETCH_ORDER_SUCCESS: {
+      const { data } = action.responseGql;
+
+      return { ...state, orderId: data.order.orderId };
+    }
+    case types.FETCH_CASHBACKINFO_SUCCESS: {
+      return { ...state, cashbackInfo: action.cashbackInfo };
+    }
+    default:
+      return state;
   }
-  return state;
 }
 
 export default reducer;

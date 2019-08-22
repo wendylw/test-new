@@ -1,14 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import PhoneView from '../../../../../components/PhoneView';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
 
-import { Link, withRouter } from 'react-router-dom';
+
 import qs from 'qs';
 import Utils from '../libs/utils';
 import GlobalConstants from '../Constants';
 import api from '../utils/api';
 import Constants from '../cashback/utils/Constants';
-import PhoneView from '../components/PhoneView';
-import CurrencyNumber from '../components/CurrencyNumbers';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { getOnlineStoreInfo } from '../../../../redux/modules/app';
+import { actions as thankYouActions, getBusinessInfo } from '../../../../redux/modules/thankYou';
 
 const ORDER_CAN_CLAIM = 'Can_Claim';
 const ANIMATION_TIME = 3600;
@@ -102,12 +108,6 @@ class PhoneViewContainer extends React.Component {
 
 	renderCurrencyNumber() {
 		const {
-			onlineStoreInfo: {
-				locale,
-				currency,
-			}
-		} = this.props;
-		const {
 			cashbackInfoResponse: {
 				cashback,
 			},
@@ -119,8 +119,6 @@ class PhoneViewContainer extends React.Component {
 
 		return (
 			<CurrencyNumber
-				locale={locale}
-				currency={currency}
 				classList="font-weight-bold"
 				money={Math.abs(cashback || 0)}
 			/>
@@ -168,6 +166,7 @@ class PhoneViewContainer extends React.Component {
 
 	render() {
 		const {
+			businessInfo,
 			onlineStoreInfo: {
 				country,
 			}
@@ -181,8 +180,9 @@ class PhoneViewContainer extends React.Component {
 			firstClaimedCashback,
 			redirectURL,
 		} = this.state;
+		const { enableCashback } = businessInfo;
 
-		if (!country || !cashback) {
+		if (!country || !cashback || !enableCashback) {
 			return null;
 		}
 
@@ -224,4 +224,12 @@ PhoneView.defaultProps = {
 	onlineStoreInfo: {},
 };
 
-export default withRouter(PhoneViewContainer);
+export default connect(
+	(state) => ({
+		onlineStoreInfo: getOnlineStoreInfo(state),
+		businessInfo: getBusinessInfo(state),
+	}),
+	(dispatch) => ({
+		thankYouActions: bindActionCreators(thankYouActions, dispatch),
+	})
+)(PhoneViewContainer);

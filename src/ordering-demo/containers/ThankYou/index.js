@@ -5,7 +5,7 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { getOrder, actions as thankYouActions, getBusinessInfo } from '../../redux/modules/thankYou';
+import { getOrder, actions as thankYouActions } from '../../redux/modules/thankYou';
 
 class ThankYou extends Component {
   state = {};
@@ -80,32 +80,19 @@ class ThankYou extends Component {
     );
   }
 
-  renderPhoneView() {
-    const { onlineStoreInfo, businessInfo } = this.props;
-    const { enableCashback } = businessInfo;
-
-    if (!enableCashback) {
-      return null;
-    }
-
-    // TODO: PhoneViewContainer to be tested
-    return (
-      <PhoneViewContainer onlineStoreInfo={onlineStoreInfo} />
-    );
-  }
-
   render() {
-    const { order, onlineStoreInfo, businessInfo, match, history } = this.props;
+    const { history, match, order } = this.props;
+    const date = new Date();
 
-    if (!(order && onlineStoreInfo && businessInfo)) {
-      return 'Loading...';
+    if (!order) {
+      return null;
     }
 
     return (
       <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
         <header className="header border__bottom-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => history.replace({
-            pathname: '/',
+            pathname: `${Constants.ROUTER_PATHS.HOME}`,
             search: `?table=${order.tableId}&storeId=${order.storeId}`
           })}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
@@ -127,12 +114,12 @@ class ThankYou extends Component {
           <div className="thanks__info-container">
             {this.renderPickupInfo()}
             {this.renderNeedReceipt()}
-            {this.renderPhoneView()}
+            <PhoneViewContainer />
           </div>
         </div>
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
-            <li><span>&copy; {new Date().getFullYear()} </span><a className="link link__non-underline" href="https://www.storehub.com/">StoreHub</a></li>
+            <li><span>&copy; {date.getFullYear()} </span><a className="link link__non-underline" href="https://www.storehub.com/">StoreHub</a></li>
           </ul>
         </footer>
       </section>
@@ -144,7 +131,6 @@ export default connect(
   (state) => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
     order: getOrder(state),
-    businessInfo: getBusinessInfo(state),
   }),
   (dispatch) => ({
     thankYouActions: bindActionCreators(thankYouActions, dispatch),
