@@ -249,6 +249,7 @@ apiGql.GET_ORDER_DETAIL = gql`
         unitPrice
         image
         variationTexts
+        itemType
       }
     }
   }
