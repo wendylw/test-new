@@ -1,4 +1,5 @@
 import url from '../../../utils/url';
+import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import api from '../../../utils/api';
@@ -12,6 +13,7 @@ import { getBusiness, getRequestInfo } from './app';
 const initialState = {
   orderId: null,
   cashInfo: null,
+  cashbackInfo: null,
 };
 
 export const types = {
@@ -29,6 +31,11 @@ export const types = {
   FETCH_CASHBACKINFO_REQUEST: 'REDUX_DEMO/THANK_YOU/FETCH_CASHBACKINFO_REQUEST',
   FETCH_CASHBACKINFO_SUCCESS: 'REDUX_DEMO/THANK_YOU/FETCH_CASHBACKINFO_SUCCESS',
   FETCH_CASHBACKINFO_FAILURE: 'REDUX_DEMO/THANK_YOU/FETCH_CASHBACKINFO_FAILURE',
+
+  // create CashbackInfo
+  CREATE_CASHBACKINFO_REQUEST: 'REDUX_DEMO/THANK_YOU/CREATE_CASHBACKINFO_REQUEST',
+  CREATE_CASHBACKINFO_SUCCESS: 'REDUX_DEMO/THANK_YOU/CREATE_CASHBACKINFO_SUCCESS',
+  CREATE_CASHBACKINFO_FAILURE: 'REDUX_DEMO/THANK_YOU/CREATE_CASHBACKINFO_FAILURE',
 }
 
 export const actions = {
@@ -52,6 +59,33 @@ export const actions = {
       if (ok) {
         dispatch({
           type: types.FETCH_CASHBACKINFO_SUCCESS,
+          cashbackInfo: data,
+        });
+      }
+    } catch (e) {
+      // TODO: handle error
+      console.error(e);
+    }
+  },
+
+  createCashbackInfo: (payload) => async (dispatch) => {
+    const { phone } = payload;
+
+    Utils.setPhoneNumber(phone);
+
+    try {
+      const response = await api({
+        url: '/api/cashback',
+        method: 'post',
+        data: payload,
+      });
+      const { ok, data } = response;
+
+      console.log(1111);
+
+      if (ok) {
+        dispatch({
+          type: types.CREATE_CASHBACKINFO_SUCCESS,
           cashbackInfo: data,
         });
       }
@@ -97,6 +131,9 @@ const reducer = (state = initialState, action) => {
     case types.FETCH_CASHBACKINFO_SUCCESS: {
       return { ...state, cashbackInfo: action.cashbackInfo };
     }
+    case types.CREATE_CASHBACKINFO_SUCCESS: {
+      return { ...state, cashbackInfo: Object.assign({}, state.thankYou.cashbackInfo, action.cashbackInfo) }
+    }
     default:
       return state;
   }
@@ -113,3 +150,5 @@ export const getBusinessInfo = state => {
   const business = getBusiness(state);
   return getBusinessByName(state, business);
 }
+
+export const getCashbackInfo = state => state.thankYou.cashbackInfo;

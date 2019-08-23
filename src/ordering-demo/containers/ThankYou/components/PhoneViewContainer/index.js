@@ -6,15 +6,13 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 
 import qs from 'qs';
-import Utils from '../libs/utils';
-import GlobalConstants from '../Constants';
-import api from '../utils/api';
-import Constants from '../cashback/utils/Constants';
+import Utils from '../../../../../utils/utils';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../../../redux/modules/app';
-import { actions as thankYouActions, getBusinessInfo } from '../../../../redux/modules/thankYou';
+import { actions as thankYouActions, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
 
 const ORDER_CAN_CLAIM = 'Can_Claim';
 const ANIMATION_TIME = 3600;
@@ -24,11 +22,10 @@ class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
 
 	state = {
-		cashbackInfoResponse: {},
 		phone: Utils.getPhoneNumber(),
 		isSavingPhone: false,
 		redirectURL: null,
-		firstClaimedCashback: true,
+		showCelebration: true,
 		claimedAnimationGifSrc: null
 	}
 
@@ -38,68 +35,63 @@ class PhoneViewContainer extends React.Component {
 		});
 	}
 
-	componentWillMount() {
-		this.handleCashbackAjax('get');
+	async componentWillMount() {
+		const {
+			cashbackInfo,
+			thankYouActions,
+		} = this.props;
+		const { status } = cashbackInfo || {};
+		let showCelebration = true;
+
+		await thankYouActions.getCashbackInfo();
+
+		if (status && status !== ORDER_CAN_CLAIM) {
+			showCelebration = false;
+
+			this.createCustomerCashbackInfo()
+		}
+
+		this.setState({ showCelebration });
 	}
 
 	componentWillUpdate(nextProps, nextState) {
-		if (nextState.firstClaimedCashback && nextState.redirectURL) {
+		if (nextState.showCelebration && nextState.redirectURL) {
 			this.animationSetTimeout = setTimeout(() => {
-				this.setState({ firstClaimedCashback: false });
+				this.setState({ showCelebration: false });
 
 				clearTimeout(this.animationSetTimeout);
 			}, ANIMATION_TIME);
 		}
 	}
 
-	async handleCashbackAjax(method) {
-		const { history } = this.props;
-		const { phone } = this.state;
-		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-		let options = {
-			url: `${Constants.api.CASHBACK}${method === 'get' ? `?receiptNumber=${receiptNumber}&source=${GlobalConstants.CASHBACK_SOURCE.QR_ORDERING}` : ''}`,
-			method,
-		};
-
-		if (method === 'post') {
-			options = Object.assign({}, options, {
-				data: {
-					phone,
-					receiptNumber,
-					source: GlobalConstants.CASHBACK_SOURCE.QR_ORDERING
-				}
-			});
-
-			Utils.setPhoneNumber(phone);
-		}
-
-		const { data } = await api(options);
-		let {
-			cashbackInfoResponse,
-			firstClaimedCashback,
-		} = this.state;
+	async createCustomerCashbackInfo() {
 		let redirectURL = null;
 
-		if (method === 'get' && data && data.status !== ORDER_CAN_CLAIM) {
-			firstClaimedCashback = false;
-			this.handleCashbackAjax('post');
-		}
+		await thankYouActions.createCashbackInfo(this.getOrderInfo());
 
-		if (method === 'post') {
-			const { customerId } = data || {};
+		const { cashbackInfo } = this.props;
+		const { customerId } = cashbackInfo || {};
 
-			redirectURL = `${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+		if (customerId) {
+			redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
 		}
 
 		this.setState({
-			cashbackInfoResponse: Object.assign({},
-				cashbackInfoResponse,
-				data,
-			),
-			firstClaimedCashback,
 			isSavingPhone: false,
 			redirectURL,
 		});
+	}
+
+	getOrderInfo() {
+		const { history } = this.props;
+		const { phone } = this.state;
+		const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+		return {
+			phone,
+			receiptNumber,
+			source: Constants.CASHBACK_SOURCE.QR_ORDERING
+		};
 	}
 
 	handleUpdatePhoneNumber(phone) {
@@ -107,11 +99,8 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	renderCurrencyNumber() {
-		const {
-			cashbackInfoResponse: {
-				cashback,
-			},
-		} = this.state;
+		const { cashbackInfo } = this.props;
+		const { cashback } = cashbackInfo || {};
 
 		if (!cashback) {
 			return null;
@@ -119,7 +108,7 @@ class PhoneViewContainer extends React.Component {
 
 		return (
 			<CurrencyNumber
-				classList="font-weight-bold"
+				className="font-weight-bold"
 				money={Math.abs(cashback || 0)}
 			/>
 		);
@@ -127,18 +116,16 @@ class PhoneViewContainer extends React.Component {
 
 	renderPhoneView() {
 		const {
-			onlineStoreInfo: {
-				country,
-			},
+			cashbackInfo,
+			onlineStoreInfo,
 		} = this.props;
 		const {
 			isSavingPhone,
 			redirectURL,
 			phone,
-			cashbackInfoResponse: {
-				status,
-			},
 		} = this.state;
+		const { country } = onlineStoreInfo || {};
+		const { status } = cashbackInfo || {};
 
 		if (status !== ORDER_CAN_CLAIM) {
 			return redirectURL
@@ -157,7 +144,7 @@ class PhoneViewContainer extends React.Component {
 				phone={phone}
 				country={country}
 				setPhone={this.handleUpdatePhoneNumber.bind(this)}
-				submitPhoneNumber={this.handleCashbackAjax.bind(this, 'post')}
+				submitPhoneNumber={this.createCustomerCashbackInfo()}
 				isLoading={isSavingPhone}
 				buttonText="Continue"
 			/>
@@ -166,28 +153,28 @@ class PhoneViewContainer extends React.Component {
 
 	render() {
 		const {
+			cashbackInfo,
 			businessInfo,
-			onlineStoreInfo: {
-				country,
-			}
+			onlineStoreInfo,
 		} = this.props;
 		const {
-			cashbackInfoResponse: {
-				cashback,
-				status,
-			},
 			claimedAnimationGifSrc,
-			firstClaimedCashback,
+			showCelebration,
 			redirectURL,
 		} = this.state;
-		const { enableCashback } = businessInfo;
+		const {
+			cashback,
+			status
+		} = cashbackInfo || {};
+		const { country } = onlineStoreInfo || {};
+		const { enableCashback } = businessInfo || {};
 
 		if (!country || !cashback || !enableCashback) {
 			return null;
 		}
 
 		return (
-			<div className={`thanks__phone-view ${firstClaimedCashback && redirectURL ? 'active' : ''}`}>
+			<div className={`thanks__phone-view ${showCelebration && redirectURL ? 'active' : ''}`}>
 				{
 					status !== ORDER_CAN_CLAIM
 						? (
@@ -206,7 +193,7 @@ class PhoneViewContainer extends React.Component {
 				<p className="terms-privacy text-center gray-font-opacity">
 					By tapping to continue, you agree to our
           <br />
-					<Link target="_blank" to={GlobalConstants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={GlobalConstants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+					<Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
         </p>
 				<div className="thanks__suceed-animation">
 					<img src={claimedAnimationGifSrc} alt="Beep Claimed" />
@@ -228,6 +215,7 @@ export default connect(
 	(state) => ({
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		businessInfo: getBusinessInfo(state),
+		cashbackInfo: getCashbackInfo(state),
 	}),
 	(dispatch) => ({
 		thankYouActions: bindActionCreators(thankYouActions, dispatch),

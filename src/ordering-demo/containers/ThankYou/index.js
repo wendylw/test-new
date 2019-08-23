@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PhoneViewContainer from '../../../ajax-containers/PhoneViewContainer';
+import PhoneViewContainer from './components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -114,7 +114,7 @@ class ThankYou extends Component {
           <div className="thanks__info-container">
             {this.renderPickupInfo()}
             {this.renderNeedReceipt()}
-            <PhoneViewContainer />
+            <PhoneViewContainer history={history} />
           </div>
         </div>
         <footer className="footer-link">
