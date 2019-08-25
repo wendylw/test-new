@@ -14,7 +14,7 @@ class Routes extends Component {
     const { match } = this.props;
     return (
       <Router basename={match.path}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="loader"></div>}>
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/cart" component={Cart} />

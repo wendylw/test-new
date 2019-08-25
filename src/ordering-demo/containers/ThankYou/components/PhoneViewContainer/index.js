@@ -29,12 +29,6 @@ class PhoneViewContainer extends React.Component {
 		claimedAnimationGifSrc: null
 	}
 
-	componentDidMount() {
-		this.setState({
-			claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
-		});
-	}
-
 	async componentWillMount() {
 		const {
 			cashbackInfo,
@@ -48,10 +42,16 @@ class PhoneViewContainer extends React.Component {
 		if (status && status !== ORDER_CAN_CLAIM) {
 			showCelebration = false;
 
-			this.createCustomerCashbackInfo()
+			this.createCustomerCashbackInfo();
 		}
 
 		this.setState({ showCelebration });
+	}
+
+	componentDidMount() {
+		this.setState({
+			claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
+		});
 	}
 
 	componentWillUpdate(nextProps, nextState) {
@@ -65,6 +65,7 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	async createCustomerCashbackInfo() {
+		const { thankYouActions } = this.props;
 		let redirectURL = null;
 
 		await thankYouActions.createCashbackInfo(this.getOrderInfo());
@@ -127,6 +128,8 @@ class PhoneViewContainer extends React.Component {
 		const { country } = onlineStoreInfo || {};
 		const { status } = cashbackInfo || {};
 
+		console.log(redirectURL);
+
 		if (status !== ORDER_CAN_CLAIM) {
 			return redirectURL
 				? (
@@ -144,7 +147,7 @@ class PhoneViewContainer extends React.Component {
 				phone={phone}
 				country={country}
 				setPhone={this.handleUpdatePhoneNumber.bind(this)}
-				submitPhoneNumber={this.createCustomerCashbackInfo()}
+				submitPhoneNumber={this.createCustomerCashbackInfo.bind(this)}
 				isLoading={isSavingPhone}
 				buttonText="Continue"
 			/>

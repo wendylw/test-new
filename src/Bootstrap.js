@@ -46,7 +46,7 @@ class Bootstrap extends Component {
     return (
       <React.Fragment>
         <Switch>
-          <Route path='/ordering' component={AsyncReduxDemo} />
+          <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncReduxDemo} />
           <Route exact path={Constants.ROUTER_PATHS.INDEX} render={(...args) => {
             if (isQRScannerApp()) {
               return (

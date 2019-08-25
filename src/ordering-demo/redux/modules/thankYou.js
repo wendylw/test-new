@@ -12,7 +12,6 @@ import { getBusiness, getRequestInfo } from './app';
 
 const initialState = {
   orderId: null,
-  cashInfo: null,
   cashbackInfo: null,
 };
 
@@ -132,7 +131,7 @@ const reducer = (state = initialState, action) => {
       return { ...state, cashbackInfo: action.cashbackInfo };
     }
     case types.CREATE_CASHBACKINFO_SUCCESS: {
-      return { ...state, cashbackInfo: Object.assign({}, state.thankYou.cashbackInfo, action.cashbackInfo) }
+      return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, action.cashbackInfo) }
     }
     default:
       return state;
