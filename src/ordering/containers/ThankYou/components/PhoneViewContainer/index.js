@@ -6,7 +6,6 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 import api from '../../../../../utils/api';
 
-
 import qs from 'qs';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
@@ -67,22 +66,35 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	async createCustomerCashbackInfo() {
-		const { thankYouActions } = this.props;
-		let redirectURL = null;
+		// const { thankYouActions } = this.props;
+		// let redirectURL = null;
 
-		await thankYouActions.createCashbackInfo(this.getOrderInfo());
+		// await thankYouActions.createCashbackInfo(this.getOrderInfo());
 
-		const { cashbackInfo } = this.props;
-		const { customerId } = cashbackInfo || {};
+		// const { cashbackInfo } = this.props;
+		// const { customerId } = cashbackInfo || {};
 
-		if (customerId) {
-			redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-		}
+		// if (customerId) {
+		// 	redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+		// }
 
-		this.setState({
-			isSavingPhone: false,
-			redirectURL,
+		// this.setState({
+		// 	isSavingPhone: false,
+		// 	redirectURL,
+		// });
+
+		const response = await api({
+			url: 'http://3.0.191.134:9010/authorize',
+			method: 'post',
+			data: {
+				"grant_type": "otp",
+				"username": "+8617600050716",
+				"client": "beep",
+				"business_name": "nike"
+			},
 		});
+
+		console.log(response);
 	}
 
 	getOrderInfo() {
