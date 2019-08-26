@@ -440,7 +440,7 @@ class BankCardPayment extends Component {
 										currency={currency}
 									/>
 
-									<form id="bank-2c2p-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
+									<form id="bank-braintree-form" className="form" onSubmit={this.handleSubmitForm.bind(this)}>
 										<div className="payment-bank__form-item">
 											<div className="flex flex-middle flex-space-between">
 												<label className="payment-bank__label font-weight-bold">Card information</label>
@@ -569,10 +569,10 @@ class BankCardPayment extends Component {
 						? (
 							<div className="loading-cover">
 								<div className="loader-wave">
-									<i className="dot" id="d1"></i>
-									<i className="dot" id="d2"></i>
-									<i className="dot" id="d3"></i>
-									<i className="dot" id="d4"></i>
+									<i className="dot dot1"></i>
+									<i className="dot dot2"></i>
+									<i className="dot dot3"></i>
+									<i className="dot dot4"></i>
 								</div>
 							</div>
 						)
