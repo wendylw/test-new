@@ -27,7 +27,7 @@ const AsyncTermsPrivacy = Loadable({
 })
 
 const AsyncOrdering = Loadable({
-  loader: () => import("./ordering-demo/index"),
+  loader: () => import("./ordering/index"),
   loading: Loading,
 })
 
