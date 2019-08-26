@@ -11,6 +11,7 @@ import ClearAll from '../views/components/ClearAll';
 import { clientCoreApi } from '../apiClient';
 import apiGql from '../apiGql';
 import config from '../config';
+import Utils from '../libs/utils';
 import DocumentTitle from '../views/components/DocumentTitle';
 import Constants from '../Constants';
 
@@ -20,7 +21,7 @@ export class Cart extends Component {
   }
 
   state = {
-    additionalComments: null,
+    additionalComments: Utils.getAdditionalComments(),
   }
 
   backToHome() {
@@ -32,6 +33,8 @@ export class Cart extends Component {
     this.setState({
       additionalComments: e.target.value
     });
+
+    Utils.setAdditionalComments(e.target.value);
   }
 
   render() {
@@ -67,10 +70,10 @@ export class Cart extends Component {
           </header>
           <div className="list__container">
             <CartItems />
-            <div className="cart__note flex flex-middle flex-space-between" style={{ display: 'none' }}>
+            <div className="cart__note flex flex-middle flex-space-between">
               <textarea
                 rows="4"
-                placeholder="Add a not to your order?"
+                placeholder="Add a note to your order?"
                 value={additionalComments || ''}
                 onChange={this.handleChangeAdditionalComments.bind(this)}
               ></textarea>
@@ -176,7 +179,7 @@ export class Cart extends Component {
             </div>
           </footer>
         </section>
-      </DocumentTitle>
+      </DocumentTitle >
     )
   }
 }
