@@ -114,7 +114,7 @@ export class Cart extends Component {
                     return null;
                   }
 
-                  const { stores, enableServiceCharge, serviceChargeRate } = business;
+                  const { stores, enableServiceCharge, serviceChargeRate/*, serviceChargeTax*/ } = business;
 
                   return (
                     <React.Fragment>
