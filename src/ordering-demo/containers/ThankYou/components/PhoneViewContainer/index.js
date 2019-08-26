@@ -128,8 +128,6 @@ class PhoneViewContainer extends React.Component {
 		const { country } = onlineStoreInfo || {};
 		const { status } = cashbackInfo || {};
 
-		console.log(redirectURL);
-
 		if (status !== ORDER_CAN_CLAIM) {
 			return redirectURL
 				? (
