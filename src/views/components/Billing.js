@@ -72,7 +72,7 @@ export class Billing extends Component {
                     </span>
                   </li>
                   {
-                    enableServiceCharge
+                    false && enableServiceCharge
                       ? (
                         <li className="billing__item flex flex-middle flex-space-between">
                           <label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>

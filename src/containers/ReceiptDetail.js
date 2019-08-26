@@ -71,10 +71,6 @@ export class ReceiptDetail extends Component {
                 image,
               } = item;
 
-              if (item.itemType) {
-                return null;
-              }
-
               return (
                 <Item
                   contentClassName="flex-top"
