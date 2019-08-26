@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { BrowserRouter, Link } from 'react-router-dom';
 import PhoneView from '../../../../../components/PhoneView';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
@@ -133,11 +133,13 @@ class PhoneViewContainer extends React.Component {
 		if (status !== ORDER_CAN_CLAIM) {
 			return redirectURL
 				? (
-					<Link
-						className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
-						to={redirectURL}
-						target="_blank"
-					>Check My Balance</Link>
+					<BrowserRouter basename="/">
+						<Link
+							className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+							to={redirectURL}
+							target="_blank"
+						>Check My Balance</Link>
+					</BrowserRouter>
 				)
 				: null;
 		}
@@ -196,8 +198,10 @@ class PhoneViewContainer extends React.Component {
 				<p className="terms-privacy text-center gray-font-opacity">
 					By tapping to continue, you agree to our
           <br />
-					<Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
-        </p>
+					<BrowserRouter basename="/">
+						<Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+					</BrowserRouter>
+				</p>
 				<div className="thanks__suceed-animation">
 					<img src={claimedAnimationGifSrc} alt="Beep Claimed" />
 				</div>
