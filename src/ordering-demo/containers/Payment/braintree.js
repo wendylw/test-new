@@ -554,7 +554,7 @@ class BankCardPayment extends Component {
 								? 'Redirecting'
 								: (
 									<CurrencyNumber
-										classList="font-weight-bold text-center"
+										className="font-weight-bold text-center"
 										addonBefore="Pay"
 										money={total}
 									/>

@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { actions as homeActions } from '../../redux/modules/home';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 
 const {
@@ -43,6 +44,12 @@ class Payment extends Component {
   state = {
     payNowLoading: false,
   };
+
+  componentWillMount() {
+    const { homeActions } = this.props;
+
+    homeActions.loadShoppingCart();
+  }
 
   getPaymentEntryRequestData = () => {
     const {
@@ -105,13 +112,16 @@ class Payment extends Component {
       return;
     }
 
-    this.setState({
-      payNowLoading: false,
-    });
+    if (!orderId) {
+      this.setState({
+        payNowLoading: false
+      });
+    }
   }
 
   render() {
     const { currentPayment } = this.props;
+    const { payNowLoading } = this.state;
     const className = ['table-ordering__payment'/*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
 
@@ -150,9 +160,9 @@ class Payment extends Component {
         <div className="footer-operation">
           <button
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
-            disabled={this.state.payNowLoading}
+            disabled={payNowLoading}
             onClick={this.handleClickPayNow}
-          >{this.state.payNowLoading ? 'Redirecting' : 'Pay now'}</button>
+          >{payNowLoading ? 'Redirecting' : 'Pay now'}</button>
         </div>
 
         {
@@ -186,5 +196,6 @@ export default connect(
   },
   dispatch => ({
     paymentActions: bindActionCreators(paymentActions, dispatch),
+    homeActions: bindActionCreators(homeActions, dispatch),
   }),
 )(Payment);

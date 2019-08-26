@@ -80,8 +80,6 @@ export const actions = {
       });
       const { ok, data } = response;
 
-      console.log(1111);
-
       if (ok) {
         dispatch({
           type: types.CREATE_CASHBACKINFO_SUCCESS,

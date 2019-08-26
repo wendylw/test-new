@@ -4,6 +4,7 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 const Home = lazy(() => import('./Home'));
 const Cart = lazy(() => import('./Cart'));
 const Payment = lazy(() => import('./Payment'));
+const Receipt = lazy(() => import('./Receipt'));
 const BraintreePayment = lazy(() => import('./Payment/braintree'));
 const BankingPayment = lazy(() => import('./Payment/banking'));
 const ThankYou = lazy(() => import('./ThankYou'));
@@ -19,6 +20,7 @@ class Routes extends Component {
             <Route exact path="/" component={Home} />
             <Route exact path="/cart" component={Cart} />
             <Route exact path="/payment" component={Payment} />
+            <Route exact path="/receipt" component={Receipt} />
             <Route exact path="/payment/creditcard" component={BraintreePayment} />
             <Route exact path="/payment/online-banking" component={BankingPayment} />
             <Route exact path="/thank-you" component={ThankYou} />
