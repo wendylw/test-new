@@ -4,12 +4,14 @@ import OtpInput from 'react-otp-input';
 
 import api from '../../../utils/api';
 import Utils from '../../../utils/utils';
+import config from '../../../config';
+
 
 import '../../../cashback/App.scss';
 
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
-class PhoneViewContainer extends React.Component {
+class Test extends React.Component {
 	animationSetTimeout = null;
 
 	state = {
@@ -30,7 +32,7 @@ class PhoneViewContainer extends React.Component {
 				grant_type,
 				"username": phone,
 				"client": "beep",
-				"business_name": "nike"
+				"business_name": config.business
 			},
 		});
 
@@ -61,7 +63,7 @@ class PhoneViewContainer extends React.Component {
 				grant_type,
 				"username": phone,
 				password,
-				"business_name": "nike"
+				"business_name": config.business
 			},
 		});
 
@@ -161,4 +163,4 @@ class PhoneViewContainer extends React.Component {
 	}
 }
 
-export default PhoneViewContainer;
+export default Test;
