@@ -117,7 +117,7 @@ class Test extends React.Component {
 							}}>
 								<img src={claimedAnimationGifSrc} alt="Beep Claimed" />
 
-								<h2>Login succeed</h2>
+								<h2>LOGIN SUCCESSFUL</h2>
 							</div>
 						)
 						: null
