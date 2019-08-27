@@ -62,6 +62,7 @@ class Test extends React.Component {
 			data: {
 				grant_type,
 				"username": phone,
+				"client": "beep",
 				password,
 				"business_name": config.business
 			},
