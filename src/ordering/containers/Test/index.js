@@ -113,7 +113,7 @@ class Test extends React.Component {
 					claimedAnimationGifSrc
 						? (
 							<div className="thanks__suceed-animation" style={{
-								display: `${showModal ? 'block' : 'none'}`
+								display: `${claimedAnimationGifSrc ? 'block' : 'none'}`
 							}}>
 								<img src={claimedAnimationGifSrc} alt="Beep Claimed" />
 
