@@ -40,10 +40,10 @@ class Test extends React.Component {
 		});
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
+	componentWillReceiveProps(nextProps, nextState) {
 		const { appWebToken } = nextState;
 
-		if (appWebToken) {
+		if (this.props.appWebToken !== appWebToken) {
 			this.setState({
 				claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
 			});
