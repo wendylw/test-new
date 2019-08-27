@@ -129,7 +129,6 @@ export default connect(
     return {
       onlineStoreInfo: getOnlineStoreInfo(state),
       requestInfo: getRequestInfo(state),
-
       categories: getCategoryProductList(state),
     };
   },

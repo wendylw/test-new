@@ -66,35 +66,22 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	async createCustomerCashbackInfo() {
-		// const { thankYouActions } = this.props;
-		// let redirectURL = null;
+		const { thankYouActions } = this.props;
+		let redirectURL = null;
 
-		// await thankYouActions.createCashbackInfo(this.getOrderInfo());
+		await thankYouActions.createCashbackInfo(this.getOrderInfo());
 
-		// const { cashbackInfo } = this.props;
-		// const { customerId } = cashbackInfo || {};
+		const { cashbackInfo } = this.props;
+		const { customerId } = cashbackInfo || {};
 
-		// if (customerId) {
-		// 	redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-		// }
+		if (customerId) {
+			redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+		}
 
-		// this.setState({
-		// 	isSavingPhone: false,
-		// 	redirectURL,
-		// });
-
-		const response = await api({
-			url: 'http://3.0.191.134:9010/authorize',
-			method: 'post',
-			data: {
-				"grant_type": "otp",
-				"username": "+8617600050716",
-				"client": "beep",
-				"business_name": "nike"
-			},
+		this.setState({
+			isSavingPhone: false,
+			redirectURL,
 		});
-
-		console.log(response);
 	}
 
 	getOrderInfo() {
@@ -222,11 +209,11 @@ class PhoneViewContainer extends React.Component {
 	}
 }
 
-PhoneView.propTypes = {
+PhoneViewContainer.propTypes = {
 	onlineStoreInfo: PropTypes.object,
 };
 
-PhoneView.defaultProps = {
+PhoneViewContainer.defaultProps = {
 	onlineStoreInfo: {},
 };
 
