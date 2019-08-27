@@ -6,12 +6,7 @@ import { withRouter } from "react-router";
 import Utils from '../../../libs/utils';
 import Constants from '../../../Constants';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import {
-  sendVerificationMessage,
-  tryOtpAndSaveCashback,
-  fetchPhone,
-  setPhone,
-} from '../../actions';
+import { tryOtpAndSaveCashback, fetchPhone, setPhone } from '../../actions';
 
 import 'react-phone-number-input/style.css';
 
@@ -44,8 +39,7 @@ class PhoneView extends React.Component {
     } = this.props;
 
     if (isValidPhoneNumber(phone)) {
-      // tryOtpAndSaveCashback(history);
-      sendVerificationMessage(history);
+      tryOtpAndSaveCashback(history);
     }
   }
 
@@ -102,7 +96,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispathToProps = dispatch => bindActionCreators({
-  sendVerificationMessage,
   tryOtpAndSaveCashback,
   fetchPhone,
   setPhone,
