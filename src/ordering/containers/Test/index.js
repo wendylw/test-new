@@ -20,6 +20,40 @@ class Test extends React.Component {
 		password: null,
 		showModal: false,
 		claimedAnimationGifSrc: null,
+		appWebToken: null,
+	}
+
+	componentWillMount() {
+		this.requestAppToSendToken();
+	}
+
+	componentDidMount() {
+		document.addEventListener('getAccessToken', function (response) {
+			const { data } = response || {};
+			const { webToken } = data || {};
+
+			if (webToken) {
+				this.setState({
+					appWebToken: webToken
+				});
+			}
+		});
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		const { appWebToken } = nextState;
+
+		if (appWebToken) {
+			this.setState({
+				claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
+			});
+		}
+	}
+
+	requestAppToSendToken() {
+		if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+			window.ReactNativeWebView.postMessage('getToken');
+		}
 	}
 
 	async createCustomerCashbackInfo() {
