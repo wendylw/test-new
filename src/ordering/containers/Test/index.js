@@ -68,14 +68,14 @@ class Test extends React.Component {
 			},
 		});
 
-		const { access_token, token_type } = response;
+		const { access_token, refresh_token } = response;
 
 		const tokenData = await api({
 			url: '/api/login',
 			method: 'post',
 			data: {
-				access_token,
-				token_type,
+				accessToken: access_token,
+				refreshToken: refresh_token,
 			},
 		});
 		const { data } = tokenData || {};
