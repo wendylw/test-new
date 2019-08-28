@@ -24,12 +24,13 @@ class Test extends React.Component {
 	}
 
 	componentDidMount() {
-		document.addEventListener('getAccessToken', (response, testData) => {
+		document.addEventListener('getAccessToken', (response) => {
 			const { data } = response || {};
 			const { webToken } = data || {};
 
-			alert(JSON.stringify(response));
-			alert(JSON.stringify(testData));
+			alert(response);
+			alert(response.data);
+			alert(response.data.webToken);
 
 			if (webToken) {
 				this.setState({
