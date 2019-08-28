@@ -20,7 +20,8 @@ class Test extends React.Component {
 		password: null,
 		showModal: false,
 		claimedAnimationGifSrc: null,
-		appWebToken: null,
+		accessToken: null,
+		refreshToken: null,
 	}
 
 	componentDidMount() {
@@ -29,8 +30,17 @@ class Test extends React.Component {
 
 			if (data) {
 				this.setState({
-					appWebToken: data,
-					claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF,
+					accessToken: data,
+				});
+			}
+		}, false);
+
+		document.addEventListener('getRefreshToken', (response) => {
+			const { data } = response || {};
+
+			if (data) {
+				this.setState({
+					refreshToken: data,
 				});
 			}
 		}, false);
@@ -38,9 +48,51 @@ class Test extends React.Component {
 		this.requestAppToSendToken();
 	}
 
+	componentWillUpdate(nextProps, nextState) {
+		const { accessToken, refreshToken } = nextState;
+
+		if (accessToken !== this.state.accessToken) {
+			this.setState({ accessToken });
+		}
+
+		if (refreshToken !== this.state.refreshToken) {
+			this.setState({ refreshToken });
+		}
+	}
+
+	componentDidUpdate() {
+		const { accessToken, refreshToken, claimedAnimationGifSrc } = this.state;
+
+		if (!claimedAnimationGifSrc && accessToken && refreshToken) {
+			this.login(accessToken, refreshToken);
+		}
+	}
+
 	requestAppToSendToken() {
 		if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
 			window.ReactNativeWebView.postMessage('getToken');
+		}
+	}
+
+	async login(accessToken, refreshToken) {
+		const tokenData = await api({
+			url: '/api/login',
+			method: 'post',
+			data: {
+				accessToken,
+				refreshToken,
+			},
+		});
+		const { data } = tokenData || {};
+		const { webToken } = data || {};
+
+		if (webToken) {
+			this.setState({
+				showModal: false,
+				claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF,
+			});
+		} else {
+			alert('Server error, please try again later.');
 		}
 	}
 
@@ -92,25 +144,7 @@ class Test extends React.Component {
 
 		const { access_token, refresh_token } = response;
 
-		const tokenData = await api({
-			url: '/api/login',
-			method: 'post',
-			data: {
-				accessToken: access_token,
-				refreshToken: refresh_token,
-			},
-		});
-		const { data } = tokenData || {};
-		const { webToken } = data || {};
-
-		if (webToken) {
-			this.setState({
-				showModal: false,
-				claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF,
-			});
-		} else {
-			alert('Server error, please try again later.');
-		}
+		this.login(access_token, refresh_token);
 	}
 
 	render() {
