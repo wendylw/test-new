@@ -125,14 +125,20 @@ class Test extends React.Component {
 
 		return (
 			<div>
-				<PhoneView
-					phone={phone}
-					country="MY"
-					setPhone={this.handleUpdatePhoneNumber.bind(this)}
-					submitPhoneNumber={this.createCustomerCashbackInfo.bind(this)}
-					isLoading={isSavingPhone}
-					buttonText="Continue"
-				/>
+				{
+					!claimedAnimationGifSrc
+						? (
+							<PhoneView
+								phone={phone}
+								country="MY"
+								setPhone={this.handleUpdatePhoneNumber.bind(this)}
+								submitPhoneNumber={this.createCustomerCashbackInfo.bind(this)}
+								isLoading={isSavingPhone}
+								buttonText="Continue"
+							/>
+						)
+						: null
+				}
 				{
 					claimedAnimationGifSrc
 						? (
