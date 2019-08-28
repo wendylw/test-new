@@ -29,35 +29,16 @@ class Test extends React.Component {
 			const { data } = response || {};
 
 			if (data) {
-				this.setState({
-					accessToken: data,
-				});
-			}
-		}, false);
+				const tokenList = data.split(',');
 
-		document.addEventListener('getRefreshToken', (response) => {
-			const { data } = response || {};
-
-			if (data) {
 				this.setState({
-					refreshToken: data,
+					accessToken: tokenList[0],
+					refreshToken: tokenList[1],
 				});
 			}
 		}, false);
 
 		this.requestAppToSendToken();
-	}
-
-	componentWillUpdate(nextProps, nextState) {
-		const { accessToken, refreshToken } = nextState;
-
-		if (accessToken !== this.state.accessToken) {
-			this.setState({ accessToken });
-		}
-
-		if (refreshToken !== this.state.refreshToken) {
-			this.setState({ refreshToken });
-		}
 	}
 
 	componentDidUpdate() {
