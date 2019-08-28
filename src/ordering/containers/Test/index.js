@@ -56,6 +56,7 @@ class Test extends React.Component {
 	}
 
 	async login(accessToken, refreshToken) {
+		alert('test1');
 		const tokenData = await api({
 			url: '/api/login',
 			method: 'post',
