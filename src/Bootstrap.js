@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, lazy } from 'react';
 import Loadable from 'react-loadable';
 import { Route, Redirect, Switch } from "react-router-dom";
 import Constants from './Constants';
@@ -6,35 +6,17 @@ import Utils from './libs/utils';
 
 const Loading = () => <div className="loader theme page-loader"></div>;
 
-const AsyncCashbackApp = Loadable({
-  loader: () => import("./cashback/App"),
-  loading: Loading,
-})
+const AsyncCashbackApp = lazy(() => import('./cashback/App'));
 
-const AsyncQRScanner = Loadable({
-  loader: () => import("./qrscan"),
-  loading: Loading,
-})
+const AsyncQRScanner = lazy(() => import('./qrscan'));
 
-const AsyncStoresApp = Loadable({
-  loader: () => import("./containers/Stores/index"),
-  loading: Loading,
-})
+const AsyncStoresApp = lazy(() => import('./containers/Stores/index'));
 
-const AsyncTermsPrivacy = Loadable({
-  loader: () => import("./containers/TermsPrivacy"),
-  loading: Loading,
-})
+const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
 
-const AsyncOrdering = Loadable({
-  loader: () => import("./ordering/index"),
-  loading: Loading,
-})
+const AsyncOrdering = lazy(() => import('./ordering/index'));
 
-const AsyncNotFound = Loadable({
-  loader: () => import("./containers/NotFound"),
-  loading: Loading,
-});
+const AsyncNotFound = lazy(() => import('./containers/NotFound'));
 
 class Bootstrap extends Component {
   render() {
@@ -57,8 +39,6 @@ class Bootstrap extends Component {
               <Redirect to={Constants.ROUTER_PATHS.ORDERING} />
             );
           }} />
-          <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
-          <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
           <Route
             path={Constants.ROUTER_PATHS.TERMS_OF_USE}
             render={props => <AsyncTermsPrivacy {...props} pageName='terms' />}
@@ -67,6 +47,8 @@ class Bootstrap extends Component {
             path={Constants.ROUTER_PATHS.PRIVACY}
             render={props => <AsyncTermsPrivacy {...props} pageName='privacy' />}
           />
+          <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
+          <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
           <Route component={AsyncNotFound} />
         </Switch>
       </React.Fragment>
