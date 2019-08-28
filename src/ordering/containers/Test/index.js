@@ -27,6 +27,8 @@ class Test extends React.Component {
 		document.addEventListener('getAccessToken', (response) => {
 			const { data } = response || {};
 
+			alert(data);
+
 			if (data) {
 				this.setState({
 					appWebToken: data
@@ -39,6 +41,8 @@ class Test extends React.Component {
 
 	componentWillReceiveProps(nextProps, nextState) {
 		const { appWebToken } = nextState;
+
+		alert('appwebtoken' + appWebToken);
 
 		if (this.props.appWebToken !== appWebToken) {
 			this.setState({
@@ -128,7 +132,10 @@ class Test extends React.Component {
 			phone,
 			showModal,
 			claimedAnimationGifSrc,
+			appWebToken
 		} = this.state;
+
+		alert('main====>' + appWebToken);
 
 		return (
 			<div>
