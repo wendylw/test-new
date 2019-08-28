@@ -31,24 +31,13 @@ class Test extends React.Component {
 
 			if (data) {
 				this.setState({
-					appWebToken: data
+					appWebToken: data,
+					claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF,
 				});
 			}
 		}, false);
 
 		this.requestAppToSendToken();
-	}
-
-	componentWillReceiveProps(nextProps, nextState) {
-		const { appWebToken } = nextState;
-
-		alert('appwebtoken' + appWebToken);
-
-		if (this.props.appWebToken !== appWebToken) {
-			this.setState({
-				claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
-			});
-		}
 	}
 
 	requestAppToSendToken() {
@@ -132,10 +121,7 @@ class Test extends React.Component {
 			phone,
 			showModal,
 			claimedAnimationGifSrc,
-			appWebToken
 		} = this.state;
-
-		alert('main====>' + appWebToken);
 
 		return (
 			<div>
