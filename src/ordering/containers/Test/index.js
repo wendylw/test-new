@@ -29,7 +29,7 @@ class Test extends React.Component {
 			const { data } = response || {};
 			const { webToken } = data || {};
 
-			alert(response);
+			alert(JSON.stringify(response));
 			console.log(response);
 
 			if (webToken) {
