@@ -79,6 +79,13 @@
 
           lastTouchEnd = now;
         }, false);
+
+        document.addEventListener('getAccessToken', function (response) {
+          var { data } = response || {};
+          var { webToken } = data || {};
+
+          console.log('webToken====>', response);
+        });
       }
     </script>
   </body>
