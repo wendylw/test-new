@@ -56,7 +56,6 @@ class Test extends React.Component {
 	}
 
 	async login(accessToken, refreshToken) {
-		alert('test1');
 		const tokenData = await api({
 			url: '/api/login',
 			method: 'post',
@@ -65,8 +64,6 @@ class Test extends React.Component {
 				refreshToken,
 			},
 		});
-		alert('accessToken===>' + accessToken);
-		alert(tokenData);
 		const { data } = tokenData || {};
 		const { webToken } = data || {};
 
