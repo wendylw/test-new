@@ -31,9 +31,6 @@ class Test extends React.Component {
 			if (data) {
 				const tokenList = data.split(',');
 
-				alert('tokenList0===>' + tokenList[0]);
-				alert('tokenList1===>' + tokenList[1]);
-
 				this.setState({
 					accessToken: tokenList[0],
 					refreshToken: tokenList[1],
@@ -48,9 +45,6 @@ class Test extends React.Component {
 		const { accessToken, refreshToken, claimedAnimationGifSrc } = this.state;
 
 		if (!claimedAnimationGifSrc && accessToken && refreshToken) {
-			alert('accessToken===>' + accessToken);
-			alert('refreshToken===>' + refreshToken);
-
 			this.login(accessToken, refreshToken);
 		}
 	}
@@ -62,6 +56,9 @@ class Test extends React.Component {
 	}
 
 	async login(accessToken, refreshToken) {
+		alert('accessToken=====>' + accessToken);
+		alert('refreshToken=====>' + refreshToken);
+
 		const tokenData = await api({
 			url: '/api/login',
 			method: 'post',
@@ -72,6 +69,10 @@ class Test extends React.Component {
 		});
 		const { data } = tokenData || {};
 		const { webToken } = data || {};
+
+		alert(tokenData);
+		alert(tokenData.data);
+		alert(tokenData.data.webToken);
 
 		if (webToken) {
 			this.setState({
