@@ -81,10 +81,10 @@
         }, false);
 
         document.addEventListener('getAccessToken', function (response) {
+          alert('test');
+
           var { data } = response || {};
           var { webToken } = data || {};
-
-          console.log('webToken====>', response);
         });
       }
     </script>
