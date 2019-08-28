@@ -26,18 +26,13 @@ class Test extends React.Component {
 	componentDidMount() {
 		document.addEventListener('getAccessToken', (response) => {
 			const { data } = response || {};
-			const { webToken } = data || {};
-
-			alert(response);
-			alert(response.data);
-			alert(response.data.webToken);
 
 			if (webToken) {
 				this.setState({
-					appWebToken: webToken
+					appWebToken: data
 				});
 			}
-		});
+		}, false);
 
 		this.requestAppToSendToken();
 	}
