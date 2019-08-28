@@ -23,23 +23,23 @@ class Test extends React.Component {
 		appWebToken: null,
 	}
 
-	componentWillMount() {
-		this.requestAppToSendToken();
-	}
-
 	componentDidMount() {
-		// document.addEventListener('message', function (response) {
-		// 	const { data } = response || {};
-		// 	const { webToken } = data || {};
+		alert('test1');
 
-		// 	console.log('webToken====>', response);
+		document.addEventListener('message', function (response) {
+			const { data } = response || {};
+			const { webToken } = data || {};
 
-		// 	if (webToken) {
-		// 		this.setState({
-		// 			appWebToken: webToken
-		// 		});
-		// 	}
-		// });
+			alert('test2');
+
+			if (webToken) {
+				this.setState({
+					appWebToken: webToken
+				});
+			}
+		});
+
+		this.requestAppToSendToken();
 	}
 
 	componentWillReceiveProps(nextProps, nextState) {
