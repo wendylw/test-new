@@ -32,6 +32,8 @@ class Test extends React.Component {
 			const { data } = response || {};
 			const { webToken } = data || {};
 
+			console.log('webToken====>', response);
+
 			if (webToken) {
 				this.setState({
 					appWebToken: webToken
