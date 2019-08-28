@@ -24,13 +24,13 @@ class Test extends React.Component {
 	}
 
 	componentDidMount() {
-		alert('test1');
 
 		document.addEventListener('message', function (response) {
 			const { data } = response || {};
 			const { webToken } = data || {};
 
-			alert('test2');
+			alert(response);
+			console.log(response);
 
 			if (webToken) {
 				this.setState({
