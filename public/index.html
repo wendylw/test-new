@@ -80,7 +80,7 @@
           lastTouchEnd = now;
         }, false);
 
-        document.addEventListener('getAccessToken', function (response) {
+        document.addEventListener('message', function (response) {
           alert('test');
 
           var { data } = response || {};

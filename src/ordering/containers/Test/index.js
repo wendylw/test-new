@@ -28,18 +28,18 @@ class Test extends React.Component {
 	}
 
 	componentDidMount() {
-		document.addEventListener('getAccessToken', function (response) {
-			const { data } = response || {};
-			const { webToken } = data || {};
+		// document.addEventListener('message', function (response) {
+		// 	const { data } = response || {};
+		// 	const { webToken } = data || {};
 
-			console.log('webToken====>', response);
+		// 	console.log('webToken====>', response);
 
-			if (webToken) {
-				this.setState({
-					appWebToken: webToken
-				});
-			}
-		});
+		// 	if (webToken) {
+		// 		this.setState({
+		// 			appWebToken: webToken
+		// 		});
+		// 	}
+		// });
 	}
 
 	componentWillReceiveProps(nextProps, nextState) {
