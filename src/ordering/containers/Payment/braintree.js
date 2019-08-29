@@ -71,7 +71,7 @@ const BRAINTREE_FIELDS = {
 	},
 };
 
-class BankCardPayment extends Component {
+class Braintree extends Component {
 	form = null;
 	order = {};
 
@@ -597,4 +597,4 @@ export default connect(
 	dispatch => ({
 		paymentActions: bindActionCreators(paymentActions, dispatch),
 	}),
-)(BankCardPayment);
+)(Braintree);

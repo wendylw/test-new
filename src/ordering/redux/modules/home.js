@@ -84,8 +84,6 @@ export const actions = {
 
   // decrease clicked on product item
   decreaseProductInCart: (prod) => (dispatch, getState) => {
-    console.log(`decrease ${prod.id}`);
-
     const cartItem = prod.cartItems.find(item => item.productId === prod.id);
 
     if (prod.cartQuantity === 1) {
@@ -106,7 +104,6 @@ export const actions = {
 
   // increase clicked on product item
   increaseProductInCart: (prod) => (dispatch, getState) => {
-    console.log(`increase ${prod.id}`);
     const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id);
 
     if (prod.variations && prod.variations.length) {

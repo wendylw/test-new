@@ -15,7 +15,7 @@ import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBan
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-class OnlineBankingPayment extends Component {
+class Banking extends Component {
 	order = {};
 
 	state = {
@@ -241,4 +241,4 @@ export default connect(
 	dispatch => ({
 		paymentActions: bindActionCreators(paymentActions, dispatch),
 	}),
-)(OnlineBankingPayment);
+)(Banking);
