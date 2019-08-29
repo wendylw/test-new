@@ -4,12 +4,6 @@ import { bindActionCreators } from 'redux';
 import { actions as appActions } from '../../redux/modules/app';
 
 class Sorry extends Component {
-  render() {
-    return (
-      <div className="loader theme page-loader"></div>
-    );
-  }
-
   componentWillMount() {
     this.props.appActions.showMessageModal({
       message: 'Payment Failed',
@@ -19,6 +13,20 @@ class Sorry extends Component {
     this.props.history.push({
       pathname: '/cart'
     });
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (!nextProps.order) {
+      return false;
+    }
+
+    return true;
+  }
+
+  render() {
+    return (
+      <div className="loader theme page-loader"></div>
+    );
   }
 }
 

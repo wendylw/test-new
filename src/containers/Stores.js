@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
+import Utils from '../utils/utils';
+import Constants from '../utils/constants';
 
-class StoreList extends Component {
+class Stores extends Component {
 	componentDidMount() {
 		const { data: stores, onSelect } = this.props;
 
@@ -10,6 +10,10 @@ class StoreList extends Component {
 		if (stores.length === 1) {
 			onSelect(stores[0].id);
 		}
+	}
+
+	handleStoreClick = (storeId) => {
+		this.props.onSelect(storeId);
 	}
 
 	render() {
@@ -48,10 +52,6 @@ class StoreList extends Component {
 			</ul>
 		);
 	}
-
-	handleStoreClick = (storeId) => {
-		this.props.onSelect(storeId);
-	}
 }
 
-export default StoreList;
+export default Stores;
