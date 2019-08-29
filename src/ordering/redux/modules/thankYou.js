@@ -1,4 +1,4 @@
-import url from '../../../utils/url';
+import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
@@ -51,8 +51,12 @@ export const actions = {
   getCashbackInfo: (receiptNumber) => async (dispatch) => {
     try {
       const { ok, data } = await api({
-        url: `/api/cashback?receiptNumber=${receiptNumber}&source=${Constants.CASHBACK_SOURCE.RECEIPT}`,
+        url: `/api/cashback`,
         method: 'get',
+        params: {
+          receiptNumber,
+          source: Constants.CASHBACK_SOURCE.RECEIPT,
+        }
       });
 
       if (ok) {
@@ -100,7 +104,7 @@ const fetchOrder = variables => ({
       types.FETCH_ORDER_SUCCESS,
       types.FETCH_ORDER_FAILURE,
     ],
-    endpoint: url.apiGql('Order'),
+    endpoint: Url.apiGql('Order'),
     variables,
   }
 })
@@ -112,7 +116,7 @@ const fetchCoreBusiness = variables => ({
       types.FETCH_COREBUSINESS_SUCCESS,
       types.FETCH_COREBUSINESS_FAILURE,
     ],
-    endpoint: url.apiGql('CoreBusiness'),
+    endpoint: Url.apiGql('CoreBusiness'),
     variables,
   }
 })

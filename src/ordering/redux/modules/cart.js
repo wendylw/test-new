@@ -1,4 +1,4 @@
-import url from '../../../utils/url';
+import Url from '../../../utils/url';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
@@ -19,7 +19,7 @@ export const actions = {
 };
 
 const emptyShoppingCart = () => {
-  const endpoint = url.apiGql('EmptyShoppingCart');
+  const endpoint = Url.apiGql('EmptyShoppingCart');
   return {
     [FETCH_GRAPHQL]: {
       types: [

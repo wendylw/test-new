@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import url from '../../../utils/url';
+import Url from '../../../utils/url';
 import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
@@ -125,7 +125,7 @@ export const actions = {
 };
 
 const fetchShoppingCart = () => {
-  const endpoint = url.apiGql('ShoppingCart');
+  const endpoint = Url.apiGql('ShoppingCart');
   return {
     [FETCH_GRAPHQL]: {
       types: [
@@ -139,7 +139,7 @@ const fetchShoppingCart = () => {
 }
 
 const fetchOnlineCategory = () => {
-  const endpoint = url.apiGql('OnlineCategory');
+  const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
       types: [
@@ -153,7 +153,7 @@ const fetchOnlineCategory = () => {
 }
 // variables := { productId, variations }
 const removeShoppingCartItem = (variables) => {
-  const endpoint = url.apiGql('RemoveShoppingCartItem');
+  const endpoint = Url.apiGql('RemoveShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
       types: [
@@ -168,7 +168,7 @@ const removeShoppingCartItem = (variables) => {
 };
 
 const addOrUpdateShoppingCartItem = (variables) => {
-  const endpoint = url.apiGql('AddOrUpdateShoppingCartItem');
+  const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
       types: [
@@ -183,7 +183,7 @@ const addOrUpdateShoppingCartItem = (variables) => {
 };
 
 const fetchProductDetail = (variables) => {
-  const endpoint = url.apiGql('ProductDetail');
+  const endpoint = Url.apiGql('ProductDetail');
   return {
     [FETCH_GRAPHQL]: {
       types: [

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import config from '../../../config';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import url from '../../../utils/url';
+import Url from '../../../utils/url';
 
 const initialState = {
   error: null, // network error
@@ -54,7 +54,7 @@ export const actions = {
         types.FETCH_ONLINESTOREINFO_SUCCESS,
         types.FETCH_ONLINESTOREINFO_FAILURE,
       ],
-      endpoint: url.apiGql('OnlineStoreInfo'),
+      endpoint: Url.apiGql('OnlineStoreInfo'),
     }
   })
 };

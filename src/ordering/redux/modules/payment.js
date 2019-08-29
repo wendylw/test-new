@@ -1,4 +1,4 @@
-import url from '../../../utils/url';
+import Url from '../../../utils/url';
 import Constants from '../../../Constants';
 
 import api from '../../../utils/api';
@@ -67,8 +67,11 @@ export const actions = {
   fetchBraintreeToken: (paymentName) => async (dispatch) => {
     try {
       const data = await api({
-        url: `/payment/initToken?paymentName=${paymentName}`,
+        url: `/payment/initToken`,
         method: 'get',
+        params: {
+          paymentName,
+        },
       });
       const { token } = data || {};
 
@@ -106,7 +109,7 @@ export const actions = {
 };
 
 const createOrder = variables => {
-  const endpoint = url.apiGql('CreateOrder');
+  const endpoint = Url.apiGql('CreateOrder');
 
   return {
     [FETCH_GRAPHQL]: {
@@ -122,7 +125,7 @@ const createOrder = variables => {
 };
 
 const fetchOrder = variables => {
-  const endpoint = url.apiGql('Order');
+  const endpoint = Url.apiGql('Order');
 
   return {
     [FETCH_GRAPHQL]: {
