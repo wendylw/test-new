@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { IconCart } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
@@ -44,7 +45,7 @@ export class Footer extends Component {
         <div className="cart-bar has-products flex flex-middle flex-space-between">
           <button onClick={onClickCart}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
-              <img src="/img/icon-cart.svg" alt="cart" />
+              <IconCart />
               <span className="tag__number">{count || 0}</span>
             </div>
             <label className="cart-bar__money text-middle">
