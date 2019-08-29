@@ -281,7 +281,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      platform: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.PLATFORMS_CODE.BEEP}
     }) {
       shoppingCartItem {
         id

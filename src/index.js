@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ApolloProvider } from "react-apollo";
-import { client as apiClient } from './apiClient';
 import * as serviceWorker from './serviceWorker';
 import './config'; // import here for globally init
 
@@ -12,9 +10,7 @@ import './index.css';
 
 ReactDOM.render(
   <HeapJS>
-    <ApolloProvider client={apiClient}>
-      <Bootstrap />
-    </ApolloProvider>
+    <Bootstrap />
   </HeapJS>,
   document.getElementById('root')
 );
