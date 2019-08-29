@@ -16,7 +16,7 @@ const loading = () => <div className="loader theme page-loader"></div>;
 // Containers
 const PageClaim = React.lazy(() => import('./views/PageClaim'));
 const PageHome = React.lazy(() => import('./views/PageLoyalty'));
-const ErrorPage = React.lazy(() => import('./views/components/Error'));
+const Error = React.lazy(() => import('../components/Error'));
 
 // Pages
 class Routes extends React.Component {
@@ -61,7 +61,7 @@ class Routes extends React.Component {
                   name="Loyalty"
                   render={props => <PageHome onlineStoreInfo={onlineStoreInfo} {...props} />}
                 />
-                <Route exact path={Constants.ROUTER_PATHS.CASHBACK_ERROR} name="Error" render={props => <ErrorPage {...props} />} />
+                <Route exact path={Constants.ROUTER_PATHS.CASHBACK_ERROR} name="Error" render={props => <Error {...props} />} />
               </Switch>
             </React.Suspense>
           );
