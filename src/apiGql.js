@@ -302,7 +302,6 @@ apiGql.CREATE_ORDER = gql`
     $business: String!,
     $storeId: String!,
     $tableId: String,
-    $pax: Int!,
     $additionalComments: String,
     $shoppingCartIds: [String]
   ) {
@@ -312,7 +311,6 @@ apiGql.CREATE_ORDER = gql`
       shoppingCartIds: $shoppingCartIds,
       additionalComments: $additionalComments,
       tableId: $tableId,
-      pax: $pax,
       channel: 3
     }) {
       orders {
