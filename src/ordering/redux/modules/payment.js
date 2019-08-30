@@ -49,6 +49,7 @@ export const actions = {
       business,
       storeId,
       tableId,
+      pax: 0,
       shoppingCartIds
     };
 
