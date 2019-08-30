@@ -83,8 +83,11 @@ export const actions = {
   },
 
   // decrease clicked on product item
-  decreaseProductInCart: (prod) => (dispatch, getState) => {
-    const cartItem = prod.cartItems.find(item => item.productId === prod.id);
+  decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
+    const cartItem = (shoppingCart.items || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
+
+    console.log(cartItem);
+    console.log(prod);
 
     if (prod.cartQuantity === 1) {
       return dispatch(removeShoppingCartItem({
@@ -96,15 +99,15 @@ export const actions = {
     return dispatch(addOrUpdateShoppingCartItem({
       action: 'edit',
       business: getBusiness(getState()),
-      productId: prod.id,
+      productId: cartItem.productId,
       quantity: prod.cartQuantity - 1,
-      variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [], // product has only one child products in cart
+      variations: cartItem.variations || [], // product has only one child products in cart
     }));
   },
 
   // increase clicked on product item
   increaseProductInCart: (prod) => (dispatch, getState) => {
-    const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id);
+    const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
 
     if (prod.variations && prod.variations.length) {
       if (prod._needMore) {

@@ -5,12 +5,14 @@ import { ScrollObservable } from '../../../../../views/components/ScrollComponen
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { actions as homeActions, getCategoryProductList } from '../../../../redux/modules/home';
+import { actions as homeActions, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
 class CategoryProductList extends Component {
   handleDecreaseProductInCart = async (product) => {
     try {
-      await this.props.homeActions.decreaseProductInCart(product);
+      const { shoppingCart } = this.props;
+
+      await this.props.homeActions.decreaseProductInCart(shoppingCart, product);
       await this.props.homeActions.loadShoppingCart();
     } catch (e) {
       console.error(e);
@@ -72,6 +74,7 @@ CategoryProductList.defaultProps = {
 export default connect(
   state => {
     return {
+      shoppingCart: getShoppingCart(state),
       categories: getCategoryProductList(state),
     };
   },
