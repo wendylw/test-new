@@ -26,13 +26,13 @@ class MiniCartListModal extends Component {
 
   render() {
     const {
-      viewCart,
+      show,
       cartSummary,
     } = this.props;
     const { count } = cartSummary || {};
     const className = ['aside'];
 
-    if (viewCart) {
+    if (show) {
       className.push('active');
     }
 
@@ -59,12 +59,12 @@ class MiniCartListModal extends Component {
 }
 
 MiniCartListModal.propTypes = {
-  viewCart: PropTypes.bool,
+  show: PropTypes.bool,
   onToggle: PropTypes.func,
 };
 
 MiniCartListModal.defaultProps = {
-  viewCart: false,
+  show: false,
   onToggle: () => { }
 };
 

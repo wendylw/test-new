@@ -11,7 +11,7 @@ import { actions as homeActions, getCategoryProductList } from '../../../../redu
 
 class Menu extends Component {
   state = {
-    viewMenu: this.props.viewMenu,
+    show: this.props.show,
   };
 
   handleHideMenu(e) {
@@ -57,12 +57,12 @@ class Menu extends Component {
 
   render() {
     const {
-      viewMenu,
+      show,
       categories,
     } = this.props;
     const className = ['aside'];
 
-    if (viewMenu) {
+    if (show) {
       className.push('active');
     }
 
@@ -96,12 +96,12 @@ class Menu extends Component {
 }
 
 Menu.propTypes = {
-  viewMenu: PropTypes.bool,
+  show: PropTypes.bool,
   onToggle: PropTypes.func,
 };
 
 Menu.defaultProps = {
-  viewMenu: false,
+  show: false,
   onToggle: () => { }
 };
 

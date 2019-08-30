@@ -326,10 +326,10 @@ class ProductDetail extends Component {
     const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
     const {
       product,
-      viewProductDetail,
+      show,
     } = this.props;
 
-    if (viewProductDetail && product && product.id && !product._needMore) {
+    if (show && product && product.id && !product._needMore) {
       className.push('active');
     }
 
@@ -355,12 +355,12 @@ class ProductDetail extends Component {
 }
 
 ProductDetail.propTypes = {
-  viewProductDetail: PropTypes.bool,
+  show: PropTypes.bool,
   onToggle: PropTypes.func,
 };
 
 ProductDetail.defaultProps = {
-  viewProductDetail: false,
+  show: false,
   onToggle: () => { }
 };
 

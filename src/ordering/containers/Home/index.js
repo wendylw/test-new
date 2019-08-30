@@ -61,15 +61,15 @@ class Home extends Component {
         />
         <CategoryProductList onToggle={this.handleToggleAside.bind(this)} />
         <ProductDetail
-          viewProductDetail={viewAside === ASIDE_NAMES.PRODUCT_DETAIL}
+          show={viewAside === ASIDE_NAMES.PRODUCT_DETAIL}
           onToggle={this.handleToggleAside.bind(this)}
         />
         <MiniCartListModal
-          viewCart={viewAside === ASIDE_NAMES.CART}
+          show={viewAside === ASIDE_NAMES.CART}
           onToggle={this.handleToggleAside.bind(this)}
         />
         <Menu
-          viewMenu={viewAside === ASIDE_NAMES.MENU}
+          show={viewAside === ASIDE_NAMES.MENU}
           onToggle={this.handleToggleAside.bind(this)}
         />
         <Footer
