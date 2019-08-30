@@ -1,21 +1,21 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import Loader from './components/Loader';
-import Image from '../../../components/Image';
-import RedirectForm from './components/RedirectForm';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import Constants from '../../../utils/constants';
-import config from '../../../config';
+import Loader from '../components/Loader';
+import Image from '../../../../components/Image';
+import RedirectForm from '../components/RedirectForm';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+import Constants from '../../../../utils/constants';
+import config from '../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBankList } from '../../redux/modules/payment';
+import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-class Banking extends Component {
+class OnlineBanking extends Component {
 	order = {};
 
 	state = {
@@ -241,4 +241,4 @@ export default connect(
 	dispatch => ({
 		paymentActions: bindActionCreators(paymentActions, dispatch),
 	}),
-)(Banking);
+)(OnlineBanking);

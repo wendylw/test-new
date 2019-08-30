@@ -6,8 +6,8 @@ const Home = lazy(() => import('./Home'));
 const Cart = lazy(() => import('./Cart'));
 const Payment = lazy(() => import('./Payment'));
 const Receipt = lazy(() => import('./Receipt'));
-const BraintreePayment = lazy(() => import('./Payment/braintree'));
-const BankingPayment = lazy(() => import('./Payment/banking'));
+const BraintreePayment = lazy(() => import('./Payment/Braintree'));
+const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
 const ThankYou = lazy(() => import('./ThankYou'));
 const Sorry = lazy(() => import('./Sorry'));
 

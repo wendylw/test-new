@@ -1,19 +1,19 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import Loader from './components/Loader';
-import RedirectForm from './components/RedirectForm';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import Constants from '../../../utils/constants';
-import Utils from '../../../utils/utils';
-import config from '../../../config';
+import Loader from '../components/Loader';
+import RedirectForm from '../components/RedirectForm';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+import Constants from '../../../../utils/constants';
+import Utils from '../../../../utils/utils';
+import config from '../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBraintreeToken } from '../../redux/modules/payment';
+import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBraintreeToken } from '../../../redux/modules/payment';
 
-import './braintree.scss';
+import './Braintree.scss';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
