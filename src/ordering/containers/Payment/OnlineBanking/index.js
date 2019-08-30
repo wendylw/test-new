@@ -21,8 +21,6 @@ class OnlineBanking extends Component {
   state = {
     agentCode: null,
     payNowLoading: false,
-    loadedBankingList: false,
-    bankingList: [],
   };
 
   getPaymentEntryRequestData = () => {
@@ -61,22 +59,25 @@ class OnlineBanking extends Component {
     paymentActions.fetchBankList();
   }
 
+  componentDidMount() {
+    const { bankingList } = this.props;
+
+    this.initAgentCode(bankingList);
+  }
+
   componentWillReceiveProps(nextProps) {
     const { bankingList } = nextProps;
 
-    if (bankingList.length && !this.props.bankingList.length) {
-      let newStates = {
-        loadedBankingList: true,
-      };
+    if (bankingList && bankingList.length !== this.props.bankingList.length) {
+      this.initAgentCode(bankingList);
+    }
+  }
 
-      if (bankingList && bankingList.length) {
-        newStates = Object.assign({}, newStates, {
-          agentCode: bankingList[0].agentCode,
-          bankingList: bankingList
-        });
-      }
-
-      this.setState(newStates);
+  initAgentCode(bankingList) {
+    if (bankingList && bankingList.length) {
+      this.setState({
+        agentCode: bankingList[0].agentCode
+      });
     }
   }
 
@@ -95,7 +96,7 @@ class OnlineBanking extends Component {
   }
 
   renderBankingList() {
-    const { bankingList } = this.state;
+    const { bankingList } = this.props;
 
     if (!bankingList || !bankingList.length) {
       return (
@@ -135,7 +136,6 @@ class OnlineBanking extends Component {
     const {
       agentCode,
       payNowLoading,
-      loadedBankingList,
     } = this.state;
     const paymentData = this.getPaymentEntryRequestData();
 
@@ -220,7 +220,7 @@ class OnlineBanking extends Component {
             : null
         }
 
-        <Loader loaded={loadedBankingList} />
+        <Loader loaded={Boolean((bankingList || []).length)} />
       </section>
     );
   }
