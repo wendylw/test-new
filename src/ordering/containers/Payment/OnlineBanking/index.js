@@ -68,7 +68,7 @@ class OnlineBanking extends Component {
   componentWillReceiveProps(nextProps) {
     const { bankingList } = nextProps;
 
-    if (bankingList && bankingList.length !== this.props.bankingList.length) {
+    if (bankingList && bankingList.length !== (this.props.bankingList || []).length) {
       this.initAgentCode(bankingList);
     }
   }
@@ -128,6 +128,7 @@ class OnlineBanking extends Component {
     const {
       match,
       history,
+      bankingList,
       currentOrder,
       onlineStoreInfo
     } = this.props;
