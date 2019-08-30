@@ -25,7 +25,7 @@ class CategoryProductList extends Component {
       await this.props.homeActions.loadShoppingCart();
 
       if (product.variations && product.variations.length) {
-        onToggle();
+        onToggle('PRODUCT_DETAIL');
       }
     } catch (e) {
       console.error(e);

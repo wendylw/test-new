@@ -13,12 +13,15 @@ import { actions as cartActions } from '../../redux/modules/cart';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { actions as homeActions, getCategoryProductList } from '../../redux/modules/home';
 
+const ASIDE_NAMES = {
+  PRODUCT_DETAIL: 'PRODUCT_DETAIL',
+  MENU: 'MENU',
+  CART: 'CART'
+};
+
 class Home extends Component {
   state = {
-    viewProductDetail: false,
-    viewMenu: false,
-    viewCart: false,
-    domLoaded: false,
+    viewAside: null,
   };
 
   componentWillMount() {
@@ -27,31 +30,9 @@ class Home extends Component {
     homeActions.loadProductList();
   }
 
-  componentDidMount() {
-    this.setState({ domLoaded: true });
-  }
-
-  handleToggleProductDetail() {
-    const { viewProductDetail } = this.state;
-
+  handleToggleAside(asideName) {
     this.setState({
-      viewProductDetail: !viewProductDetail
-    });
-  }
-
-  handleToggleCart() {
-    const { viewCart } = this.state;
-
-    this.setState({
-      viewCart: !viewCart
-    });
-  }
-
-  handleToggleMenu() {
-    const { viewMenu } = this.state;
-
-    this.setState({
-      viewMenu: !viewMenu
+      viewAside: asideName
     });
   }
 
@@ -61,12 +42,7 @@ class Home extends Component {
       onlineStoreInfo,
       requestInfo,
     } = this.props;
-    const {
-      viewProductDetail,
-      viewMenu,
-      viewCart,
-      domLoaded,
-    } = this.state;
+    const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
 
     if (!onlineStoreInfo || !categories) {
@@ -83,42 +59,24 @@ class Home extends Component {
         <CurrentCategoryBar
           categories={categories}
         />
-        <CategoryProductList onToggle={this.handleToggleProductDetail.bind(this)} />
-        {
-          domLoaded
-            ? (
-              <ProductDetail
-                viewProductDetail={viewProductDetail}
-                onToggle={this.handleToggleProductDetail.bind(this)}
-              />
-            )
-            : null
-        }
-        {
-          domLoaded
-            ? (
-              <MiniCartListModal
-                viewCart={viewCart}
-                onToggle={this.handleToggleCart.bind(this)}
-              />
-            )
-            : null
-        }
-        {
-          domLoaded
-            ? (
-              <Menu
-                viewMenu={viewMenu}
-                onToggle={this.handleToggleMenu.bind(this)}
-              />
-            )
-            : null
-        }
+        <CategoryProductList onToggle={this.handleToggleAside.bind(this)} />
+        <ProductDetail
+          viewProductDetail={viewAside === ASIDE_NAMES.PRODUCT_DETAIL}
+          onToggle={this.handleToggleAside.bind(this)}
+        />
+        <MiniCartListModal
+          viewCart={viewAside === ASIDE_NAMES.CART}
+          onToggle={this.handleToggleAside.bind(this)}
+        />
+        <Menu
+          viewMenu={viewAside === ASIDE_NAMES.MENU}
+          onToggle={this.handleToggleAside.bind(this)}
+        />
         <Footer
           tableId={tableId}
           onlineStoreInfo={onlineStoreInfo}
-          onClickCart={this.handleToggleCart.bind(this)}
-          onClickMenu={this.handleToggleMenu.bind(this)}
+          onClickCart={this.handleToggleAside.bind(this, ASIDE_NAMES.CART)}
+          onClickMenu={this.handleToggleAside.bind(this, ASIDE_NAMES.MENU)}
         />
       </section>
     );

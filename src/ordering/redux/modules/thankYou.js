@@ -50,12 +50,13 @@ export const actions = {
 
   getCashbackInfo: (receiptNumber) => async (dispatch) => {
     try {
-      const { ok, data } = await api(Object.assign({}, Url.API_URLS.GET_CASHBACK, {
+      const { ok, data } = await api({
+        ...Url.API_URLS.GET_CASHBACK,
         params: {
           receiptNumber,
           source: Constants.CASHBACK_SOURCE.RECEIPT,
         }
-      }));
+      });
 
       if (ok) {
         dispatch({
@@ -75,9 +76,10 @@ export const actions = {
     Utils.setPhoneNumber(phone);
 
     try {
-      const response = await api(Object.assign({}, Url.API_URLS.POST_CASHBACK, {
+      const response = await api({
+        ...Url.API_URLS.POST_CASHBACK,
         data: payload,
-      }));
+      });
       const { ok, data } = response;
 
       if (ok) {
