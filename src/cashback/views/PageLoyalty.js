@@ -1,13 +1,15 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import qs from 'qs';
-import Message from './components/Message';
-import { sendMessage, setCustomerId } from '../actions';
+
 import Image from './components/Image';
-import CurrencyNumber from './components/CurrencyNumber';
+import Message from './components/Message';
 import LoyaltyView from './components/LoyaltyView';
 import RedeemButton from './components/RedeemButton';
+import CurrencyNumber from './components/CurrencyNumber';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { sendMessage, setCustomerId } from '../actions';
 
 class PageLoyalty extends React.Component {
   state = {}
