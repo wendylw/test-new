@@ -282,6 +282,7 @@ class ProductDetail extends Component {
           variation={this.getVariationText()}
           price={Number(this.displayPrice())}
           cartQuantity={cartQuantity}
+          decreaseDisabled={cartQuantity === 1}
           onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />

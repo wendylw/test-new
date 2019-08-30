@@ -72,6 +72,7 @@ class CartList extends Component {
                 price={displayPrice}
                 cartQuantity={quantity}
                 soldOut={isCartItemSoldOut(cartItem)}
+                decreaseDisabled={!!quantity}
                 onDecrease={async () => {
                   if (quantity === 1) {
                     this.handleRemoveCartItem({

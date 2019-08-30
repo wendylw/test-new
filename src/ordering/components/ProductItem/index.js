@@ -4,7 +4,6 @@ import Item from '../Item';
 import Tag from '../../../components/Tag';
 import ItemOperator from '../ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import Constants from '../../../utils/constants';
 
 export class ProductItem extends Component {
   render() {
@@ -16,6 +15,7 @@ export class ProductItem extends Component {
       price,
       soldOut,
       cartQuantity,
+      decreaseDisabled,
       onDecrease,
       onIncrease,
     } = this.props;
@@ -38,7 +38,7 @@ export class ProductItem extends Component {
               <ItemOperator
                 className="flex-middle"
                 quantity={cartQuantity}
-                decreaseDisabled={cartQuantity === Constants.ADD_TO_CART_MIN_QUANTITY}
+                decreaseDisabled={decreaseDisabled}
                 onDecrease={onDecrease}
                 onIncrease={onIncrease}
               />
@@ -57,6 +57,7 @@ ProductItem.propTypes = {
   title: PropTypes.string,
   price: PropTypes.number,
   cartQuantity: PropTypes.number,
+  decreaseDisabled: PropTypes.bool,
   onDecrease: PropTypes.func,
   onIncrease: PropTypes.func,
 };
@@ -69,6 +70,7 @@ ProductItem.defaultProps = {
   title: '',
   price: 0,
   cartQuantity: 0,
+  decreaseDisabled: false,
   onDecrease: () => { },
   onIncrease: () => { },
 };

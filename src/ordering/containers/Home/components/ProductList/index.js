@@ -24,6 +24,7 @@ class ProductList extends Component {
               price={product.displayPrice}
               cartQuantity={product.cartQuantity}
               soldOut={product.soldOut}
+              decreaseDisabled={!product.canDecreaseQuantity}
               onDecrease={this.handleItemDecrease.bind(this, product)}
               onIncrease={this.handleItemIncrease.bind(this, product)}
             />
