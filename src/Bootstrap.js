@@ -11,7 +11,7 @@ const AsyncNotFound = lazy(() => import('./containers/NotFound'));
 
 const AsyncOrdering = lazy(() => import('./ordering'));
 
-const AsyncCashbackApp = lazy(() => import('./cashback/App'));
+const AsyncCashbackApp = lazy(() => import('./cashback'));
 
 const AsyncQRScanner = lazy(() => import('./qrscan'));
 
