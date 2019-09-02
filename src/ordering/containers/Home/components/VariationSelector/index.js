@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { variationOnProductType } from '../../../../../views/propTypes';
+import { variationOnProductType } from '../../../../../utils/propTypes';
 
 export class VariationSelector extends Component {
   static propTypes = {

@@ -14,7 +14,7 @@ class Manifest extends Component {
   }
 
   render() {
-    return <React.Fragment></React.Fragment>;
+    return <React.Fragment>{this.props.children}</React.Fragment>;
   }
 }
 
