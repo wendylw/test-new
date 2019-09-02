@@ -3,7 +3,7 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 
 const Claim = lazy(() => import('./Claim'));
 const Home = lazy(() => import('./Home'));
-const Error = lazy(() => import('../components/Error'));
+const Error = lazy(() => import('../../components/Error'));
 
 class Routes extends Component {
 	render() {
