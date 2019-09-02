@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import config from '../config';
 import api from '../utils/api';
-import DocumentTitle from '../views/components/DocumentTitle';
+import DocumentTitle from '../components/DocumentTitle';
 
 import '../Common.scss';
 

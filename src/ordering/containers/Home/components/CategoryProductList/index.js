@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ProductList from '../ProductList';
-import { ScrollObservable } from '../../../../../views/components/ScrollComponents';
+import { ScrollObservable } from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
 import React, { Component } from 'react';
-import config from '../../config';
+import config from '../config';
 
 class HeapJS extends Component {
   componentWillMount() {

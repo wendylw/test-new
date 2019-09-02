@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   ScrollObserver,
   getCurrentScrollName,
-} from '../../../../../views/components/ScrollComponents';
+} from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

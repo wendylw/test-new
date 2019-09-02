@@ -1,5 +1,5 @@
 import React from "react";
-import DocumentTitle from "../views/components/DocumentTitle";
+import DocumentTitle from "../components/DocumentTitle";
 import Constants from "../Constants";
 
 export default () =>

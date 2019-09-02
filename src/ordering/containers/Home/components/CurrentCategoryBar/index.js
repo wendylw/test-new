@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ScrollObserver } from '../../../../../views/components/ScrollComponents';
+import { ScrollObserver } from '../../../../../components/ScrollComponents';
 
 class CurrentCategoryBar extends Component {
   render() {

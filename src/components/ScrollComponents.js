@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React from 'react';
-import Utils from '../../libs/utils';
+import Utils from '../utils/utils';
 
 const observableContainer = {};
 const TOP_BAR_HEIGHT = 50;
@@ -65,7 +65,7 @@ window.addEventListener('scroll', () => {
       scrollname,
     },
   }));
-  
+
 });
 
 export function getCurrentScrollName() {

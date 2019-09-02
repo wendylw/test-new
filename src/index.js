@@ -4,7 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import './config'; // import here for globally init
 
 import Bootstrap from './Bootstrap';
-import HeapJS from './views/components/HeapJS';
+import HeapJS from './components/HeapJS';
 
 import './index.css';
 
