@@ -12,7 +12,7 @@ class App extends Component {
     const { error } = this.props;
 
     return (
-      <main className="loyalty flex-column">
+      <main className="loyalty">
         <Routes />
         {
           error
