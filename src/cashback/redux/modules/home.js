@@ -4,15 +4,13 @@ import Constants from '../../../utils/constants';
 
 import api from '../../../utils/api';
 
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness, getRequestInfo } from './app';
 
 
 const initialState = {
-	customerInfo: null,
 	cashbackInfo: null,
+	hashData: null,
 };
 
 export const types = {
@@ -22,9 +20,9 @@ export const types = {
 	FETCH_HASHDATA_FAILURE: 'LOYALTY/CLAIM/FETCH_HASHDATA_FAILURE',
 
 	// fetch coreBusiness
-	FETCH_COREBUSINESS_REQUEST: 'LOYALTY/CLAIM/FETCH_COREBUSINESS_REQUEST',
-	FETCH_COREBUSINESS_SUCCESS: 'LOYALTY/CLAIM/FETCH_COREBUSINESS_SUCCESS',
-	FETCH_COREBUSINESS_FAILURE: 'LOYALTY/CLAIM/FETCH_COREBUSINESS_FAILURE',
+	FETCH_BUSINESS_REQUEST: 'LOYALTY/CLAIM/FETCH_BUSINESS_REQUEST',
+	FETCH_BUSINESS_SUCCESS: 'LOYALTY/CLAIM/FETCH_BUSINESS_SUCCESS',
+	FETCH_BUSINESS_FAILURE: 'LOYALTY/CLAIM/FETCH_BUSINESS_FAILURE',
 
 	// fetch CashbackInfo
 	FETCH_CASHBACKINFO_REQUEST: 'LOYALTY/CLAIM/FETCH_CASHBACKINFO_REQUEST',
@@ -38,16 +36,6 @@ export const types = {
 }
 
 export const actions = {
-	loadOrder: (orderId) => (dispatch) => {
-		return dispatch(fetchOrder({ orderId }));
-	},
-
-	loadCoreBusiness: () => (dispatch, getState) => {
-		const { storeId } = getRequestInfo(getState());
-		const business = getBusiness(getState());
-		return dispatch(fetchCoreBusiness({ business, storeId }));
-	},
-
 	getCashbackInfo: (receiptNumber) => async (dispatch) => {
 		try {
 			const { ok, data } = await api({
@@ -111,38 +99,9 @@ export const actions = {
 	},
 };
 
-const fetchOrder = variables => ({
-	[FETCH_GRAPHQL]: {
-		types: [
-			types.FETCH_ORDER_REQUEST,
-			types.FETCH_ORDER_SUCCESS,
-			types.FETCH_ORDER_FAILURE,
-		],
-		endpoint: Url.apiGql('Order'),
-		variables,
-	}
-})
-
-const fetchCoreBusiness = variables => ({
-	[FETCH_GRAPHQL]: {
-		types: [
-			types.FETCH_COREBUSINESS_REQUEST,
-			types.FETCH_COREBUSINESS_SUCCESS,
-			types.FETCH_COREBUSINESS_FAILURE,
-		],
-		endpoint: Url.apiGql('CoreBusiness'),
-		variables,
-	}
-})
-
 // reducer
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
-		case types.FETCH_ORDER_SUCCESS: {
-			const { data } = action.responseGql;
-
-			return { ...state, orderId: data.claim.orderId };
-		}
 		case types.FETCH_CASHBACKINFO_SUCCESS: {
 			return { ...state, cashbackInfo: action.cashbackInfo };
 		}
@@ -158,11 +117,6 @@ const reducer = (state = initialState, action) => {
 }
 
 export default reducer;
-
-// selectors
-export const getOrder = state => {
-	return getOrderByOrderId(state, state.claim.orderId)
-};
 
 export const getBusinessInfo = state => {
 	const business = getBusiness(state);

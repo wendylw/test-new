@@ -6,17 +6,6 @@ import { clearMessage } from '../../../cashback-demo/actions';
 class Message extends React.Component {
 	timer = null;
 
-	clear() {
-		if (this.timer) {
-			clearTimeout(this.timer);
-		}
-
-		this.timer = setTimeout(() => {
-			// this.props.clearMessage();
-			clearTimeout(this.timer);
-		}, 5000);
-	}
-
 	componentDidMount() {
 		this.clear();
 	}
@@ -32,6 +21,17 @@ class Message extends React.Component {
 		}
 
 		return false;
+	}
+
+	clear() {
+		if (this.timer) {
+			clearTimeout(this.timer);
+		}
+
+		this.timer = setTimeout(() => {
+			// this.props.clearMessage();
+			clearTimeout(this.timer);
+		}, 5000);
 	}
 
 	getMessageType() {
@@ -56,10 +56,6 @@ class Message extends React.Component {
 
 		const messageMap = {
 			/* get Cash Back messages */
-			// 'Can_Claim': '',
-			// 'Expired': '',
-			// 'Invalid': '',
-			// 'Claimed': '',
 			Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
 			/* save Cash Back messages */
 			Claimed_FirstTime: `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
@@ -70,8 +66,6 @@ class Message extends React.Component {
 			NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
 			NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
 			NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,
-			/* set page message */
-			// 'NotClaimed'
 			/* set Otp */
 			NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
 			/* verify phone */
@@ -99,22 +93,5 @@ class Message extends React.Component {
 		);
 	}
 }
-
-// const mapStateToProps = state => {
-// 	const business = state.common.business || {};
-
-// 	try {
-// 		return {
-// 			claimCashbackCountPerDay: business.claimCashbackCountPerDay,
-// 			message: state.message.message,
-// 			errorMessageKey: state.message.errorStatus,
-// 			show: state.message.show,
-// 		};
-// 	} catch (e) {
-// 		return {};
-// 	}
-// };
-
-// const mapDispatchToProps = dispatch => bindActionCreators({ clearMessage }, dispatch);
 
 export default Message;

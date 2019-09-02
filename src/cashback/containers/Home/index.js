@@ -1,16 +1,17 @@
 import React from 'react';
 
 import RedeemModal from './RedeemModal';
-import LoyaltyView from './RecentActivities';
+import RecentActivities from './RecentActivities';
 import Image from '../../../components/Image';
 import Message from '../../components/Message';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import qs from 'qs';
 
-// import { connect } from 'react-redux';
-// import { bindActionCreators } from 'redux';
-// import { setCustomerId } from '../actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as homeActions, getBusinessInfo } from '../../redux/modules/claim';
 
 class PageLoyalty extends React.Component {
 	state = {
@@ -56,21 +57,26 @@ class PageLoyalty extends React.Component {
 						/>
 					</div>
 				</section>
-				<LoyaltyView />
+				<RecentActivities />
 			</section>
 		);
 	}
 }
 
-export default PageLoyalty;
+export default connect(
+	(state) => ({
+		onlineStoreInfo: getOnlineStoreInfo(state),
+		businessInfo: getBusinessInfo(state),
+	}),
+	(dispatch) => ({
+		homeActions: bindActionCreators(homeActions, dispatch),
+	})
+)(PageLoyalty);
 
 // const mapStateToProps = state => ({
-// 	business: state.common.business,
 // 	cashbackHistory: state.user.cashbackHistory,
 // });
 
 // const mapDispatchToProps = dispatch => bindActionCreators({
 // 	setCustomerId,
 // }, dispatch);
-
-// export default connect(mapStateToProps, mapDispatchToProps)(PageLoyalty);
