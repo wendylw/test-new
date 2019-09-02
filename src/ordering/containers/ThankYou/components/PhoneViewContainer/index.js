@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { BrowserRouter, Link } from 'react-router-dom';
 import PhoneView from '../../../../../components/PhoneView';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
@@ -43,7 +42,7 @@ class PhoneViewContainer extends React.Component {
     if (status && status !== ORDER_CAN_CLAIM) {
       showCelebration = false;
 
-      this.createCustomerCashbackInfo();
+      this.handleCreateCustomerCashbackInfo();
     }
 
     this.setState({ showCelebration });
@@ -65,7 +64,19 @@ class PhoneViewContainer extends React.Component {
     }
   }
 
-  async createCustomerCashbackInfo() {
+  getOrderInfo() {
+    const { history } = this.props;
+    const { phone } = this.state;
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    return {
+      phone,
+      receiptNumber,
+      source: Constants.CASHBACK_SOURCE.QR_ORDERING
+    };
+  }
+
+  async handleCreateCustomerCashbackInfo() {
     const { thankYouActions } = this.props;
     let redirectURL = null;
 
@@ -82,18 +93,6 @@ class PhoneViewContainer extends React.Component {
       isSavingPhone: false,
       redirectURL,
     });
-  }
-
-  getOrderInfo() {
-    const { history } = this.props;
-    const { phone } = this.state;
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    return {
-      phone,
-      receiptNumber,
-      source: Constants.CASHBACK_SOURCE.QR_ORDERING
-    };
   }
 
   handleUpdatePhoneNumber(phone) {
@@ -148,7 +147,7 @@ class PhoneViewContainer extends React.Component {
         phone={phone}
         country={country}
         setPhone={this.handleUpdatePhoneNumber.bind(this)}
-        submitPhoneNumber={this.createCustomerCashbackInfo.bind(this)}
+        submitPhoneNumber={this.handleCreateCustomerCashbackInfo.bind(this)}
         isLoading={isSavingPhone}
         buttonText="Continue"
       />
@@ -208,14 +207,6 @@ class PhoneViewContainer extends React.Component {
     );
   }
 }
-
-PhoneViewContainer.propTypes = {
-  onlineStoreInfo: PropTypes.object,
-};
-
-PhoneViewContainer.defaultProps = {
-  onlineStoreInfo: {},
-};
 
 export default connect(
   (state) => ({

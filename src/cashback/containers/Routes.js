@@ -8,6 +8,7 @@ const Error = lazy(() => import('../../components/Error'));
 class Routes extends Component {
 	render() {
 		const { match } = this.props;
+
 		return (
 			<Router basename={match.path}>
 				<Suspense fallback={<div className="loader theme page-loader"></div>}>

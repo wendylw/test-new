@@ -77,7 +77,7 @@ class Test extends React.Component {
     }
   }
 
-  async createCustomerCashbackInfo() {
+  async handleCreateCustomerCashbackInfo() {
     const { phone } = this.state;
     const grant_type = 'otp';
     const response = await api({
@@ -145,7 +145,7 @@ class Test extends React.Component {
                 phone={phone}
                 country="MY"
                 setPhone={this.handleUpdatePhoneNumber.bind(this)}
-                submitPhoneNumber={this.createCustomerCashbackInfo.bind(this)}
+                submitPhoneNumber={this.handleCreateCustomerCashbackInfo.bind(this)}
                 isLoading={isSavingPhone}
                 buttonText="Continue"
               />
