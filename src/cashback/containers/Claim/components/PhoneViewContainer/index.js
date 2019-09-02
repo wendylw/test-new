@@ -8,7 +8,7 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../../../redux/modules/app';
-import { actions as claimActions, getHashData } from '../../../../redux/modules/claim';
+import { actions as claimActions, getCashbackInfo, getHashData } from '../../../../redux/modules/claim';
 
 class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
@@ -31,8 +31,10 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	async handleCreateCustomerCashbackInfo() {
-		const { claimActions } = this.props;
-		let redirectURL = null;
+		const {
+			history,
+			claimActions,
+		} = this.props;
 
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
@@ -40,13 +42,11 @@ class PhoneViewContainer extends React.Component {
 		const { customerId } = cashbackInfo || {};
 
 		if (customerId) {
-			redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+			history.push({
+				pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+				search: `?customerId=${customerId || ''}`
+			});
 		}
-
-		this.setState({
-			isSavingPhone: false,
-			redirectURL,
-		});
 	}
 
 	handleUpdatePhoneNumber(phone) {
@@ -90,6 +90,7 @@ class PhoneViewContainer extends React.Component {
 export default connect(
 	(state) => ({
 		onlineStoreInfo: getOnlineStoreInfo(state),
+		cashbackInfo: getCashbackInfo(state),
 		hashData: getHashData(state),
 	}),
 	(dispatch) => ({
