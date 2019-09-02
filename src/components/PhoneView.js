@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css';
-import Utils from '../libs/utils';
+import Utils from '../utils/utils';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');

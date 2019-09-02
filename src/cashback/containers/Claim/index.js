@@ -46,10 +46,10 @@ class PageClaim extends React.Component {
 		}
 
 		if (!isNaN(cashbackNumber) && cashbackNumber) {
-			return <CurrencyNumber classList="cash-back__money" money={cashback} />;
+			return <CurrencyNumber classList="loyalty__money" money={cashback} />;
 		}
 
-		return <span className="cash-back__money">{`${percentage}% Cashback`}</span>;
+		return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
 	}
 
 	renderLocation() {
@@ -86,10 +86,10 @@ class PageClaim extends React.Component {
 		} = businessInfo || {};
 
 		return (
-			<section className="cash-back flex-column" style={{
+			<section className="loyalty__claim flex-column" style={{
 				// backgroundImage: `url(${theImage})`,
 			}}>
-				<article className="cash-back__home text-center">
+				<article className="loyalty__content text-center">
 					{
 						logo
 							? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />

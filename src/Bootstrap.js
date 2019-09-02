@@ -1,7 +1,7 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Route, Redirect, Switch, BrowserRouter as Router } from "react-router-dom";
 import Constants from './Constants';
-import Utils from './libs/utils';
+import Utils from './utils/utils';
 
 const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
 

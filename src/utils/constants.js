@@ -22,9 +22,9 @@ const ROUTER_PATHS = {
   PLAYGROUND: 'playground',
   ERROR: '/ordering/error',
   CASHBACK: '/loyalty', // App basename
-  CASHBACK_HOME: '/loyalty/',
-  CASHBACK_CLAIM: '/loyalty/claim',
-  CASHBACK_ERROR: '/loyalty/error',
+  CASHBACK_HOME: '/',
+  CASHBACK_CLAIM: '/claim',
+  CASHBACK_ERROR: '/error',
   QRSCAN: '/qrscan', // App basename
   TERMS_OF_USE: '/terms-conditions',
   PRIVACY: '/privacy',
