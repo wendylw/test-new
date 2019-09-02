@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import qs from 'qs';
 // import Message from './components/Message';
 
-import CurrencyNumber from '../../../components/CurrencyNumber';
+import CurrencyNumber from '../../components/CurrencyNumber';
 import Image from '../../../components/Image';
 
 import 'react-phone-number-input/style.css';
