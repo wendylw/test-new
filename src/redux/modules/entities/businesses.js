@@ -8,7 +8,12 @@ const reducer = (state = initialState, action) => {
       const { business } = data;
       return { ...state, [business.name]: business };
     }
+  } else if (action.business) {
+    const { name } = action.business;
+
+    return { ...state, [name]: action.business };
   }
+
   return state;
 };
 

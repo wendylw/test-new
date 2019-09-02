@@ -2,11 +2,11 @@ const api = {};
 
 api.PREFIX = '/api/cashback';
 
-api.getCashbackHashData = hash => `${api.PREFIX}/hash/${hash}/decode`;
-api.CASHBACK = `${api.PREFIX}`;
+// api.getCashbackHashData = hash => `${api.PREFIX}/hash/${hash}/decode`;
+// api.CASHBACK = `${api.PREFIX}`;
 api.CODE = `${api.PREFIX}/codes`;
 api.HISTORY = `${api.PREFIX}/history`;
-api.BUSINESS = `${api.PREFIX}/business`;
+// api.BUSINESS = `${api.PREFIX}/business`;
 
 api.HOME = `${api.PREFIX}/home`;
 api.USERS = `${api.PREFIX}/users`;

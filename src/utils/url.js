@@ -19,6 +19,10 @@ const API_URLS = {
     url: `/api/cashback/hash/${hash}/decode`,
     method: 'get',
   }),
+  GET_CAHSBACK_BUSINESS: {
+    url: '/api/cashback/business',
+    method: 'get'
+  }
 };
 
 export default {

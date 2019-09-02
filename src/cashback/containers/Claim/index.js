@@ -28,7 +28,7 @@ class PageClaim extends React.Component {
 		const { receiptNumber } = hashData || {};
 
 		if (receiptNumber) {
-			await claimActions.getCashbackInfo(receiptNumber);
+			claimActions.getCashbackInfo(receiptNumber);
 		}
 	}
 

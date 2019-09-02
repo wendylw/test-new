@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 import config from '../../../config';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Url from '../../../utils/url';
+import api from '../../../utils/api';
+
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
 	error: null, // network error
@@ -22,16 +24,21 @@ const initialState = {
 };
 
 export const types = {
-	CLEAR_ERROR: "REDUX_DEMO/APP/CLEAR_ERROR",
+	CLEAR_ERROR: "LOYALTY/APP/CLEAR_ERROR",
 
 	// fetch onlineStoreInfo
-	FETCH_ONLINESTOREINFO_REQUEST: "REDUX_DEMO/APP/FETCH_ONLINESTOREINFO_REQUEST",
-	FETCH_ONLINESTOREINFO_SUCCESS: "REDUX_DEMO/APP/FETCH_ONLINESTOREINFO_SUCCESS",
-	FETCH_ONLINESTOREINFO_FAILURE: "REDUX_DEMO/APP/FETCH_ONLINESTOREINFO_FAILURE",
+	FETCH_ONLINESTOREINFO_REQUEST: "LOYALTY/APP/FETCH_ONLINESTOREINFO_REQUEST",
+	FETCH_ONLINESTOREINFO_SUCCESS: "LOYALTY/APP/FETCH_ONLINESTOREINFO_SUCCESS",
+	FETCH_ONLINESTOREINFO_FAILURE: "LOYALTY/APP/FETCH_ONLINESTOREINFO_FAILURE",
+
+	// fetch business
+	FETCH_BUSINESS_REQUEST: "LOYALTY/APP/FETCH_BUSINESS_REQUEST",
+	FETCH_BUSINESS_SUCCESS: "LOYALTY/APP/FETCH_BUSINESS_SUCCESS",
+	FETCH_BUSINESS_FAILURE: "LOYALTY/APP/FETCH_BUSINESS_FAILURE",
 
 	// message modal
-	SHOW_MESSAGE_MODAL: "REDUX_DEMO/APP/SHOW_MESSAGE_MODAL",
-	HIDE_MESSAGE_MODAL: "REDUX_DEMO/APP/HIDE_MESSAGE_MODAL",
+	SHOW_MESSAGE_MODAL: "LOYALTY/APP/SHOW_MESSAGE_MODAL",
+	HIDE_MESSAGE_MODAL: "LOYALTY/APP/HIDE_MESSAGE_MODAL",
 };
 
 //action creators
@@ -39,14 +46,17 @@ export const actions = {
 	clearError: () => ({
 		type: types.CLEAR_ERROR
 	}),
+
 	showMessageModal: ({ message, description }) => ({
 		type: types.SHOW_MESSAGE_MODAL,
 		message,
 		description,
 	}),
+
 	hideMessageModal: () => ({
 		type: types.HIDE_MESSAGE_MODAL,
 	}),
+
 	fetchOnlineStoreInfo: () => ({
 		[FETCH_GRAPHQL]: {
 			types: [
@@ -56,7 +66,28 @@ export const actions = {
 			],
 			endpoint: Url.apiGql('OnlineStoreInfo'),
 		}
-	})
+	}),
+
+	fetchBusiness: () => async (dispatch) => {
+		try {
+			const { ok, data } = await api({
+				...Url.API_URLS.GET_CAHSBACK_BUSINESS,
+				params: {
+					storeId: config.storeId,
+				}
+			});
+
+			if (ok) {
+				dispatch({
+					type: types.FETCH_BUSINESS_SUCCESS,
+					business: data,
+				});
+			}
+		} catch (e) {
+			// TODO: handle error
+			console.error(e);
+		}
+	}
 };
 
 const error = (state = initialState.error, action) => {
