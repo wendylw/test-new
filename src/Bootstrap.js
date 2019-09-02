@@ -45,7 +45,7 @@ class Bootstrap extends Component {
               );
             }} />
             <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrdering} />
-            {/* <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} /> */}
+            <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
             <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
             <Route component={AsyncNotFound} />
           </Switch>

@@ -5,7 +5,8 @@ $white: #FFFFFF;
 $black: #000000;
 $dark: #2c2c2c;
 $red: #FF5821;
-$green: #8bc34a;
+$yellow: #AB8D3F;
+$green: #8BC34A;
 $gray-1: #8D90A1;
 $gray-2: #909090;
 $gray-3: #DEDEDF;
@@ -152,6 +153,15 @@ form {
   }
 }
 
+.form {
+  &__error-message {
+    display: inline-block;
+    margin: 10px 0;
+    color: $red;
+    font-size: 0.8rem;
+  }
+}
+
 .input {
   @extend .border-radius-base;
 
@@ -236,12 +246,24 @@ form {
     width: 100%;
   }
 
+  &__outline {
+    border: 1px solid;
+    height: 14vw;
+    background-color: transparent;
+  }
+
   &__disabled {
     pointer-events: none;
     color: $white;
     background-color: $gray-3;
     opacity: 0.8;
   }
+}
+
+.reset-button {
+  border: 0;
+  outline: none;
+  box-shadow: none;
 }
 
 .radio {
@@ -289,12 +311,6 @@ form {
       }
     }
   }
-}
-
-.reset-button {
-  border: 0;
-  outline: none;
-  box-shadow: none;
 }
 
 .flex {
