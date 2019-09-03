@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import GlobalConstans from '../Constants';
+import GlobalConstans from '../utils/constants';
 
 const { DEFAULT_FAVICON } = GlobalConstans;
 

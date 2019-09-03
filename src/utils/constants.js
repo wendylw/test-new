@@ -7,27 +7,27 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
+  TERMS_OF_USE: '/terms-conditions',
+  PRIVACY: '/privacy',
+  ERROR: '/error',
+  SORRY: '/sorry',
   INDEX: '/',
-  STORES: '/ordering/stores',
-  ORDERING: '/ordering', // App basename
+  // ordering App basename
+  STORES: '/stores',
+  ORDERING: '/ordering',
   HOME: '/ordering/',
-  PORDUCTS: '/ordering/products',
   CART: '/cart',
   PAYMENT: '/payment',
   CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   THANK_YOU: '/thank-you',
   RECEIPT_DETAIL: '/receipt',
-  SORRY: '/sorry',
-  PLAYGROUND: 'playground',
-  ERROR: '/ordering/error',
-  CASHBACK: '/loyalty', // App basename
+  // cashback App basename
+  CASHBACK: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
-  CASHBACK_ERROR: '/error',
-  QRSCAN: '/qrscan', // App basename
-  TERMS_OF_USE: '/terms-conditions',
-  PRIVACY: '/privacy',
+  // Qrscan App basename
+  QRSCAN: '/qrscan',
 };
 
 const CASHBACK_SOURCE = {

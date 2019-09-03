@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Constants from '../../Constants';
+import Constants from '../utils/constants';
 
 class Manifest extends Component {
   componentDidMount() {

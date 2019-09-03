@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import Constants from './Constants';
+import Constants from './utils/constants';
 
 const apiGql = {};
 

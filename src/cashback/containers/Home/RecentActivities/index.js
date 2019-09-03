@@ -68,18 +68,17 @@ class RecentActivities extends React.Component {
 	// 	);
 	// }
 
-	// renderEventTime(eventTime) {
-	// 	// const { onlineStoreInfo: { locale } = {} } = this.props || {};
-	// 	const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-	// 	const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-	// 	const locale = 'en'; // use English by now.
+	getTime(eventTime) {
+		const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+		const eventDateTime = new Date(Number.parseInt(eventTime, 10));
+		const locale = 'en'; // use English by now.
 
-	// 	if (locale) {
-	// 		return eventDateTime.toLocaleDateString(locale, dateOptions);
-	// 	}
+		if (locale) {
+			return eventDateTime.toLocaleDateString(locale, dateOptions);
+		}
 
-	// 	return eventDateTime.toDateString(dateOptions);
-	// }
+		return eventDateTime.toDateString(dateOptions);
+	}
 
 	componentWillMount() {
 		const { homeActions, customerId } = this.props;
@@ -87,6 +86,34 @@ class RecentActivities extends React.Component {
 		if (customerId) {
 			homeActions.getCashbackHistory(customerId);
 		}
+	}
+
+	renderLogList() {
+		const { cashbackHistory } = this.props;
+		const { logs } = cashbackHistory || {};
+
+		return (
+			<div className="activity">
+				{
+					(logs || []).map((activity, i) => (
+						<div key={`${i}`} className="activity__item flex flex-middle">
+							{this.renderIcon(activity.eventType, { className: 'activity__icon' })}
+							<summary>
+								<h4 className="activity__title">
+									<label>{this.renderEventType(activity.eventType)}&nbsp;</label>
+									{
+										activity.eventType !== 'pending'
+											? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
+											: null
+									}
+								</h4>
+								<time className="activity__time">{this.renderEventTime(activity.eventTime)}</time>
+							</summary>
+						</div>
+					))
+				}
+			</div>
+		);
 	}
 
 	render() {
@@ -118,26 +145,7 @@ class RecentActivities extends React.Component {
 							)
 					}
 					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activity</h3>
-					<div className="activity">
-						{
-							logs.map((activity, i) => (
-								<div key={`${i}`} className="activity__item flex flex-middle">
-									{this.renderIcon(activity.eventType, { className: 'activity__icon' })}
-									<summary>
-										<h4 className="activity__title">
-											<label>{this.renderEventType(activity.eventType)}&nbsp;</label>
-											{
-												activity.eventType !== 'pending'
-													? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
-													: null
-											}
-										</h4>
-										<time className="activity__time">{this.renderEventTime(activity.eventTime)}</time>
-									</summary>
-								</div>
-							))
-						}
-					</div>
+					{this.renderLogList()}
 				</aside>
 			</section>
 		);

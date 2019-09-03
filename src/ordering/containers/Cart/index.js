@@ -17,7 +17,7 @@ import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../.
 
 class Cart extends Component {
   state = {
-    additionalComments: Utils.getAdditionalComments(),
+    additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
   componentDidMount() {
@@ -30,7 +30,7 @@ class Cart extends Component {
       additionalComments: e.target.value
     });
 
-    Utils.setAdditionalComments(e.target.value);
+    Utils.setSessionVariable('additionalComments', e.target.value);
   }
 
   handleClickBack = () => {

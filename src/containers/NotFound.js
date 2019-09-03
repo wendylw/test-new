@@ -1,6 +1,6 @@
 import React from "react";
 import DocumentTitle from "../components/DocumentTitle";
-import Constants from "../Constants";
+import Constants from "../utils/constants";
 
 export default () =>
   <DocumentTitle title={Constants.DOCUMENT_TITLE.NOT_FOUND}>

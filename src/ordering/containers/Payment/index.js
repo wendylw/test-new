@@ -104,7 +104,7 @@ class Payment extends Component {
     const { orderId } = currentOrder || {};
 
     if (orderId) {
-      Utils.removeAdditionalComments();
+      Utils.removeSessionVariable('additionalComments');
     }
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {

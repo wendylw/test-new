@@ -135,7 +135,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     // }
 
     if (data.status === 'NotClaimed') {
-      history.push(GlobalConstants.ROUTER_PATHS.CASHBACK_ERROR, {
+      history.push(GlobalConstants.ROUTER_PATHS.ERROR, {
         message: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
       });
 

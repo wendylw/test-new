@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Modal from './Modal';
-import Constants from '../../Constants';
-import config from '../../config';
+import Constants from '../utils/constants';
+import config from '../config';
 
 class PeopleCountModal extends Component {
   modal = null;
@@ -23,36 +23,36 @@ class PeopleCountModal extends Component {
         show
         onHide={() => history.replace(Constants.ROUTER_PATHS.HOME)}
       >
-          <Modal.Header>
-            <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
-          </Modal.Header>
-          <Modal.Body>
-            <ul className="customer-numbers grid">
-              {mostNumbers.map(n => 
-                <li className="text-center width-1-3" key={`${n}`}>
-                  <span
-                    className={`tag__card ${this.state.value === n ? 'active' : ''}`}
-                    onClick={() => this.setState({ value: n })}
-                  >{n}</span>
-                </li>
-              )}
-              {showLastNumber ? (
-                <li className="text-center width-2-3" key={`${lastNumber}`}>
-                  <span
-                    className={`tag__card ${this.state.value === Constants.PeopleCount.MAX_PLUS ? 'active' : ''}`}
-                    onClick={() => this.setState({ value: Constants.PeopleCount.MAX_PLUS })}
-                  >{lastNumber}</span>
-                </li>
-              ) : null}
-            </ul>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="button__fill button__block" onClick={() => {
-              config.peopleCount = this.state.value;
-              this.modal.hide();
-            }}>OK</button>
-          </Modal.Footer>
-        </Modal>
+        <Modal.Header>
+          <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
+        </Modal.Header>
+        <Modal.Body>
+          <ul className="customer-numbers grid">
+            {mostNumbers.map(n =>
+              <li className="text-center width-1-3" key={`${n}`}>
+                <span
+                  className={`tag__card ${this.state.value === n ? 'active' : ''}`}
+                  onClick={() => this.setState({ value: n })}
+                >{n}</span>
+              </li>
+            )}
+            {showLastNumber ? (
+              <li className="text-center width-2-3" key={`${lastNumber}`}>
+                <span
+                  className={`tag__card ${this.state.value === Constants.PeopleCount.MAX_PLUS ? 'active' : ''}`}
+                  onClick={() => this.setState({ value: Constants.PeopleCount.MAX_PLUS })}
+                >{lastNumber}</span>
+              </li>
+            ) : null}
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="button__fill button__block" onClick={() => {
+            config.peopleCount = this.state.value;
+            this.modal.hide();
+          }}>OK</button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 }

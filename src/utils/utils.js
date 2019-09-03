@@ -43,16 +43,16 @@ Utils.setPhoneNumber = function setPhoneNumber(phone) {
   localStorage.setItem('user.p', phone || '');
 }
 
-Utils.getAdditionalComments = function getAdditionalComments() {
-  return sessionStorage.getItem('additionalComments');
+Utils.getSessionVariable = function getSessionVariable(name) {
+  return sessionStorage.getItem(name);
 }
 
-Utils.setAdditionalComments = function setAdditionalComments(additionalComments) {
-  sessionStorage.setItem('additionalComments', additionalComments || '');
+Utils.setSessionVariable = function setSessionVariable(name, value) {
+  sessionStorage.setItem(name, value || '');
 }
 
-Utils.removeAdditionalComments = function removeAdditionalComments() {
-  sessionStorage.removeItem('additionalComments');
+Utils.removeSessionVariable = function removeSessionVariable(name) {
+  sessionStorage.removeItem(name);
 }
 
 Utils.isProductSoldOut = (product) => {
