@@ -1,21 +1,12 @@
 import qs from 'qs';
 import {
   GET_STANDING_CENTS,
-  GET_BUSINESS,
   SET_MESSAGE,
-  SET_ONLINE_STORE_NIFO,
-  SET_HASH_DATA,
   SET_COMMON_DATA,
-  SET_CUSTOMER_ID,
-  SET_CASHBACK_HISTORY,
   SEND_OTP,
   SEND_OTP_SUCCESS,
   SEND_OTP_FAILURE,
   RESET_OTP_INPUT,
-  SET_PHONE,
-  SEND_PHONE_REQUEST,
-  SEND_PHONE_SUCCESS,
-  SEND_PHONE_FAILURE,
 } from "./types";
 import api from "../../utils/api";
 import GlobalConstants from '../../Constants';
@@ -34,27 +25,6 @@ export const getStandingCents = payload => async (dispatch) => {
     payload: data,
   });
 }
-
-export const getCashbackHistory = ({ customerId }) => async (dispatch) => {
-  try {
-    const { ok, data } = await api({
-      url: `${Constants.api.HISTORY}/?customerId=${customerId}`,
-      method: 'get',
-    });
-
-    if (ok) {
-      dispatch({
-        type: SET_CASHBACK_HISTORY,
-        payload: {
-          filters: { customerId },
-          ...data,
-        },
-      })
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 export const getCashbackInfo = receiptNumber => async (dispatch) => {
   try {
