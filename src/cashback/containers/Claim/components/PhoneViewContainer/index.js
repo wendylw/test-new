@@ -8,7 +8,7 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../../../redux/modules/app';
-import { actions as claimActions, getCashbackInfo, getHashData } from '../../../../redux/modules/claim';
+import { actions as claimActions, getCashbackInfo, getReceiptNumber } from '../../../../redux/modules/claim';
 
 class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
@@ -19,9 +19,8 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	getOrderInfo() {
-		const { hashData } = this.props;
+		const { receiptNumber } = this.props;
 		const { phone } = this.state;
-		const { receiptNumber = '' } = hashData || {};
 
 		return {
 			phone,
@@ -91,7 +90,7 @@ export default connect(
 	(state) => ({
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		cashbackInfo: getCashbackInfo(state),
-		hashData: getHashData(state),
+		receiptNumber: getReceiptNumber(state),
 	}),
 	(dispatch) => ({
 		claimActions: bindActionCreators(claimActions, dispatch),

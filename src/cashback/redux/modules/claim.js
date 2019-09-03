@@ -10,19 +10,14 @@ import { getBusiness, getRequestInfo } from './app';
 
 const initialState = {
 	cashbackInfo: null,
-	hashData: null,
+	receiptNumber: null,
 };
 
 export const types = {
-	// fetch hashdata
-	FETCH_HASHDATA_REQUEST: 'LOYALTY/CLAIM/FETCH_HASHDATA_REQUEST',
-	FETCH_HASHDATA_SUCCESS: 'LOYALTY/CLAIM/FETCH_HASHDATA_SUCCESS',
-	FETCH_HASHDATA_FAILURE: 'LOYALTY/CLAIM/FETCH_HASHDATA_FAILURE',
-
-	// fetch coreBusiness
-	FETCH_BUSINESS_REQUEST: 'LOYALTY/CLAIM/FETCH_BUSINESS_REQUEST',
-	FETCH_BUSINESS_SUCCESS: 'LOYALTY/CLAIM/FETCH_BUSINESS_SUCCESS',
-	FETCH_BUSINESS_FAILURE: 'LOYALTY/CLAIM/FETCH_BUSINESS_FAILURE',
+	// fetch receiptNumber
+	FETCH_RECEIPTNUMBER_REQUEST: 'LOYALTY/CLAIM/FETCH_RECEIPTNUMBER_REQUEST',
+	FETCH_RECEIPTNUMBER_SUCCESS: 'LOYALTY/CLAIM/FETCH_RECEIPTNUMBER_SUCCESS',
+	FETCH_RECEIPTNUMBER_FAILURE: 'LOYALTY/CLAIM/FETCH_RECEIPTNUMBER_FAILURE',
 
 	// fetch CashbackInfo
 	FETCH_CASHBACKINFO_REQUEST: 'LOYALTY/CLAIM/FETCH_CASHBACKINFO_REQUEST',
@@ -82,14 +77,14 @@ export const actions = {
 		}
 	},
 
-	getCashbackHashData: (hash) => async (dispatch) => {
+	getCashbackReceiptNumber: (hash) => async (dispatch) => {
 		try {
 			const { ok, data } = await api(Url.API_URLS.GET_CASHBACK_HASDATA(hash));
 
 			if (ok && data) {
 				dispatch({
-					type: types.FETCH_HASHDATA_SUCCESS,
-					hashData: data,
+					type: types.FETCH_RECEIPTNUMBER_SUCCESS,
+					receiptNumber: data.receiptNumber,
 				});
 			}
 		} catch (e) {
@@ -108,7 +103,7 @@ const reducer = (state = initialState, action) => {
 		case types.CREATE_CASHBACKINFO_SUCCESS: {
 			return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, action.cashbackInfo) }
 		}
-		case types.FETCH_HASHDATA_SUCCESS: {
+		case types.FETCH_RECEIPTNUMBER_SUCCESS: {
 			return { ...state, hashData: action.hashData }
 		}
 		default:
@@ -124,4 +119,4 @@ export const getBusinessInfo = state => {
 }
 
 export const getCashbackInfo = state => state.claim.cashbackInfo;
-export const getHashData = state => state.claim.hashData;
+export const getReceiptNumber = state => state.claim.receiptNumber;

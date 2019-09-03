@@ -9,7 +9,7 @@ import qs from 'qs';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as claimActions, getBusinessInfo, getCashbackInfo, getHashData } from '../../redux/modules/claim';
+import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber } from '../../redux/modules/claim';
 
 
 class PageClaim extends React.Component {
@@ -22,10 +22,9 @@ class PageClaim extends React.Component {
 		} = this.props;
 		const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-		await claimActions.getCashbackHashData(encodeURIComponent(h));
+		await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
 
-		const { hashData } = this.props;
-		const { receiptNumber } = hashData || {};
+		const { receiptNumber } = this.props;
 
 		if (receiptNumber) {
 			claimActions.getCashbackInfo(receiptNumber);
@@ -114,7 +113,7 @@ export default connect(
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		businessInfo: getBusinessInfo(state),
 		cashbackInfo: getCashbackInfo(state),
-		hashData: getHashData(state),
+		receiptNumber: getReceiptNumber(state),
 	}),
 	(dispatch) => ({
 		claimActions: bindActionCreators(claimActions, dispatch),
