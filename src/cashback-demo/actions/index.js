@@ -75,25 +75,16 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     const receiptNumber = getState().common.hashData.receiptNumber;
 
     // dispatch(sendPhoneRequest());
-    const response = await api({
-      url: `${Constants.api.CASHBACK}`,
-      method: 'post',
-      data: {
-        phone,
-        receiptNumber,
-        source: GlobalConstants.CASHBACK_SOURCE.RECEIPT
-      },
-    });
-    const { ok, data, error } = response;
-
-    if (!ok) {
-      // dispatch(sendPhoneFailure());
-      dispatch(resetOtpInput());
-      dispatch(sendMessage({
-        message: error.message
-      }));
-      return;
-    }
+    // const response = await api({
+    //   url: `${Constants.api.CASHBACK}`,
+    //   method: 'post',
+    //   data: {
+    //     phone,
+    //     receiptNumber,
+    //     source: GlobalConstants.CASHBACK_SOURCE.RECEIPT
+    //   },
+    // });
+    // const { ok, data, error } = response;
 
     // dispatch(sendPhoneSuccess());
 
@@ -104,13 +95,13 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     // dispatch(setCustomerId({ customerId: data.customerId }));
     // }
 
-    if (data.status === 'NotClaimed') {
-      history.push(GlobalConstants.ROUTER_PATHS.ERROR, {
-        message: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
-      });
+    // if (data.status === 'NotClaimed') {
+    //   history.push(GlobalConstants.ROUTER_PATHS.ERROR, {
+    //     message: ,
+    //   });
 
-      return;
-    }
+    //   return;
+    // }
 
     const errorOptions = {
       errorStatus: data.status,
@@ -129,73 +120,6 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   }, { addQueryPrefix: true });
 
   history.push(`${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}${queryString}`);
-};
-
-export const sendOtp = phone => async (dispatch, getState) => {
-  try {
-    // not yet available to resend
-    if (getState().user.otpCountDown > 0) {
-      console.warn(`OTP can be sent after ${getState().user.otpCountDown} seconds.`);
-      return;
-    }
-
-    dispatch({
-      type: SEND_OTP,
-      payload: { otpStatus: 'sending' },
-    });
-
-    const { ok } = await api({
-      url: Constants.api.CODE,
-      method: 'post',
-      data: { phone },
-    });
-
-    if (ok) {
-      let otpCountDown = GlobalConstants.OTP_TIMEOUT;
-
-      dispatch({
-        type: SEND_OTP_SUCCESS,
-        payload: {
-          otpCountDown,
-          otpStatus: 'sent',
-        },
-      });
-
-      const timer = setInterval(() => {
-        if (otpCountDown <= 0) {
-          clearInterval(timer);
-          return;
-        }
-
-        otpCountDown = otpCountDown - 1;
-
-        dispatch({
-          type: SEND_OTP,
-          payload: { otpCountDown },
-        });
-      }, 1000);
-    } else {
-      dispatch(sendMessage({
-        errorStatus: 'NotSent_OTP',
-      }));
-      dispatch({
-        type: SEND_OTP_FAILURE,
-        payload: {
-          otpCountDown: 0,
-          otpStatus: 'readyToSend',
-        },
-      });
-    }
-  } catch (e) {
-    console.error(e);
-    dispatch({
-      type: SEND_OTP_FAILURE,
-      payload: {
-        otpCountDown: 0,
-        otpStatus: 'readyToSend',
-      },
-    });
-  }
 };
 
 export const sendMessage = ({ errorStatus, message = '' }) => ({

@@ -20,7 +20,7 @@ class PhoneViewContainer extends React.Component {
   animationSetTimeout = null;
 
   state = {
-    phone: Utils.getPhoneNumber(),
+    phone: Utils.getLocalStorageVariable('user.p'),
     isSavingPhone: false,
     redirectURL: null,
     showCelebration: true,

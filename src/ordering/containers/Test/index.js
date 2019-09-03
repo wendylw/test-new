@@ -15,7 +15,7 @@ class Test extends React.Component {
   animationSetTimeout = null;
 
   state = {
-    phone: Utils.getPhoneNumber(),
+    phone: Utils.getLocalStorageVariable('user.p'),
     isSavingPhone: false,
     password: null,
     showModal: false,

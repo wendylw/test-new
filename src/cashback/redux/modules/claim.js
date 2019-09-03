@@ -56,7 +56,7 @@ export const actions = {
 	createCashbackInfo: (payload) => async (dispatch) => {
 		const { phone } = payload;
 
-		Utils.setPhoneNumber(phone);
+		Utils.setLocalStorageVariable('user.p', phone);
 
 		try {
 			const response = await api({

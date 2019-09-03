@@ -50,6 +50,7 @@ class Message extends React.Component {
 			Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
 			Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
 			Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
+			NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
 			NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
 			NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
 			NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,

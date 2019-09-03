@@ -35,12 +35,16 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return (top + height) - window.pageYOffset - topAdjustment;
 }
 
-Utils.getPhoneNumber = function getPhoneNumber() {
-  return localStorage.getItem('user.p');
+Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
+  return localStorage.getItem(name);
 }
 
-Utils.setPhoneNumber = function setPhoneNumber(phone) {
-  localStorage.setItem('user.p', phone || '');
+Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
+  localStorage.setItem(name, value || '');
+}
+
+Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
+  localStorage.removeItem(name);
 }
 
 Utils.getSessionVariable = function getSessionVariable(name) {
