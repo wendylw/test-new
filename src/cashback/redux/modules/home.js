@@ -102,6 +102,8 @@ const reducer = (state = initialState, action) => {
 
 				return { ...state, cashbackHistorySummary: Object.assign({}, state.cashbackHistorySummary) };
 			}
+
+			return state;
 		}
 		default:
 			return state;
