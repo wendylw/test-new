@@ -7,7 +7,7 @@ import Utils from '../../../utils/utils';
 import config from '../../../config';
 
 
-import '../../../cashback-demo/App.scss';
+import '../../../App.scss';
 
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 

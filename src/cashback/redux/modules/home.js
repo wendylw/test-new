@@ -59,7 +59,10 @@ const reducer = (state = initialState, action) => {
 			return { ...state, customerId: action.customerId };
 		}
 		case types.GET_CASHBACK_HISTORIES_SUCCESS: {
-			return { ...state, loyaltyHistories: action.loyaltyHistories };
+			const { loyaltyHistories } = action;
+			const { totalCredits } = loyaltyHistories;
+
+			return { ...state, loyaltyHistoriesSummary: { totalCredits } };
 		}
 		default:
 			return state;
