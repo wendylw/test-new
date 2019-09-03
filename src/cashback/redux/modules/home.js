@@ -1,12 +1,12 @@
 import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
+// import Utils from '../../../utils/utils';
+// import Constants from '../../../utils/constants';
 
 import api from '../../../utils/api';
 
+import { getLoyaltyHistoriesByCustomerId } from '../../../redux/modules/entities/loyaltyHistories';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
-
 
 const initialState = {
 	customerId: null,
@@ -68,10 +68,15 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
+export const getCustomerId = state => state.home.customerId;
+
 export const getBusinessInfo = state => {
 	const business = getBusiness(state);
 	return getBusinessByName(state, business);
 }
 
-export const getCashbackInfo = state => state.claim.cashbackInfo;
-export const getCustomerId = state => state.claim.customerId;
+export const getCashbackHistory = state => {
+	const customeId = getCustomerId(state);
+
+	return getLoyaltyHistoriesByCustomerId(state, customeId);
+}

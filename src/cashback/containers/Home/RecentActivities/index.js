@@ -1,9 +1,12 @@
 import React from 'react';
+
+// import { getCashbackHistory } from '../../actions';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+import { IconPending, IconChecked, IconEarned } from '../../../../components/Icons';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-// import { getCashbackHistory } from '../../actions';
-import { IconPending, IconChecked, IconEarned } from '../../../../components/Icons';
-import CurrencyNumber from '../../../components/CurrencyNumber';
+import { actions as homeActions, getCustomerId, getCashbackHistory } from '../../../redux/modules/home';
 
 class RecentActivities extends React.Component {
 	state = {
@@ -14,68 +17,76 @@ class RecentActivities extends React.Component {
 		this.setState({ fullScreen: !this.state.fullScreen });
 	}
 
-	async fetch() {
-		const { customerId, history } = this.props;
+	// async fetch() {
+	// 	const { customerId, history } = this.props;
 
-		if (!customerId) {
-			console.error(new Error('custom id is required in RecentActivityView'));
-			// this.props.sendMessage({
-			// 	errorStatus: 'Activity_Incorrect',
-			// });
-			// history.push('/');
-			return;
-		}
+	// 	if (!customerId) {
+	// 		console.error(new Error('custom id is required in RecentActivityView'));
+	// 		// this.props.sendMessage({
+	// 		// 	errorStatus: 'Activity_Incorrect',
+	// 		// });
+	// 		// history.push('/');
+	// 		return;
+	// 	}
 
-		try {
-			// await getCashbackHistory({ customerId });
-		} catch (e) {
-			console.error(e);
-		} finally {
-		}
-	}
+	// 	try {
+	// 		// await getCashbackHistory({ customerId });
+	// 	} catch (e) {
+	// 		console.error(e);
+	// 	} finally {
+	// 	}
+	// }
+
+	// componentWillMount() {
+	// 	this.fetch();
+	// }
+
+	// renderEventType(eventType) {
+	// 	const eventTypesMap = {
+	// 		pending: "Cashback Pending",
+	// 		/* expense is same as redeemed */
+	// 		expense: "Redeemed",
+	// 		earned: "You earned",
+	// 	};
+
+	// 	return eventTypesMap[eventType] || eventType;
+	// }
+
+	// renderIcon(eventType, props) {
+	// 	const eventTypesMap = {
+	// 		pending: IconPending,
+	// 		expense: IconChecked,
+	// 		earned: IconEarned,
+	// 	};
+
+	// 	const IconComponent = eventTypesMap[eventType];
+
+	// 	if (!IconComponent) return null;
+
+	// 	return (
+	// 		<IconComponent {...props} />
+	// 	);
+	// }
+
+	// renderEventTime(eventTime) {
+	// 	// const { onlineStoreInfo: { locale } = {} } = this.props || {};
+	// 	const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+	// 	const eventDateTime = new Date(Number.parseInt(eventTime, 10));
+	// 	const locale = 'en'; // use English by now.
+
+	// 	if (locale) {
+	// 		return eventDateTime.toLocaleDateString(locale, dateOptions);
+	// 	}
+
+	// 	return eventDateTime.toDateString(dateOptions);
+	// }
 
 	componentWillMount() {
-		this.fetch();
-	}
+		const { homeActions, customerId } = this.props;
 
-	renderEventType(eventType) {
-		const eventTypesMap = {
-			pending: "Cashback Pending",
-			/* expense is same as redeemed */
-			expense: "Redeemed",
-			earned: "You earned",
-		};
-
-		return eventTypesMap[eventType] || eventType;
-	}
-
-	renderIcon(eventType, props) {
-		const eventTypesMap = {
-			pending: IconPending,
-			expense: IconChecked,
-			earned: IconEarned,
-		};
-
-		const IconComponent = eventTypesMap[eventType];
-
-		if (!IconComponent) return null;
-
-		return (
-			<IconComponent {...props} />
-		);
-	}
-
-	renderEventTime(eventTime) {
-		// const { onlineStoreInfo: { locale } = {} } = this.props || {};
-		const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-		const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-		const locale = 'en'; // use English by now.
-
-		if (locale) {
-			return eventDateTime.toLocaleDateString(locale, dateOptions);
+		if (customerId) {
+			homeActions.getCashbackHistory(customerId);
 		}
-
-		return eventDateTime.toDateString(dateOptions);
 	}
 
 	render() {
@@ -133,10 +144,12 @@ class RecentActivities extends React.Component {
 	}
 }
 
-const mapStateToProps = () => ({});
-
-const mapDispathToProps = dispatch => bindActionCreators({
-	// getCashbackHistory,
-}, dispatch);
-
-export default connect(mapStateToProps, mapDispathToProps)(RecentActivities);
+export default connect(
+	(state) => ({
+		customerId: getCustomerId(state),
+		cashbackHistory: getCashbackHistory(state),
+	}),
+	(dispatch) => ({
+		homeActions: bindActionCreators(homeActions, dispatch),
+	})
+)(RecentActivities);

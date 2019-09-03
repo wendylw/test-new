@@ -1,12 +1,14 @@
-import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Url from '../../../utils/url';
-import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
-import { getAllProducts } from '../../../redux/modules/entities/products';
-import { getAllCategories } from '../../../redux/modules/entities/categories';
 import Utils from '../../../utils/utils';
+
+import { combineReducers } from 'redux';
+import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
+import { getAllCategories } from '../../../redux/modules/entities/categories';
+import { getAllProducts } from '../../../redux/modules/entities/products';
+import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusiness } from './app';
+
 
 const initialState = {
   currentProduct: {

@@ -24,7 +24,7 @@ const API_URLS = {
     method: 'get'
   },
   GET_CASHBACK_HISTORIES: {
-    url: '/api/cashback/business',
+    url: '/api/cashback/history',
     method: 'get',
   },
 };

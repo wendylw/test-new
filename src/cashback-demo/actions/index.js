@@ -104,7 +104,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     const phone = getState().user.phone;
     const receiptNumber = getState().common.hashData.receiptNumber;
 
-    dispatch(sendPhoneRequest());
+    // dispatch(sendPhoneRequest());
     const response = await api({
       url: `${Constants.api.CASHBACK}`,
       method: 'post',
@@ -117,7 +117,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
     const { ok, data, error } = response;
 
     if (!ok) {
-      dispatch(sendPhoneFailure());
+      // dispatch(sendPhoneFailure());
       dispatch(resetOtpInput());
       dispatch(sendMessage({
         message: error.message
@@ -125,14 +125,14 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
       return;
     }
 
-    dispatch(sendPhoneSuccess());
+    // dispatch(sendPhoneSuccess());
 
     // save phone
-    await dispatch(savePhone(phone));
+    // await dispatch(savePhone(phone));
 
-    if (data.customerId) {
-      dispatch(setCustomerId({ customerId: data.customerId }));
-    }
+    // if (data.customerId) {
+    // dispatch(setCustomerId({ customerId: data.customerId }));
+    // }
 
     if (data.status === 'NotClaimed') {
       history.push(GlobalConstants.ROUTER_PATHS.CASHBACK_ERROR, {
@@ -150,7 +150,7 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   } catch (e) {
     // TODO: handle error
     console.error(e);
-    dispatch(sendPhoneFailure());
+    // dispatch(sendPhoneFailure());
   }
 
   const queryString = qs.stringify({

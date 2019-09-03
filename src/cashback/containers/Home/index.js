@@ -1,9 +1,9 @@
 import React from 'react';
 
 import RedeemModal from './RedeemModal';
-import RecentActivities from './RecentActivities';
 import Image from '../../../components/Image';
 import Message from '../../components/Message';
+import RecentActivities from './RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import qs from 'qs';
@@ -11,7 +11,7 @@ import qs from 'qs';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as homeActions, getBusinessInfo } from '../../redux/modules/home';
+import { actions as homeActions, getBusinessInfo, getCashbackHistory } from '../../redux/modules/home';
 
 
 class PageLoyalty extends React.Component {
@@ -19,14 +19,14 @@ class PageLoyalty extends React.Component {
 		showModal: false,
 	}
 
-	componentWillMount() {
+	async componentWillMount() {
 		const {
 			history,
 			homeActions,
 		} = this.props;
 		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-		homeActions.setCustomerId(customerId);
+		await homeActions.setCustomerId(customerId);
 	}
 
 	render() {
@@ -35,9 +35,12 @@ class PageLoyalty extends React.Component {
 			onlineStoreInfo,
 			cashbackHistory,
 		} = this.props;
-		const { totalCredits } = cashbackHistory || {};
+		const {
+			displayBusinessName,
+			name,
+		} = business || {};
 		const { logo } = onlineStoreInfo || {};
-		const { displayBusinessName, name } = business || {};
+		const { totalCredits } = cashbackHistory || {};
 
 		return (
 			<section className="loyalty__home flex-column">
@@ -68,16 +71,9 @@ export default connect(
 	(state) => ({
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		businessInfo: getBusinessInfo(state),
+		cashbackHistory: getCashbackHistory(state),
 	}),
 	(dispatch) => ({
 		homeActions: bindActionCreators(homeActions, dispatch),
 	})
 )(PageLoyalty);
-
-// const mapStateToProps = state => ({
-// 	cashbackHistory: state.user.cashbackHistory,
-// });
-
-// const mapDispatchToProps = dispatch => bindActionCreators({
-// 	setCustomerId,
-// }, dispatch);

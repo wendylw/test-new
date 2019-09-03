@@ -12,3 +12,8 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
+// selectors
+
+export const getAllBusinesses = (state) => state.entities.loyaltyHistories;
+
+export const getLoyaltyHistoriesByCustomerId = (state, customerId) => getAllBusinesses(state)[customerId];
