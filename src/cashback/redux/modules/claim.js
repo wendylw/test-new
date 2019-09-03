@@ -104,7 +104,7 @@ const reducer = (state = initialState, action) => {
 			return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, action.cashbackInfo) }
 		}
 		case types.FETCH_RECEIPTNUMBER_SUCCESS: {
-			return { ...state, hashData: action.hashData }
+			return { ...state, receiptNumber: action.receiptNumber }
 		}
 		default:
 			return state;
