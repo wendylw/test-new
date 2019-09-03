@@ -1,10 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { clearMessage } from '../../../cashback-demo/actions';
+import { getBusiness } from '../../redux/modules/app';
+
+const MESSAGE_TYPES = {
+	PRIMARY: 'primary',
+	ERROR: 'error',
+};
 
 class Message extends React.Component {
 	timer = null;
+	MESSAGES = {};
+
+	state = {
+		error: ['NotClaimed_Cancelled'],
+	}
+
+	componentWillMount() {
+		this.initMessages();
+	}
 
 	componentDidMount() {
 		this.clear();
@@ -23,38 +37,11 @@ class Message extends React.Component {
 		return false;
 	}
 
-	clear() {
-		if (this.timer) {
-			clearTimeout(this.timer);
-		}
-
-		this.timer = setTimeout(() => {
-			// this.props.clearMessage();
-			clearTimeout(this.timer);
-		}, 5000);
-	}
-
-	getMessageType() {
-		const { errorMessageKey } = this.props;
-		const errorStatus = ['NotClaimed_Cancelled'];
-		let messageType = 'primary';
-
-		if (errorStatus.includes(errorMessageKey)) {
-			messageType = 'error';
-		}
-
-		/* Type includes 'primary', 'error' */
-		return messageType;
-	}
-
-	getMessage() {
-		const { message, errorMessageKey, claimCashbackCountPerDay } = this.props;
-
-		if (!errorMessageKey) {
-			return message;
-		}
-
-		const messageMap = {
+	initMessages() {
+		const { businessInfo } = this.props;
+		const { claimCashbackCountPerDay } = businessInfo || {};
+		const messages = {
+			Default: 'Oops, please scan QR to claim again.',
 			/* get Cash Back messages */
 			Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
 			/* save Cash Back messages */
@@ -71,27 +58,70 @@ class Message extends React.Component {
 			/* verify phone */
 			Save_Cashback_Failed: 'Oops! please retry again later.',
 			/* Activity */
-			Activity_Incorrect: 'Activity incorrect, need retry.'
-		};
+			Activity_Incorrect: 'Activity incorrect, need retry.',
+		}
 
-		let displayMessage = messageMap[errorMessageKey] || `Oops, please scan QR to claim again.`;
+		this.MESSAGES = messages;
+	}
 
-		return displayMessage;
+	clear() {
+		if (this.timer) {
+			clearTimeout(this.timer);
+		}
+
+		this.timer = setTimeout(() => {
+			// this.props.clearMessage();
+			clearTimeout(this.timer);
+		}, 5000);
+	}
+
+	getMessage() {
+		const { status, message } = this.props;
+
+		if (!status) {
+			return message;
+		}
+
+		return this.MESSAGES[status] || this.MESSAGES.Default;
 	}
 
 	render() {
-		const { show = false } = this.props;
+		const {
+			show,
+			status,
+			message,
+		} = this.props;
+		const { error } = this.state;
+		const classList = ['top-message'];
+		const type = error.includes(status) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY;
 
 		if (!show) {
 			return null;
 		}
 
 		return (
-			<div className={`top-message ${this.getMessageType()}`}>
-				<span className="top-message__text">{this.getMessage()}</span>
+			<div className={classList.push(type).join(' ')}>
+				<span className="top-message__text">
+					{status ? (this.MESSAGES[status] || this.MESSAGES.Default) : message}
+				</span>
 			</div>
 		);
 	}
 }
 
-export default Message;
+Message.propTypes = {
+	show: PropTypes.bool,
+	status: PropTypes.string,
+	message: PropTypes.string,
+};
+
+Message.defaultProps = {
+	show: false,
+	message: '',
+};
+
+export default connect(
+	(state) => ({
+		businessInfo: getBusiness(state),
+	})
+)(Message);
