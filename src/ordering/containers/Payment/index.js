@@ -9,6 +9,7 @@ import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as homeActions } from '../../redux/modules/home';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
+import Utils from '../../../utils/utils';
 
 const {
   PAYMENT_METHODS,
@@ -100,6 +101,10 @@ class Payment extends Component {
       currentOrder
     } = this.props;
     const { orderId } = currentOrder || {};
+
+    if (orderId) {
+      Utils.removeAdditionalComments();
+    }
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};

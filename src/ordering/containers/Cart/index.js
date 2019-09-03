@@ -1,6 +1,12 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import CartList from './components/CartList';
+import {
+  IconLeftArrow,
+  IconDelete,
+  IconClose,
+} from '../../../components/Icons';
+import Utils from '../../../utils/utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
@@ -10,9 +16,21 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
+  state = {
+    additionalComments: Utils.getAdditionalComments(),
+  }
+
   componentDidMount() {
     const { homeActions } = this.props;
     homeActions.loadProductList();
+  }
+
+  handleChangeAdditionalComments(e) {
+    this.setState({
+      additionalComments: e.target.value
+    });
+
+    Utils.setAdditionalComments(e.target.value);
   }
 
   handleClickBack = () => {
@@ -23,6 +41,33 @@ class Cart extends Component {
     this.props.cartActions.clearAll().then(() => {
       this.props.history.push('/');
     });
+  }
+
+  renderAdditionalComments() {
+    const { additionalComments } = this.state;
+
+    return (
+      <div className="cart__note flex flex-middle flex-space-between">
+        <textarea
+          rows="4"
+          placeholder="Add a note to your order?"
+          value={additionalComments || ''}
+          onChange={this.handleChangeAdditionalComments.bind(this)}
+        ></textarea>
+        {
+          additionalComments
+            ? (
+              <i
+                className="cart__close-button"
+                onClick={() => this.setState({ additionalComments: null })}
+              >
+                <IconClose />
+              </i>
+            )
+            : null
+        }
+      </div>
+    );
   }
 
   render() {
@@ -43,16 +88,17 @@ class Cart extends Component {
           onClick={this.handleClickBack}
         >
           <figure className="header__image-container text-middle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
+            <IconLeftArrow />
           </figure>
           <h2 className="header__title font-weight-bold text-middle">{`Order ${count || 0} Items`}</h2>
           <button className="warning__button" onClick={this.handleClearAll}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+            <IconDelete />
             <span className="warning__label text-middle">Clear All</span>
           </button>
         </header>
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
+          {this.renderAdditionalComments()}
         </div>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">

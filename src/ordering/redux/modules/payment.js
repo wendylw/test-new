@@ -1,4 +1,5 @@
 import Url from '../../../utils/url';
+import Utils from '../../../utils/utils';
 import Constants from '../../../Constants';
 
 import api from '../../../utils/api';
@@ -44,12 +45,14 @@ export const actions = {
   createOrder: () => (dispatch, getState) => {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
+    const additionalComments = Utils.getAdditionalComments();
     const { storeId, tableId } = getRequestInfo(getState());
     const variables = {
       business,
       storeId,
+      shoppingCartIds,
+      additionalComments,
       tableId,
-      shoppingCartIds
     };
 
     return dispatch(createOrder(variables));
