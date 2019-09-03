@@ -65,7 +65,7 @@ class RecentActivities extends React.Component {
 		const { country } = onlineStoreInfo || {};
 
 		return (
-			<div className="activity">
+			<ul className="activity">
 				{
 					(logs || []).map((activity, i) => {
 						const {
@@ -76,7 +76,7 @@ class RecentActivities extends React.Component {
 						const type = this.getType(eventType, { className: 'activity__icon' });
 
 						return (
-							<div key={`${i}`} className="activity__item flex flex-middle">
+							<li key={`${i}`} className="activity__item flex flex-middle">
 								{type.icon}
 								<summary>
 									<h4 className="activity__title">
@@ -91,11 +91,11 @@ class RecentActivities extends React.Component {
 										{eventDateTime.toLocaleDateString(LANGUAGES(country || 'MY'), DATE_OPTIONS)}
 									</time>
 								</summary>
-							</div>
+							</li>
 						);
 					})
 				}
-			</div>
+			</ul>
 		);
 	}
 
@@ -108,7 +108,7 @@ class RecentActivities extends React.Component {
 		}
 
 		return (
-			<section className={`asdie-section ${this.state.fullScreen ? 'full' : ''}`}>
+			<div className={`asdie-section ${this.state.fullScreen ? 'full' : ''}`}>
 				<aside className="aside-bottom">
 					{
 						!this.state.fullScreen ? (
@@ -127,7 +127,7 @@ class RecentActivities extends React.Component {
 					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activity</h3>
 					{this.renderLogList()}
 				</aside>
-			</section>
+			</div>
 		);
 	}
 }

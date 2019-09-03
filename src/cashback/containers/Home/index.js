@@ -11,7 +11,7 @@ import qs from 'qs';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as homeActions, getBusinessInfo, getCashbackHistory } from '../../redux/modules/home';
+import { actions as homeActions, getBusinessInfo, getCashbackHistory, getCashbackHistorySummary } from '../../redux/modules/home';
 
 
 class PageLoyalty extends React.Component {
@@ -27,13 +27,16 @@ class PageLoyalty extends React.Component {
 		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
 		await homeActions.setCustomerId(customerId);
+		homeActions.setCashbackMessage();
 	}
 
 	render() {
 		const {
 			business,
+			homeActions,
 			onlineStoreInfo,
 			cashbackHistory,
+			cashbackHistorySummary,
 		} = this.props;
 		const {
 			displayBusinessName,
@@ -41,11 +44,15 @@ class PageLoyalty extends React.Component {
 		} = business || {};
 		const { logo } = onlineStoreInfo || {};
 		const { totalCredits } = cashbackHistory || {};
+		const { status } = cashbackHistorySummary || {};
 
 		return (
-			<section className="loyalty__home flex-column">
-				<Message />
-				<section className="loyalty__content text-center">
+			<section className="loyalty__home">
+				<Message
+					status={status}
+					clearMessage={() => homeActions.clearCashbackMessage()}
+				/>
+				<div className="loyalty__content text-center">
 					{
 						logo ? (
 							<Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
@@ -60,7 +67,7 @@ class PageLoyalty extends React.Component {
 							onClose={() => this.setState({ showModal: false })}
 						/>
 					</div>
-				</section>
+				</div>
 				<RecentActivities />
 			</section>
 		);
@@ -72,6 +79,7 @@ export default connect(
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		businessInfo: getBusinessInfo(state),
 		cashbackHistory: getCashbackHistory(state),
+		cashbackHistorySummary: getCashbackHistorySummary(state)
 	}),
 	(dispatch) => ({
 		homeActions: bindActionCreators(homeActions, dispatch),

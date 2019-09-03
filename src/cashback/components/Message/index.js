@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getBusiness } from '../../redux/modules/app';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
@@ -29,12 +30,7 @@ class Message extends React.Component {
 	}
 
 	shouldComponentUpdate(nextProps) {
-		if ((nextProps.message !== this.props.message)
-			|| nextProps.errorMessageKey !== this.props.errorMessageKey) {
-			return true;
-		}
-
-		return false;
+		return (nextProps.message !== this.props.message) || (nextProps.status !== this.props.status);
 	}
 
 	initMessages() {
@@ -66,14 +62,17 @@ class Message extends React.Component {
 	}
 
 	clear() {
-		if (this.timer) {
-			clearTimeout(this.timer);
-		}
+		const {
+			status,
+			clearMessage
+		} = this.props;
 
-		this.timer = setTimeout(() => {
-			// this.props.clearMessage();
-			clearTimeout(this.timer);
-		}, 5000);
+		if (status) {
+			this.timer = setTimeout(() => {
+				clearMessage();
+				clearTimeout(this.timer);
+			}, 5000);
+		}
 	}
 
 	getMessage() {
@@ -88,20 +87,18 @@ class Message extends React.Component {
 
 	render() {
 		const {
-			show,
 			status,
 			message,
 		} = this.props;
 		const { error } = this.state;
-		const classList = ['top-message'];
-		const type = error.includes(status) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY;
+		const classList = ['top-message', error.includes(status) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
 
-		if (!show) {
+		if (!status && !message) {
 			return null;
 		}
 
 		return (
-			<div className={classList.push(type).join(' ')}>
+			<div className={classList.join(' ')}>
 				<span className="top-message__text">
 					{status ? (this.MESSAGES[status] || this.MESSAGES.Default) : message}
 				</span>
@@ -111,18 +108,21 @@ class Message extends React.Component {
 }
 
 Message.propTypes = {
-	show: PropTypes.bool,
 	status: PropTypes.string,
 	message: PropTypes.string,
+	clearMessage: PropTypes.func,
 };
 
 Message.defaultProps = {
-	show: false,
-	message: '',
+	clearMessage: () => { },
 };
 
 export default connect(
-	(state) => ({
-		businessInfo: getBusiness(state),
-	})
+	(state) => {
+		const business = getBusiness(state) || '';
+
+		return {
+			businessInfo: getBusinessByName(state, business),
+		}
+	}
 )(Message);

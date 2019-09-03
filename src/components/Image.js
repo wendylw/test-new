@@ -27,9 +27,7 @@ const DIM = {
 const FIT = 'outside';
 class Image extends React.Component {
   shouldComponentUpdate(nextProps) {
-    const { src } = nextProps;
-
-    return src !== this.props.src;
+    return nextProps.src !== this.props.src;
   }
 
   /*

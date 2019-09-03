@@ -342,7 +342,8 @@
   &__claim,
   &__home {
     @extend .flex;
-    @extend .flex-space-between;
+    @extend .flex-column;
+    @extend .flex-top;
 
     position: fixed;
     width: 100%;
@@ -354,7 +355,8 @@
   }
 
   &__content {
-    padding: 8.7vh 0;
+    padding: 8vh 0;
+    width: inherit;
   }
 
   &__money {

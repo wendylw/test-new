@@ -85,7 +85,7 @@ class PageClaim extends React.Component {
 		} = businessInfo || {};
 
 		return (
-			<section className="loyalty__claim flex-column" style={{
+			<section className="loyalty__claim" style={{
 				// backgroundImage: `url(${theImage})`,
 			}}>
 				<article className="loyalty__content text-center">

@@ -16,11 +16,7 @@ class Sorry extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (!nextProps.order) {
-      return false;
-    }
-
-    return true;
+    return !!nextProps.order;
   }
 
   render() {

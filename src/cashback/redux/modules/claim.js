@@ -66,6 +66,8 @@ export const actions = {
 			const { ok, data } = response;
 
 			if (ok) {
+				Utils.setLocalStorageVariable('cashback.status', data.status);
+
 				dispatch({
 					type: types.CREATE_CASHBACKINFO_SUCCESS,
 					cashbackInfo: data,
