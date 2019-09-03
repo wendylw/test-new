@@ -1,12 +1,23 @@
 import React from 'react';
-
-// import { getCashbackHistory } from '../../actions';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import { IconPending, IconChecked, IconEarned } from '../../../../components/Icons';
+import { IconPending, IconChecked, IconEarned, IconClose } from '../../../../components/Icons';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { getOnlineStoreInfo } from '../../../redux/modules/app';
 import { actions as homeActions, getCustomerId, getCashbackHistory } from '../../../redux/modules/home';
+
+const LANGUAGES = {
+	MY: 'EN',
+	TH: 'EN',
+	PH: 'EN',
+};
+const DATE_OPTIONS = {
+	weekday: 'short',
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+};
 
 class RecentActivities extends React.Component {
 	state = {
@@ -17,67 +28,24 @@ class RecentActivities extends React.Component {
 		this.setState({ fullScreen: !this.state.fullScreen });
 	}
 
-	// async fetch() {
-	// 	const { customerId, history } = this.props;
+	getType(type, props) {
+		const TypesMap = {
+			pending: {
+				text: 'Cashback Pending',
+				icon: <IconPending {...props} />,
+			},
+			/* expense is same as redeemed */
+			expense: {
+				text: 'Redeemed',
+				icon: <IconChecked {...props} />,
+			},
+			earned: {
+				text: 'You earned',
+				icon: <IconEarned {...props} />,
+			},
+		};
 
-	// 	if (!customerId) {
-	// 		console.error(new Error('custom id is required in RecentActivityView'));
-	// 		// this.props.sendMessage({
-	// 		// 	errorStatus: 'Activity_Incorrect',
-	// 		// });
-	// 		// history.push('/');
-	// 		return;
-	// 	}
-
-	// 	try {
-	// 		// await getCashbackHistory({ customerId });
-	// 	} catch (e) {
-	// 		console.error(e);
-	// 	} finally {
-	// 	}
-	// }
-
-	// componentWillMount() {
-	// 	this.fetch();
-	// }
-
-	// renderEventType(eventType) {
-	// 	const eventTypesMap = {
-	// 		pending: "Cashback Pending",
-	// 		/* expense is same as redeemed */
-	// 		expense: "Redeemed",
-	// 		earned: "You earned",
-	// 	};
-
-	// 	return eventTypesMap[eventType] || eventType;
-	// }
-
-	// renderIcon(eventType, props) {
-	// 	const eventTypesMap = {
-	// 		pending: IconPending,
-	// 		expense: IconChecked,
-	// 		earned: IconEarned,
-	// 	};
-
-	// 	const IconComponent = eventTypesMap[eventType];
-
-	// 	if (!IconComponent) return null;
-
-	// 	return (
-	// 		<IconComponent {...props} />
-	// 	);
-	// }
-
-	getTime(eventTime) {
-		const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-		const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-		const locale = 'en'; // use English by now.
-
-		if (locale) {
-			return eventDateTime.toLocaleDateString(locale, dateOptions);
-		}
-
-		return eventDateTime.toDateString(dateOptions);
+		return TypesMap[type];
 	}
 
 	componentWillMount() {
@@ -89,28 +57,43 @@ class RecentActivities extends React.Component {
 	}
 
 	renderLogList() {
-		const { cashbackHistory } = this.props;
+		const {
+			cashbackHistory,
+			onlineStoreInfo,
+		} = this.props;
 		const { logs } = cashbackHistory || {};
+		const { country } = onlineStoreInfo || {};
 
 		return (
 			<div className="activity">
 				{
-					(logs || []).map((activity, i) => (
-						<div key={`${i}`} className="activity__item flex flex-middle">
-							{this.renderIcon(activity.eventType, { className: 'activity__icon' })}
-							<summary>
-								<h4 className="activity__title">
-									<label>{this.renderEventType(activity.eventType)}&nbsp;</label>
-									{
-										activity.eventType !== 'pending'
-											? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
-											: null
-									}
-								</h4>
-								<time className="activity__time">{this.renderEventTime(activity.eventTime)}</time>
-							</summary>
-						</div>
-					))
+					(logs || []).map((activity, i) => {
+						const {
+							eventType,
+							eventTime,
+						} = activity;
+						const eventDateTime = new Date(Number.parseInt(eventTime, 10));
+						const type = this.getType(eventType, { className: 'activity__icon' });
+
+						return (
+							<div key={`${i}`} className="activity__item flex flex-middle">
+								{type.icon}
+								<summary>
+									<h4 className="activity__title">
+										<label>{type.text}&nbsp;</label>
+										{
+											activity.eventType !== 'pending'
+												? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
+												: null
+										}
+									</h4>
+									<time className="activity__time">
+										{eventDateTime.toLocaleDateString(LANGUAGES(country || 'MY'), DATE_OPTIONS)}
+									</time>
+								</summary>
+							</div>
+						);
+					})
 				}
 			</div>
 		);
@@ -136,10 +119,7 @@ class RecentActivities extends React.Component {
 										className="header__image-container text-middle"
 										onClick={this.toggleFullScreen.bind(this)}
 									>
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-											<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-											<path d="M0 0h24v24H0z" fill="none" />
-										</svg>
+										<IconClose />
 									</figure>
 								</header>
 							)
@@ -154,6 +134,7 @@ class RecentActivities extends React.Component {
 
 export default connect(
 	(state) => ({
+		onlineStoreInfo: getOnlineStoreInfo(state),
 		customerId: getCustomerId(state),
 		cashbackHistory: getCashbackHistory(state),
 	}),

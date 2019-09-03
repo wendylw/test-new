@@ -5,7 +5,7 @@ import Constants from '../../../utils/constants';
 import api from '../../../utils/api';
 
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness } from './app';
 
 
 const initialState = {
