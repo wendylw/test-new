@@ -35,31 +35,6 @@ export const getStandingCents = payload => async (dispatch) => {
   });
 }
 
-export const getCashbackHashData = hash => async (dispatch, getState) => {
-  const { hashData = {} } = getState().common;
-
-  if (hashData.h) return;
-
-  try {
-    const { ok, data } = await api({
-      url: Constants.api.getCashbackHashData(hash),
-      method: 'get',
-    });
-
-    if (ok) {
-      dispatch({
-        type: SET_HASH_DATA,
-        payload: {
-          ...data,
-        },
-      });
-    }
-  } catch (e) {
-    // TODO: handle error
-    console.error(e);
-  }
-};
-
 export const getCashbackHistory = ({ customerId }) => async (dispatch) => {
   try {
     const { ok, data } = await api({
@@ -109,30 +84,6 @@ export const getCashbackInfo = receiptNumber => async (dispatch) => {
     console.error(e);
   }
 };
-
-export const getBusiness = storeId => async (dispatch) => {
-  try {
-    const { ok, data } = await api({
-      url: `${Constants.api.BUSINESS}?storeId=${storeId}`,
-      method: 'get',
-    });
-
-    if (ok) {
-      dispatch({
-        type: GET_BUSINESS,
-        payload: data,
-      });
-    }
-  } catch (e) {
-    // TODO: handle error
-    console.error(e);
-  }
-}
-
-export const setCustomerId = payload => ({
-  type: SET_CUSTOMER_ID,
-  payload,
-});
 
 export const resetOtpInput = () => ({
   type: RESET_OTP_INPUT,
@@ -210,37 +161,6 @@ export const tryOtpAndSaveCashback = history => async (dispatch, getState) => {
   history.push(`${GlobalConstants.ROUTER_PATHS.CASHBACK_HOME}${queryString}`);
 };
 
-const sendPhoneRequest = () => ({
-  type: SEND_PHONE_REQUEST,
-})
-
-const sendPhoneSuccess = () => ({
-  type: SEND_PHONE_SUCCESS,
-})
-
-const sendPhoneFailure = () => ({
-  type: SEND_PHONE_FAILURE,
-})
-
-export const getCashbackAndHashData = hash => async (dispatch, getState) => {
-  await dispatch(getCashbackHashData(hash));
-
-  const { hashData } = getState().common;
-
-  if (hashData && hashData.receiptNumber) {
-    try {
-      await dispatch(getCashbackInfo(hashData.receiptNumber));
-    } catch (e) {
-      console.log(e);
-    }
-  }
-};
-
-export const setOnlineStoreInfo = payload => ({
-  type: SET_ONLINE_STORE_NIFO,
-  payload,
-});
-
 export const sendOtp = phone => async (dispatch, getState) => {
   try {
     // not yet available to resend
@@ -306,20 +226,6 @@ export const sendOtp = phone => async (dispatch, getState) => {
       },
     });
   }
-};
-
-export const setPhone = phone => ({
-  type: SET_PHONE,
-  payload: { phone },
-});
-
-export const fetchPhone = () => async dispatch => {
-  const phone = localStorage.getItem('user.p');
-  await dispatch(setPhone(phone));
-}
-
-export const savePhone = phone => async dispatch => {
-  localStorage.setItem('user.p', phone || '');
 };
 
 export const sendMessage = ({ errorStatus, message = '' }) => ({

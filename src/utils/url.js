@@ -22,7 +22,11 @@ const API_URLS = {
   GET_CAHSBACK_BUSINESS: {
     url: '/api/cashback/business',
     method: 'get'
-  }
+  },
+  GET_CASHBACK_HISTORIES: {
+    url: '/api/cashback/business',
+    method: 'get',
+  },
 };
 
 export default {

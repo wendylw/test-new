@@ -5,7 +5,7 @@ import Constants from '../../../utils/constants';
 import api from '../../../utils/api';
 
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness } from './app';
 
 
 const initialState = {
@@ -13,23 +13,54 @@ const initialState = {
 };
 
 export const types = {
-	// fetch hashdata
-	FETCH_HASHDATA_REQUEST: 'LOYALTY/CLAIM/FETCH_HASHDATA_REQUEST',
-	FETCH_HASHDATA_SUCCESS: 'LOYALTY/CLAIM/FETCH_HASHDATA_SUCCESS',
-	FETCH_HASHDATA_FAILURE: 'LOYALTY/CLAIM/FETCH_HASHDATA_FAILURE',
+	// set customeId
+	SET_CUSTOMER_ID_SUCCESS: 'LOYALTY/HOME/SET_CUSTOMER_ID_SUCCESS',
 
-	// create CashbackInfo
-	CREATE_CASHBACKINFO_REQUEST: 'LOYALTY/CLAIM/CREATE_CASHBACKINFO_REQUEST',
-	CREATE_CASHBACKINFO_SUCCESS: 'LOYALTY/CLAIM/CREATE_CASHBACKINFO_SUCCESS',
-	CREATE_CASHBACKINFO_FAILURE: 'LOYALTY/CLAIM/CREATE_CASHBACKINFO_FAILURE',
+	// get cashback histories
+	GET_CASHBACK_HISTORIES_REQUEST: 'LOYALTY/HOME/GET_CASHBACK_HISTORIES_REQUEST',
+	GET_CASHBACK_HISTORIES_SUCCESS: 'LOYALTY/HOME/GET_CASHBACK_HISTORIES_SUCCESS',
+	GET_CASHBACK_HISTORIES_FAILURE: 'LOYALTY/HOME/GET_CASHBACK_HISTORIES_FAILURE',
 }
 
 export const actions = {
+	setCustomerId: customerId => ({
+		type: types.SET_CUSTOMER_ID_SUCCESS,
+		customerId,
+	}),
+
+	getCashbackHistory: customerId => async (dispatch) => {
+		try {
+			const { ok, data } = await api({
+				...Url.API_URLS.GET_CASHBACK_HISTORIES,
+				params: {
+					customerId,
+				}
+			});
+
+			if (ok) {
+				dispatch({
+					type: types.GET_CASHBACK_HISTORIES_SUCCESS,
+					loyaltyHistories: {
+						customerId,
+						...data,
+					},
+				})
+			}
+		} catch (e) {
+			console.error(e);
+		}
+	}
 };
 
 // reducer
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
+		case types.SET_CUSTOMER_ID_SUCCESS: {
+			return { ...state, customerId: action.customerId };
+		}
+		case types.GET_CASHBACK_HISTORIES_SUCCESS: {
+			return { ...state, loyaltyHistories: action.loyaltyHistories };
+		}
 		default:
 			return state;
 	}

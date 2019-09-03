@@ -11,7 +11,8 @@ import qs from 'qs';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as homeActions, getBusinessInfo } from '../../redux/modules/claim';
+import { actions as homeActions, getBusinessInfo } from '../../redux/modules/home';
+
 
 class PageLoyalty extends React.Component {
 	state = {
@@ -21,11 +22,11 @@ class PageLoyalty extends React.Component {
 	componentWillMount() {
 		const {
 			history,
-			setCustomerId,
+			homeActions,
 		} = this.props;
 		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-		// setCustomerId({ customerId });
+		homeActions.setCustomerId(customerId);
 	}
 
 	render() {
