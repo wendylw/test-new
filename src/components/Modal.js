@@ -2,20 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class Modal extends Component {
-  static propTypes = {
-    show: PropTypes.bool,
-    hideOnBlank: PropTypes.bool,
-    onShow: PropTypes.func,
-    onHide: PropTypes.func,
-  };
-
-  static defaultProps = {
-    show: false,
-    hideOnBlank: false,
-    onShow: () => {},
-    onHide: () => {},
-  }
-
   state = {
     show: typeof this.props.show === 'boolean' ? this.props.show : false,
   };
@@ -60,11 +46,11 @@ class Modal extends Component {
     const { children, className = '' } = this.props;
 
     return (
-      <section className={`modal ${className}`} style={this.state.show ? {display: 'block'} : null} onClick={this.handleClick.bind(this)}>
-          <div className="modal__content">
-            {children}
-          </div>
-        </section>
+      <section className={`modal ${className}`} style={this.state.show ? { display: 'block' } : null} onClick={this.handleClick.bind(this)}>
+        <div className="modal__content">
+          {children}
+        </div>
+      </section>
     );
   }
 }
@@ -86,5 +72,19 @@ Modal.Footer = ({ children, className = '' }) => (
     {children}
   </footer>
 );
+
+Modal.propTypes = {
+  show: PropTypes.bool,
+  hideOnBlank: PropTypes.bool,
+  onShow: PropTypes.func,
+  onHide: PropTypes.func,
+};
+
+Modal.defaultProps = {
+  show: false,
+  hideOnBlank: false,
+  onShow: () => { },
+  onHide: () => { },
+};
 
 export default Modal;

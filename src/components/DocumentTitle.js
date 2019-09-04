@@ -2,10 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class DocumentTitle extends React.Component {
-  static propTypes = {
-    title: PropTypes.string.isRequired,
-  };
-
   static setTitle(title) {
     if (title !== document.title) {
       document.title = title;
@@ -32,5 +28,9 @@ class DocumentTitle extends React.Component {
     );
   }
 }
+
+DocumentTitle.propTypes = {
+  title: PropTypes.string.isRequired,
+};
 
 export default DocumentTitle;

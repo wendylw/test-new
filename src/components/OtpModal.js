@@ -1,13 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import PropTypes from 'prop-types';
 import OtpInput from 'react-otp-input';
 import { IconSms } from './Icons';
-import Constants from '../../../../../utils/constants';
-
-const OTP_COUNT_DOWN_MAX = 20; // seconds
+import Constants from '../utils/constants';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
-class PhoneVerifyModal extends React.Component {
+class OtpModal extends React.Component {
 	render() {
 		const { onClose, phone, otpRenderTime } = this.props;
 
@@ -49,11 +48,11 @@ class PhoneVerifyModal extends React.Component {
 				</section>
 
 				<footer className="footer-operation opt">
-					<button className="button__fill button__block border-radius-base font-weight-bold text-uppercase">Ok</button>
+					<button className="button__fill button__block border-radius-base font-weight-bold text-uppercase">OK</button>
 				</footer>
 			</div>
 		);
 	}
 }
 
-export default PhoneVerifyModal;
+export default OtpModal;
