@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import {
   IconLeftArrow,
@@ -99,6 +100,13 @@ class Cart extends Component {
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
+          <Billing
+            tax={0}
+            serviceCharge={0}
+            businessInfo={0}
+            subtotal={0}
+            total={0}
+          />
         </div>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
