@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Utils from '../../../../utils/utils';
-import Constants from '../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
+import Constants from '../../../../../utils/constants';
 
 class StoreList extends Component {
 	componentDidMount() {

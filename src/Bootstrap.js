@@ -5,9 +5,9 @@ import Utils from './utils/utils';
 
 const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
 
-const AsyncStoresApp = lazy(() => import('./containers/Stores'));
-
 const AsyncNotFound = lazy(() => import('./containers/NotFound'));
+
+const AsyncStoresApp = lazy(() => import('./stores'));
 
 const AsyncOrdering = lazy(() => import('./ordering'));
 

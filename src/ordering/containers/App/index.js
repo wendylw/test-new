@@ -5,11 +5,10 @@ import { actions as appActions, getOnlineStoreInfo, getError, getMessageModal } 
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
-import MessageModal from '../../components/MessageModal';
+import MessageModal from '../../../components/ErrorToast';
 
 class App extends Component {
   render() {
-    console.log('_App.render()');
     const { error, messageModal } = this.props;
 
     return (

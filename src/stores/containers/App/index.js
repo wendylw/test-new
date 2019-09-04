@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component, lazy } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
+const Home = lazy(() => import('../Home'));
 
 class App extends Component {
   render() {
     const { error } = this.props;
 
     return (
-      <main className="loyalty">
-        <Routes />
+      <main className="store-list">
+        <Home />
         {
           error
             ? <ErrorToast message={error} clearError={this.handleClearError} />

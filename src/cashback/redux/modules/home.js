@@ -1,6 +1,4 @@
 import Url from '../../../utils/url';
-// import Utils from '../../../utils/utils';
-// import Constants from '../../../utils/constants';
 
 import api from '../../../utils/api';
 

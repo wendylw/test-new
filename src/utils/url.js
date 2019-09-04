@@ -27,6 +27,10 @@ const API_URLS = {
     url: '/api/cashback/history',
     method: 'get',
   },
+  GET_STORES: storeId => ({
+    url: `/api/ordering/stores/${storeId}?a=redirectTo`,
+    method: 'get',
+  }),
 };
 
 export default {
