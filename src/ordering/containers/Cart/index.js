@@ -12,8 +12,8 @@ import Utils from '../../../utils/utils';
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as cartActions } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -75,9 +75,16 @@ class Cart extends Component {
     const {
       cartSummary,
       shoppingCart,
+      businessInfo,
     } = this.props;
     const { items } = shoppingCart || {};
-    const { count } = cartSummary || {};
+    const {
+      total,
+      count,
+      subtotal,
+      tax,
+      serviceCharge,
+    } = cartSummary || {};
 
     if (!(cartSummary && items)) {
       return null;
@@ -100,14 +107,14 @@ class Cart extends Component {
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
-          <Billing
-            tax={0}
-            serviceCharge={0}
-            businessInfo={0}
-            subtotal={0}
-            total={0}
-          />
         </div>
+        <Billing
+          tax={tax}
+          serviceCharge={serviceCharge}
+          businessInfo={businessInfo}
+          subtotal={subtotal}
+          total={total}
+        />
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
@@ -133,6 +140,7 @@ export default connect(
     shoppingCart: getShoppingCart(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     currentProduct: getCurrentProduct(state),
+    businessInfo: getBusinessInfo(state),
   }),
   dispatch => ({
     homeActions: bindActionCreators(homeActions, dispatch),
