@@ -88,9 +88,6 @@ export const actions = {
   decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
     const cartItem = (shoppingCart.items || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
 
-    console.log(cartItem);
-    console.log(prod);
-
     if (prod.cartQuantity === 1) {
       return dispatch(removeShoppingCartItem({
         productId: cartItem.productId,
@@ -103,7 +100,7 @@ export const actions = {
       business: getBusiness(getState()),
       productId: cartItem.productId,
       quantity: prod.cartQuantity - 1,
-      variations: cartItem.variations || [], // product has only one child products in cart
+      variations: cartItem.variations || [],
     }));
   },
 

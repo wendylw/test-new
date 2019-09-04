@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import {
-  IconLeftArrow,
   IconDelete,
   IconClose,
 } from '../../../components/Icons';

@@ -8,22 +8,21 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
   TERMS_OF_USE: '/terms-conditions',
+  RECEIPT_DETAIL: '/receipt',
+  THANK_YOU: '/thank-you',
   PRIVACY: '/privacy',
   ERROR: '/error',
   SORRY: '/sorry',
-  INDEX: '/',
+  STORES_HOME: '/',
   // ordering App basename
-  STORES: '/stores',
-  ORDERING: '/ordering',
-  HOME: '/ordering/',
-  CART: '/cart',
-  PAYMENT: '/payment',
-  CREDIT_CARD_PAYMENT: '/payment/creditcard',
-  ONLINE_BANKING_PAYMENT: '/payment/online-banking',
-  THANK_YOU: '/thank-you',
-  RECEIPT_DETAIL: '/receipt',
+  ORDERING_BASE: '/ordering',
+  ORDERING_HOME: '/',
+  ORDERING_CART: '/cart',
+  ORDERING_PAYMENT: '/payment',
+  ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
+  ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   // cashback App basename
-  CASHBACK: '/loyalty',
+  CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
   // Qrscan App basename

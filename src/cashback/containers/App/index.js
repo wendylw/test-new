@@ -8,7 +8,6 @@ import ErrorToast from './components/ErrorToast';
 
 class App extends Component {
   render() {
-    console.log('_App.render()');
     const { error } = this.props;
 
     return (

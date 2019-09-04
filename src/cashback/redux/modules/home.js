@@ -86,12 +86,24 @@ const reducer = (state = initialState, action) => {
 			const { loyaltyHistories } = action;
 			const { totalCredits } = loyaltyHistories;
 
-			return { ...state, cashbackHistorySummary: Object.assign({}, state.cashbackHistorySummary, { totalCredits }) };
+			return {
+				...state,
+				cashbackHistorySummary: {
+					...state.cashbackHistorySummary,
+					totalCredits,
+				}
+			};
 		}
 		case types.SET_CASHBACK_MESSAGE_SUCCESS: {
 			const { status } = action;
 
-			return { ...state, cashbackHistorySummary: Object.assign({}, state.cashbackHistorySummary, { status }) };
+			return {
+				...state,
+				cashbackHistorySummary: {
+					...state.cashbackHistorySummary,
+					status,
+				}
+			};
 		}
 		case types.CLEAR_CASHBACK_MESSAGE_SUCCESS: {
 			const { cashbackHistorySummary } = state;

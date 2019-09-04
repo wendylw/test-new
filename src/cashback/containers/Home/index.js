@@ -1,9 +1,9 @@
 import React from 'react';
 
-import RedeemModal from './RedeemModal';
+import RedeemModal from './components/RedeemModal';
 import Image from '../../../components/Image';
 import Message from '../../components/Message';
-import RecentActivities from './RecentActivities';
+import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import qs from 'qs';

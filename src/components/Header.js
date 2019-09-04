@@ -40,7 +40,6 @@ class Header extends Component {
 	render() {
 		const {
 			className,
-			isPage,
 			isStoreHome,
 			title,
 			children,

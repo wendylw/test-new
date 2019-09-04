@@ -1,11 +1,16 @@
 import React from 'react';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import { IconPending, IconChecked, IconEarned, IconClose } from '../../../../components/Icons';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import {
+	IconPending,
+	IconChecked,
+	IconEarned,
+	IconClose,
+} from '../../../../../components/Icons';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../../redux/modules/app';
-import { actions as homeActions, getCustomerId, getCashbackHistory } from '../../../redux/modules/home';
+import { getOnlineStoreInfo } from '../../../../redux/modules/app';
+import { actions as homeActions, getCustomerId, getCashbackHistory } from '../../../../redux/modules/home';
 
 const LANGUAGES = {
 	MY: 'EN',

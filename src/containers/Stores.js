@@ -4,10 +4,14 @@ import Constants from '../utils/constants';
 
 class Stores extends Component {
 	componentDidMount() {
-		const { data: stores, onSelect } = this.props;
+		const { data } = this.props;
+		const {
+			stores,
+			onSelect,
+		} = data || {};
 
 		// auto redirect when there only one store in the list
-		if (stores.length === 1) {
+		if (stores && stores.length === 1) {
 			onSelect(stores[0].id);
 		}
 	}
@@ -18,11 +22,12 @@ class Stores extends Component {
 
 	render() {
 		const { data } = this.props;
+		const { stores } = data || {};
 
 		return (
 			<ul className="list">
 				{
-					data.map(store => {
+					(stores || []).map(store => {
 						const {
 							id,
 							name,

@@ -3,7 +3,7 @@ import React from 'react';
 import {
 	IconRedeemed,
 	IconClose
-} from '../../../../components/Icons';
+} from '../../../../../components/Icons';
 
 class RedeemModal extends React.Component {
 	render() {

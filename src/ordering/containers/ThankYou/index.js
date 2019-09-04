@@ -93,7 +93,7 @@ class ThankYou extends Component {
       <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
         <header className="header border__bottom-divider flex flex-middle flex-space-between">
           <figure className="header__image-container text-middle" onClick={() => history.replace({
-            pathname: `${Constants.ROUTER_PATHS.HOME}`,
+            pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
             search: `?table=${order.tableId}&storeId=${order.storeId}`
           })}>
             <IconClose />

@@ -15,6 +15,8 @@ const AsyncCashbackApp = lazy(() => import('./cashback'));
 
 const AsyncQRScanner = lazy(() => import('./qrscan'));
 
+const { ROUTER_PATHS } = Constants;
+
 class Bootstrap extends Component {
   render() {
     return (
@@ -22,31 +24,32 @@ class Bootstrap extends Component {
         <Suspense fallback={<div className="loader theme page-loader"></div>}>
           <Switch>
             <Route
-              path={Constants.ROUTER_PATHS.TERMS_OF_USE}
+              path={ROUTER_PATHS.TERMS_OF_USE}
               render={props => <AsyncTermsPrivacy {...props} pageName='terms' />}
             />
             <Route
-              path={Constants.ROUTER_PATHS.PRIVACY}
+              path={ROUTER_PATHS.PRIVACY}
               render={props => <AsyncTermsPrivacy {...props} pageName='privacy' />}
             />
-            <Route exact path={Constants.ROUTER_PATHS.INDEX} render={(...args) => {
+            <Route exact path={ROUTER_PATHS.STORES_HOME} render={(...args) => {
               if (isQRScannerApp()) {
                 return (
-                  <Redirect to={Constants.ROUTER_PATHS.QRSCAN} />
+                  <Redirect to={ROUTER_PATHS.QRSCAN} />
                 );
               }
+
               // goto stores when visit home page without scaning QR Code.
               if (!Utils.getQueryString('h')) {
                 return <AsyncStoresApp />
               }
 
               return (
-                <Redirect to={Constants.ROUTER_PATHS.ORDERING} />
+                <Redirect to={ROUTER_PATHS.ORDERING_BASE} />
               );
             }} />
-            <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrdering} />
-            <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
-            <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
+            <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
+            <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
+            <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
             <Route component={AsyncNotFound} />
           </Switch>
         </Suspense>

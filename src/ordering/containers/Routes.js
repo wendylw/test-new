@@ -1,6 +1,8 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
 
+import Constants from '../../utils/constants';
+
 const Test = lazy(() => import('./Test'));
 const Home = lazy(() => import('./Home'));
 const Cart = lazy(() => import('./Cart'));
@@ -11,6 +13,8 @@ const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
 const ThankYou = lazy(() => import('./ThankYou'));
 const Sorry = lazy(() => import('./Sorry'));
 
+const { ROUTER_PATHS } = Constants;
+
 class Routes extends Component {
   render() {
     const { match } = this.props;
@@ -19,7 +23,7 @@ class Routes extends Component {
         <Suspense fallback={<div className="loader theme page-loader"></div>}>
           <Switch>
             <Route exact path="/test" component={Test} />
-            <Route exact path="/" component={Home} />
+            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path="/cart" component={Cart} />
             <Route exact path="/payment" component={Payment} />
             <Route exact path="/receipt" component={Receipt} />

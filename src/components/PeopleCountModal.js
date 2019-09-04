@@ -21,7 +21,7 @@ class PeopleCountModal extends Component {
       <Modal
         ref={ref => this.modal = ref} className="customer-numbers__modal"
         show
-        onHide={() => history.replace(Constants.ROUTER_PATHS.HOME)}
+        onHide={() => history.replace(Constants.ROUTER_PATHS.ORDERING_HOME)}
       >
         <Modal.Header>
           <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
