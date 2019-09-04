@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import config from '../config';
-import placeholder from '../images/item-placeholder.svg';
+import placeholder from '../images/product-placeholder.jpg';
 
 /* CONSTANTS variable */
 // --BEGIN-- different from marketplace
