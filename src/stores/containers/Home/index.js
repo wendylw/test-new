@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import StoreList from './components/StoreList/index.js';
+import Header from '../../../components/Header';
 
 import Constants from '../../../utils/constants';
 
@@ -22,7 +23,7 @@ class App extends Component {
   handleSelectStore() {
     const {
       history,
-      hashCode
+      hashCode,
     } = this.props;
 
     history.push({
@@ -32,26 +33,42 @@ class App extends Component {
   }
 
   render() {
-    const { businessInfo } = this.props;
+    const {
+      businessInfo,
+      onlineStoreInfo,
+    } = this.props;
+    const {
+      logo,
+      storeName
+    } = onlineStoreInfo;
     const { stores } = businessInfo || {};
 
     return (
-      <section className="store-list__content">
-        <h2 className="text-center">Please select a store to continue…</h2>
+      <React.Fragment>
+        <Header
+          className="border__bottom-divider gray has-right"
+          isPage={true}
+          isStoreHome={true}
+          logo={logo}
+          title={storeName}
+        />
+        <section className="store-list__content">
+          <h2 className="text-center">Please select a store to continue…</h2>
 
-        <div className="list__container">
-          {
-            !stores || !stores.length
-              ? <h3 className="text-center">something wrong, please try again later.</h3>
-              : (
-                <StoreList
-                  storeList={stores.filter(store => store.isOnline && !store.isDeleted)}
-                  onSelect={this.handleSelectStore.bind(this)}
-                />
-              )
-          }
-        </div>
-      </section>
+          <div className="list__container">
+            {
+              !stores || !stores.length
+                ? <h3 className="text-center">something wrong, please try again later.</h3>
+                : (
+                  <StoreList
+                    storeList={stores.filter(store => store.isOnline && !store.isDeleted)}
+                    onSelect={this.handleSelectStore.bind(this)}
+                  />
+                )
+            }
+          </div>
+        </section>
+      </React.Fragment>
     );
   }
 }
