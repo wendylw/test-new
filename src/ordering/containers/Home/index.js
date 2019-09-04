@@ -42,10 +42,15 @@ class Home extends Component {
       requestInfo,
     } = this.props;
     const { tableId } = requestInfo || {};
+    const classList = ['border__bottom-divider gray'];
+
+    if (!tableId) {
+      classList.push('has-right');
+    }
 
     return (
       <Header
-        className={!tableId ? 'has-right' : null}
+        className={classList.join(' ')}
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}

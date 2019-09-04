@@ -94,6 +94,7 @@ class Cart extends Component {
     return (
       <section className={`table-ordering__order` /* hide */}>
         <Header
+          className="border__bottom-divider gray"
           isPage={true}
           title={`Order ${count || 0} Items`}
           navFunc={this.handleClickBack.bind(this)}

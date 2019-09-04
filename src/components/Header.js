@@ -47,10 +47,6 @@ class Header extends Component {
 		} = this.props;
 		const classList = ['header flex flex-middle flex-space-between'];
 
-		if (isPage) {
-			classList.push('border__bottom-divider page');
-		}
-
 		if (className) {
 			classList.push(className);
 		}
