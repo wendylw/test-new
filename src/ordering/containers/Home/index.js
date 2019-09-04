@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Menu from './components/Menu';
 import Footer from './components/Footer';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
@@ -36,6 +36,30 @@ class Home extends Component {
     });
   }
 
+  renderHeader() {
+    const {
+      onlineStoreInfo,
+      requestInfo,
+    } = this.props;
+    const { tableId } = requestInfo || {};
+
+    return (
+      <Header
+        className={!tableId ? 'has-right' : null}
+        isPage={true}
+        isStoreHome={true}
+        logo={onlineStoreInfo.logo}
+        title={onlineStoreInfo.storeName}
+      >
+        {
+          tableId
+            ? <span className="gray-font-opacity text-uppercase">Table {tableId}</span>
+            : null
+        }
+      </Header>
+    );
+  }
+
   render() {
     const {
       categories,
@@ -51,11 +75,7 @@ class Home extends Component {
 
     return (
       <section className="table-ordering__home">
-        <Header
-          logo={onlineStoreInfo.logo}
-          title={onlineStoreInfo.storeName}
-          table={tableId}
-        />
+        {this.renderHeader()}
         <CurrentCategoryBar
           categories={categories}
         />

@@ -8,6 +8,7 @@ import {
   IconClose,
 } from '../../../components/Icons';
 import Utils from '../../../utils/utils';
+import Header from '../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
@@ -92,18 +93,16 @@ class Cart extends Component {
 
     return (
       <section className={`table-ordering__order` /* hide */}>
-        <header className="header border__bottom-divider flex flex-middle flex-space-between"
-          onClick={this.handleClickBack}
+        <Header
+          isPage={true}
+          title={`Order ${count || 0} Items`}
+          navFunc={this.handleClickBack.bind(this)}
         >
-          <figure className="header__image-container text-middle">
-            <IconLeftArrow />
-          </figure>
-          <h2 className="header__title font-weight-bold text-middle">{`Order ${count || 0} Items`}</h2>
           <button className="warning__button" onClick={this.handleClearAll}>
             <IconDelete />
             <span className="warning__label text-middle">Clear All</span>
           </button>
-        </header>
+        </Header>
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}

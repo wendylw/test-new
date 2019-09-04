@@ -257,6 +257,17 @@
   padding-top: 50px;
   min-height: 100%;
 
+  .header__title {
+    max-width: 55vw;
+    text-transform: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    + span {
+      min-width: 32vw;
+    }
+  }
+
   &__home {
     @extend .main-section;
 
@@ -265,11 +276,6 @@
 
     .header__image-container {
       background-color: $gray-4;
-    }
-
-    .header__title {
-      max-width: 60vw;
-      text-transform: none;
     }
   }
 
@@ -285,10 +291,6 @@
       display: block;
       width: 100%;
       height: 43.2vw;
-    }
-
-    .header__title {
-      max-width: 54vw;
     }
 
     .billing {
@@ -314,14 +316,6 @@
 
   &__thanks {
     @extend .main-section;
-
-    .header__title {
-      max-width: 55vw;
-    }
-
-    .header__title + span {
-      min-width: 32vw;
-    }
   }
 
   &__receipt {
@@ -474,7 +468,10 @@
   width: 100%;
   padding: 10px 3.8vw;
   height: 50px;
-  background-color: $gray-5;
+
+  &.page {
+    background-color: $gray-5;
+  }
 
   &__image-container {
     @extend .reset-font-size;
@@ -518,7 +515,7 @@
     text-overflow: ellipsis;
   }
 
-  &.has-table::after,
+  &.has-right::after,
   &__title + span {
     content: "";
     text-align: right;

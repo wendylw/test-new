@@ -11,31 +11,24 @@ import Constants from '../utils/constants';
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
 	render() {
-		const { onClose, phone, otpRenderTime } = this.props;
-
-		if (typeof onClose !== 'function') {
-			console.error('onClose is required');
-			return null;
-		}
+		const { onClose, phone, ResendOtpTime } = this.props;
 
 		return (
 			<div className="full-aside">
 				<header className="header border__bottom-divider flex flex-middle flex-space-between">
 					<figure
 						className="header__image-container text-middle"
-						ref={this.headerRef}
 						onClick={onClose}
 					>
 						<IconClose />
 					</figure>
-					<h2 className="header__title font-weight-bold text-middle text-center">OTP Verification</h2>
 				</header>
 
 				<section className="full-aside__content text-center">
 					<figure className="full-aside__image-container">
 						<IconSms />
 					</figure>
-					<h2 className="full-aside__title">To protect your account, we've sent you a One Time Passcode (OTP) to {phone}. Enter it below.</h2>
+					<h2 className="full-aside__title">We’ve sent you a One Time Passcode (OTP) to {phone}. Enter it below to continue.</h2>
 					<div className="otp-input">
 						<OtpInput
 							key={`otp-0`}
@@ -44,7 +37,7 @@ class OtpModal extends React.Component {
 							inputStyle={{ width: '1.15em' }}
 						/>
 					</div>
-					<button className="otp-resend" >RESEND OTP?</button>
+					<button className="otp-resend" >Resend OTP? ({ResendOtpTime})</button>
 				</section>
 
 				<footer className="footer-operation opt">
@@ -54,5 +47,18 @@ class OtpModal extends React.Component {
 		);
 	}
 }
+
+
+OtpModal.propTypes = {
+	phone: PropTypes.string,
+	ResendOtpTime: PropTypes.number,
+	onClose: PropTypes.func,
+};
+
+OtpModal.defaultProps = {
+	phone: '',
+	ResendOtpTime: 0,
+	onClose: () => { },
+};
 
 export default OtpModal;
