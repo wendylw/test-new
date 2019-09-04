@@ -24,13 +24,13 @@ class Routes extends Component {
           <Switch>
             <Route exact path="/test" component={Test} />
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
-            <Route exact path="/cart" component={Cart} />
-            <Route exact path="/payment" component={Payment} />
-            <Route exact path="/receipt" component={Receipt} />
-            <Route exact path="/payment/creditcard" component={BraintreePayment} />
-            <Route exact path="/payment/online-banking" component={BankingPayment} />
-            <Route exact path="/thank-you" component={ThankYou} />
-            <Route exact path="/sorry" component={Sorry} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
+            <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={BraintreePayment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
+            <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
+            <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
+            <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
           </Switch>
         </Suspense>
       </Router>
