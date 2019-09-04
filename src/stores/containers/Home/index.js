@@ -14,10 +14,20 @@ class App extends Component {
     redirectTo: '',
   }
 
-  componentWillMount() {
-    const { homeActions } = this.props;
+  async componentWillMount() {
+    const {
+      history,
+      homeActions,
+    } = this.props;
 
-    homeActions.loadCoreBusiness();
+    await homeActions.loadCoreBusiness();
+
+    const { businessInfo } = this.props;
+    const { stores } = businessInfo || {};
+
+    if (stores && stores.length === 1) {
+
+    }
   }
 
   handleSelectStore() {
