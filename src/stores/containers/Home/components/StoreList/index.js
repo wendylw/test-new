@@ -1,33 +1,19 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 
 class StoreList extends Component {
-	componentDidMount() {
-		const { data } = this.props;
-		const {
-			stores,
-			onSelect,
-		} = data || {};
-
-		// auto redirect when there only one store in the list
-		if (stores && stores.length === 1) {
-			onSelect(stores[0].id);
-		}
-	}
-
-	handleStoreClick = (storeId) => {
-		this.props.onSelect(storeId);
-	}
-
 	render() {
-		const { data } = this.props;
-		const { stores } = data || {};
+		const {
+			storeList,
+			onSelect,
+		} = this.props;
 
 		return (
 			<ul className="list">
 				{
-					(stores || []).map(store => {
+					storeList.map(store => {
 						const {
 							id,
 							name,
@@ -39,7 +25,7 @@ class StoreList extends Component {
 								key={id}
 								className="item border__bottom-divider border-radius-base flex flex-top"
 								onClick={() => {
-									this.handleStoreClick(id);
+									onSelect(id);
 								}}
 							>
 								<div className="item__content flex flex-middle flex-space-between">
@@ -58,5 +44,15 @@ class StoreList extends Component {
 		);
 	}
 }
+
+StoreList.propTypes = {
+	storeList: PropTypes.array,
+	onSelect: PropTypes.func,
+};
+
+StoreList.defaultProps = {
+	storeList: [],
+	onSelect: () => { },
+};
 
 export default StoreList;
