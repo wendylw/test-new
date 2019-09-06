@@ -51,7 +51,7 @@ export const actions = {
       business,
       storeId,
       shoppingCartIds,
-      additionalComments,
+      additionalComments: encodeURIComponent(additionalComments),
       tableId,
     };
 
