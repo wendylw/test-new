@@ -55,7 +55,7 @@ class Payment extends Component {
 
     if (additionalComments) {
       variables = Object.assign({}, variables, {
-        additionalComments,
+        additionalComments: encodeURIComponent(additionalComments),
       });
     }
 
