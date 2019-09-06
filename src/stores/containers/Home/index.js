@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 
-import Constants from '../../../utils/constants';
+// import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -15,7 +15,7 @@ class App extends Component {
   async componentWillMount() {
     const { homeActions } = this.props;
 
-    await homeActions.loadCoreBusiness();
+    // await homeActions.loadCoreBusiness();
     await homeActions.loadCoreStores();
   }
 
@@ -32,7 +32,7 @@ class App extends Component {
 
     // auto redirect when there only one store in the list
     if (stores && stores.length === 1) {
-      this.handleSelectStore(stores[0].id);
+      // this.handleSelectStore(stores[0].id);
 
       return;
     }
@@ -46,7 +46,7 @@ class App extends Component {
     const { hashCode } = this.props;
 
     if (hashCode) {
-      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+      // window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
     }
   }
 

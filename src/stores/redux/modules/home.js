@@ -1,5 +1,4 @@
 import Url from '../../../utils/url';
-
 import api from '../../../utils/api';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -31,6 +30,7 @@ export const actions = {
 	loadCoreBusiness: () => (dispatch, getState) => {
 		const { storeId } = getRequestInfo(getState());
 		const business = getBusiness(getState());
+
 		return dispatch(fetchCoreBusiness({ business, storeId }));
 	},
 

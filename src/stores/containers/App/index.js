@@ -26,11 +26,11 @@ class App extends Component {
   componentDidMount() {
     const {
       fetchOnlineStoreInfo,
-      fetchBusiness,
+      // fetchBusiness,
     } = this.props.appActions;
 
     fetchOnlineStoreInfo();
-    fetchBusiness();
+    // fetchBusiness();
   }
 
   handleClearError = () => {

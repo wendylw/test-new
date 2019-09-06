@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import api from '../../../utils/api';
+// import api from '../../../utils/api';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
@@ -68,26 +68,26 @@ export const actions = {
 		}
 	}),
 
-	fetchBusiness: () => async (dispatch) => {
-		try {
-			const { ok, data } = await api({
-				...Url.API_URLS.GET_CAHSBACK_BUSINESS,
-				params: {
-					storeId: config.storeId,
-				}
-			});
+	// fetchBusiness: () => async (dispatch) => {
+	// 	try {
+	// 		const { ok, data } = await api({
+	// 			...Url.API_URLS.GET_CAHSBACK_BUSINESS,
+	// 			params: {
+	// 				storeId: config.storeId,
+	// 			}
+	// 		});
 
-			if (ok) {
-				dispatch({
-					type: types.FETCH_BUSINESS_SUCCESS,
-					business: data,
-				});
-			}
-		} catch (e) {
-			// TODO: handle error
-			console.error(e);
-		}
-	}
+	// 		if (ok) {
+	// 			dispatch({
+	// 				type: types.FETCH_BUSINESS_SUCCESS,
+	// 				business: data,
+	// 			});
+	// 		}
+	// 	} catch (e) {
+	// 		// TODO: handle error
+	// 		console.error(e);
+	// 	}
+	// }
 };
 
 const error = (state = initialState.error, action) => {
