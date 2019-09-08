@@ -69,8 +69,9 @@ const reducer = (state = initialState, action) => {
 		case types.FETCH_CORESTORES_SUCCESS: {
 			const { business } = action.responseGql.data;
 			const { stores } = business || {};
+			const validStores = (stores || []).filter(s => s.isOnline && !s.isDeleted);
 
-			return { ...state, isFetching: false, storeIds: stores.map(s => s.id) };
+			return { ...state, isFetching: false, storeIds: validStores.map(s => s.id) };
 		}
 		case types.FETCH_CORESTORES_FAILURE: {
 			return { ...state, isFetching: false };

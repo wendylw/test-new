@@ -86,7 +86,7 @@ class App extends Component {
                 ? <h3 className="text-center">something wrong, please try again later.</h3>
                 : (
                   <StoreList
-                    storeList={stores.filter(store => store.isOnline && !store.isDeleted)}
+                    storeList={stores}
                     onSelect={this.handleSelectStore.bind(this)}
                   />
                 )
