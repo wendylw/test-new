@@ -31,11 +31,6 @@ export const types = {
 	FETCH_ONLINESTOREINFO_SUCCESS: "STORES/APP/FETCH_ONLINESTOREINFO_SUCCESS",
 	FETCH_ONLINESTOREINFO_FAILURE: "STORES/APP/FETCH_ONLINESTOREINFO_FAILURE",
 
-	// fetch business
-	FETCH_BUSINESS_REQUEST: "STORES/APP/FETCH_BUSINESS_REQUEST",
-	FETCH_BUSINESS_SUCCESS: "STORES/APP/FETCH_BUSINESS_SUCCESS",
-	FETCH_BUSINESS_FAILURE: "STORES/APP/FETCH_BUSINESS_FAILURE",
-
 	// message modal
 	SHOW_MESSAGE_MODAL: "STORES/APP/SHOW_MESSAGE_MODAL",
 	HIDE_MESSAGE_MODAL: "STORES/APP/HIDE_MESSAGE_MODAL",
@@ -67,27 +62,6 @@ export const actions = {
 			endpoint: Url.apiGql('OnlineStoreInfo'),
 		}
 	}),
-
-	// fetchBusiness: () => async (dispatch) => {
-	// 	try {
-	// 		const { ok, data } = await api({
-	// 			...Url.API_URLS.GET_CAHSBACK_BUSINESS,
-	// 			params: {
-	// 				storeId: config.storeId,
-	// 			}
-	// 		});
-
-	// 		if (ok) {
-	// 			dispatch({
-	// 				type: types.FETCH_BUSINESS_SUCCESS,
-	// 				business: data,
-	// 			});
-	// 		}
-	// 	} catch (e) {
-	// 		// TODO: handle error
-	// 		console.error(e);
-	// 	}
-	// }
 };
 
 const error = (state = initialState.error, action) => {

@@ -1,38 +1,37 @@
 import React, { Component } from 'react';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
-
-// import Constants from '../../../utils/constants';
+import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { actions as homeActions, getBusinessInfo, getStoreHashCode, showStores } from '../../redux/modules/home';
+import { actions as homeActions, getStoreHashCode, getAllStores, showStores } from '../../redux/modules/home';
 
 class App extends Component {
   state = {}
 
-  async componentWillMount() {
+  componentWillMount() {
     const { homeActions } = this.props;
 
-    // await homeActions.loadCoreBusiness();
-    await homeActions.loadCoreStores();
+    homeActions.loadCoreStores();
   }
 
   componentDidMount() {
-    this.redirectPage(this.props.businessInfo);
+    this.redirectPage(this.props.stores);
   }
 
-  componentDidUpdate(nextProps) {
-    this.redirectPage(nextProps.businessInfo);
+  componentWillReceiveProps(nextProps) {
+    this.redirectPage(nextProps.stores);
   }
 
-  redirectPage(businessInfo) {
-    const { stores } = businessInfo || {};
+  redirectPage(stores) {
+    const { stores: oldStores } = this.props;
+    const valid = oldStores !== stores || (oldStores && oldStores.length && oldStores[0].id !== stores[0].id);
 
     // auto redirect when there only one store in the list
-    if (stores && stores.length === 1) {
-      // this.handleSelectStore(stores[0].id);
+    if (valid && stores && stores.length === 1) {
+      this.handleSelectStore(stores[0].id);
 
       return;
     }
@@ -46,23 +45,26 @@ class App extends Component {
     const { hashCode } = this.props;
 
     if (hashCode) {
-      // window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
     }
   }
 
   render() {
     const {
       show,
-      businessInfo,
+      stores,
       onlineStoreInfo,
     } = this.props;
     const {
       logo,
       storeName
     } = onlineStoreInfo || {};
-    const { stores } = businessInfo || {};
 
     if (!show) {
+      return null;
+    }
+
+    if (stores && stores.length === 1) {
       return null;
     }
 
@@ -100,12 +102,11 @@ export default connect(
   state => ({
     show: showStores(state),
     hashCode: getStoreHashCode(state),
-    businessInfo: getBusinessInfo(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
+    stores: getAllStores(state),
     error: getError(state),
   }),
   dispatch => ({
-    show: false,
     homeActions: bindActionCreators(homeActions, dispatch),
   }),
 )(App);
