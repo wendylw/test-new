@@ -21,13 +21,13 @@ const dataSource = [
     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
     logo: '/img/payment-banking.png',
     label: 'Online Banking',
-    pathname: ROUTER_PATHS.ONLINE_BANKING_PAYMENT,
+    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: '/img/payment-credit.png',
     label: 'Visa / MasterCard',
-    pathname: ROUTER_PATHS.CREDIT_CARD_PAYMENT,
+    pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
   {
     name: PAYMENT_METHODS.BOOST_PAY,
