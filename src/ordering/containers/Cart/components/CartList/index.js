@@ -63,6 +63,7 @@ class CartList extends Component {
               quantity,
               image,
             } = cartItem;
+
             return (
               <ProductItem
                 key={id}
