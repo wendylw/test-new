@@ -6,6 +6,7 @@ import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
+import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -25,7 +26,17 @@ class Home extends Component {
   };
 
   componentWillMount() {
-    const { homeActions } = this.props;
+    const {
+      history,
+      homeActions,
+      requestInfo
+    } = this.props;
+    const { storeId } = requestInfo;
+    const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    if (!storeId && !h) {
+      window.location.href = '/';
+    }
 
     homeActions.loadProductList();
   }
