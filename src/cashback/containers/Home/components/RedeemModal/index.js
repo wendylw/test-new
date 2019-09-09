@@ -1,9 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import {
-	IconRedeemed,
-	IconClose
-} from '../../../../../components/Icons';
+import { IconRedeemed } from '../../../../../components/Icons';
 import Header from '../../../../../components/Header';
 
 class RedeemModal extends React.Component {
@@ -22,8 +19,7 @@ class RedeemModal extends React.Component {
 		return (
 			<div className="full-aside">
 				<Header
-					className="border__bottom-divider gray has-right"
-					title="Redeem info"
+					isPage={true}
 					navFunc={onClose}
 				/>
 

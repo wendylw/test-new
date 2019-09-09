@@ -6,6 +6,7 @@ import {
 	IconSms,
 	IconClose,
 } from './Icons';
+import Header from './Header';
 import Constants from '../utils/constants';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
@@ -15,14 +16,7 @@ class OtpModal extends React.Component {
 
 		return (
 			<div className="full-aside">
-				<header className="header border__bottom-divider flex flex-middle flex-space-between">
-					<figure
-						className="header__image-container text-middle"
-						onClick={onClose}
-					>
-						<IconClose />
-					</figure>
-				</header>
+				<Header navFunc={onClose} />
 
 				<section className="full-aside__content text-center">
 					<figure className="full-aside__image-container">

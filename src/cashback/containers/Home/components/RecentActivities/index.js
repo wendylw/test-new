@@ -4,8 +4,8 @@ import {
 	IconPending,
 	IconChecked,
 	IconEarned,
-	IconClose,
 } from '../../../../../components/Icons';
+import Header from '../../../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -116,18 +116,9 @@ class RecentActivities extends React.Component {
 			<div className={`asdie-section ${this.state.fullScreen ? 'full' : ''}`}>
 				<aside className="aside-bottom">
 					{
-						!this.state.fullScreen ? (
-							<i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
-						) : (
-								<header className="header border__bottom-divider flex flex-middle flex-space-between">
-									<figure
-										className="header__image-container text-middle"
-										onClick={this.toggleFullScreen.bind(this)}
-									>
-										<IconClose />
-									</figure>
-								</header>
-							)
+						!this.state.fullScreen
+							? <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
+							: <Header navFunc={this.toggleFullScreen.bind(this)} />
 					}
 					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activity</h3>
 					{this.renderLogList()}
