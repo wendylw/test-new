@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
-import { IconClose } from '../../../components/Icons';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 
@@ -133,12 +133,12 @@ class Payment extends Component {
 
     return (
       <section className={className.join(' ')}>
-        <header className="header border__botton-divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle" onClick={this.handleClickBack}>
-            <IconClose />
-          </figure>
-          <h2 className="header__title font-weight-bold text-middle">Select Payment</h2>
-        </header>
+        <Header
+          className="border__botton-divider gray has-right"
+          isPage={true}
+          title="Select Payment"
+          navFunc={this.handleClickBac}
+        />
 
         <div>
           <ul className="payment__list">

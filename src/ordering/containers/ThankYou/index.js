@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PhoneViewContainer from './components/PhoneViewContainer';
-import { IconClose } from '../../../components/Icons';
+import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -91,14 +91,15 @@ class ThankYou extends Component {
 
     return (
       <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
-        <header className="header border__bottom-divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle" onClick={() => history.replace({
+        <Header
+          className="border__botton-divider gray has-right"
+          isPage={true}
+          title="Order Paid"
+          navFunc={() => history.replace({
             pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
             search: `?table=${order.tableId}&storeId=${order.storeId}`
-          })}>
-            <IconClose />
-          </figure>
-          <h2 className="header__title font-weight-bold text-middle">Order Paid</h2>
+          })}
+        >
           <span className="gray-font-opacity text-uppercase">
             {
               order.tableId
@@ -106,7 +107,7 @@ class ThankYou extends Component {
                 : 'Self pick-up'
             }
           </span>
-        </header>
+        </Header>
         <div className="thanks text-center">
           <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>

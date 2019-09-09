@@ -17,7 +17,7 @@ class Header extends Component {
 			navFunc,
 		} = this.props;
 
-		if (isStoreHome && logo) {
+		if (isStoreHome) {
 			return (
 				<Image
 					className="header__image-container text-middle"

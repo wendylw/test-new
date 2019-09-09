@@ -4,6 +4,7 @@ import {
 	IconRedeemed,
 	IconClose
 } from '../../../../../components/Icons';
+import Header from '../../../../../components/Header';
 
 class RedeemModal extends React.Component {
 	render() {
@@ -20,15 +21,11 @@ class RedeemModal extends React.Component {
 
 		return (
 			<div className="full-aside">
-				<header className="header border__bottom-divider flex flex-middle flex-space-between">
-					<figure
-						className="header__image-container text-middle"
-						onClick={onClose}
-					>
-						<IconClose />
-					</figure>
-					<h2 className="header__title font-weight-bold text-middle text-center text-uppercase">Redeem info</h2>
-				</header>
+				<Header
+					className="border__bottom-divider gray has-right"
+					title="Redeem info"
+					navFunc={onClose}
+				/>
 
 				<section className="full-aside__content text-center">
 					<figure className="full-aside__image-container">

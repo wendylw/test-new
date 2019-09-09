@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import Item from '../../components/Item';
 import Billing from '../../components/Billing';
-import { IconClose } from '../../../components/Icons';
+import Header from '../../../components/Header';
 import ItemOperator from '../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
@@ -80,11 +80,11 @@ export class ReceiptDetail extends Component {
 
     return (
       <section className="table-ordering__receipt">
-        <header className="header border__bottom-divider flex flex-middle flex-space-between">
-          <figure className="header__image-container text-middle" onClick={this.backToThankYou.bind(this)}>
-            <IconClose />
-          </figure>
-          <h2 className="header__title font-weight-bold text-middle">View Receipt</h2>
+        <Header
+          className="border__botton-divider gray has-right"
+          title="View Receipt"
+          navFunc={this.backToThankYou.bind(this)}
+        >
           <span className="gray-font-opacity text-uppercase">
             {
               tableId
@@ -92,7 +92,7 @@ export class ReceiptDetail extends Component {
                 : 'Self pick-up'
             }
           </span>
-        </header>
+        </Header>
         <div className="receipt__content text-center">
           <label className="receipt__label gray-font-opacity font-weight-bold text-uppercase">Receipt Number</label>
           <span className="receipt__id-number">{orderId}</span>
