@@ -137,7 +137,7 @@ class Payment extends Component {
           className="border__botton-divider gray has-right"
           isPage={true}
           title="Select Payment"
-          navFunc={this.handleClickBac}
+          navFunc={this.handleClickBack}
         />
 
         <div>
