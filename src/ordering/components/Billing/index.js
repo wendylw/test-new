@@ -13,7 +13,8 @@ export class Billing extends Component {
 			serviceChargeRate = 0,
 		} = businessInfo;
 
-		if (!enableServiceCharge) {
+		// TODO: revert service charge after released BEEP-163
+		if (!enableServiceCharge || !serviceCharge) {
 			return null;
 		}
 

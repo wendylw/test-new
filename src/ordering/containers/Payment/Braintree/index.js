@@ -103,9 +103,12 @@ class Braintree extends Component {
       business,
     } = this.props;
     const {
-      cardHolderName,
+      card,
       nonce,
     } = this.state;
+    const {
+      cardHolderName
+    } = card || {};
     const h = config.h();
     const queryString = `?h=${encodeURIComponent(h)}`;
 
