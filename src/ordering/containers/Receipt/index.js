@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
+import qs from 'qs';
 import React, { Component } from 'react';
 import Item from '../../components/Item';
 import Billing from '../../components/Billing';
@@ -13,6 +14,16 @@ import { bindActionCreators } from 'redux';
 import { actions as thankYouActions, getOrder, getBusinessInfo } from '../../redux/modules/thankYou';
 
 export class ReceiptDetail extends Component {
+  componentWillMount() {
+    const {
+      history,
+      thankYouActions,
+    } = this.props;
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    thankYouActions.loadOrder(receiptNumber);
+  }
+
   backToThankYou() {
     const { history, order } = this.props;
     const h = config.h();
@@ -82,7 +93,7 @@ export class ReceiptDetail extends Component {
     return (
       <section className="table-ordering__receipt">
         <Header
-          className="border__botton-divider gray has-right"
+          className="border__bottom-divider gray"
           title="View Receipt"
           navFunc={this.backToThankYou.bind(this)}
         >

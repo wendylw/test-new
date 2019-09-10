@@ -92,7 +92,7 @@ class ThankYou extends Component {
     return (
       <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__botton-divider gray has-right"
+          className="border__bottom-divider gray"
           isPage={true}
           title="Order Paid"
           navFunc={() => history.replace({

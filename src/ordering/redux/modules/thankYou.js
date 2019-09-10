@@ -38,7 +38,7 @@ export const types = {
 }
 
 export const actions = {
-  loadOrder: (orderId) => (dispatch, getState) => {
+  loadOrder: (orderId) => (dispatch) => {
     return dispatch(fetchOrder({ orderId }));
   },
 

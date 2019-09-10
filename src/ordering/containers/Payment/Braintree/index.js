@@ -523,7 +523,7 @@ class Braintree extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__botton-divider gray has-right"
+          className="border__bottom-divider gray has-right"
           isPage={true}
           title="Pay via Card"
           navFunc={() => {

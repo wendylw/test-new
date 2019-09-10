@@ -134,7 +134,7 @@ class Payment extends Component {
     return (
       <section className={className.join(' ')}>
         <Header
-          className="border__botton-divider gray has-right"
+          className="border__bottom-divider gray has-right"
           isPage={true}
           title="Select Payment"
           navFunc={this.handleClickBack}
@@ -146,7 +146,7 @@ class Payment extends Component {
               dataSource.map(payment => (
                 <li
                   key={payment.name}
-                  className="payment__item border__botton-divider flex flex-middle flex-space-between"
+                  className="payment__item border__bottom-divider flex flex-middle flex-space-between"
                   onClick={() => this.setCurrentPayment(payment.name)}
                 >
                   <figure className="payment__image-container">

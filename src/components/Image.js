@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import config from '../config';
-import placeholder from '../images/product-placeholder.jpg';
 
 /* CONSTANTS variable */
 // --BEGIN-- different from marketplace
+const placeholder = '/img/product-placeholder.jpg';
 const {
   imageS3Domain,
   imageCompressionDomain,
