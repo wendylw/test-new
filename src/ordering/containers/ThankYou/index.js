@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import PhoneViewContainer from './components/PhoneViewContainer';
 import Header from '../../../components/Header';
+import PhoneViewContainer from './components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';

@@ -93,7 +93,7 @@ class RecentActivities extends React.Component {
 										}
 									</h4>
 									<time className="activity__time">
-										{eventDateTime.toLocaleDateString(LANGUAGES(country || 'MY'), DATE_OPTIONS)}
+										{eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
 									</time>
 								</summary>
 							</li>

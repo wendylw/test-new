@@ -30,14 +30,15 @@ class PhoneViewContainer extends React.Component {
   async componentWillMount() {
     const {
       history,
-      cashbackInfo,
       thankYouActions,
     } = this.props;
-    const { status } = cashbackInfo || {};
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let showCelebration = true;
 
     await thankYouActions.getCashbackInfo(receiptNumber);
+
+    const { cashbackInfo } = this.props;
+    const { status } = cashbackInfo || {};
 
     if (status && status !== ORDER_CAN_CLAIM) {
       showCelebration = false;
