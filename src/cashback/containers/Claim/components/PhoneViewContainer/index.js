@@ -25,7 +25,7 @@ class PhoneViewContainer extends React.Component {
 		return {
 			phone,
 			receiptNumber,
-			source: Constants.CASHBACK_SOURCE.QR_ORDERING
+			source: Constants.CASHBACK_SOURCE.RECEIPT
 		};
 	}
 
