@@ -88,7 +88,7 @@ const OTP_CODE_SIZE = 5;
 
 const REQUEST_ERROR_KEYS = {
   403: 'No permission',
-  200: 'Token expired',
+  404: 'Bad Request',
   401: 'Token expired',
 };
 

@@ -24,8 +24,7 @@ function get(url) {
       return handleResponse(url, response);
     })
     .catch(error => {
-      console.error(`Request failed. Url = ${url}. Message = ${error}`);
-      return Promise.reject({ error: { message: 'Request failed.' } });
+      return Promise.reject(error);
     });
 }
 
@@ -53,4 +52,4 @@ function handleResponse(url, response) {
   }
 }
 
-export { get, post };
+export { get, post, RequestError };
