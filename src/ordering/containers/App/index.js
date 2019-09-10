@@ -1,22 +1,87 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getError, getMessageModal } from '../../redux/modules/app';
+import {
+  actions as appActions,
+  getOnlineStoreInfo,
+  getError,
+  getUser,
+  getMessageModal
+} from '../../redux/modules/app';
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
 
 class App extends Component {
+  state = {
+    accessToken: null,
+    refreshToken: null,
+  };
+
+  componentWillMount() {
+    const { appActions } = this.props;
+
+    this.getTokens();
+    this.postExpiredMessage();
+
+    appActions.getLoginStatus();
+  }
+
+  async componentDidMount() {
+    const { appActions } = this.props;
+
+    await appActions.fetchOnlineStoreInfo();
+
+    this.postExpiredMessage();
+  }
+
+  getTokens() {
+    document.addEventListener('acceptTokens', (response) => {
+      const { data } = response || {};
+
+      if (data) {
+        const tokenList = data.split(',');
+
+        this.setState({
+          accessToken: tokenList[0],
+          refreshToken: tokenList[1],
+        });
+      }
+    }, false);
+  }
+
+  postExpiredMessage() {
+    const {
+      error,
+      user,
+    } = this.props;
+    const { isWebview } = user;
+    const { isExpired } = error;
+
+    if (isWebview && isExpired) {
+      window.ReactNativeWebView.postMessage('tokenExpired');
+    }
+  }
+
+  handleClearError = () => {
+    this.props.appActions.clearError();
+  }
+
+  handleCloseMessageModal = () => {
+    this.props.appActions.hideMessageModal();
+  }
+
   render() {
     const { error, messageModal } = this.props;
+    const { message } = error || {};
 
     return (
       <main className="table-ordering">
         <Routes />
         {
-          error
-            ? <ErrorToast message={error} clearError={this.handleClearError} />
+          message
+            ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
         {
@@ -32,24 +97,12 @@ class App extends Component {
       </main>
     );
   }
-
-  componentDidMount() {
-    const { fetchOnlineStoreInfo } = this.props.appActions;
-    fetchOnlineStoreInfo();
-  }
-
-  handleClearError = () => {
-    this.props.appActions.clearError();
-  }
-
-  handleCloseMessageModal = () => {
-    this.props.appActions.hideMessageModal();
-  }
 }
 
 export default connect(
   state => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
+    user: getUser(state),
     error: getError(state),
     messageModal: getMessageModal(state),
   }),

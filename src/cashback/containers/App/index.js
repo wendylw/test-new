@@ -9,13 +9,14 @@ import ErrorToast from '../../../components/ErrorToast';
 class App extends Component {
   render() {
     const { error } = this.props;
+    const { message } = error || {};
 
     return (
       <main className="loyalty">
         <Routes />
         {
-          error
-            ? <ErrorToast message={error} clearError={this.handleClearError} />
+          message
+            ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
       </main>

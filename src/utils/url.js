@@ -31,6 +31,14 @@ const API_URLS = {
     url: `/api/ordering/stores/${storeId}?a=redirectTo`,
     method: 'get',
   }),
+  GET_LOGIN_STATUS: {
+    url: '/api/ping',
+    method: 'get',
+  },
+  POST_LOGIN: {
+    url: '/api/login',
+    method: 'post',
+  },
 };
 
 export default {
