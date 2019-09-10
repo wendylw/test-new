@@ -86,7 +86,7 @@ class PhoneViewContainer extends React.Component {
     const { customerId } = cashbackInfo || {};
 
     if (customerId) {
-      redirectURL = `${Constants.ROUTER_PATHS.ORDERING_HOME}?customerId=${customerId}`;
+      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
     }
 
     this.setState({
