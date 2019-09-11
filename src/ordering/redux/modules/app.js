@@ -3,6 +3,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 
 import api from '../../../utils/api';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
@@ -42,10 +43,14 @@ export const types = {
   HIDE_MESSAGE_MODAL: 'ORDERING/APP/HIDE_MESSAGE_MODAL',
 
   // fetch login status
+  FETCH_LOGIN_STATUS_REQUEST: 'ORDERING/APP/FETCH_LOGIN_STATUS_REQUEST',
   FETCH_LOGIN_STATUS_SUCCESS: 'ORDERING/APP/FETCH_LOGIN_STATUS_SUCCESS',
+  FETCH_LOGIN_STATUS_FAILURE: 'ORDERING/APP/FETCH_LOGIN_STATUS_FAILURE',
 
   // login
+  CREATE_LOGIN_REQUEST: 'ORDERING/APP/CREATE_LOGIN_REQUEST',
   CREATE_LOGIN_SUCCESS: 'ORDERING/APP/CREATE_LOGIN_SUCCESS',
+  CREATE_LOGIN_FAILURE: 'ORDERING/APP/CREATE_LOGIN_FAILURE',
 };
 
 //action creators
@@ -71,21 +76,16 @@ export const actions = {
       console.error(e);
     }
   },
-  getLoginStatus: () => async (dispatch) => {
-    try {
-      const { login } = await api(Url.API_URLS.GET_LOGIN_STATUS);
-
-      if (!login) {
-        dispatch({
-          type: types.FETCH_LOGIN_STATUS_SUCCESS,
-          isLogin: login,
-        });
-      }
-    } catch (e) {
-      // TODO: handle error
-      console.error(e);
+  getLoginStatus: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_LOGIN_STATUS_REQUEST,
+        types.FETCH_LOGIN_STATUS_SUCCESS,
+        types.FETCH_LOGIN_STATUS_FAILURE,
+      ],
+      ...Url.API_URLS.GET_LOGIN_STATUS
     }
-  },
+  }),
   clearError: () => ({
     type: types.CLEAR_ERROR
   }),
@@ -110,9 +110,12 @@ export const actions = {
 };
 
 const user = (state = initialState.user, action) => {
-  const { type, isLogin } = action;
+  const { type, response } = action;
+  const { isLogin } = response || {};
 
   switch (type) {
+    case types.FETCH_LOGIN_STATUS_REQUEST:
+      return { ...state, isFetching: true };
     case types.CREATE_LOGIN_SUCCESS:
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
@@ -121,7 +124,10 @@ const user = (state = initialState.user, action) => {
           ...user,
           isLogin,
         },
+        isFetching: false,
       };
+    case types.FETCH_LOGIN_STATUS_FAILURE:
+      return { ...state, isFetching: false };
     default:
       return state;
   }
@@ -130,16 +136,16 @@ const user = (state = initialState.user, action) => {
 const error = (state = initialState.error, action) => {
   const {
     type,
-    errorCode,
+    code,
     message,
   } = action;
 
-  if (type === types.CLEAR_ERROR || errorCode === 200) {
+  if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (errorCode === 401) {
+  } else if (code === 401) {
     return { ...state, isExpired: true };
-  } else if (errorCode && errorCode !== 401) {
-    return { ...state, errorCode, message };
+  } else if (code && code !== 401) {
+    return { ...state, code, message };
   }
 
   return state;

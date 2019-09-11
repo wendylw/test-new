@@ -10,7 +10,11 @@ export default store => next => action => {
     return next(action);
   }
 
-  const { endpoint, types, variables } = callAPI;
+  const {
+    endpoint,
+    types,
+    variables,
+  } = callAPI;
 
   if (typeof endpoint !== 'string') {
     throw new Error('endpoint is required as string');
@@ -23,9 +27,10 @@ export default store => next => action => {
   }
 
   const actionWith = data => {
-    const finalAction = { ...action, ...data }
-    delete finalAction[FETCH_GRAPHQL]
-    return finalAction
+    const finalAction = { ...action, ...data };
+
+    delete finalAction[FETCH_GRAPHQL];
+    return finalAction;
   }
 
   const [requestType, successType, failureType] = types;
