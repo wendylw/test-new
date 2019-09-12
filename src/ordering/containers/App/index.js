@@ -14,10 +14,7 @@ import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
 
 class App extends Component {
-  state = {
-    accessToken: null,
-    refreshToken: null,
-  };
+  state = {};
 
   componentWillMount() {
     const { appActions } = this.props;
@@ -37,13 +34,15 @@ class App extends Component {
   }
 
   getTokens() {
+    const { appActions } = this.props;
+
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
 
       if (data) {
         const tokenList = data.split(',');
 
-        this.setState({
+        appActions.loginApp({
           accessToken: tokenList[0],
           refreshToken: tokenList[1],
         });

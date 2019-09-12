@@ -55,27 +55,20 @@ export const types = {
 
 //action creators
 export const actions = {
-  loginApp: (accessToken, refreshToken) => async (dispatch) => {
-    try {
-      const { data } = await api({
-        ...Url.API_URLS.POST_LOGIN,
-        data: {
-          accessToken,
-          refreshToken,
-        },
-      });
-
-      if (data) {
-        dispatch({
-          type: types.CREATE_LOGIN_SUCCESS,
-          isLogin: true,
-        });
-      }
-    } catch (e) {
-      // TODO: handle error
-      console.error(e);
+  loginApp: ({ accessToken, refreshToken }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.CREATE_LOGIN_REQUEST,
+        types.CREATE_LOGIN_SUCCESS,
+        types.CREATE_LOGIN_FAILURE,
+      ],
+      ...Url.API_URLS.POST_LOGIN,
+      data: {
+        accessToken,
+        refreshToken,
+      },
     }
-  },
+  }),
   getLoginStatus: () => ({
     [API_REQUEST]: {
       types: [
@@ -111,7 +104,7 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response } = action;
-  const { isLogin } = response || {};
+  const { login } = response || {};
 
   switch (type) {
     case types.FETCH_LOGIN_STATUS_REQUEST:
@@ -122,7 +115,7 @@ const user = (state = initialState.user, action) => {
         ...state,
         user: {
           ...user,
-          isLogin,
+          isLogin: login,
         },
         isFetching: false,
       };
