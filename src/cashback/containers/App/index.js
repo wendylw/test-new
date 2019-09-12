@@ -40,6 +40,9 @@ class App extends Component {
       if (data) {
         const tokenList = data.split(',');
 
+        alert('accessToken ====>' + tokenList[0]);
+        alert('refreshToken ====>' + tokenList[1]);
+
         appActions.loginApp({
           accessToken: tokenList[0],
           refreshToken: tokenList[1],
@@ -55,9 +58,6 @@ class App extends Component {
     } = this.props;
     const { isWebview } = user;
     const { isExpired } = error;
-
-    alert('isWebview===>' + isWebview);
-    alert('isExpired===>' + isExpired);
 
     if (isWebview && isExpired) {
       window.ReactNativeWebView.postMessage('tokenExpired');
