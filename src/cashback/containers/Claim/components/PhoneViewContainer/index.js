@@ -34,7 +34,9 @@ class PhoneViewContainer extends React.Component {
 			history,
 			claimActions,
 		} = this.props;
+		const { phone } = this.state;
 
+		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
 		const { cashbackInfo } = this.props;

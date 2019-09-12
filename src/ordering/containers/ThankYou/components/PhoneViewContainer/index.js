@@ -79,8 +79,10 @@ class PhoneViewContainer extends React.Component {
 
   async handleCreateCustomerCashbackInfo() {
     const { thankYouActions } = this.props;
+    const { phone } = this.state;
     let redirectURL = null;
 
+    Utils.setLocalStorageVariable('user.p', phone);
     await thankYouActions.createCashbackInfo(this.getOrderInfo());
 
     const { cashbackInfo } = this.props;

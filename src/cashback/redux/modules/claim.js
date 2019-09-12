@@ -1,12 +1,10 @@
 import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import api from '../../../utils/api';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
-
 
 const initialState = {
 	cashbackInfo: null,
@@ -31,82 +29,64 @@ export const types = {
 }
 
 export const actions = {
-	getCashbackInfo: (receiptNumber) => async (dispatch) => {
-		try {
-			const { ok, data } = await api({
-				...Url.API_URLS.GET_CASHBACK,
-				params: {
-					receiptNumber,
-					source: Constants.CASHBACK_SOURCE.RECEIPT,
-				}
-			});
-
-			if (ok) {
-				dispatch({
-					type: types.FETCH_CASHBACKINFO_SUCCESS,
-					cashbackInfo: data,
-				});
-			}
-		} catch (e) {
-			// TODO: handle error
-			console.error(e);
+	getCashbackInfo: (receiptNumber) => ({
+		[API_REQUEST]: {
+			types: [
+				types.FETCH_CASHBACKINFO_REQUEST,
+				types.FETCH_CASHBACKINFO_SUCCESS,
+				types.FETCH_CASHBACKINFO_FAILURE,
+			],
+			...Url.API_URLS.GET_CASHBACK,
+			params: {
+				receiptNumber,
+				source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+			},
 		}
-	},
+	}),
 
-	createCashbackInfo: (payload) => async (dispatch) => {
-		const { phone } = payload;
-
-		Utils.setLocalStorageVariable('user.p', phone);
-
-		try {
-			const response = await api({
-				...Url.API_URLS.POST_CASHBACK,
-				data: payload,
-			});
-			const { ok, data } = response;
-
-			if (ok) {
-				Utils.setLocalStorageVariable('cashback.status', data.status);
-
-				dispatch({
-					type: types.CREATE_CASHBACKINFO_SUCCESS,
-					cashbackInfo: data,
-				});
+	createCashbackInfo: ({ receiptNumber, phone, source }) => ({
+		[API_REQUEST]: {
+			types: [
+				types.CREATE_CASHBACKINFO_REQUEST,
+				types.CREATE_CASHBACKINFO_SUCCESS,
+				types.CREATE_CASHBACKINFO_FAILURE,
+			],
+			...Url.API_URLS.POST_CASHBACK,
+			payload: {
+				receiptNumber,
+				phone,
+				source,
 			}
-		} catch (e) {
-			// TODO: handle error
-			console.error(e);
 		}
-	},
+	}),
 
-	getCashbackReceiptNumber: (hash) => async (dispatch) => {
-		try {
-			const { ok, data } = await api(Url.API_URLS.GET_CASHBACK_HASDATA(hash));
-
-			if (ok && data) {
-				dispatch({
-					type: types.FETCH_RECEIPTNUMBER_SUCCESS,
-					receiptNumber: data.receiptNumber,
-				});
-			}
-		} catch (e) {
-			// TODO: handle error
-			console.error(e);
+	getCashbackReceiptNumber: (hash) => ({
+		[API_REQUEST]: {
+			types: [
+				types.FETCH_RECEIPTNUMBER_REQUEST,
+				types.FETCH_RECEIPTNUMBER_SUCCESS,
+				types.FETCH_RECEIPTNUMBER_FAILURE,
+			],
+			...Url.API_URLS.GET_CASHBACK_HASDATA(hash)
 		}
-	},
+	}),
 };
 
 // reducer
 const reducer = (state = initialState, action) => {
+	const { response } = action;
+
 	switch (action.type) {
 		case types.FETCH_CASHBACKINFO_SUCCESS: {
-			return { ...state, cashbackInfo: action.cashbackInfo };
+			return { ...state, cashbackInfo: response };
 		}
 		case types.CREATE_CASHBACKINFO_SUCCESS: {
-			return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, action.cashbackInfo) }
+			return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, response) };
 		}
 		case types.FETCH_RECEIPTNUMBER_SUCCESS: {
-			return { ...state, receiptNumber: action.receiptNumber }
+			const { receiptNumber } = response || {};
+
+			return { ...state, receiptNumber: receiptNumber }
 		}
 		default:
 			return state;

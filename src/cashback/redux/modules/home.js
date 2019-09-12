@@ -1,11 +1,11 @@
 import Url from '../../../utils/url';
+import Utils from '../../../utils/utils';
 
-import api from '../../../utils/api';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 
 import { getLoyaltyHistoriesByCustomerId } from '../../../redux/modules/entities/loyaltyHistories';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
-import Utils from '../../../utils/utils';
 
 const initialState = {
 	customerId: null,
@@ -34,28 +34,19 @@ export const actions = {
 		customerId,
 	}),
 
-	getCashbackHistory: customerId => async (dispatch) => {
-		try {
-			const { ok, data } = await api({
-				...Url.API_URLS.GET_CASHBACK_HISTORIES,
-				params: {
-					customerId,
-				}
-			});
-
-			if (ok) {
-				dispatch({
-					type: types.GET_CASHBACK_HISTORIES_SUCCESS,
-					loyaltyHistories: {
-						customerId,
-						...data,
-					},
-				});
-			}
-		} catch (e) {
-			console.error(e);
+	getCashbackHistory: customerId => ({
+		[API_REQUEST]: {
+			types: [
+				types.GET_CASHBACK_HISTORIES_REQUEST,
+				types.GET_CASHBACK_HISTORIES_SUCCESS,
+				types.GET_CASHBACK_HISTORIES_FAILURE,
+			],
+			...Url.API_URLS.GET_CASHBACK_HISTORIES,
+			params: {
+				customerId,
+			},
 		}
-	},
+	}),
 
 	setCashbackMessage: () => (dispatch) => {
 		const status = Utils.getLocalStorageVariable('cashback.status');
@@ -81,8 +72,9 @@ const reducer = (state = initialState, action) => {
 			return { ...state, customerId: action.customerId };
 		}
 		case types.GET_CASHBACK_HISTORIES_SUCCESS: {
-			const { loyaltyHistories } = action;
-			const { totalCredits } = loyaltyHistories;
+			const { response } = action;
+			const { loyaltyHistories } = response || {};
+			const { totalCredits } = loyaltyHistories || {};
 
 			return {
 				...state,

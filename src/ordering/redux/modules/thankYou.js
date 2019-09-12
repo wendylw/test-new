@@ -1,8 +1,6 @@
 import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import api from '../../../utils/api';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -55,7 +53,7 @@ export const actions = {
         types.FETCH_CASHBACKINFO_SUCCESS,
         types.FETCH_CASHBACKINFO_FAILURE,
       ],
-      ...Url.API_URLS.GET_BRAINTREE_TOKEN,
+      ...Url.API_URLS.GET_CASHBACK,
       params: {
         receiptNumber,
         source: Constants.CASHBACK_SOURCE.QR_ORDERING,
@@ -63,29 +61,21 @@ export const actions = {
     }
   }),
 
-  createCashbackInfo: (payload) => async (dispatch) => {
-    const { phone } = payload;
-
-    Utils.setLocalStorageVariable('user.p', phone);
-
-    try {
-      const response = await api({
-        ...Url.API_URLS.POST_CASHBACK,
-        data: payload,
-      });
-      const { ok, data } = response;
-
-      if (ok) {
-        dispatch({
-          type: types.CREATE_CASHBACKINFO_SUCCESS,
-          cashbackInfo: data,
-        });
+  createCashbackInfo: ({ receiptNumber, phone, source }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.CREATE_CASHBACKINFO_REQUEST,
+        types.CREATE_CASHBACKINFO_SUCCESS,
+        types.CREATE_CASHBACKINFO_FAILURE,
+      ],
+      ...Url.API_URLS.POST_CASHBACK,
+      payload: {
+        receiptNumber,
+        phone,
+        source,
       }
-    } catch (e) {
-      // TODO: handle error
-      console.error(e);
     }
-  },
+  }),
 };
 
 const fetchOrder = variables => ({
@@ -127,7 +117,7 @@ const reducer = (state = initialState, action) => {
       return { ...state, cashbackInfo: response };
     }
     case types.CREATE_CASHBACKINFO_SUCCESS: {
-      return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, action.cashbackInfo) }
+      return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, response) };
     }
     default:
       return state;
