@@ -7,7 +7,13 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
-	error: null, // network error
+	user: {
+		isWebview: Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage),
+		isLogin: true,
+	},
+	error: {
+		isExpired: false,
+	}, // network error
 	messageModal: {
 		show: false,
 		message: '',
@@ -153,12 +159,18 @@ const user = (state = initialState.user, action) => {
 }
 
 const error = (state = initialState.error, action) => {
-	const { type, error } = action;
+	const {
+		type,
+		code,
+		message,
+	} = action;
 
-	if (type === types.CLEAR_ERROR) {
+	if (type === types.CLEAR_ERROR || code === 200) {
 		return null;
-	} else if (error) {
-		return error;
+	} else if (code === 401) {
+		return { ...state, isExpired: true };
+	} else if (code && code !== 401) {
+		return { ...state, code, message };
 	}
 
 	return state;
