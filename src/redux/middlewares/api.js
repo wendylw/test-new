@@ -41,53 +41,32 @@ export default store => next => action => {
 
 	next(actionWith({ type: requestType }));
 
-	if (method === 'get') {
-		return get(requestUrl).then(
-			response => {
-				const { error } = response;
+	const methodMapToRequest = {
+		get: (url) => get(url),
+		post: (url, data) => post(url, data),
+	};
 
-				// handle error filed when 200 status
-				if (error) {
-					return next(actionWith({
-						type: failureType,
-						...error,
-					}));
-				}
+	return methodMapToRequest[method](requestUrl, data).then(
+		response => {
+			const { error } = response;
 
+			// handle error filed when 200 status
+			if (error) {
 				return next(actionWith({
-					type: successType,
-					response
+					type: failureType,
+					...error,
 				}));
-			},
-		).catch(error => {
-			return next(actionWith({
-				type: failureType,
-				...error,
-			}));
-		});
-	} else if (method === 'post') {
-		return post(requestUrl, data).then(
-			response => {
-				const { error } = response;
+			}
 
-				// handle error filed when 200 status
-				if (error) {
-					return next(actionWith({
-						type: failureType,
-						...error,
-					}));
-				}
-
-				return next(actionWith({
-					type: successType,
-					response
-				}));
-			},
-		).catch(error => {
 			return next(actionWith({
-				type: failureType,
-				...error,
+				type: successType,
+				response
 			}));
-		});
-	}
+		},
+	).catch(error => {
+		return next(actionWith({
+			type: failureType,
+			...error,
+		}));
+	});
 }
