@@ -16,19 +16,19 @@ class App extends Component {
     const { appActions } = this.props;
 
     this.getTokens();
-    this.postExpiredMessage();
-
     appActions.getLoginStatus();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const {
       fetchOnlineStoreInfo,
       fetchBusiness,
     } = this.props.appActions;
 
-    fetchOnlineStoreInfo();
-    fetchBusiness();
+    await fetchOnlineStoreInfo();
+    await fetchBusiness();
+
+    this.postExpiredMessage();
   }
 
   getTokens() {
@@ -55,6 +55,9 @@ class App extends Component {
     } = this.props;
     const { isWebview } = user;
     const { isExpired } = error;
+
+    alert('isWebview===>' + isWebview);
+    alert('isExpired===>' + isExpired);
 
     if (isWebview && isExpired) {
       window.ReactNativeWebView.postMessage('tokenExpired');

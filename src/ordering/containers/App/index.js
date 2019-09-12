@@ -24,7 +24,6 @@ class App extends Component {
     const { appActions } = this.props;
 
     this.getTokens();
-    this.postExpiredMessage();
 
     appActions.getLoginStatus();
   }
@@ -34,7 +33,7 @@ class App extends Component {
 
     await appActions.fetchOnlineStoreInfo();
 
-    this.postExpiredMessage();
+    this.postAppMessage();
   }
 
   getTokens() {
@@ -54,7 +53,7 @@ class App extends Component {
     }, false);
   }
 
-  postExpiredMessage() {
+  postAppMessage() {
     const {
       error,
       user,
