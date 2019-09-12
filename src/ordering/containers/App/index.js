@@ -13,7 +13,7 @@ import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
 
-import Login from '../../components/Login';
+// import Login from '../../components/Login';
 
 // import OtpModal from '../../../components/OtpModal';
 
@@ -76,7 +76,10 @@ class App extends Component {
   }
 
   render() {
-    const { error, messageModal } = this.props;
+    const {
+      error,
+      messageModal
+    } = this.props;
     const { message } = error || {};
 
     return (
@@ -97,7 +100,7 @@ class App extends Component {
             )
             : null
         }
-        <Login />
+        {/* <Login /> */}
       </main>
     );
   }

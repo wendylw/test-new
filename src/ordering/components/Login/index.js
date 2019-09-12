@@ -41,7 +41,7 @@ class Login extends React.Component {
 						isLoading={isSavingPhone}
 						buttonText="Continue"
 					/>
-					<button className="text-uppercase">Skip</button>
+					<button className="link button__block button__block-link font-weight-bold text-uppercase text-center">Skip</button>
 				</aside>
 			</div>
 		);

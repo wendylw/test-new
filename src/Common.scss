@@ -252,6 +252,10 @@ form {
     background-color: transparent;
   }
 
+  &__block-link {
+    height: 14vw;
+  }
+
   &__disabled {
     pointer-events: none;
     color: $white;

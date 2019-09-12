@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from './modules';
+import api from '../../redux/middlewares/api';
 import apiGql from '../../redux/middlewares/apiGql';
 
 let store;
@@ -15,7 +16,7 @@ if (
 		composeEnhancers(applyMiddleware(thunk, apiGql))
 	);
 } else {
-	store = createStore(rootReducer, applyMiddleware(thunk, apiGql));
+	store = createStore(rootReducer, applyMiddleware(thunk, apiGql, api));
 }
 
 export default store;

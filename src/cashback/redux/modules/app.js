@@ -3,6 +3,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import api from '../../../utils/api';
 
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
@@ -39,10 +40,44 @@ export const types = {
 	// message modal
 	SHOW_MESSAGE_MODAL: "LOYALTY/APP/SHOW_MESSAGE_MODAL",
 	HIDE_MESSAGE_MODAL: "LOYALTY/APP/HIDE_MESSAGE_MODAL",
+
+	// fetch login status
+	FETCH_LOGIN_STATUS_REQUEST: 'ORDERING/APP/FETCH_LOGIN_STATUS_REQUEST',
+	FETCH_LOGIN_STATUS_SUCCESS: 'ORDERING/APP/FETCH_LOGIN_STATUS_SUCCESS',
+	FETCH_LOGIN_STATUS_FAILURE: 'ORDERING/APP/FETCH_LOGIN_STATUS_FAILURE',
+
+	// login
+	CREATE_LOGIN_REQUEST: 'ORDERING/APP/CREATE_LOGIN_REQUEST',
+	CREATE_LOGIN_SUCCESS: 'ORDERING/APP/CREATE_LOGIN_SUCCESS',
+	CREATE_LOGIN_FAILURE: 'ORDERING/APP/CREATE_LOGIN_FAILURE',
 };
 
 //action creators
 export const actions = {
+	loginApp: ({ accessToken, refreshToken }) => ({
+		[API_REQUEST]: {
+			types: [
+				types.CREATE_LOGIN_REQUEST,
+				types.CREATE_LOGIN_SUCCESS,
+				types.CREATE_LOGIN_FAILURE,
+			],
+			...Url.API_URLS.POST_LOGIN,
+			data: {
+				accessToken,
+				refreshToken,
+			},
+		}
+	}),
+	getLoginStatus: () => ({
+		[API_REQUEST]: {
+			types: [
+				types.FETCH_LOGIN_STATUS_REQUEST,
+				types.FETCH_LOGIN_STATUS_SUCCESS,
+				types.FETCH_LOGIN_STATUS_FAILURE,
+			],
+			...Url.API_URLS.GET_LOGIN_STATUS
+		}
+	}),
 	clearError: () => ({
 		type: types.CLEAR_ERROR
 	}),
@@ -89,6 +124,33 @@ export const actions = {
 		}
 	}
 };
+
+const user = (state = initialState.user, action) => {
+	const { type, response } = action;
+	const { login } = response || {};
+
+	switch (type) {
+		case types.FETCH_LOGIN_STATUS_REQUEST:
+			return { ...state, isFetching: true };
+		case types.CREATE_LOGIN_SUCCESS:
+			return {
+				...state,
+				isLogin: true,
+				isFetching: false,
+			};
+		case types.FETCH_LOGIN_STATUS_SUCCESS:
+			return {
+				...state,
+				isLogin: login,
+				isFetching: false,
+			};
+		case types.CREATE_LOGIN_FAILURE:
+		case types.FETCH_LOGIN_STATUS_FAILURE:
+			return { ...state, isFetching: false };
+		default:
+			return state;
+	}
+}
 
 const error = (state = initialState.error, action) => {
 	const { type, error } = action;
@@ -140,6 +202,7 @@ const messageModal = (state = initialState.messageModal, action) => {
 const requestInfo = (state = initialState.requestInfo, action) => state;
 
 export default combineReducers({
+	user,
 	error,
 	messageModal,
 	business,
