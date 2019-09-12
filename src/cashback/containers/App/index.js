@@ -31,7 +31,7 @@ class App extends Component {
     this.postExpiredMessage();
   }
 
-  getTokens() {
+  async getTokens() {
     const { appActions } = this.props;
 
     document.addEventListener('acceptTokens', (response) => {
@@ -40,13 +40,12 @@ class App extends Component {
       if (data) {
         const tokenList = data.split(',');
 
-        alert('accessToken ====>' + tokenList[0]);
-        alert('refreshToken ====>' + tokenList[1]);
-
-        appActions.loginApp({
+        await appActions.loginApp({
           accessToken: tokenList[0],
           refreshToken: tokenList[1],
         });
+
+        alert('loginStatus====>' + this.props.user.isLogin)
       }
     }, false);
   }
