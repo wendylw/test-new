@@ -15,7 +15,7 @@ export default store => next => action => {
 		method,
 		types,
 		params,
-		data
+		payload
 	} = callAPI;
 	const requestParamsStr = params ? '?' + Object.keys(params).map(key => `${key}=${params[key]}`).join('&') : '';
 	const requestUrl = `${url}${requestParamsStr}`;
@@ -43,10 +43,10 @@ export default store => next => action => {
 
 	const methodMapToRequest = {
 		get: (url) => get(url),
-		post: (url, data) => post(url, data),
+		post: (url, payload) => post(url, payload),
 	};
 
-	return methodMapToRequest[method](requestUrl, data).then(
+	return methodMapToRequest[method](requestUrl, payload).then(
 		response => {
 			const { error } = response;
 

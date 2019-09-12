@@ -34,18 +34,16 @@ class App extends Component {
   getTokens() {
     const { appActions } = this.props;
 
-    document.addEventListener('acceptTokens', async (response) => {
+    document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
 
       if (data) {
         const tokenList = data.split(',');
 
-        await appActions.loginApp({
+        appActions.loginApp({
           accessToken: tokenList[0],
           refreshToken: tokenList[1],
         });
-
-        alert('loginStatus====>' + this.props.user.isLogin)
       }
     }, false);
   }

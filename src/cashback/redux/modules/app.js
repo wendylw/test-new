@@ -68,7 +68,7 @@ export const actions = {
 				types.CREATE_LOGIN_FAILURE,
 			],
 			...Url.API_URLS.POST_LOGIN,
-			data: {
+			payload: {
 				accessToken,
 				refreshToken,
 			},
