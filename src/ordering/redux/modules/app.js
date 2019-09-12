@@ -2,7 +2,6 @@ import { combineReducers } from 'redux';
 import config from '../../../config';
 import Url from '../../../utils/url';
 
-import api from '../../../utils/api';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
@@ -110,15 +109,18 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_REQUEST:
       return { ...state, isFetching: true };
     case types.CREATE_LOGIN_SUCCESS:
+      return {
+        ...state,
+        isLogin: true,
+        isFetching: false,
+      };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
-        user: {
-          ...user,
-          isLogin: login,
-        },
+        isLogin: login,
         isFetching: false,
       };
+    case types.CREATE_LOGIN_FAILURE:
     case types.FETCH_LOGIN_STATUS_FAILURE:
       return { ...state, isFetching: false };
     default:
