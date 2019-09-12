@@ -31,10 +31,10 @@ class App extends Component {
     this.postExpiredMessage();
   }
 
-  async getTokens() {
+  getTokens() {
     const { appActions } = this.props;
 
-    document.addEventListener('acceptTokens', (response) => {
+    document.addEventListener('acceptTokens', async (response) => {
       const { data } = response || {};
 
       if (data) {
