@@ -3,7 +3,7 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import api from '../../../utils/api';
-
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
@@ -48,27 +48,20 @@ export const actions = {
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
 
-  getCashbackInfo: (receiptNumber) => async (dispatch) => {
-    try {
-      const { ok, data } = await api({
-        ...Url.API_URLS.GET_CASHBACK,
-        params: {
-          receiptNumber,
-          source: Constants.CASHBACK_SOURCE.QR_ORDERING,
-        }
-      });
-
-      if (ok) {
-        dispatch({
-          type: types.FETCH_CASHBACKINFO_SUCCESS,
-          cashbackInfo: data,
-        });
-      }
-    } catch (e) {
-      // TODO: handle error
-      console.error(e);
+  getCashbackInfo: (receiptNumber) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_CASHBACKINFO_REQUEST,
+        types.FETCH_CASHBACKINFO_SUCCESS,
+        types.FETCH_CASHBACKINFO_FAILURE,
+      ],
+      ...Url.API_URLS.GET_BRAINTREE_TOKEN,
+      params: {
+        receiptNumber,
+        source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+      },
     }
-  },
+  }),
 
   createCashbackInfo: (payload) => async (dispatch) => {
     const { phone } = payload;
@@ -121,14 +114,17 @@ const fetchCoreBusiness = variables => ({
 
 // reducer
 const reducer = (state = initialState, action) => {
+  const { responseGql, response } = action;
+  const { data } = responseGql || {};
+
   switch (action.type) {
     case types.FETCH_ORDER_SUCCESS: {
-      const { data } = action.responseGql;
+      const { order } = data || {};
 
-      return { ...state, orderId: data.order.orderId };
+      return { ...state, orderId: order.orderId };
     }
     case types.FETCH_CASHBACKINFO_SUCCESS: {
-      return { ...state, cashbackInfo: action.cashbackInfo };
+      return { ...state, cashbackInfo: response };
     }
     case types.CREATE_CASHBACKINFO_SUCCESS: {
       return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, action.cashbackInfo) }
