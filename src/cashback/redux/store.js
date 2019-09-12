@@ -13,7 +13,7 @@ if (
 	const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 	store = createStore(
 		rootReducer,
-		composeEnhancers(applyMiddleware(thunk, apiGql))
+		composeEnhancers(applyMiddleware(thunk, apiGql, api))
 	);
 } else {
 	store = createStore(rootReducer, applyMiddleware(thunk, apiGql, api));

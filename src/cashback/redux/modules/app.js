@@ -223,6 +223,7 @@ export default combineReducers({
 });
 
 // selectors
+export const getUser = state => state.app.user;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {

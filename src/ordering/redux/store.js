@@ -16,7 +16,7 @@ if (
     composeEnhancers(applyMiddleware(thunk, apiGql, api))
   );
 } else {
-  store = createStore(rootReducer, applyMiddleware(thunk, apiGql));
+  store = createStore(rootReducer, applyMiddleware(thunk, apiGql, api));
 }
 
 export default store;
