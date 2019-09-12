@@ -20,7 +20,7 @@ class OtpModal extends React.Component {
 
 				<section className="full-aside__content text-center">
 					<figure className="full-aside__image-container">
-						<IconSms />
+						<img src="/img/beep-otp.png" alt="otp" />
 					</figure>
 					<h2 className="full-aside__title">We’ve sent you a One Time Passcode (OTP) to {phone}. Enter it below to continue.</h2>
 					<div className="otp-input">
@@ -28,10 +28,15 @@ class OtpModal extends React.Component {
 							key={`otp-0`}
 							onChange={() => { }}
 							numInputs={Constants.OTP_CODE_SIZE}
-							inputStyle={{ width: '1.15em' }}
+							inputStyle={{
+								width: '16vw',
+								height: '16vw',
+								fontSize: '8vw',
+								color: '#303030',
+							}}
 						/>
 					</div>
-					<button className="otp-resend" >Resend OTP? ({ResendOtpTime})</button>
+					<button className="otp-resend text-uppercase" >Resend OTP? ({ResendOtpTime})</button>
 				</section>
 
 				<footer className="footer-operation opt">

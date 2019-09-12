@@ -1181,6 +1181,11 @@
     font-size: 1.4rem;
     line-height: $line-height-base;
   }
+
+  &.login {
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 200;
+  }
 }
 
 .logo-default {

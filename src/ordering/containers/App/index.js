@@ -13,6 +13,10 @@ import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
 
+import Login from '../../components/Login';
+
+// import OtpModal from '../../../components/OtpModal';
+
 class App extends Component {
   state = {};
 
@@ -93,6 +97,7 @@ class App extends Component {
             )
             : null
         }
+        <Login />
       </main>
     );
   }
