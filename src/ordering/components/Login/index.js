@@ -1,5 +1,7 @@
 import React from 'react';
+import OtpModal from '../../../components/OtpModal';
 import PhoneView from '../../../components/PhoneView';
+
 import Utils from '../../../utils/utils';
 
 import { connect } from 'react-redux';
@@ -43,6 +45,7 @@ class Login extends React.Component {
 					/>
 					<button className="link button__block button__block-link font-weight-bold text-uppercase text-center">Skip</button>
 				</aside>
+				<OtpModal />
 			</div>
 		);
 	}

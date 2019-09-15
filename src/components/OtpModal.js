@@ -2,17 +2,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import OtpInput from 'react-otp-input';
-import {
-	IconSms,
-	IconClose,
-} from './Icons';
 import Header from './Header';
 import Constants from '../utils/constants';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
+	countDown() {
+
+	}
+
 	render() {
-		const { onClose, phone, ResendOtpTime } = this.props;
+		const {
+			show,
+			phone,
+			ResendOtpTime,
+			onClose,
+		} = this.props;
+
+		if (!show) {
+			return null;
+		}
 
 		return (
 			<div className="full-aside">
@@ -36,7 +45,12 @@ class OtpModal extends React.Component {
 							}}
 						/>
 					</div>
-					<button className="otp-resend text-uppercase" >Resend OTP? ({ResendOtpTime})</button>
+					<button
+						className="otp-resend text-uppercase"
+						disabled={!!ResendOtpTime}
+					>
+						{`Resend OTP${ResendOtpTime ? `? (${ResendOtpTime})` : ''}`}
+					</button>
 				</section>
 
 				<footer className="footer-operation opt">
@@ -49,12 +63,14 @@ class OtpModal extends React.Component {
 
 
 OtpModal.propTypes = {
+	show: PropTypes.string,
 	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	onClose: PropTypes.func,
 };
 
 OtpModal.defaultProps = {
+	show: true,
 	phone: '',
 	ResendOtpTime: 0,
 	onClose: () => { },
