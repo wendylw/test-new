@@ -153,7 +153,12 @@ apiGql.GET_PRODUCT_DETAIL = gql`
 
 apiGql.GET_PRODUCTS = gql`
   query ProductList($page: Int!, $size: Int!, $business: String!) {
-    products(page: $page, size: $size, business: $business) {
+    products(
+      page: $page,
+      size: $size,
+      business: $business,
+      channels: [${Constants.CHANNEL_TYPE.BEEP}]
+    ) {
       total
       productlist {
         id
@@ -166,7 +171,10 @@ apiGql.GET_PRODUCTS = gql`
 
 apiGql.GET_ONLINE_CATEGORY = gql`
   query OnlineCategory($business: String!) {
-    onlineCategory(business: $business) {
+    onlineCategory(
+      business: $business,
+      channels: [${Constants.CHANNEL_TYPE.BEEP}]
+    ) {
       id
       name
       isEnabled
@@ -281,7 +289,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      platform: 2
     }) {
       shoppingCartItem {
         id
@@ -311,7 +319,8 @@ apiGql.CREATE_ORDER = gql`
       shoppingCartIds: $shoppingCartIds,
       additionalComments: $additionalComments,
       tableId: $tableId,
-      channel: 3
+      pax: $pax,
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     }) {
       orders {
         id
