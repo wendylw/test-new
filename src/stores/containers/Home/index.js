@@ -40,7 +40,7 @@ class App extends Component {
   async handleSelectStore(storeId) {
     const { homeActions } = this.props;
 
-    await homeActions.getStoreHashCode(storeId);
+    await homeActions.getStoreHashData(storeId);
 
     const { hashCode } = this.props;
 

@@ -8,21 +8,6 @@ import '../../../App.scss';
 const Home = lazy(() => import('../Home'));
 
 class App extends Component {
-  render() {
-    const { error } = this.props;
-
-    return (
-      <main className="store-list">
-        <Home />
-        {
-          error
-            ? <ErrorToast message={error} clearError={this.handleClearError} />
-            : null
-        }
-      </main>
-    );
-  }
-
   componentDidMount() {
     const {
       fetchOnlineStoreInfo,
@@ -39,6 +24,21 @@ class App extends Component {
 
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
+  }
+
+  render() {
+    const { error } = this.props;
+
+    return (
+      <main className="store-list">
+        <Home />
+        {
+          error
+            ? <ErrorToast message={error} clearError={this.handleClearError} />
+            : null
+        }
+      </main>
+    );
   }
 }
 
