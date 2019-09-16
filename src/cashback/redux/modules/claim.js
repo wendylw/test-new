@@ -67,7 +67,7 @@ export const actions = {
 				types.FETCH_RECEIPTNUMBER_SUCCESS,
 				types.FETCH_RECEIPTNUMBER_FAILURE,
 			],
-			...Url.API_URLS.GET_CASHBACK_HASDATA(hash)
+			...Url.API_URLS.GET_GET_CASHBACK_HASH_DATA(hash)
 		}
 	}),
 };

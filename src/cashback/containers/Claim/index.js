@@ -45,7 +45,7 @@ class PageClaim extends React.Component {
 		}
 
 		if (!isNaN(cashbackNumber) && cashbackNumber) {
-			return <CurrencyNumber classList="loyalty__money" money={cashback} />;
+			return <CurrencyNumber className="loyalty__money" money={cashback} />;
 		}
 
 		return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;

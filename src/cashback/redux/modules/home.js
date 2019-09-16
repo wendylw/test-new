@@ -13,7 +13,7 @@ const initialState = {
 };
 
 export const types = {
-	// set customeId
+	// set customerId
 	SET_CUSTOMER_ID_SUCCESS: 'LOYALTY/HOME/SET_CUSTOMER_ID_SUCCESS',
 
 	// get cashback histories
@@ -73,8 +73,7 @@ const reducer = (state = initialState, action) => {
 		}
 		case types.GET_CASHBACK_HISTORIES_SUCCESS: {
 			const { response } = action;
-			const { loyaltyHistories } = response || {};
-			const { totalCredits } = loyaltyHistories || {};
+			const { totalCredits } = response || {};
 
 			return {
 				...state,
@@ -123,7 +122,7 @@ export const getBusinessInfo = state => {
 }
 
 export const getCashbackHistory = state => {
-	const customeId = getCustomerId(state);
+	const customerId = getCustomerId(state);
 
-	return getLoyaltyHistoriesByCustomerId(state, customeId);
+	return getLoyaltyHistoriesByCustomerId(state, customerId);
 }

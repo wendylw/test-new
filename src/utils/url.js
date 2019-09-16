@@ -15,7 +15,7 @@ const API_URLS = {
     url: '/api/cashback',
     method: 'post',
   },
-  GET_CASHBACK_HASDATA: hash => ({
+  GET_GET_CASHBACK_HASH_DATA: hash => ({
     url: `/api/cashback/hash/${hash}/decode`,
     method: 'get',
   }),
