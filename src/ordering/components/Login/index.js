@@ -30,7 +30,7 @@ class Login extends React.Component {
 		} = this.state;
 
 		return (
-			<div className="full-aside login">
+			<section className="aside aside__login">
 				<aside className="aside-bottom not-full">
 					<label className="phone-view-form__label text-center">
 						Do you have a Beep account? Login with your mobile phone number.
@@ -46,7 +46,7 @@ class Login extends React.Component {
 					<button className="link button__block button__block-link font-weight-bold text-uppercase text-center">Skip</button>
 				</aside>
 				<OtpModal />
-			</div>
+			</section>
 		);
 	}
 }

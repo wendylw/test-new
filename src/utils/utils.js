@@ -207,7 +207,7 @@ Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   ];
 
   addressKeys.forEach((item, index) => {
-    if (addressInfo[item] && index < splitLength) {
+    if (addressInfo[item] && Boolean(addressInfo[item]) && index < splitLength) {
       addressList.push(addressInfo[item]);
     }
   });

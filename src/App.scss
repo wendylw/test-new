@@ -865,6 +865,10 @@
     display: flex;
   }
 
+  &__login {
+    z-index: 400;
+  }
+
   &.active {
     opacity: 1;
     z-index: 100;

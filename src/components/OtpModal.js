@@ -70,7 +70,7 @@ OtpModal.propTypes = {
 };
 
 OtpModal.defaultProps = {
-	show: true,
+	show: false,
 	phone: '',
 	ResendOtpTime: 0,
 	onClose: () => { },
