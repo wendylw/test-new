@@ -31,6 +31,8 @@ class App extends Component {
 
     // auto redirect when there only one store in the list
     if (valid && stores && stores.length === 1) {
+      console.log(111);
+
       this.handleSelectStore(stores[0].id);
 
       return;
