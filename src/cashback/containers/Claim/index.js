@@ -8,7 +8,7 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber } from '../../redux/modules/claim';
 
 
@@ -110,6 +110,7 @@ class PageClaim extends React.Component {
 
 export default connect(
 	(state) => ({
+		user: getUser(state),
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		businessInfo: getBusinessInfo(state),
 		cashbackInfo: getCashbackInfo(state),

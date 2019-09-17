@@ -18,6 +18,18 @@ class PhoneViewContainer extends React.Component {
 		isSavingPhone: false,
 	}
 
+	componentWillMount() {
+		const { user } = this.props;
+		const {
+			isWebview,
+			isLogin,
+		} = user || {};
+
+		if (isWebview && isLogin) {
+			this.handleCreateCustomerCashbackInfo();
+		}
+	}
+
 	getOrderInfo() {
 		const { receiptNumber } = this.props;
 		const { phone } = this.state;
