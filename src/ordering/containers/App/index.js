@@ -22,8 +22,6 @@ class App extends Component {
     const { appActions } = this.props;
 
     this.getTokens();
-
-    appActions.getLoginStatus();
   }
 
   async componentDidMount() {
@@ -34,8 +32,13 @@ class App extends Component {
     this.postAppMessage();
   }
 
-  getTokens() {
+  async getTokens() {
     const { appActions } = this.props;
+    await appActions.getLoginStatus();
+
+    const { user } = this.props;
+    const { isLogin } = user || {};
+
 
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
@@ -43,10 +46,12 @@ class App extends Component {
       if (data) {
         const tokenList = data.split(',');
 
-        appActions.loginApp({
-          accessToken: tokenList[0],
-          refreshToken: tokenList[1],
-        });
+        if (!isLogin) {
+          appActions.loginApp({
+            accessToken: tokenList[0],
+            refreshToken: tokenList[1],
+          });
+        }
       }
     }, false);
   }
