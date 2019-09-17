@@ -45,8 +45,6 @@ class App extends Component {
         const tokenList = data.split(',');
 
         alert('appLogin====>' + isLogin);
-        alert('accessToken====>' + tokenList[0]);
-        alert('refreshToken====>' + tokenList[1]);
 
         if (!isLogin) {
           await appActions.loginApp({
@@ -54,7 +52,7 @@ class App extends Component {
             refreshToken: tokenList[1],
           });
 
-          alert('hasLogin====>' + isLogin);
+          alert('hasLogin====>' + this.props.isLogin);
         }
       }
     }, false);
