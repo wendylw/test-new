@@ -38,14 +38,14 @@ class App extends Component {
   }
 
   getTokens(isLogin) {
-    document.addEventListener('acceptTokens', async (response) => {
+    document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
 
       if (data) {
         const tokenList = data.split(',');
 
         if (!isLogin) {
-          await appActions.loginApp({
+          appActions.loginApp({
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
