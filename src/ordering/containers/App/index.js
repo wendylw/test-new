@@ -45,6 +45,8 @@ class App extends Component {
         const tokenList = data.split(',');
 
         alert('appLogin====>' + isLogin);
+        alert('accessToken====>' + tokenList[0]);
+        alert('refreshToken====>' + tokenList[1]);
 
         if (!isLogin) {
           appActions.loginApp({
