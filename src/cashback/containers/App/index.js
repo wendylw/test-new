@@ -44,6 +44,8 @@ class App extends Component {
       if (data) {
         const tokenList = data.split(',');
 
+        alert('appLogin====>', isLogin);
+
         if (!isLogin) {
           appActions.loginApp({
             accessToken: tokenList[0],
