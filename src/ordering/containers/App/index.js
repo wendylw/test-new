@@ -9,6 +9,7 @@ import {
   getMessageModal
 } from '../../redux/modules/app';
 import Routes from '../Routes';
+import 'normalize.css';
 import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
@@ -19,8 +20,6 @@ class App extends Component {
   state = {};
 
   componentWillMount() {
-    const { appActions } = this.props;
-
     this.getTokens();
   }
 

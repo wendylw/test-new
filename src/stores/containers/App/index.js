@@ -4,6 +4,7 @@ import ErrorToast from '../../../components/ErrorToast';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getError } from '../../redux/modules/app';
+import 'normalize.css';
 import '../../../App.scss';
 const Home = lazy(() => import('../Home'));
 
