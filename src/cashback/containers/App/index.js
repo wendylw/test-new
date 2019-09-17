@@ -13,8 +13,14 @@ import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 
 class App extends Component {
-  componentWillMount() {
-    this.getTokens();
+  async componentWillMount() {
+    const { appActions } = this.props;
+    await appActions.getLoginStatus();
+
+    const { user } = this.props;
+    const { isLogin } = user || {};
+
+    this.getTokens(isLogin);
   }
 
   async componentDidMount() {
@@ -29,12 +35,7 @@ class App extends Component {
     this.postExpiredMessage();
   }
 
-  async getTokens() {
-    const { appActions } = this.props;
-    await appActions.getLoginStatus();
-
-    const { user } = this.props;
-    const { isLogin } = user || {};
+  async getTokens(isLogin) {
 
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
