@@ -103,6 +103,15 @@ class PhoneViewContainer extends React.Component {
     this.setState({ phone });
   }
 
+  handlePostLoyaltyPageMessage() {
+    const { user } = this.props;
+    const { isWebview } = user;
+
+    if (isWebview) {
+      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+    }
+  }
+
   renderCurrencyNumber() {
     const { cashbackInfo } = this.props;
     const { cashback } = cashbackInfo || {};
@@ -130,12 +139,28 @@ class PhoneViewContainer extends React.Component {
       redirectURL,
       phone,
     } = this.state;
-    const { isLogin } = user || {};
+    const {
+      isWebview,
+      isLogin,
+    } = user || {};
     const { country } = onlineStoreInfo || {};
     const { status } = cashbackInfo || {};
 
     if (status !== ORDER_CAN_CLAIM || isLogin) {
-      return redirectURL
+      if (!redirectURL && !isWebview) {
+        return null;
+      }
+
+      if (isWebview) {
+        return (
+          <button
+            className="button__fill link__block border-radius-base font-weight-bold text-uppercase"
+            onClick={this.handlePostLoyaltyPageMessage.bind(this)}
+          >Check My Balance</button>
+        );
+      }
+
+      return redirectURL && !isWebview
         ? (
           <BrowserRouter basename="/">
             <Link
