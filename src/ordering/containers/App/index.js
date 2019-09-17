@@ -29,12 +29,6 @@ class App extends Component {
     this.getTokens(isLogin);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.user.isLogin !== nextProps.user.isLogin) {
-      alert('nextLogin====>' + nextProps.user.isLogin);
-    }
-  }
-
   async componentDidMount() {
     const { appActions } = this.props;
 
