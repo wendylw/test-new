@@ -38,13 +38,15 @@ class App extends Component {
     const { user } = this.props;
     const { isLogin } = user || {};
 
+    alert('oldLogin====>' + isLogin);
+
     document.addEventListener('acceptTokens', async (response) => {
       const { data } = response || {};
 
       if (data) {
         const tokenList = data.split(',');
 
-        alert('appLogin====>' + isLogin);
+        alert('oldLogin====>' + isLogin);
 
         if (!isLogin) {
           await appActions.loginApp({
@@ -52,7 +54,8 @@ class App extends Component {
             refreshToken: tokenList[1],
           });
 
-          alert('hasLogin====>' + this.props.isLogin);
+          alert('props====>' + JSON.stringify(this.props));
+          alert('newLogin====>' + this.props.isLogin);
         }
       }
     }, false);

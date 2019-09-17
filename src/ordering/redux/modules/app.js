@@ -8,7 +8,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 const initialState = {
   user: {
     isWebview: Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage),
-    isLogin: true,
+    isLogin: false,
   },
   error: {
     isExpired: false,
