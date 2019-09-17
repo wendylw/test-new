@@ -23,7 +23,10 @@ class App extends Component {
     const { appActions } = this.props;
     await appActions.getLoginStatus();
 
-    this.getTokens();
+    const { user } = this.props;
+    const { isLogin } = user || {};
+
+    this.getTokens(isLogin);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -40,7 +43,7 @@ class App extends Component {
     this.postAppMessage();
   }
 
-  getTokens() {
+  getTokens(isLogin) {
     alert('oldUser====>' + JSON.stringify(this.props.user));
 
     document.addEventListener('acceptTokens', async (response) => {
