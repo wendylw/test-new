@@ -54,8 +54,7 @@ class App extends Component {
             refreshToken: tokenList[1],
           });
 
-          alert('props====>' + JSON.stringify(this.props));
-          alert('newLogin====>' + this.props.isLogin);
+          alert('newLogin====>' + this.props.user.isLogin);
         }
       }
     }, false);
