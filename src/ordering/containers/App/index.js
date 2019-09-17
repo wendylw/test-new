@@ -19,7 +19,10 @@ import MessageModal from '../../../components/ErrorToast';
 class App extends Component {
   state = {};
 
-  componentWillMount() {
+  async componentWillMount() {
+    const { appActions } = this.props;
+    await appActions.getLoginStatus();
+
     this.getTokens();
   }
 
@@ -37,14 +40,8 @@ class App extends Component {
     this.postAppMessage();
   }
 
-  async getTokens() {
-    const { appActions } = this.props;
-    await appActions.getLoginStatus();
-
-    const { user } = this.props;
-    const { isLogin } = user || {};
-
-    alert('oldLogin====>' + isLogin);
+  getTokens() {
+    alert('oldUser====>' + JSON.stringify(this.props.user));
 
     document.addEventListener('acceptTokens', async (response) => {
       const { data } = response || {};
@@ -52,15 +49,13 @@ class App extends Component {
       if (data) {
         const tokenList = data.split(',');
 
-        alert('oldLogin====>' + isLogin);
-
         if (!isLogin) {
           await appActions.loginApp({
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
 
-          alert('newLogin====>' + this.props.user.isLogin);
+          alert('newUser====>' + JSON.stringify(this.props.user));
         }
       }
     }, false);
