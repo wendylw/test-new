@@ -38,8 +38,6 @@ class App extends Component {
   }
 
   getTokens(isLogin) {
-    alert('oldUser====>' + JSON.stringify(this.props.user));
-
     document.addEventListener('acceptTokens', async (response) => {
       const { data } = response || {};
 
@@ -51,8 +49,6 @@ class App extends Component {
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
-
-          alert('newUser====>' + JSON.stringify(this.props.user));
         }
       }
     }, false);

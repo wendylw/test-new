@@ -146,26 +146,12 @@ class PhoneViewContainer extends React.Component {
     const { country } = onlineStoreInfo || {};
     const { status } = cashbackInfo || {};
 
-    // alert('phoneLogin====>' + isLogin);
-    // alert('isWebview====>' + isWebview);
-    // alert('redirectURL====>' + redirectURL);
-
-
     if (status !== ORDER_CAN_CLAIM || isLogin) {
       if (!redirectURL && !isWebview) {
         return null;
       }
 
-      if (isWebview) {
-        return (
-          <button
-            className="button__fill link__block border-radius-base font-weight-bold text-uppercase"
-            onClick={this.handlePostLoyaltyPageMessage.bind(this)}
-          >Check My Balance</button>
-        );
-      }
-
-      return redirectURL && !isWebview
+      return !isWebview
         ? (
           <BrowserRouter basename="/">
             <Link
@@ -175,7 +161,12 @@ class PhoneViewContainer extends React.Component {
             >Check My Balance</Link>
           </BrowserRouter>
         )
-        : null;
+        : (
+          <button
+            className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+            onClick={this.handlePostLoyaltyPageMessage.bind(this)}
+          >Check My Balance</button>
+        );
     }
 
     return (

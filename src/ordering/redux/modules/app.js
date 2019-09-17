@@ -105,11 +105,6 @@ const user = (state = initialState.user, action) => {
   const { type, response } = action;
   const { login } = response || {};
 
-  if (type === types.CREATE_LOGIN_SUCCESS) {
-    alert('type===>>' + type);
-    alert('login===>>' + login);
-  }
-
   switch (type) {
     case types.FETCH_LOGIN_STATUS_REQUEST:
       return { ...state, isFetching: true };
