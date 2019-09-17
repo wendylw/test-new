@@ -14,8 +14,6 @@ import ErrorToast from '../../../components/ErrorToast';
 
 class App extends Component {
   componentWillMount() {
-    const { appActions } = this.props;
-
     this.getTokens();
   }
 
@@ -43,8 +41,6 @@ class App extends Component {
 
       if (data) {
         const tokenList = data.split(',');
-
-        alert('appLogin====>', isLogin);
 
         if (!isLogin) {
           appActions.loginApp({

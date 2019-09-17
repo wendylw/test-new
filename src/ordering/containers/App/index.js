@@ -38,12 +38,13 @@ class App extends Component {
     const { user } = this.props;
     const { isLogin } = user || {};
 
-
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
 
       if (data) {
         const tokenList = data.split(',');
+
+        alert('appLogin====>' + isLogin);
 
         if (!isLogin) {
           appActions.loginApp({

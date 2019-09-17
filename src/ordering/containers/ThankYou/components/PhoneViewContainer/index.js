@@ -146,9 +146,9 @@ class PhoneViewContainer extends React.Component {
     const { country } = onlineStoreInfo || {};
     const { status } = cashbackInfo || {};
 
-    alert('phoneLogin====>', isLogin);
-    alert('isWebview====>', isWebview);
-    alert('redirectURL====>', redirectURL);
+    alert('phoneLogin====>' + isLogin);
+    alert('isWebview====>' + isWebview);
+    alert('redirectURL====>' + redirectURL);
 
 
     if (status !== ORDER_CAN_CLAIM || isLogin) {
