@@ -38,7 +38,7 @@ class App extends Component {
     const { user } = this.props;
     const { isLogin } = user || {};
 
-    document.addEventListener('acceptTokens', (response) => {
+    document.addEventListener('acceptTokens', async (response) => {
       const { data } = response || {};
 
       if (data) {
@@ -49,10 +49,12 @@ class App extends Component {
         alert('refreshToken====>' + tokenList[1]);
 
         if (!isLogin) {
-          appActions.loginApp({
+          await appActions.loginApp({
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
+
+          alert('hasLogin====>' + isLogin);
         }
       }
     }, false);
