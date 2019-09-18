@@ -29,11 +29,11 @@ class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { user } = nextProps;
     const {
-      user,
-      isWebview
-    } = nextProps;
-    const { isExpired } = user || {};
+      isExpired,
+      isWebview,
+    } = user || {};
 
     if (isExpired && this.props.user.isExpired !== isExpired) {
       alert('newExpired====>' + isExpired);
