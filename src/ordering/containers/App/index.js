@@ -31,11 +31,12 @@ class App extends Component {
   componentWillReceiveProps(nextProps) {
     const {
       user,
-      error
+      error,
+      isWebview
     } = nextProps;
     const { isExpired } = error || {};
 
-    if (isExpired && this.props.error.isExpired !== isExpired) {
+    if (isWebview && isExpired && this.props.error.isExpired !== isExpired) {
       alert('newExpired====>' + isExpired);
 
       this.postAppMessage(user, error);
