@@ -37,6 +37,7 @@ class App extends Component {
 
     if (isExpired && this.props.user.isExpired !== isExpired) {
       alert('newExpired====>' + isExpired);
+      alert('isWebview====>' + isWebview);
 
       if (isWebview) {
         this.postAppMessage(user);
