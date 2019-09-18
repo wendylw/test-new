@@ -31,15 +31,16 @@ class App extends Component {
   componentWillReceiveProps(nextProps) {
     const {
       user,
-      error,
       isWebview
     } = nextProps;
-    const { isExpired } = error || {};
+    const { isExpired } = user || {};
 
-    if (isWebview && isExpired && this.props.error.isExpired !== isExpired) {
+    if (isExpired && this.props.user.isExpired !== isExpired) {
       alert('newExpired====>' + isExpired);
 
-      this.postAppMessage(user, error);
+      if (isWebview) {
+        this.postAppMessage(user);
+      }
     }
   }
 
@@ -48,9 +49,9 @@ class App extends Component {
 
     await appActions.fetchOnlineStoreInfo();
 
-    const { user, error } = this.props;
+    const { user } = this.props;
 
-    this.postAppMessage(user, error);
+    this.postAppMessage(user);
   }
 
   getTokens(isLogin) {
@@ -74,9 +75,11 @@ class App extends Component {
     }, false);
   }
 
-  postAppMessage(user, error) {
-    const { isWebview } = user || {};
-    const { isExpired } = error || {};
+  postAppMessage(user) {
+    const {
+      isWebview,
+      isExpired
+    } = user || {};
 
     if (isWebview && isExpired) {
       window.ReactNativeWebView.postMessage('tokenExpired');

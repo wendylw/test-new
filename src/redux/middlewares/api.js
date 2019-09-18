@@ -10,8 +10,6 @@ export default store => next => action => {
 		return next(action);
 	}
 
-	console.log(callAPI);
-
 	const {
 		url,
 		method,
