@@ -40,10 +40,11 @@ class PhoneViewContainer extends React.Component {
     const { cashbackInfo, user } = this.props;
     const { status } = cashbackInfo || {};
     const { isLogin } = user;
+    const isClaimed = status && status !== ORDER_CAN_CLAIM;
 
-    if ((status && status !== ORDER_CAN_CLAIM) || isLogin) {
-      showCelebration = !!isLogin;
+    showCelebration = !isClaimed;
 
+    if (isClaimed || isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
 
