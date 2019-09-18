@@ -9,7 +9,6 @@ import {
   getMessageModal
 } from '../../redux/modules/app';
 import Routes from '../Routes';
-import 'normalize.css';
 import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
