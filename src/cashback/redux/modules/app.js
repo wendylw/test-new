@@ -131,7 +131,11 @@ export const actions = {
 };
 
 const user = (state = initialState.user, action) => {
-	const { type, response } = action;
+	const {
+		type,
+		response,
+		code
+	} = action;
 	const { login } = response || {};
 
 	switch (type) {
