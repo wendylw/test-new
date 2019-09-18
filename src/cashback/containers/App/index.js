@@ -35,6 +35,7 @@ class App extends Component {
   }
 
   async getTokens(isLogin) {
+    const { appActions } = this.props;
 
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
