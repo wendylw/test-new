@@ -10,10 +10,9 @@ const initialState = {
 	user: {
 		isWebview: Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage),
 		isLogin: false,
-	},
-	error: {
 		isExpired: false,
-	}, // network error
+	},
+	error: null, // network error
 	messageModal: {
 		show: false,
 		message: '',
@@ -136,6 +135,11 @@ const user = (state = initialState.user, action) => {
 	const { login } = response || {};
 
 	switch (type) {
+		case types.CLEAR_ERROR:
+			if (code === 401) {
+				alert('expired====>true');
+				return { ...state, isExpired: true };
+			}
 		case types.FETCH_LOGIN_STATUS_REQUEST:
 			return { ...state, isFetching: true };
 		case types.CREATE_LOGIN_SUCCESS:
@@ -173,8 +177,6 @@ const error = (state = initialState.error, action) => {
 
 	if (type === types.CLEAR_ERROR || code === 200) {
 		return null;
-	} else if (code === 401) {
-		return { ...state, isExpired: true };
 	} else if (code && code !== 401) {
 		return { ...state, code, message };
 	}
