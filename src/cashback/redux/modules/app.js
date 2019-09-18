@@ -139,11 +139,6 @@ const user = (state = initialState.user, action) => {
 	const { login } = response || {};
 
 	switch (type) {
-		case types.CLEAR_ERROR:
-			if (code === 401) {
-				alert('expired====>true');
-				return { ...state, isExpired: true };
-			}
 		case types.FETCH_LOGIN_STATUS_REQUEST:
 			return { ...state, isFetching: true };
 		case types.CREATE_LOGIN_SUCCESS:
@@ -165,6 +160,12 @@ const user = (state = initialState.user, action) => {
 				},
 			};
 		case types.CREATE_LOGIN_FAILURE:
+			if (code && code === 401) {
+				alert('expired====>true');
+				return { ...state, isExpired: true };
+			}
+
+			return { ...state, isFetching: false };
 		case types.FETCH_LOGIN_STATUS_FAILURE:
 			return { ...state, isFetching: false };
 		default:

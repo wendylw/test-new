@@ -60,6 +60,8 @@ class App extends Component {
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
 
+      alert('isLogin====>' + isLogin);
+
       if (data) {
         const tokenList = data.split(',');
 
