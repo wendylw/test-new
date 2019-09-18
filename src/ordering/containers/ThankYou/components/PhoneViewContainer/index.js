@@ -33,18 +33,15 @@ class PhoneViewContainer extends React.Component {
       thankYouActions,
     } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let showCelebration = true;
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { cashbackInfo, user } = this.props;
     const { status } = cashbackInfo || {};
-    const { isLogin } = user;
-    const isClaimed = status && status !== ORDER_CAN_CLAIM;
+    const { isLogin } = user || {};
+    const showCelebration = status === ORDER_CAN_CLAIM;
 
-    showCelebration = !isClaimed;
-
-    if (isClaimed || isLogin) {
+    if (status !== ORDER_CAN_CLAIM || isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
 
@@ -127,6 +124,8 @@ class PhoneViewContainer extends React.Component {
     if (isWebview) {
       window.ReactNativeWebView.postMessage('goToLoyaltyPage');
     }
+
+    return;
   }
 
   renderCurrencyNumber() {

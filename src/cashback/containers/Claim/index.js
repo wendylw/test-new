@@ -74,15 +74,21 @@ class PageClaim extends React.Component {
 
 	render() {
 		const {
+			user,
 			history,
 			onlineStoreInfo,
 			businessInfo,
 		} = this.props;
+		const { isWebview } = user;
 		const { logo } = onlineStoreInfo || {};
 		const {
 			name,
 			displayBusinessName,
 		} = businessInfo || {};
+
+		if (isWebview) {
+			return <div className="loader theme page-loader"></div>;
+		}
 
 		return (
 			<section className="loyalty__claim" style={{

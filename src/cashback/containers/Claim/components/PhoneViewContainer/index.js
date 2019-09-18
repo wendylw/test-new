@@ -30,6 +30,22 @@ class PhoneViewContainer extends React.Component {
 		}
 	}
 
+	componentWillReceiveProps(nextProps) {
+		const { user } = nextProps;
+		const {
+			isWebview,
+			isLogin,
+		} = user || {};
+
+		if (this.props.user.isLogin === isLogin) {
+			return;
+		}
+
+		if (isWebview && isLogin) {
+			this.handleCreateCustomerCashbackInfo();
+		}
+	}
+
 	getOrderInfo() {
 		const { receiptNumber } = this.props;
 		const { phone } = this.state;
@@ -51,10 +67,9 @@ class PhoneViewContainer extends React.Component {
 		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
-		const { cashbackInfo } = this.props;
-		const { customerId } = cashbackInfo || {};
-
 		if (customerId) {
+			this.handlePostLoyaltyPageMessage();
+
 			history.push({
 				pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
 				search: `?customerId=${customerId || ''}`
@@ -64,6 +79,17 @@ class PhoneViewContainer extends React.Component {
 
 	handleUpdatePhoneNumber(phone) {
 		this.setState({ phone });
+	}
+
+	handlePostLoyaltyPageMessage() {
+		const { user } = this.props;
+		const { isWebview } = user;
+
+		if (isWebview) {
+			window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+		}
+
+		return;
 	}
 
 	render() {
