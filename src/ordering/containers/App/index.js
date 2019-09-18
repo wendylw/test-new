@@ -28,12 +28,28 @@ class App extends Component {
     this.getTokens(isLogin);
   }
 
+  componentWillReceiveProps(nextProps) {
+    const {
+      user,
+      error
+    } = nextProps;
+    const { isExpired } = error || {};
+
+    if (isExpired && this.props.error.isExpired !== isExpired) {
+      alert('newExpired====>' + isExpired);
+
+      this.postAppMessage(user);
+    }
+  }
+
   async componentDidMount() {
     const { appActions } = this.props;
 
     await appActions.fetchOnlineStoreInfo();
 
-    this.postAppMessage();
+    const { user } = this.props;
+
+    this.postAppMessage(user);
   }
 
   getTokens(isLogin) {
@@ -41,8 +57,6 @@ class App extends Component {
 
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
-
-      alert('oldUsr====>' + JSON.stringify(this.props.user));
 
       if (data) {
         const tokenList = data.split(',');
@@ -59,13 +73,10 @@ class App extends Component {
     }, false);
   }
 
-  postAppMessage() {
-    const {
-      error,
-      user,
-    } = this.props;
-    const { isWebview } = user;
-    const { isExpired } = error;
+  postAppMessage(user) {
+    const { error } = this.props;
+    const { isWebview } = user || {};
+    const { isExpired } = error || {};
 
     if (isWebview && isExpired) {
       window.ReactNativeWebView.postMessage('tokenExpired');

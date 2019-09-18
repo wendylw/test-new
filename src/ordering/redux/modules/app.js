@@ -138,6 +138,7 @@ const error = (state = initialState.error, action) => {
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
   } else if (code === 401) {
+    alert('expired====>true');
     return { ...state, isExpired: true };
   } else if (code && code !== 401) {
     return { ...state, code, message };
