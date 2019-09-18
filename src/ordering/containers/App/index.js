@@ -40,6 +40,8 @@ class App extends Component {
     document.addEventListener('acceptTokens', async (response) => {
       const { data } = response || {};
 
+      alert('newUsr====>' + JSON.stringify(this.props.user));
+
       if (data) {
         const tokenList = data.split(',');
 
@@ -48,6 +50,8 @@ class App extends Component {
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
+
+          alert('newUsr====>' + JSON.stringify(this.props.user));
         }
       }
     }, false);
