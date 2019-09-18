@@ -38,7 +38,7 @@ class App extends Component {
     if (isExpired && this.props.error.isExpired !== isExpired) {
       alert('newExpired====>' + isExpired);
 
-      this.postAppMessage(user);
+      this.postAppMessage(user, error);
     }
   }
 
@@ -47,9 +47,9 @@ class App extends Component {
 
     await appActions.fetchOnlineStoreInfo();
 
-    const { user } = this.props;
+    const { user, error } = this.props;
 
-    this.postAppMessage(user);
+    this.postAppMessage(user, error);
   }
 
   getTokens(isLogin) {
@@ -73,8 +73,7 @@ class App extends Component {
     }, false);
   }
 
-  postAppMessage(user) {
-    const { error } = this.props;
+  postAppMessage(user, error) {
     const { isWebview } = user || {};
     const { isExpired } = error || {};
 
