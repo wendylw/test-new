@@ -1,4 +1,5 @@
 import Url from '../../../utils/url';
+import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -12,21 +13,7 @@ const initialState = {
 	cashbackHistorySummary: null,
 };
 
-export const types = {
-	// set customerId
-	SET_CUSTOMER_ID_SUCCESS: 'LOYALTY/HOME/SET_CUSTOMER_ID_SUCCESS',
-
-	// get cashback histories
-	GET_CASHBACK_HISTORIES_REQUEST: 'LOYALTY/HOME/GET_CASHBACK_HISTORIES_REQUEST',
-	GET_CASHBACK_HISTORIES_SUCCESS: 'LOYALTY/HOME/GET_CASHBACK_HISTORIES_SUCCESS',
-	GET_CASHBACK_HISTORIES_FAILURE: 'LOYALTY/HOME/GET_CASHBACK_HISTORIES_FAILURE',
-
-	// set cashback message
-	SET_CASHBACK_MESSAGE_SUCCESS: 'LOYALTY/HOME/SET_CASHBACK_MESSAGE_SUCCESS',
-
-	// clear cashback message
-	CLEAR_CASHBACK_MESSAGE_SUCCESS: 'LOYALTY/HOME/CLEAR_CASHBACK_MESSAGE_SUCCESS',
-}
+export const types = HOME_TYPES;
 
 export const actions = {
 	setCustomerId: customerId => ({
