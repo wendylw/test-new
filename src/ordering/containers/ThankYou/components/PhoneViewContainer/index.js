@@ -50,6 +50,22 @@ class PhoneViewContainer extends React.Component {
     this.setState({ showCelebration });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { user } = nextProps;
+    const {
+      isWebview,
+      isLogin,
+    } = user || {};
+
+    if (this.props.user.isLogin === isLogin) {
+      return;
+    }
+
+    if (isWebview && isLogin) {
+      this.handleCreateCustomerCashbackInfo();
+    }
+  }
+
   componentDidMount() {
     this.setState({
       claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF

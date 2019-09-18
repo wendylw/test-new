@@ -36,9 +36,6 @@ class App extends Component {
     } = user || {};
 
     if (isExpired && this.props.user.isExpired !== isExpired) {
-      alert('newExpired====>' + isExpired);
-      alert('isWebview====>' + isWebview);
-
       if (isWebview) {
         this.postAppMessage(user);
       }
@@ -61,8 +58,6 @@ class App extends Component {
     document.addEventListener('acceptTokens', (response) => {
       const { data } = response || {};
 
-      alert('isLogin====>' + isLogin);
-
       if (data) {
         const tokenList = data.split(',');
 
@@ -71,8 +66,6 @@ class App extends Component {
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
-
-          alert('newUsr====>' + JSON.stringify(this.props.user));
         }
       }
     }, false);
