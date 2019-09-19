@@ -68,13 +68,12 @@ class RecentActivities extends React.Component {
 			cashbackHistory,
 			onlineStoreInfo,
 		} = this.props;
-		const { logs } = cashbackHistory || {};
 		const { country } = onlineStoreInfo || {};
 
 		return (
 			<ul className="activity">
 				{
-					(logs || []).map((activity, i) => {
+					(cashbackHistory || []).map((activity, i) => {
 						const {
 							eventType,
 							eventTime,
