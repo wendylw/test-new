@@ -105,7 +105,7 @@ class PageClaim extends React.Component {
 					<PhoneViewContainer history={history} />
 				</div>
 
-				{
+				{/* {
 					isWebview
 						? (
 							<div className="loading-cover">
@@ -113,7 +113,7 @@ class PageClaim extends React.Component {
 							</div>
 						)
 						: null
-				}
+				} */}
 			</section>
 		);
 	}
