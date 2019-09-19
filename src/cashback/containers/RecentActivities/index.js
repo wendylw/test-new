@@ -79,7 +79,7 @@ class RecentActivities extends React.Component {
 							eventTime,
 						} = activity;
 						const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-						const type = this.getType(eventType, { className: 'activity__icon' });
+						const type = this.getType(eventType, { className: `activity__icon ${eventType}` });
 
 						return (
 							<li key={`${i}`} className="activity__item flex flex-middle">

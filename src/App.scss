@@ -1614,23 +1614,18 @@
   }
 }
 
-.activity {
-  margin: -4px -16px;
+.card-list {
   padding: 0 16px;
-  max-height: 140px;
   overflow: hidden;
 
   &__item {
-    @extend .border-radius-base;
-
     padding: 4vw 6vw;
     margin: 12px 0;
-    box-shadow: 1px 1px 8px 1px rgba(0, 0, 0, 0.1);
+  }
 
-    summary {
-      padding: 0 4vw;
-      width: 65vw;
-    }
+  &__item-summary {
+    padding: 0 4vw;
+    width: 65vw;
   }
 
   &__icon {
@@ -1640,28 +1635,106 @@
     background-repeat: no-repeat;
     background-size: 100% auto;
     background-position: center center;
-    fill: $theme-color;
     opacity: 0.6;
+  }
 
-    svg {
-      width: 100%;
-    }
+  &__icon-svg {
+    width: 100%;
   }
 
   &__title {
     margin: 5px 0;
+  }
 
-    * {
-      @extend .font-weight-bold;
+  &__title-children {
+    @extend .font-weight-bold;
 
-      display: inline-block;
-      font-size: 1.5rem;
-    }
+    display: inline-block;
+    font-size: 1.5rem;
   }
 
   &__time {
     margin: 5px 0;
+  }
+}
+
+.receipt {
+  @extend .card-list;
+
+  margin: -4px -16px;
+
+  &__item {
+    @extend .card-list__item;
+
+    box-shadow: 1px 1px 8px 1px rgba(0, 0, 0, 0.1);
+
+    summary {
+      @extend .card-list__item-summary;
+    }
+  }
+
+  &__icon {
+    @extend .card-list__icon;
+
+    fill: $theme-color;
+
+    svg {
+      @extend .card-list__icon-svg;
+    }
+  }
+
+  &__title {
+    @extend .card-list__title;
+
+    * {
+      @extend .card-list__title-children;
+    }
+  }
+
+  &__time {
+    @extend .card-list__time;
+
     color: $gray-2;
+  }
+}
+
+.activity {
+  @extend .card-list;
+
+  &__item {
+    @extend .card-list__item;
+
+    color: $white;
+
+    summary {
+      @extend .card-list__item-summary;
+    }
+  }
+
+  &__icon {
+    @extend .card-list__icon;
+
+    fill: $gray-5;
+
+    svg {
+      @extend .card-list__icon-svg;
+    }
+
+    &.earned {
+      fill: $theme-color;
+    }
+  }
+
+  &__title {
+    @extend .card-list__title;
+
+    * {
+      @extend .card-list__title-children;
+    }
+  }
+
+  &__time {
+    @extend .card-list__time;
   }
 }
 

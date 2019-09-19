@@ -69,7 +69,7 @@ class RecentActivities extends React.Component {
 		const { country } = onlineStoreInfo || {};
 
 		return (
-			<ul className="activity">
+			<ul className="receipt">
 				{
 					(cashbackHistory || []).map((activity, i) => {
 						const {
@@ -77,13 +77,13 @@ class RecentActivities extends React.Component {
 							eventTime,
 						} = activity;
 						const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-						const type = this.getType(eventType, { className: 'activity__icon' });
+						const type = this.getType(eventType, { className: 'receipt__icon' });
 
 						return (
-							<li key={`${i}`} className="activity__item flex flex-middle">
+							<li key={`${i}`} className="receipt__item flex flex-middle">
 								{type.icon}
 								<summary>
-									<h4 className="activity__title">
+									<h4 className="receipt__title">
 										<label>{type.text}&nbsp;</label>
 										{
 											activity.eventType !== 'pending'
@@ -91,7 +91,7 @@ class RecentActivities extends React.Component {
 												: null
 										}
 									</h4>
-									<time className="activity__time">
+									<time className="receipt__time">
 										{eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
 									</time>
 								</summary>
