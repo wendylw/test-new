@@ -64,8 +64,6 @@ class App extends Component {
             accessToken: tokenList[0],
             refreshToken: tokenList[1],
           });
-
-          alert('newUsr====>' + JSON.stringify(this.props.user));
         }
       }
     }, false);

@@ -40,15 +40,11 @@ class PhoneViewContainer extends React.Component {
 			isLogin,
 		} = user || {};
 
-		alert('phoneNextProps1====>' + JSON.stringify(user));
-
 		if (this.props.user.isLogin === isLogin) {
 			return;
 		}
 
 		if (isWebview && isLogin) {
-			alert('phoneNextProps2====>' + isLogin);
-
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
@@ -83,7 +79,7 @@ class PhoneViewContainer extends React.Component {
 		const { isWebview } = user || {};
 		const { phone } = this.state;
 
-		alert('orderInfo====>' + JSON.stringify(cashbackInfo));
+		alert('orderInfo====>' + JSON.stringify(this.getOrderInfo()));
 
 		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
