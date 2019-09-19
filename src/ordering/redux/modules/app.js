@@ -125,7 +125,7 @@ const user = (state = initialState.user, action) => {
       };
     case types.CREATE_LOGIN_FAILURE:
       if (code && code === 401) {
-        return { ...state, isExpired: true };
+        return { ...state, isExpired: true, isFetching: false };
       }
 
       return { ...state, isFetching: false };

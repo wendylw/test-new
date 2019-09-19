@@ -144,25 +144,18 @@ const user = (state = initialState.user, action) => {
 		case types.CREATE_LOGIN_SUCCESS:
 			return {
 				...state,
-				user: {
-					...state.user,
-					isLogin: true,
-					isFetching: false,
-				},
+				isLogin: true,
+				isFetching: false,
 			};
 		case types.FETCH_LOGIN_STATUS_SUCCESS:
 			return {
 				...state,
-				user: {
-					...state.user,
-					isLogin: login,
-					isFetching: false,
-				},
+				isLogin: login,
+				isFetching: false,
 			};
 		case types.CREATE_LOGIN_FAILURE:
 			if (code && code === 401) {
-				alert('expired====>true');
-				return { ...state, isExpired: true };
+				return { ...state, isExpired: true, isFetching: false };
 			}
 
 			return { ...state, isFetching: false };
