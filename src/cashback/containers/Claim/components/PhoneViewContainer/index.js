@@ -14,6 +14,7 @@ class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
 
 	state = {
+		receiptNumber: this.props.receiptNumber,
 		phone: Utils.getLocalStorageVariable('user.p'),
 		isSavingPhone: false,
 	}
@@ -33,13 +34,20 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { user } = nextProps;
+		const {
+			user,
+			receiptNumber,
+		} = nextProps;
 		const {
 			isWebview,
 			isLogin,
 		} = user || {};
 
-		alert('phoneNextProps1====>' + JSON.stringify(user));
+		if (receiptNumber !== this.props.receiptNumber) {
+			alert('phoneNextReceiptNumber===>' + receiptNumber);
+
+			this.setState({ receiptNumber });
+		}
 
 		if (this.props.user.isLogin === isLogin) {
 			return;
@@ -54,16 +62,9 @@ class PhoneViewContainer extends React.Component {
 
 	getOrderInfo() {
 		const {
-			history,
 			receiptNumber,
-		} = this.props;
-		const { phone } = this.state;
-
-		if (!receiptNumber) {
-			const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-			await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
-		}
+			phone,
+		} = this.state;
 
 		return {
 			phone,
