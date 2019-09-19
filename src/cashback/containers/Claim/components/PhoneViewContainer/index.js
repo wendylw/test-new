@@ -53,8 +53,17 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	getOrderInfo() {
-		const { receiptNumber } = this.props;
+		const {
+			history,
+			receiptNumber,
+		} = this.props;
 		const { phone } = this.state;
+
+		if (!receiptNumber) {
+			const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+			await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
+		}
 
 		return {
 			phone,
