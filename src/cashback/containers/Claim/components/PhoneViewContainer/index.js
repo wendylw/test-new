@@ -34,32 +34,25 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { user } = nextProps;
+		const { receiptNumber, user } = nextProps;
 		const {
 			isWebview,
 			isLogin,
 		} = user || {};
+		const valid = this.props.user.isLogin !== isLogin || this.props.receiptNumber !== receiptNumber;
 
-		if (this.props.user.isLogin === isLogin) {
-			return;
-		}
-
-		if (isWebview && isLogin) {
+		if (valid && isWebview && isLogin && receiptNumber) {
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
 
-	async getOrderInfo() {
-		const {
-			history,
-			receiptNumber,
-		} = this.props;
+	getOrderInfo() {
+		const { receiptNumber } = this.props;
 		const { phone } = this.state;
-		const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
 		return {
 			phone,
-			receiptNumber: receiptNumber || h,
+			receiptNumber,
 			source: Constants.CASHBACK_SOURCE.RECEIPT
 		};
 	}
