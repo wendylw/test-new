@@ -86,9 +86,9 @@ class PageClaim extends React.Component {
 			displayBusinessName,
 		} = businessInfo || {};
 
-		if (isWebview) {
-			return <div className="loader theme page-loader"></div>;
-		}
+		// if (isWebview) {
+		// 	return <div className="loader theme page-loader"></div>;
+		// }
 
 		return (
 			<section className="loyalty__claim" style={{
