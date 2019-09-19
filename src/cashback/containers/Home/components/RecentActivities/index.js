@@ -66,13 +66,12 @@ class RecentActivities extends React.Component {
 			cashbackHistory,
 			onlineStoreInfo,
 		} = this.props;
-		const { logs } = cashbackHistory || {};
 		const { country } = onlineStoreInfo || {};
 
 		return (
 			<ul className="activity">
 				{
-					(logs || []).map((activity, i) => {
+					(cashbackHistory || []).map((activity, i) => {
 						const {
 							eventType,
 							eventTime,
@@ -106,9 +105,8 @@ class RecentActivities extends React.Component {
 
 	render() {
 		const { cashbackHistory, customerId } = this.props;
-		const { logs } = cashbackHistory || {};
 
-		if (!Array.isArray(logs) || !customerId) {
+		if (!Array.isArray(cashbackHistory) || !customerId) {
 			return null;
 		}
 
@@ -120,7 +118,7 @@ class RecentActivities extends React.Component {
 							? <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
 							: <Header navFunc={this.toggleFullScreen.bind(this)} />
 					}
-					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activity</h3>
+					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Receipts</h3>
 					{this.renderLogList()}
 				</aside>
 			</div>

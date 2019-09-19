@@ -1149,6 +1149,7 @@
   &__title {
     padding: 16px 0;
     font-size: 1.3rem;
+    color: $gray-0;
   }
 }
 
@@ -1619,8 +1620,8 @@
     @extend .border-radius-base;
 
     padding: 4vw 6vw;
-    margin: 4px 0;
-    border: 1px solid $gray-3;
+    margin: 12px 0;
+    box-shadow: 1px 1px 8px 1px rgba(0, 0, 0, 0.1);
 
     summary {
       padding: 0 4vw;

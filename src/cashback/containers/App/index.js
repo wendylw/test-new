@@ -30,8 +30,6 @@ class App extends Component {
     } = user || {};
 
     if (isExpired && this.props.user.isExpired !== isExpired) {
-      alert('newExpired====>' + isExpired);
-
       if (isWebview) {
         this.postAppMessage(user);
       }
@@ -80,8 +78,12 @@ class App extends Component {
     } = user || {};
 
     if (isWebview && isExpired) {
+      alert('expired');
+
       window.ReactNativeWebView.postMessage('tokenExpired');
     } else if (isWebview && !isExpired) {
+      alert('login');
+
       window.ReactNativeWebView.postMessage('getToken');
     }
   }

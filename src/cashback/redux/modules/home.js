@@ -54,9 +54,6 @@ export const actions = {
 
 // reducer
 const reducer = (state = initialState, action) => {
-	console.log(state);
-	console.log(action);
-
 	switch (action.type) {
 		case types.SET_CUSTOMER_ID_SUCCESS: {
 			return { ...state, customerId: action.customerId };

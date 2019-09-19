@@ -25,6 +25,8 @@ class PhoneViewContainer extends React.Component {
 			isLogin,
 		} = user || {};
 
+		alert('phoneWillMount====>' + JSON.stringify(user));
+
 		if (isWebview && isLogin) {
 			this.handleCreateCustomerCashbackInfo();
 		}
@@ -36,19 +38,15 @@ class PhoneViewContainer extends React.Component {
 			isWebview,
 			isLogin,
 		} = user || {};
-		const { user: preUser } = this.props;
 
-		alert('phonePageUser====>' + JSON.stringify(user));
+		alert('phoneNextProps1====>' + JSON.stringify(user));
 
-
-		if (preUser && preUser.isLogin === isLogin) {
-			alert('oldLogin====>' + isLogin);
-
+		if (this.props.user.isLogin === isLogin) {
 			return;
 		}
 
 		if (isWebview && isLogin) {
-			alert('newLogin====>' + isLogin);
+			alert('phoneNextProps2====>' + isLogin);
 
 			this.handleCreateCustomerCashbackInfo();
 		}
