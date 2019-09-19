@@ -1,5 +1,4 @@
 import React from 'react';
-import qs from 'qs';
 import { BrowserRouter, Link } from 'react-router-dom';
 import PhoneView from '../../../../../components/PhoneView';
 

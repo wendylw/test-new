@@ -85,10 +85,6 @@ class PageClaim extends React.Component {
 			displayBusinessName,
 		} = businessInfo || {};
 
-		if (isWebview) {
-			return <div className="loader theme page-loader"></div>;
-		}
-
 		return (
 			<section className="loyalty__claim" style={{
 				// backgroundImage: `url(${theImage})`,
@@ -108,6 +104,16 @@ class PageClaim extends React.Component {
 				<div className="asdie-section">
 					<PhoneViewContainer history={history} />
 				</div>
+
+				{
+					isWebview
+						? (
+							<div className="loading-cover">
+								<i className="loader theme page-loader"></i>
+							</div>
+						)
+						: null
+				}
 			</section>
 		);
 	}
