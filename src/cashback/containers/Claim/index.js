@@ -1,10 +1,9 @@
 import React from 'react';
-
+import qs from 'qs';
 import PhoneViewContainer from './components/PhoneViewContainer';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPin } from '../../../components/Icons';
 import Image from '../../../components/Image';
-import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

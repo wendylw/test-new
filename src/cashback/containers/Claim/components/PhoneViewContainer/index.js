@@ -1,4 +1,5 @@
 import React from 'react';
+import qs from 'qs';
 import { BrowserRouter, Link } from 'react-router-dom';
 import PhoneView from '../../../../../components/PhoneView';
 
@@ -14,7 +15,6 @@ class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
 
 	state = {
-		receiptNumber: this.props.receiptNumber,
 		phone: Utils.getLocalStorageVariable('user.p'),
 		isSavingPhone: false,
 	}
@@ -34,35 +34,38 @@ class PhoneViewContainer extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const {
-			user,
-			receiptNumber,
-		} = nextProps;
+		const { user } = nextProps;
 		const {
 			isWebview,
 			isLogin,
 		} = user || {};
 
-		if (receiptNumber !== this.props.receiptNumber) {
-			alert('phoneNextReceiptNumber===>' + receiptNumber);
-
-			this.setState({ receiptNumber });
-		}
+		alert('phoneNextProps1====>' + JSON.stringify(user));
 
 		if (this.props.user.isLogin === isLogin) {
 			return;
 		}
 
 		if (isWebview && isLogin) {
+			alert('phoneNextProps2====>' + isLogin);
+
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
 
-	getOrderInfo() {
+	async getOrderInfo() {
 		const {
+			history,
 			receiptNumber,
-			phone,
-		} = this.state;
+			claimActions,
+		} = this.props;
+		const { phone } = this.state;
+
+		if (!receiptNumber) {
+			const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+			await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
+		}
 
 		return {
 			phone,
@@ -80,7 +83,7 @@ class PhoneViewContainer extends React.Component {
 		const { isWebview } = user || {};
 		const { phone } = this.state;
 
-		alert('newOrderInfo====>' + JSON.stringify(this.getOrderInfo()));
+		alert('orderInfo====>' + JSON.stringify(cashbackInfo));
 
 		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
