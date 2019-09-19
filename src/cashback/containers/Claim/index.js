@@ -26,6 +26,8 @@ class PageClaim extends React.Component {
 
 		const { receiptNumber } = this.props;
 
+		alert('getReceiptNumber');
+
 		if (receiptNumber) {
 			claimActions.getCashbackInfo(receiptNumber);
 		}
