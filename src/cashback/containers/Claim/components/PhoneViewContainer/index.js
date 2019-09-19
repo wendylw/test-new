@@ -26,8 +26,6 @@ class PhoneViewContainer extends React.Component {
 			isLogin,
 		} = user || {};
 
-		alert('phoneWillMount====>' + JSON.stringify(user));
-
 		if (isWebview && isLogin) {
 			this.handleCreateCustomerCashbackInfo();
 		}
@@ -68,8 +66,6 @@ class PhoneViewContainer extends React.Component {
 
 		Utils.setLocalStorageVariable('user.p', phone);
 
-		alert('orderReceiptNumber====>' + this.getOrderInfo().receiptNumber);
-
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
 		const { cashbackInfo } = this.props;
@@ -78,8 +74,6 @@ class PhoneViewContainer extends React.Component {
 		if (!customerId) {
 			return null;
 		}
-
-		alert('cashbackInfo====>' + JSON.stringify(cashbackInfo));
 
 		if (isWebview) {
 			this.handlePostLoyaltyPageMessage();
