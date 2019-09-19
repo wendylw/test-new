@@ -65,9 +65,11 @@ class PhoneViewContainer extends React.Component {
 
 	async handleCreateCustomerCashbackInfo() {
 		const {
+			user,
 			history,
 			claimActions,
 		} = this.props;
+		const { isWebview } = user || {};
 		const { phone } = this.state;
 
 		Utils.setLocalStorageVariable('user.p', phone);
@@ -76,11 +78,15 @@ class PhoneViewContainer extends React.Component {
 		const { cashbackInfo } = this.props;
 		const { customerId } = cashbackInfo || {};
 
-		alert('customerId====>' + customerId);
+		alert('cashbackInfo====>' + JSON.stringify(cashbackInfo));
 
-		if (customerId) {
+		if (!customerId) {
+			return null;
+		}
+
+		if (isWebview) {
 			this.handlePostLoyaltyPageMessage();
-
+		} else {
 			history.push({
 				pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
 				search: `?customerId=${customerId || ''}`
