@@ -108,7 +108,7 @@ class PageClaim extends React.Component {
 					/>
 				</div>
 
-				{/* {
+				{
 					isWebview
 						? (
 							<div className="loading-cover">
@@ -116,7 +116,7 @@ class PageClaim extends React.Component {
 							</div>
 						)
 						: null
-				} */}
+				}
 			</section>
 		);
 	}
