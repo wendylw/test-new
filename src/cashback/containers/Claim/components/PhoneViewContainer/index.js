@@ -26,6 +26,8 @@ class PhoneViewContainer extends React.Component {
 		} = user || {};
 
 		if (isWebview && isLogin) {
+			alert('willMountIsLogin====>' + isLogin);
+
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
@@ -40,10 +42,14 @@ class PhoneViewContainer extends React.Component {
 
 
 		if (preUser && preUser.isLogin === isLogin) {
+			alert('oldLogin====>' + isLogin);
+
 			return;
 		}
 
 		if (isWebview && isLogin) {
+			alert('newLogin====>' + isLogin);
+
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
@@ -71,6 +77,8 @@ class PhoneViewContainer extends React.Component {
 
 		const { cashbackInfo } = this.props;
 		const { customerId } = cashbackInfo || {};
+
+		alert('customerId====>' + customerId);
 
 		if (customerId) {
 			this.handlePostLoyaltyPageMessage();
