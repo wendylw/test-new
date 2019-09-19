@@ -79,19 +79,20 @@ class PhoneViewContainer extends React.Component {
 		const { isWebview } = user || {};
 		const { phone } = this.state;
 
-		alert('orderInfo====>' + JSON.stringify(this.getOrderInfo()));
-
 		Utils.setLocalStorageVariable('user.p', phone);
+
+		alert('orderReceiptNumber====>' + this.getOrderInfo().receiptNumber);
+
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
 		const { cashbackInfo } = this.props;
 		const { customerId } = cashbackInfo || {};
 
-		alert('cashbackInfo====>' + JSON.stringify(cashbackInfo));
-
 		if (!customerId) {
 			return null;
 		}
+
+		alert('cashbackInfo====>' + JSON.stringify(cashbackInfo));
 
 		if (isWebview) {
 			this.handlePostLoyaltyPageMessage();
