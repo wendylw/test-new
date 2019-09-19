@@ -36,8 +36,10 @@ class PhoneViewContainer extends React.Component {
 			isWebview,
 			isLogin,
 		} = user || {};
+		const { user: preUser } = this.props;
 
-		if (this.props.user.isLogin === isLogin) {
+
+		if (preUser && preUser.isLogin === isLogin) {
 			return;
 		}
 
@@ -66,6 +68,9 @@ class PhoneViewContainer extends React.Component {
 
 		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
+
+		const { cashbackInfo } = this.props;
+		const { customerId } = cashbackInfo || {};
 
 		if (customerId) {
 			this.handlePostLoyaltyPageMessage();
