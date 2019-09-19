@@ -3,17 +3,14 @@ import { HOME_TYPES } from '../../../cashback/redux/types';
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
-  // console.log(state);
-  // console.log(action);
-  // if (action.type === HOME_TYPES.SET_CUSTOMER_ID_SUCCESS) {
-  //   const { customerId } = action;
+  if (action.type === HOME_TYPES.GET_CASHBACK_HISTORIES_SUCCESS) {
+    const { response } = action;
+    const { customerId, logs } = response || {};
 
-  //   return { ...state, [customerId]: [] };
-  // }
-
-  // if (action.type === HOME_TYPES.GET_CASHBACK_HISTORIES_SUCCESS) {
-  //   return { ...state, [state.customerId]: action.logs };
-  // }
+    if (customerId) {
+      return { ...state, [customerId]: logs };
+    }
+  }
 
   return state;
 }

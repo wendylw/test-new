@@ -60,7 +60,11 @@ export default store => next => action => {
 
 			return next(actionWith({
 				type: successType,
-				response
+				response: {
+					...payload,
+					...params,
+					...response,
+				}
 			}));
 		},
 	).catch(error => {
