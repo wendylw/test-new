@@ -31,13 +31,13 @@ class PhoneViewContainer extends React.Component {
 		}
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const { receiptNumber, user } = nextProps;
+	componentDidUpdate(prevProps) {
+		const { receiptNumber, user } = this.props;
 		const {
 			isWebview,
 			isLogin,
 		} = user || {};
-		const valid = this.props.user.isLogin !== isLogin || this.props.receiptNumber !== receiptNumber;
+		const valid = prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber;
 
 		if (valid && isWebview && isLogin && receiptNumber) {
 			alert('next props post cashback');
