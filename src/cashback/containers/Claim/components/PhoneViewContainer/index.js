@@ -7,8 +7,7 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
-import { actions as claimActions, getCashbackInfo, getReceiptNumber } from '../../../../redux/modules/claim';
+import { actions as claimActions } from '../../../../redux/modules/claim';
 
 class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
@@ -142,12 +141,7 @@ class PhoneViewContainer extends React.Component {
 }
 
 export default connect(
-	(state) => ({
-		user: getUser(state),
-		onlineStoreInfo: getOnlineStoreInfo(state),
-		cashbackInfo: getCashbackInfo(state),
-		receiptNumber: getReceiptNumber(state),
-	}),
+	() => ({}),
 	(dispatch) => ({
 		claimActions: bindActionCreators(claimActions, dispatch),
 	})

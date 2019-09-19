@@ -86,7 +86,7 @@ const reducer = (state = initialState, action) => {
 		case types.FETCH_RECEIPTNUMBER_SUCCESS: {
 			const { receiptNumber } = response || {};
 
-			return { ...state, receiptNumber }
+			return { ...state, receiptNumber };
 		}
 		default:
 			return state;

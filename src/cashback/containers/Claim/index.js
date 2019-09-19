@@ -26,7 +26,7 @@ class PageClaim extends React.Component {
 		const { receiptNumber } = this.props;
 
 		if (receiptNumber) {
-			claimActions.getCashbackInfo(receiptNumber);
+			await claimActions.getCashbackInfo(receiptNumber);
 		}
 	}
 
@@ -102,7 +102,10 @@ class PageClaim extends React.Component {
 					{this.renderLocation()}
 				</article>
 				<div className="asdie-section">
-					<PhoneViewContainer history={history} />
+					<PhoneViewContainer
+						history={history}
+						{...this.props}
+					/>
 				</div>
 
 				{/* {
