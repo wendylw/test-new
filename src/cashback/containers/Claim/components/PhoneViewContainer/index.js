@@ -88,7 +88,7 @@ class PhoneViewContainer extends React.Component {
 
 	handlePostLoyaltyPageMessage() {
 		const { user } = this.props;
-		const { isWebview } = user;
+		const { isWebview } = user || {};
 
 		if (isWebview) {
 			window.ReactNativeWebView.postMessage('goToLoyaltyPage');
