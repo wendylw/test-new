@@ -26,6 +26,7 @@ class PageClaim extends React.Component {
 
 		const { receiptNumber } = this.props;
 
+		alert('hashcode===>' + h);
 		alert('getReceiptNumber===>' + receiptNumber);
 
 		if (receiptNumber) {
