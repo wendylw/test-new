@@ -1,3 +1,4 @@
+import qs from 'qs';
 import React from 'react';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import {
@@ -5,7 +6,7 @@ import {
 	IconChecked,
 	IconEarned,
 } from '../../../components/Icons';
-import Header from '../../../components/Header';
+// import Header from '../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -26,11 +27,20 @@ const DATE_OPTIONS = {
 
 class RecentActivities extends React.Component {
 	state = {
-		fullScreen: false,
 	}
 
-	toggleFullScreen() {
-		this.setState({ fullScreen: !this.state.fullScreen });
+	componentWillMount() {
+		const {
+			history,
+			homeActions,
+		} = this.props;
+		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+		homeActions.setCustomerId(customerId);
+
+		if (customerId) {
+			homeActions.getCashbackHistory(customerId);
+		}
 	}
 
 	getType(type, props) {
@@ -51,14 +61,6 @@ class RecentActivities extends React.Component {
 		};
 
 		return TypesMap[type];
-	}
-
-	componentWillMount() {
-		const { homeActions, customerId } = this.props;
-
-		if (customerId) {
-			homeActions.getCashbackHistory(customerId);
-		}
 	}
 
 	renderLogList() {
@@ -105,25 +107,21 @@ class RecentActivities extends React.Component {
 	}
 
 	render() {
-		const { cashbackHistory, customerId } = this.props;
-		const { logs } = cashbackHistory || {};
+		// const { cashbackHistory, customerId } = this.props;
+		// const { logs } = cashbackHistory || {};
 
-		if (!Array.isArray(logs) || !customerId) {
-			return null;
-		}
+		// if (!Array.isArray(logs) || !customerId) {
+		// 	return null;
+		// }
 
 		return (
-			<div className={`asdie-section ${this.state.fullScreen ? 'full' : ''}`}>
-				<aside className="aside-bottom">
-					{
-						!this.state.fullScreen
-							? <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
-							: <Header navFunc={this.toggleFullScreen.bind(this)} />
-					}
-					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activity</h3>
+			<section className="loyalty__activities" style={{
+				// backgroundImage: `url(${theImage})`,
+			}}>
+				<article className="loyalty__content">
 					{this.renderLogList()}
-				</aside>
-			</div>
+				</article>
+			</section>
 		);
 	}
 }

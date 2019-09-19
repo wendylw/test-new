@@ -3,6 +3,9 @@ import { HOME_TYPES } from '../../../cashback/redux/types';
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
+
+  console.log(action);
+
   if (action.type === HOME_TYPES.SET_CUSTOMER_ID_SUCCESS) {
     const { customerId } = action;
 

@@ -275,12 +275,15 @@
   }
 }
 
+.has-header-container {
+  padding-top: 50px;
+  min-height: 100%;
+}
+
 .table-ordering {
   @extend .flex;
   @extend .flex-center;
-
-  padding-top: 50px;
-  min-height: 100%;
+  @extend .has-header-container;
 
   .header__title {
     max-width: 55vw;
@@ -359,10 +362,12 @@
 
 .loyalty {
   &__claim,
-  &__home {
+  &__home,
+  &__activities {
     @extend .flex;
     @extend .flex-column;
     @extend .flex-top;
+    @extend .has-header-container;
 
     position: fixed;
     width: 100%;
@@ -374,7 +379,6 @@
   }
 
   &__content {
-    padding: 8vh 0;
     width: inherit;
   }
 
@@ -416,9 +420,7 @@
 .store-list {
   @extend .flex;
   @extend .flex-center;
-
-  padding-top: 50px;
-  min-height: 100%;
+  @extend .has-header-container;
 
   .item {
     margin: 5vw 0;

@@ -29,6 +29,14 @@ class RecentActivities extends React.Component {
 		fullScreen: false,
 	}
 
+	componentWillMount() {
+		const { homeActions, customerId } = this.props;
+
+		if (customerId) {
+			homeActions.getCashbackHistory(customerId);
+		}
+	}
+
 	toggleFullScreen() {
 		this.setState({ fullScreen: !this.state.fullScreen });
 	}
@@ -51,14 +59,6 @@ class RecentActivities extends React.Component {
 		};
 
 		return TypesMap[type];
-	}
-
-	componentWillMount() {
-		const { homeActions, customerId } = this.props;
-
-		if (customerId) {
-			homeActions.getCashbackHistory(customerId);
-		}
 	}
 
 	renderLogList() {
