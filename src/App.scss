@@ -13,6 +13,7 @@
 
 .top-message {
   display: block;
+  position: relative;
   padding: 9vw;
   width: 100%;
   color: $white;
@@ -30,6 +31,17 @@
     @extend .font-weight-bold;
 
     line-height: $line-height-base;
+  }
+
+  &__close-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 4vw;
+
+    svg {
+      fill: $white;
+    }
   }
 }
 

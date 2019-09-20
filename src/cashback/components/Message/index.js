@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { IconClose } from '../../../components/Icons'
 
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
@@ -10,7 +11,6 @@ const MESSAGE_TYPES = {
 };
 
 class Message extends React.Component {
-	timer = null;
 	MESSAGES = {};
 
 	state = {
@@ -19,14 +19,6 @@ class Message extends React.Component {
 
 	componentWillMount() {
 		this.initMessages();
-	}
-
-	componentDidMount() {
-		this.clear();
-	}
-
-	componentDidUpdate() {
-		this.clear();
 	}
 
 	shouldComponentUpdate(nextProps) {
@@ -61,20 +53,6 @@ class Message extends React.Component {
 		this.MESSAGES = messages;
 	}
 
-	clear() {
-		const {
-			status,
-			clearMessage
-		} = this.props;
-
-		if (status) {
-			this.timer = setTimeout(() => {
-				clearMessage();
-				clearTimeout(this.timer);
-			}, 5000);
-		}
-	}
-
 	getMessage() {
 		const { status, message } = this.props;
 
@@ -99,6 +77,9 @@ class Message extends React.Component {
 
 		return (
 			<div className={classList.join(' ')}>
+				<i className="top-message__close-button" onClick={this.props.clearMessage}>
+					<IconClose />
+				</i>
 				<span className="top-message__text">
 					{status ? (this.MESSAGES[status] || this.MESSAGES.Default) : message}
 				</span>
