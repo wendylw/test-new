@@ -245,7 +245,7 @@ class PhoneViewContainer extends React.Component {
             <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
 					</BrowserRouter>
         </p>
-        <div className="thanks__suceed-animation">
+        <div className="thanks__succeed-animation">
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>

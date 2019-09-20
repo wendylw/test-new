@@ -1518,7 +1518,7 @@
     padding: 4vw;
   }
 
-  &__suceed-animation {
+  &__succeed-animation {
     display: none;
     position: absolute;
     left: 0;
@@ -1526,7 +1526,7 @@
     width: 100%;
   }
 
-  &__phone-view.active &__suceed-animation {
+  &__phone-view.active &__succeed-animation {
     display: block;
   }
 }
