@@ -118,7 +118,7 @@ class RecentActivities extends React.Component {
 							? <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
 							: <Header navFunc={this.toggleFullScreen.bind(this)} />
 					}
-					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Receipts</h3>
+					<h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activities</h3>
 					{this.renderLogList()}
 				</aside>
 			</div>

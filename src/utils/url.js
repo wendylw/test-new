@@ -31,6 +31,10 @@ const API_URLS = {
     url: `/api/ordering/stores/${storeId}?a=redirectTo`,
     method: 'get',
   }),
+  GET_RECEIPTS_LIST: {
+    url: '/api/transaction',
+    method: 'get',
+  },
   GET_LOGIN_STATUS: {
     url: '/api/ping',
     method: 'get',

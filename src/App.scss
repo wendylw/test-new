@@ -1655,6 +1655,7 @@
 
   &__time {
     margin: 5px 0;
+    color: $gray-2;
   }
 }
 
@@ -1693,8 +1694,6 @@
 
   &__time {
     @extend .card-list__time;
-
-    color: $gray-2;
   }
 }
 

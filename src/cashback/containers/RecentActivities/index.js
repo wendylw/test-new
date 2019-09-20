@@ -6,7 +6,8 @@ import {
 	IconChecked,
 	IconEarned,
 } from '../../../components/Icons';
-// import Header from '../../../components/Header';
+import Header from '../../../components/Header';
+import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -106,17 +107,24 @@ class RecentActivities extends React.Component {
 	}
 
 	render() {
-		// const { cashbackHistory, customerId } = this.props;
-		// const { logs } = cashbackHistory || {};
-
-		// if (!Array.isArray(logs) || !customerId) {
-		// 	return null;
-		// }
+		const {
+			history,
+			customerId,
+		} = this.props;
 
 		return (
 			<section className="loyalty__activities" style={{
 				// backgroundImage: `url(${theImage})`,
 			}}>
+				<Header
+					isPage={true}
+					navFunc={() => {
+						history.push({
+							pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+							search: `?customerId=${customerId || ''}`
+						});
+					}}
+				/>
 				<article className="loyalty__content">
 					{this.renderLogList()}
 				</article>
