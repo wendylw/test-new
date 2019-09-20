@@ -61,7 +61,7 @@ class PageLoyalty extends React.Component {
 					<h5 className="logo-default__title text-uppercase">Total cashback</h5>
 					<CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
 					<div className="redeem__button-container">
-						<button className="redeem__button button__outline button__block border-radius-base font-weight-bold text-uppercase" onClick={() => this.setState({ showModal: true })}>How to redeem?</button>
+						<button className="redeem__button button__outline button__block border-radius-base font-weight-bold text-uppercase" onClick={() => this.setState({ showModal: true })}>How to use Cashback?</button>
 						<RedeemModal
 							show={this.state.showModal}
 							onClose={() => this.setState({ showModal: false })}
