@@ -78,7 +78,6 @@ class App extends Component {
     } = user || {};
 
     if (isWebview && isExpired) {
-      alert('expired');
       window.ReactNativeWebView.postMessage('tokenExpired');
     } else if (isWebview && !isExpired) {
       window.ReactNativeWebView.postMessage('getToken');
