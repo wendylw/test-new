@@ -61,18 +61,17 @@ class OnlineBankingPayment extends Component {
 	}
 
 	async payNow() {
-		const { agentCode } = this.state;
-		let payState = {
+		this.setState({
 			payNowLoading: true
-		};
-
-		if (agentCode) {
-			payState = {
-				fire: true,
+		}, () => {
+			const { agentCode } = this.state;
+			const payState = {
+				fire: !!agentCode,
+				payNowLoading: !!agentCode,
 			};
-		}
 
-		this.setState(payState);
+			this.setState(payState);
+		});
 	}
 
 	handleSelectBank(e) {
@@ -195,7 +194,7 @@ class OnlineBankingPayment extends Component {
 									<button
 										className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
 										onClick={this.payNow.bind(this)}
-										disabled={payNowLoading && agentCode}
+										disabled={payNowLoading}
 									>{
 											payNowLoading && !agentCode
 												? 'Redirecting'
