@@ -29,11 +29,11 @@ const dataSource = [
     label: 'Visa / MasterCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
-  {
+  /*{
     name: PAYMENT_METHODS.BOOST_PAY,
     logo: '/img/payment-boost.png',
     label: 'Boost',
-  },
+  },*/
   {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: '/img/payment-grab.png',
