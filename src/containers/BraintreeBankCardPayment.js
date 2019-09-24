@@ -332,20 +332,21 @@ class BankCardPayment extends Component {
 				submitButtonEl.addEventListener('click', function (e) {
 					e.preventDefault();
 
+					that.setState({ payNowLoading: true });
+
 					hostedFieldsInstance.tokenize(function (err, payload) {
 						that.checkFieldsEmpty();
 						const { card } = that.state;
 
 						if (err) {
-							console.error(err);
-						} else if (Boolean(card.cardHolderName)) {
+							that.setState({ payNowLoading: false });
+						} else {
 							that.setState({
 								nonce: payload.nonce,
-								payNowLoading: true,
-								fire: true,
+								payNowLoading: Boolean(card.cardHolderName),
+								fire: Boolean(card.cardHolderName),
 							});
 						}
-
 					});
 				}, false);
 			});
