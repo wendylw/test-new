@@ -1,9 +1,11 @@
 import Constants from './constants';
+import config from '../config';
 
 const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
   Accept: "application/json",
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
+  "Cookie": `__s=${config.storeId};__t=${config.table}`,
 });
 
 class RequestError extends Error {
