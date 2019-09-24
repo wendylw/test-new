@@ -131,6 +131,7 @@ class Payment extends Component {
               </div>
             </li>
             <li
+              style={{ display: 'none' }}
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
               onClick={this.savePaymentMethod.bind(this, BOOST_PAY)}
             >
