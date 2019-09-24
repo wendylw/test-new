@@ -7,17 +7,43 @@ import Constants from '../utils/constants';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
-	countDown() {
+	countDownSetTimeoutObj = null;
 
+	state = {
+		otp: null,
+		currentOtpTime: this.props.ResendOtpTime,
+		phone: Utils.getLocalStorageVariable('user.p'),
+	};
+
+	componentWillMount() {
+		const { currentOtpTime } = this.state;
+
+		this.countDown(currentOtpTime);
+	}
+
+	countDown(currentOtpTime) {
+		if (!currentOtpTime) {
+			return;
+		}
+
+		this.setState({
+			currentOtpTime: currentOtpTime - 1,
+		});
+
+		setTimeout(this.countDown(currentOtpTime - 1), 1000);
 	}
 
 	render() {
 		const {
 			show,
 			phone,
-			ResendOtpTime,
 			onClose,
+			sendOtp,
 		} = this.props;
+		const {
+			otp,
+			currentOtpTime,
+		} = this.state;
 
 		if (!show) {
 			return null;
@@ -34,8 +60,8 @@ class OtpModal extends React.Component {
 					<h2 className="full-aside__title">We’ve sent you a One Time Passcode (OTP) to {phone}. Enter it below to continue.</h2>
 					<div className="otp-input">
 						<OtpInput
-							key={`otp-0`}
-							onChange={() => { }}
+							key="otp-input"
+							onChange={otp => this.setState({ otp })}
 							numInputs={Constants.OTP_CODE_SIZE}
 							inputStyle={{
 								width: '16vw',
@@ -47,14 +73,18 @@ class OtpModal extends React.Component {
 					</div>
 					<button
 						className="otp-resend text-uppercase"
-						disabled={!!ResendOtpTime}
+						disabled={!!currentOtpTime}
 					>
-						{`Resend OTP${ResendOtpTime ? `? (${ResendOtpTime})` : ''}`}
+						{`Resend OTP${currentOtpTime ? `? (${currentOtpTime})` : ''}`}
 					</button>
 				</section>
 
 				<footer className="footer-operation opt">
-					<button className="button__fill button__block border-radius-base font-weight-bold text-uppercase">OK</button>
+					<button
+						className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+						disabled={!otp || otp.length !== Constants.OTP_CODE_SIZE}
+						onClick={sendOtp}
+					>OK</button>
 				</footer>
 			</div>
 		);
@@ -67,6 +97,7 @@ OtpModal.propTypes = {
 	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	onClose: PropTypes.func,
+	sendOtp: PropTypes.func,
 };
 
 OtpModal.defaultProps = {
@@ -74,6 +105,7 @@ OtpModal.defaultProps = {
 	phone: '',
 	ResendOtpTime: 0,
 	onClose: () => { },
+	sendOtp: () => { },
 };
 
 export default OtpModal;

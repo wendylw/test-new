@@ -19,7 +19,7 @@ const API_URLS = {
     url: `/api/cashback/hash/${hash}/decode`,
     method: 'get',
   }),
-  GET_CAHSBACK_BUSINESS: {
+  GET_CASHBACK_BUSINESS: {
     url: '/api/cashback/business',
     method: 'get'
   },
@@ -41,6 +41,10 @@ const API_URLS = {
   },
   POST_LOGIN: {
     url: '/api/login',
+    method: 'post',
+  },
+  POST_OTP: {
+    url: '/api/authorize', //TODO: change to new url
     method: 'post',
   },
 };

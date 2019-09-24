@@ -72,7 +72,7 @@ export const actions = {
   },
 
   // load shopping cart
-  loadShoppingCart: () => (dispatch, getState) => {
+  loadShoppingCart: () => (dispatch) => {
     dispatch(fetchShoppingCart());
   },
 

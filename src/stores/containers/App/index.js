@@ -9,13 +9,9 @@ const Home = lazy(() => import('../Home'));
 
 class App extends Component {
   componentDidMount() {
-    const {
-      fetchOnlineStoreInfo,
-      // fetchBusiness,
-    } = this.props.appActions;
+    const { fetchOnlineStoreInfo } = this.props.appActions;
 
     fetchOnlineStoreInfo();
-    // fetchBusiness();
   }
 
   handleClearError = () => {

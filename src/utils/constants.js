@@ -86,6 +86,11 @@ const PEOPLE_COUNT = {
 const OTP_TIMEOUT = 60;
 const OTP_CODE_SIZE = 5;
 
+const AUTH_INFO = {
+  GRANT_TYPE: 'otp',
+  CLIENT: 'beep',
+};
+
 const REQUEST_ERROR_KEYS = {
   403: 'No permission',
   404: 'Bad Request',
@@ -108,5 +113,6 @@ export default {
   BACKEND_PING_PATH,
   DOCUMENT_TITLE,
   PEOPLE_COUNT,
+  AUTH_INFO,
   REQUEST_ERROR_KEYS,
 };

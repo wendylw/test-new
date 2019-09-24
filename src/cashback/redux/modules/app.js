@@ -1,17 +1,21 @@
 import { combineReducers } from 'redux';
+import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import api from '../../../utils/api';
 
+import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+
+const { AUTH_INFO } = Constants;
 
 const initialState = {
 	user: {
 		isWebview: Utils.isWebview(),
 		isLogin: false,
 		isExpired: false,
+		getOtp: false,
 	},
 	error: null, // network error
 	messageModal: {
@@ -30,33 +34,7 @@ const initialState = {
 	}
 };
 
-export const types = {
-	CLEAR_ERROR: "LOYALTY/APP/CLEAR_ERROR",
-
-	// fetch onlineStoreInfo
-	FETCH_ONLINESTOREINFO_REQUEST: "LOYALTY/APP/FETCH_ONLINESTOREINFO_REQUEST",
-	FETCH_ONLINESTOREINFO_SUCCESS: "LOYALTY/APP/FETCH_ONLINESTOREINFO_SUCCESS",
-	FETCH_ONLINESTOREINFO_FAILURE: "LOYALTY/APP/FETCH_ONLINESTOREINFO_FAILURE",
-
-	// fetch business
-	FETCH_BUSINESS_REQUEST: "LOYALTY/APP/FETCH_BUSINESS_REQUEST",
-	FETCH_BUSINESS_SUCCESS: "LOYALTY/APP/FETCH_BUSINESS_SUCCESS",
-	FETCH_BUSINESS_FAILURE: "LOYALTY/APP/FETCH_BUSINESS_FAILURE",
-
-	// message modal
-	SHOW_MESSAGE_MODAL: "LOYALTY/APP/SHOW_MESSAGE_MODAL",
-	HIDE_MESSAGE_MODAL: "LOYALTY/APP/HIDE_MESSAGE_MODAL",
-
-	// fetch login status
-	FETCH_LOGIN_STATUS_REQUEST: 'ORDERING/APP/FETCH_LOGIN_STATUS_REQUEST',
-	FETCH_LOGIN_STATUS_SUCCESS: 'ORDERING/APP/FETCH_LOGIN_STATUS_SUCCESS',
-	FETCH_LOGIN_STATUS_FAILURE: 'ORDERING/APP/FETCH_LOGIN_STATUS_FAILURE',
-
-	// login
-	CREATE_LOGIN_REQUEST: 'ORDERING/APP/CREATE_LOGIN_REQUEST',
-	CREATE_LOGIN_SUCCESS: 'ORDERING/APP/CREATE_LOGIN_SUCCESS',
-	CREATE_LOGIN_FAILURE: 'ORDERING/APP/CREATE_LOGIN_FAILURE',
-};
+export const types = APP_TYPES;
 
 //action creators
 export const actions = {
@@ -74,6 +52,42 @@ export const actions = {
 			},
 		}
 	}),
+
+	getOtp: ({ phone }) => ({
+		[API_REQUEST]: {
+			types: [
+				types.GET_OTP_REQUEST,
+				types.GET_OTP_SUCCESS,
+				types.GET_OTP_FAILURE,
+			],
+			...Url.API_URLS.POST_OTP,
+			payload: {
+				grant_type: AUTH_INFO.GRANT_TYPE,
+				client: AUTH_INFO.CLIENT,
+				business_name: config.business,
+				username: phone,
+			},
+		}
+	}),
+
+	sendOtp: ({ phone, otp }) => ({
+		[API_REQUEST]: {
+			types: [
+				types.CREATE_OTP_REQUEST,
+				types.CREATE_OTP_SUCCESS,
+				types.CREATE_OTP_FAILURE,
+			],
+			...Url.API_URLS.POST_OTP,
+			payload: {
+				grant_type: AUTH_INFO.GRANT_TYPE,
+				client: AUTH_INFO.CLIENT,
+				business_name: config.business,
+				username: phone,
+				password: otp,
+			},
+		}
+	}),
+
 	getLoginStatus: () => ({
 		[API_REQUEST]: {
 			types: [
@@ -84,6 +98,7 @@ export const actions = {
 			...Url.API_URLS.GET_LOGIN_STATUS
 		}
 	}),
+
 	clearError: () => ({
 		type: types.CLEAR_ERROR
 	}),
@@ -109,26 +124,19 @@ export const actions = {
 		}
 	}),
 
-	fetchBusiness: () => async (dispatch) => {
-		try {
-			const { ok, data } = await api({
-				...Url.API_URLS.GET_CAHSBACK_BUSINESS,
-				params: {
-					storeId: config.storeId,
-				}
-			});
-
-			if (ok) {
-				dispatch({
-					type: types.FETCH_BUSINESS_SUCCESS,
-					business: data,
-				});
-			}
-		} catch (e) {
-			// TODO: handle error
-			console.error(e);
+	fetchBusiness: () => ({
+		[API_REQUEST]: {
+			types: [
+				types.FETCH_BUSINESS_REQUEST,
+				types.FETCH_BUSINESS_SUCCESS,
+				types.FETCH_BUSINESS_FAILURE,
+			],
+			...Url.API_URLS.GET_CASHBACK_BUSINESS,
+			params: {
+				storeId: config.storeId,
+			},
 		}
-	}
+	}),
 };
 
 const user = (state = initialState.user, action) => {
@@ -140,6 +148,10 @@ const user = (state = initialState.user, action) => {
 	const { login } = response || {};
 
 	switch (type) {
+		case types.GET_OTP_SUCCESS:
+			return { ...state, getOtp: true };
+		case types.CREATE_OTP_SUCCESS:
+			return { ...state, ...response };
 		case types.FETCH_LOGIN_STATUS_REQUEST:
 			return { ...state, isFetching: true };
 		case types.CREATE_LOGIN_SUCCESS:

@@ -104,7 +104,6 @@ class PageClaim extends React.Component {
 				<div className="asdie-section">
 					<PhoneViewContainer
 						history={history}
-						{...this.props}
 					/>
 				</div>
 
