@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
 
@@ -7,7 +8,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
   user: {
-    isWebview: Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage),
+    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
   },

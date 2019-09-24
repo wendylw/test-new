@@ -5,6 +5,7 @@ import {
 	IconClose,
 } from './Icons';
 import Image from './Image';
+import Utils from '../utils/utils';
 
 class Header extends Component {
 
@@ -16,6 +17,10 @@ class Header extends Component {
 			title,
 			navFunc,
 		} = this.props;
+
+		if (Utils.isWebview()) {
+			return null;
+		}
 
 		if (isStoreHome) {
 			return (
