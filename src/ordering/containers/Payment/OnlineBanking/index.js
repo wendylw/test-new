@@ -83,11 +83,13 @@ class OnlineBanking extends Component {
   }
 
   async payNow() {
-    let payState = {
+    this.setState({
       payNowLoading: true
-    };
+    }, () => {
+      const { agentCode } = this.state;
 
-    this.setState(payState);
+      this.setState({ payNowLoading: !!agentCode });
+    });
   }
 
   handleSelectBank(e) {
@@ -194,7 +196,7 @@ class OnlineBanking extends Component {
           <button
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
-            disabled={payNowLoading && agentCode}
+            disabled={payNowLoading}
           >{
               payNowLoading && !agentCode
                 ? 'Redirecting'
