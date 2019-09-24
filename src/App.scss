@@ -6,8 +6,9 @@
   display: none;
   position: fixed;
   width: 100%;
+  top: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: -100;
   background-color: rgba($color: $black, $alpha: 0.5);
 }
 
@@ -317,6 +318,11 @@
 
     transition: all 0.4s;
     -webkit-transition: all 0.4s;
+
+    .aside {
+      top: 50px;
+      bottom: 21.6vw;
+    }
 
     .header__image-container {
       background-color: $gray-4;
@@ -679,7 +685,6 @@
 .modal {
   @extend .back-drop;
 
-  top: 0;
   z-index: 300;
 
   &__content {
@@ -868,10 +873,7 @@
   @extend .back-drop;
 
   display: block;
-  top: 50px;
-  bottom: 21.6vw;
   opacity: 0;
-  z-index: -100;
 
   transition: opacity 0.01s 0.3s, z-index 0.01s 0.3s;
   -webkit-transition: opacity 0.01s 0.3s, z-index 0.01s 0.3s;
@@ -883,10 +885,6 @@
   &__product-detail {
     display: -webkit-flex;
     display: flex;
-  }
-
-  &__login {
-    z-index: 400;
   }
 
   &.active {

@@ -10,6 +10,7 @@ import {
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
+import Login from '../../components/Login';
 
 class App extends Component {
   async componentWillMount() {
@@ -102,6 +103,7 @@ class App extends Component {
             ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
+        <Login />
       </main>
     );
   }

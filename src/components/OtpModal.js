@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import OtpInput from 'react-otp-input';
 import Header from './Header';
+import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
