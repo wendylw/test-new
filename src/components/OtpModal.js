@@ -38,6 +38,7 @@ class OtpModal extends React.Component {
 			show,
 			phone,
 			onClose,
+			getOtp,
 			sendOtp,
 		} = this.props;
 		const {
@@ -74,6 +75,7 @@ class OtpModal extends React.Component {
 					<button
 						className="otp-resend text-uppercase"
 						disabled={!!currentOtpTime}
+						onClick={getOtp}
 					>
 						{`Resend OTP${currentOtpTime ? `? (${currentOtpTime})` : ''}`}
 					</button>
@@ -97,6 +99,7 @@ OtpModal.propTypes = {
 	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	onClose: PropTypes.func,
+	getOtp: PropTypes.func,
 	sendOtp: PropTypes.func,
 };
 
