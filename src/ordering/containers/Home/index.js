@@ -41,7 +41,32 @@ class Home extends Component {
     homeActions.loadProductList();
   }
 
+  toggleBodyScroll(blockScroll = false) {
+    const rootEl = document.getElementById('root');
+    const homeEl = document.getElementById('table-ordering-home');
+
+    if (rootEl && homeEl) {
+      rootEl.classList.toggle('fixed', blockScroll);
+
+      if (blockScroll) {
+        const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+        homeEl.style.top = `-${currentScrollTop}px`;
+
+        Object.assign(localState, { blockScrollTop: currentScrollTop });
+      } else {
+        const { blockScrollTop } = localState;
+
+        homeEl.style.top = null;
+        document.body.scrollTop = blockScrollTop;
+        document.documentElement.scrollTop = blockScrollTop;
+      }
+    }
+  }
+
   handleToggleAside(asideName) {
+    this.toggleBodyScroll(!!asideName);
+
     this.setState({
       viewAside: asideName
     });
