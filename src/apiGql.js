@@ -153,7 +153,12 @@ apiGql.GET_PRODUCT_DETAIL = gql`
 
 apiGql.GET_PRODUCTS = gql`
   query ProductList($page: Int!, $size: Int!, $business: String!) {
-    products(page: $page, size: $size, business: $business) {
+    products(
+      page: $page,
+      size: $size,
+      business: $business,
+      channels: [${Constants.CHANNEL_TYPE.BEEP}]
+    ) {
       total
       productlist {
         id
@@ -166,7 +171,10 @@ apiGql.GET_PRODUCTS = gql`
 
 apiGql.GET_ONLINE_CATEGORY = gql`
   query OnlineCategory($business: String!) {
-    onlineCategory(business: $business) {
+    onlineCategory(
+      business: $business,
+      channels: [${Constants.CHANNEL_TYPE.BEEP}]
+    ) {
       id
       name
       isEnabled
@@ -192,20 +200,19 @@ apiGql.GET_ONLINE_CATEGORY = gql`
   }
 `;
 
+// revert serviceCharge when BEEP-163 is released
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
   query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: "",
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      userId: ""
     ) {
       total
       subtotal
       count
       discount
       tax
-      serviceCharge
       items {
         ...ShoppingCartItem
       }
@@ -227,6 +234,7 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
+// revert serviceCharge when BEEP-163 is released
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
@@ -238,7 +246,6 @@ apiGql.GET_ORDER_DETAIL = gql`
       storeId
       tableId
       pickUpId
-      serviceCharge
       additionalComments
       items {
         id
@@ -284,7 +291,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      platform: 2
     }) {
       shoppingCartItem {
         id
@@ -316,7 +323,7 @@ apiGql.CREATE_ORDER = gql`
       additionalComments: $additionalComments,
       tableId: $tableId,
       pax: $pax,
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     }) {
       orders {
         id
