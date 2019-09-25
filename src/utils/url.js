@@ -44,7 +44,7 @@ const API_URLS = {
     method: 'post',
   },
   POST_OTP: {
-    url: '/api/authorize', //TODO: change to new url
+    url: 'https://auth-api.test.shub.us/authorize',
     method: 'post',
   },
 };
