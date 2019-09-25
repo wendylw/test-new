@@ -527,6 +527,7 @@
 
     position: relative;
     display: inline-block;
+    min-width: 36px;
     width: 36px;
     border-radius: 50%;
     overflow: hidden;
@@ -541,6 +542,7 @@
       top: 0;
       bottom: 0;
       left: 0;
+      right: 0;
       margin: auto;
       fill: $gray-2;
     }
@@ -557,7 +559,7 @@
     @extend .text-uppercase;
 
     display: inline-block;
-    padding: 0 5.4vw;
+    padding: 0 5vw;
     width: 100%;
     max-width: 100%;
     overflow: hidden;
