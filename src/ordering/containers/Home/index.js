@@ -20,6 +20,10 @@ const ASIDE_NAMES = {
   CART: 'CART'
 };
 
+const localState = {
+  blockScrollTop: 0,
+};
+
 class Home extends Component {
   state = {
     viewAside: null,
