@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { BrowserRouter, Link } from 'react-router-dom';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
+import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 
 class Login extends React.Component {
 	state = {};
@@ -14,18 +16,33 @@ class Login extends React.Component {
 	}
 
 	render() {
-		const { onlineStoreInfo } = this.props;
+		const {
+			user,
+			title,
+			className,
+			onlineStoreInfo
+		} = this.props;
+		const { isLogin } = user || {};
 		const { country } = onlineStoreInfo || {};
+		const classList = ['aside'];
+
+		if (className) {
+			classList.push(className);
+		}
+
+		if (!isLogin) {
+			classList.push('active');
+		}
 
 		return (
-			<section className="aside">
+			<section className={classList.join(' ')}>
 				<PhoneViewContainer
 					className="aside-bottom not-full"
-					title="Do you have a Beep account? Login with your mobile phone number."
+					title={title}
 					country={country}
 					buttonText="Continue"
 					show={true}
-					onSubmit={}
+					onSubmit={() => { }}
 				>
 					<p className="terms-privacy text-center gray-font-opacity">
 						By tapping to continue, you agree to our<br />
@@ -42,6 +59,8 @@ class Login extends React.Component {
 
 
 Login.propTypes = {
+	className: PropTypes.string,
+	title: PropTypes.string,
 };
 
 Login.defaultProps = {
@@ -50,6 +69,7 @@ Login.defaultProps = {
 export default connect(
 	(state) => {
 		return {
+			user: getUser(state),
 			onlineStoreInfo: getOnlineStoreInfo(state),
 		};
 	}

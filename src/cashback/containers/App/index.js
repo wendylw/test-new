@@ -92,7 +92,10 @@ class App extends Component {
   }
 
   render() {
-    const { error } = this.props;
+    const {
+      user,
+      error,
+    } = this.props;
     const { message } = error || {};
 
     return (
@@ -103,7 +106,10 @@ class App extends Component {
             ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
-        <Login />
+        <Login
+          className="aside"
+          title={user.prompt}
+        />
       </main>
     );
   }

@@ -96,7 +96,7 @@ class OtpModal extends React.Component {
 
 
 OtpModal.propTypes = {
-	show: PropTypes.string,
+	show: PropTypes.bool,
 	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	onClose: PropTypes.func,

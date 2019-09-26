@@ -383,6 +383,10 @@
 }
 
 .loyalty {
+  .aside {
+    background-color: transparent;
+  }
+
   &__claim,
   &__home,
   &__activities {

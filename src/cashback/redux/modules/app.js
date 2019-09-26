@@ -16,6 +16,7 @@ const initialState = {
 		isLogin: false,
 		isExpired: false,
 		getOtp: false,
+		prompt: 'Do you have a Beep account? Login with your mobile phone number.',
 	},
 	error: null, // network error
 	messageModal: {

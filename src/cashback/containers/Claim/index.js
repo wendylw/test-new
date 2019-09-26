@@ -1,9 +1,11 @@
 import React from 'react';
 import qs from 'qs';
-import PhoneViewContainer from './components/PhoneViewContainer';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPin } from '../../../components/Icons';
 import Image from '../../../components/Image';
+
+import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -12,13 +14,20 @@ import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNu
 
 
 class PageClaim extends React.Component {
-	state = {}
+	state = {
+		phone: Utils.getLocalStorageVariable('user.p'),
+	}
 
 	async componentWillMount() {
 		const {
+			user,
 			history,
 			claimActions,
 		} = this.props;
+		const {
+			isWebview,
+			isLogin,
+		} = user || {};
 		const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
 		await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
@@ -28,6 +37,74 @@ class PageClaim extends React.Component {
 		if (receiptNumber) {
 			await claimActions.getCashbackInfo(receiptNumber);
 		}
+
+		if (isWebview && isLogin) {
+			this.handleCreateCustomerCashbackInfo();
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		const { receiptNumber, user } = this.props;
+		const {
+			isWebview,
+			isLogin,
+		} = user || {};
+		const valid = prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber;
+
+		if (valid && isWebview && isLogin && receiptNumber) {
+			this.handleCreateCustomerCashbackInfo();
+		}
+	}
+
+	getOrderInfo() {
+		const { receiptNumber } = this.props;
+		const { phone } = this.state;
+
+		return {
+			phone,
+			receiptNumber,
+			source: Constants.CASHBACK_SOURCE.RECEIPT
+		};
+	}
+
+	async handleCreateCustomerCashbackInfo() {
+		const {
+			user,
+			history,
+			claimActions,
+		} = this.props;
+		const { isWebview } = user || {};
+		const { phone } = this.state;
+
+		Utils.setLocalStorageVariable('user.p', phone);
+		await claimActions.createCashbackInfo(this.getOrderInfo());
+
+		const { cashbackInfo } = this.props;
+		const { customerId } = cashbackInfo || {};
+
+		if (!customerId) {
+			return null;
+		}
+
+		if (isWebview) {
+			this.handlePostLoyaltyPageMessage();
+		} else {
+			history.push({
+				pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+				search: `?customerId=${customerId || ''}`
+			});
+		}
+	}
+
+	handlePostLoyaltyPageMessage() {
+		const { user } = this.props;
+		const { isWebview } = user || {};
+
+		if (isWebview) {
+			window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+		}
+
+		return;
 	}
 
 	renderCashback() {
@@ -101,12 +178,6 @@ class PageClaim extends React.Component {
 
 					{this.renderLocation()}
 				</article>
-				<div className="asdie-section">
-					<PhoneViewContainer
-						history={history}
-					/>
-				</div>
-
 				{
 					isWebview
 						? (
