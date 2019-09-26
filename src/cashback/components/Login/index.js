@@ -1,21 +1,13 @@
 import React from 'react';
+import { BrowserRouter, Link } from 'react-router-dom';
 import OtpModal from '../../../components/OtpModal';
-import PhoneView from '../../../components/PhoneView';
-
-import Utils from '../../../utils/utils';
+import PhoneViewContainer from '../../../components/PhoneViewContainer';
 
 import { connect } from 'react-redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 
 class Login extends React.Component {
-	state = {
-		phone: Utils.getLocalStorageVariable('user.p'),
-		isSavingPhone: false,
-	}
-
-	handleUpdatePhoneNumber(phone) {
-		this.setState({ phone });
-	}
+	state = {};
 
 	handleLogin() {
 
@@ -24,27 +16,24 @@ class Login extends React.Component {
 	render() {
 		const { onlineStoreInfo } = this.props;
 		const { country } = onlineStoreInfo || {};
-		const {
-			isSavingPhone,
-			phone,
-		} = this.state;
 
 		return (
 			<section className="aside">
-				<aside className="aside-bottom not-full">
-					<label className="phone-view-form__label text-center">
-						Do you have a Beep account? Login with your mobile phone number.
-					</label>
-					<PhoneView
-						phone={phone}
-						country={country}
-						setPhone={this.handleUpdatePhoneNumber.bind(this)}
-						submitPhoneNumber={this.handleLogin.bind(this)}
-						isLoading={isSavingPhone}
-						buttonText="Continue"
-					/>
-					<button className="link button__block button__block-link font-weight-bold text-uppercase text-center">Skip</button>
-				</aside>
+				<PhoneViewContainer
+					className="aside-bottom not-full"
+					title="Do you have a Beep account? Login with your mobile phone number."
+					country={country}
+					buttonText="Continue"
+					show={true}
+					onSubmit={}
+				>
+					<p className="terms-privacy text-center gray-font-opacity">
+						By tapping to continue, you agree to our<br />
+						<BrowserRouter basename="/">
+							<Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+							</BrowserRouter>
+					</p>
+				</PhoneViewContainer>
 				<OtpModal />
 			</section>
 		);

@@ -8,7 +8,6 @@ const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class PhoneView extends React.Component {
   state = {
-    showVerify: false,
     isLoading: this.props.isLoading,
     errorMessage: {
       phone: null
@@ -21,15 +20,6 @@ class PhoneView extends React.Component {
     if (isLoading !== this.state.isLoading) {
       this.setState({ isLoading });
     }
-  }
-
-  toggleVerifyModal(flag) {
-    if (typeof flag === 'boolean') {
-      this.setState({ showVerify: flag });
-      return;
-    }
-
-    this.setState({ showVerify: !this.state.showVerify });
   }
 
   savePhoneNumber() {
