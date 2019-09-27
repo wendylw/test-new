@@ -138,6 +138,10 @@ export const actions = {
 			},
 		}
 	}),
+
+	setLoginPrompt: () => (dispatch) => {
+
+	}
 };
 
 const user = (state = initialState.user, action) => {

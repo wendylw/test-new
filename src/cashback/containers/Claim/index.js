@@ -151,7 +151,6 @@ class PageClaim extends React.Component {
 	render() {
 		const {
 			user,
-			history,
 			onlineStoreInfo,
 			businessInfo,
 		} = this.props;
