@@ -9,7 +9,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber } from '../../redux/modules/claim';
 
 
@@ -31,6 +31,7 @@ class PageClaim extends React.Component {
 		const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
 		await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
+		appActions.setLoginPrompt('Claim with your mobile number');
 
 		const { receiptNumber } = this.props;
 

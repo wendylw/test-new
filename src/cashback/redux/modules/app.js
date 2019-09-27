@@ -139,16 +139,24 @@ export const actions = {
 		}
 	}),
 
-	setLoginPrompt: () => (dispatch) => {
+	setLoginPrompt: (prompt) => {
+		console.log(1111);
 
-	}
+		console.log(prompt);
+
+		return {
+			type: types.SET_LOGIN_PROMPT,
+			prompt
+		};
+	},
 };
 
 const user = (state = initialState.user, action) => {
 	const {
 		type,
 		response,
-		code
+		code,
+		prompt,
 	} = action;
 	const { login } = response || {};
 
@@ -179,6 +187,8 @@ const user = (state = initialState.user, action) => {
 			return { ...state, isFetching: false };
 		case types.FETCH_LOGIN_STATUS_FAILURE:
 			return { ...state, isFetching: false };
+		case types.SET_LOGIN_PROMPT:
+			return { ...state, prompt };
 		default:
 			return state;
 	}
