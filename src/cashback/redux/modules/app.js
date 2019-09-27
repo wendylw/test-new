@@ -15,7 +15,7 @@ const initialState = {
 		isWebview: Utils.isWebview(),
 		isLogin: false,
 		isExpired: false,
-		getOtp: false,
+		hasOtp: false,
 		prompt: 'Do you have a Beep account? Login with your mobile phone number.',
 	},
 	error: null, // network error
@@ -52,6 +52,10 @@ export const actions = {
 				refreshToken,
 			},
 		}
+	}),
+
+	resetOtpStatus: () => ({
+		type: types.RESET_OTP_STATUS,
 	}),
 
 	getOtp: ({ phone }) => ({
@@ -114,6 +118,11 @@ export const actions = {
 		type: types.HIDE_MESSAGE_MODAL,
 	}),
 
+	setLoginPrompt: (prompt) => ({
+		type: types.SET_LOGIN_PROMPT,
+		prompt,
+	}),
+
 	fetchOnlineStoreInfo: () => ({
 		[FETCH_GRAPHQL]: {
 			types: [
@@ -138,17 +147,6 @@ export const actions = {
 			},
 		}
 	}),
-
-	setLoginPrompt: (prompt) => async (dispatch) => {
-		console.log(1111);
-
-		console.log(prompt);
-
-		return {
-			type: types.SET_LOGIN_PROMPT,
-			prompt
-		};
-	},
 };
 
 const user = (state = initialState.user, action) => {
@@ -162,7 +160,7 @@ const user = (state = initialState.user, action) => {
 
 	switch (type) {
 		case types.GET_OTP_SUCCESS:
-			return { ...state, getOtp: true };
+			return { ...state, hasOtp: true };
 		case types.CREATE_OTP_SUCCESS:
 			return { ...state, ...response };
 		case types.FETCH_LOGIN_STATUS_REQUEST:
@@ -189,6 +187,8 @@ const user = (state = initialState.user, action) => {
 			return { ...state, isFetching: false };
 		case types.SET_LOGIN_PROMPT:
 			return { ...state, prompt };
+		case types.RESET_OTP_STATUS:
+			return { ...state, hasOtp: false };
 		default:
 			return state;
 	}

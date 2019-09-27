@@ -22,16 +22,14 @@ class PageClaim extends React.Component {
 		const {
 			user,
 			history,
+			appActions,
 			claimActions,
 		} = this.props;
-		const {
-			isWebview,
-			isLogin,
-		} = user || {};
+		const { isLogin } = user || {};
 		const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-		await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
 		appActions.setLoginPrompt('Claim with your mobile number');
+		await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
 
 		const { receiptNumber } = this.props;
 
@@ -39,20 +37,17 @@ class PageClaim extends React.Component {
 			await claimActions.getCashbackInfo(receiptNumber);
 		}
 
-		if (isWebview && isLogin) {
+		if (isLogin) {
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
 
 	componentDidUpdate(prevProps) {
 		const { receiptNumber, user } = this.props;
-		const {
-			isWebview,
-			isLogin,
-		} = user || {};
+		const { isLogin } = user || {};
 		const valid = prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber;
 
-		if (valid && isWebview && isLogin && receiptNumber) {
+		if (valid && isLogin && receiptNumber) {
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
@@ -201,6 +196,7 @@ export default connect(
 		receiptNumber: getReceiptNumber(state),
 	}),
 	(dispatch) => ({
+		appActions: bindActionCreators(appActions, dispatch),
 		claimActions: bindActionCreators(claimActions, dispatch),
 	})
 )(PageClaim);

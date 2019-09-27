@@ -36,20 +36,15 @@ class OtpModal extends React.Component {
 
 	render() {
 		const {
-			show,
-			phone,
 			onClose,
 			getOtp,
 			sendOtp,
 		} = this.props;
 		const {
 			otp,
+			phone,
 			currentOtpTime,
 		} = this.state;
-
-		if (!show) {
-			return null;
-		}
 
 		return (
 			<div className="full-aside">
@@ -96,8 +91,6 @@ class OtpModal extends React.Component {
 
 
 OtpModal.propTypes = {
-	show: PropTypes.bool,
-	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	onClose: PropTypes.func,
 	getOtp: PropTypes.func,
@@ -105,8 +98,6 @@ OtpModal.propTypes = {
 };
 
 OtpModal.defaultProps = {
-	show: false,
-	phone: '',
 	ResendOtpTime: 0,
 	onClose: () => { },
 	sendOtp: () => { },

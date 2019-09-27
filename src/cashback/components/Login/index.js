@@ -6,13 +6,46 @@ import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { bindActionCreators } from 'redux';
+import { actions as appActions, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 
 class Login extends React.Component {
-	state = {};
+	state = {
+		showOtp: this.props.user.hasOtp,
+	};
 
-	handleLogin() {
+	handleCloseOtpModal() {
+		const { appActions } = this.props;
 
+		appActions.resetOtpStatus();
+
+		this.setState({
+			showOtp: false,
+		});
+	}
+
+	async handleSubmitPhoneNumber(phone) {
+		const { appActions } = this.props;
+
+		await appActions.resetOtpStatus();
+		appActions.getOtp({ phone });
+	}
+
+	renderOtpModal() {
+		const { showOtp } = this.state;
+
+		if (!showOtp) {
+			return null;
+		}
+
+		return (
+			<OtpModal
+				ResendOtpTime={20}
+				onClose={this.handleCloseOtpModal.bind(this)}
+				getOtp={this.handleSubmitPhoneNumber.bind(this)}
+				sendOtp={() => { }}
+			/>
+		);
 	}
 
 	render() {
@@ -42,7 +75,7 @@ class Login extends React.Component {
 					country={country}
 					buttonText="Continue"
 					show={true}
-					onSubmit={() => { }}
+					onSubmit={this.handleSubmitPhoneNumber.bind(this)}
 				>
 					<p className="terms-privacy text-center gray-font-opacity">
 						By tapping to continue, you agree to our<br />
@@ -51,7 +84,8 @@ class Login extends React.Component {
 							</BrowserRouter>
 					</p>
 				</PhoneViewContainer>
-				<OtpModal />
+				{this.renderOtpModal()}
+
 			</section>
 		);
 	}
@@ -67,10 +101,11 @@ Login.defaultProps = {
 };
 
 export default connect(
-	(state) => {
-		return {
-			user: getUser(state),
-			onlineStoreInfo: getOnlineStoreInfo(state),
-		};
-	}
+	(state) => ({
+		user: getUser(state),
+		onlineStoreInfo: getOnlineStoreInfo(state),
+	}),
+	(dispatch) => ({
+		appActions: bindActionCreators(appActions, dispatch),
+	})
 )(Login);
