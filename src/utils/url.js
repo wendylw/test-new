@@ -46,6 +46,7 @@ const API_URLS = {
   POST_OTP: {
     url: 'https://auth-api.test.shub.us/authorize',
     method: 'post',
+    mode: 'cors',
   },
 };
 

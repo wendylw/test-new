@@ -13,6 +13,7 @@ export default store => next => action => {
 	const {
 		url,
 		method,
+		mode,
 		types,
 		params,
 		payload
@@ -43,10 +44,10 @@ export default store => next => action => {
 
 	const methodMapToRequest = {
 		get: (url) => get(url),
-		post: (url, payload) => post(url, payload),
+		post: (url, payload, options) => post(url, payload, options),
 	};
 
-	return methodMapToRequest[method](requestUrl, payload).then(
+	return methodMapToRequest[method](requestUrl, payload, { mode }).then(
 		response => {
 			const { error } = response;
 

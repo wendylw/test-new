@@ -106,10 +106,7 @@ class App extends Component {
             ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
-        <Login
-          className="aside"
-          title={user.prompt}
-        />
+        <Login title={user.prompt} />
       </main>
     );
   }

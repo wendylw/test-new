@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PhoneView from './PhoneView';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
@@ -9,12 +8,31 @@ const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class PhoneViewContainer extends React.Component {
 	state = {
-		phone: Utils.getLocalStorageVariable('user.p'),
-		isSavingPhone: false,
+		phone: this.props.phone,
+		isSavingPhone: this.props.isLoading,
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { isLoading, phone } = nextProps;
+
+		if (phone !== this.props.phone) {
+			this.setState({ phone });
+		}
+
+		if (isLoading !== this.props.isLoading) {
+			this.setState({ isSavingPhone: isLoading });
+		}
 	}
 
 	handleUpdatePhoneNumber(phone) {
-		this.setState({ phone });
+		const { updatePhoneNumber } = this.props;
+		const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+		if (metadataMobile.countries[selectedCountry]) {
+			updatePhoneNumber(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+
+			this.setState({ phone });
+		}
 	}
 
 	handleSubmitPhoneNumber() {
@@ -25,23 +43,26 @@ class PhoneViewContainer extends React.Component {
 			return;
 		}
 
+		Utils.setLocalStorageVariable('user.p', phone);
 		this.setState({ isSavingPhone: true });
 
 		onSubmit(phone);
 	}
 
-	renderPhoneView() {
+	render() {
 		const {
+			children,
+			title,
+			className,
+			country,
 			buttonText,
-			onlineStoreInfo,
 		} = this.props;
 		const {
 			isSavingPhone,
 			phone,
-			errorMessage,
 		} = this.state;
-		const { country } = onlineStoreInfo || {};
 		let buttonContent = buttonText;
+
 
 		if (!country) {
 			return null;
@@ -52,25 +73,19 @@ class PhoneViewContainer extends React.Component {
 		}
 
 		return (
-			<React.Fragment>
+			<aside className={className}>
+				{
+					title
+						? <label className="phone-view-form__label text-center">{title}</label>
+						: null
+				}
 				<PhoneInput
 					placeholder="Enter phone number"
 					value={formatPhoneNumberIntl(phone)}
 					country={country}
 					metadata={metadataMobile}
-					onChange={phone => {
-						const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
-
-						this.handleUpdatePhoneNumber(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
-					}}
+					onChange={phone => this.handleUpdatePhoneNumber(phone)}
 				/>
-
-				{
-					errorMessage.phone
-						? <span className="error">{errorMessage.phone}</span>
-						: null
-				}
-
 				<button
 					className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
 					onClick={this.handleSubmitPhoneNumber.bind(this)}
@@ -78,43 +93,6 @@ class PhoneViewContainer extends React.Component {
 				>
 					{buttonContent}
 				</button>
-			</React.Fragment>
-		);
-	}
-
-	render() {
-		const {
-			children,
-			title,
-			className,
-			country,
-		} = this.props;
-		const {
-			isSavingPhone,
-			phone,
-		} = this.state;
-
-		if (!country) {
-			return null;
-		}
-
-		return (
-			<aside className={className}>
-				{
-					title
-						? <label className="phone-view-form__label text-center">{title}</label>
-						: null
-				}
-
-				{this.renderPhoneView()}
-				<PhoneView
-					phone={phone}
-					country={country}
-					setPhone={this.handleUpdatePhoneNumber.bind(this)}
-					submitPhoneNumber={this.handleSubmitPhoneNumber.bind(this)}
-					isLoading={isSavingPhone}
-					buttonText="Continue"
-				/>
 				{children}
 			</aside>
 		);
@@ -122,17 +100,20 @@ class PhoneViewContainer extends React.Component {
 }
 
 PhoneViewContainer.propTypes = {
+	phone: PropTypes.string,
 	className: PropTypes.string,
 	title: PropTypes.string,
 	country: PropTypes.string,
 	buttonText: PropTypes.string,
-	show: PropTypes.bool,
+	isLoading: PropTypes.bool,
+	updatePhoneNumber: PropTypes.func,
 	onSubmit: PropTypes.func,
 };
 
 PhoneViewContainer.defaultProps = {
-	show: false,
-	country: 'MY',
+	isLoading: false,
+	updatePhoneNumber: () => { },
+	onSubmit: () => { },
 };
 
 export default PhoneViewContainer;

@@ -3,7 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import OtpInput from 'react-otp-input';
 import Header from './Header';
-import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
@@ -13,7 +12,6 @@ class OtpModal extends React.Component {
 	state = {
 		otp: null,
 		currentOtpTime: this.props.ResendOtpTime,
-		phone: Utils.getLocalStorageVariable('user.p'),
 	};
 
 	componentWillMount() {
@@ -39,10 +37,10 @@ class OtpModal extends React.Component {
 			onClose,
 			getOtp,
 			sendOtp,
+			phone,
 		} = this.props;
 		const {
 			otp,
-			phone,
 			currentOtpTime,
 		} = this.state;
 
@@ -71,7 +69,7 @@ class OtpModal extends React.Component {
 					<button
 						className="otp-resend text-uppercase"
 						disabled={!!currentOtpTime}
-						onClick={getOtp}
+						onClick={() => getOtp(phone)}
 					>
 						{`Resend OTP${currentOtpTime ? `? (${currentOtpTime})` : ''}`}
 					</button>
@@ -81,7 +79,7 @@ class OtpModal extends React.Component {
 					<button
 						className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
 						disabled={!otp || otp.length !== Constants.OTP_CODE_SIZE}
-						onClick={sendOtp}
+						onClick={() => sendOtp(otp)}
 					>OK</button>
 				</footer>
 			</div>
@@ -91,6 +89,7 @@ class OtpModal extends React.Component {
 
 
 OtpModal.propTypes = {
+	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	onClose: PropTypes.func,
 	getOtp: PropTypes.func,

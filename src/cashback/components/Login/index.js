@@ -8,42 +8,56 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
 	state = {
-		showOtp: this.props.user.hasOtp,
+		phone: Utils.getLocalStorageVariable('user.p'),
 	};
 
 	handleCloseOtpModal() {
 		const { appActions } = this.props;
 
 		appActions.resetOtpStatus();
-
-		this.setState({
-			showOtp: false,
-		});
 	}
 
-	async handleSubmitPhoneNumber(phone) {
-		const { appActions } = this.props;
+	handleUpdatePhoneNumber(phone) {
+		this.setState({ phone });
+	}
 
-		await appActions.resetOtpStatus();
+	async handleSubmitPhoneNumber() {
+		const { appActions } = this.props;
+		const { phone } = this.state;
+
 		appActions.getOtp({ phone });
 	}
 
-	renderOtpModal() {
-		const { showOtp } = this.state;
+	async handleWebLogin(otp) {
+		const { appActions } = this.props;
+		const { phone } = this.state;
 
-		if (!showOtp) {
+		await appActions.sendOtp({
+			phone,
+			otp,
+		});
+	}
+
+	renderOtpModal() {
+		const { user } = this.props;
+		const { hasOtp } = user || {};
+		const { phone } = this.state;
+
+		if (!hasOtp) {
 			return null;
 		}
 
 		return (
 			<OtpModal
 				ResendOtpTime={20}
+				phone={phone}
 				onClose={this.handleCloseOtpModal.bind(this)}
 				getOtp={this.handleSubmitPhoneNumber.bind(this)}
-				sendOtp={() => { }}
+				sendOtp={this.handleWebLogin.bind(this)}
 			/>
 		);
 	}
@@ -55,8 +69,12 @@ class Login extends React.Component {
 			className,
 			onlineStoreInfo
 		} = this.props;
-		const { isLogin } = user || {};
+		const {
+			isFetching,
+			isLogin,
+		} = user || {};
 		const { country } = onlineStoreInfo || {};
+		const { phone } = this.state;
 		const classList = ['aside'];
 
 		if (className) {
@@ -72,9 +90,12 @@ class Login extends React.Component {
 				<PhoneViewContainer
 					className="aside-bottom not-full"
 					title={title}
+					phone={phone}
 					country={country}
 					buttonText="Continue"
 					show={true}
+					isLoading={isFetching}
+					updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
 					onSubmit={this.handleSubmitPhoneNumber.bind(this)}
 				>
 					<p className="terms-privacy text-center gray-font-opacity">

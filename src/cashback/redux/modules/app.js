@@ -159,15 +159,21 @@ const user = (state = initialState.user, action) => {
 	const { login } = response || {};
 
 	switch (type) {
+		case types.RESET_OTP_STATUS:
+			return { ...state, isFetching: false, hasOtp: false };
 		case types.GET_OTP_SUCCESS:
-			return { ...state, hasOtp: true };
+			return { ...state, isFetching: false, hasOtp: true };
 		case types.CREATE_OTP_SUCCESS:
-			return { ...state, ...response };
+			/* response has accessToken and refreshToken */
+			return { ...state, isFetching: false, ...response };
 		case types.FETCH_LOGIN_STATUS_REQUEST:
+		case types.GET_OTP_REQUEST:
 			return { ...state, isFetching: true };
 		case types.CREATE_LOGIN_SUCCESS:
+			const validKeys = Object.keys(state).filter(key => key !== 'accessToken' && key !== 'refreshToken');
+
 			return {
-				...state,
+				...state.filter(key => validKeys.includes(key)),
 				isLogin: true,
 				isFetching: false,
 			};
@@ -187,8 +193,6 @@ const user = (state = initialState.user, action) => {
 			return { ...state, isFetching: false };
 		case types.SET_LOGIN_PROMPT:
 			return { ...state, prompt };
-		case types.RESET_OTP_STATUS:
-			return { ...state, hasOtp: false };
 		default:
 			return state;
 	}

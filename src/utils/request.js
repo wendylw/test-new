@@ -4,7 +4,6 @@ const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
   Accept: "application/json",
   "Content-Type": "application/json",
-  "Test": "test",
 });
 
 class RequestError extends Error {
@@ -29,11 +28,12 @@ function get(url) {
     });
 }
 
-function post(url, data) {
+function post(url, data, options) {
   return fetch(url, {
     method: "POST",
     headers: headers,
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
+    ...options,
   })
     .then(response => {
       return handleResponse(url, response);
