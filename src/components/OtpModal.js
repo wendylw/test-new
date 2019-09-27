@@ -12,12 +12,21 @@ class OtpModal extends React.Component {
 	state = {
 		otp: null,
 		currentOtpTime: this.props.ResendOtpTime,
+		isSendingOtp: this.props.isLoading,
 	};
 
 	componentWillMount() {
 		const { currentOtpTime } = this.state;
 
 		this.countDown(currentOtpTime);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { isLoading } = nextProps;
+
+		if (isLoading !== this.props.isLoading) {
+			this.setState({ isSendingOtp: isLoading });
+		}
 	}
 
 	countDown(currentOtpTime) {
@@ -42,6 +51,7 @@ class OtpModal extends React.Component {
 		const {
 			otp,
 			currentOtpTime,
+			isSendingOtp,
 		} = this.state;
 
 		return (
@@ -78,7 +88,7 @@ class OtpModal extends React.Component {
 				<footer className="footer-operation opt">
 					<button
 						className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
-						disabled={!otp || otp.length !== Constants.OTP_CODE_SIZE}
+						disabled={isSendingOtp || !otp || otp.length !== Constants.OTP_CODE_SIZE}
 						onClick={() => sendOtp(otp)}
 					>OK</button>
 				</footer>
@@ -91,6 +101,7 @@ class OtpModal extends React.Component {
 OtpModal.propTypes = {
 	phone: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
+	isLoading: PropTypes.bool,
 	onClose: PropTypes.func,
 	getOtp: PropTypes.func,
 	sendOtp: PropTypes.func,

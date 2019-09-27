@@ -70,9 +70,7 @@ class PageClaim extends React.Component {
 			claimActions,
 		} = this.props;
 		const { isWebview } = user || {};
-		const { phone } = this.state;
 
-		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
 		const { cashbackInfo } = this.props;
@@ -150,7 +148,7 @@ class PageClaim extends React.Component {
 			onlineStoreInfo,
 			businessInfo,
 		} = this.props;
-		const { isWebview } = user;
+		const { isLogin } = user;
 		const { logo } = onlineStoreInfo || {};
 		const {
 			name,
@@ -174,7 +172,7 @@ class PageClaim extends React.Component {
 					{this.renderLocation()}
 				</article>
 				{
-					isWebview
+					isLogin
 						? (
 							<div className="loading-cover">
 								<i className="loader theme page-loader"></i>

@@ -40,11 +40,24 @@ class Login extends React.Component {
 			phone,
 			otp,
 		});
+
+		const { user } = this.props;
+		const { accessToken, refreshToken } = user;
+
+		if (accessToken && refreshToken) {
+			appActions.loginApp({
+				accessToken,
+				refreshToken,
+			});
+		}
 	}
 
 	renderOtpModal() {
 		const { user } = this.props;
-		const { hasOtp } = user || {};
+		const {
+			isFetching,
+			hasOtp
+		} = user || {};
 		const { phone } = this.state;
 
 		if (!hasOtp) {
@@ -58,6 +71,7 @@ class Login extends React.Component {
 				onClose={this.handleCloseOtpModal.bind(this)}
 				getOtp={this.handleSubmitPhoneNumber.bind(this)}
 				sendOtp={this.handleWebLogin.bind(this)}
+				isLoading={isFetching}
 			/>
 		);
 	}

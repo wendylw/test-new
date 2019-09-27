@@ -164,8 +164,14 @@ const user = (state = initialState.user, action) => {
 		case types.GET_OTP_SUCCESS:
 			return { ...state, isFetching: false, hasOtp: true };
 		case types.CREATE_OTP_SUCCESS:
-			/* response has accessToken and refreshToken */
-			return { ...state, isFetching: false, ...response };
+			const { access_token, refresh_token } = response;
+
+			return {
+				...state,
+				isFetching: false,
+				accessToken: access_token,
+				refreshToken: refresh_token,
+			};
 		case types.FETCH_LOGIN_STATUS_REQUEST:
 		case types.GET_OTP_REQUEST:
 			return { ...state, isFetching: true };
