@@ -139,7 +139,7 @@ export const actions = {
 		}
 	}),
 
-	setLoginPrompt: (prompt) => {
+	setLoginPrompt: (prompt) => async (dispatch) => {
 		console.log(1111);
 
 		console.log(prompt);
