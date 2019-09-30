@@ -109,7 +109,6 @@ class App extends Component {
 
     return (
       <main className="loyalty">
-        <Message />
         {
           message
             ? <ErrorToast message={message} clearError={this.handleClearError} />
