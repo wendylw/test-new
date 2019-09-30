@@ -38,11 +38,12 @@ class OtpModal extends React.Component {
 			currentOtpTime: currentOtpTime - 1,
 		});
 
-		setTimeout(this.countDown(currentOtpTime - 1), 1000);
+		setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
 	}
 
 	render() {
 		const {
+			buttonText,
 			onClose,
 			getOtp,
 			sendOtp,
@@ -53,6 +54,11 @@ class OtpModal extends React.Component {
 			currentOtpTime,
 			isSendingOtp,
 		} = this.state;
+		let buttonContent = buttonText;
+
+		if (isSendingOtp) {
+			buttonContent = <div className="loader"></div>;
+		}
 
 		return (
 			<div className="full-aside">
@@ -90,7 +96,7 @@ class OtpModal extends React.Component {
 						className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
 						disabled={isSendingOtp || !otp || otp.length !== Constants.OTP_CODE_SIZE}
 						onClick={() => sendOtp(otp)}
-					>OK</button>
+					>{buttonContent}</button>
 				</footer>
 			</div>
 		);
@@ -100,6 +106,7 @@ class OtpModal extends React.Component {
 
 OtpModal.propTypes = {
 	phone: PropTypes.string,
+	buttonText: PropTypes.string,
 	ResendOtpTime: PropTypes.number,
 	isLoading: PropTypes.bool,
 	onClose: PropTypes.func,
@@ -108,6 +115,7 @@ OtpModal.propTypes = {
 };
 
 OtpModal.defaultProps = {
+	buttonText: '',
 	ResendOtpTime: 0,
 	onClose: () => { },
 	sendOtp: () => { },

@@ -155,6 +155,10 @@ class PageClaim extends React.Component {
 			displayBusinessName,
 		} = businessInfo || {};
 
+		if (isLogin) {
+			return <div className="loader theme page-loader"></div>;
+		}
+
 		return (
 			<section className="loyalty__claim" style={{
 				// backgroundImage: `url(${theImage})`,
@@ -171,15 +175,6 @@ class PageClaim extends React.Component {
 
 					{this.renderLocation()}
 				</article>
-				{
-					isLogin
-						? (
-							<div className="loading-cover">
-								<i className="loader theme page-loader"></i>
-							</div>
-						)
-						: null
-				}
 			</section>
 		);
 	}

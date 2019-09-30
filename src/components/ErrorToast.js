@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class ErrorToast extends Component {
 	componentDidMount() {
@@ -15,14 +16,23 @@ class ErrorToast extends Component {
 
 	render() {
 		const { message } = this.props;
+
 		return (
-			<div className="error-toast">
-				<div className="error-toast__text">
+			<div className="top-message error fixed">
+				<div className="top-message__text">
 					{message}
 				</div>
 			</div>
 		);
 	}
 }
+
+ErrorToast.propTypes = {
+	clearError: PropTypes.func,
+};
+
+ErrorToast.defaultProps = {
+	clearError: () => { },
+};
 
 export default ErrorToast;

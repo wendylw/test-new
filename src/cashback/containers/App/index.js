@@ -96,17 +96,26 @@ class App extends Component {
       user,
       error,
     } = this.props;
+    const {
+      isFetching,
+      prompt,
+      isLogin,
+    } = user || {};
     const { message } = error || {};
 
     return (
       <main className="loyalty">
-        <Routes />
         {
           message
             ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
-        <Login title={user.prompt} />
+        {
+          !isFetching && !isLogin
+            ? <Login title={prompt} />
+            : null
+        }
+        <Routes />
       </main>
     );
   }

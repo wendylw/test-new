@@ -10,7 +10,7 @@ import {
 } from '../../redux/modules/app';
 import Routes from '../Routes';
 import '../../../App.scss';
-import ErrorToast from './components/ErrorToast';
+import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
 
 // import Login from '../../components/Login';

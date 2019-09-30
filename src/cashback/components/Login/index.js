@@ -56,16 +56,18 @@ class Login extends React.Component {
 		const { user } = this.props;
 		const {
 			isFetching,
-			hasOtp
+			isLogin,
+			hasOtp,
 		} = user || {};
 		const { phone } = this.state;
 
-		if (!hasOtp) {
+		if (!hasOtp || isLogin) {
 			return null;
 		}
 
 		return (
 			<OtpModal
+				buttonText="Ok"
 				ResendOtpTime={20}
 				phone={phone}
 				onClose={this.handleCloseOtpModal.bind(this)}
