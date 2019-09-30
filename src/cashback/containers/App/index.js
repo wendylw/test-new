@@ -11,8 +11,6 @@ import {
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
-import MessageModal from '../../components/MessageModal';
-import Message from '../../components/Message';
 import Login from '../../components/Login';
 
 class App extends Component {
@@ -98,7 +96,6 @@ class App extends Component {
     const {
       user,
       error,
-      messageInfo,
     } = this.props;
     const {
       isFetching,

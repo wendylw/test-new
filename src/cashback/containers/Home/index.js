@@ -1,8 +1,8 @@
 import React from 'react';
 
-import RedeemModal from './components/RedeemModal';
 import Image from '../../../components/Image';
 import Message from '../../components/Message';
+import RedeemModal from './components/RedeemModal';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
@@ -10,13 +10,20 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActions, getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as homeActions, getBusinessInfo, getCashbackHistory, getCashbackHistorySummary } from '../../redux/modules/home';
 
 
 class PageLoyalty extends React.Component {
 	state = {
 		showModal: false,
+	}
+
+	setMessage(cashbackHistorySummary) {
+		const { appActions } = this.props;
+		const { status } = cashbackHistorySummary || {};
+
+		appActions.showMessageInfo({ key: status });
 	}
 
 	async componentWillMount() {
@@ -30,13 +37,40 @@ class PageLoyalty extends React.Component {
 		homeActions.setCashbackMessage();
 	}
 
+	componentDidMount() {
+		this.setMessage(this.props.cashbackHistorySummary);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { cashbackHistorySummary } = nextProps;
+		const { status } = cashbackHistorySummary || {};
+		const { status: preCashbackStatus } = this.props.cashbackHistorySummary || {};
+
+		if (status !== preCashbackStatus) {
+			this.setMessage(cashbackHistorySummary);
+		}
+	}
+
+	renderMessage() {
+		const {
+			homeActions,
+			cashbackHistorySummary,
+		} = this.props;
+		const { status } = cashbackHistorySummary || {};
+
+		return (
+			<Message
+				status={status}
+				clearMessage={() => homeActions.clearCashbackMessage()}
+			/>
+		);
+	}
+
 	render() {
 		const {
 			business,
-			homeActions,
 			onlineStoreInfo,
 			cashbackHistory,
-			cashbackHistorySummary,
 		} = this.props;
 		const {
 			displayBusinessName,
@@ -44,14 +78,10 @@ class PageLoyalty extends React.Component {
 		} = business || {};
 		const { logo } = onlineStoreInfo || {};
 		const { totalCredits } = cashbackHistory || {};
-		const { status } = cashbackHistorySummary || {};
 
 		return (
 			<section className="loyalty__home">
-				<Message
-					status={status}
-					clearMessage={() => homeActions.clearCashbackMessage()}
-				/>
+				{this.renderMessage()}
 				<div className="loyalty__content text-center">
 					{
 						logo ? (
@@ -82,6 +112,7 @@ export default connect(
 		cashbackHistorySummary: getCashbackHistorySummary(state)
 	}),
 	(dispatch) => ({
+		appActions: bindActionCreators(appActions, dispatch),
 		homeActions: bindActionCreators(homeActions, dispatch),
 	})
 )(PageLoyalty);

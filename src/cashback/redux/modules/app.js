@@ -109,13 +109,13 @@ export const actions = {
 		type: types.CLEAR_ERROR
 	}),
 
-	showMessageModal: ({ message, description }) => ({
+	showMessageInfo: ({ key, message }) => ({
 		type: types.SHOW_MESSAGE_MODAL,
+		key,
 		message,
-		description,
 	}),
 
-	hideMessageModal: () => ({
+	hideMessageInfo: () => ({
 		type: types.HIDE_MESSAGE_MODAL,
 	}),
 
@@ -257,11 +257,11 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 const messageInfo = (state = initialState.messageInfo, action) => {
 	switch (action.type) {
 		case types.SHOW_MESSAGE_MODAL: {
-			const { message, description } = action;
-			return { ...state, show: true, message, description };
+			const { key, message } = action;
+			return { ...state, show: true, key, message };
 		}
 		case types.HIDE_MESSAGE_MODAL: {
-			return { ...state, show: false, message: '', description: '' };
+			return { ...state, show: false, key: null, message: null };
 		}
 		default:
 			return state;

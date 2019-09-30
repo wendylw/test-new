@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getBusiness } from '../../redux/modules/app';
+import { getBusiness, getMessageInfo } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { IconClose } from '../../../components/Icons'
 
@@ -54,24 +54,23 @@ class Message extends React.Component {
 	}
 
 	getMessage() {
-		const { status, message } = this.props;
+		const { messageInfo } = this.props;
+		const { key, message } = messageInfo || {};
 
-		if (!status) {
+		if (!key) {
 			return message;
 		}
 
-		return this.MESSAGES[status] || this.MESSAGES.Default;
+		return this.MESSAGES[key] || this.MESSAGES.Default;
 	}
 
 	render() {
-		const {
-			status,
-			message,
-		} = this.props;
+		const { messageInfo } = this.props;
+		const { key, message } = messageInfo || {};
 		const { error } = this.state;
-		const classList = ['top-message', error.includes(status) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
+		const classList = ['top-message', error.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
 
-		if (!status && !message) {
+		if (!key && !message) {
 			return null;
 		}
 
@@ -81,7 +80,7 @@ class Message extends React.Component {
 					<IconClose />
 				</i>
 				<span className="top-message__text">
-					{status ? (this.MESSAGES[status] || this.MESSAGES.Default) : message}
+					{key ? (this.MESSAGES[key] || this.MESSAGES.Default) : message}
 				</span>
 			</div>
 		);
@@ -103,6 +102,7 @@ export default connect(
 		const business = getBusiness(state) || '';
 
 		return {
+			messageInfo: getMessageInfo(state),
 			businessInfo: getBusinessByName(state, business),
 		}
 	}
