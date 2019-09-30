@@ -16,6 +16,7 @@ const initialState = {
 		isLogin: false,
 		isExpired: false,
 		hasOtp: false,
+		consumerId: null,
 		prompt: 'Do you have a Beep account? Login with your mobile phone number.',
 	},
 	error: null, // network error
@@ -181,10 +182,19 @@ const user = (state = initialState.user, action) => {
 				refreshToken: refresh_token,
 			};
 		case types.CREATE_LOGIN_SUCCESS:
-			const validKeys = Object.keys(state).filter(key => key !== 'accessToken' && key !== 'refreshToken');
+			if (state.accessToken) {
+				delete state.accessToken;
+			}
+
+			if (state.refreshToken) {
+				delete state.refreshToken;
+			}
+
+			const { consumerId } = response;
 
 			return {
-				...state.filter(key => validKeys.includes(key)),
+				...state,
+				consumerId,
 				isLogin: true,
 				isFetching: false,
 			};

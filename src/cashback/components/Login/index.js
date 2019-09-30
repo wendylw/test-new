@@ -73,7 +73,7 @@ class Login extends React.Component {
 				onClose={this.handleCloseOtpModal.bind(this)}
 				getOtp={this.handleSubmitPhoneNumber.bind(this)}
 				sendOtp={this.handleWebLogin.bind(this)}
-				isLoading={isFetching}
+				isLoading={isFetching || isLogin}
 			/>
 		);
 	}

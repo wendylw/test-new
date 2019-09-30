@@ -10,7 +10,7 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber } from '../../redux/modules/claim';
+import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
 
 class PageClaim extends React.Component {
@@ -43,11 +43,20 @@ class PageClaim extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { receiptNumber, user } = this.props;
+		const {
+			isFetching,
+			receiptNumber,
+			user,
+			cashbackInfo,
+		} = this.props;
 		const { isLogin } = user || {};
-		const valid = prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber;
+		const { customerId } = cashbackInfo || {};
 
-		if (valid && isLogin && receiptNumber) {
+		if (isFetching || !isLogin || !receiptNumber || customerId) {
+			return;
+		}
+
+		if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber) {
 			this.handleCreateCustomerCashbackInfo();
 		}
 	}
@@ -156,7 +165,7 @@ class PageClaim extends React.Component {
 		} = businessInfo || {};
 
 		if (isLogin) {
-			return <div className="loader theme page-loader"></div>;
+			return <div className="loading-cover"><i className="loader theme page-loader"></i></div>;
 		}
 
 		return (
@@ -187,6 +196,7 @@ export default connect(
 		businessInfo: getBusinessInfo(state),
 		cashbackInfo: getCashbackInfo(state),
 		receiptNumber: getReceiptNumber(state),
+		isFetching: isFetchingCashbackInfo(state),
 	}),
 	(dispatch) => ({
 		appActions: bindActionCreators(appActions, dispatch),

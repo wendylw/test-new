@@ -111,7 +111,7 @@ class App extends Component {
             : null
         }
         {
-          !isFetching && !isLogin
+          !isFetching || !isLogin
             ? <Login title={prompt} />
             : null
         }

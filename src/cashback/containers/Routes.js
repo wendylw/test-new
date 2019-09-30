@@ -12,7 +12,7 @@ class Routes extends Component {
 
 		return (
 			<Router basename={match.path}>
-				<Suspense fallback={<div className="loader theme page-loader"></div>}>
+				<Suspense fallback={<div className="loading-cover"><i className="loader theme page-loader"></i></div>}>
 					<Switch>
 						<Route exact path="/" component={Home} />
 						<Route exact path="/claim" component={Claim} />

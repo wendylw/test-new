@@ -1,4 +1,5 @@
 import Url from '../../../utils/url';
+import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -11,22 +12,7 @@ const initialState = {
 	receiptNumber: null,
 };
 
-export const types = {
-	// fetch receiptNumber
-	FETCH_RECEIPTNUMBER_REQUEST: 'LOYALTY/CLAIM/FETCH_RECEIPTNUMBER_REQUEST',
-	FETCH_RECEIPTNUMBER_SUCCESS: 'LOYALTY/CLAIM/FETCH_RECEIPTNUMBER_SUCCESS',
-	FETCH_RECEIPTNUMBER_FAILURE: 'LOYALTY/CLAIM/FETCH_RECEIPTNUMBER_FAILURE',
-
-	// fetch CashbackInfo
-	FETCH_CASHBACKINFO_REQUEST: 'LOYALTY/CLAIM/FETCH_CASHBACKINFO_REQUEST',
-	FETCH_CASHBACKINFO_SUCCESS: 'LOYALTY/CLAIM/FETCH_CASHBACKINFO_SUCCESS',
-	FETCH_CASHBACKINFO_FAILURE: 'LOYALTY/CLAIM/FETCH_CASHBACKINFO_FAILURE',
-
-	// create CashbackInfo
-	CREATE_CASHBACKINFO_REQUEST: 'LOYALTY/CLAIM/CREATE_CASHBACKINFO_REQUEST',
-	CREATE_CASHBACKINFO_SUCCESS: 'LOYALTY/CLAIM/CREATE_CASHBACKINFO_SUCCESS',
-	CREATE_CASHBACKINFO_FAILURE: 'LOYALTY/CLAIM/CREATE_CASHBACKINFO_FAILURE',
-}
+export const types = CLAIM_TYPES;
 
 export const actions = {
 	getCashbackInfo: (receiptNumber) => ({
@@ -77,16 +63,36 @@ const reducer = (state = initialState, action) => {
 	const { response } = action;
 
 	switch (action.type) {
+		case types.FETCH_CASHBACKINFO_REQUEST:
+		case types.CREATE_CASHBACKINFO_REQUEST:
+		case types.FETCH_RECEIPTNUMBER_REQUEST:
+			return { ...state, isFetching: true };
+		case types.FETCH_CASHBACKINFO_FAILURE:
+		case types.CREATE_CASHBACKINFO_FAILURE:
+		case types.FETCH_RECEIPTNUMBER_FAILURE:
+			return { ...state, isFetching: false };
 		case types.FETCH_CASHBACKINFO_SUCCESS: {
-			return { ...state, cashbackInfo: response };
+			return {
+				...state,
+				isFetching: false,
+				cashbackInfo: response,
+			};
 		}
 		case types.CREATE_CASHBACKINFO_SUCCESS: {
-			return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, response) };
+			return {
+				...state,
+				isFetching: false,
+				cashbackInfo: Object.assign({}, state.cashbackInfo, response),
+			};
 		}
 		case types.FETCH_RECEIPTNUMBER_SUCCESS: {
 			const { receiptNumber } = response || {};
 
-			return { ...state, receiptNumber };
+			return {
+				...state,
+				isFetching: false,
+				receiptNumber,
+			};
 		}
 		default:
 			return state;
@@ -100,5 +106,6 @@ export const getBusinessInfo = state => {
 	return getBusinessByName(state, business);
 }
 
+export const isFetchingCashbackInfo = state => state.claim.isFetching;
 export const getCashbackInfo = state => state.claim.cashbackInfo;
 export const getReceiptNumber = state => state.claim.receiptNumber;
