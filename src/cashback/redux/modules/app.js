@@ -22,8 +22,8 @@ const initialState = {
 	error: null, // network error
 	messageInfo: {
 		show: false,
-		key: '',
-		message: '',
+		key: null,
+		message: null,
 	}, // message modal
 	business: config.business,
 	onlineStoreInfo: {
@@ -109,10 +109,26 @@ export const actions = {
 		type: types.CLEAR_ERROR
 	}),
 
-	showMessageInfo: ({ key, message }) => ({
-		type: types.SHOW_MESSAGE_MODAL,
+	setMessageInfo: ({ key, message }) => ({
+		type: types.SET_MESSAGE_INFO,
 		key,
 		message,
+	}),
+
+	setCashbackMessage: () => (dispatch) => {
+		const status = Utils.getLocalStorageVariable('cashback.status');
+
+		if (status) {
+			Utils.removeLocalStorageVariable('cashback.status');
+			dispatch({
+				type: types.SET_CASHBACK_MESSAGE_SUCCESS,
+				status,
+			});
+		}
+	},
+
+	showMessageInfo: () => ({
+		type: types.SHOW_MESSAGE_MODAL,
 	}),
 
 	hideMessageInfo: () => ({
@@ -256,12 +272,20 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 
 const messageInfo = (state = initialState.messageInfo, action) => {
 	switch (action.type) {
-		case types.SHOW_MESSAGE_MODAL: {
+		case types.SET_MESSAGE_INFO: {
 			const { key, message } = action;
-			return { ...state, show: true, key, message };
+			return { ...state, key, message };
 		}
 		case types.HIDE_MESSAGE_MODAL: {
 			return { ...state, show: false, key: null, message: null };
+		}
+		case types.SET_CASHBACK_MESSAGE_SUCCESS: {
+			const { status } = action;
+
+			return {
+				...state,
+				key: status,
+			};
 		}
 		default:
 			return state;

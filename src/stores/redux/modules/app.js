@@ -31,7 +31,7 @@ export const types = {
 	FETCH_ONLINESTOREINFO_FAILURE: "STORES/APP/FETCH_ONLINESTOREINFO_FAILURE",
 
 	// message modal
-	SHOW_MESSAGE_MODAL: "STORES/APP/SHOW_MESSAGE_MODAL",
+	SET_MESSAGE_INFO: "STORES/APP/SET_MESSAGE_INFO",
 	HIDE_MESSAGE_MODAL: "STORES/APP/HIDE_MESSAGE_MODAL",
 };
 
@@ -42,7 +42,7 @@ export const actions = {
 	}),
 
 	showMessageModal: ({ message, description }) => ({
-		type: types.SHOW_MESSAGE_MODAL,
+		type: types.SET_MESSAGE_INFO,
 		message,
 		description,
 	}),
@@ -98,7 +98,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 
 const messageModal = (state = initialState.messageModal, action) => {
 	switch (action.type) {
-		case types.SHOW_MESSAGE_MODAL: {
+		case types.SET_MESSAGE_INFO: {
 			const { message, description } = action;
 			return { ...state, show: true, message, description };
 		}

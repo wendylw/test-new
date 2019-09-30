@@ -11,6 +11,7 @@ import {
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
+import Message from '../../components/Message';
 import Login from '../../components/Login';
 
 class App extends Component {
@@ -111,6 +112,7 @@ class App extends Component {
             ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
+        <Message />
         {
           !isFetching || !isLogin
             ? <Login title={prompt} />

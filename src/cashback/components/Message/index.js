@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getBusiness, getMessageInfo } from '../../redux/modules/app';
+import { actions as appActions, getBusiness, getMessageInfo } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { IconClose } from '../../../components/Icons'
+import { bindActionCreators } from 'redux';
 
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
@@ -19,10 +19,6 @@ class Message extends React.Component {
 
 	componentWillMount() {
 		this.initMessages();
-	}
-
-	shouldComponentUpdate(nextProps) {
-		return (nextProps.message !== this.props.message) || (nextProps.status !== this.props.status);
 	}
 
 	initMessages() {
@@ -65,7 +61,7 @@ class Message extends React.Component {
 	}
 
 	render() {
-		const { messageInfo } = this.props;
+		const { appActions, messageInfo } = this.props;
 		const { key, message } = messageInfo || {};
 		const { error } = this.state;
 		const classList = ['top-message', error.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
@@ -76,7 +72,7 @@ class Message extends React.Component {
 
 		return (
 			<div className={classList.join(' ')}>
-				<i className="top-message__close-button" onClick={this.props.clearMessage}>
+				<i className="top-message__close-button" onClick={() => appActions.hideMessageInfo()}>
 					<IconClose />
 				</i>
 				<span className="top-message__text">
@@ -87,16 +83,6 @@ class Message extends React.Component {
 	}
 }
 
-Message.propTypes = {
-	status: PropTypes.string,
-	message: PropTypes.string,
-	clearMessage: PropTypes.func,
-};
-
-Message.defaultProps = {
-	clearMessage: () => { },
-};
-
 export default connect(
 	(state) => {
 		const business = getBusiness(state) || '';
@@ -105,5 +91,8 @@ export default connect(
 			messageInfo: getMessageInfo(state),
 			businessInfo: getBusinessByName(state, business),
 		}
-	}
+	},
+	(dispatch) => ({
+		appActions: bindActionCreators(appActions, dispatch),
+	}),
 )(Message);

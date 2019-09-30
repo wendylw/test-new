@@ -18,6 +18,13 @@ class PageClaim extends React.Component {
 		phone: Utils.getLocalStorageVariable('user.p'),
 	}
 
+	setMessage(cashbackInfo) {
+		const { appActions } = this.props;
+		const { status } = cashbackInfo || {};
+
+		appActions.setMessageInfo({ key: status });
+	}
+
 	async componentWillMount() {
 		const {
 			user,
@@ -39,6 +46,20 @@ class PageClaim extends React.Component {
 
 		if (isLogin) {
 			this.handleCreateCustomerCashbackInfo();
+		}
+	}
+
+	componentDidMount() {
+		this.setMessage(this.props.cashbackInfo);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { cashbackInfo } = nextProps;
+		const { status } = cashbackInfo || {};
+		const { status: preCashbackInfo } = this.props.cashbackInfo || {};
+
+		if (status !== preCashbackInfo) {
+			this.setMessage(cashbackInfo);
 		}
 	}
 

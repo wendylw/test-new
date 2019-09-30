@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Image from '../../../components/Image';
-import Message from '../../components/Message';
 import RedeemModal from './components/RedeemModal';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -19,51 +18,16 @@ class PageLoyalty extends React.Component {
 		showModal: false,
 	}
 
-	setMessage(cashbackHistorySummary) {
-		const { appActions } = this.props;
-		const { status } = cashbackHistorySummary || {};
-
-		appActions.showMessageInfo({ key: status });
-	}
-
 	async componentWillMount() {
 		const {
 			history,
+			appActions,
 			homeActions,
 		} = this.props;
 		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
 		await homeActions.setCustomerId(customerId);
-		homeActions.setCashbackMessage();
-	}
-
-	componentDidMount() {
-		this.setMessage(this.props.cashbackHistorySummary);
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const { cashbackHistorySummary } = nextProps;
-		const { status } = cashbackHistorySummary || {};
-		const { status: preCashbackStatus } = this.props.cashbackHistorySummary || {};
-
-		if (status !== preCashbackStatus) {
-			this.setMessage(cashbackHistorySummary);
-		}
-	}
-
-	renderMessage() {
-		const {
-			homeActions,
-			cashbackHistorySummary,
-		} = this.props;
-		const { status } = cashbackHistorySummary || {};
-
-		return (
-			<Message
-				status={status}
-				clearMessage={() => homeActions.clearCashbackMessage()}
-			/>
-		);
+		appActions.setCashbackMessage();
 	}
 
 	render() {
@@ -81,7 +45,6 @@ class PageLoyalty extends React.Component {
 
 		return (
 			<section className="loyalty__home">
-				{this.renderMessage()}
 				<div className="loyalty__content text-center">
 					{
 						logo ? (

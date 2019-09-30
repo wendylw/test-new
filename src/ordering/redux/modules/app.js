@@ -38,7 +38,7 @@ export const types = {
   FETCH_ONLINESTOREINFO_FAILURE: 'ORDERING/APP/FETCH_ONLINESTOREINFO_FAILURE',
 
   // message modal
-  SHOW_MESSAGE_MODAL: 'ORDERING/APP/SHOW_MESSAGE_MODAL',
+  SET_MESSAGE_INFO: 'ORDERING/APP/SET_MESSAGE_INFO',
   HIDE_MESSAGE_MODAL: 'ORDERING/APP/HIDE_MESSAGE_MODAL',
 
   // fetch login status
@@ -82,7 +82,7 @@ export const actions = {
     type: types.CLEAR_ERROR
   }),
   showMessageModal: ({ message, description }) => ({
-    type: types.SHOW_MESSAGE_MODAL,
+    type: types.SET_MESSAGE_INFO,
     message,
     description,
   }),
@@ -176,7 +176,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
-    case types.SHOW_MESSAGE_MODAL: {
+    case types.SET_MESSAGE_INFO: {
       const { message, description } = action;
       return { ...state, show: true, message, description };
     }

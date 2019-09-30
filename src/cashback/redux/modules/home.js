@@ -34,22 +34,6 @@ export const actions = {
 			},
 		}
 	}),
-
-	setCashbackMessage: () => (dispatch) => {
-		const status = Utils.getLocalStorageVariable('cashback.status');
-
-		if (status) {
-			Utils.removeLocalStorageVariable('cashback.status');
-			dispatch({
-				type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-				status,
-			});
-		}
-	},
-
-	clearCashbackMessage: () => (dispatch) => {
-		dispatch({ type: types.CLEAR_CASHBACK_MESSAGE_SUCCESS });
-	},
 };
 
 // reducer
@@ -69,29 +53,6 @@ const reducer = (state = initialState, action) => {
 					totalCredits
 				}
 			};
-		}
-		case types.SET_CASHBACK_MESSAGE_SUCCESS: {
-			const { status } = action;
-
-			return {
-				...state,
-				cashbackHistorySummary: {
-					...state.cashbackHistorySummary,
-					status,
-				}
-			};
-		}
-		case types.CLEAR_CASHBACK_MESSAGE_SUCCESS: {
-			const { cashbackHistorySummary } = state;
-			const { status } = cashbackHistorySummary || {};
-
-			if (status) {
-				delete state.cashbackHistorySummary.status;
-
-				return { ...state, cashbackHistorySummary: Object.assign({}, state.cashbackHistorySummary) };
-			}
-
-			return state;
 		}
 		default:
 			return state;

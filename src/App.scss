@@ -365,6 +365,7 @@
 }
 
 .loyalty {
+
   .aside {
     background-color: transparent;
   }
@@ -388,6 +389,14 @@
 
   &__content {
     width: inherit;
+  }
+
+  .top-message {
+    & ~ .loyalty__claim,
+    & ~ .loyalty__home,
+    & ~ .loyalty__activities {
+      padding: 20px;
+    }
   }
 
   &__money {
