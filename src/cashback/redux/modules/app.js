@@ -20,10 +20,10 @@ const initialState = {
 		prompt: 'Do you have a Beep account? Login with your mobile phone number.',
 	},
 	error: null, // network error
-	messageModal: {
+	messageInfo: {
 		show: false,
+		key: '',
 		message: '',
-		description: '',
 	}, // message modal
 	business: config.business,
 	onlineStoreInfo: {
@@ -254,7 +254,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 	}
 }
 
-const messageModal = (state = initialState.messageModal, action) => {
+const messageInfo = (state = initialState.messageInfo, action) => {
 	switch (action.type) {
 		case types.SHOW_MESSAGE_MODAL: {
 			const { message, description } = action;
@@ -273,7 +273,7 @@ const requestInfo = (state = initialState.requestInfo, action) => state;
 export default combineReducers({
 	user,
 	error,
-	messageModal,
+	messageInfo,
 	business,
 	onlineStoreInfo,
 	requestInfo,
@@ -287,4 +287,4 @@ export const getOnlineStoreInfo = state => {
 	return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
 export const getRequestInfo = state => state.app.requestInfo;
-export const getMessageModal = state => state.app.messageModal;
+export const getMessageInfo = state => state.app.messageInfo;

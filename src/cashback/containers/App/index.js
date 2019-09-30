@@ -4,12 +4,15 @@ import { bindActionCreators } from 'redux';
 import {
   actions as appActions,
   getOnlineStoreInfo,
+  getMessageInfo,
   getError,
   getUser,
 } from '../../redux/modules/app';
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
+import MessageModal from '../../components/MessageModal';
+import Message from '../../components/Message';
 import Login from '../../components/Login';
 
 class App extends Component {
@@ -95,6 +98,7 @@ class App extends Component {
     const {
       user,
       error,
+      messageInfo,
     } = this.props;
     const {
       isFetching,
@@ -105,6 +109,7 @@ class App extends Component {
 
     return (
       <main className="loyalty">
+        <Message />
         {
           message
             ? <ErrorToast message={message} clearError={this.handleClearError} />
@@ -125,6 +130,7 @@ export default connect(
   state => ({
     user: getUser(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
+    messageInfo: getMessageInfo(state),
     error: getError(state),
   }),
   dispatch => ({

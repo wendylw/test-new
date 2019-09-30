@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import config from '../../../config';
 import Url from '../../../utils/url';
-// import api from '../../../utils/api';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 

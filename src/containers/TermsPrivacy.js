@@ -17,13 +17,22 @@ export class TermsPrivacy extends Component {
 	async componentWillMount() {
 		const { pageName } = this.props;
 
-		const data = await api({
-			url: '/api/privacy',
-			method: 'get',
-			params: {
-				filePath: config.termsPrivacyURLS[pageName]
-			}
-		});
+		const data = await fetch(`/api/privacy?filePath=${config.termsPrivacyURLS[pageName]}`, {
+			method: 'GET',
+			mode: 'cors',
+			headers: new Headers({
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			}),
+		})
+			.then(response => response.text())
+			.then(fileData => {
+				// data就是我们请求的repos
+				return fileData;
+			})
+			.catch(error => {
+				return Promise.reject(error);
+			});
 
 		this.setState({ termsPrivacyData: data });
 	}

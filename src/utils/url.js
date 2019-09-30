@@ -43,6 +43,10 @@ const API_URLS = {
     url: '/api/login',
     method: 'post',
   },
+  GET_TERMS_PRIVACY: {
+    ur: '/api/privacy',
+    method: 'get',
+  },
   POST_OTP: {
     url: 'https://auth-api.test.shub.us/authorize',
     method: 'post',
