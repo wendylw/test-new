@@ -5,6 +5,11 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { IconClose } from '../../../components/Icons'
 import { bindActionCreators } from 'redux';
 
+import Modal from '../../../components/Modal';
+// import BeepReward from '../../../images/beep-reward.png'
+// import RedeemButton from './RedeemButton';
+const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
+
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
 	ERROR: 'error',
@@ -15,6 +20,7 @@ class Message extends React.Component {
 
 	state = {
 		error: ['NotClaimed_Cancelled'],
+		showAnimation: false,
 	}
 
 	componentWillMount() {
@@ -60,7 +66,7 @@ class Message extends React.Component {
 		return this.MESSAGES[key] || this.MESSAGES.Default;
 	}
 
-	render() {
+	renderTopMessage() {
 		const { appActions, messageInfo } = this.props;
 		const {
 			show,
@@ -83,6 +89,42 @@ class Message extends React.Component {
 					{key ? (this.MESSAGES[key] || this.MESSAGES.Default) : message}
 				</span>
 			</div>
+		);
+	}
+
+	render() {
+		const { showAnimation } = this.state;
+
+		// if (!show || (!key && !message)) {
+		// 	return null;
+		// }
+
+		return (
+			<aside className="aside active aside__section-container">
+				<div className="aside__section-content border-radius-base">
+					<Modal show={true}>
+						<div className={`thanks__phone-view ${showAnimation === true ? 'active' : ''}`}>
+							<div className="thanks__succeed-animation">
+								{/* <img src={CLAIMED_ANIMATION_GIF} alt="Beep Claimed" /> */}
+							</div>
+							<Modal.Header>
+								{/* <img src={BeepReward} alt="beep reward" /> */}
+							</Modal.Header>
+							<Modal.Body>
+								<div className="text-center">
+									<h4 className="modal__paragraph-container font-weight-bold">test</h4>
+									<p className="modal__paragraph">test</p>
+									{/* {
+										operation == 'close'
+											? <button className="modal__paragraph link text-uppercase" onClick={this.closeModal.bind(this)}>{operation}</button>
+											: <RedeemButton cashbackFill="button__fill" closeModal={() => this.closeModal()} />
+									} */}
+								</div>
+							</Modal.Body>
+						</div>
+					</Modal>
+				</div>
+			</aside>
 		);
 	}
 }

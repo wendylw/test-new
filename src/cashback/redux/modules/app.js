@@ -276,6 +276,9 @@ const messageInfo = (state = initialState.messageInfo, action) => {
 			const { key, message } = action;
 			return { ...state, key, message };
 		}
+		case types.SHOW_MESSAGE_MODAL: {
+			return { ...state, show: true };
+		}
 		case types.HIDE_MESSAGE_MODAL: {
 			return { ...state, show: false, key: null, message: null };
 		}

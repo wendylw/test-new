@@ -9,8 +9,8 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as homeActions, getBusinessInfo, getCashbackHistory, getCashbackHistorySummary } from '../../redux/modules/home';
+import { actions as appActions, getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
+import { actions as homeActions, getCashbackHistory, getCashbackHistorySummary } from '../../redux/modules/home';
 
 
 class PageLoyalty extends React.Component {
@@ -71,7 +71,7 @@ class PageLoyalty extends React.Component {
 export default connect(
 	(state) => ({
 		onlineStoreInfo: getOnlineStoreInfo(state),
-		businessInfo: getBusinessInfo(state),
+		business: getBusiness(state),
 		cashbackHistory: getCashbackHistory(state),
 		cashbackHistorySummary: getCashbackHistorySummary(state)
 	}),
