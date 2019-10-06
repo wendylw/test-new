@@ -685,12 +685,13 @@
   z-index: 300;
 
   &__content {
+    @extend .border-radius-base;
+
     margin: 30px auto;
     max-width: 80%;
     max-height: 80%;
     width: 100%;
     background-color: $white;
-    border-radius: 12px;
     overflow: hidden;
   }
 
@@ -704,6 +705,7 @@
   }
 
   &__body {
+    position: relative;
     max-height: 70vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;

@@ -100,13 +100,10 @@ class Message extends React.Component {
 		// }
 
 		return (
-			<aside className="aside active aside__section-container">
+			<aside className="aside active">
 				<div className="aside__section-content border-radius-base">
 					<Modal show={true}>
-						<div className={`thanks__phone-view ${showAnimation === true ? 'active' : ''}`}>
-							<div className="thanks__succeed-animation">
-								{/* <img src={CLAIMED_ANIMATION_GIF} alt="Beep Claimed" /> */}
-							</div>
+						<div className={`${showAnimation === true ? 'active' : ''}`}>
 							<Modal.Header>
 								{/* <img src={BeepReward} alt="beep reward" /> */}
 							</Modal.Header>
@@ -119,6 +116,9 @@ class Message extends React.Component {
 											? <button className="modal__paragraph link text-uppercase" onClick={this.closeModal.bind(this)}>{operation}</button>
 											: <RedeemButton cashbackFill="button__fill" closeModal={() => this.closeModal()} />
 									} */}
+								</div>
+								<div className="thanks__succeed-animation">
+									{/* <img src={CLAIMED_ANIMATION_GIF} alt="Beep Claimed" /> */}
 								</div>
 							</Modal.Body>
 						</div>
