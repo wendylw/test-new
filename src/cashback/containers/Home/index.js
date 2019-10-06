@@ -27,7 +27,8 @@ class PageLoyalty extends React.Component {
 		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
 		await homeActions.setCustomerId(customerId);
-		appActions.setCashbackMessage();
+		await appActions.setCashbackMessage();
+		appActions.showMessageInfo();
 	}
 
 	render() {

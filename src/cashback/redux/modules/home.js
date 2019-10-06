@@ -1,6 +1,5 @@
 import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
-import Utils from '../../../utils/utils';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 

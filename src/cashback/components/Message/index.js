@@ -62,11 +62,15 @@ class Message extends React.Component {
 
 	render() {
 		const { appActions, messageInfo } = this.props;
-		const { key, message } = messageInfo || {};
+		const {
+			show,
+			key,
+			message,
+		} = messageInfo || {};
 		const { error } = this.state;
 		const classList = ['top-message', error.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
 
-		if (!key && !message) {
+		if (!show || (!key && !message)) {
 			return null;
 		}
 
