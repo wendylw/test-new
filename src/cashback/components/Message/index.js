@@ -6,25 +6,31 @@ import { IconClose } from '../../../components/Icons'
 import { bindActionCreators } from 'redux';
 
 import Modal from '../../../components/Modal';
-// import BeepReward from '../../../images/beep-reward.png'
 // import RedeemButton from './RedeemButton';
-const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
 	ERROR: 'error',
 };
 
+const ERROR_STATUS = ['NotClaimed_Cancelled'];
+const EARNED_STATUS = ['Claimed_FirstTime', 'Claimed_NotFirstTime']
+
 class Message extends React.Component {
 	MESSAGES = {};
+	timer = null;
 
 	state = {
-		error: ['NotClaimed_Cancelled'],
-		showAnimation: false,
+		modalStatus: [''],
+		animationGifSrc: null,
 	}
 
 	componentWillMount() {
 		this.initMessages();
+	}
+
+	componentDidMount() {
+		this.setState({ animationGifSrc: '/img/succeed-animation.gif' });
 	}
 
 	initMessages() {
@@ -35,8 +41,13 @@ class Message extends React.Component {
 			/* get Cash Back messages */
 			Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
 			/* save Cash Back messages */
-			Claimed_FirstTime: `Awesome, you've earned your first cashback! 🎉 To learn how to redeem it, tap the button below.`,
-			Claimed_NotFirstTime: `You've earned more cashback! 🎉`,
+			Claimed_FirstTime: {
+				title: `Awesome, you've earned your first cashback! 🎉 `,
+				description: `Tap the button below to learn how to use your cashback.`,
+			},
+			Claimed_NotFirstTime: {
+				title: `You've earned more cashback! 🎉`,
+			},
 			Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
 			Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
 			Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
@@ -66,18 +77,56 @@ class Message extends React.Component {
 		return this.MESSAGES[key] || this.MESSAGES.Default;
 	}
 
-	renderTopMessage() {
+	renderModalMessage() {
+		const { messageInfo } = this.props;
+		const { animationGifSrc } = this.state;
+		const { key } = messageInfo || {};
+		const isFirstTime = key === 'Claimed_FirstTime';
+
+		return (
+			<aside className="aside active">
+				<div className="aside__section-content border-radius-base">
+					<Modal show={true}>
+						<Modal.Body className="active">
+							<img src="/img/beep-reward.jpg" alt="beep reward" />
+							<div className="modal__detail text-center">
+								<h4 className="modal__title font-weight-bold">this.MESSAGES[key].title</h4>
+								{
+									this.MESSAGES[key].description
+										? <p className="modal__text">this.MESSAGES[key].description</p>
+										: null
+								}
+								{
+									isFirstTime
+										? <button className="button__fill button__block border-radius-base font-weight-bold text-uppercase" onClick={() => { }}>How to use Cashback?</button>
+										: <button className="button__block link text-uppercase font-weight-bold" onClick={() => { }}>Close</button>
+								}
+							</div>
+						</Modal.Body>
+						<div className="thanks__succeed-animation">
+							<img src={animationGifSrc} alt="Beep Claimed" />
+						</div>
+					</Modal>
+				</div>
+			</aside>
+		);
+	}
+
+	render() {
 		const { appActions, messageInfo } = this.props;
 		const {
 			show,
 			key,
 			message,
 		} = messageInfo || {};
-		const { error } = this.state;
-		const classList = ['top-message', error.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
+		const classList = ['top-message', ERROR_STATUS.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
 
 		if (!show || (!key && !message)) {
 			return null;
+		}
+
+		if (EARNED_STATUS.includes(key)) {
+			return this.renderModalMessage();
 		}
 
 		return (
@@ -89,42 +138,6 @@ class Message extends React.Component {
 					{key ? (this.MESSAGES[key] || this.MESSAGES.Default) : message}
 				</span>
 			</div>
-		);
-	}
-
-	render() {
-		const { showAnimation } = this.state;
-
-		// if (!show || (!key && !message)) {
-		// 	return null;
-		// }
-
-		return (
-			<aside className="aside active">
-				<div className="aside__section-content border-radius-base">
-					<Modal show={true}>
-						<div className={`${showAnimation === true ? 'active' : ''}`}>
-							<Modal.Header>
-								{/* <img src={BeepReward} alt="beep reward" /> */}
-							</Modal.Header>
-							<Modal.Body>
-								<div className="text-center">
-									<h4 className="modal__paragraph-container font-weight-bold">test</h4>
-									<p className="modal__paragraph">test</p>
-									{/* {
-										operation == 'close'
-											? <button className="modal__paragraph link text-uppercase" onClick={this.closeModal.bind(this)}>{operation}</button>
-											: <RedeemButton cashbackFill="button__fill" closeModal={() => this.closeModal()} />
-									} */}
-								</div>
-								<div className="thanks__succeed-animation">
-									{/* <img src={CLAIMED_ANIMATION_GIF} alt="Beep Claimed" /> */}
-								</div>
-							</Modal.Body>
-						</div>
-					</Modal>
-				</div>
-			</aside>
 		);
 	}
 }

@@ -687,6 +687,7 @@
   &__content {
     @extend .border-radius-base;
 
+    position: relative;
     margin: 30px auto;
     max-width: 80%;
     max-height: 80%;
@@ -705,18 +706,18 @@
   }
 
   &__body {
-    position: relative;
     max-height: 70vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  &__paragraph-container {
-    padding-bottom: 4.8vw;
+  &__detail {
+    padding: 3.8vw;
   }
 
-  &__paragraph {
-    padding: 0 4.8vw 4.8vw;
+  &__text {
+    padding: 0 3.8vw;
+    margin: 3.8vw 0;
     line-height: 1.5em;
   }
 }
