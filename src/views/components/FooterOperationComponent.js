@@ -6,10 +6,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../Constants';
 import config from '../../config';
 
-const {
-  MENU,
-  EDIT,
-} = Constants.HOME_ASIDE_NAMES;
+const { EDIT } = Constants.HOME_ASIDE_NAMES;
 
 export class FooterOperationComponent extends Component {
   getDisplayPrice() {
@@ -44,13 +41,6 @@ export class FooterOperationComponent extends Component {
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
-        <button className="button menu-button" onClick={this.handleToggleAside.bind(this, MENU)}>
-          <i className="menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </i>
-        </button>
         <div className="cart-bar has-products flex flex-middle flex-space-between">
           <button onClick={this.handleToggleAside.bind(this, EDIT)}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
@@ -59,6 +49,7 @@ export class FooterOperationComponent extends Component {
             </div>
             <label className="cart-bar__money text-middle">
               <CurrencyNumber
+                classList="font-weight-bold"
                 money={this.getDisplayPrice() || 0}
                 locale={locale}
                 currency={currency}

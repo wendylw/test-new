@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 // TODO: migrate Scroll into here.
-import { ScrollObserver, getCurrentScrollName } from '../../../../../views/components/ScrollComponents';
+import { ScrollObserver, getCurrentScrollId } from '../../../../../views/components/ScrollComponents';
 
 class Menu extends Component {
   render() {
@@ -16,20 +16,22 @@ class Menu extends Component {
               return (
                 <ScrollObserver
                   key={id}
-                  render={(scrollname, scrollTo) => {
+                  render={(scrollid, scrollToSmoothly) => {
                     const classNameLi = ['nav-pane__item'];
-                    const currentScrollName = scrollname || getCurrentScrollName();
-                    if (currentScrollName === name) {
+                    const currentScrollId = scrollid || getCurrentScrollId();
+
+                    if (currentScrollId === id) {
                       classNameLi.push('active');
                     }
+
                     return (
                       <li className={classNameLi.join(' ')}>
                         <a
                           className="nav-pane__link flex flex-middle flex-space-between"
-                          onClick={() => {
-                            onClickItem();
-                            scrollTo(name);
-                          }}
+                          onClick={() => scrollToSmoothly({
+                            direction: 'y',
+                            targetId: id,
+                          })}
                         >
                           <label className="nav-pane__label">{name}</label>
                           <span className="nav-pane__number gray-font-opacity">
