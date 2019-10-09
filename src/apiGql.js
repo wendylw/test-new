@@ -291,7 +291,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      platform: 2
+      channel: 3
     }) {
       shoppingCartItem {
         id
