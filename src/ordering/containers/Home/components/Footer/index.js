@@ -24,7 +24,6 @@ export class Footer extends Component {
 
   render() {
     const {
-      onClickMenu,
       onClickCart,
       cartSummary,
       tableId,
@@ -33,15 +32,6 @@ export class Footer extends Component {
 
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
-        <div>
-          <button className="button menu-button" onClick={onClickMenu}>
-            <i className="menu">
-              <span></span>
-              <span></span>
-              <span></span>
-            </i>
-          </button>
-        </div>
         <div className="cart-bar has-products flex flex-middle flex-space-between">
           <button onClick={onClickCart}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
@@ -49,7 +39,7 @@ export class Footer extends Component {
               <span className="tag__number">{count || 0}</span>
             </div>
             <label className="cart-bar__money text-middle">
-              <CurrencyNumber money={this.getDisplayPrice() || 0} />
+              <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
             </label>
           </button>
           {
@@ -70,12 +60,10 @@ export class Footer extends Component {
 
 Footer.propTypes = {
   tableId: PropTypes.string,
-  onClickMenu: PropTypes.func,
   onClickCart: PropTypes.func,
 };
 
 Footer.defaultProps = {
-  onClickMenu: () => { },
   onClickCart: () => { },
 };
 
