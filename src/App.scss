@@ -282,13 +282,9 @@
 .table-ordering {
   @extend .flex;
   @extend .flex-center;
-<<<<<<< HEAD
-  @extend .has-header-container;
-=======
   
   padding-top: 50px;
   min-height: 100%;
->>>>>>> origin/BEEP-169
 
   .header__title {
     max-width: 55vw;
