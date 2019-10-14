@@ -42,12 +42,12 @@ class CategoryProductList extends Component {
         <ol className="category__list">
           {
             categories.map(category => (
-              <li key={category.id}>
-                <h2 className="category__header flex flex-middle flex-space-between">
-                  <label>{category.name}</label>
-                  <span className="gray-font-opacity">{`${category.cartQuantity || 0} Items`}</span>
-                </h2>
-                <ScrollObservable name={category.name} key={category.id}>
+              <li key={category.id} id={category.id}>
+                <ScrollObservable targetId={category.id} key={category.id}>
+                  <h2 className="category__header flex flex-middle flex-space-between">
+                    <label>{category.name}</label>
+                    <span className="gray-font-opacity">{`${category.cartQuantity || 0} Items`}</span>
+                  </h2>
                   <ProductList
                     products={category.products}
                     onDecreaseItem={this.handleDecreaseProductInCart}
