@@ -211,6 +211,7 @@ apiGql.GET_SHOPPING_CART = gql`
     ) {
       total
       subtotal
+      serviceCharge
       count
       discount
       tax
