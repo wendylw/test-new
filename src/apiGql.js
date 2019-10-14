@@ -206,7 +206,8 @@ apiGql.GET_SHOPPING_CART = gql`
   query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: ""
+      userId: "",
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     ) {
       total
       subtotal
