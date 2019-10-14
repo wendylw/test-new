@@ -6,7 +6,7 @@ import { IconClose } from '../../../components/Icons'
 import { bindActionCreators } from 'redux';
 
 import Modal from '../../../components/Modal';
-// import RedeemButton from './RedeemButton';
+import RedeemInfo from '../../containers/Home/components/RedeemInfo';
 
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
@@ -106,7 +106,7 @@ class Message extends React.Component {
 								}
 								{
 									isFirstTime
-										? <button className="button__fill button__block border-radius-base font-weight-bold text-uppercase" onClick={() => { }}>How to use Cashback?</button>
+										? <RedeemInfo buttonClassName="button__fill button__block border-radius-base font-weight-bold text-uppercase" buttonText="How to use Cashback?" />
 										: null
 								}
 
