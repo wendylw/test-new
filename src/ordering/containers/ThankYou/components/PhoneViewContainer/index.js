@@ -222,7 +222,7 @@ class PhoneViewContainer extends React.Component {
     }
 
     return (
-      <div className={`thanks__phone-view ${showCelebration && redirectURL ? 'active' : ''}`}>
+      <div className="thanks__phone-view">
         {
           status !== ORDER_CAN_CLAIM || isLogin
             ? (
@@ -245,7 +245,7 @@ class PhoneViewContainer extends React.Component {
             <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
 					</BrowserRouter>
         </p>
-        <div className="thanks__succeed-animation">
+        <div className={`succeed-animation ${showCelebration && redirectURL ? 'active' : ''}`}>
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>

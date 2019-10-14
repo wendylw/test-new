@@ -263,6 +263,18 @@
 	}
 }
 
+.succeed-animation {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+
+  &.active {
+    display: block;
+  }
+}
+
 .container {
   height: 100%;
   min-height: 100%;
@@ -732,7 +744,6 @@
   &__content {
     @extend .border-radius-base;
 
-    position: relative;
     margin: 30px auto;
     max-width: 90%;
     max-height: 90%;
@@ -757,6 +768,7 @@
   }
 
   &__detail {
+    position: relative;
     padding: 3.8vw;
   }
 
@@ -1523,18 +1535,6 @@
   &__phone-view {
     position: relative;
     padding: 4vw;
-  }
-
-  &__succeed-animation {
-    display: none;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-  }
-
-  &__phone-view.active &__succeed-animation {
-    display: block;
   }
 }
 

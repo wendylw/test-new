@@ -14,11 +14,13 @@ const MESSAGE_TYPES = {
 };
 
 const ERROR_STATUS = ['NotClaimed_Cancelled'];
-const EARNED_STATUS = ['Claimed_FirstTime', 'Claimed_NotFirstTime']
+const EARNED_STATUS = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
+
+const ANIMATION_TIME = 3600;
 
 class Message extends React.Component {
 	MESSAGES = {};
-	timer = null;
+	animationSetTimeout = null;
 
 	state = {
 		modalStatus: [''],
@@ -31,6 +33,12 @@ class Message extends React.Component {
 
 	componentDidMount() {
 		this.setState({ animationGifSrc: '/img/succeed-animation.gif' });
+
+		this.animationSetTimeout = setTimeout(() => {
+			this.setState({ animationGifSrc: null });
+
+			clearTimeout(this.animationSetTimeout);
+		}, ANIMATION_TIME);
 	}
 
 	initMessages() {
@@ -103,11 +111,12 @@ class Message extends React.Component {
 								}
 
 								<button className="button__block button__block-link link text-uppercase font-weight-bold" onClick={() => appActions.hideMessageInfo()}>Close</button>
+
+								<div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
+									<img src={animationGifSrc} alt="Beep Claimed" />
+								</div>
 							</div>
 						</Modal.Body>
-						<div className="thanks__succeed-animation">
-							<img src={animationGifSrc} alt="Beep Claimed" />
-						</div>
 					</Modal>
 				</div>
 			</aside>
