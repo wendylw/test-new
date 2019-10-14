@@ -244,6 +244,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       orderId
       status
       subtotal
+      serviceCharge
       total
       storeId
       tableId
