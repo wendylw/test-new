@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Menu from './components/Menu';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 import ProductDetail from './components/ProductDetail';
@@ -133,15 +132,10 @@ class Home extends Component {
           show={viewAside === ASIDE_NAMES.CART}
           onToggle={this.handleToggleAside.bind(this)}
         />
-        <Menu
-          show={viewAside === ASIDE_NAMES.MENU}
-          onToggle={this.handleToggleAside.bind(this)}
-        />
         <Footer
           tableId={tableId}
           onlineStoreInfo={onlineStoreInfo}
           onClickCart={this.handleToggleAside.bind(this, ASIDE_NAMES.CART)}
-          onClickMenu={this.handleToggleAside.bind(this, ASIDE_NAMES.MENU)}
         />
       </section>
     );
