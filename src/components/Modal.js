@@ -44,9 +44,14 @@ class Modal extends Component {
 
   render() {
     const { children, className = '' } = this.props;
+    const { show } = this.state;
+
+    if (!show) {
+      return null;
+    }
 
     return (
-      <section className={`modal ${className}`} style={this.state.show ? { display: 'block' } : null} onClick={this.handleClick.bind(this)}>
+      <section className={`modal ${className}`} onClick={this.handleClick.bind(this)}>
         <div className="modal__content">
           {children}
         </div>

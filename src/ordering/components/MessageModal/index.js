@@ -6,7 +6,7 @@ class MessageModal extends Component {
 
     return (
       <section
-        className="emodal__align-middle modal flex flex-middle flex-space-betwen"
+        className="modal__align-middle modal flex flex-middle flex-space-between"
         style={styles.section}
       >
         <div className="modal__content">

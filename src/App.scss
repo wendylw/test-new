@@ -722,13 +722,20 @@
 
   z-index: 300;
 
+  &.align-middle {
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-middle;
+    @extend .flex-center;
+  }
+
   &__content {
     @extend .border-radius-base;
 
     position: relative;
     margin: 30px auto;
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 90%;
+    max-height: 90%;
     width: 100%;
     background-color: $white;
     overflow: hidden;
@@ -753,10 +760,14 @@
     padding: 3.8vw;
   }
 
+  &__title,
   &__text {
     padding: 0 3.8vw;
-    margin: 3.8vw 0;
     line-height: 1.5em;
+  }
+
+  &__text {
+    margin: 3.8vw 0;
   }
 }
 

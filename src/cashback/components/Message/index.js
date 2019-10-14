@@ -78,7 +78,7 @@ class Message extends React.Component {
 	}
 
 	renderModalMessage() {
-		const { messageInfo } = this.props;
+		const { messageInfo, appActions } = this.props;
 		const { animationGifSrc } = this.state;
 		const { key } = messageInfo || {};
 		const isFirstTime = key === 'Claimed_FirstTime';
@@ -86,21 +86,23 @@ class Message extends React.Component {
 		return (
 			<aside className="aside active">
 				<div className="aside__section-content border-radius-base">
-					<Modal show={true}>
+					<Modal show={true} className="align-middle">
 						<Modal.Body className="active">
 							<img src="/img/beep-reward.jpg" alt="beep reward" />
 							<div className="modal__detail text-center">
-								<h4 className="modal__title font-weight-bold">this.MESSAGES[key].title</h4>
+								<h4 className="modal__title font-weight-bold">{this.MESSAGES[key].title}</h4>
 								{
-									this.MESSAGES[key].description
-										? <p className="modal__text">this.MESSAGES[key].description</p>
+									this.MESSAGES['Claimed_FirstTime'].description
+										? <p className="modal__text">{this.MESSAGES[key].description}</p>
 										: null
 								}
 								{
 									isFirstTime
 										? <button className="button__fill button__block border-radius-base font-weight-bold text-uppercase" onClick={() => { }}>How to use Cashback?</button>
-										: <button className="button__block link text-uppercase font-weight-bold" onClick={() => { }}>Close</button>
+										: null
 								}
+
+								<button className="button__block button__block-link link text-uppercase font-weight-bold" onClick={() => appActions.hideMessageInfo()}>Close</button>
 							</div>
 						</Modal.Body>
 						<div className="thanks__succeed-animation">
