@@ -117,6 +117,8 @@ class RecentActivities extends React.Component {
 				// backgroundImage: `url(${theImage})`,
 			}}>
 				<Header
+					className="transparent text-center"
+					title="Cashback History"
 					isPage={true}
 					navFunc={() => {
 						history.push({
