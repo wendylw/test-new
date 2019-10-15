@@ -1,12 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { actions as appActions, getBusiness, getMessageInfo } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { IconClose } from '../../../components/Icons'
-import { bindActionCreators } from 'redux';
-
-import Modal from '../../../components/Modal';
-import RedeemInfo from '../../containers/Home/components/RedeemInfo';
+import TopMessage from '../TopMessage';
+import ClaimedMessage from '../ClaimedMessage';
 
 const MESSAGE_TYPES = {
 	PRIMARY: 'primary',
@@ -16,29 +14,16 @@ const MESSAGE_TYPES = {
 const ERROR_STATUS = ['NotClaimed_Cancelled'];
 const EARNED_STATUS = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 
-const ANIMATION_TIME = 3600;
-
 class Message extends React.Component {
 	MESSAGES = {};
 	animationSetTimeout = null;
 
 	state = {
 		modalStatus: [''],
-		animationGifSrc: null,
 	}
 
 	componentWillMount() {
 		this.initMessages();
-	}
-
-	componentDidMount() {
-		this.setState({ animationGifSrc: '/img/succeed-animation.gif' });
-
-		this.animationSetTimeout = setTimeout(() => {
-			this.setState({ animationGifSrc: null });
-
-			clearTimeout(this.animationSetTimeout);
-		}, ANIMATION_TIME);
 	}
 
 	initMessages() {
@@ -85,44 +70,6 @@ class Message extends React.Component {
 		return this.MESSAGES[key] || this.MESSAGES.Default;
 	}
 
-	renderModalMessage() {
-		const { messageInfo, appActions } = this.props;
-		const { animationGifSrc } = this.state;
-		const { key } = messageInfo || {};
-		const isFirstTime = key === 'Claimed_FirstTime';
-
-		return (
-			<aside className="aside active">
-				<div className="aside__section-content border-radius-base">
-					<Modal show={true} className="align-middle">
-						<Modal.Body className="active">
-							<img src="/img/beep-reward.jpg" alt="beep reward" />
-							<div className="modal__detail text-center">
-								<h4 className="modal__title font-weight-bold">{this.MESSAGES[key].title}</h4>
-								{
-									this.MESSAGES['Claimed_FirstTime'].description
-										? <p className="modal__text">{this.MESSAGES[key].description}</p>
-										: null
-								}
-								{
-									isFirstTime
-										? <RedeemInfo buttonClassName="button__fill button__block border-radius-base font-weight-bold text-uppercase" buttonText="How to use Cashback?" />
-										: null
-								}
-
-								<button className="button__block button__block-link link text-uppercase font-weight-bold" onClick={() => appActions.hideMessageInfo()}>Close</button>
-
-								<div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
-									<img src={animationGifSrc} alt="Beep Claimed" />
-								</div>
-							</div>
-						</Modal.Body>
-					</Modal>
-				</div>
-			</aside>
-		);
-	}
-
 	render() {
 		const { appActions, messageInfo } = this.props;
 		const {
@@ -130,25 +77,26 @@ class Message extends React.Component {
 			key,
 			message,
 		} = messageInfo || {};
-		const classList = ['top-message', ERROR_STATUS.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY];
 
 		if (!show || (!key && !message)) {
 			return null;
 		}
 
-		if (EARNED_STATUS.includes(key)) {
-			return this.renderModalMessage();
-		}
-
 		return (
-			<div className={classList.join(' ')}>
-				<i className="top-message__close-button" onClick={() => appActions.hideMessageInfo()}>
-					<IconClose />
-				</i>
-				<span className="top-message__text">
-					{key ? (this.MESSAGES[key] || this.MESSAGES.Default) : message}
-				</span>
-			</div>
+			EARNED_STATUS.includes(key)
+				? (
+					<ClaimedMessage
+						isFirstTime={key === 'Claimed_FirstTime'}
+						hideMessage={() => appActions.hideMessageInfo()}
+					/>
+				)
+				: (
+					< TopMessage
+						className={ERROR_STATUS.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY}
+						hideMessage={() => appActions.hideMessageInfo()}
+						message={key ? (this.MESSAGES[key] || this.MESSAGES.Default) : message}
+					/>
+				)
 		);
 	}
 }

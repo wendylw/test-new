@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { IconClose } from '../../../components/Icons'
 
 class TopMessage extends React.Component {
@@ -7,7 +8,7 @@ class TopMessage extends React.Component {
 	render() {
 		const {
 			className,
-			children,
+			message,
 			hideMessage,
 		} = this.props;
 		const classList = ['top-message'];
@@ -21,9 +22,7 @@ class TopMessage extends React.Component {
 				<i className="top-message__close-button" onClick={() => hideMessage()}>
 					<IconClose />
 				</i>
-				{/* <span className="top-message__text">
-				</span> */}
-				{children}
+				<span className="top-message__text">{message}</span>
 			</div>
 		);
 	}
@@ -31,6 +30,7 @@ class TopMessage extends React.Component {
 
 TopMessage.propTypes = {
 	className: PropTypes.string,
+	message: PropTypes.string,
 	hideMessage: PropTypes.func,
 };
 

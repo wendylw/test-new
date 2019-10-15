@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Message from './components/Message';
 import Image from '../../../components/Image';
 import RedeemInfo from './components/RedeemInfo';
 import RecentActivities from './components/RecentActivities';

@@ -25,7 +25,8 @@ class ClaimedMessage extends React.Component {
 
 	render() {
 		const {
-			children,
+			title,
+			description,
 			isFirstTime,
 			hideMessage,
 		} = this.props;
@@ -38,13 +39,12 @@ class ClaimedMessage extends React.Component {
 						<Modal.Body className="active">
 							<img src="/img/beep-reward.jpg" alt="beep reward" />
 							<div className="modal__detail text-center">
-								{/* <h4 className="modal__title font-weight-bold">{title}</h4>
+								<h4 className="modal__title font-weight-bold">{title}</h4>
 								{
 									description
 										? <p className="modal__text">{description}</p>
 										: null
-								} */}
-								{children}
+								}
 								{
 									isFirstTime
 										? <RedeemInfo buttonClassName="button__fill button__block border-radius-base font-weight-bold text-uppercase" buttonText="How to use Cashback?" />
@@ -66,11 +66,15 @@ class ClaimedMessage extends React.Component {
 }
 
 ClaimedMessage.propTypes = {
+	title: PropTypes.string,
+	description: PropTypes.string,
 	isFirstTime: PropTypes.bool,
 	hideMessage: PropTypes.func,
 };
 
 ClaimedMessage.defaultProps = {
+	title: '',
+	description: '',
 	isFirstTime: false,
 	hideMessage: () => { },
 };
