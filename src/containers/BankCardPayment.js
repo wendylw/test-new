@@ -465,6 +465,7 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'businessName', value: config.business });
 						fields.push({ name: 'redirectURL', value: redirectURL });
 						fields.push({ name: 'webhookURL', value: webhookURL });
+						fields.push({ name: 'type', value: 1 });
 						fields.push({ name: 'paymentName', value: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY });
 						fields.push({ name: 'cardholderName', value: cardholderName });
 
