@@ -1,9 +1,8 @@
 import React from 'react';
 
-import Message from './components/Message';
 import Image from '../../../components/Image';
 import Header from '../../../components/Header';
-import RedeemInfo from './components/RedeemInfo';
+import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
