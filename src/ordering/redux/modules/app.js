@@ -3,6 +3,7 @@ import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
 
+import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
@@ -11,6 +12,8 @@ const initialState = {
     isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
+    hasOtp: false,
+    consumerId: null,
   },
   error: null, // network error
   messageModal: {
@@ -29,28 +32,7 @@ const initialState = {
   }
 };
 
-export const types = {
-  CLEAR_ERROR: 'ORDERING/APP/CLEAR_ERROR',
-
-  // fetch onlineStoreInfo
-  FETCH_ONLINESTOREINFO_REQUEST: 'ORDERING/APP/FETCH_ONLINESTOREINFO_REQUEST',
-  FETCH_ONLINESTOREINFO_SUCCESS: 'ORDERING/APP/FETCH_ONLINESTOREINFO_SUCCESS',
-  FETCH_ONLINESTOREINFO_FAILURE: 'ORDERING/APP/FETCH_ONLINESTOREINFO_FAILURE',
-
-  // message modal
-  SET_MESSAGE_INFO: 'ORDERING/APP/SET_MESSAGE_INFO',
-  HIDE_MESSAGE_MODAL: 'ORDERING/APP/HIDE_MESSAGE_MODAL',
-
-  // fetch login status
-  FETCH_LOGIN_STATUS_REQUEST: 'ORDERING/APP/FETCH_LOGIN_STATUS_REQUEST',
-  FETCH_LOGIN_STATUS_SUCCESS: 'ORDERING/APP/FETCH_LOGIN_STATUS_SUCCESS',
-  FETCH_LOGIN_STATUS_FAILURE: 'ORDERING/APP/FETCH_LOGIN_STATUS_FAILURE',
-
-  // login
-  CREATE_LOGIN_REQUEST: 'ORDERING/APP/CREATE_LOGIN_REQUEST',
-  CREATE_LOGIN_SUCCESS: 'ORDERING/APP/CREATE_LOGIN_SUCCESS',
-  CREATE_LOGIN_FAILURE: 'ORDERING/APP/CREATE_LOGIN_FAILURE',
-};
+export const types = APP_TYPES;
 
 //action creators
 export const actions = {
@@ -68,6 +50,46 @@ export const actions = {
       },
     }
   }),
+
+  resetOtpStatus: () => ({
+    type: types.RESET_OTP_STATUS,
+  }),
+
+  getOtp: ({ phone }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.GET_OTP_REQUEST,
+        types.GET_OTP_SUCCESS,
+        types.GET_OTP_FAILURE,
+      ],
+      ...Url.API_URLS.POST_OTP,
+      payload: {
+        grant_type: AUTH_INFO.GRANT_TYPE,
+        client: AUTH_INFO.CLIENT,
+        business_name: config.business,
+        username: phone,
+      },
+    }
+  }),
+
+  sendOtp: ({ phone, otp }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.CREATE_OTP_REQUEST,
+        types.CREATE_OTP_SUCCESS,
+        types.CREATE_OTP_FAILURE,
+      ],
+      ...Url.API_URLS.POST_OTP,
+      payload: {
+        grant_type: AUTH_INFO.GRANT_TYPE,
+        client: AUTH_INFO.CLIENT,
+        business_name: config.business,
+        username: phone,
+        password: otp,
+      },
+    }
+  }),
+
   getLoginStatus: () => ({
     [API_REQUEST]: {
       types: [
@@ -78,17 +100,21 @@ export const actions = {
       ...Url.API_URLS.GET_LOGIN_STATUS
     }
   }),
+
   clearError: () => ({
     type: types.CLEAR_ERROR
   }),
+
   showMessageModal: ({ message, description }) => ({
     type: types.SET_MESSAGE_INFO,
     message,
     description,
   }),
+
   hideMessageModal: () => ({
     type: types.HIDE_MESSAGE_MODAL,
   }),
+
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -106,15 +132,46 @@ const user = (state = initialState.user, action) => {
     type,
     response,
     code,
+    prompt,
   } = action;
   const { login } = response || {};
 
   switch (type) {
     case types.FETCH_LOGIN_STATUS_REQUEST:
+    case types.GET_OTP_REQUEST:
+    case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true };
-    case types.CREATE_LOGIN_SUCCESS:
+    case types.FETCH_LOGIN_STATUS_FAILURE:
+    case types.GET_OTP_FAILURE:
+    case types.CREATE_OTP_FAILURE:
+      return { ...state, isFetching: false };
+    case types.RESET_OTP_STATUS:
+      return { ...state, isFetching: false, hasOtp: false };
+    case types.GET_OTP_SUCCESS:
+      return { ...state, isFetching: false, hasOtp: true };
+    case types.CREATE_OTP_SUCCESS:
+      const { access_token, refresh_token } = response;
+
       return {
         ...state,
+        isFetching: false,
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      };
+    case types.CREATE_LOGIN_SUCCESS:
+      if (state.accessToken) {
+        delete state.accessToken;
+      }
+
+      if (state.refreshToken) {
+        delete state.refreshToken;
+      }
+
+      const { consumerId } = response;
+
+      return {
+        ...state,
+        consumerId,
         isLogin: true,
         isFetching: false,
       };
@@ -130,8 +187,8 @@ const user = (state = initialState.user, action) => {
       }
 
       return { ...state, isFetching: false };
-    case types.FETCH_LOGIN_STATUS_FAILURE:
-      return { ...state, isFetching: false };
+    case types.SET_LOGIN_PROMPT:
+      return { ...state, prompt };
     default:
       return state;
   }

@@ -7,6 +7,7 @@ import {
   IconClose,
 } from '../../../components/Icons';
 import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
 
 import { connect } from 'react-redux';
@@ -35,12 +36,16 @@ class Cart extends Component {
   }
 
   handleClickBack = () => {
-    this.props.history.push('/');
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+    });
   }
 
   handleClearAll = () => {
     this.props.cartActions.clearAll().then(() => {
-      this.props.history.push('/');
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      });
     });
   }
 
