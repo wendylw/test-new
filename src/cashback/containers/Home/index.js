@@ -2,7 +2,9 @@ import React from 'react';
 
 import Message from './components/Message';
 import Image from '../../../components/Image';
+import Header from '../../../components/Header';
 import RedeemInfo from './components/RedeemInfo';
+import { IconInfo } from '../../../components/Icons';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
@@ -47,6 +49,11 @@ class PageLoyalty extends React.Component {
 
 		return (
 			<section className="loyalty__home">
+				<Header
+					className="transparent has-right"
+					isPage={true}
+					navFunc={() => { }}
+				/>
 				<div className="loyalty__content text-center">
 					{
 						logo ? (
@@ -54,8 +61,14 @@ class PageLoyalty extends React.Component {
 						) : null
 					}
 					<h5 className="logo-default__title text-uppercase">Total cashback</h5>
-					<CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
-					<RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__outline button__block border-radius-base font-weight-bold text-uppercase" buttonText="How to use Cashback?" />
+					<div className="loyalty__money-info">
+						<CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
+						<IconInfo />
+					</div>
+					<div className="location">
+						<span className="location__text gray-font-opacity text-middle">Polpetta Café, 10 Boulevard</span>
+					</div>
+					<RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
 				</div>
 				<RecentActivities />
 			</section>
