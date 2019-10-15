@@ -465,19 +465,22 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'businessName', value: config.business });
 						fields.push({ name: 'redirectURL', value: redirectURL });
 						fields.push({ name: 'webhookURL', value: webhookURL });
-						fields.push({ name: 'type', value: 1 });
+						fields.push({ name: 'payActionWay', value: 1 });
 						fields.push({ name: 'paymentName', value: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY });
 						fields.push({ name: 'cardholderName', value: cardholderName });
 
 						window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
 							if (!errCode) {
-								window.encryptedCardInfo = encryptedData.encryptedCardInfo;
+								window.encryptedCardData = encryptedData;
 							} else {
 								console.log(errDesc + "(" + errCode + ")");
 							}
 						});
 
-						fields.push({ name: 'encryptedCardData', value: window.encryptedCardInfo });
+						fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData.encryptedCardInfo });
+						fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData.expYearCardInfo });
+						fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData.expMonthCardInfo });
+						fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData.maskedCardInfo });
 
 						return fields;
 					}}
