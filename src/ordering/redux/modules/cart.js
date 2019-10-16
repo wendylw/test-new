@@ -1,4 +1,5 @@
 import Url from '../../../utils/url';
+import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
@@ -6,17 +7,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 const initialState = {
 };
 
-export const types = {
-  // clear all
-  CLEARALL_REQUEST: 'ORDERING/CART/CLEARALL_REQUEST',
-  CLEARALL_SUCCESS: 'ORDERING/CART/CLEARALL_SUCCESS',
-  CLEARALL_FAILURE: 'ORDERING/CART/CLEARALL_FAILURE',
-
-  // fetch coreBusiness
-  FETCH_COREBUSINESS_REQUEST: 'ORDERING/CART/FETCH_COREBUSINESS_REQUEST',
-  FETCH_COREBUSINESS_SUCCESS: 'ORDERING/CART/FETCH_COREBUSINESS_SUCCESS',
-  FETCH_COREBUSINESS_FAILURE: 'ORDERING/CART/FETCH_COREBUSINESS_FAILURE',
-};
+export const types = CART_TYPES;
 
 // actions
 export const actions = {
@@ -29,6 +20,17 @@ export const actions = {
     const business = getBusiness(getState());
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
+
+  getStoreHashData: ({ consumerId, business }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_AVAILABLE_CASHBACK_REQUEST,
+        types.FETCH_AVAILABLE_CASHBACK_SUCCESS,
+        types.FETCH_AVAILABLE_CASHBACK_FAILURE,
+      ],
+      ...Url.API_URLS.GET_AVAILABLE_CASHBACK(consumerId, business),
+    }
+  }),
 };
 
 const emptyShoppingCart = () => {

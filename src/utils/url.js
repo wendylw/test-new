@@ -52,6 +52,10 @@ const API_URLS = {
     method: 'post',
     mode: 'cors',
   },
+  GET_AVAILABLE_CASHBACK: (consumerId, business) => ({
+    url: `/api/consumer/${consumerId}/loyalty/${business}/balance`,
+    method: 'get',
+  }),
 };
 
 export default {

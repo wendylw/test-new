@@ -4,16 +4,14 @@ import { bindActionCreators } from 'redux';
 import {
   actions as appActions,
   getOnlineStoreInfo,
+  getMessageModal,
   getError,
   getUser,
-  getMessageModal
 } from '../../redux/modules/app';
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
-
-// import Login from '../../components/Login';
 
 class App extends Component {
   state = {};
@@ -101,7 +99,6 @@ class App extends Component {
 
     return (
       <main className="table-ordering">
-        <Routes />
         {
           message
             ? <ErrorToast message={message} clearError={this.handleClearError} />
@@ -117,7 +114,7 @@ class App extends Component {
             )
             : null
         }
-        {/* <Login /> */}
+        <Routes />
       </main>
     );
   }
