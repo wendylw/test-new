@@ -298,6 +298,8 @@ class Braintree extends Component {
       authorization: token || null,
     }, function (err, clientInstance) {
       if (err) {
+        alert('initError' + JSON.stringify(err));
+
         return;
       }
 
