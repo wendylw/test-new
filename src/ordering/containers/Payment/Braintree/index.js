@@ -156,7 +156,6 @@ class Braintree extends Component {
 
       script.onload = () => {
         if (window.braintree && window.braintree.client && window.braintree.hostedFields) {
-          alert('loadedBraintree=>' + JSON.stringify(Boolean(window.braintree && window.braintree.client && window.braintree.hostedFields)));
           this.braintreeSetting(token);
         }
       }
@@ -169,7 +168,6 @@ class Braintree extends Component {
     const { token } = nextProps;
 
     if (token && !this.props.token) {
-      alert('token =>' + token);
       this.braintreeSetting(token);
     }
   }
@@ -298,8 +296,6 @@ class Braintree extends Component {
       authorization: token || null,
     }, function (err, clientInstance) {
       if (err) {
-        alert('initError' + JSON.stringify(err));
-
         return;
       }
 
@@ -311,19 +307,14 @@ class Braintree extends Component {
         fields: BRAINTREE_FIELDS,
       }, function (err, hostedFieldsInstance) {
         if (err) {
-          console.error(err);
-
-          alert('getTokenError');
           return;
         }
-
-        alert('getTokenSuccess');
 
         that.setState({
           brainTreeDOMLoaded: true
         });
 
-        alert(this.state.brainTreeDOMLoaded);
+        alert('loaded' + JSON.stringify(that.state.brainTreeDOMLoaded));
 
         hostedFieldsInstance.on('blur', function (e) {
           const isReset = e.fields[e.emittedBy].isValid;
