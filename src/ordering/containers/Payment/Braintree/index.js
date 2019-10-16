@@ -172,6 +172,12 @@ class Braintree extends Component {
     }
   }
 
+  componentWillMount() {
+    const { paymentActions } = this.props;
+
+    paymentActions.clearBraintreeToken();
+  }
+
   getQueryObject(paramName) {
     const { history } = this.props;
 
