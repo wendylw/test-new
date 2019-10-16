@@ -156,7 +156,7 @@ class Braintree extends Component {
 
       script.onload = () => {
         if (window.braintree && window.braintree.client && window.braintree.hostedFields) {
-          alert('loadedBraintree =>' + JSON.stringify(Boolean(window.braintree && window.braintree.client && window.braintree.hostedFields)));
+          alert('loadedBraintree=>' + JSON.stringify(Boolean(window.braintree && window.braintree.client && window.braintree.hostedFields)));
           this.braintreeSetting(token);
         }
       }
