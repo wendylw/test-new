@@ -16,7 +16,7 @@ const initialState = {
     isLogin: false,
     isExpired: false,
     hasOtp: false,
-    consumerId: null,
+    consumerId: config.consumerId,
   },
   error: null, // network error
   messageModal: {

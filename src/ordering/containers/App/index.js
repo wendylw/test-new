@@ -97,8 +97,6 @@ class App extends Component {
     } = this.props;
     const { message } = error || {};
 
-    console.log(typeof message);
-
     return (
       <main className="table-ordering">
         {

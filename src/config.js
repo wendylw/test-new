@@ -14,6 +14,14 @@ const getStoreId = () => {
   }
 };
 
+const getConsumerId = () => {
+  try {
+    return document.cookie.split(';').find(s => s.includes('__cid')).split('=')[1];
+  } catch (e) {
+    return null;
+  }
+};
+
 const business = (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.'));
 
 const config = {
@@ -36,6 +44,7 @@ const config = {
   business,
   table: getTableId(),
   storeId: getStoreId(),
+  consumerId: getConsumerId(),
 };
 
 Object.defineProperty(config, 'peopleCount', {
