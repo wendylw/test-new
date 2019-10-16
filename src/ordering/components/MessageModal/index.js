@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 
 class MessageModal extends Component {
+  handleClickOK = () => {
+    this.props.onHide();
+  }
+
   render() {
     const { message, description } = this.props.data;
 
@@ -11,25 +15,17 @@ class MessageModal extends Component {
       >
         <div className="modal__content">
           <header className="hint-modal__header modal__header">
-            {/* <h4 className="font-weight-bold">Payment Cancelled</h4> */}
             <h4 className="font-weight-bold">{message}</h4>
           </header>
           <div className="modal__body">
-            <div className="modal__paragraph-container">
-              {/* <p className="modal__paragraph">You have cancelled your payment. The contents of your cart have been saved for you.</p> */}
-              <p className="modal__paragraph">{description}</p>
-            </div>
+            <p className="modal__text">{description}</p>
           </div>
           <footer>
-            <button className="button__fill button__block" onClick={this.handleClickOK}>OK</button>
+            <button className="button__fill button__block font-weight-bold" onClick={this.handleClickOK}>OK</button>
           </footer>
         </div>
       </section>
     );
-  }
-
-  handleClickOK = () => {
-    this.props.onHide();
   }
 }
 

@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
@@ -6,6 +7,8 @@ import Url from '../../../utils/url';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+
+const { AUTH_INFO } = Constants;
 
 const initialState = {
   user: {

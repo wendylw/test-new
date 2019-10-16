@@ -1,6 +1,7 @@
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 

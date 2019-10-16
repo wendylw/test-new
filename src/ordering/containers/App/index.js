@@ -11,7 +11,7 @@ import {
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
-import MessageModal from '../../../components/ErrorToast';
+import MessageModal from '../../components/MessageModal';
 
 class App extends Component {
   state = {};
@@ -96,6 +96,8 @@ class App extends Component {
       messageModal
     } = this.props;
     const { message } = error || {};
+
+    console.log(typeof message);
 
     return (
       <main className="table-ordering">

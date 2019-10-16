@@ -39,10 +39,10 @@ class ClaimedMessage extends React.Component {
 						<Modal.Body className="active">
 							<img src="/img/beep-reward.jpg" alt="beep reward" />
 							<div className="modal__detail text-center">
-								<h4 className="modal__title font-weight-bold">{title}</h4>
+								<h4 className="modal__title font-weight-bold">Awesome, you've earned your first cashback! 🎉 </h4>
 								{
 									description
-										? <p className="modal__text">{description}</p>
+										? <p className="modal__text">Tap the button below to learn how to use your cashback.</p>
 										: null
 								}
 								{
