@@ -1,6 +1,6 @@
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness, getUser, getRequestInfo } from './app';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
@@ -19,19 +19,20 @@ export const actions = {
   loadCoreBusiness: () => (dispatch, getState) => {
     const { storeId } = getRequestInfo(getState());
     const business = getBusiness(getState());
+
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
 
-  getStoreHashData: ({ consumerId, business }) => ({
-    [API_REQUEST]: {
-      types: [
-        types.FETCH_AVAILABLE_CASHBACK_REQUEST,
-        types.FETCH_AVAILABLE_CASHBACK_SUCCESS,
-        types.FETCH_AVAILABLE_CASHBACK_FAILURE,
-      ],
-      ...Url.API_URLS.GET_AVAILABLE_CASHBACK(consumerId, business),
-    }
-  }),
+  loadAvailableCashback: () => (dispatch, getState) => {
+    const business = getBusiness(getState());
+    const user = getUser(getState());
+    const { consumerId } = user || {};
+
+    dispatch(fetchAvailableCashback({
+      consumerId,
+      business,
+    }));
+  },
 };
 
 const emptyShoppingCart = () => {
@@ -46,7 +47,7 @@ const emptyShoppingCart = () => {
       endpoint,
     },
   };
-}
+};
 
 const fetchCoreBusiness = variables => ({
   [FETCH_GRAPHQL]: {
@@ -58,17 +59,36 @@ const fetchCoreBusiness = variables => ({
     endpoint: Url.apiGql('CoreBusiness'),
     variables,
   }
-})
+});
+
+const fetchAvailableCashback = ({ consumerId, business }) => ({
+  [API_REQUEST]: {
+    types: [
+      types.FETCH_AVAILABLE_CASHBACK_REQUEST,
+      types.FETCH_AVAILABLE_CASHBACK_SUCCESS,
+      types.FETCH_AVAILABLE_CASHBACK_FAILURE,
+    ],
+    ...Url.API_URLS.GET_AVAILABLE_CASHBACK(consumerId, business),
+  }
+});
 
 // reducers
 const reducer = (state = initialState, action) => {
-  return state;
+  const { data } = responseGql || {};
+
+  switch (action.type) {
+    case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
+      return { ...state, currentPayment: action.paymentName };
+    default:
+      return state;
+  }
 }
 
 export default reducer;
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
+
   return getBusinessByName(state, business);
 }
 

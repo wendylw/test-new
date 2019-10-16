@@ -23,8 +23,10 @@ class Cart extends Component {
   }
 
   componentDidMount() {
-    const { homeActions } = this.props;
+    const { cartActions, homeActions } = this.props;
+
     homeActions.loadProductList();
+    cartActions.loadCoreBusiness();
   }
 
   handleChangeAdditionalComments(e) {
