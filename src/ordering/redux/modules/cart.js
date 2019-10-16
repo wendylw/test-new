@@ -74,7 +74,7 @@ const fetchAvailableCashback = ({ consumerId, business }) => ({
 
 // reducers
 const reducer = (state = initialState, action) => {
-  const { data } = responseGql || {};
+  const { response } = action;
 
   switch (action.type) {
     case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
