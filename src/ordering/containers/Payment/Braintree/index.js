@@ -155,7 +155,7 @@ class Braintree extends Component {
       script.src = braintreeSources[key];
 
       script.onload = () => {
-        if (window.braintree && window.braintree.client && window.braintree.hostedFields) {
+        if (window.braintree && window.braintree.client && window.braintree.hostedFields && token) {
           this.braintreeSetting(token);
         }
       }
