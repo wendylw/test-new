@@ -298,11 +298,6 @@ class Braintree extends Component {
     const that = this;
     const submitButtonEl = document.getElementById('submitButton');
 
-    console.log(window.braintree);
-    console.log(window.braintree.client);
-    console.log(window.braintree.hostedFields);
-    console.log(token);
-
     if (!window.braintree || !window.braintree.client || !window.braintree.hostedFields || !token) {
       return;
     }
