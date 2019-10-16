@@ -161,7 +161,7 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, braintreeToken: token };
     }
-    case type.CLEAR_BRAINTREE_TOKEN: {
+    case types.CLEAR_BRAINTREE_TOKEN: {
       return { ...state, braintreeToken: '' };
     }
     case types.FETCH_BANKLIST_SUCCESS: {

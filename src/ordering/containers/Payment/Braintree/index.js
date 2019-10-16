@@ -133,13 +133,15 @@ class Braintree extends Component {
   }
 
   componentWillMount() {
+    console.log(111);
+
     const {
       history,
       paymentActions,
     } = this.props;
 
-    paymentActions.fetchOrder(Utils.getQueryObject(history, 'orderId'));
     paymentActions.fetchBraintreeToken(Constants.PAYMENT_METHODS.CREDIT_CARD_PAY);
+    paymentActions.fetchOrder(Utils.getQueryObject(history, 'orderId'));
   }
 
   componentDidMount() {
@@ -155,9 +157,7 @@ class Braintree extends Component {
       script.src = braintreeSources[key];
 
       script.onload = () => {
-        if (window.braintree && window.braintree.client && window.braintree.hostedFields && token) {
-          this.braintreeSetting(token);
-        }
+        this.braintreeSetting(token);
       }
 
       document.body.appendChild(script);
@@ -172,7 +172,7 @@ class Braintree extends Component {
     }
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     const { paymentActions } = this.props;
 
     paymentActions.clearBraintreeToken();
@@ -297,6 +297,15 @@ class Braintree extends Component {
   braintreeSetting(token) {
     const that = this;
     const submitButtonEl = document.getElementById('submitButton');
+
+    console.log(window.braintree);
+    console.log(window.braintree.client);
+    console.log(window.braintree.hostedFields);
+    console.log(token);
+
+    if (!window.braintree || !window.braintree.client || !window.braintree.hostedFields || !token) {
+      return;
+    }
 
     window.braintree.client.create({
       authorization: token || null,
