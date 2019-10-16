@@ -6,6 +6,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const initialState = {
+  storeCreditsBalance: 0,
 };
 
 export const types = CART_TYPES;
@@ -78,7 +79,9 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
-      return { ...state, currentPayment: action.paymentName };
+      const { storeCreditsBalance } = response || {};
+
+      return { ...state, storeCreditsBalance };
     default:
       return state;
   }

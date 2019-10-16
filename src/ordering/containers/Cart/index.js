@@ -12,7 +12,10 @@ import Header from '../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import {
+  getOnlineStoreInfo,
+  getUser,
+} from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
@@ -23,10 +26,28 @@ class Cart extends Component {
   }
 
   componentDidMount() {
-    const { cartActions, homeActions } = this.props;
+    const {
+      user,
+      cartActions,
+      homeActions,
+    } = this.props;
+    const { isLogin } = user || {};
 
     homeActions.loadProductList();
     cartActions.loadCoreBusiness();
+
+    if (isLogin) {
+      cartActions.loadAvailableCashback();
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { user } = nextProps;
+    const { isLogin } = user || {};
+
+    if (isLogin !== this.props.user.isLogin) {
+      cartActions.loadAvailableCashback();
+    }
   }
 
   handleChangeAdditionalComments(e) {
@@ -142,6 +163,7 @@ class Cart extends Component {
 
 export default connect(
   state => ({
+    user: getUser(state),
     cartSummary: getCartSummary(state),
     shoppingCart: getShoppingCart(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
