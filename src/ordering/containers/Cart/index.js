@@ -17,7 +17,7 @@ import {
   getUser,
 } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
-import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as cartActions, getCreditsBalance, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -101,6 +101,7 @@ class Cart extends Component {
 
   render() {
     const {
+      creditsBalance,
       cartSummary,
       shoppingCart,
       businessInfo,
@@ -141,6 +142,7 @@ class Cart extends Component {
           businessInfo={businessInfo}
           subtotal={subtotal}
           total={total}
+          creditsBalance={creditsBalance <= total ? creditsBalance : total}
         />
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
@@ -166,9 +168,10 @@ export default connect(
     user: getUser(state),
     cartSummary: getCartSummary(state),
     shoppingCart: getShoppingCart(state),
+    businessInfo: getBusinessInfo(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     currentProduct: getCurrentProduct(state),
-    businessInfo: getBusinessInfo(state),
+    creditsBalance: getCreditsBalance(state),
   }),
   dispatch => ({
     homeActions: bindActionCreators(homeActions, dispatch),

@@ -81,7 +81,7 @@ const reducer = (state = initialState, action) => {
     case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
       const { storeCreditsBalance } = response || {};
 
-      return { ...state, storeCreditsBalance };
+      return { ...state, storeCreditsBalance: 5 };
     default:
       return state;
   }
@@ -94,5 +94,7 @@ export const getBusinessInfo = state => {
 
   return getBusinessByName(state, business);
 }
+
+export const getCreditsBalance = state => state.cart.storeCreditsBalance;
 
 // selectors

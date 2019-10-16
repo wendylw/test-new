@@ -22,7 +22,7 @@ export class Billing extends Component {
 			<li className="billing__item flex flex-middle flex-space-between">
 				<label className="gray-font-opacity">Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
 				<span className="gray-font-opacity">
-					<CurrencyNumber money={serviceCharge || 0} />
+					{serviceCharge || 0}
 				</span>
 			</li>
 		);
@@ -33,6 +33,7 @@ export class Billing extends Component {
 			subtotal,
 			total,
 			tax,
+			creditsBalance,
 			businessInfo,
 		} = this.props;
 		const { stores = [] } = businessInfo || {};
@@ -44,13 +45,19 @@ export class Billing extends Component {
 					<li className="billing__item flex flex-middle flex-space-between">
 						<label className="gray-font-opacity">Subtotal</label>
 						<span className="gray-font-opacity">
-							<CurrencyNumber money={subtotal || 0} />
+							{subtotal || 0}
+						</span>
+					</li>
+					<li className="billing__item flex flex-middle flex-space-between">
+						<label className="gray-font-opacity">Beep Cashback</label>
+						<span className="gray-font-opacity">
+							- {creditsBalance}
 						</span>
 					</li>
 					<li className="billing__item flex flex-middle flex-space-between">
 						<label className="gray-font-opacity">{(receiptTemplateData || {}).taxName || `Tax`}</label>
 						<span className="gray-font-opacity">
-							<CurrencyNumber money={tax || 0} />
+							{tax || 0}
 						</span>
 					</li>
 					{this.renderServiceCharge()}
@@ -72,6 +79,7 @@ Billing.propTypes = {
 	businessInfo: PropTypes.object,
 	subtotal: PropTypes.number,
 	total: PropTypes.number,
+	creditsBalance: PropTypes.number,
 };
 
 Billing.defaultProps = {
@@ -82,6 +90,7 @@ Billing.defaultProps = {
 	serviceChargeRate: 0,
 	subtotal: 0,
 	total: 0,
+	creditsBalance: 0,
 };
 
 export default Billing;
