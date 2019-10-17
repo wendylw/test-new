@@ -41,7 +41,7 @@ class PhoneViewContainer extends React.Component {
     const { isLogin } = user || {};
     const showCelebration = status === ORDER_CAN_CLAIM;
 
-    if (status !== ORDER_CAN_CLAIM || isLogin) {
+    if (isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
 
@@ -50,16 +50,13 @@ class PhoneViewContainer extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { user } = nextProps;
-    const {
-      isWebview,
-      isLogin,
-    } = user || {};
+    const { isLogin } = user || {};
 
     if (this.props.user.isLogin === isLogin) {
       return;
     }
 
-    if (isWebview && isLogin) {
+    if (isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
   }
@@ -147,7 +144,6 @@ class PhoneViewContainer extends React.Component {
   renderPhoneView() {
     const {
       user,
-      cashbackInfo,
       onlineStoreInfo,
     } = this.props;
     const {
@@ -160,9 +156,8 @@ class PhoneViewContainer extends React.Component {
       isLogin,
     } = user || {};
     const { country } = onlineStoreInfo || {};
-    const { status } = cashbackInfo || {};
 
-    if (status !== ORDER_CAN_CLAIM || isLogin) {
+    if (isLogin) {
       if (!redirectURL && !isWebview) {
         return null;
       }
