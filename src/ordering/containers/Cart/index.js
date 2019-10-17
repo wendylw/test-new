@@ -17,7 +17,7 @@ import {
   getUser,
 } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
-import { actions as cartActions, getCreditsBalance, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -42,7 +42,7 @@ class Cart extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { user } = nextProps;
+    const { user, cartActions } = nextProps;
     const { isLogin } = user || {};
 
     if (isLogin !== this.props.user.isLogin) {
@@ -101,7 +101,6 @@ class Cart extends Component {
 
   render() {
     const {
-      creditsBalance,
       cartSummary,
       shoppingCart,
       businessInfo,
@@ -113,6 +112,7 @@ class Cart extends Component {
       subtotal,
       tax,
       serviceCharge,
+      storeCreditsBalance,
     } = cartSummary || {};
 
     if (!(cartSummary && items)) {
@@ -136,14 +136,19 @@ class Cart extends Component {
           <CartList shoppingCart={shoppingCart} />
           {/* {this.renderAdditionalComments()} */}
         </div>
-        <Billing
-          tax={tax}
-          serviceCharge={serviceCharge}
-          businessInfo={businessInfo}
-          subtotal={subtotal}
-          total={total}
-          creditsBalance={creditsBalance <= total ? creditsBalance : total}
-        />
+        <div className="aside-section">
+          <aside className="aside-bottom">
+            <i className="aside-bottom__slide-button" onClick={() => { }}></i>
+            <Billing
+              tax={tax}
+              serviceCharge={serviceCharge}
+              businessInfo={businessInfo}
+              subtotal={subtotal}
+              total={total}
+              creditsBalance={storeCreditsBalance <= total ? storeCreditsBalance : total}
+            />
+          </aside>
+        </div>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
@@ -171,7 +176,6 @@ export default connect(
     businessInfo: getBusinessInfo(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     currentProduct: getCurrentProduct(state),
-    creditsBalance: getCreditsBalance(state),
   }),
   dispatch => ({
     homeActions: bindActionCreators(homeActions, dispatch),

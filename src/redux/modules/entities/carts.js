@@ -1,3 +1,5 @@
+import { CART_TYPES } from '../../../ordering/redux/types';
+
 const initialState = {
   summary: {
     count: 0,
@@ -44,6 +46,16 @@ const reducer = (state = initialState, action) => {
     if (emptyShoppingCart && emptyShoppingCart.success) {
       return { ...state, summary: initialState.summary, data: {} };
     }
+  } else if (action.type === CART_TYPES.FETCH_AVAILABLE_CASHBACK_SUCCESS) {
+    const { storeCreditsBalance } = action.response || {};
+
+    return {
+      ...state,
+      summary: {
+        ...state.summary,
+        storeCreditsBalance: 5,
+      },
+    };
   }
   return commonReducer(state, action);
 }
