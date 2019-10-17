@@ -324,8 +324,6 @@ class Braintree extends Component {
           brainTreeDOMLoaded: true
         });
 
-        alert('loaded' + JSON.stringify(that.state.brainTreeDOMLoaded));
-
         hostedFieldsInstance.on('blur', function (e) {
           const isReset = e.fields[e.emittedBy].isValid;
 
