@@ -57,7 +57,7 @@ export class Billing extends Component {
 					{
 						creditsBalance
 							? (
-								<li className="billing__item primary border-radius-base flex flex-middle flex-space-between">
+								<li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
 									<label className="font-weight-bold">Beep Cashback</label>
 									<span>
 										- {creditsBalance}
@@ -73,8 +73,8 @@ export class Billing extends Component {
 						</span>
 					</li>
 					{this.renderServiceCharge()}
-					<li className="billing__item flex flex-middle flex-space-between">
-						<label className="font-weight-bold">Total</label>
+					<li className="billing__item show flex flex-middle flex-space-between">
+						<label>Total</label>
 						<span className="font-weight-bold">
 							<CurrencyNumber money={total || 0} />
 						</span>

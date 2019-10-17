@@ -1423,6 +1423,12 @@
     background-color: $gray-5;
   }
 
+  &__collapse &__item {
+    &:not(.show) {
+      display: none;
+    }
+  }
+
   &__item {
     padding: 2.4vw;
 

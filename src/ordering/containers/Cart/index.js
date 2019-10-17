@@ -22,6 +22,7 @@ import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../.
 
 class Cart extends Component {
   state = {
+    expandBilling: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
@@ -105,6 +106,7 @@ class Cart extends Component {
       shoppingCart,
       businessInfo,
     } = this.props;
+    const { expandBilling } = this.state;
     const { items } = shoppingCart || {};
     const {
       total,
@@ -136,19 +138,18 @@ class Cart extends Component {
           <CartList shoppingCart={shoppingCart} />
           {/* {this.renderAdditionalComments()} */}
         </div>
-        <div className="aside-section">
-          <aside className="aside-bottom">
-            <i className="aside-bottom__slide-button" onClick={() => { }}></i>
-            <Billing
-              tax={tax}
-              serviceCharge={serviceCharge}
-              businessInfo={businessInfo}
-              subtotal={subtotal}
-              total={total}
-              creditsBalance={storeCreditsBalance <= total ? storeCreditsBalance : total}
-            />
-          </aside>
-        </div>
+        <aside className="aside-bottom">
+          <i className="aside-bottom__slide-button" onClick={() => this.setState({ expandBilling: !expandBilling })}></i>
+          <Billing
+            className={!expandBilling ? 'billing__collapse' : ''}
+            tax={tax}
+            serviceCharge={serviceCharge}
+            businessInfo={businessInfo}
+            subtotal={subtotal}
+            total={total}
+            creditsBalance={storeCreditsBalance <= total ? storeCreditsBalance : total}
+          />
+        </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
