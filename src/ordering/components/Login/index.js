@@ -25,7 +25,7 @@ class Login extends React.Component {
 		this.setState({ phone });
 	}
 
-	async handleSubmitPhoneNumber() {
+	handleSubmitPhoneNumber() {
 		const { appActions } = this.props;
 		const { phone } = this.state;
 
@@ -83,7 +83,8 @@ class Login extends React.Component {
 			user,
 			title,
 			className,
-			onlineStoreInfo
+			onlineStoreInfo,
+			hasOtp,
 		} = this.props;
 		const { isFetching } = user || {};
 		const { country } = onlineStoreInfo || {};
@@ -92,6 +93,10 @@ class Login extends React.Component {
 
 		if (className) {
 			classList.push(className);
+		}
+
+		if (hasOtp) {
+			classList.push('active');
 		}
 
 		return (

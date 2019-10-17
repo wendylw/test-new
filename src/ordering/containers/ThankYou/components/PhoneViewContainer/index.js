@@ -9,7 +9,7 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { actions as appActions, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as thankYouActions, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
 
 const ORDER_CAN_CLAIM = 'Can_Claim';
@@ -116,6 +116,13 @@ class PhoneViewContainer extends React.Component {
     this.setState({ phone });
   }
 
+  handleSubmitPhoneNumber() {
+    const { appActions } = this.props;
+    const { phone } = this.state;
+
+    appActions.getOtp({ phone });
+  }
+
   handlePostLoyaltyPageMessage() {
     const { user } = this.props;
     const { isWebview } = user;
@@ -158,38 +165,41 @@ class PhoneViewContainer extends React.Component {
       isWebview,
       isLogin,
     } = user || {};
-    const { status } = cashbackInfo || {};
     const { country } = onlineStoreInfo || {};
 
-    if (status !== ORDER_CAN_CLAIM && isLogin && (redirectURL || isWebview)) {
-      return !isWebview
-        ? (
-          <BrowserRouter basename="/">
-            <Link
-              className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
-              to={redirectURL}
-              target="_blank"
-            >Check My Balance</Link>
-          </BrowserRouter>
-        )
-        : (
-          <button
-            className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
-            onClick={this.handlePostLoyaltyPageMessage.bind(this)}
-          >Check My Balance</button>
-        );
+    if (!isLogin) {
+      return (
+        <PhoneView
+          phone={phone}
+          country={country}
+          setPhone={this.handleUpdatePhoneNumber.bind(this)}
+          submitPhoneNumber={this.handleSubmitPhoneNumber.bind(this)}
+          isLoading={isSavingPhone}
+          buttonText="Continue"
+        />
+      );
     }
 
-    return (
-      <PhoneView
-        phone={phone}
-        country={country}
-        setPhone={this.handleUpdatePhoneNumber.bind(this)}
-        submitPhoneNumber={this.handleCreateCustomerCashbackInfo.bind(this)}
-        isLoading={isSavingPhone}
-        buttonText="Continue"
-      />
-    );
+    if (!redirectURL && !isWebview) {
+      return null;
+    }
+
+    return !isWebview
+      ? (
+        <BrowserRouter basename="/">
+          <Link
+            className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+            to={redirectURL}
+            target="_blank"
+          >Check My Balance</Link>
+        </BrowserRouter>
+      )
+      : (
+        <button
+          className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+          onClick={this.handlePostLoyaltyPageMessage.bind(this)}
+        >Check My Balance</button>
+      );
   }
 
   render() {
@@ -256,6 +266,7 @@ export default connect(
     cashbackInfo: getCashbackInfo(state),
   }),
   (dispatch) => ({
+    appActions: bindActionCreators(appActions, dispatch),
     thankYouActions: bindActionCreators(thankYouActions, dispatch),
   })
 )(PhoneViewContainer);
