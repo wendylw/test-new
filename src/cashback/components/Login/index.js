@@ -91,7 +91,7 @@ class Login extends React.Component {
 		} = user || {};
 		const { country } = onlineStoreInfo || {};
 		const { phone } = this.state;
-		const classList = ['aside'];
+		const classList = ['aside login'];
 
 		if (className) {
 			classList.push(className);

@@ -84,12 +84,11 @@ class Login extends React.Component {
 			title,
 			className,
 			onlineStoreInfo,
-			hasOtp,
 		} = this.props;
-		const { isFetching } = user || {};
+		const { hasOtp, isFetching } = user || {};
 		const { country } = onlineStoreInfo || {};
 		const { phone } = this.state;
-		const classList = ['aside'];
+		const classList = ['aside login'];
 
 		if (className) {
 			classList.push(className);

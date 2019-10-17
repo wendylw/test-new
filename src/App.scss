@@ -986,6 +986,10 @@
     transition: opacity 0.01s, z-index 0.01s;
     -webkit-transition: opacity 0.01s, z-index 0.01s;
 
+    &.login {
+      z-index: 200;
+    }
+
     > .cart-pane,
     > .product-detail {
       transform: translateY(0%);

@@ -107,7 +107,6 @@ class PhoneViewContainer extends React.Component {
     }
 
     this.setState({
-      isSavingPhone: false,
       redirectURL,
     });
   }
@@ -153,15 +152,14 @@ class PhoneViewContainer extends React.Component {
   renderPhoneView() {
     const {
       user,
-      cashbackInfo,
       onlineStoreInfo,
     } = this.props;
     const {
-      isSavingPhone,
       redirectURL,
       phone,
     } = this.state;
     const {
+      isFetching,
       isWebview,
       isLogin,
     } = user || {};
@@ -174,7 +172,7 @@ class PhoneViewContainer extends React.Component {
           country={country}
           setPhone={this.handleUpdatePhoneNumber.bind(this)}
           submitPhoneNumber={this.handleSubmitPhoneNumber.bind(this)}
-          isLoading={isSavingPhone}
+          isLoading={isFetching}
           buttonText="Continue"
         />
       );
