@@ -37,28 +37,19 @@ class PhoneViewContainer extends React.Component {
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { cashbackInfo, user } = this.props;
-    const { status } = cashbackInfo || {};
-    const { isLogin } = user || {};
-    const showCelebration = status === ORDER_CAN_CLAIM;
 
-    if (isLogin) {
-      this.handleCreateCustomerCashbackInfo();
-    }
-
-    this.setState({ showCelebration });
+    this.canClaimCheck(cashbackInfo, user);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { user } = nextProps;
-    const { isLogin } = user || {};
+    const { cashbackInfo, user } = nextProps;
+    const { isLogin } = user;
 
     if (this.props.user.isLogin === isLogin) {
       return;
     }
 
-    if (isLogin) {
-      this.handleCreateCustomerCashbackInfo();
-    }
+    this.canClaimCheck(cashbackInfo, user);
   }
 
   componentDidMount() {
@@ -74,6 +65,17 @@ class PhoneViewContainer extends React.Component {
 
         clearTimeout(this.animationSetTimeout);
       }, ANIMATION_TIME);
+    }
+  }
+
+  canClaimCheck(cashbackInfo, user) {
+    const { status } = cashbackInfo || {};
+    const { isLogin } = user || {};
+    const canClaim = status === ORDER_CAN_CLAIM;
+
+    if (canClaim && isLogin) {
+      this.setState({ showCelebration: true });
+      this.handleCreateCustomerCashbackInfo();
     }
   }
 
@@ -144,6 +146,7 @@ class PhoneViewContainer extends React.Component {
   renderPhoneView() {
     const {
       user,
+      cashbackInfo,
       onlineStoreInfo,
     } = this.props;
     const {
@@ -155,13 +158,10 @@ class PhoneViewContainer extends React.Component {
       isWebview,
       isLogin,
     } = user || {};
+    const { status } = cashbackInfo || {};
     const { country } = onlineStoreInfo || {};
 
-    if (isLogin) {
-      if (!redirectURL && !isWebview) {
-        return null;
-      }
-
+    if (status !== ORDER_CAN_CLAIM && isLogin && (redirectURL || isWebview)) {
       return !isWebview
         ? (
           <BrowserRouter basename="/">
