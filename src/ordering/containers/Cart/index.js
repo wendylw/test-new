@@ -114,7 +114,7 @@ class Cart extends Component {
       subtotal,
       tax,
       serviceCharge,
-      storeCreditsBalance,
+      storeCreditsBalance = 0,
     } = cartSummary || {};
 
     if (!(cartSummary && items)) {

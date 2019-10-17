@@ -53,7 +53,7 @@ const reducer = (state = initialState, action) => {
       ...state,
       summary: {
         ...state.summary,
-        storeCreditsBalance: 5,
+        storeCreditsBalance,
       },
     };
   }
