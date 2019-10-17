@@ -29,7 +29,7 @@ const config = {
     terms: process.env.REACT_APP_TERMS_URL,
     privacy: process.env.REACT_APP_PRIVACY_URL,
   },
-  storehubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
+  storeHubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,

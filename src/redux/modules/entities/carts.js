@@ -1,4 +1,4 @@
-import { CART_TYPES } from '../../../ordering/redux/types';
+import { APP_TYPES } from '../../../ordering/redux/types';
 
 const initialState = {
   summary: {
@@ -7,6 +7,7 @@ const initialState = {
     subtotal: 0,
     total: 0,
     tax: 0,
+    storeCreditsBalance: 0,
   },
   data: {},
 };
@@ -46,7 +47,7 @@ const reducer = (state = initialState, action) => {
     if (emptyShoppingCart && emptyShoppingCart.success) {
       return { ...state, summary: initialState.summary, data: {} };
     }
-  } else if (action.type === CART_TYPES.FETCH_AVAILABLE_CASHBACK_SUCCESS) {
+  } else if (action.type === APP_TYPES.FETCH_AVAILABLE_CASHBACK_SUCCESS) {
     const { storeCreditsBalance } = action.response || {};
 
     return {
@@ -57,6 +58,7 @@ const reducer = (state = initialState, action) => {
       },
     };
   }
+
   return commonReducer(state, action);
 }
 

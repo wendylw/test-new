@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import {
@@ -16,39 +15,51 @@ import {
   getOnlineStoreInfo,
   getUser,
 } from '../../redux/modules/app';
+import { actions as appActions } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { actions as paymentActions } from '../../redux/modules/payment';
 import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
   state = {
     expandBilling: false,
+    isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
   componentDidMount() {
     const {
-      user,
+      appActions,
       cartActions,
       homeActions,
+      user,
     } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin } = user;
 
     homeActions.loadProductList();
     cartActions.loadCoreBusiness();
 
     if (isLogin) {
-      cartActions.loadAvailableCashback();
+      appActions.loadAvailableCashback();
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { user, cartActions } = nextProps;
-    const { isLogin } = user || {};
+  getSpendCashback() {
+    const { cartSummary } = this.props;
+    const {
+      total,
+      storeCreditsBalance
+    } = cartSummary;
 
-    if (isLogin !== this.props.user.isLogin) {
-      cartActions.loadAvailableCashback();
-    }
+    return storeCreditsBalance <= total ? storeCreditsBalance : total;
+  }
+
+  getPaidTotal() {
+    const { cartSummary } = this.props;
+    const { total } = cartSummary;
+
+    return Number((total - this.getSpendCashback()).toFixed(2));
   }
 
   handleChangeAdditionalComments(e) {
@@ -63,6 +74,20 @@ class Cart extends Component {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
     });
+  }
+
+  handleCheckPaymentStatus = async () => {
+    const { history } = this.props;
+
+    if (!this.getPaidTotal()) {
+      const { paymentActions } = this.props;
+
+      await paymentActions.createOrder();
+
+      return;
+    }
+
+    history.push(Constants.ROUTER_PATHS.ORDERING_PAYMENT);
   }
 
   handleClearAll = () => {
@@ -106,15 +131,13 @@ class Cart extends Component {
       shoppingCart,
       businessInfo,
     } = this.props;
-    const { expandBilling } = this.state;
+    const { expandBilling, isCreatingOrder } = this.state;
     const { items } = shoppingCart || {};
     const {
-      total,
       count,
       subtotal,
       tax,
       serviceCharge,
-      storeCreditsBalance = 0,
     } = cartSummary || {};
 
     if (!(cartSummary && items)) {
@@ -129,7 +152,7 @@ class Cart extends Component {
           title={`Order ${count || 0} Items`}
           navFunc={this.handleClickBack.bind(this)}
         >
-          <button className="warning__button" onClick={this.handleClearAll}>
+          <button className="warning__button" onClick={this.handleClearAll.bind(this)}>
             <IconDelete />
             <span className="warning__label text-middle">Clear All</span>
           </button>
@@ -146,22 +169,29 @@ class Cart extends Component {
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
             subtotal={subtotal}
-            total={total}
-            creditsBalance={storeCreditsBalance <= total ? storeCreditsBalance : total}
+            total={this.getPaidTotal()}
+            creditsBalance={this.getSpendCashback()}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
               className="billing__button button button__fill button__block dark font-weight-bold"
-              onClick={this.handleClickBack}
+              onClick={this.handleClickBack.bind(this)}
             >Back</button>
           </div>
           <div className="footer-operation__item width-2-3">
-            <Link
-              className={`billing__link button button__fill button__block font-weight-bold ${items && items.length > 0 ? '' : 'disabled'}`}
-              to="/payment"
-            >Pay</Link>
+            <button
+              className="billing__link button button__fill button__block font-weight-bold"
+              onClick={this.handleCheckPaymentStatus.bind(this)}
+              disabled={!items || !items.length || isCreatingOrder}
+            >
+              {
+                isCreatingOrder
+                  ? <div className="loader"></div>
+                  : 'Pay'
+              }
+            </button>
           </div>
         </footer>
       </section>
@@ -179,7 +209,9 @@ export default connect(
     currentProduct: getCurrentProduct(state),
   }),
   dispatch => ({
+    appActions: bindActionCreators(appActions, dispatch),
     homeActions: bindActionCreators(homeActions, dispatch),
     cartActions: bindActionCreators(cartActions, dispatch),
+    paymentActions: bindActionCreators(paymentActions, dispatch),
   }),
 )(Cart);

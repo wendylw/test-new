@@ -6,9 +6,9 @@ import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as homeActions } from '../../redux/modules/home';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { actions as appActions, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 
@@ -48,9 +48,18 @@ class Payment extends Component {
   };
 
   componentWillMount() {
-    const { homeActions } = this.props;
+    const {
+      user,
+      appActions,
+      homeActions,
+    } = this.props;
+    const { isLogin } = user;
 
     homeActions.loadShoppingCart();
+
+    if (isLogin) {
+      appActions.loadAvailableCashback();
+    }
   }
 
   getPaymentEntryRequestData = () => {
@@ -168,7 +177,13 @@ class Payment extends Component {
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             disabled={payNowLoading}
             onClick={this.handleClickPayNow}
-          >{payNowLoading ? 'Redirecting' : 'Pay now'}</button>
+          >
+            {
+              payNowLoading
+                ? <div className="loader"></div>
+                : 'Pay now'
+            }
+          </button>
         </div>
 
         {
@@ -176,7 +191,7 @@ class Payment extends Component {
             ? (
               <RedirectForm
                 ref={ref => this.form = ref}
-                action={config.storehubPaymentEntryURL}
+                action={config.storeHubPaymentEntryURL}
                 method="POST"
                 data={paymentData}
               />
@@ -194,6 +209,7 @@ export default connect(
     const currentOrderId = getCurrentOrderId(state);
 
     return {
+      user: getUser(state),
       business: getBusiness(state),
       currentPayment: getCurrentPayment(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
@@ -201,6 +217,7 @@ export default connect(
     };
   },
   dispatch => ({
+    appActions: bindActionCreators(appActions, dispatch),
     paymentActions: bindActionCreators(paymentActions, dispatch),
     homeActions: bindActionCreators(homeActions, dispatch),
   }),
