@@ -34,6 +34,8 @@ export const types = {
   FETCH_BRAINTREE_TOKEN_SUCCESS: 'ORDERING/PAYMENT/FETCH_BRAINTREE_TOKEN_SUCCESS',
   FETCH_BRAINTREE_TOKEN_FAILURE: 'ORDERING/PAYMENT/FETCH_BRAINTREE_TOKEN_FAILURE',
 
+  CLEAR_BRAINTREE_TOKEN: 'ORDERING/PAYMENT/CLEAR_BRAINTREE_TOKEN',
+
   // getBankList
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
@@ -79,6 +81,10 @@ export const actions = {
         paymentName,
       },
     }
+  }),
+
+  clearBraintreeToken: () => ({
+    type: types.CLEAR_BRAINTREE_TOKEN,
   }),
 
   fetchBankList: () => ({
@@ -154,6 +160,9 @@ const reducer = (state = initialState, action) => {
       const { token } = response || {};
 
       return { ...state, braintreeToken: token };
+    }
+    case types.CLEAR_BRAINTREE_TOKEN: {
+      return { ...state, braintreeToken: '' };
     }
     case types.FETCH_BANKLIST_SUCCESS: {
       const { bankingList } = response || {};
