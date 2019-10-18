@@ -95,6 +95,7 @@ const REQUEST_ERROR_KEYS = {
   403: 'No permission',
   404: 'Bad Request',
   401: 'Token expired',
+  500: 'Server error',
 };
 
 export default {

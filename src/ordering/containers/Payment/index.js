@@ -129,7 +129,7 @@ class Payment extends Component {
       Utils.removeSessionVariable('additionalComments');
     }
 
-    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
+    if (EXCLUDED_PAYMENTS.includes(currentPayment) && orderId) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
 
       history.push({
@@ -140,11 +140,9 @@ class Payment extends Component {
       return;
     }
 
-    if (!orderId) {
-      this.setState({
-        payNowLoading: false
-      });
-    }
+    this.setState({
+      payNowLoading: orderId
+    });
   }
 
   render() {
