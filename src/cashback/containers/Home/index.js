@@ -16,74 +16,74 @@ import { actions as homeActions, getCashbackHistory, getCashbackHistorySummary }
 
 
 class PageLoyalty extends React.Component {
-	state = {
-		showModal: false,
-	}
+  state = {
+    showModal: false,
+  }
 
-	async componentWillMount() {
-		const {
-			history,
-			appActions,
-			homeActions,
-		} = this.props;
-		const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+  async componentWillMount() {
+    const {
+      history,
+      appActions,
+      homeActions,
+    } = this.props;
+    const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-		await homeActions.setCustomerId(customerId);
-		await appActions.setCashbackMessage();
-		appActions.showMessageInfo();
-	}
+    await homeActions.setCustomerId(customerId);
+    await appActions.setCashbackMessage();
+    appActions.showMessageInfo();
+  }
 
-	render() {
-		const {
-			business,
-			onlineStoreInfo,
-			cashbackHistory,
-		} = this.props;
-		const {
-			displayBusinessName,
-			name,
-		} = business || {};
-		const { logo } = onlineStoreInfo || {};
-		const { totalCredits } = cashbackHistory || {};
+  render() {
+    const {
+      business,
+      onlineStoreInfo,
+      cashbackHistory,
+    } = this.props;
+    const {
+      displayBusinessName,
+      name,
+    } = business || {};
+    const { logo } = onlineStoreInfo || {};
+    const { totalCredits } = cashbackHistory || {};
 
-		return (
-			<section className="loyalty__home">
-				<Header
-					className="transparent has-right"
-					isPage={true}
-					navFunc={() => { }}
-				/>
-				<div className="loyalty__content text-center">
-					{
-						logo ? (
-							<Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
-						) : null
-					}
-					<h5 className="logo-default__title text-uppercase">Total cashback</h5>
-					<div className="loyalty__money-info">
-						<CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
-						<IconInfo />
-					</div>
-					<div className="location">
-						<span className="location__text gray-font-opacity text-middle">Polpetta Café, 10 Boulevard</span>
-					</div>
-					<RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
-				</div>
-				<RecentActivities />
-			</section>
-		);
-	}
+    return (
+      <section className="loyalty__home">
+        <Header
+          className="transparent has-right"
+          isPage={true}
+          navFunc={() => { }}
+        />
+        <div className="loyalty__content text-center">
+          {
+            logo ? (
+              <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+            ) : null
+          }
+          <h5 className="logo-default__title text-uppercase">Total cashback</h5>
+          <div className="loyalty__money-info">
+            <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
+            <IconInfo />
+          </div>
+          <div className="location">
+            <span className="location__text gray-font-opacity text-middle">Polpetta Café, 10 Boulevard</span>
+          </div>
+          <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
+        </div>
+        <RecentActivities />
+      </section>
+    );
+  }
 }
 
 export default connect(
-	(state) => ({
-		onlineStoreInfo: getOnlineStoreInfo(state),
-		business: getBusiness(state),
-		cashbackHistory: getCashbackHistory(state),
-		cashbackHistorySummary: getCashbackHistorySummary(state)
-	}),
-	(dispatch) => ({
-		appActions: bindActionCreators(appActions, dispatch),
-		homeActions: bindActionCreators(homeActions, dispatch),
-	})
+  (state) => ({
+    onlineStoreInfo: getOnlineStoreInfo(state),
+    business: getBusiness(state),
+    cashbackHistory: getCashbackHistory(state),
+    cashbackHistorySummary: getCashbackHistorySummary(state)
+  }),
+  (dispatch) => ({
+    appActions: bindActionCreators(appActions, dispatch),
+    homeActions: bindActionCreators(homeActions, dispatch),
+  })
 )(PageLoyalty);

@@ -4,13 +4,13 @@ import App from "./containers/App";
 import store from "./redux/store";
 
 class index extends Component {
-	render() {
-		return (
-			<Provider store={store}>
-				<App />
-			</Provider>
-		);
-	}
+  render() {
+    return (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+  }
 }
 
 export default index;

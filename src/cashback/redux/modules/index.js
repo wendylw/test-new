@@ -5,10 +5,10 @@ import home from './home';
 import claim from './claim';
 
 const rootReducer = combineReducers({
-	entities,
-	app,
-	home,
-	claim,
+  entities,
+  app,
+  home,
+  claim,
 });
 
 export default rootReducer;

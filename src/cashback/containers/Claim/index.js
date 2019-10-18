@@ -14,213 +14,213 @@ import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNu
 
 
 class PageClaim extends React.Component {
-	state = {
-		phone: Utils.getLocalStorageVariable('user.p'),
-	}
+  state = {
+    phone: Utils.getLocalStorageVariable('user.p'),
+  }
 
-	setMessage(cashbackInfo) {
-		const { appActions } = this.props;
-		const { status } = cashbackInfo || {};
+  setMessage(cashbackInfo) {
+    const { appActions } = this.props;
+    const { status } = cashbackInfo || {};
 
-		appActions.setMessageInfo({ key: status });
-	}
+    appActions.setMessageInfo({ key: status });
+  }
 
-	async componentWillMount() {
-		const {
-			user,
-			history,
-			appActions,
-			claimActions,
-		} = this.props;
-		const { isLogin } = user || {};
-		const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+  async componentWillMount() {
+    const {
+      user,
+      history,
+      appActions,
+      claimActions,
+    } = this.props;
+    const { isLogin } = user || {};
+    const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-		appActions.setLoginPrompt('Claim with your mobile number');
-		await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
+    appActions.setLoginPrompt('Claim with your mobile number');
+    await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
 
-		const { receiptNumber } = this.props;
+    const { receiptNumber } = this.props;
 
-		if (receiptNumber) {
-			await claimActions.getCashbackInfo(receiptNumber);
-		}
+    if (receiptNumber) {
+      await claimActions.getCashbackInfo(receiptNumber);
+    }
 
-		if (isLogin) {
-			this.handleCreateCustomerCashbackInfo();
-		}
-	}
+    if (isLogin) {
+      this.handleCreateCustomerCashbackInfo();
+    }
+  }
 
-	componentDidMount() {
-		this.setMessage(this.props.cashbackInfo);
-	}
+  componentDidMount() {
+    this.setMessage(this.props.cashbackInfo);
+  }
 
-	componentWillReceiveProps(nextProps) {
-		const { cashbackInfo } = nextProps;
-		const { status } = cashbackInfo || {};
-		const { status: preCashbackInfo } = this.props.cashbackInfo || {};
+  componentWillReceiveProps(nextProps) {
+    const { cashbackInfo } = nextProps;
+    const { status } = cashbackInfo || {};
+    const { status: preCashbackInfo } = this.props.cashbackInfo || {};
 
-		if (status !== preCashbackInfo) {
-			this.setMessage(cashbackInfo);
-		}
-	}
+    if (status !== preCashbackInfo) {
+      this.setMessage(cashbackInfo);
+    }
+  }
 
-	componentDidUpdate(prevProps) {
-		const {
-			isFetching,
-			receiptNumber,
-			user,
-			cashbackInfo,
-		} = this.props;
-		const { isLogin } = user || {};
-		const { customerId } = cashbackInfo || {};
+  componentDidUpdate(prevProps) {
+    const {
+      isFetching,
+      receiptNumber,
+      user,
+      cashbackInfo,
+    } = this.props;
+    const { isLogin } = user || {};
+    const { customerId } = cashbackInfo || {};
 
-		if (isFetching || !isLogin || !receiptNumber || customerId) {
-			return;
-		}
+    if (isFetching || !isLogin || !receiptNumber || customerId) {
+      return;
+    }
 
-		if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber) {
-			this.handleCreateCustomerCashbackInfo();
-		}
-	}
+    if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber) {
+      this.handleCreateCustomerCashbackInfo();
+    }
+  }
 
-	getOrderInfo() {
-		const { receiptNumber } = this.props;
-		const { phone } = this.state;
+  getOrderInfo() {
+    const { receiptNumber } = this.props;
+    const { phone } = this.state;
 
-		return {
-			phone,
-			receiptNumber,
-			source: Constants.CASHBACK_SOURCE.RECEIPT
-		};
-	}
+    return {
+      phone,
+      receiptNumber,
+      source: Constants.CASHBACK_SOURCE.RECEIPT
+    };
+  }
 
-	async handleCreateCustomerCashbackInfo() {
-		const {
-			user,
-			history,
-			claimActions,
-		} = this.props;
-		const { isWebview } = user || {};
+  async handleCreateCustomerCashbackInfo() {
+    const {
+      user,
+      history,
+      claimActions,
+    } = this.props;
+    const { isWebview } = user || {};
 
-		await claimActions.createCashbackInfo(this.getOrderInfo());
+    await claimActions.createCashbackInfo(this.getOrderInfo());
 
-		const { cashbackInfo } = this.props;
-		const { customerId } = cashbackInfo || {};
+    const { cashbackInfo } = this.props;
+    const { customerId } = cashbackInfo || {};
 
-		if (!customerId) {
-			return null;
-		}
+    if (!customerId) {
+      return null;
+    }
 
-		if (isWebview) {
-			this.handlePostLoyaltyPageMessage();
-		} else {
-			history.push({
-				pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-				search: `?customerId=${customerId || ''}`
-			});
-		}
-	}
+    if (isWebview) {
+      this.handlePostLoyaltyPageMessage();
+    } else {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+        search: `?customerId=${customerId || ''}`
+      });
+    }
+  }
 
-	handlePostLoyaltyPageMessage() {
-		const { user } = this.props;
-		const { isWebview } = user || {};
+  handlePostLoyaltyPageMessage() {
+    const { user } = this.props;
+    const { isWebview } = user || {};
 
-		if (isWebview) {
-			window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-		}
+    if (isWebview) {
+      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+    }
 
-		return;
-	}
+    return;
+  }
 
-	renderCashback() {
-		const { cashbackInfo } = this.props;
-		const {
-			cashback,
-			defaultLoyaltyRatio,
-		} = cashbackInfo || {};
-		let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
-		const cashbackNumber = Number(cashback);
+  renderCashback() {
+    const { cashbackInfo } = this.props;
+    const {
+      cashback,
+      defaultLoyaltyRatio,
+    } = cashbackInfo || {};
+    let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
+    const cashbackNumber = Number(cashback);
 
-		if (!cashback && !defaultLoyaltyRatio) {
-			return null;
-		}
+    if (!cashback && !defaultLoyaltyRatio) {
+      return null;
+    }
 
-		if (!isNaN(cashbackNumber) && cashbackNumber) {
-			return <CurrencyNumber className="loyalty__money" money={cashback} />;
-		}
+    if (!isNaN(cashbackNumber) && cashbackNumber) {
+      return <CurrencyNumber className="loyalty__money" money={cashback} />;
+    }
 
-		return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
-	}
+    return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
+  }
 
-	renderLocation() {
-		const {
-			cashbackInfo,
-			businessInfo,
-		} = this.props;
-		const {
-			name,
-			displayBusinessName,
-		} = businessInfo || {};
-		const { store } = cashbackInfo || {};
-		const { city } = store || {};
-		const addressInfo = [displayBusinessName || name, city].filter(v => v);
+  renderLocation() {
+    const {
+      cashbackInfo,
+      businessInfo,
+    } = this.props;
+    const {
+      name,
+      displayBusinessName,
+    } = businessInfo || {};
+    const { store } = cashbackInfo || {};
+    const { city } = store || {};
+    const addressInfo = [displayBusinessName || name, city].filter(v => v);
 
-		return (
-			<div className="location">
-				<IconPin />
-				<span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
-			</div>
-		);
-	}
+    return (
+      <div className="location">
+        <IconPin />
+        <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
+      </div>
+    );
+  }
 
-	render() {
-		const {
-			user,
-			onlineStoreInfo,
-			businessInfo,
-		} = this.props;
-		const { isLogin } = user;
-		const { logo } = onlineStoreInfo || {};
-		const {
-			name,
-			displayBusinessName,
-		} = businessInfo || {};
+  render() {
+    const {
+      user,
+      onlineStoreInfo,
+      businessInfo,
+    } = this.props;
+    const { isLogin } = user;
+    const { logo } = onlineStoreInfo || {};
+    const {
+      name,
+      displayBusinessName,
+    } = businessInfo || {};
 
-		if (isLogin) {
-			return <div className="loading-cover"><i className="loader theme page-loader"></i></div>;
-		}
+    if (isLogin) {
+      return <div className="loading-cover"><i className="loader theme page-loader"></i></div>;
+    }
 
-		return (
-			<section className="loyalty__claim" style={{
-				// backgroundImage: `url(${theImage})`,
-			}}>
-				<article className="loyalty__content text-center">
-					{
-						logo
-							? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
-							: null
-					}
-					<h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
+    return (
+      <section className="loyalty__claim" style={{
+        // backgroundImage: `url(${theImage})`,
+      }}>
+        <article className="loyalty__content text-center">
+          {
+            logo
+              ? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+              : null
+          }
+          <h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
 
-					{this.renderCashback()}
+          {this.renderCashback()}
 
-					{this.renderLocation()}
-				</article>
-			</section>
-		);
-	}
+          {this.renderLocation()}
+        </article>
+      </section>
+    );
+  }
 }
 
 export default connect(
-	(state) => ({
-		user: getUser(state),
-		onlineStoreInfo: getOnlineStoreInfo(state),
-		businessInfo: getBusinessInfo(state),
-		cashbackInfo: getCashbackInfo(state),
-		receiptNumber: getReceiptNumber(state),
-		isFetching: isFetchingCashbackInfo(state),
-	}),
-	(dispatch) => ({
-		appActions: bindActionCreators(appActions, dispatch),
-		claimActions: bindActionCreators(claimActions, dispatch),
-	})
+  (state) => ({
+    user: getUser(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+    businessInfo: getBusinessInfo(state),
+    cashbackInfo: getCashbackInfo(state),
+    receiptNumber: getReceiptNumber(state),
+    isFetching: isFetchingCashbackInfo(state),
+  }),
+  (dispatch) => ({
+    appActions: bindActionCreators(appActions, dispatch),
+    claimActions: bindActionCreators(claimActions, dispatch),
+  })
 )(PageClaim);
