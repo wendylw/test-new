@@ -7,7 +7,7 @@ export class TermsAndPrivacyLinks extends React.Component {
     return (
       <BrowserRouter basename="/">
         <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
-			</BrowserRouter>
+      </BrowserRouter>
     );
   }
 }
