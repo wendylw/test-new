@@ -56,6 +56,10 @@ const API_URLS = {
     url: `/api/consumer/${consumerId}/loyalty/${business}/balance`,
     method: 'get',
   }),
+  CALCULATE_RESULT: {
+    url: '/api/calculator',
+    method: 'post',
+  },
 };
 
 export default {

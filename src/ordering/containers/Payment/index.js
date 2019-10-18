@@ -7,6 +7,7 @@ import config from '../../../config';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as homeActions } from '../../redux/modules/home';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as appActions, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
@@ -62,6 +63,16 @@ class Payment extends Component {
     }
   }
 
+  getSpendCashback() {
+    const { cartSummary } = this.props;
+    const {
+      total,
+      storeCreditsBalance
+    } = cartSummary;
+
+    return storeCreditsBalance <= total ? storeCreditsBalance : total;
+  }
+
   getPaymentEntryRequestData = () => {
     const {
       onlineStoreInfo,
@@ -103,7 +114,9 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    await this.props.paymentActions.createOrder();
+    await this.props.paymentActions.createOrder({
+      cashback: this.getSpendCashback(),
+    });
 
     const {
       history,
@@ -211,6 +224,7 @@ export default connect(
     return {
       user: getUser(state),
       business: getBusiness(state),
+      cartSummary: getCartSummary(state),
       currentPayment: getCurrentPayment(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       currentOrder: getOrderByOrderId(state, currentOrderId),

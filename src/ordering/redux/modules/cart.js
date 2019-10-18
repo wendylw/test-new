@@ -3,8 +3,11 @@ import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 
-const initialState = {};
+const initialState = {
+  paidTotal: 0,
+};
 
 export const types = CART_TYPES;
 
@@ -20,6 +23,21 @@ export const actions = {
 
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
+
+  loadTotalCalculateResult: ({ initial, subtraction }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.TOTAL_CALCULATOR_REQUEST,
+        types.TOTAL_CALCULATOR_SUCCESS,
+        types.TOTAL_CALCULATOR_FAILURE,
+      ],
+      ...Url.API_URLS.CALCULATE_RESULT,
+      payload: {
+        initial,
+        subtraction,
+      },
+    }
+  })
 };
 
 const emptyShoppingCart = () => {
@@ -50,7 +68,17 @@ const fetchCoreBusiness = variables => ({
 
 // reducers
 const reducer = (state = initialState, action) => {
-  return state;
+  const { response } = action;
+
+  switch (action.type) {
+    case types.TOTAL_CALCULATOR_SUCCESS: {
+      const { result } = response || {};
+
+      return { ...state, paidTotal: result };
+    }
+    default:
+      return state;
+  }
 }
 
 export default reducer;
@@ -60,5 +88,7 @@ export const getBusinessInfo = state => {
 
   return getBusinessByName(state, business);
 };
+
+export const getPaidTotal = state => state.cart.paidTotal;
 
 // selectors

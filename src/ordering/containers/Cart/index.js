@@ -18,7 +18,7 @@ import {
 import { actions as appActions } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { actions as paymentActions } from '../../redux/modules/payment';
-import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as cartActions, getBusinessInfo, getPaidTotal } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -28,7 +28,7 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const {
       appActions,
       cartActions,
@@ -41,7 +41,18 @@ class Cart extends Component {
     cartActions.loadCoreBusiness();
 
     if (isLogin) {
-      appActions.loadAvailableCashback();
+      await appActions.loadAvailableCashback();
+
+      const { cartSummary } = this.props;
+      const {
+        total,
+        storeCreditsBalance
+      } = cartSummary || {};
+
+      await cartActions.loadTotalCalculateResult({
+        initial: total,
+        subtraction: [storeCreditsBalance],
+      });
     }
   }
 
@@ -53,13 +64,6 @@ class Cart extends Component {
     } = cartSummary;
 
     return storeCreditsBalance <= total ? storeCreditsBalance : total;
-  }
-
-  getPaidTotal() {
-    const { cartSummary } = this.props;
-    const { total } = cartSummary;
-
-    return Number((total - this.getSpendCashback()).toFixed(2));
   }
 
   handleChangeAdditionalComments(e) {
@@ -77,12 +81,19 @@ class Cart extends Component {
   }
 
   handleCheckPaymentStatus = async () => {
-    const { history } = this.props;
+    const {
+      history,
+      user,
+      paidTotal,
+    } = this.props;
+    const { isLogin } = user;
 
-    if (!this.getPaidTotal()) {
+    if (isLogin && !paidTotal) {
       const { paymentActions } = this.props;
 
-      await paymentActions.createOrder();
+      await paymentActions.createOrder({
+        cashback: this.getSpendCashback(),
+      });
 
       return;
     }
@@ -127,15 +138,19 @@ class Cart extends Component {
 
   render() {
     const {
+      user,
+      paidTotal,
       cartSummary,
       shoppingCart,
       businessInfo,
     } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
+    const { isLogin } = user || {};
     const { items } = shoppingCart || {};
     const {
       count,
       subtotal,
+      total,
       tax,
       serviceCharge,
     } = cartSummary || {};
@@ -169,7 +184,7 @@ class Cart extends Component {
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
             subtotal={subtotal}
-            total={this.getPaidTotal()}
+            total={isLogin ? paidTotal : total}
             creditsBalance={this.getSpendCashback()}
           />
         </aside>
@@ -202,6 +217,7 @@ class Cart extends Component {
 export default connect(
   state => ({
     user: getUser(state),
+    paidTotal: getPaidTotal(state),
     cartSummary: getCartSummary(state),
     shoppingCart: getShoppingCart(state),
     businessInfo: getBusinessInfo(state),
