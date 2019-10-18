@@ -36,14 +36,21 @@ const commonReducer = (state = initialState, action) => {
         _available: false, // attached field
       };
     });
-    return { ...state, summary, data: kvData };
+
+    return {
+      ...state,
+      summary: Object.assign(state.summary, summary),
+      data: kvData
+    };
   }
+
   return state;
 }
 
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
     const { emptyShoppingCart } = action.responseGql.data || {};
+
     if (emptyShoppingCart && emptyShoppingCart.success) {
       return { ...state, summary: initialState.summary, data: {} };
     }

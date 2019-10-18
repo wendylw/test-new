@@ -17,7 +17,7 @@ const initialState = {
     isExpired: false,
     hasOtp: false,
     consumerId: config.consumerId,
-    spendCashback: 0,
+    storeCreditsBalance: 0,
   },
   error: null, // network error
   messageModal: {

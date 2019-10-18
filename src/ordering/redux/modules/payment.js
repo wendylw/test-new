@@ -44,7 +44,7 @@ export const types = {
 
 // action creators
 export const actions = {
-  createOrder: () => (dispatch, getState) => {
+  createOrder: ({ cashback }) => (dispatch, getState) => {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
@@ -55,6 +55,7 @@ export const actions = {
       shoppingCartIds,
       additionalComments: encodeURIComponent(additionalComments),
       tableId,
+      cashback,
     };
 
     return dispatch(createOrder(variables));
