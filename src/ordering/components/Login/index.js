@@ -11,135 +11,135 @@ import { actions as appActions, getUser, getOnlineStoreInfo } from '../../redux/
 import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
-	state = {
-		phone: Utils.getLocalStorageVariable('user.p'),
-	};
+  state = {
+    phone: Utils.getLocalStorageVariable('user.p'),
+  };
 
-	handleCloseOtpModal() {
-		const { appActions } = this.props;
+  handleCloseOtpModal() {
+    const { appActions } = this.props;
 
-		appActions.resetOtpStatus();
-	}
+    appActions.resetOtpStatus();
+  }
 
-	handleUpdatePhoneNumber(phone) {
-		this.setState({ phone });
-	}
+  handleUpdatePhoneNumber(phone) {
+    this.setState({ phone });
+  }
 
-	handleSubmitPhoneNumber() {
-		const { appActions } = this.props;
-		const { phone } = this.state;
+  handleSubmitPhoneNumber() {
+    const { appActions } = this.props;
+    const { phone } = this.state;
 
-		appActions.getOtp({ phone });
-	}
+    appActions.getOtp({ phone });
+  }
 
-	async handleWebLogin(otp) {
-		const { appActions } = this.props;
-		const { phone } = this.state;
+  async handleWebLogin(otp) {
+    const { appActions } = this.props;
+    const { phone } = this.state;
 
-		await appActions.sendOtp({
-			phone,
-			otp,
-		});
+    await appActions.sendOtp({
+      phone,
+      otp,
+    });
 
-		const { user } = this.props;
-		const { accessToken, refreshToken } = user;
+    const { user } = this.props;
+    const { accessToken, refreshToken } = user;
 
-		if (accessToken && refreshToken) {
-			appActions.loginApp({
-				accessToken,
-				refreshToken,
-			});
-		}
-	}
+    if (accessToken && refreshToken) {
+      appActions.loginApp({
+        accessToken,
+        refreshToken,
+      });
+    }
+  }
 
-	renderOtpModal() {
-		const { user } = this.props;
-		const {
-			isFetching,
-			isLogin,
-			hasOtp,
-		} = user || {};
-		const { phone } = this.state;
+  renderOtpModal() {
+    const { user } = this.props;
+    const {
+      isFetching,
+      isLogin,
+      hasOtp,
+    } = user || {};
+    const { phone } = this.state;
 
-		if (!hasOtp || isLogin) {
-			return null;
-		}
+    if (!hasOtp || isLogin) {
+      return null;
+    }
 
-		return (
-			<OtpModal
-				buttonText="Ok"
-				ResendOtpTime={20}
-				phone={phone}
-				onClose={this.handleCloseOtpModal.bind(this)}
-				getOtp={this.handleSubmitPhoneNumber.bind(this)}
-				sendOtp={this.handleWebLogin.bind(this)}
-				isLoading={isFetching || isLogin}
-			/>
-		);
-	}
+    return (
+      <OtpModal
+        buttonText="Ok"
+        ResendOtpTime={20}
+        phone={phone}
+        onClose={this.handleCloseOtpModal.bind(this)}
+        getOtp={this.handleSubmitPhoneNumber.bind(this)}
+        sendOtp={this.handleWebLogin.bind(this)}
+        isLoading={isFetching || isLogin}
+      />
+    );
+  }
 
-	render() {
-		const {
-			user,
-			title,
-			className,
-			onlineStoreInfo,
-		} = this.props;
-		const { hasOtp, isFetching } = user || {};
-		const { country } = onlineStoreInfo || {};
-		const { phone } = this.state;
-		const classList = ['aside login'];
+  render() {
+    const {
+      user,
+      title,
+      className,
+      onlineStoreInfo,
+    } = this.props;
+    const { hasOtp, isFetching } = user || {};
+    const { country } = onlineStoreInfo || {};
+    const { phone } = this.state;
+    const classList = ['aside login'];
 
-		if (className) {
-			classList.push(className);
-		}
+    if (className) {
+      classList.push(className);
+    }
 
-		if (hasOtp) {
-			classList.push('active');
-		}
+    if (hasOtp) {
+      classList.push('active');
+    }
 
-		return (
-			<section className={classList.join(' ')}>
-				<PhoneViewContainer
-					className="aside-bottom not-full"
-					title={title}
-					phone={phone}
-					country={country}
-					buttonText="Continue"
-					show={true}
-					isLoading={isFetching}
-					updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
-					onSubmit={this.handleSubmitPhoneNumber.bind(this)}
-				>
-					<p className="terms-privacy text-center gray-font-opacity">
-						By tapping to continue, you agree to our<br />
-						<BrowserRouter basename="/">
-							<Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
-							</BrowserRouter>
-					</p>
-				</PhoneViewContainer>
-				{this.renderOtpModal()}
+    return (
+      <section className={classList.join(' ')}>
+        <PhoneViewContainer
+          className="aside-bottom not-full"
+          title={title}
+          phone={phone}
+          country={country}
+          buttonText="Continue"
+          show={true}
+          isLoading={isFetching}
+          updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
+          onSubmit={this.handleSubmitPhoneNumber.bind(this)}
+        >
+          <p className="terms-privacy text-center gray-font-opacity">
+            By tapping to continue, you agree to our<br />
+            <BrowserRouter basename="/">
+              <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+						</BrowserRouter>
+          </p>
+        </PhoneViewContainer>
+        {this.renderOtpModal()}
 
-			</section>
-		);
-	}
+      </section>
+    );
+  }
 }
 
 
 Login.propTypes = {
-	className: PropTypes.string,
-	title: PropTypes.string,
+  className: PropTypes.string,
+  title: PropTypes.string,
 };
 
 Login.defaultProps = {
 };
 
 export default connect(
-	(state) => ({
-		user: getUser(state),
-		onlineStoreInfo: getOnlineStoreInfo(state),
-	}),
-	(dispatch) => ({
-		appActions: bindActionCreators(appActions, dispatch),
-	})
+  (state) => ({
+    user: getUser(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+  }),
+  (dispatch) => ({
+    appActions: bindActionCreators(appActions, dispatch),
+  })
 )(Login);
