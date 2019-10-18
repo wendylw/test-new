@@ -12,6 +12,7 @@ const { AUTH_INFO } = Constants;
 
 const initialState = {
   user: {
+    showLoginPage: false,
     isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
@@ -40,6 +41,14 @@ export const types = APP_TYPES;
 
 //action creators
 export const actions = {
+  showLogin: () => ({
+    type: types.SHOW_LOGIN_PAGE,
+  }),
+
+  hideLogin: () => ({
+    type: types.HIDE_LOGIN_PAGE,
+  }),
+
   loginApp: ({ accessToken, refreshToken }) => ({
     [API_REQUEST]: {
       types: [
@@ -152,6 +161,10 @@ const user = (state = initialState.user, action) => {
   const { login } = response || {};
 
   switch (type) {
+    case types.SHOW_LOGIN_PAGE:
+      return { ...state, showLoginPage: true };
+    case types.HIDE_LOGIN_PAGE:
+      return { ...state, showLoginPage: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.GET_OTP_REQUEST:
     case types.CREATE_OTP_REQUEST:

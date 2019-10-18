@@ -85,7 +85,11 @@ class Login extends React.Component {
       className,
       onlineStoreInfo,
     } = this.props;
-    const { hasOtp, isFetching } = user || {};
+    const {
+      showLoginPage,
+      hasOtp,
+      isFetching,
+    } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
     const classList = ['aside login'];
@@ -94,30 +98,36 @@ class Login extends React.Component {
       classList.push(className);
     }
 
-    if (hasOtp) {
+    if (hasOtp || showLoginPage) {
       classList.push('active');
     }
 
     return (
       <section className={classList.join(' ')}>
-        <PhoneViewContainer
-          className="aside-bottom not-full"
-          title={title}
-          phone={phone}
-          country={country}
-          buttonText="Continue"
-          show={true}
-          isLoading={isFetching}
-          updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
-          onSubmit={this.handleSubmitPhoneNumber.bind(this)}
-        >
-          <p className="terms-privacy text-center gray-font-opacity">
-            By tapping to continue, you agree to our<br />
-            <BrowserRouter basename="/">
-              <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
-            </BrowserRouter>
-          </p>
-        </PhoneViewContainer>
+        {
+          showLoginPage
+            ? (
+              <PhoneViewContainer
+                className="aside-bottom not-full"
+                title={title}
+                phone={phone}
+                country={country}
+                buttonText="Continue"
+                show={true}
+                isLoading={isFetching}
+                updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
+                onSubmit={this.handleSubmitPhoneNumber.bind(this)}
+              >
+                <p className="terms-privacy text-center gray-font-opacity">
+                  By tapping to continue, you agree to our<br />
+                  <BrowserRouter basename="/">
+                    <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+                  </BrowserRouter>
+                </p>
+              </PhoneViewContainer>
+            )
+            : null
+        }
         {this.renderOtpModal()}
 
       </section>
