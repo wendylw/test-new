@@ -199,7 +199,7 @@ class OnlineBanking extends Component {
             disabled={payNowLoading}
           >{
               payNowLoading && !agentCode
-                ? 'Redirecting'
+                ? <div className="loader"></div>
                 : (
                   <CurrencyNumber
                     className="font-weight-bold text-center"
@@ -216,7 +216,7 @@ class OnlineBanking extends Component {
             ? (
               <RedirectForm
                 ref={ref => this.form = ref}
-                action={config.storehubPaymentEntryURL}
+                action={config.storeHubPaymentEntryURL}
                 method="POST"
                 data={paymentData}
               />

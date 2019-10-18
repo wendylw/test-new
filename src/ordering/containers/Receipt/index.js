@@ -111,6 +111,7 @@ export class ReceiptDetail extends Component {
         </div>
         {this.renderProductItem()}
         <Billing
+          className="fixed"
           tax={tax}
           serviceCharge={serviceCharge}
           subtotal={subtotal}

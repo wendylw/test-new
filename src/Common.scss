@@ -16,6 +16,7 @@ $gray-5: #FAFAFA;
 $blue: #31728D;
 $link-blue: #2196F3;
 $theme-color: #FF9419;
+$theme-color-translucent: rgba(255, 148, 25, 0.5);
 $gray-1-active: #4f515f;
 $theme-color-active: #DE8115;
 $font-weight-light: 300;
@@ -85,6 +86,10 @@ button {
 
 img {
   max-width: 100%;
+}
+
+.hide {
+  display: none;
 }
 
 .reset-font-size {

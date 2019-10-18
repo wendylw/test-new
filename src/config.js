@@ -14,6 +14,14 @@ const getStoreId = () => {
   }
 };
 
+const getConsumerId = () => {
+  try {
+    return document.cookie.split(';').find(s => s.includes('__cid')).split('=')[1];
+  } catch (e) {
+    return null;
+  }
+};
+
 const business = (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.'));
 
 const config = {
@@ -21,7 +29,7 @@ const config = {
     terms: process.env.REACT_APP_TERMS_URL,
     privacy: process.env.REACT_APP_PRIVACY_URL,
   },
-  storehubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
+  storeHubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
@@ -36,6 +44,7 @@ const config = {
   business,
   table: getTableId(),
   storeId: getStoreId(),
+  consumerId: getConsumerId(),
 };
 
 Object.defineProperty(config, 'peopleCount', {

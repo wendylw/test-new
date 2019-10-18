@@ -16,7 +16,8 @@ const initialState = {
     isLogin: false,
     isExpired: false,
     hasOtp: false,
-    consumerId: null,
+    consumerId: config.consumerId,
+    spendCashback: 0,
   },
   error: null, // network error
   messageModal: {
@@ -128,6 +129,17 @@ export const actions = {
       endpoint: Url.apiGql('OnlineStoreInfo'),
     }
   }),
+
+  loadAvailableCashback: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_AVAILABLE_CASHBACK_REQUEST,
+        types.FETCH_AVAILABLE_CASHBACK_SUCCESS,
+        types.FETCH_AVAILABLE_CASHBACK_FAILURE,
+      ],
+      ...Url.API_URLS.GET_AVAILABLE_CASHBACK(config.consumerId, config.business),
+    }
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -192,6 +204,10 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
+    case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
+      const { storeCreditsBalance } = response || {};
+
+      return { ...state, storeCreditsBalance };
     default:
       return state;
   }

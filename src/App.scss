@@ -343,13 +343,8 @@
       height: 43.2vw;
     }
 
-    .billing {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-top: 1px solid $gray-3;
-      background-color: $gray-5;
+    .aside-bottom {
+      bottom: 21.6vw;
     }
   }
 
@@ -991,6 +986,10 @@
     transition: opacity 0.01s, z-index 0.01s;
     -webkit-transition: opacity 0.01s, z-index 0.01s;
 
+    &.login {
+      z-index: 200;
+    }
+
     > .cart-pane,
     > .product-detail {
       transform: translateY(0%);
@@ -1190,7 +1189,7 @@
 .aside-bottom {
   @extend .asdie-section;
 
-  padding: 0 16px;
+  padding: 0 2.4vw;
   width: 100%;
   background-color: $white;
   overflow-y: hidden;
@@ -1417,11 +1416,29 @@
 }
 
 .billing {
-  padding: 10px 4.8vw 21.6vw;
-  z-index: 200;
+  &.fixed {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    padding: 2.4vw;
+    border-top: 1px solid $gray-3;
+    background-color: $gray-5;
+  }
+
+  &__collapse &__item {
+    &:not(.show) {
+      display: none;
+    }
+  }
 
   &__item {
-    margin: 14px 0;
+    padding: 2.4vw;
+
+    &.primary {
+      background-color: $theme-color-translucent;
+    }
   }
 
   &__link,
@@ -1714,10 +1731,10 @@
   }
 }
 
-.receipt {
+.receipt-list {
   @extend .card-list;
 
-  margin: -4px -16px;
+  margin: -4px -2.4vw;
 
   &__item {
     @extend .card-list__item;

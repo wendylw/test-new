@@ -12,6 +12,7 @@ import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
+import Login from '../../components/Login';
 
 class App extends Component {
   state = {};
@@ -97,8 +98,6 @@ class App extends Component {
     } = this.props;
     const { message } = error || {};
 
-    console.log(typeof message);
-
     return (
       <main className="table-ordering">
         {
@@ -116,6 +115,7 @@ class App extends Component {
             )
             : null
         }
+        <Login />
         <Routes />
       </main>
     );

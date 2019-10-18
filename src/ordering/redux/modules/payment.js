@@ -96,7 +96,7 @@ export const actions = {
       ],
       ...Url.API_URLS.GET_BANKING_LIST,
     }
-  })
+  }),
 };
 
 const createOrder = variables => {

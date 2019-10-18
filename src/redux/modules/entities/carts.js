@@ -1,3 +1,5 @@
+import { APP_TYPES } from '../../../ordering/redux/types';
+
 const initialState = {
   summary: {
     count: 0,
@@ -5,6 +7,7 @@ const initialState = {
     subtotal: 0,
     total: 0,
     tax: 0,
+    storeCreditsBalance: 0,
   },
   data: {},
 };
@@ -44,7 +47,20 @@ const reducer = (state = initialState, action) => {
     if (emptyShoppingCart && emptyShoppingCart.success) {
       return { ...state, summary: initialState.summary, data: {} };
     }
+  } else if (action.type === APP_TYPES.FETCH_AVAILABLE_CASHBACK_SUCCESS) {
+    //TODO: let's use schema name in the response from Api middleware, so that each entities can get response data from its name named data.
+
+    const { storeCreditsBalance } = action.response || {};
+
+    return {
+      ...state,
+      summary: {
+        ...state.summary,
+        storeCreditsBalance,
+      },
+    };
   }
+
   return commonReducer(state, action);
 }
 

@@ -69,7 +69,7 @@ class RecentActivities extends React.Component {
 		const { country } = onlineStoreInfo || {};
 
 		return (
-			<ul className="receipt">
+			<ul className="receipt-list">
 				{
 					(cashbackHistory || []).map((activity, i) => {
 						const {
@@ -77,13 +77,13 @@ class RecentActivities extends React.Component {
 							eventTime,
 						} = activity;
 						const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-						const type = this.getType(eventType, { className: 'receipt__icon' });
+						const type = this.getType(eventType, { className: 'receipt-list__icon' });
 
 						return (
-							<li key={`${i}`} className="receipt__item flex flex-middle">
+							<li key={`${i}`} className="receipt-list__item flex flex-middle">
 								{type.icon}
 								<summary>
-									<h4 className="receipt__title">
+									<h4 className="receipt-list__title">
 										<label>{type.text}&nbsp;</label>
 										{
 											activity.eventType !== 'pending'
@@ -91,7 +91,7 @@ class RecentActivities extends React.Component {
 												: null
 										}
 									</h4>
-									<time className="receipt__time">
+									<time className="receipt-list__time">
 										{eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
 									</time>
 								</summary>
@@ -111,7 +111,7 @@ class RecentActivities extends React.Component {
 		}
 
 		return (
-			<div className={`asdie-section ${this.state.fullScreen ? 'full' : ''}`}>
+			<div className={`aside-section ${this.state.fullScreen ? 'full' : ''}`}>
 				<aside className="aside-bottom">
 					{
 						!this.state.fullScreen

@@ -566,7 +566,7 @@ class Braintree extends Component {
             disabled={payNowLoading || !brainTreeDOMLoaded}
           >{
               payNowLoading
-                ? 'Redirecting'
+                ? <div className="loader"></div>
                 : (
                   <CurrencyNumber
                     className="font-weight-bold text-center"
@@ -583,7 +583,7 @@ class Braintree extends Component {
             ? (
               <RedirectForm
                 ref={ref => this.form = ref}
-                action={config.storehubPaymentEntryURL}
+                action={config.storeHubPaymentEntryURL}
                 method="POST"
                 data={paymentData}
               />

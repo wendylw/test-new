@@ -1,13 +1,10 @@
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
-import { getBusiness, getUser, getRequestInfo } from './app';
-import { API_REQUEST } from '../../../redux/middlewares/api';
+import { getBusiness, getRequestInfo } from './app';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
-const initialState = {
-  storeCreditsBalance: 0,
-};
+const initialState = {};
 
 export const types = CART_TYPES;
 
@@ -22,17 +19,6 @@ export const actions = {
     const business = getBusiness(getState());
 
     return dispatch(fetchCoreBusiness({ business, storeId }));
-  },
-
-  loadAvailableCashback: () => (dispatch, getState) => {
-    const business = getBusiness(getState());
-    const user = getUser(getState());
-    const { consumerId } = user || {};
-
-    dispatch(fetchAvailableCashback({
-      consumerId,
-      business,
-    }));
   },
 };
 
@@ -62,29 +48,9 @@ const fetchCoreBusiness = variables => ({
   }
 });
 
-const fetchAvailableCashback = ({ consumerId, business }) => ({
-  [API_REQUEST]: {
-    types: [
-      types.FETCH_AVAILABLE_CASHBACK_REQUEST,
-      types.FETCH_AVAILABLE_CASHBACK_SUCCESS,
-      types.FETCH_AVAILABLE_CASHBACK_FAILURE,
-    ],
-    ...Url.API_URLS.GET_AVAILABLE_CASHBACK(consumerId, business),
-  }
-});
-
 // reducers
 const reducer = (state = initialState, action) => {
-  const { response } = action;
-
-  switch (action.type) {
-    case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
-      const { storeCreditsBalance } = response || {};
-
-      return { ...state, storeCreditsBalance };
-    default:
-      return state;
-  }
+  return state;
 }
 
 export default reducer;
@@ -93,6 +59,6 @@ export const getBusinessInfo = state => {
   const business = getBusiness(state);
 
   return getBusinessByName(state, business);
-}
+};
 
 // selectors
