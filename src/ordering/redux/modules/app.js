@@ -18,6 +18,7 @@ const initialState = {
     isExpired: false,
     hasOtp: false,
     consumerId: config.consumerId,
+    customerId: '',
     storeCreditsBalance: 0,
   },
   error: null, // network error
@@ -139,14 +140,14 @@ export const actions = {
     }
   }),
 
-  loadAvailableCashback: () => ({
+  loadCustomerProfile: () => ({
     [API_REQUEST]: {
       types: [
-        types.FETCH_AVAILABLE_CASHBACK_REQUEST,
-        types.FETCH_AVAILABLE_CASHBACK_SUCCESS,
-        types.FETCH_AVAILABLE_CASHBACK_FAILURE,
+        types.FETCH_CUSTOMER_PROFILE_REQUEST,
+        types.FETCH_CUSTOMER_PROFILE_SUCCESS,
+        types.FETCH_CUSTOMER_PROFILE_FAILURE,
       ],
-      ...Url.API_URLS.GET_AVAILABLE_CASHBACK(config.consumerId, config.business),
+      ...Url.API_URLS.GET_CUSTOMER_PROFILE(config.consumerId),
     }
   }),
 };
@@ -218,10 +219,10 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.FETCH_AVAILABLE_CASHBACK_SUCCESS:
-      const { storeCreditsBalance } = response || {};
+    case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
+      const { storeCreditsBalance, customerId } = response || {};
 
-      return { ...state, storeCreditsBalance };
+      return { ...state, storeCreditsBalance, customerId };
     default:
       return state;
   }
