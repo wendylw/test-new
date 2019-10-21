@@ -12,6 +12,7 @@ import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
+const ORDER_CAN_CLAIM = 'Can_Claim';
 
 class PageClaim extends React.Component {
   state = {
@@ -45,6 +46,7 @@ class PageClaim extends React.Component {
     }
 
     if (isLogin) {
+      await appActions.loadCustomerProfile();
       this.handleCreateCustomerCashbackInfo();
     }
   }
@@ -63,21 +65,21 @@ class PageClaim extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     const {
       isFetching,
       receiptNumber,
       user,
-      cashbackInfo,
+      appActions,
     } = this.props;
-    const { isLogin } = user || {};
-    const { customerId } = cashbackInfo || {};
+    const { isLogin, customerId } = user || {};
 
     if (isFetching || !isLogin || !receiptNumber || customerId) {
       return;
     }
 
     if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber) {
+      await appActions.loadCustomerProfile();
       this.handleCreateCustomerCashbackInfo();
     }
   }
@@ -98,13 +100,14 @@ class PageClaim extends React.Component {
       user,
       history,
       claimActions,
+      cashbackInfo,
     } = this.props;
-    const { isWebview } = user || {};
+    const { isWebview, customerId } = user || {};
+    const { status } = cashbackInfo || {};
 
-    await claimActions.createCashbackInfo(this.getOrderInfo());
-
-    const { cashbackInfo } = this.props;
-    const { customerId } = cashbackInfo || {};
+    if (status === ORDER_CAN_CLAIM) {
+      await claimActions.createCashbackInfo(this.getOrderInfo());
+    }
 
     if (!customerId) {
       return null;
