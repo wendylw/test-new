@@ -17,6 +17,7 @@ const ANIMATION_TIME = 3600;
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
 class PhoneViewContainer extends React.Component {
+  MESSAGES = {};
   animationSetTimeout = null;
 
   state = {
@@ -33,6 +34,8 @@ class PhoneViewContainer extends React.Component {
       thankYouActions,
     } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    this.initMessages();
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
@@ -68,6 +71,52 @@ class PhoneViewContainer extends React.Component {
         clearTimeout(this.animationSetTimeout);
       }, ANIMATION_TIME);
     }
+  }
+
+  initMessages() {
+    const { businessInfo } = this.props;
+    const { claimCashbackCountPerDay } = businessInfo || {};
+    const messages = {
+      Default: 'Oops, please scan QR to claim again.',
+      /* get Cash Back messages */
+      Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
+      /* save Cash Back messages */
+      Claimed_FirstTime: {
+        title: `Awesome, you've earned your first cashback! 🎉 `,
+        description: `Tap the button below to learn how to use your cashback.`,
+      },
+      Claimed_NotFirstTime: {
+        title: `You've earned more cashback! 🎉`,
+      },
+      Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
+      Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
+      Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
+      NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+      NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
+      NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,
+      /* set Otp */
+      NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
+      /* verify phone */
+      Save_Cashback_Failed: 'Oops! please retry again later.',
+      /* Activity */
+      Activity_Incorrect: 'Activity incorrect, need retry.',
+    }
+
+    this.MESSAGES = messages;
+  }
+
+  getMessage() {
+    const { cashbackInfo } = this.props;
+    const { status: key } = cashbackInfo || {};
+
+    if (!key) {
+      return null;
+    }
+
+    console.log(key);
+
+    return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
   canClaimCheck(cashbackInfo, user) {
@@ -238,19 +287,9 @@ class PhoneViewContainer extends React.Component {
 
     return (
       <div className="thanks__phone-view">
-        {
-          status !== ORDER_CAN_CLAIM || isLogin
-            ? (
-              <label className="phone-view-form__label text-center">
-                You’ve earned {this.renderCurrencyNumber()} Cashback!
-							</label>
-            )
-            : (
-              <label className="phone-view-form__label text-center">
-                Earn {this.renderCurrencyNumber()} Cashback with Your Mobile Number
-							</label>
-            )
-        }
+        <label className="phone-view-form__label text-center">
+          {this.getMessage()}
+        </label>
         {this.renderPhoneView()}
 
         <p className="terms-privacy text-center gray-font-opacity">

@@ -1,4 +1,3 @@
-import qs from 'qs';
 import React from 'react';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import {
@@ -11,8 +10,8 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as homeActions, getCustomerId, getCashbackHistory } from '../../redux/modules/home';
+import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { actions as homeActions, getCashbackHistory } from '../../redux/modules/home';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -30,14 +29,37 @@ class RecentActivities extends React.Component {
   state = {
   }
 
-  componentWillMount() {
-    const {
-      history,
-      homeActions,
-    } = this.props;
-    const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+  async componentWillMount() {
+    const { user, appActions } = this.props;
+    const { isLogin } = user || {};
 
-    homeActions.setCustomerId(customerId);
+    if (isLogin) {
+      await appActions.loadCustomerProfile();
+      this.getLoyaltyHistory();
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    const {
+      isFetching,
+      user,
+      appActions,
+    } = this.props;
+    const { isLogin } = user || {};
+
+    if (isFetching || !isLogin) {
+      return;
+    }
+
+    if (prevProps.user.isLogin !== isLogin) {
+      await appActions.loadCustomerProfile();
+      this.getLoyaltyHistory();
+    }
+  }
+
+  getLoyaltyHistory() {
+    const { homeActions, user } = this.props;
+    const { customerId } = user || {};
 
     if (customerId) {
       homeActions.getCashbackHistory(customerId);
@@ -137,11 +159,12 @@ class RecentActivities extends React.Component {
 
 export default connect(
   (state) => ({
+    user: getUser(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
-    customerId: getCustomerId(state),
     cashbackHistory: getCashbackHistory(state),
   }),
   (dispatch) => ({
+    appActions: bindActionCreators(appActions, dispatch),
     homeActions: bindActionCreators(homeActions, dispatch),
   })
 )(RecentActivities);

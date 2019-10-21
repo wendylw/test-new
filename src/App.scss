@@ -408,6 +408,11 @@
     width: inherit;
   }
 
+  &__activities &__content {
+    max-height: 100%;
+    overflow: auto;
+  }
+
   .top-message {
     & ~ .loyalty__claim,
     & ~ .loyalty__home,
