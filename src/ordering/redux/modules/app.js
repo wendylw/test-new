@@ -201,6 +201,7 @@ const user = (state = initialState.user, action) => {
         ...state,
         consumerId,
         isLogin: true,
+        hasOtp: false,
         isFetching: false,
       };
     case types.FETCH_LOGIN_STATUS_SUCCESS:

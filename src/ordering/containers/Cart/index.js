@@ -44,14 +44,11 @@ class Cart extends Component {
       await appActions.loadAvailableCashback();
 
       const { cartSummary } = this.props;
-      const {
-        total,
-        storeCreditsBalance
-      } = cartSummary || {};
+      const { total } = cartSummary || {};
 
       await cartActions.loadTotalCalculateResult({
         initial: total,
-        subtraction: [storeCreditsBalance],
+        subtraction: [this.getSpendCashback()],
       });
     }
   }
@@ -90,6 +87,10 @@ class Cart extends Component {
 
     if (isLogin && !paidTotal) {
       const { paymentActions } = this.props;
+
+      this.setState({
+        isCreatingOrder: true,
+      });
 
       await paymentActions.createOrder({
         cashback: this.getSpendCashback(),

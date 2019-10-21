@@ -133,8 +133,6 @@ class Braintree extends Component {
   }
 
   componentWillMount() {
-    console.log(111);
-
     const {
       history,
       paymentActions,
