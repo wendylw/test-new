@@ -23,7 +23,7 @@ class PhoneViewContainer extends React.Component {
     phone: Utils.getLocalStorageVariable('user.p'),
     isSavingPhone: false,
     redirectURL: null,
-    showCelebration: true,
+    showCelebration: false,
     claimedAnimationGifSrc: null
   }
 
@@ -39,6 +39,7 @@ class PhoneViewContainer extends React.Component {
     const { cashbackInfo, user } = this.props;
 
     this.canClaimCheck(cashbackInfo, user);
+    this.setLoyaltyPageUrl(user.isLogin);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,6 +51,7 @@ class PhoneViewContainer extends React.Component {
     }
 
     this.canClaimCheck(cashbackInfo, user);
+    this.setLoyaltyPageUrl(isLogin);
   }
 
   componentDidMount() {
@@ -79,6 +81,28 @@ class PhoneViewContainer extends React.Component {
     }
   }
 
+  async setLoyaltyPageUrl(isLogin) {
+    const { appActions } = this.props;
+
+    if (!isLogin) {
+      return;
+    }
+
+    await appActions.loadCustomerProfile();
+
+    const { user } = this.props;
+    const { customerId } = user || {};
+    let redirectURL = null;
+
+    if (customerId) {
+      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    }
+
+    this.setState({
+      redirectURL,
+    });
+  }
+
   getOrderInfo() {
     const { history } = this.props;
     const { phone } = this.state;
@@ -94,21 +118,9 @@ class PhoneViewContainer extends React.Component {
   async handleCreateCustomerCashbackInfo() {
     const { thankYouActions } = this.props;
     const { phone } = this.state;
-    let redirectURL = null;
 
     Utils.setLocalStorageVariable('user.p', phone);
     await thankYouActions.createCashbackInfo(this.getOrderInfo());
-
-    const { cashbackInfo } = this.props;
-    const { customerId } = cashbackInfo || {};
-
-    if (customerId) {
-      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-    }
-
-    this.setState({
-      redirectURL,
-    });
   }
 
   handleUpdatePhoneNumber(phone) {

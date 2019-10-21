@@ -52,8 +52,8 @@ const API_URLS = {
     method: 'post',
     mode: 'cors',
   },
-  GET_AVAILABLE_CASHBACK: (consumerId, business) => ({
-    url: `/api/consumer/${consumerId}/loyalty/${business}/balance`,
+  GET_CUSTOMER_PROFILE: (consumerId) => ({
+    url: `/api/consumer/${consumerId}/customer`,
     method: 'get',
   }),
   CALCULATE_RESULT: {

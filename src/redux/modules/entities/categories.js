@@ -11,10 +11,12 @@ const reducer = (state = initialState, action) => {
     // Only deal with response.data.onlineCategory
     const kvData = {};
     onlineCategory.forEach(category => {
-      kvData[category.id] = {
-        ...category,
-        products: category.products.map(product => product.id),
-      };
+      if (category.products && category.products.length) {
+        kvData[category.id] = {
+          ...category,
+          products: category.products.map(product => product.id),
+        };
+      }
     });
     return { ...state, ...kvData };
   }

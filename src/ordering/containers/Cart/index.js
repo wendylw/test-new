@@ -41,7 +41,7 @@ class Cart extends Component {
     cartActions.loadCoreBusiness();
 
     if (isLogin) {
-      await appActions.loadAvailableCashback();
+      await appActions.loadCustomerProfile();
 
       const { cartSummary } = this.props;
       const { total } = cartSummary || {};
