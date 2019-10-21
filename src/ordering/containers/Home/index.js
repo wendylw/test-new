@@ -37,9 +37,6 @@ class Home extends Component {
     const { storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    console.log('storeId==>', storeId);
-    console.log('h===>', h);
-
     if (!storeId && !h) {
       window.location.href = '/';
     }
