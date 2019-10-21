@@ -11,6 +11,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
   orderId: '',
+  thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
 };
@@ -141,11 +142,11 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_PAYMENT:
       return { ...state, currentPayment: action.paymentName };
     case types.CREATEORDER_SUCCESS: {
-      const { createOrder } = data || {};
-      const [order] = createOrder.orders;
+      const { orders, redirectUrl } = data || {};
+      const [order] = orders;
 
       if (order) {
-        return { ...state, orderId: order.orderId };
+        return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
       }
       return state;
     }
@@ -181,6 +182,8 @@ export default reducer;
 export const getCurrentPayment = state => state.payment.currentPayment;
 
 export const getCurrentOrderId = (state) => state.payment.orderId;
+
+export const getThankYouPageUrl = (state) => state.payment.thankYouPageUrl;
 
 export const getBraintreeToken = state => state.payment.braintreeToken;
 

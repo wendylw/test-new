@@ -17,7 +17,7 @@ import {
 } from '../../redux/modules/app';
 import { actions as appActions } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
-import { actions as paymentActions } from '../../redux/modules/payment';
+import { actions as paymentActions, getThankYouPageUrl } from '../../redux/modules/payment';
 import { actions as cartActions, getBusinessInfo, getPaidTotal } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
@@ -95,6 +95,12 @@ class Cart extends Component {
       await paymentActions.createOrder({
         cashback: this.getSpendCashback(),
       });
+
+      const { thankYouPageUrl } = this.props;
+
+      if (thankYouPageUrl) {
+        history.push(thankYouPageUrl);
+      }
 
       return;
     }
@@ -224,6 +230,7 @@ export default connect(
     businessInfo: getBusinessInfo(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     currentProduct: getCurrentProduct(state),
+    thankYouPageUrl: getThankYouPageUrl(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActions, dispatch),
