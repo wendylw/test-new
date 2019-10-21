@@ -1,10 +1,6 @@
 import React from 'react';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import {
-  IconPending,
-  IconChecked,
-  IconEarned,
-} from '../../../../../components/Icons';
+import { IconTicket } from '../../../../../components/Icons';
 import Header from '../../../../../components/Header';
 
 import { connect } from 'react-redux';
@@ -41,26 +37,6 @@ class RecentActivities extends React.Component {
     this.setState({ fullScreen: !this.state.fullScreen });
   }
 
-  getType(type, props) {
-    const TypesMap = {
-      pending: {
-        text: 'Cashback Pending',
-        icon: <IconPending {...props} />,
-      },
-      /* expense is same as redeemed */
-      expense: {
-        text: 'Redeemed',
-        icon: <IconChecked {...props} />,
-      },
-      earned: {
-        text: 'You earned',
-        icon: <IconEarned {...props} />,
-      },
-    };
-
-    return TypesMap[type];
-  }
-
   renderLogList() {
     const {
       cashbackHistory,
@@ -77,16 +53,15 @@ class RecentActivities extends React.Component {
               eventTime,
             } = activity;
             const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-            const type = this.getType(eventType, { className: 'receipt-list__icon' });
 
             return (
               <li key={`${i}`} className="receipt-list__item flex flex-middle">
-                {type.icon}
+                <IconTicket className="activity__icon ticket" />
                 <summary>
                   <h4 className="receipt-list__title">
-                    <label>{type.text}&nbsp;</label>
+                    <label>Receipt - </label>
                     {
-                      activity.eventType !== 'pending'
+                      eventType !== 'pending'
                         ? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
                         : null
                     }
