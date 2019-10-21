@@ -5,7 +5,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 
 import { getLoyaltyHistoriesByCustomerId } from '../../../redux/modules/entities/loyaltyHistories';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getBusiness } from './app';
+import { getUser, getBusiness } from './app';
 
 const initialState = {
   customerId: null,
@@ -69,7 +69,8 @@ export const getBusinessInfo = state => {
 }
 
 export const getCashbackHistory = state => {
-  const customerId = getCustomerId(state);
+  const user = getUser(state);
+  const { customerId } = user || {};
 
   return getLoyaltyHistoriesByCustomerId(state, customerId);
 }
