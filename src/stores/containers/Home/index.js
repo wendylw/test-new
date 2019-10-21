@@ -11,26 +11,17 @@ import { actions as homeActions, getStoreHashCode, getAllStores, showStores } fr
 class App extends Component {
   state = {}
 
-  componentWillMount() {
+  async componentWillMount() {
     const { homeActions } = this.props;
 
-    homeActions.loadCoreStores();
-  }
+    await homeActions.loadCoreStores();
 
-  componentDidMount() {
     this.redirectPage(this.props.stores);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.redirectPage(nextProps.stores);
-  }
-
   redirectPage(stores) {
-    const { stores: oldStores } = this.props;
-    const valid = oldStores !== stores || (oldStores && oldStores.length && oldStores[0].id !== stores[0].id);
-
     // auto redirect when there only one store in the list
-    if (valid && stores && stores.length === 1) {
+    if (stores.length === 1) {
       this.handleSelectStore(stores[0].id);
 
       return;
