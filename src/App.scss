@@ -1160,7 +1160,7 @@
   padding: 4vw;
 }
 
-.asdie-section {
+.aside-section {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -1171,23 +1171,16 @@
     z-index: 100;
 
     .aside-bottom {
-      @extend .asdie-section.full;
+      @extend .aside-section.full;
 
-      top: 0;
       padding-top: 50px;
       border-radius: 0;
-    }
-
-    .activity {
-      max-height: 100%;
-      overflow: auto;
-      padding-bottom: 50px;
     }
   }
 }
 
 .aside-bottom {
-  @extend .asdie-section;
+  @extend .aside-section;
 
   padding: 0 2.4vw;
   width: 100%;
@@ -1736,6 +1729,15 @@
   @extend .card-list;
 
   margin: -4px -2.4vw;
+  padding: 0 16px;
+  overflow: hidden;
+  max-height: 140px;
+
+  &.full {
+    max-height: 100%;
+    overflow: auto;
+    padding-bottom: 50px;
+  }
 
   &__item {
     @extend .card-list__item;

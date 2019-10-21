@@ -59,7 +59,7 @@ class Payment extends Component {
     homeActions.loadShoppingCart();
 
     if (isLogin) {
-      appActions.loadAvailableCashback();
+      appActions.loadCustomerProfile();
     }
   }
 

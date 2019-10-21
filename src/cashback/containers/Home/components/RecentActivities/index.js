@@ -45,7 +45,7 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-      <ul className="receipt-list">
+      <ul className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}>
         {
           (cashbackHistory || []).map((activity, i) => {
             const {

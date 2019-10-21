@@ -361,7 +361,7 @@ export const getCategoryProductList = createSelector(
           };
         }),
       };
-    });
+    }).filter(c => c.products.length);
 
     return mergeWithShoppingCart(newCategories, carts);
   }

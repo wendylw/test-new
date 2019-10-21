@@ -17,6 +17,8 @@ const initialState = {
     isExpired: false,
     hasOtp: false,
     consumerId: config.consumerId,
+    customerId: '',
+    storeCreditsBalance: 0,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
   },
   error: null, // network error
@@ -140,6 +142,17 @@ export const actions = {
     prompt,
   }),
 
+  loadCustomerProfile: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_CUSTOMER_PROFILE_REQUEST,
+        types.FETCH_CUSTOMER_PROFILE_SUCCESS,
+        types.FETCH_CUSTOMER_PROFILE_FAILURE,
+      ],
+      ...Url.API_URLS.GET_CUSTOMER_PROFILE(config.consumerId),
+    }
+  }),
+
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -228,6 +241,10 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
+    case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
+      const { storeCreditsBalance, customerId } = response || {};
+
+      return { ...state, storeCreditsBalance, customerId };
     default:
       return state;
   }
