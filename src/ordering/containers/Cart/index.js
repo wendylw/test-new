@@ -99,7 +99,7 @@ class Cart extends Component {
       const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
-        history.push(thankYouPageUrl);
+        window.location = thankYouPageUrl;
       }
 
       return;
