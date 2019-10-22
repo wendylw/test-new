@@ -107,14 +107,13 @@ class PhoneViewContainer extends React.Component {
   }
 
   getMessage() {
-    const { cashbackInfo } = this.props;
+    const { user, cashbackInfo } = this.props;
+    const { isLogin } = user || {};
     const { status: key } = cashbackInfo || {};
 
-    if (!key) {
-      return null;
+    if (!key || !isLogin) {
+      return 'Claim with your mobile number';
     }
-
-    console.log(key);
 
     return this.MESSAGES[key] || this.MESSAGES.Default;
   }
@@ -124,10 +123,11 @@ class PhoneViewContainer extends React.Component {
     const { isLogin } = user || {};
     const canClaim = status === ORDER_CAN_CLAIM;
 
-    if (canClaim && isLogin) {
-      this.setState({ showCelebration: true });
+    if (isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
+
+    this.setState({ showCelebration: canClaim && isLogin });
   }
 
   async setLoyaltyPageUrl(isLogin) {
@@ -283,7 +283,7 @@ class PhoneViewContainer extends React.Component {
     return (
       <div className="thanks__phone-view">
         <label className="phone-view-form__label text-center">
-          {this.getMessage()}
+          {this.getMessage() || ''}
         </label>
         {this.renderPhoneView()}
 
