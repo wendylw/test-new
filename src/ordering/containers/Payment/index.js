@@ -59,7 +59,7 @@ class Payment extends Component {
     homeActions.loadShoppingCart();
 
     if (isLogin) {
-      appActions.loadAvailableCashback();
+      appActions.loadCustomerProfile();
     }
   }
 
@@ -128,6 +128,9 @@ class Payment extends Component {
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
     }
+
+    console.log(EXCLUDED_PAYMENTS.includes(currentPayment));
+    console.log(orderId);
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment) && orderId) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};

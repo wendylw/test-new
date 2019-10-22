@@ -17,13 +17,14 @@ const ANIMATION_TIME = 3600;
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
 class PhoneViewContainer extends React.Component {
+  MESSAGES = {};
   animationSetTimeout = null;
 
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
     isSavingPhone: false,
     redirectURL: null,
-    showCelebration: true,
+    showCelebration: false,
     claimedAnimationGifSrc: null
   }
 
@@ -34,11 +35,14 @@ class PhoneViewContainer extends React.Component {
     } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
+    this.initMessages();
+
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { cashbackInfo, user } = this.props;
 
     this.canClaimCheck(cashbackInfo, user);
+    this.setLoyaltyPageUrl(user.isLogin);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,6 +54,7 @@ class PhoneViewContainer extends React.Component {
     }
 
     this.canClaimCheck(cashbackInfo, user);
+    this.setLoyaltyPageUrl(isLogin);
   }
 
   componentDidMount() {
@@ -68,15 +73,83 @@ class PhoneViewContainer extends React.Component {
     }
   }
 
+  initMessages() {
+    const { businessInfo } = this.props;
+    const { claimCashbackCountPerDay } = businessInfo || {};
+    const messages = {
+      Default: 'Oops, please scan QR to claim again.',
+      /* get Cash Back messages */
+      Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
+      /* save Cash Back messages */
+      Claimed_FirstTime: {
+        title: `Awesome, you've earned your first cashback! 🎉 `,
+        description: `Tap the button below to learn how to use your cashback.`,
+      },
+      Claimed_NotFirstTime: {
+        title: `You've earned more cashback! 🎉`,
+      },
+      Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
+      Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
+      Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
+      NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+      NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
+      NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,
+      /* set Otp */
+      NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
+      /* verify phone */
+      Save_Cashback_Failed: 'Oops! please retry again later.',
+      /* Activity */
+      Activity_Incorrect: 'Activity incorrect, need retry.',
+    }
+
+    this.MESSAGES = messages;
+  }
+
+  getMessage() {
+    const { user, cashbackInfo } = this.props;
+    const { isLogin } = user || {};
+    const { status: key } = cashbackInfo || {};
+
+    if (!key || !isLogin) {
+      return 'Claim with your mobile number';
+    }
+
+    return this.MESSAGES[key] || this.MESSAGES.Default;
+  }
+
   canClaimCheck(cashbackInfo, user) {
     const { status } = cashbackInfo || {};
     const { isLogin } = user || {};
     const canClaim = status === ORDER_CAN_CLAIM;
 
-    if (canClaim && isLogin) {
-      this.setState({ showCelebration: true });
+    if (isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
+
+    this.setState({ showCelebration: canClaim && isLogin });
+  }
+
+  async setLoyaltyPageUrl(isLogin) {
+    const { appActions } = this.props;
+
+    if (!isLogin) {
+      return;
+    }
+
+    await appActions.loadCustomerProfile();
+
+    const { user } = this.props;
+    const { customerId } = user || {};
+    let redirectURL = null;
+
+    if (customerId) {
+      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    }
+
+    this.setState({
+      redirectURL,
+    });
   }
 
   getOrderInfo() {
@@ -94,21 +167,9 @@ class PhoneViewContainer extends React.Component {
   async handleCreateCustomerCashbackInfo() {
     const { thankYouActions } = this.props;
     const { phone } = this.state;
-    let redirectURL = null;
 
     Utils.setLocalStorageVariable('user.p', phone);
     await thankYouActions.createCashbackInfo(this.getOrderInfo());
-
-    const { cashbackInfo } = this.props;
-    const { customerId } = cashbackInfo || {};
-
-    if (customerId) {
-      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-    }
-
-    this.setState({
-      redirectURL,
-    });
   }
 
   handleUpdatePhoneNumber(phone) {
@@ -202,7 +263,6 @@ class PhoneViewContainer extends React.Component {
 
   render() {
     const {
-      user,
       cashbackInfo,
       businessInfo,
       onlineStoreInfo,
@@ -212,11 +272,7 @@ class PhoneViewContainer extends React.Component {
       showCelebration,
       redirectURL,
     } = this.state;
-    const {
-      cashback,
-      status
-    } = cashbackInfo || {};
-    const { isLogin } = user || {};
+    const { cashback } = cashbackInfo || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
 
@@ -226,19 +282,9 @@ class PhoneViewContainer extends React.Component {
 
     return (
       <div className="thanks__phone-view">
-        {
-          status !== ORDER_CAN_CLAIM || isLogin
-            ? (
-              <label className="phone-view-form__label text-center">
-                You’ve earned {this.renderCurrencyNumber()} Cashback!
-							</label>
-            )
-            : (
-              <label className="phone-view-form__label text-center">
-                Earn {this.renderCurrencyNumber()} Cashback with Your Mobile Number
-							</label>
-            )
-        }
+        <label className="phone-view-form__label text-center">
+          {this.getMessage() || ''}
+        </label>
         {this.renderPhoneView()}
 
         <p className="terms-privacy text-center gray-font-opacity">

@@ -54,7 +54,7 @@ const reducer = (state = initialState, action) => {
     if (emptyShoppingCart && emptyShoppingCart.success) {
       return { ...state, summary: initialState.summary, data: {} };
     }
-  } else if (action.type === APP_TYPES.FETCH_AVAILABLE_CASHBACK_SUCCESS) {
+  } else if (action.type === APP_TYPES.FETCH_CUSTOMER_PROFILE_SUCCESS) {
     //TODO: let's use schema name in the response from Api middleware, so that each entities can get response data from its name named data.
 
     const { storeCreditsBalance } = action.response || {};
