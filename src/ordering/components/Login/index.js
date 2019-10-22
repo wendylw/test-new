@@ -59,7 +59,6 @@ class Login extends React.Component {
       isLogin,
       hasOtp,
     } = user || {};
-    const { phone } = this.state;
 
     if (!hasOtp || isLogin) {
       return null;
@@ -69,7 +68,7 @@ class Login extends React.Component {
       <OtpModal
         buttonText="Ok"
         ResendOtpTime={20}
-        phone={phone}
+        phone={Utils.getLocalStorageVariable('user.p')}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
