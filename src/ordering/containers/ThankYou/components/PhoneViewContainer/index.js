@@ -263,7 +263,6 @@ class PhoneViewContainer extends React.Component {
 
   render() {
     const {
-      user,
       cashbackInfo,
       businessInfo,
       onlineStoreInfo,
@@ -273,11 +272,7 @@ class PhoneViewContainer extends React.Component {
       showCelebration,
       redirectURL,
     } = this.state;
-    const {
-      cashback,
-      status
-    } = cashbackInfo || {};
-    const { isLogin } = user || {};
+    const { cashback } = cashbackInfo || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
 
