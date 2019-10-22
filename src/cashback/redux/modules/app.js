@@ -163,6 +163,20 @@ export const actions = {
       endpoint: Url.apiGql('OnlineStoreInfo'),
     }
   }),
+
+  fetchBusiness: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_BUSINESS_REQUEST,
+        types.FETCH_BUSINESS_SUCCESS,
+        types.FETCH_BUSINESS_FAILURE,
+      ],
+      ...Url.API_URLS.GET_CASHBACK_BUSINESS,
+      params: {
+        storeId: config.storeId,
+      },
+    }
+  }),
 };
 
 const user = (state = initialState.user, action) => {
