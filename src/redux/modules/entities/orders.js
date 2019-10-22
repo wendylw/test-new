@@ -4,8 +4,8 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
     const { data } = action.responseGql;
-    if (data.createOrder) {
-      const [order] = data.createOrder.orders;
+    if (data.orders) {
+      const [order] = data.orders;
       return { ...state, [order.orderId]: order };
     } else if (data.order) {
       const { order } = data;
