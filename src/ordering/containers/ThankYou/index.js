@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Header from '../../../components/Header';
-import PhoneViewContainer from './components/PhoneViewContainer';
+import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -116,7 +116,7 @@ class ThankYou extends Component {
           <div className="thanks__info-container">
             {this.renderPickupInfo()}
             {this.renderNeedReceipt()}
-            <PhoneViewContainer history={history} />
+            <PhoneLogin history={history} />
           </div>
         </div>
         <footer className="footer-link">

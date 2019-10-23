@@ -16,7 +16,7 @@ const ORDER_CAN_CLAIM = 'Can_Claim';
 const ANIMATION_TIME = 3600;
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
-class PhoneViewContainer extends React.Component {
+class PhoneLogin extends React.Component {
   MESSAGES = {};
   animationSetTimeout = null;
 
@@ -180,6 +180,8 @@ class PhoneViewContainer extends React.Component {
     const { appActions } = this.props;
     const { phone } = this.state;
 
+    console.log(phone);
+
     appActions.getOtp({ phone });
   }
 
@@ -313,4 +315,4 @@ export default connect(
     appActions: bindActionCreators(appActions, dispatch),
     thankYouActions: bindActionCreators(thankYouActions, dispatch),
   })
-)(PhoneViewContainer);
+)(PhoneLogin);
