@@ -42,7 +42,7 @@ class PhoneLogin extends React.Component {
     const { user } = this.props;
 
     this.canClaimCheck(user);
-    this.setLoyaltyPageUrl(user.isLogin);
+    this.setLoyaltyPageUrl(user);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,7 +54,7 @@ class PhoneLogin extends React.Component {
     }
 
     this.canClaimCheck(user);
-    this.setLoyaltyPageUrl(isLogin);
+    this.setLoyaltyPageUrl(user);
   }
 
   componentDidMount() {
@@ -131,18 +131,21 @@ class PhoneLogin extends React.Component {
     this.setState({ showCelebration: ORDER_CLAIMED_SUCCESSFUL.includes(status) && isLogin });
   }
 
-  async setLoyaltyPageUrl(isLogin) {
+  async setLoyaltyPageUrl(user) {
     const { appActions } = this.props;
+    const {
+      isLogin,
+      consumerId,
+    } = user || {};
+    let redirectURL = null;
 
     if (!isLogin) {
       return;
     }
 
-    await appActions.loadCustomerProfile();
+    await appActions.loadCustomerProfile({ consumerId });
 
-    const { user } = this.props;
-    const { customerId } = user || {};
-    let redirectURL = null;
+    const { customerId } = this.props.user || {};
 
     if (customerId) {
       redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;

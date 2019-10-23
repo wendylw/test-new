@@ -54,12 +54,12 @@ class Payment extends Component {
       appActions,
       homeActions,
     } = this.props;
-    const { isLogin } = user;
+    const { consumerId, isLogin } = user || {};
 
     homeActions.loadShoppingCart();
 
     if (isLogin) {
-      appActions.loadCustomerProfile();
+      appActions.loadCustomerProfile({ consumerId });
     }
   }
 

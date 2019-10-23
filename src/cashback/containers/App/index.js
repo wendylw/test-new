@@ -115,7 +115,7 @@ class App extends Component {
         <Message />
         {
           !isFetching || !isLogin
-            ? <Login title={prompt} />
+            ? <Login className="aside" title={prompt} />
             : null
         }
         <Routes />

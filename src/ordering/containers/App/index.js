@@ -115,7 +115,7 @@ class App extends Component {
             )
             : null
         }
-        <Login />
+        <Login className="aside" />
         <Routes />
       </main>
     );

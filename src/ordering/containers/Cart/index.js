@@ -55,11 +55,13 @@ class Cart extends Component {
 
   async updatePaidTotal() {
     const {
+      user,
       appActions,
       cartActions,
     } = this.props;
+    const { consumerId } = user || {};
 
-    await appActions.loadCustomerProfile();
+    await appActions.loadCustomerProfile({ consumerId });
 
     const { cartSummary } = this.props;
     const { total } = cartSummary || {};
