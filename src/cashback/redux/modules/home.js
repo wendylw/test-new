@@ -20,6 +20,22 @@ export const actions = {
     customerId,
   }),
 
+  getReceiptList: (business,page,pageSize) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_RECEIPT_LIST_REQUEST,
+        types.FETCH_RECEIPT_LIST_SUCCESS,
+        types.FETCH_RECEIPT_LIST_FAILURE
+      ],
+      ...Url.API_URLS.GET_RECEIPTS_LIST,
+      params: {
+        business,
+        page,
+        pageSize
+      }
+    }
+  }),
+
   getCashbackHistory: customerId => ({
     [API_REQUEST]: {
       types: [
@@ -53,6 +69,14 @@ const reducer = (state = initialState, action) => {
         }
       };
     }
+    case types.FETCH_RECEIPT_LIST_SUCCESS: {
+      const {response} = action;
+      const { list } = response || {};
+      return {
+        ...state,
+        receiptList: list
+      }
+    }
     default:
       return state;
   }
@@ -61,6 +85,7 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 
 export const getCustomerId = state => state.home.customerId;
+export const getReceiptList = state => state.home.receiptList;
 export const getCashbackHistorySummary = state => state.home.cashbackHistorySummary;
 
 export const getBusinessInfo = state => {
