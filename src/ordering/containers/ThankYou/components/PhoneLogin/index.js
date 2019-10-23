@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as thankYouActions, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
 
-const ORDER_CAN_CLAIM = 'Can_Claim';
+const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const ANIMATION_TIME = 3600;
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
@@ -39,21 +39,21 @@ class PhoneLogin extends React.Component {
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
-    const { cashbackInfo, user } = this.props;
+    const { user } = this.props;
 
-    this.canClaimCheck(cashbackInfo, user);
+    this.canClaimCheck(user);
     this.setLoyaltyPageUrl(user.isLogin);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { cashbackInfo, user } = nextProps;
+    const { user } = nextProps;
     const { isLogin } = user;
 
     if (this.props.user.isLogin === isLogin) {
       return;
     }
 
-    this.canClaimCheck(cashbackInfo, user);
+    this.canClaimCheck(user);
     this.setLoyaltyPageUrl(isLogin);
   }
 
@@ -118,16 +118,17 @@ class PhoneLogin extends React.Component {
     return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
-  canClaimCheck(cashbackInfo, user) {
-    const { status } = cashbackInfo || {};
+  async canClaimCheck(user) {
     const { isLogin } = user || {};
-    const canClaim = status === ORDER_CAN_CLAIM;
 
     if (isLogin) {
-      this.handleCreateCustomerCashbackInfo();
+      await this.handleCreateCustomerCashbackInfo();
     }
 
-    this.setState({ showCelebration: canClaim && isLogin });
+    const { cashbackInfo } = this.props;
+    const { status } = cashbackInfo || {};
+
+    this.setState({ showCelebration: ORDER_CLAIMED_SUCCESSFUL.includes(status) && isLogin });
   }
 
   async setLoyaltyPageUrl(isLogin) {

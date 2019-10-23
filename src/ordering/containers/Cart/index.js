@@ -28,29 +28,46 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
-  async componentDidMount() {
+  async componentWillMount() {
     const {
-      appActions,
       cartActions,
       homeActions,
       user,
     } = this.props;
     const { isLogin } = user;
 
-    homeActions.loadProductList();
     cartActions.loadCoreBusiness();
+    await homeActions.loadProductList();
 
     if (isLogin) {
-      await appActions.loadCustomerProfile();
-
-      const { cartSummary } = this.props;
-      const { total } = cartSummary || {};
-
-      await cartActions.loadTotalCalculateResult({
-        initial: total,
-        subtraction: [this.getSpendCashback()],
-      });
+      this.updatePaidTotal();
     }
+  }
+
+  async componentWillReceiveProps(nextProps) {
+    const { user } = nextProps;
+    const { isLogin } = user || {};
+
+    if (isLogin && isLogin !== this.props.user.isLogin) {
+      this.updatePaidTotal();
+    }
+  }
+
+  async updatePaidTotal() {
+    const {
+      appActions,
+      cartActions,
+    } = this.props;
+
+    await appActions.loadCustomerProfile();
+
+    const { cartSummary } = this.props;
+    const { total } = cartSummary || {};
+
+    cartActions.loadTotalCalculateResult({
+      initial: total,
+      subtraction: [this.getSpendCashback()],
+    });
   }
 
   getSpendCashback() {

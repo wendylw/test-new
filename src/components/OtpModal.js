@@ -29,8 +29,14 @@ class OtpModal extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.countDownSetTimeoutObj);
+  }
+
   countDown(currentOtpTime) {
     if (!currentOtpTime) {
+      clearTimeout(this.countDownSetTimeoutObj);
+
       return;
     }
 
@@ -38,7 +44,7 @@ class OtpModal extends React.Component {
       currentOtpTime: currentOtpTime - 1,
     });
 
-    setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
+    this.countDownSetTimeoutObj = setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
   }
 
   render() {
