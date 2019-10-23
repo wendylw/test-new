@@ -180,8 +180,6 @@ class PhoneLogin extends React.Component {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    console.log(phone);
-
     appActions.getOtp({ phone });
   }
 
