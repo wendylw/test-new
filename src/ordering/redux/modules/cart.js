@@ -3,10 +3,12 @@ import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getAllCartItems } from '../../../redux/modules/entities/carts';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 
 const initialState = {
   paidTotal: 0,
+  canSpend: true,
 };
 
 export const types = CART_TYPES;
@@ -37,7 +39,11 @@ export const actions = {
         subtraction,
       },
     }
-  })
+  }),
+
+  getSpendCashbackAvailable: () => (dispatch, getState) => {
+    const items = getAllCartItems(getState());
+  },
 };
 
 const emptyShoppingCart = () => {
@@ -66,9 +72,21 @@ const fetchCoreBusiness = variables => ({
   }
 });
 
+const fetchOrderCashbackAvailable = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [
+      types.FETCH_CASHBACK_AVAILABLE_REQUEST,
+      types.FETCH_CASHBACK_AVAILABLE_SUCCESS,
+      types.FETCH_CASHBACK_AVAILABLE_FAILURE,
+    ],
+    endpoint: Url.apiGql('OrderLoyaltyCheck'),
+    variables,
+  }
+});
+
 // reducers
 const reducer = (state = initialState, action) => {
-  const { response } = action;
+  const { data, response } = action;
 
   switch (action.type) {
     case types.TOTAL_CALCULATOR_SUCCESS: {
@@ -76,6 +94,11 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, paidTotal: result };
     }
+    case types.FETCH_CASHBACK_AVAILABLE_SUCCESS:
+      const { orderLoyaltyCheck } = data || {};
+      const { canSpend } = orderLoyaltyCheck || {};
+
+      return { ...state, canSpend };
     default:
       return state;
   }
@@ -89,6 +112,7 @@ export const getBusinessInfo = state => {
   return getBusinessByName(state, business);
 };
 
+export const getSpendCashbackAvailable = state => state.cart.canSpend;
 export const getPaidTotal = state => state.cart.paidTotal;
 
 // selectors
