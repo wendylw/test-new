@@ -9,6 +9,7 @@ import { getUser, getBusiness } from './app';
 
 const initialState = {
   customerId: null,
+  receiptList: [],
   cashbackHistorySummary: null,
 };
 
@@ -74,7 +75,7 @@ const reducer = (state = initialState, action) => {
       const { list } = response || {};
       return {
         ...state,
-        receiptList: list
+        receiptList: state.receiptList.concat(list)
       }
     }
     default:
