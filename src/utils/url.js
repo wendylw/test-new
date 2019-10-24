@@ -53,7 +53,7 @@ const API_URLS = {
     mode: 'cors',
   },
   GET_CUSTOMER_PROFILE: (consumerId) => ({
-    url: `/api/consumer/${consumerId}/customer`,
+    url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
   CALCULATE_RESULT: {
