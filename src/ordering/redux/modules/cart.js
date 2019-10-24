@@ -3,7 +3,7 @@ import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getAllCartItems } from '../../../redux/modules/entities/carts';
+// import { getAllCartItems } from '../../../redux/modules/entities/carts';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 
 const initialState = {
@@ -42,7 +42,7 @@ export const actions = {
   }),
 
   getSpendCashbackAvailable: () => (dispatch, getState) => {
-    const items = getAllCartItems(getState());
+    // const items = getAllCartItems(getState());
   },
 };
 
@@ -72,17 +72,17 @@ const fetchCoreBusiness = variables => ({
   }
 });
 
-const fetchOrderCashbackAvailable = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [
-      types.FETCH_CASHBACK_AVAILABLE_REQUEST,
-      types.FETCH_CASHBACK_AVAILABLE_SUCCESS,
-      types.FETCH_CASHBACK_AVAILABLE_FAILURE,
-    ],
-    endpoint: Url.apiGql('OrderLoyaltyCheck'),
-    variables,
-  }
-});
+// const fetchOrderCashbackAvailable = variables => ({
+//   [FETCH_GRAPHQL]: {
+//     types: [
+//       types.FETCH_CASHBACK_AVAILABLE_REQUEST,
+//       types.FETCH_CASHBACK_AVAILABLE_SUCCESS,
+//       types.FETCH_CASHBACK_AVAILABLE_FAILURE,
+//     ],
+//     endpoint: Url.apiGql('OrderLoyaltyCheck'),
+//     variables,
+//   }
+// });
 
 // reducers
 const reducer = (state = initialState, action) => {
