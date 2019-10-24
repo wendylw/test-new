@@ -137,7 +137,7 @@ class PhoneLogin extends React.Component {
       isLogin,
       consumerId,
     } = user || {};
-    // let redirectURL = null;
+    let redirectURL = null;
 
     if (!isLogin) {
       return;
@@ -145,15 +145,15 @@ class PhoneLogin extends React.Component {
 
     await appActions.loadCustomerProfile({ consumerId });
 
-    // const { customerId } = this.props.user || {};
+    const { customerId } = this.props.user || {};
 
-    // if (customerId) {
-    //   redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-    // }
+    if (customerId) {
+      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
+    }
 
-    // this.setState({
-    //   redirectURL,
-    // });
+    this.setState({
+      redirectURL,
+    });
   }
 
   getOrderInfo() {

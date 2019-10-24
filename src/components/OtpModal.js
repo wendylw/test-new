@@ -18,7 +18,7 @@ class OtpModal extends React.Component {
   componentWillMount() {
     const { currentOtpTime } = this.state;
 
-    this.countDown(currentOtpTime);
+    // this.countDown(currentOtpTime);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -29,23 +29,23 @@ class OtpModal extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.countDownSetTimeoutObj);
-  }
+  // componentWillUnmount() {
+  //   clearTimeout(this.countDownSetTimeoutObj);
+  // }
 
-  countDown(currentOtpTime) {
-    clearTimeout(this.countDownSetTimeoutObj);
+  // countDown(currentOtpTime) {
+  //   clearTimeout(this.countDownSetTimeoutObj);
 
-    if (!currentOtpTime) {
-      return;
-    }
+  //   if (!currentOtpTime) {
+  //     return;
+  //   }
 
-    this.setState({
-      currentOtpTime: currentOtpTime - 1,
-    });
+  //   this.setState({
+  //     currentOtpTime: currentOtpTime - 1,
+  //   });
 
-    this.countDownSetTimeoutObj = setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
-  }
+  //   this.countDownSetTimeoutObj = setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
+  // }
 
   render() {
     const {
@@ -88,13 +88,13 @@ class OtpModal extends React.Component {
               }}
             />
           </div>
-          <button
+          {/* <button
             className="otp-resend text-uppercase"
             disabled={!!currentOtpTime}
             onClick={() => getOtp(phone)}
           >
             {`Resend OTP${currentOtpTime ? `? (${currentOtpTime})` : ''}`}
-          </button>
+          </button> */}
         </section>
 
         <footer className="footer-operation opt">
