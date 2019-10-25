@@ -60,6 +60,14 @@ const API_URLS = {
     url: '/api/calculator',
     method: 'post',
   },
+  GET_PENDING_TRANSACTIONS: {
+    url: '/api/transactions/status/pending',
+    method: 'get',
+  },
+  PUT_TRANSACTIONS_STATUS: {
+    url: '/api/transactions/status',
+    method: 'put'
+  },
 };
 
 export default {
