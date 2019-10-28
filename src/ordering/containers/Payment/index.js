@@ -63,16 +63,6 @@ class Payment extends Component {
     }
   }
 
-  getSpendCashback() {
-    const { cartSummary } = this.props;
-    const {
-      total,
-      storeCreditsBalance
-    } = cartSummary;
-
-    return storeCreditsBalance <= total ? storeCreditsBalance : total;
-  }
-
   getPaymentEntryRequestData = () => {
     const {
       onlineStoreInfo,
@@ -114,9 +104,10 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    await this.props.paymentActions.createOrder({
-      cashback: this.getSpendCashback(),
-    });
+    const { cartSummary } = this.props;
+    const { cashback } = cartSummary || {};
+
+    await this.props.paymentActions.createOrder({ cashback });
 
     const {
       history,

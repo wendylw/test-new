@@ -40,46 +40,8 @@ class Cart extends Component {
     await homeActions.loadProductList();
 
     if (isLogin) {
-      this.updatePaidTotal();
+      await appActions.loadCustomerProfile();
     }
-  }
-
-  async componentWillReceiveProps(nextProps) {
-    const { user } = nextProps;
-    const { isLogin } = user || {};
-
-    if (isLogin && isLogin !== this.props.user.isLogin) {
-      this.updatePaidTotal();
-    }
-  }
-
-  async updatePaidTotal() {
-    const {
-      user,
-      appActions,
-      cartActions,
-    } = this.props;
-    const { consumerId } = user || {};
-
-    await appActions.loadCustomerProfile({ consumerId });
-
-    const { cartSummary } = this.props;
-    const { total } = cartSummary || {};
-
-    cartActions.loadTotalCalculateResult({
-      initial: total,
-      subtraction: [this.getSpendCashback()],
-    });
-  }
-
-  getSpendCashback() {
-    const { cartSummary } = this.props;
-    const {
-      total,
-      storeCreditsBalance
-    } = cartSummary;
-
-    return storeCreditsBalance <= total ? storeCreditsBalance : total;
   }
 
   handleChangeAdditionalComments(e) {
@@ -99,21 +61,20 @@ class Cart extends Component {
   handleCheckPaymentStatus = async () => {
     const {
       history,
+      cartSummary,
       user,
-      paidTotal,
     } = this.props;
     const { isLogin } = user;
+    const { cashback } = cartSummary || {};
 
-    if (isLogin && !paidTotal) {
+    if (isLogin) {
       const { paymentActions } = this.props;
 
       this.setState({
         isCreatingOrder: true,
       });
 
-      await paymentActions.createOrder({
-        cashback: this.getSpendCashback(),
-      });
+      await paymentActions.createOrder({ cashback });
 
       const { thankYouPageUrl } = this.props;
 
@@ -165,7 +126,6 @@ class Cart extends Component {
   render() {
     const {
       user,
-      paidTotal,
       cartSummary,
       shoppingCart,
       businessInfo,
@@ -179,6 +139,7 @@ class Cart extends Component {
       total,
       tax,
       serviceCharge,
+      cashback,
     } = cartSummary || {};
 
     if (!(cartSummary && items)) {
@@ -210,8 +171,8 @@ class Cart extends Component {
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
             subtotal={subtotal}
-            total={isLogin ? paidTotal : total}
-            creditsBalance={this.getSpendCashback()}
+            total={total}
+            creditsBalance={cashback}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -243,7 +204,6 @@ class Cart extends Component {
 export default connect(
   state => ({
     user: getUser(state),
-    paidTotal: getPaidTotal(state),
     cartSummary: getCartSummary(state),
     shoppingCart: getShoppingCart(state),
     businessInfo: getBusinessInfo(state),

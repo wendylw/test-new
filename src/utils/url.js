@@ -1,4 +1,8 @@
 const API_URLS = {
+  GET_CART: {
+    url: '/api/cart',
+    method: 'get',
+  },
   GET_BRAINTREE_TOKEN: {
     url: '/payment/initToken',
     method: 'get',
@@ -56,10 +60,6 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
-  CALCULATE_RESULT: {
-    url: '/api/calculator',
-    method: 'post',
-  },
 };
 
 export default {
