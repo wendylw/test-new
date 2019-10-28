@@ -202,13 +202,13 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     case types.FETCH_SHOPPINGCART_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_SHOPPINGCART_SUCCESS: {
-      const { shoppingCart } = action.responseGql.data;
+      const { items, unavailableItems } = action.response || {};
 
       return {
         ...state,
         isFetching: false,
-        itemIds: shoppingCart.items.map(item => item.id),
-        unavailableItemIds: shoppingCart.unavailableItems.map(item => item.id),
+        itemIds: items.map(item => item.id),
+        unavailableItemIds: unavailableItems.map(item => item.id),
       }
     }
     case types.FETCH_SHOPPINGCART_FAILURE:

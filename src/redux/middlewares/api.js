@@ -69,6 +69,8 @@ export default store => next => action => {
       }));
     },
   ).catch(error => {
+    console.log(error);
+
     return next(actionWith({
       type: failureType,
       ...error,
