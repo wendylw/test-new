@@ -35,13 +35,6 @@ const commonReducer = (state = initialState, action) => {
       };
     });
 
-    console.log({
-      ...state,
-      summary: Object.assign(state.summary, summary),
-      data: kvData
-    });
-
-
     return {
       ...state,
       summary: Object.assign(state.summary, summary),
