@@ -10,6 +10,8 @@ import config from '../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { actions as homeActions } from '../../../redux/modules/home';
+import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
@@ -54,10 +56,11 @@ class OnlineBanking extends Component {
     };
   }
 
-  componentWillMount() {
-    const { paymentActions } = this.props;
+  async componentWillMount() {
+    const { homeActions, paymentActions } = this.props;
 
     paymentActions.fetchBankList();
+    await homeActions.loadShoppingCart();
   }
 
   componentDidMount() {
@@ -85,9 +88,12 @@ class OnlineBanking extends Component {
   async payNow() {
     this.setState({
       payNowLoading: true
-    }, () => {
+    }, async () => {
+      const { paymentActions, cartSummary } = this.props;
+      const { cashback } = cartSummary || {};
       const { agentCode } = this.state;
 
+      await paymentActions.createOrder({ cashback });
       this.setState({ payNowLoading: !!agentCode });
     });
   }
@@ -132,10 +138,10 @@ class OnlineBanking extends Component {
       match,
       history,
       bankingList,
-      currentOrder,
+      cartSummary,
       onlineStoreInfo
     } = this.props;
-    const { total } = currentOrder || {};
+    const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const {
       agentCode,
@@ -237,12 +243,14 @@ export default connect(
     return {
       bankingList: getBankList(state),
       business: getBusiness(state),
+      cartSummary: getCartSummary(state),
       currentPayment: getCurrentPayment(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       currentOrder: getOrderByOrderId(state, currentOrderId),
     };
   },
   dispatch => ({
+    homeActions: bindActionCreators(homeActions, dispatch),
     paymentActions: bindActionCreators(paymentActions, dispatch),
   }),
 )(OnlineBanking);

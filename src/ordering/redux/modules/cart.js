@@ -1,10 +1,13 @@
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
-const initialState = {};
+const initialState = {
+  pendingTransactionsIds: []
+};
 
 export const types = CART_TYPES;
 
@@ -20,6 +23,32 @@ export const actions = {
 
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
+
+  loadPendingPaymentList: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_PENDING_TRANSACTIONS_REQUEST,
+        types.FETCH_PENDING_TRANSACTIONS_SUCCESS,
+        types.FETCH_PENDING_TRANSACTIONS_FAILURE,
+      ],
+      ...Url.API_URLS.GET_PENDING_TRANSACTIONS,
+    },
+  }),
+
+  UpdateTransactionsStatus: ({ status, receiptNumbers }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.UPDATE_TRANSACTIONS_STATUS_REQUEST,
+        types.UPDATE_TRANSACTIONS_STATUS_SUCCESS,
+        types.UPDATE_TRANSACTIONS_STATUS_FAILURE,
+      ],
+      ...Url.API_URLS.PUT_TRANSACTIONS_STATUS,
+      payload: {
+        status,
+        receiptNumbers,
+      },
+    }
+  }),
 };
 
 const emptyShoppingCart = () => {
@@ -50,7 +79,16 @@ const fetchCoreBusiness = variables => ({
 
 // reducers
 const reducer = (state = initialState, action) => {
-  return state;
+  const { transactions } = action.response || {};
+
+  switch (action.type) {
+    case types.FETCH_PENDING_TRANSACTIONS_SUCCESS:
+      return { ...state, pendingTransactionsIds: (transactions || []).map(t => t.orderId) };
+    case types.UPDATE_TRANSACTIONS_STATUS_SUCCESS:
+      return { ...state, pendingTransactionsIds: [] };
+    default:
+      return state;
+  }
 }
 
 export default reducer;
@@ -60,5 +98,7 @@ export const getBusinessInfo = state => {
 
   return getBusinessByName(state, business);
 };
+
+export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 // selectors

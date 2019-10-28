@@ -5,11 +5,12 @@ import Header from '../../../../components/Header';
 import RedirectForm from '../components/RedirectForm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Constants from '../../../../utils/constants';
-import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { actions as homeActions } from '../../../redux/modules/home';
+import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActions, getCurrentPayment, getCurrentOrderId, getBraintreeToken } from '../../../redux/modules/payment';
@@ -95,6 +96,49 @@ class Braintree extends Component {
     },
   };
 
+  async componentWillMount() {
+    const {
+      paymentActions,
+    } = this.props;
+
+    paymentActions.fetchBraintreeToken(Constants.PAYMENT_METHODS.CREDIT_CARD_PAY);
+    await homeActions.loadShoppingCart();
+  }
+
+  componentDidMount() {
+    const braintreeSources = {
+      client: 'https://js.braintreegateway.com/web/3.47.0/js/client.min.js',
+      hostedFields: 'https://js.braintreegateway.com/web/3.47.0/js/hosted-fields.min.js',
+    };
+
+    Object.keys(braintreeSources).forEach(key => {
+      const script = document.createElement('script');
+      const { token } = this.props;
+
+      script.src = braintreeSources[key];
+
+      script.onload = () => {
+        this.braintreeSetting(token);
+      }
+
+      document.body.appendChild(script);
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { token } = nextProps;
+
+    if (token && !this.props.token) {
+      this.braintreeSetting(token);
+    }
+  }
+
+  componentWillUnmount() {
+    const { paymentActions } = this.props;
+
+    paymentActions.clearBraintreeToken();
+  }
+
   getPaymentEntryRequestData = () => {
     const {
       onlineStoreInfo,
@@ -130,50 +174,6 @@ class Braintree extends Component {
       cardHolderName,
       nonce,
     };
-  }
-
-  componentWillMount() {
-    const {
-      history,
-      paymentActions,
-    } = this.props;
-
-    paymentActions.fetchBraintreeToken(Constants.PAYMENT_METHODS.CREDIT_CARD_PAY);
-    paymentActions.fetchOrder(Utils.getQueryObject(history, 'orderId'));
-  }
-
-  componentDidMount() {
-    const braintreeSources = {
-      client: 'https://js.braintreegateway.com/web/3.47.0/js/client.min.js',
-      hostedFields: 'https://js.braintreegateway.com/web/3.47.0/js/hosted-fields.min.js',
-    };
-
-    Object.keys(braintreeSources).forEach(key => {
-      const script = document.createElement('script');
-      const { token } = this.props;
-
-      script.src = braintreeSources[key];
-
-      script.onload = () => {
-        this.braintreeSetting(token);
-      }
-
-      document.body.appendChild(script);
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { token } = nextProps;
-
-    if (token && !this.props.token) {
-      this.braintreeSetting(token);
-    }
-  }
-
-  componentWillUnmount() {
-    const { paymentActions } = this.props;
-
-    paymentActions.clearBraintreeToken();
   }
 
   getQueryObject(paramName) {
@@ -293,6 +293,7 @@ class Braintree extends Component {
   }
 
   braintreeSetting(token) {
+    const { paymentActions } = this.props;
     const that = this;
     const submitButtonEl = document.getElementById('submitButton');
 
@@ -387,10 +388,15 @@ class Braintree extends Component {
           that.setCardField({ field: 'type', value: type });
         });
 
-        submitButtonEl.addEventListener('click', function (e) {
+        submitButtonEl.addEventListener('click', async function (e) {
           e.preventDefault();
 
           that.setState({ payNowLoading: true });
+
+          const { cartSummary } = that.props;
+          const { cashback } = cartSummary || {};
+
+          await paymentActions.createOrder({ cashback });
 
           hostedFieldsInstance.tokenize(function (err, payload) {
             that.checkFieldsEmpty();
@@ -522,14 +528,14 @@ class Braintree extends Component {
       match,
       history,
       onlineStoreInfo,
-      currentOrder,
+      cartSummary,
     } = this.props;
     const { logo } = onlineStoreInfo || {};
     const {
       payNowLoading,
       brainTreeDOMLoaded,
     } = this.state;
-    const { total } = currentOrder || {};
+    const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
@@ -602,6 +608,7 @@ export default connect(
     return {
       token: getBraintreeToken(state),
       business: getBusiness(state),
+      cartSummary: getCartSummary(state),
       currentPayment: getCurrentPayment(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       currentOrder: getOrderByOrderId(state, currentOrderId),

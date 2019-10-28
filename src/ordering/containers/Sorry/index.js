@@ -1,17 +1,24 @@
 import React, { Component } from 'react';
+import Constants from '../../../utils/constants';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions } from '../../redux/modules/app';
+import { actions as cartActions, getPendingTransactionIds } from '../../redux/modules/cart';
 
 class Sorry extends Component {
-  componentWillMount() {
+  async componentWillMount() {
+    const { cartActions } = this.props;
+
+    await cartActions.loadPendingPaymentList();
+
     this.props.appActions.showMessageModal({
       message: 'Payment Failed',
       description: `We could not process your payment. The contents of your cart have been saved for you.`,
     });
 
     this.props.history.push({
-      pathname: '/cart'
+      pathname: Constants.ROUTER_PATHS.ORDERING_CART
     });
   }
 
@@ -28,8 +35,10 @@ class Sorry extends Component {
 
 export default connect(
   state => ({
+    pendingTransactionIds: getPendingTransactionIds(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActions, dispatch),
+    cartActions: bindActionCreators(cartActions, dispatch),
   })
 )(Sorry);

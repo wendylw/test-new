@@ -100,35 +100,34 @@ class Payment extends Component {
   }
 
   handleClickPayNow = async () => {
+    const {
+      history,
+      currentPayment,
+      cartSummary,
+    } = this.props;
+    const { cashback } = cartSummary || {};
+
     this.setState({
       payNowLoading: true,
     });
 
-    const { cartSummary } = this.props;
-    const { cashback } = cartSummary || {};
+    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
+      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
+
+      history.push({ pathname });
+
+      return;
+    }
 
     await this.props.paymentActions.createOrder({ cashback });
 
     const {
-      history,
-      currentPayment,
       currentOrder
     } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
-    }
-
-    if (EXCLUDED_PAYMENTS.includes(currentPayment) && orderId) {
-      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
-
-      history.push({
-        pathname,
-        search: `?orderId=${orderId || ''}`
-      });
-
-      return;
     }
 
     this.setState({
