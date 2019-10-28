@@ -18,7 +18,7 @@ import {
 import { actions as appActions } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { actions as paymentActions, getThankYouPageUrl } from '../../redux/modules/payment';
-import { actions as cartActions, getBusinessInfo, getPaidTotal } from '../../redux/modules/cart';
+import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -37,7 +37,7 @@ class Cart extends Component {
     const { isLogin } = user;
 
     cartActions.loadCoreBusiness();
-    await homeActions.loadProductList();
+    await homeActions.loadShoppingCart();
 
     if (isLogin) {
       await appActions.loadCustomerProfile();
@@ -125,13 +125,11 @@ class Cart extends Component {
 
   render() {
     const {
-      user,
       cartSummary,
       shoppingCart,
       businessInfo,
     } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
-    const { isLogin } = user || {};
     const { items } = shoppingCart || {};
     const {
       count,

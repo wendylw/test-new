@@ -4,9 +4,7 @@ import { getBusiness, getRequestInfo } from './app';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
-const initialState = {
-  canSpend: true,
-};
+const initialState = {};
 
 export const types = CART_TYPES;
 
@@ -52,17 +50,7 @@ const fetchCoreBusiness = variables => ({
 
 // reducers
 const reducer = (state = initialState, action) => {
-  const { data } = action;
-
-  switch (action.type) {
-    case types.FETCH_CASHBACK_AVAILABLE_SUCCESS:
-      const { orderLoyaltyCheck } = data || {};
-      const { canSpend } = orderLoyaltyCheck || {};
-
-      return { ...state, canSpend };
-    default:
-      return state;
-  }
+  return state;
 }
 
 export default reducer;

@@ -119,7 +119,7 @@ class App extends Component {
         }
         {
           !isLogin
-            ? <Login className="aside" title={prompt} />
+            ? <Login className="aside" />
             : null
         }
         <Routes />
