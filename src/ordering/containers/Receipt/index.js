@@ -60,7 +60,7 @@ export class ReceiptDetail extends Component {
                 key={id}
                 image={image}
                 title={title}
-                variation={variationTexts.join(', ')}
+                variation={(variationTexts || []).join(', ')}
                 detail={
                   <CurrencyNumber money={displayPrice || unitPrice || 0} />
                 }

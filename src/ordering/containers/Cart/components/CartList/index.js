@@ -69,7 +69,7 @@ class CartList extends Component {
                 key={id}
                 image={image}
                 title={title}
-                variation={variationTexts.join(', ')}
+                variation={(variationTexts || []).join(', ')}
                 price={displayPrice}
                 cartQuantity={quantity}
                 soldOut={isCartItemSoldOut(cartItem)}
