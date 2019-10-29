@@ -66,9 +66,9 @@ class Cart extends Component {
       user,
     } = this.props;
     const { isLogin } = user;
-    const { cashback } = cartSummary || {};
+    const { cashback, total } = cartSummary || {};
 
-    if (isLogin) {
+    if (isLogin && !total) {
       const { paymentActions } = this.props;
 
       this.setState({
