@@ -35,7 +35,7 @@ export const actions = {
     },
   }),
 
-  UpdateTransactionsStatus: ({ status, receiptNumbers }) => ({
+  updateTransactionsStatus: ({ status, receiptNumbers }) => ({
     [API_REQUEST]: {
       types: [
         types.UPDATE_TRANSACTIONS_STATUS_REQUEST,

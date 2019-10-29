@@ -8,10 +8,6 @@ import { actions as cartActions, getPendingTransactionIds } from '../../redux/mo
 
 class Sorry extends Component {
   async componentWillMount() {
-    const { cartActions } = this.props;
-
-    await cartActions.loadPendingPaymentList();
-
     this.props.appActions.showMessageModal({
       message: 'Payment Failed',
       description: `We could not process your payment. The contents of your cart have been saved for you.`,
