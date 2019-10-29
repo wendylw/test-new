@@ -9,10 +9,12 @@ export class Billing extends Component {
       businessInfo,
     } = this.props;
     const {
+      enableServiceCharge = false,
       serviceChargeRate = 0,
     } = businessInfo;
 
-    if (!serviceCharge) {
+    // TODO: revert service charge after released BEEP-163
+    if (!enableServiceCharge || !serviceCharge) {
       return null;
     }
 
