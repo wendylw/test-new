@@ -1,14 +1,13 @@
 import React from 'react';
-
+import qs from 'qs';
 import PhoneViewContainer from './components/PhoneViewContainer';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPin } from '../../../components/Icons';
 import Image from '../../../components/Image';
-import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber } from '../../redux/modules/claim';
 
 
@@ -27,7 +26,7 @@ class PageClaim extends React.Component {
 		const { receiptNumber } = this.props;
 
 		if (receiptNumber) {
-			claimActions.getCashbackInfo(receiptNumber);
+			await claimActions.getCashbackInfo(receiptNumber);
 		}
 	}
 
@@ -45,7 +44,7 @@ class PageClaim extends React.Component {
 		}
 
 		if (!isNaN(cashbackNumber) && cashbackNumber) {
-			return <CurrencyNumber classList="loyalty__money" money={cashback} />;
+			return <CurrencyNumber className="loyalty__money" money={cashback} />;
 		}
 
 		return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
@@ -74,10 +73,12 @@ class PageClaim extends React.Component {
 
 	render() {
 		const {
+			user,
 			history,
 			onlineStoreInfo,
 			businessInfo,
 		} = this.props;
+		const { isWebview } = user;
 		const { logo } = onlineStoreInfo || {};
 		const {
 			name,
@@ -101,8 +102,21 @@ class PageClaim extends React.Component {
 					{this.renderLocation()}
 				</article>
 				<div className="asdie-section">
-					<PhoneViewContainer history={history} />
+					<PhoneViewContainer
+						history={history}
+						{...this.props}
+					/>
 				</div>
+
+				{
+					isWebview
+						? (
+							<div className="loading-cover">
+								<i className="loader theme page-loader"></i>
+							</div>
+						)
+						: null
+				}
 			</section>
 		);
 	}
@@ -110,6 +124,7 @@ class PageClaim extends React.Component {
 
 export default connect(
 	(state) => ({
+		user: getUser(state),
 		onlineStoreInfo: getOnlineStoreInfo(state),
 		businessInfo: getBusinessInfo(state),
 		cashbackInfo: getCashbackInfo(state),

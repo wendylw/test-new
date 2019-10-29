@@ -2,10 +2,10 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import api from '../../../utils/api';
-
 import { getCartItemIds } from './home';
 import { getBusiness, getRequestInfo } from './app';
+
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const initialState = {
@@ -33,6 +33,8 @@ export const types = {
   FETCH_BRAINTREE_TOKEN_REQUEST: 'ORDERING/PAYMENT/FETCH_BRAINTREE_TOKEN_REQUEST',
   FETCH_BRAINTREE_TOKEN_SUCCESS: 'ORDERING/PAYMENT/FETCH_BRAINTREE_TOKEN_SUCCESS',
   FETCH_BRAINTREE_TOKEN_FAILURE: 'ORDERING/PAYMENT/FETCH_BRAINTREE_TOKEN_FAILURE',
+
+  CLEAR_BRAINTREE_TOKEN: 'ORDERING/PAYMENT/CLEAR_BRAINTREE_TOKEN',
 
   // getBankList
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
@@ -67,48 +69,34 @@ export const actions = {
     paymentName
   }),
 
-  fetchBraintreeToken: (paymentName) => async (dispatch) => {
-    try {
-      const data = await api({
-        url: `/payment/initToken`,
-        method: 'get',
-        params: {
-          paymentName,
-        },
-      });
-      const { token } = data || {};
-
-      if (token) {
-        dispatch({
-          type: types.FETCH_BRAINTREE_TOKEN_SUCCESS,
-          token,
-        });
-      }
-    } catch (e) {
-      // TODO: handle error
-      console.error(e);
+  fetchBraintreeToken: (paymentName) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_BRAINTREE_TOKEN_REQUEST,
+        types.FETCH_BRAINTREE_TOKEN_SUCCESS,
+        types.FETCH_BRAINTREE_TOKEN_FAILURE,
+      ],
+      ...Url.API_URLS.GET_BRAINTREE_TOKEN,
+      params: {
+        paymentName,
+      },
     }
-  },
+  }),
 
-  fetchBankList: () => async (dispatch) => {
-    try {
-      const data = await api({
-        url: '/payment/onlineBanking',
-        method: 'get',
-      });
-      const { bankingList } = data || {};
+  clearBraintreeToken: () => ({
+    type: types.CLEAR_BRAINTREE_TOKEN,
+  }),
 
-      if (bankingList && bankingList.length) {
-        dispatch({
-          type: types.FETCH_BANKLIST_SUCCESS,
-          bankingList,
-        });
-      }
-    } catch (e) {
-      // TODO: handle error
-      console.error(e);
+  fetchBankList: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_BANKLIST_REQUEST,
+        types.FETCH_BANKLIST_SUCCESS,
+        types.FETCH_BANKLIST_FAILURE,
+      ],
+      ...Url.API_URLS.GET_BANKING_LIST,
     }
-  }
+  })
 };
 
 const createOrder = variables => {
@@ -145,11 +133,14 @@ const fetchOrder = variables => {
 
 // reducers
 const reducer = (state = initialState, action) => {
+  const { response, responseGql } = action;
+  const { data } = responseGql || {};
+
   switch (action.type) {
     case types.SET_CURRENT_PAYMENT:
       return { ...state, currentPayment: action.paymentName };
     case types.CREATEORDER_SUCCESS: {
-      const { createOrder } = action.responseGql.data || {};
+      const { createOrder } = data || {};
       const [order] = createOrder.orders;
 
       if (order) {
@@ -158,7 +149,7 @@ const reducer = (state = initialState, action) => {
       return state;
     }
     case types.FETCH_ORDER_SUCCESS: {
-      const { order } = action.responseGql.data || {};
+      const { order } = data || {};
 
       if (order) {
         return { ...state, orderId: order.orderId };
@@ -166,10 +157,17 @@ const reducer = (state = initialState, action) => {
       return state;
     }
     case types.FETCH_BRAINTREE_TOKEN_SUCCESS: {
-      return { ...state, braintreeToken: action.token };
+      const { token } = response || {};
+
+      return { ...state, braintreeToken: token };
+    }
+    case types.CLEAR_BRAINTREE_TOKEN: {
+      return { ...state, braintreeToken: '' };
     }
     case types.FETCH_BANKLIST_SUCCESS: {
-      return { ...state, bankingList: action.bankingList };
+      const { bankingList } = response || {};
+
+      return { ...state, bankingList };
     }
     default:
       return state;

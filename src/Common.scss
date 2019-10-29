@@ -7,6 +7,7 @@ $dark: #2c2c2c;
 $red: #FF5821;
 $yellow: #AB8D3F;
 $green: #8BC34A;
+$gray-0: #6B6B6B;
 $gray-1: #8D90A1;
 $gray-2: #909090;
 $gray-3: #DEDEDF;
@@ -21,9 +22,6 @@ $font-weight-light: 300;
 $font-weight-bold: 600;
 $border-radius-base: 4px;
 $line-height-base: 1.4em;
-
-// @import '~normalize.css';
-@import "~normalize.css/normalize.css";
 
 * {
   margin: 0;
@@ -250,6 +248,10 @@ form {
     border: 1px solid;
     height: 14vw;
     background-color: transparent;
+  }
+
+  &__block-link {
+    height: 14vw;
   }
 
   &__disabled {

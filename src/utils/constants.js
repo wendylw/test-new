@@ -77,7 +77,7 @@ const ADD_TO_CART_MIN_QUANTITY = 1;
 
 const BACKEND_PING_PATH = '/ping';
 
-const PeopleCount = {
+const PEOPLE_COUNT = {
   DEFAULT: 1,
   MAX: 12,
   MAX_PLUS: -1,
@@ -85,6 +85,12 @@ const PeopleCount = {
 
 const OTP_TIMEOUT = 60;
 const OTP_CODE_SIZE = 5;
+
+const REQUEST_ERROR_KEYS = {
+  403: 'No permission',
+  404: 'Bad Request',
+  401: 'Token expired',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -101,5 +107,6 @@ export default {
   ADD_TO_CART_MIN_QUANTITY,
   BACKEND_PING_PATH,
   DOCUMENT_TITLE,
-  PeopleCount,
+  PEOPLE_COUNT,
+  REQUEST_ERROR_KEYS,
 };

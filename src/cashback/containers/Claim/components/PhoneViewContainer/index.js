@@ -7,8 +7,7 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../../../redux/modules/app';
-import { actions as claimActions, getCashbackInfo, getReceiptNumber } from '../../../../redux/modules/claim';
+import { actions as claimActions } from '../../../../redux/modules/claim';
 
 class PhoneViewContainer extends React.Component {
 	animationSetTimeout = null;
@@ -16,6 +15,31 @@ class PhoneViewContainer extends React.Component {
 	state = {
 		phone: Utils.getLocalStorageVariable('user.p'),
 		isSavingPhone: false,
+	}
+
+	componentWillMount() {
+		const { user } = this.props;
+		const {
+			isWebview,
+			isLogin,
+		} = user || {};
+
+		if (isWebview && isLogin) {
+			this.handleCreateCustomerCashbackInfo();
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		const { receiptNumber, user } = this.props;
+		const {
+			isWebview,
+			isLogin,
+		} = user || {};
+		const valid = prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber;
+
+		if (valid && isWebview && isLogin && receiptNumber) {
+			this.handleCreateCustomerCashbackInfo();
+		}
 	}
 
 	getOrderInfo() {
@@ -31,16 +55,26 @@ class PhoneViewContainer extends React.Component {
 
 	async handleCreateCustomerCashbackInfo() {
 		const {
+			user,
 			history,
 			claimActions,
 		} = this.props;
+		const { isWebview } = user || {};
+		const { phone } = this.state;
 
+		Utils.setLocalStorageVariable('user.p', phone);
 		await claimActions.createCashbackInfo(this.getOrderInfo());
 
 		const { cashbackInfo } = this.props;
 		const { customerId } = cashbackInfo || {};
 
-		if (customerId) {
+		if (!customerId) {
+			return null;
+		}
+
+		if (isWebview) {
+			this.handlePostLoyaltyPageMessage();
+		} else {
 			history.push({
 				pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
 				search: `?customerId=${customerId || ''}`
@@ -50,6 +84,17 @@ class PhoneViewContainer extends React.Component {
 
 	handleUpdatePhoneNumber(phone) {
 		this.setState({ phone });
+	}
+
+	handlePostLoyaltyPageMessage() {
+		const { user } = this.props;
+		const { isWebview } = user || {};
+
+		if (isWebview) {
+			window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+		}
+
+		return;
 	}
 
 	render() {
@@ -87,11 +132,7 @@ class PhoneViewContainer extends React.Component {
 }
 
 export default connect(
-	(state) => ({
-		onlineStoreInfo: getOnlineStoreInfo(state),
-		cashbackInfo: getCashbackInfo(state),
-		receiptNumber: getReceiptNumber(state),
-	}),
+	() => ({}),
 	(dispatch) => ({
 		claimActions: bindActionCreators(claimActions, dispatch),
 	})

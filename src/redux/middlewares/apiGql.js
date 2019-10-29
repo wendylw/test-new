@@ -1,34 +1,42 @@
-import { post } from "../../utils/request"
+import { post } from '../../utils/request';
 
 //Deal with every single action that has FETCH_GRAPHQL field.
-export const FETCH_GRAPHQL = 'FETCH GRAPHQL'
+export const FETCH_GRAPHQL = 'FETCH GRAPHQL';
 
 export default store => next => action => {
-  const callAPI = action[FETCH_GRAPHQL]
-  if(!callAPI) {
-    return next(action)
+  const callAPI = action[FETCH_GRAPHQL];
+
+  if (!callAPI) {
+    return next(action);
   }
 
-  const { endpoint, types, variables } = callAPI
-  if(typeof endpoint !== 'string') {
-    throw new Error("endpoint is required as string");
+  const {
+    endpoint,
+    types,
+    variables,
+  } = callAPI;
+
+  if (typeof endpoint !== 'string') {
+    throw new Error('endpoint is required as string');
   }
-  if(!Array.isArray(types) && types.length !== 3) {
-    throw new Error("types is required as actions");
+  if (!Array.isArray(types) && types.length !== 3) {
+    throw new Error('types is required as actions');
   }
-  if(!types.every(type => typeof type === 'string')) {
-    throw new Error("every type in types should be string");
+  if (!types.every(type => typeof type === 'string')) {
+    throw new Error('every type in types should be string');
   }
 
   const actionWith = data => {
-    const finalAction = {...action, ...data}
-    delete finalAction[FETCH_GRAPHQL]
-    return finalAction
+    const finalAction = { ...action, ...data };
+
+    delete finalAction[FETCH_GRAPHQL];
+    return finalAction;
   }
 
-  const [requestType, successType, failureType] = types
+  const [requestType, successType, failureType] = types;
 
-  next(actionWith({type: requestType}))
+  next(actionWith({ type: requestType }));
+
   return post(endpoint, variables).then(
     responseGql => {
       const { error } = responseGql;
@@ -37,7 +45,7 @@ export default store => next => action => {
       if (error) {
         return next(actionWith({
           type: failureType,
-          error: error,
+          ...error,
         }));
       }
 
@@ -46,9 +54,10 @@ export default store => next => action => {
         responseGql
       }));
     },
-    error => next(actionWith({
+  ).catch(error => {
+    return next(actionWith({
       type: failureType,
-      error: error.message || 'Fetch data failed'
-    }))
-  )
+      ...error,
+    }));
+  });
 }

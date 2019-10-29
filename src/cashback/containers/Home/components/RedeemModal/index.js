@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import { IconRedeemed } from '../../../../../components/Icons';
 import Header from '../../../../../components/Header';
 
 class RedeemModal extends React.Component {
@@ -25,9 +24,9 @@ class RedeemModal extends React.Component {
 
 				<section className="full-aside__content text-center">
 					<figure className="full-aside__image-container">
-						<IconRedeemed />
+						<img src="/img/beep-qrscan.png" alt="otp" />
 					</figure>
-					<h2 className="full-aside__title">How to use your Cashback?</h2>
+					<h2 className="full-aside__title">How to use Cashback?</h2>
 					<ol className="redeem__list">
 						<li className="redeem__item">When paying your bill, tell the cashier your phone number.</li>
 						<li className="redeem__item">Your bill will be discounted based on your remaining cashback.</li>

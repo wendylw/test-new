@@ -1,22 +1,110 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getError, getMessageModal } from '../../redux/modules/app';
+import {
+  actions as appActions,
+  getOnlineStoreInfo,
+  getError,
+  getUser,
+  getMessageModal
+} from '../../redux/modules/app';
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from './components/ErrorToast';
 import MessageModal from '../../../components/ErrorToast';
 
+// import Login from '../../components/Login';
+
 class App extends Component {
+  state = {};
+
+  async componentWillMount() {
+    const { appActions } = this.props;
+    await appActions.getLoginStatus();
+
+    const { user } = this.props;
+    const { isLogin } = user || {};
+
+    this.getTokens(isLogin);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { user } = nextProps;
+    const {
+      isExpired,
+      isWebview,
+    } = user || {};
+
+    if (isExpired && this.props.user.isExpired !== isExpired) {
+      if (isWebview) {
+        this.postAppMessage(user);
+      }
+    }
+  }
+
+  async componentDidMount() {
+    const { appActions } = this.props;
+
+    await appActions.fetchOnlineStoreInfo();
+
+    const { user } = this.props;
+
+    this.postAppMessage(user);
+  }
+
+  getTokens(isLogin) {
+    const { appActions } = this.props;
+
+    document.addEventListener('acceptTokens', (response) => {
+      const { data } = response || {};
+
+      if (data) {
+        const tokenList = data.split(',');
+
+        if (!isLogin) {
+          appActions.loginApp({
+            accessToken: tokenList[0],
+            refreshToken: tokenList[1],
+          });
+        }
+      }
+    }, false);
+  }
+
+  postAppMessage(user) {
+    const {
+      isWebview,
+      isExpired
+    } = user || {};
+
+    if (isWebview && isExpired) {
+      window.ReactNativeWebView.postMessage('tokenExpired');
+    } else if (isWebview && !isExpired) {
+      window.ReactNativeWebView.postMessage('getToken');
+    }
+  }
+
+  handleClearError = () => {
+    this.props.appActions.clearError();
+  }
+
+  handleCloseMessageModal = () => {
+    this.props.appActions.hideMessageModal();
+  }
+
   render() {
-    const { error, messageModal } = this.props;
+    const {
+      error,
+      messageModal
+    } = this.props;
+    const { message } = error || {};
 
     return (
       <main className="table-ordering">
         <Routes />
         {
-          error
-            ? <ErrorToast message={error} clearError={this.handleClearError} />
+          message
+            ? <ErrorToast message={message} clearError={this.handleClearError} />
             : null
         }
         {
@@ -29,27 +117,16 @@ class App extends Component {
             )
             : null
         }
+        {/* <Login /> */}
       </main>
     );
-  }
-
-  componentDidMount() {
-    const { fetchOnlineStoreInfo } = this.props.appActions;
-    fetchOnlineStoreInfo();
-  }
-
-  handleClearError = () => {
-    this.props.appActions.clearError();
-  }
-
-  handleCloseMessageModal = () => {
-    this.props.appActions.hideMessageModal();
   }
 }
 
 export default connect(
   state => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
+    user: getUser(state),
     error: getError(state),
     messageModal: getMessageModal(state),
   }),

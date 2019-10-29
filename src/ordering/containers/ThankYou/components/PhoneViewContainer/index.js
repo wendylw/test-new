@@ -9,7 +9,7 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo } from '../../../../redux/modules/app';
+import { getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as thankYouActions, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
 
 const ORDER_CAN_CLAIM = 'Can_Claim';
@@ -33,20 +33,35 @@ class PhoneViewContainer extends React.Component {
       thankYouActions,
     } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let showCelebration = true;
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
-    const { cashbackInfo } = this.props;
+    const { cashbackInfo, user } = this.props;
     const { status } = cashbackInfo || {};
+    const { isLogin } = user || {};
+    const showCelebration = status === ORDER_CAN_CLAIM;
 
-    if (status && status !== ORDER_CAN_CLAIM) {
-      showCelebration = false;
-
+    if (status !== ORDER_CAN_CLAIM || isLogin) {
       this.handleCreateCustomerCashbackInfo();
     }
 
     this.setState({ showCelebration });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { user } = nextProps;
+    const {
+      isWebview,
+      isLogin,
+    } = user || {};
+
+    if (this.props.user.isLogin === isLogin) {
+      return;
+    }
+
+    if (isWebview && isLogin) {
+      this.handleCreateCustomerCashbackInfo();
+    }
   }
 
   componentDidMount() {
@@ -79,8 +94,10 @@ class PhoneViewContainer extends React.Component {
 
   async handleCreateCustomerCashbackInfo() {
     const { thankYouActions } = this.props;
+    const { phone } = this.state;
     let redirectURL = null;
 
+    Utils.setLocalStorageVariable('user.p', phone);
     await thankYouActions.createCashbackInfo(this.getOrderInfo());
 
     const { cashbackInfo } = this.props;
@@ -98,6 +115,17 @@ class PhoneViewContainer extends React.Component {
 
   handleUpdatePhoneNumber(phone) {
     this.setState({ phone });
+  }
+
+  handlePostLoyaltyPageMessage() {
+    const { user } = this.props;
+    const { isWebview } = user;
+
+    if (isWebview) {
+      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+    }
+
+    return;
   }
 
   renderCurrencyNumber() {
@@ -118,6 +146,7 @@ class PhoneViewContainer extends React.Component {
 
   renderPhoneView() {
     const {
+      user,
       cashbackInfo,
       onlineStoreInfo,
     } = this.props;
@@ -126,11 +155,19 @@ class PhoneViewContainer extends React.Component {
       redirectURL,
       phone,
     } = this.state;
+    const {
+      isWebview,
+      isLogin,
+    } = user || {};
     const { country } = onlineStoreInfo || {};
     const { status } = cashbackInfo || {};
 
-    if (status !== ORDER_CAN_CLAIM) {
-      return redirectURL
+    if (status !== ORDER_CAN_CLAIM || isLogin) {
+      if (!redirectURL && !isWebview) {
+        return null;
+      }
+
+      return !isWebview
         ? (
           <BrowserRouter basename="/">
             <Link
@@ -140,7 +177,12 @@ class PhoneViewContainer extends React.Component {
             >Check My Balance</Link>
           </BrowserRouter>
         )
-        : null;
+        : (
+          <button
+            className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+            onClick={this.handlePostLoyaltyPageMessage.bind(this)}
+          >Check My Balance</button>
+        );
     }
 
     return (
@@ -157,6 +199,7 @@ class PhoneViewContainer extends React.Component {
 
   render() {
     const {
+      user,
       cashbackInfo,
       businessInfo,
       onlineStoreInfo,
@@ -170,6 +213,7 @@ class PhoneViewContainer extends React.Component {
       cashback,
       status
     } = cashbackInfo || {};
+    const { isLogin } = user || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
 
@@ -180,7 +224,7 @@ class PhoneViewContainer extends React.Component {
     return (
       <div className={`thanks__phone-view ${showCelebration && redirectURL ? 'active' : ''}`}>
         {
-          status !== ORDER_CAN_CLAIM
+          status !== ORDER_CAN_CLAIM || isLogin
             ? (
               <label className="phone-view-form__label text-center">
                 You’ve earned {this.renderCurrencyNumber()} Cashback!
@@ -201,7 +245,7 @@ class PhoneViewContainer extends React.Component {
             <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
 					</BrowserRouter>
         </p>
-        <div className="thanks__suceed-animation">
+        <div className="thanks__succeed-animation">
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>
@@ -211,6 +255,7 @@ class PhoneViewContainer extends React.Component {
 
 export default connect(
   (state) => ({
+    user: getUser(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     businessInfo: getBusinessInfo(state),
     cashbackInfo: getCashbackInfo(state),

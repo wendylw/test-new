@@ -1,19 +1,31 @@
+import Constants from './constants';
+
+const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
   Accept: "application/json",
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
+  "Test": "test",
 });
+
+class RequestError extends Error {
+  constructor(message, code) {
+    super();
+
+    this.message = message;
+    this.code = code;
+  }
+}
 
 function get(url) {
   return fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: headers
   })
     .then(response => {
       return handleResponse(url, response);
     })
     .catch(error => {
-      console.error(`Request failed. Url = ${url}. Message = ${error}`);
-      return Promise.reject({ error: { message: "Request failed." } });
+      return Promise.reject(error);
     });
 }
 
@@ -27,8 +39,7 @@ function post(url, data) {
       return handleResponse(url, response);
     })
     .catch(error => {
-      console.error(`Request failed. Url = ${url}. Message = ${error}`);
-      return Promise.reject({ error: { message: "Request failed." } });
+      return Promise.reject(error);
     });
 }
 
@@ -36,11 +47,10 @@ function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
   } else {
-    console.error(`Request failed. Url = ${url}`);
-    return Promise.reject({
-      error: { message: "Request failed due to server error" }
-    });
+    const code = response.code || response.status;
+
+    return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
   }
 }
 
-export { get, post };
+export { get, post, RequestError };

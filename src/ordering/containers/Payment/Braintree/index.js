@@ -133,13 +133,15 @@ class Braintree extends Component {
   }
 
   componentWillMount() {
+    console.log(111);
+
     const {
       history,
       paymentActions,
     } = this.props;
 
-    paymentActions.fetchOrder(Utils.getQueryObject(history, 'orderId'));
     paymentActions.fetchBraintreeToken(Constants.PAYMENT_METHODS.CREDIT_CARD_PAY);
+    paymentActions.fetchOrder(Utils.getQueryObject(history, 'orderId'));
   }
 
   componentDidMount() {
@@ -155,9 +157,7 @@ class Braintree extends Component {
       script.src = braintreeSources[key];
 
       script.onload = () => {
-        if (window.braintree && window.braintree.client && window.braintree.hostedFields) {
-          this.braintreeSetting(token);
-        }
+        this.braintreeSetting(token);
       }
 
       document.body.appendChild(script);
@@ -170,6 +170,12 @@ class Braintree extends Component {
     if (token && !this.props.token) {
       this.braintreeSetting(token);
     }
+  }
+
+  componentWillUnmount() {
+    const { paymentActions } = this.props;
+
+    paymentActions.clearBraintreeToken();
   }
 
   getQueryObject(paramName) {
@@ -292,6 +298,10 @@ class Braintree extends Component {
     const that = this;
     const submitButtonEl = document.getElementById('submitButton');
 
+    if (!window.braintree || !window.braintree.client || !window.braintree.hostedFields || !token) {
+      return;
+    }
+
     window.braintree.client.create({
       authorization: token || null,
     }, function (err, clientInstance) {
@@ -307,13 +317,14 @@ class Braintree extends Component {
         fields: BRAINTREE_FIELDS,
       }, function (err, hostedFieldsInstance) {
         if (err) {
-          console.error(err);
           return;
         }
 
         that.setState({
           brainTreeDOMLoaded: true
         });
+
+        alert('loaded' + JSON.stringify(that.state.brainTreeDOMLoaded));
 
         hostedFieldsInstance.on('blur', function (e) {
           const isReset = e.fields[e.emittedBy].isValid;

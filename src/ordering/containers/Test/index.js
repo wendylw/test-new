@@ -155,7 +155,7 @@ class Test extends React.Component {
         {
           claimedAnimationGifSrc
             ? (
-              <div className="thanks__suceed-animation" style={{
+              <div className="thanks__succeed-animation" style={{
                 display: `${claimedAnimationGifSrc ? 'block' : 'none'}`
               }}>
                 <img src={claimedAnimationGifSrc} alt="Beep Claimed" />

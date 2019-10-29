@@ -10,7 +10,7 @@ class Loader extends Component {
 		}
 
 		return (
-			<div className="loading-cover">
+			<div className="loading-cover opacity">
 				<div className="loader-wave">
 					<i className="dot dot1"></i>
 					<i className="dot dot2"></i>

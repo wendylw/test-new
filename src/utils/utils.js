@@ -12,6 +12,10 @@ Utils.getQueryString = key => {
   return queries;
 }
 
+Utils.isWebview = function isWebview() {
+  return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
+}
+
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
   return function newFn(...args) {
@@ -226,7 +230,7 @@ Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   ];
 
   addressKeys.forEach((item, index) => {
-    if (addressInfo[item] && index < splitLength) {
+    if (addressInfo[item] && Boolean(addressInfo[item]) && index < splitLength) {
       addressList.push(addressInfo[item]);
     }
   });

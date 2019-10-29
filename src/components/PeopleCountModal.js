@@ -8,13 +8,13 @@ class PeopleCountModal extends Component {
   modal = null;
 
   state = {
-    value: Constants.PeopleCount.DEFAULT,
+    value: Constants.PEOPLE_COUNT.DEFAULT,
   }
 
   render() {
     const { history } = this.props;
-    const mostNumbers = Array.from(new Array(Constants.PeopleCount.MAX).fill(0), (_, index) => index + 1);
-    const lastNumber = `${Constants.PeopleCount.MAX}+ pax`;
+    const mostNumbers = Array.from(new Array(Constants.PEOPLE_COUNT.MAX).fill(0), (_, index) => index + 1);
+    const lastNumber = `${Constants.PEOPLE_COUNT.MAX}+ pax`;
     const showLastNumber = false; // hide the MAX+ pax button for API asking
 
     return (
@@ -39,8 +39,8 @@ class PeopleCountModal extends Component {
             {showLastNumber ? (
               <li className="text-center width-2-3" key={`${lastNumber}`}>
                 <span
-                  className={`tag__card ${this.state.value === Constants.PeopleCount.MAX_PLUS ? 'active' : ''}`}
-                  onClick={() => this.setState({ value: Constants.PeopleCount.MAX_PLUS })}
+                  className={`tag__card ${this.state.value === Constants.PEOPLE_COUNT.MAX_PLUS ? 'active' : ''}`}
+                  onClick={() => this.setState({ value: Constants.PEOPLE_COUNT.MAX_PLUS })}
                 >{lastNumber}</span>
               </li>
             ) : null}

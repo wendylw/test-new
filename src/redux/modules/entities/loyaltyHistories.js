@@ -1,10 +1,15 @@
+import { HOME_TYPES } from '../../../cashback/redux/types';
+
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
-  if (action.loyaltyHistories) {
-    const { customerId } = action.loyaltyHistories;
+  if (action.type === HOME_TYPES.GET_CASHBACK_HISTORIES_SUCCESS) {
+    const { response } = action;
+    const { customerId, logs } = response || {};
 
-    return { ...state, [customerId]: action.loyaltyHistories };
+    if (customerId) {
+      return { ...state, [customerId]: logs };
+    }
   }
 
   return state;

@@ -1,5 +1,6 @@
 import Url from '../../../utils/url';
-import api from '../../../utils/api';
+
+import { API_REQUEST } from '../../../redux/middlewares/api';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getStoreById } from '../../../redux/modules/entities/stores';
@@ -17,7 +18,7 @@ export const types = {
 	FETCH_CORESTORES_SUCCESS: 'STORES/HOME/FETCH_CORESTORES_SUCCESS',
 	FETCH_CORESTORES_FAILURE: 'STORES/HOME/FETCH_CORESTORES_FAILURE',
 
-	// fetch storeHashcode
+	// fetch store Hash code
 	FETCH_STORE_HASHCODE_REQUEST: 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST',
 	FETCH_STORE_HASHCODE_SUCCESS: 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS',
 	FETCH_STORE_HASHCODE_FAILURE: 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE',
@@ -29,20 +30,16 @@ export const actions = {
 		return dispatch(fetchCoreStores({ business }));
 	},
 
-	getStoreHashCode: (storeId) => async (dispatch) => {
-		try {
-			const { ok, data } = await api(Url.API_URLS.GET_STORE_HASHDATA(storeId));
-
-			if (ok && data) {
-				dispatch({
-					type: types.FETCH_STORE_HASHCODE_SUCCESS,
-					storeHashCode: data.redirectTo,
-				});
-			}
-		} catch (e) {
-			console.error(e);
+	getStoreHashData: (storeId) => ({
+		[API_REQUEST]: {
+			types: [
+				types.FETCH_STORE_HASHCODE_REQUEST,
+				types.FETCH_STORE_HASHCODE_SUCCESS,
+				types.FETCH_STORE_HASHCODE_FAILURE,
+			],
+			...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
 		}
-	},
+	}),
 };
 
 const fetchCoreStores = variables => ({
@@ -61,7 +58,10 @@ const fetchCoreStores = variables => ({
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
 		case types.FETCH_STORE_HASHCODE_SUCCESS: {
-			return { ...state, storeHashCode: action.storeHashCode };
+			const { response } = action;
+			const { redirectTo } = response || {};
+
+			return { ...state, storeHashCode: redirectTo };
 		}
 		case types.FETCH_CORESTORES_REQUEST: {
 			return { ...state, isFetching: true };

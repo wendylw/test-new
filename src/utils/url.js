@@ -15,7 +15,7 @@ const API_URLS = {
     url: '/api/cashback',
     method: 'post',
   },
-  GET_CASHBACK_HASDATA: hash => ({
+  GET_GET_CASHBACK_HASH_DATA: hash => ({
     url: `/api/cashback/hash/${hash}/decode`,
     method: 'get',
   }),
@@ -27,10 +27,22 @@ const API_URLS = {
     url: '/api/cashback/history',
     method: 'get',
   },
-  GET_STORE_HASHDATA: storeId => ({
+  GET_STORE_HASH_DATA: storeId => ({
     url: `/api/ordering/stores/${storeId}?a=redirectTo`,
     method: 'get',
   }),
+  GET_RECEIPTS_LIST: {
+    url: '/api/transaction',
+    method: 'get',
+  },
+  GET_LOGIN_STATUS: {
+    url: '/api/ping',
+    method: 'get',
+  },
+  POST_LOGIN: {
+    url: '/api/login',
+    method: 'post',
+  },
 };
 
 export default {
