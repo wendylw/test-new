@@ -34,13 +34,14 @@ class Cart extends Component {
       homeActions,
       user,
     } = this.props;
-    const { isLogin } = user;
+    const { consumerId, isLogin } = user || {};
+
 
     cartActions.loadCoreBusiness();
     await homeActions.loadShoppingCart();
 
     if (isLogin) {
-      await appActions.loadCustomerProfile();
+      await appActions.loadCustomerProfile({ consumerId });
     }
   }
 
