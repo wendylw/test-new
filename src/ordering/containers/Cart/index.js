@@ -160,7 +160,7 @@ class Cart extends Component {
         </Header>
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
-          {/* {this.renderAdditionalComments()} */}
+          {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
           <i className="aside-bottom__slide-button" onClick={() => this.setState({ expandBilling: !expandBilling })}></i>
