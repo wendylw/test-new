@@ -105,7 +105,7 @@ class Cart extends Component {
         </Header>
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
-          {/* {this.renderAdditionalComments()} */}
+          {this.renderAdditionalComments()}
         </div>
         <Billing
           tax={tax}
