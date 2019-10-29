@@ -78,7 +78,7 @@ export const actions = {
     }
   }),
 
-  sendOtp: ({ phone, otp }) => ({
+  sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
       types: [
         types.CREATE_OTP_REQUEST,
@@ -90,7 +90,7 @@ export const actions = {
         grant_type: AUTH_INFO.GRANT_TYPE,
         client: AUTH_INFO.CLIENT,
         business_name: config.business,
-        username: phone,
+        username: Utils.getLocalStorageVariable('user.p'),
         password: otp,
       },
     }
@@ -142,14 +142,14 @@ export const actions = {
     prompt,
   }),
 
-  loadCustomerProfile: () => ({
+  loadCustomerProfile: ({ consumerId }) => ({
     [API_REQUEST]: {
       types: [
         types.FETCH_CUSTOMER_PROFILE_REQUEST,
         types.FETCH_CUSTOMER_PROFILE_SUCCESS,
         types.FETCH_CUSTOMER_PROFILE_FAILURE,
       ],
-      ...Url.API_URLS.GET_CUSTOMER_PROFILE(config.consumerId),
+      ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId || config.consumerId),
     }
   }),
 

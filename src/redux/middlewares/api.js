@@ -16,7 +16,7 @@ export default store => next => action => {
     mode,
     types,
     params,
-    payload
+    payload,
   } = callAPI;
   const requestParamsStr = params ? '?' + Object.keys(params).map(key => `${key}=${params[key]}`).join('&') : '';
   const requestUrl = `${url}${requestParamsStr}`;
@@ -61,11 +61,11 @@ export default store => next => action => {
 
       return next(actionWith({
         type: successType,
-        response: {
+        params: {
           ...payload,
           ...params,
-          ...response,
-        }
+        },
+        response,
       }));
     },
   ).catch(error => {

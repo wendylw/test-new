@@ -28,9 +28,15 @@ function get(url) {
     });
 }
 
-function post(url, data, options) {
+const fetchData = function (url, requestOptions) {
+  const {
+    method,
+    data,
+    options,
+  } = requestOptions;
+
   return fetch(url, {
-    method: "POST",
+    method,
     headers: headers,
     body: JSON.stringify(data),
     ...options,
@@ -43,6 +49,22 @@ function post(url, data, options) {
     });
 }
 
+function post(url, data, options) {
+  return fetchData(url, {
+    method: 'POST',
+    data,
+    options,
+  });
+}
+
+function put(url, data, options) {
+  return fetchData(url, {
+    method: 'PUT',
+    data,
+    options,
+  });
+}
+
 function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
@@ -53,4 +75,4 @@ function handleResponse(url, response) {
   }
 }
 
-export { get, post, RequestError };
+export { get, post, put, RequestError };

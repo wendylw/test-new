@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Header from '../../../components/Header';
-import PhoneViewContainer from './components/PhoneViewContainer';
+import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -37,10 +37,11 @@ class ThankYou extends Component {
   };
 
   renderPickupInfo() {
+    const { order } = this.props;
     const {
       tableId,
       pickUpId,
-    } = this.props.order;
+    } = order || {};
 
     if (!pickUpId || tableId) {
       return null;
@@ -57,7 +58,8 @@ class ThankYou extends Component {
   }
 
   renderNeedReceipt() {
-    const { orderId } = this.props.order;
+    const { order } = this.props;
+    const { orderId } = order || {};
 
     if (this.state.needReceipt === 'detail') {
       return (
@@ -84,10 +86,7 @@ class ThankYou extends Component {
   render() {
     const { history, match, order } = this.props;
     const date = new Date();
-
-    if (!order) {
-      return null;
-    }
+    const { tableId } = order || {};
 
     return (
       <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
@@ -102,8 +101,8 @@ class ThankYou extends Component {
         >
           <span className="gray-font-opacity text-uppercase">
             {
-              order.tableId
-                ? `Table ${order.tableId}`
+              tableId
+                ? `Table ${tableId}`
                 : 'Self pick-up'
             }
           </span>
@@ -116,7 +115,7 @@ class ThankYou extends Component {
           <div className="thanks__info-container">
             {this.renderPickupInfo()}
             {this.renderNeedReceipt()}
-            <PhoneViewContainer history={history} />
+            <PhoneLogin history={history} />
           </div>
         </div>
         <footer className="footer-link">

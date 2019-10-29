@@ -18,7 +18,7 @@ import {
 import { actions as appActions } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { actions as paymentActions, getThankYouPageUrl } from '../../redux/modules/payment';
-import { actions as cartActions, getBusinessInfo, getPaidTotal } from '../../redux/modules/cart';
+import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -28,39 +28,21 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
-  async componentDidMount() {
+  async componentWillMount() {
     const {
-      appActions,
       cartActions,
       homeActions,
       user,
     } = this.props;
-    const { isLogin } = user;
+    const { consumerId, isLogin } = user || {};
 
-    homeActions.loadProductList();
+
     cartActions.loadCoreBusiness();
+    await homeActions.loadShoppingCart();
 
     if (isLogin) {
-      await appActions.loadCustomerProfile();
-
-      const { cartSummary } = this.props;
-      const { total } = cartSummary || {};
-
-      await cartActions.loadTotalCalculateResult({
-        initial: total,
-        subtraction: [this.getSpendCashback()],
-      });
+      await appActions.loadCustomerProfile({ consumerId });
     }
-  }
-
-  getSpendCashback() {
-    const { cartSummary } = this.props;
-    const {
-      total,
-      storeCreditsBalance
-    } = cartSummary;
-
-    return storeCreditsBalance <= total ? storeCreditsBalance : total;
   }
 
   handleChangeAdditionalComments(e) {
@@ -80,21 +62,20 @@ class Cart extends Component {
   handleCheckPaymentStatus = async () => {
     const {
       history,
+      cartSummary,
       user,
-      paidTotal,
     } = this.props;
     const { isLogin } = user;
+    const { cashback, total } = cartSummary || {};
 
-    if (isLogin && !paidTotal) {
+    if (isLogin && !total) {
       const { paymentActions } = this.props;
 
       this.setState({
         isCreatingOrder: true,
       });
 
-      await paymentActions.createOrder({
-        cashback: this.getSpendCashback(),
-      });
+      await paymentActions.createOrder({ cashback });
 
       const { thankYouPageUrl } = this.props;
 
@@ -145,14 +126,11 @@ class Cart extends Component {
 
   render() {
     const {
-      user,
-      paidTotal,
       cartSummary,
       shoppingCart,
       businessInfo,
     } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
-    const { isLogin } = user || {};
     const { items } = shoppingCart || {};
     const {
       count,
@@ -160,6 +138,7 @@ class Cart extends Component {
       total,
       tax,
       serviceCharge,
+      cashback,
     } = cartSummary || {};
 
     if (!(cartSummary && items)) {
@@ -181,7 +160,7 @@ class Cart extends Component {
         </Header>
         <div className="list__container">
           <CartList shoppingCart={shoppingCart} />
-          {/* {this.renderAdditionalComments()} */}
+          {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
           <i className="aside-bottom__slide-button" onClick={() => this.setState({ expandBilling: !expandBilling })}></i>
@@ -191,8 +170,8 @@ class Cart extends Component {
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
             subtotal={subtotal}
-            total={isLogin ? paidTotal : total}
-            creditsBalance={this.getSpendCashback()}
+            total={total}
+            creditsBalance={cashback}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -224,7 +203,6 @@ class Cart extends Component {
 export default connect(
   state => ({
     user: getUser(state),
-    paidTotal: getPaidTotal(state),
     cartSummary: getCartSummary(state),
     shoppingCart: getShoppingCart(state),
     businessInfo: getBusinessInfo(state),

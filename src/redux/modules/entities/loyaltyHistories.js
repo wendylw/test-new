@@ -5,8 +5,9 @@ const initialState = {};
 
 const reducer = (state = initialState, action) => {
   if (action.type === HOME_TYPES.GET_CASHBACK_HISTORIES_SUCCESS) {
-    const { response } = action;
-    const { customerId, logs } = response || {};
+    const { response, params } = action;
+    const { customerId } = params || {};
+    const { logs } = response || {};
 
     if (customerId) {
       return { ...state, [customerId]: logs };

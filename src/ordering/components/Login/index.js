@@ -34,12 +34,8 @@ class Login extends React.Component {
 
   async handleWebLogin(otp) {
     const { appActions } = this.props;
-    const { phone } = this.state;
 
-    await appActions.sendOtp({
-      phone,
-      otp,
-    });
+    await appActions.sendOtp({ otp });
 
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
@@ -59,7 +55,6 @@ class Login extends React.Component {
       isLogin,
       hasOtp,
     } = user || {};
-    const { phone } = this.state;
 
     if (!hasOtp || isLogin) {
       return null;
@@ -69,7 +64,7 @@ class Login extends React.Component {
       <OtpModal
         buttonText="Ok"
         ResendOtpTime={20}
-        phone={phone}
+        phone={Utils.getLocalStorageVariable('user.p')}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
@@ -92,7 +87,7 @@ class Login extends React.Component {
     } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['aside login'];
+    const classList = ['login'];
 
     if (className) {
       classList.push(className);

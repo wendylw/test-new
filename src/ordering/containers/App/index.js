@@ -93,9 +93,11 @@ class App extends Component {
 
   render() {
     const {
+      user,
       error,
       messageModal
     } = this.props;
+    const { isLogin } = user || {};
     const { message } = error || {};
 
     return (
@@ -115,7 +117,11 @@ class App extends Component {
             )
             : null
         }
-        <Login />
+        {
+          !isLogin
+            ? <Login className="aside" />
+            : null
+        }
         <Routes />
       </main>
     );

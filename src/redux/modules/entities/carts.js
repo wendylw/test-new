@@ -1,4 +1,4 @@
-import { APP_TYPES } from '../../../ordering/redux/types';
+import { APP_TYPES, HOME_TYPES } from '../../../ordering/redux/types';
 
 const initialState = {
   summary: {
@@ -13,14 +13,12 @@ const initialState = {
 };
 
 const commonReducer = (state = initialState, action) => {
-  if (action.responseGql) {
-    const { shoppingCart } = action.responseGql.data || {};
-
-    if (!shoppingCart) {
+  if (action.type === HOME_TYPES.FETCH_SHOPPINGCART_SUCCESS) {
+    if (!action.response) {
       return state;
     }
 
-    const { items, unavailableItems, ...summary } = shoppingCart;
+    const { items, unavailableItems, ...summary } = action.response;
 
     // Only deal with response.data.shoppingCart
     const kvData = {};

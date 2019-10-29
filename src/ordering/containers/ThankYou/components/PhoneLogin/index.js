@@ -12,11 +12,11 @@ import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as thankYouActions, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
 
-const ORDER_CAN_CLAIM = 'Can_Claim';
+const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const ANIMATION_TIME = 3600;
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
-class PhoneViewContainer extends React.Component {
+class PhoneLogin extends React.Component {
   MESSAGES = {};
   animationSetTimeout = null;
 
@@ -39,22 +39,22 @@ class PhoneViewContainer extends React.Component {
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
-    const { cashbackInfo, user } = this.props;
+    const { user } = this.props;
 
-    this.canClaimCheck(cashbackInfo, user);
-    this.setLoyaltyPageUrl(user.isLogin);
+    this.canClaimCheck(user);
+    this.setLoyaltyPageUrl(user);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { cashbackInfo, user } = nextProps;
+    const { user } = nextProps;
     const { isLogin } = user;
 
     if (this.props.user.isLogin === isLogin) {
       return;
     }
 
-    this.canClaimCheck(cashbackInfo, user);
-    this.setLoyaltyPageUrl(isLogin);
+    this.canClaimCheck(user);
+    this.setLoyaltyPageUrl(user);
   }
 
   componentDidMount() {
@@ -118,30 +118,34 @@ class PhoneViewContainer extends React.Component {
     return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
-  canClaimCheck(cashbackInfo, user) {
-    const { status } = cashbackInfo || {};
+  async canClaimCheck(user) {
     const { isLogin } = user || {};
-    const canClaim = status === ORDER_CAN_CLAIM;
 
     if (isLogin) {
-      this.handleCreateCustomerCashbackInfo();
+      await this.handleCreateCustomerCashbackInfo();
     }
 
-    this.setState({ showCelebration: canClaim && isLogin });
+    const { cashbackInfo } = this.props;
+    const { status } = cashbackInfo || {};
+
+    this.setState({ showCelebration: ORDER_CLAIMED_SUCCESSFUL.includes(status) && isLogin });
   }
 
-  async setLoyaltyPageUrl(isLogin) {
+  async setLoyaltyPageUrl(user) {
     const { appActions } = this.props;
+    const {
+      isLogin,
+      consumerId,
+    } = user || {};
+    let redirectURL = null;
 
     if (!isLogin) {
       return;
     }
 
-    await appActions.loadCustomerProfile();
+    await appActions.loadCustomerProfile({ consumerId });
 
-    const { user } = this.props;
-    const { customerId } = user || {};
-    let redirectURL = null;
+    const { customerId } = this.props.user || {};
 
     if (customerId) {
       redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
@@ -313,4 +317,4 @@ export default connect(
     appActions: bindActionCreators(appActions, dispatch),
     thankYouActions: bindActionCreators(thankYouActions, dispatch),
   })
-)(PhoneViewContainer);
+)(PhoneLogin);

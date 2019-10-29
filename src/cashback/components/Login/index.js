@@ -34,12 +34,8 @@ class Login extends React.Component {
 
   async handleWebLogin(otp) {
     const { appActions } = this.props;
-    const { phone } = this.state;
 
-    await appActions.sendOtp({
-      phone,
-      otp,
-    });
+    await appActions.sendOtp({ otp });
 
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
@@ -91,7 +87,7 @@ class Login extends React.Component {
     } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['aside login'];
+    const classList = ['login'];
 
     if (className) {
       classList.push(className);

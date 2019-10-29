@@ -30,10 +30,10 @@ class RecentActivities extends React.Component {
 
   async componentWillMount() {
     const { user, appActions } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin, consumerId } = user || {};
 
     if (isLogin) {
-      await appActions.loadCustomerProfile();
+      await appActions.loadCustomerProfile({ consumerId });
       this.getLoyaltyHistory();
     }
   }
@@ -44,14 +44,14 @@ class RecentActivities extends React.Component {
       user,
       appActions,
     } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin, consumerId } = user || {};
 
     if (isFetching || !isLogin) {
       return;
     }
 
     if (prevProps.user.isLogin !== isLogin) {
-      await appActions.loadCustomerProfile();
+      await appActions.loadCustomerProfile({ consumerId });
       this.getLoyaltyHistory();
     }
   }

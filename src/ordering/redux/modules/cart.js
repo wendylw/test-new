@@ -1,12 +1,12 @@
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
 import { getBusiness, getRequestInfo } from './app';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { API_REQUEST } from '../../../redux/middlewares/api';
 
 const initialState = {
-  paidTotal: 0,
+  pendingTransactionsIds: []
 };
 
 export const types = CART_TYPES;
@@ -24,20 +24,31 @@ export const actions = {
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
 
-  loadTotalCalculateResult: ({ initial, subtraction }) => ({
+  loadPendingPaymentList: () => ({
     [API_REQUEST]: {
       types: [
-        types.TOTAL_CALCULATOR_REQUEST,
-        types.TOTAL_CALCULATOR_SUCCESS,
-        types.TOTAL_CALCULATOR_FAILURE,
+        types.FETCH_PENDING_TRANSACTIONS_REQUEST,
+        types.FETCH_PENDING_TRANSACTIONS_SUCCESS,
+        types.FETCH_PENDING_TRANSACTIONS_FAILURE,
       ],
-      ...Url.API_URLS.CALCULATE_RESULT,
+      ...Url.API_URLS.GET_PENDING_TRANSACTIONS,
+    },
+  }),
+
+  updateTransactionsStatus: ({ status, receiptNumbers }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.UPDATE_TRANSACTIONS_STATUS_REQUEST,
+        types.UPDATE_TRANSACTIONS_STATUS_SUCCESS,
+        types.UPDATE_TRANSACTIONS_STATUS_FAILURE,
+      ],
+      ...Url.API_URLS.PUT_TRANSACTIONS_STATUS,
       payload: {
-        initial,
-        subtraction,
+        status,
+        receiptNumbers,
       },
     }
-  })
+  }),
 };
 
 const emptyShoppingCart = () => {
@@ -68,14 +79,13 @@ const fetchCoreBusiness = variables => ({
 
 // reducers
 const reducer = (state = initialState, action) => {
-  const { response } = action;
+  const { transactions } = action.response || {};
 
   switch (action.type) {
-    case types.TOTAL_CALCULATOR_SUCCESS: {
-      const { result } = response || {};
-
-      return { ...state, paidTotal: result };
-    }
+    case types.FETCH_PENDING_TRANSACTIONS_SUCCESS:
+      return { ...state, pendingTransactionsIds: (transactions || []).map(t => t.orderId) };
+    case types.UPDATE_TRANSACTIONS_STATUS_SUCCESS:
+      return { ...state, pendingTransactionsIds: [] };
     default:
       return state;
   }
@@ -89,6 +99,6 @@ export const getBusinessInfo = state => {
   return getBusinessByName(state, business);
 };
 
-export const getPaidTotal = state => state.cart.paidTotal;
+export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 // selectors

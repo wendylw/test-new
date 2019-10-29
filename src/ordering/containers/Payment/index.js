@@ -54,23 +54,13 @@ class Payment extends Component {
       appActions,
       homeActions,
     } = this.props;
-    const { isLogin } = user;
+    const { consumerId, isLogin } = user || {};
 
     homeActions.loadShoppingCart();
 
     if (isLogin) {
-      appActions.loadCustomerProfile();
+      appActions.loadCustomerProfile({ consumerId });
     }
-  }
-
-  getSpendCashback() {
-    const { cartSummary } = this.props;
-    const {
-      total,
-      storeCreditsBalance
-    } = cartSummary;
-
-    return storeCreditsBalance <= total ? storeCreditsBalance : total;
   }
 
   getPaymentEntryRequestData = () => {
@@ -110,37 +100,34 @@ class Payment extends Component {
   }
 
   handleClickPayNow = async () => {
+    const {
+      history,
+      currentPayment,
+      cartSummary,
+    } = this.props;
+    const { cashback } = cartSummary || {};
+
     this.setState({
       payNowLoading: true,
     });
 
-    await this.props.paymentActions.createOrder({
-      cashback: this.getSpendCashback(),
-    });
+    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
+      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
+
+      history.push({ pathname });
+
+      return;
+    }
+
+    await this.props.paymentActions.createOrder({ cashback });
 
     const {
-      history,
-      currentPayment,
       currentOrder
     } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
-    }
-
-    console.log(EXCLUDED_PAYMENTS.includes(currentPayment));
-    console.log(orderId);
-
-    if (EXCLUDED_PAYMENTS.includes(currentPayment) && orderId) {
-      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
-
-      history.push({
-        pathname,
-        search: `?orderId=${orderId || ''}`
-      });
-
-      return;
     }
 
     this.setState({

@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
+import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
 
 import { combineReducers } from 'redux';
@@ -7,6 +8,7 @@ import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusiness } from './app';
 
 
@@ -27,36 +29,7 @@ const initialState = {
   },
 };
 
-export const types = {
-  // fetch shoppingCart
-  FETCH_SHOPPINGCART_REQUEST: 'ORDERING/HOME/FETCH_SHOPPINGCART_REQUEST',
-  FETCH_SHOPPINGCART_SUCCESS: 'ORDERING/HOME/FETCH_SHOPPINGCART_SUCCESS',
-  FETCH_SHOPPINGCART_FAILURE: 'ORDERING/HOME/FETCH_SHOPPINGCART_FAILURE',
-
-  // fetch onlineCategory
-  FETCH_ONLINECATEGORY_REQUEST: 'ORDERING/HOME/FETCH_ONLINECATEGORY_REQUEST',
-  FETCH_ONLINECATEGORY_SUCCESS: 'ORDERING/HOME/FETCH_ONLINECATEGORY_SUCCESS',
-  FETCH_ONLINECATEGORY_FAILURE: 'ORDERING/HOME/FETCH_ONLINECATEGORY_FAILURE',
-
-  // mutable removeShoppingCartItem
-  REMOVE_SHOPPINGCARTITEM_REQUEST: 'ORDERING/HOME/REMOVE_SHOPPINGCARTITEM_REQUEST',
-  REMOVE_SHOPPINGCARTITEM_SUCCESS: 'ORDERING/HOME/REMOVE_SHOPPINGCARTITEM_SUCCESS',
-  REMOVE_SHOPPINGCARTITEM_FAILURE: 'ORDERING/HOME/REMOVE_SHOPPINGCARTITEM_FAILURE',
-
-  // fetch productDetail
-  FETCH_PRODUCTDETAIL_REQUEST: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__REQUEST',
-  FETCH_PRODUCTDETAIL_SUCCESS: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__SUCCESS',
-  FETCH_PRODUCTDETAIL_FAILURE: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__FAILURE',
-
-  // mutable addOrUpdateShoppingCartItem
-  ADDORUPDATE_SHOPPINGCARTITEM_REQUEST: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_REQUEST',
-  ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS',
-  ADDORUPDATE_SHOPPINGCARTITEM_FAILURE: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_FAILURE',
-
-  // - or + on home page product item
-  DECREASE_PRODUCT_IN_CART: 'ORDERING/HOME/DECREASE_PRODUCT_IN_CART',
-  INCREASE_PRODUCT_IN_CART: 'ORDERING/HOME/INCREASE_PRODUCT_IN_CART',
-};
+export const types = HOME_TYPES;
 
 // actions
 export const actions = {
@@ -127,15 +100,14 @@ export const actions = {
 };
 
 const fetchShoppingCart = () => {
-  const endpoint = Url.apiGql('ShoppingCart');
   return {
-    [FETCH_GRAPHQL]: {
+    [API_REQUEST]: {
       types: [
         types.FETCH_SHOPPINGCART_REQUEST,
         types.FETCH_SHOPPINGCART_SUCCESS,
         types.FETCH_SHOPPINGCART_FAILURE,
       ],
-      endpoint,
+      ...Url.API_URLS.GET_CART,
     },
   };
 }
@@ -230,13 +202,13 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     case types.FETCH_SHOPPINGCART_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_SHOPPINGCART_SUCCESS: {
-      const { shoppingCart } = action.responseGql.data;
+      const { items, unavailableItems } = action.response || {};
 
       return {
         ...state,
         isFetching: false,
-        itemIds: shoppingCart.items.map(item => item.id),
-        unavailableItemIds: shoppingCart.unavailableItems.map(item => item.id),
+        itemIds: items.map(item => item.id),
+        unavailableItemIds: unavailableItems.map(item => item.id),
       }
     }
     case types.FETCH_SHOPPINGCART_FAILURE:

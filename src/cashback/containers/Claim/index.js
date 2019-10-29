@@ -33,7 +33,7 @@ class PageClaim extends React.Component {
       appActions,
       claimActions,
     } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin, consumerId } = user || {};
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     appActions.setLoginPrompt('Claim with your mobile number');
@@ -46,7 +46,7 @@ class PageClaim extends React.Component {
     }
 
     if (isLogin) {
-      await appActions.loadCustomerProfile();
+      await appActions.loadCustomerProfile({ consumerId });
       this.handleCreateCustomerCashbackInfo();
     }
   }
@@ -72,14 +72,18 @@ class PageClaim extends React.Component {
       user,
       appActions,
     } = this.props;
-    const { isLogin, customerId } = user || {};
+    const {
+      isLogin,
+      consumerId,
+      customerId,
+    } = user || {};
 
     if (isFetching || !isLogin || !receiptNumber || customerId) {
       return;
     }
 
     if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber) {
-      await appActions.loadCustomerProfile();
+      await appActions.loadCustomerProfile({ consumerId });
       this.handleCreateCustomerCashbackInfo();
     }
   }

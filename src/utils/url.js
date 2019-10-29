@@ -1,4 +1,8 @@
 const API_URLS = {
+  GET_CART: {
+    url: '/api/cart',
+    method: 'get',
+  },
   GET_BRAINTREE_TOKEN: {
     url: '/payment/initToken',
     method: 'get',
@@ -53,12 +57,16 @@ const API_URLS = {
     mode: 'cors',
   },
   GET_CUSTOMER_PROFILE: (consumerId) => ({
-    url: `/api/consumer/${consumerId}/customer`,
+    url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
-  CALCULATE_RESULT: {
-    url: '/api/calculator',
-    method: 'post',
+  GET_PENDING_TRANSACTIONS: {
+    url: '/api/transactions/status/pending',
+    method: 'get',
+  },
+  PUT_TRANSACTIONS_STATUS: {
+    url: '/api/transactions/status',
+    method: 'put'
   },
 };
 
