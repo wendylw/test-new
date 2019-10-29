@@ -9,12 +9,10 @@ export class Billing extends Component {
       businessInfo,
     } = this.props;
     const {
-      enableServiceCharge = false,
       serviceChargeRate = 0,
     } = businessInfo;
 
-    // TODO: revert service charge after released BEEP-163
-    if (!enableServiceCharge || !serviceCharge) {
+    if (!serviceCharge) {
       return null;
     }
 
@@ -93,7 +91,6 @@ Billing.propTypes = {
   subtotal: PropTypes.number,
   total: PropTypes.number,
   creditsBalance: PropTypes.number,
-  enableServiceCharge: PropTypes.bool,
 };
 
 Billing.defaultProps = {
@@ -104,7 +101,6 @@ Billing.defaultProps = {
   subtotal: 0,
   total: 0,
   creditsBalance: 0,
-  enableServiceCharge: false,
 };
 
 export default Billing;
