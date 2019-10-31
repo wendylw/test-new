@@ -69,7 +69,7 @@ class RecentActivities extends React.Component {
     const pageSize = 10;
     homeActions.getReceiptList(business,page,pageSize);
     if(page === 10){
-      this.setState('hasMoreItems',true)
+      this.setState({hasMoreItems: false})
     }
   }
 
@@ -92,6 +92,7 @@ class RecentActivities extends React.Component {
           loader={<div key={0}>Loading ...</div>}
           useWindow={false}
           className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}
+          useWindow={false}
         > 
           <div>
             {
@@ -140,7 +141,9 @@ class RecentActivities extends React.Component {
               : <Header navFunc={this.toggleFullScreen.bind(this)} />
           }
           <h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Receipts</h3>
-          {this.renderLogList()}
+          <div>
+            {this.renderLogList()}
+          </div>
         </aside>
       </div>
     );
