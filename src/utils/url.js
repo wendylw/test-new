@@ -36,7 +36,7 @@ const API_URLS = {
     method: 'get',
   }),
   GET_RECEIPTS_LIST: {
-    url: '/api/transaction',
+    url: '/api/transactions',
     method: 'get',
   },
   GET_LOGIN_STATUS: {
