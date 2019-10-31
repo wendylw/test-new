@@ -1,5 +1,4 @@
 import { HOME_TYPES } from '../../../cashback/redux/types';
-import { resolve } from 'dns';
 
 const initialState = {};
 

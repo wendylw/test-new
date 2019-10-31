@@ -68,8 +68,8 @@ class RecentActivities extends React.Component {
     const { business, homeActions } = this.props; 
     const pageSize = 10;
     homeActions.getReceiptList(business,page,pageSize);
-    if(page == 10){
-      this.state.hasMoreItems = false;
+    if(page === 10){
+      this.setState('hasMoreItems',true)
     }
   }
 
@@ -84,29 +84,6 @@ class RecentActivities extends React.Component {
     } = this.props;
     const { country } = onlineStoreInfo || {};
 
-    console.log(receiptList);
-    var items = [];
-    (receiptList || []).map((receipt,i) => {
-      const {
-        createdTime,
-        total
-      } = receipt;
-      const receiptTime = new Date(createdTime)
-      items.push(
-        <div className="receipt-list__item flex flex-middle" key={`${i}`}>
-          <IconTicket className="activity__icon ticket" />
-          <summary>
-            <h4 className="receipt-list__title">
-              <label>Receipt - </label>
-              <CurrencyNumber money={Math.abs(total || 0)} />
-            </h4>
-            <time className="receipt-list__time">
-              {receiptTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
-            </time>
-          </summary>
-        </div>
-      )
-    })
     return (
         <InfiniteScroll
           pageStart={0}
@@ -117,7 +94,30 @@ class RecentActivities extends React.Component {
           className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}
         > 
           <div>
-            {items}
+            {
+              (receiptList || []).map((receipt,i) => {
+                const {
+                  createdTime,
+                  total
+                } = receipt;
+                const receiptTime = new Date(createdTime);
+
+                return (
+                  <div className="receipt-list__item flex flex-middle" key={`${i}`}>
+                    <IconTicket className="activity__icon ticket" />
+                    <summary>
+                      <h4 className="receipt-list__title">
+                        <label>Receipt - </label>
+                        <CurrencyNumber money={Math.abs(total || 0)} />
+                      </h4>
+                      <time className="receipt-list__time">
+                        {receiptTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                      </time>
+                    </summary>
+                  </div>
+                );
+              })
+            }
           </div>
         </InfiniteScroll>
     );
