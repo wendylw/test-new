@@ -93,7 +93,6 @@ Billing.propTypes = {
   subtotal: PropTypes.number,
   total: PropTypes.number,
   creditsBalance: PropTypes.number,
-  enableServiceCharge: PropTypes.bool,
 };
 
 Billing.defaultProps = {
@@ -104,7 +103,6 @@ Billing.defaultProps = {
   subtotal: 0,
   total: 0,
   creditsBalance: 0,
-  enableServiceCharge: false,
 };
 
 export default Billing;

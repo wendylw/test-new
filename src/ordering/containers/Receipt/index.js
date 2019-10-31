@@ -22,6 +22,7 @@ export class ReceiptDetail extends Component {
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     thankYouActions.loadOrder(receiptNumber);
+    thankYouActions.loadCoreBusiness();
   }
 
   backToThankYou() {
@@ -60,7 +61,7 @@ export class ReceiptDetail extends Component {
                 key={id}
                 image={image}
                 title={title}
-                variation={variationTexts.join(', ')}
+                variation={(variationTexts || []).join(', ')}
                 detail={
                   <CurrencyNumber money={displayPrice || unitPrice || 0} />
                 }
@@ -80,7 +81,7 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { order } = this.props;
+    const { order, businessInfo } = this.props;
     const {
       orderId,
       tax,
@@ -88,6 +89,7 @@ export class ReceiptDetail extends Component {
       subtotal,
       total,
       tableId,
+      cashback,
     } = order || {};
 
     return (
@@ -113,9 +115,11 @@ export class ReceiptDetail extends Component {
         <Billing
           className="fixed"
           tax={tax}
+          businessInfo={businessInfo}
           serviceCharge={serviceCharge}
           subtotal={subtotal}
           total={total}
+          creditsBalance={cashback}
         />
       </section>
     )
