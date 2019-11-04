@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Constants from '../../Constants';
+import Utils from '../../libs/utils';
 
 const localState = {
   blockScrollTop: 0,
@@ -30,23 +31,34 @@ class Aside extends Component {
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
-    const homeEl = document.getElementById('table-ordering-home');
+    const rootClassName = rootEl.getAttribute('class').replace(/fixed/g, '');
+    const listEl = document.getElementById('product-list');
 
-    if (rootEl && homeEl) {
-      rootEl.classList.toggle('fixed', blockScroll);
-
+    if (rootEl && listEl) {
       if (blockScroll) {
-        const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+        let listElOffsetTop = currentScrollTop + listEl.getBoundingClientRect().top;
 
-        homeEl.style.top = `-${currentScrollTop}px`;
+        if (!Utils.getUserAgentInfo().browser.includes('Safari')) {
+          let currentParent = listEl.offsetParent;
 
+          listElOffsetTop = listEl.offsetTop;
+
+          while (currentParent !== null) {
+            listElOffsetTop += currentParent.offsetTop;
+            currentParent = currentParent.offsetParent;
+          }
+        }
+
+        listEl.style.top = `${listElOffsetTop - currentScrollTop}px`;
         Object.assign(localState, { blockScrollTop: currentScrollTop });
+        rootEl.setAttribute('class', `${rootClassName} fixed`);
       } else {
         const { blockScrollTop } = localState;
 
-        homeEl.style.top = null;
-        document.body.scrollTop = blockScrollTop;
-        document.documentElement.scrollTop = blockScrollTop;
+        rootEl.setAttribute('class', rootClassName);
+        listEl.style.top = '';
+        window.scrollTo(0, blockScrollTop);
       }
     }
   }

@@ -9,7 +9,6 @@ import FooterOperation from '../views/components/FooterOperation';
 import Constants from '../Constants';
 import ProductDetails from '../views/components/ProductDetails';
 import ProductsEditCart from '../views/components/ProductsEditCart';
-import MainMenu from '../views/components/MainMenu';
 import DocumentTitle from '../views/components/DocumentTitle';
 
 export class Home extends Component {
@@ -89,17 +88,6 @@ export class Home extends Component {
               ? (
                 <ProductsEditCart
                   active={asidesStatus.edit}
-                  toggleAside={this.handleToggleAside.bind(this)}
-                />
-              )
-              : null
-          }
-
-          {
-            loaded
-              ? (
-                <MainMenu
-                  active={asidesStatus.menu}
                   toggleAside={this.handleToggleAside.bind(this)}
                 />
               )

@@ -1,0 +1,104 @@
+.category {
+  &__current {
+    @extend .header;
+
+    top: 50px;
+    background-color: $gray-4;
+  }
+
+  &__item {
+    &:last-child {
+      padding-right: 24px;
+    }
+  }
+
+  &__nav-hint {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 50px;
+    padding: 13px 0;
+    background: linear-gradient(to left, $gray-5, $gray-5 60%, rgba(255, 255, 255, 0) 100%);
+    background: -webkit-linear-gradient(to left, $gray-5, $gray-5 60%, rgba(255, 255, 255, 0) 100%);
+    background: -moz-linear-gradient(to left, $gray-5, $gray-5 60%, rgba(255, 255, 255, 0) 100%);
+
+    svg {
+      transform: rotate(-90deg);
+      -webkit-transform: rotate(-90deg);
+    }
+  }
+}
+
+.menu {
+  display: inline-block;
+  span {
+    @extend .reset-font-size;
+
+    display: block;
+    margin: 3px 0;
+  }
+
+  span:before,
+  span:after {
+    content: "";
+    margin: 0 1px;
+    display: inline-block;
+    background-color: $white;
+  }
+
+  span:before {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+  }
+
+  span:after {
+    @extend .border-radius-base;
+
+    height: 2px;
+    width: 5vw;
+  }
+}
+
+.menu-button {
+  @extend .reset-button;
+
+  position: relative;
+  width: 14vw;
+  height: 14vw;
+}
+
+.nav-pane {
+  @extend .aside-content;
+  @extend .animation__slide-up;
+
+  position: absolute;
+  bottom: 0;
+  padding: 15px 0;
+  max-height: 80%;
+  width: 100%;
+
+
+  &__link {
+    padding: 4vw 5vw;
+  }
+
+  &__label {
+    display: inline-block;
+    max-width: 90%;
+  }
+
+  &__item.active {
+    background-color: $gray-4;
+  }
+}
+
+body.loading {
+  .nav-pane{}
+}
+
+.aside {
+  &.active {
+    > .nav-pane {}
+  }
+}
