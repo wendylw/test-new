@@ -51,7 +51,7 @@ const DOCUMENT_TITLE = {
 
 const PAYMENT_METHODS = {
   ONLINE_BANKING_PAY: 'CCPP',
-  CREDIT_CARD_PAY: 'BrainTree',
+  CREDIT_CARD_PAY: 'CCPPCreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
 };
