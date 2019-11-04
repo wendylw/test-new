@@ -27,7 +27,6 @@ class BankCardPayment extends Component {
 
 	state = {
 		payNowLoading: false,
-		domLoaded: false,
 		fire: false,
 		cardNumberSelectionStart: 0,
 		card: {},
@@ -49,8 +48,6 @@ class BankCardPayment extends Component {
 
 		script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
 		document.body.appendChild(script);
-
-		this.setState({ domLoaded: true });
 	}
 
 	getQueryObject(paramName) {
@@ -270,7 +267,6 @@ class BankCardPayment extends Component {
 		} = onlineStoreInfo || {};
 		const {
 			payNowLoading,
-			domLoaded,
 			fire,
 			card,
 			validDate,
@@ -465,41 +461,23 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'businessName', value: config.business });
 						fields.push({ name: 'redirectURL', value: redirectURL });
 						fields.push({ name: 'webhookURL', value: webhookURL });
-						fields.push({ name: 'payActionWay', value: 1 });
-						fields.push({ name: 'paymentName', value: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY });
+						fields.push({ name: 'paymentName', value: 'CCPP' });
 						fields.push({ name: 'cardholderName', value: cardholderName });
 
 						window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
 							if (!errCode) {
-								window.encryptedCardData = encryptedData;
+								window.encryptedCardInfo = encryptedData.encryptedCardInfo;
 							} else {
 								console.log(errDesc + "(" + errCode + ")");
 							}
 						});
 
-						fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData.encryptedCardInfo });
-						fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData.expYearCardInfo });
-						fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData.expMonthCardInfo });
-						fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData.maskedCardInfo });
+						fields.push({ name: 'encryptedCardData', value: window.encryptedCardInfo });
 
 						return fields;
 					}}
 					fire={fire}
 				/>
-				{
-					!domLoaded
-						? (
-							<div className="loading-cover">
-								<div className="loader-wave">
-									<i className="dot dot1"></i>
-									<i className="dot dot2"></i>
-									<i className="dot dot3"></i>
-									<i className="dot dot4"></i>
-								</div>
-							</div>
-						)
-						: null
-				}
 			</section>
 		)
 	}

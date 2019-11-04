@@ -40,7 +40,7 @@ const AsyncPayment = Loadable({
 });
 
 const AsyncBankCardPayment = Loadable({
-  loader: () => import("./containers/BankCardPayment"),
+  loader: () => import("./containers/BraintreeBankCardPayment"),
   loading: MyLoadingComponent,
 });
 
