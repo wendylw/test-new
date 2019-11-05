@@ -22,18 +22,33 @@ class PageClaim extends React.Component {
   }
 
   render() {
+    const { errorMessageKey } = this.props;
+
     return (
       <main className="cash-back flex-column" style={{
         // backgroundImage: `url(${theImage})`,
       }}>
         <HomeBody />
-        <PhoneView />
+        {
+          errorMessageKey === 'Merchant_Limited'
+            ? (
+              <section className="asdie-section">
+                <aside className="aside-bottom not-full">
+                  <label className="phone-view-form__label text-center">Sorry, cashback claims are unavailable at the moment.</label>
+                  <label className="phone-view-form__label text-center">Please speak to the cashier for more information.</label>
+                </aside>
+              </section>
+            )
+            : <PhoneView />
+        }
       </main>
     );
   }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state) => ({
+  errorMessageKey: state.message.errorStatus,
+});
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getCashbackAndHashData,
