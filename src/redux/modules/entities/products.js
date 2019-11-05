@@ -11,7 +11,11 @@ const reducer = (state = initialState, action) => {
       onlineCategory.forEach(category => {
         category.products.forEach(product => {
           // Fetch product detail when _needMore is true
-          kvData[product.id] = Object.assign(product, product.variations && product.variations.length ? { _needMore: true } : {});
+          kvData[product.id] = {
+            ...product,
+            // mark it as need more to fetch product detail
+            _needMore: product.variations && product.variations.length
+          };
         });
       });
 
