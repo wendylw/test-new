@@ -81,9 +81,11 @@ export const actions = {
   increaseProductInCart: (prod) => (dispatch, getState) => {
     const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
 
-    if (getState().home.currentProduct.id !== prod.id) {
-      return dispatch(fetchProductDetail({ productId: prod.id }));
-    } else {
+    if (prod.variations && prod.variations.length) {
+      if (getState().home.currentProduct.id !== prod.id) {
+        return dispatch(fetchProductDetail({ productId: prod.id }));
+      }
+
       return;
     }
 
