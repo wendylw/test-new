@@ -82,7 +82,7 @@ export const actions = {
     const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
 
     if (prod.variations && prod.variations.length) {
-      if (prod._needMore) {
+      if (getState().home.currentProduct.id !== prod.id) {
         return dispatch(fetchProductDetail({ productId: prod.id }));
       }
 
