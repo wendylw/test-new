@@ -369,6 +369,10 @@
     background-color: $white;
   }
 
+  &__cashback-receipt {
+    margin-top: 50px;
+  }
+
   &__prompt-page {
     @extend .main-section;
 

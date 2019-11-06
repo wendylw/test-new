@@ -36,6 +36,7 @@ class PageLoyalty extends React.Component {
   render() {
     const {
       business,
+      history,
       onlineStoreInfo,
       cashbackHistorySummary,
     } = this.props;
@@ -69,7 +70,7 @@ class PageLoyalty extends React.Component {
           </div>
           <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
         </div>
-        <ReceiptList />
+        <ReceiptList history={history}/>
       </section>
     );
   }

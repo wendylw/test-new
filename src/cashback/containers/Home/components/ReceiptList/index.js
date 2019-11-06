@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
 import { actions as homeActions, getCashbackHistory, getReceiptList, getFetchState } from '../../../../redux/modules/home';
+import constants from '../../../../../utils/constants';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -72,6 +73,19 @@ class RecentActivities extends React.Component {
     this.setState({ fullScreen: !this.state.fullScreen });
   }
 
+  handleClickViewReceipt = (orderId) => {
+    const {
+      history,
+    } = this.props;
+
+    return (
+      () =>  history.push({
+        pathname: constants.ROUTER_PATHS.RECEIPT_DETAIL,
+        search: `?receiptNumber=${orderId || ''}`
+      })
+    )
+  };
+
   renderLogList() {
     const {
       onlineStoreInfo,
@@ -93,12 +107,16 @@ class RecentActivities extends React.Component {
               (receiptList || []).map((receipt,i) => {
                 const {
                   createdTime,
-                  total
+                  total,
+                  receiptNumber
                 } = receipt;
                 const receiptTime = new Date(createdTime);
 
                 return (
-                  <div className="receipt-list__item flex flex-middle" key={`${i}`}>
+                  <div 
+                    className="receipt-list__item flex flex-middle" 
+                    key={`${i}`}
+                    onClick={this.handleClickViewReceipt(receiptNumber)}>
                     <IconTicket className="activity__icon ticket" />
                     <summary>
                       <h4 className="receipt-list__title">

@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 import qs from 'qs';
 import React, { Component } from 'react';
-import Item from '../../components/Item';
-import Billing from '../../components/Billing';
+import Item from './components/Item';
+import Billing from './components/Billing';
 import Header from '../../../components/Header';
-import ItemOperator from '../../components/ItemOperator';
+import ItemOperator from './components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
@@ -29,7 +29,7 @@ export class ReceiptDetail extends Component {
     const h = config.h();
     const { orderId } = order || {};
 
-    history.replace(`${Constants.ROUTER_PATHS.THANK_YOU}?h=${h}&receiptNumber=${orderId}`, history.location.state);
+    history.replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${h}`, history.location.state);
   }
 
   renderProductItem() {
@@ -91,7 +91,7 @@ export class ReceiptDetail extends Component {
     } = order || {};
 
     return (
-      <section className="table-ordering__receipt">
+      <section className="table-ordering__receipt table-ordering__cashback-receipt">
         <Header
           className="border__bottom-divider gray"
           title="View Receipt"

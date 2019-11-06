@@ -5,6 +5,7 @@ const RecentActivities = lazy(() => import('./RecentActivities'));
 const Claim = lazy(() => import('./Claim'));
 const Home = lazy(() => import('./Home'));
 const Error = lazy(() => import('../../components/Error'));
+const Receipt = lazy(() => import('./Receipt'));
 
 class Routes extends Component {
   render() {
@@ -18,6 +19,7 @@ class Routes extends Component {
             <Route exact path="/claim" component={Claim} />
             <Route exact path="/activities" component={RecentActivities} />
             <Route exact path="/error" component={Error} />
+            <Route exact path="/receipt" component={Receipt} />
           </Switch>
         </Suspense>
       </Router>
