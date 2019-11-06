@@ -47,7 +47,7 @@ class BankCardPayment extends Component {
 
 		const script = document.createElement('script');
 
-		script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
+		script.src = config.storehubPaymentScriptSrc;
 		document.body.appendChild(script);
 
 		this.setState({ domLoaded: true });
