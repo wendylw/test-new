@@ -7,7 +7,7 @@ import Header from '../../../../../components/Header';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
-import { actions as homeActions, getCashbackHistory, getReceiptList } from '../../../../redux/modules/home';
+import { actions as homeActions, getCashbackHistory, getReceiptList, getFetchState } from '../../../../redux/modules/home';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -23,9 +23,7 @@ const DATE_OPTIONS = {
 
 class RecentActivities extends React.Component {
   state = {
-    fullScreen: false,
-    receiptList: [],
-    hasMoreItems: true
+    fullScreen: false
   }
 
   async componentWillMount() {
@@ -68,10 +66,7 @@ class RecentActivities extends React.Component {
     const { business, homeActions } = this.props; 
     const pageSize = 10;
     homeActions.getReceiptList(business,page,pageSize);
-    if(page === 10){
-      this.setState({hasMoreItems: false})
-    }
-  }
+  } 
 
   toggleFullScreen() {
     this.setState({ fullScreen: !this.state.fullScreen });
@@ -80,7 +75,8 @@ class RecentActivities extends React.Component {
   renderLogList() {
     const {
       onlineStoreInfo,
-      receiptList
+      receiptList,
+      fetchState
     } = this.props;
     const { country } = onlineStoreInfo || {};
 
@@ -88,10 +84,8 @@ class RecentActivities extends React.Component {
         <InfiniteScroll
           pageStart={0}
           loadMore={this.loadItems.bind(this)}
-          hasMore={this.state.hasMoreItems}
-          loader={<div key={0}>Loading ...</div>}
-          useWindow={false}
-          className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}
+          hasMore={fetchState}
+          loader={<div style={{clear:'both'}} key={0}>Loading ...</div>}
           useWindow={false}
         > 
           <div>
@@ -141,7 +135,7 @@ class RecentActivities extends React.Component {
               : <Header navFunc={this.toggleFullScreen.bind(this)} />
           }
           <h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Receipts</h3>
-          <div>
+          <div className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}>
             {this.renderLogList()}
           </div>
         </aside>
@@ -156,7 +150,8 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
     business: getBusiness(state),
     cashbackHistory: getCashbackHistory(state),
-    receiptList: getReceiptList(state)
+    receiptList: getReceiptList(state),
+    fetchState: getFetchState(state)
   }),
   (dispatch) => ({
     appActions: bindActionCreators(appActions, dispatch),

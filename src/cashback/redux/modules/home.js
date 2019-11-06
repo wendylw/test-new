@@ -10,6 +10,7 @@ import { getUser, getBusiness } from './app';
 const initialState = {
   customerId: null,
   receiptList: [],
+  fetchState: true,
   cashbackHistorySummary: null,
 };
 
@@ -75,7 +76,8 @@ const reducer = (state = initialState, action) => {
       const { list } = response || {};
       return {
         ...state,
-        receiptList: state.receiptList.concat(list)
+        receiptList: state.receiptList.concat(list),
+        fetchState: list.length === 0 ? false: true
       }
     }
     default:
@@ -87,6 +89,7 @@ export default reducer;
 
 export const getCustomerId = state => state.home.customerId;
 export const getReceiptList = state => state.home.receiptList;
+export const getFetchState = state => state.home.fetchState;
 export const getCashbackHistorySummary = state => state.home.cashbackHistorySummary;
 
 export const getBusinessInfo = state => {

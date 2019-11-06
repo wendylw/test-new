@@ -4,7 +4,7 @@ import Image from '../../../components/Image';
 import Header from '../../../components/Header';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
-import RecentActivities from './components/RecentActivities';
+import ReceiptList from './components/ReceiptList';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import qs from 'qs';
@@ -69,7 +69,7 @@ class PageLoyalty extends React.Component {
           </div>
           <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
         </div>
-        <RecentActivities />
+        <ReceiptList />
       </section>
     );
   }
