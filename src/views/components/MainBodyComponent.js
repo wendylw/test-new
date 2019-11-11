@@ -8,7 +8,7 @@ import {
 import {
   ScrollObservable,
   ScrollObserver,
-  getCurrentScrollName,
+  getCurrentScrollId,
 } from './ScrollComponents';
 import Tag from '../../components/Tag';
 import Item from '../../components/Item';
@@ -18,8 +18,9 @@ import config from '../../config';
 import Constants from '../../Constants';
 
 const { PRODUCT } = Constants.HOME_ASIDE_NAMES;
-
 export class MainBodyComponent extends Component {
+  lastActivedCategory = null;
+
   state = {
     mergedItems: null,
   };
@@ -94,33 +95,66 @@ export class MainBodyComponent extends Component {
 
     return (
       <React.Fragment>
-        <ScrollObserver render={(scrollname => {
-          const currentScrollname = scrollname || getCurrentScrollName();
-          const category = onlineCategoryMergedShoppingCart.find(c => c.name === currentScrollname);
+        <ScrollObserver
+          containerId="CategoryNavContent"
+          defaultScrollId={getCurrentScrollId() || onlineCategoryMergedShoppingCart[0].id}
+          render={(scrollid, scrollToSmoothly) => {
+            const currentCategory = onlineCategoryMergedShoppingCart.find(c => c.id === scrollid);
 
-          if (!category) {
-            return null;
-          }
+            return (
+              <div className="category__nav">
+                <div id="CategoryNavContent" className="category__nav-content">
+                  <ul
+                    className="category__nav-list text-middle"
+                  >
+                    {
+                      onlineCategoryMergedShoppingCart.map((c, key) => {
+                        const classList = ['category__item text-center'];
 
-          return (
-            <div className="category__current flex flex-middle flex-space-between">
-              <label>{category.name}</label>
-              <span className="gray-font-opacity">{category.cartQuantity} items</span>
-            </div>
-          );
-        })} />
+                        if (document.getElementById('root').getAttribute('class').includes('fixed')) {
+                          const isActive = document.getElementById(`category-${c.id}`).getAttribute('class').includes('active');
 
-        <div className="list__container">
+                          if (isActive) {
+                            classList.push('active');
+                          }
+                        } else {
+                          if (currentCategory && currentCategory.id === c.id) {
+                            classList.push('active');
+                          }
+                        }
+
+                        return (
+                          <li
+                            id={`category-${c.id}`}
+                            key={`category-${c.id}`}
+                            className={classList.join(' ')}
+                            onClick={() => scrollToSmoothly({
+                              direction: 'y',
+                              targetId: c.id,
+                            })}
+                          >
+                            <label>{c.name}</label>
+                          </li>
+                        );
+                      })
+                    }
+                  </ul>
+                </div>
+              </div>
+            );
+          }} />
+
+        <div id="product-list" className="list__container">
           <ol className="category__list">
             {
               onlineCategoryMergedShoppingCart.map((category) => (
-                <li key={category.id}>
-                  <h2 className="category__header flex flex-middle flex-space-between">
-                    <label>{category.name}</label>
-                    <span className="gray-font-opacity">{category.cartQuantity} items</span>
-                  </h2>
-                  <ul className="list">
-                    <ScrollObservable name={category.name} key={category.id}>
+                <li key={category.id} id={category.id}>
+                  <ScrollObservable targetId={category.id} key={category.id}>
+                    <h2 className="category__header flex flex-middle flex-space-between">
+                      <label>{category.name}</label>
+                      <span className="gray-font-opacity">{category.cartQuantity} items</span>
+                    </h2>
+                    <ul className="list">
                       {
                         category.products.map(prod => (
                           <Item
@@ -153,8 +187,8 @@ export class MainBodyComponent extends Component {
                           </Item>
                         ))
                       }
-                    </ScrollObservable>
-                  </ul>
+                    </ul>
+                  </ScrollObservable>
                 </li>
               ))
             }

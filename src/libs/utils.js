@@ -23,16 +23,23 @@ Utils.debounce = function debounce(fn, timeout = 50) {
   };
 };
 
-Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustment = 0) {
-  var top = el.offsetTop;
-  var height = el.offsetHeight;
+Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustment = 0, windowScrolledTop = 0) {
+  const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
+  let height = isSafari ? el.getBoundingClientRect().height : el.offsetHeight;
+  let top = windowScrolledTop + el.getBoundingClientRect().top;
 
-  while (el.offsetParent) {
-    el = el.offsetParent;
-    top += el.offsetTop;
+  if (!isSafari) {
+    let currentParent = el.offsetParent;
+
+    top = el.offsetTop;
+
+    while (currentParent !== null) {
+      top += currentParent.offsetTop;
+      currentParent = currentParent.offsetParent;
+    }
   }
 
-  return (top + height) - window.pageYOffset - topAdjustment;
+  return (top + height) - windowScrolledTop - topAdjustment;
 }
 
 Utils.getPhoneNumber = function getPhoneNumber() {
@@ -209,6 +216,47 @@ Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   });
 
   return addressList.join(', ');
+}
+
+Utils.initSmoothAnimation = function initSmoothAnimation() {
+  const vendors = ['webkit', 'moz'];
+  let lastTime = 0;
+
+  for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||    // name has changed in Webkit
+      window[vendors[x] + 'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = function (callback, element) {
+      var currTime = new Date().getTime();
+      var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+      var id = window.setTimeout(function () {
+        callback(currTime + timeToCall);
+      }, timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+  }
+  if (!window.cancelAnimationFrame) {
+    window.cancelAnimationFrame = function (id) {
+      clearTimeout(id);
+    };
+  }
+}
+
+Utils.getUserAgentInfo = function getUserAgentInfo() {
+  /* eslint-disable */
+  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
+  /* eslint-enabled */
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
+  const browsers = navigator.userAgent.match(regex);
+
+  return {
+    isMobile,
+    browser: browsers ? browsers[0] : '',
+  }
 }
 
 export default Utils;
