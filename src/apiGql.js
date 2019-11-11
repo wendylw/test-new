@@ -206,10 +206,12 @@ apiGql.GET_SHOPPING_CART = gql`
   query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: ""
+      userId: "",
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     ) {
       total
       subtotal
+      serviceCharge
       count
       discount
       tax
@@ -242,6 +244,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       orderId
       status
       subtotal
+      serviceCharge
       total
       storeId
       tableId
