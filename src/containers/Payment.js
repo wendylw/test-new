@@ -7,6 +7,7 @@ import withOnlinstStoreInfo from '../libs/withOnlineStoreInfo';
 import Constants from '../Constants';
 import apiGql from '../apiGql';
 import config from '../config';
+import Utils from '../libs/utils';
 import RedirectForm from '../views/components/RedirectForm';
 import DocumentTitle from '../views/components/DocumentTitle';
 
@@ -54,7 +55,7 @@ class Payment extends Component {
 
     if (additionalComments) {
       variables = Object.assign({}, variables, {
-        additionalComments,
+        additionalComments: encodeURIComponent(additionalComments),
       });
     }
 
@@ -62,6 +63,7 @@ class Payment extends Component {
       const { data } = await this.props.createOrder({ variables });
 
       if (data.createOrder) {
+        Utils.removeAdditionalComments();
         // config.peopleCount = null; // clear peopleCount for next order
         this.setState({
           order: data.createOrder.orders[0],
