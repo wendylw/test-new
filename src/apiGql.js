@@ -153,7 +153,12 @@ apiGql.GET_PRODUCT_DETAIL = gql`
 
 apiGql.GET_PRODUCTS = gql`
   query ProductList($page: Int!, $size: Int!, $business: String!) {
-    products(page: $page, size: $size, business: $business) {
+    products(
+      page: $page,
+      size: $size,
+      business: $business,
+      channels: [${Constants.CHANNEL_TYPE.BEEP}]
+    ) {
       total
       productlist {
         id
@@ -166,7 +171,10 @@ apiGql.GET_PRODUCTS = gql`
 
 apiGql.GET_ONLINE_CATEGORY = gql`
   query OnlineCategory($business: String!) {
-    onlineCategory(business: $business) {
+    onlineCategory(
+      business: $business,
+      channels: [${Constants.CHANNEL_TYPE.BEEP}]
+    ) {
       id
       name
       isEnabled
@@ -198,10 +206,11 @@ apiGql.GET_SHOPPING_CART = gql`
     shoppingCart(
       business: $business,
       userId: "",
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     ) {
       total
       subtotal
+      serviceCharge
       count
       discount
       tax
@@ -234,6 +243,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       orderId
       status
       subtotal
+      serviceCharge
       total
       storeId
       tableId
@@ -284,7 +294,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     }) {
       shoppingCartItem {
         id
@@ -316,7 +326,7 @@ apiGql.CREATE_ORDER = gql`
       additionalComments: $additionalComments,
       tableId: $tableId,
       pax: $pax,
-      channel: ${Constants.PLATFORMS_CODE.BEEP}
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     }) {
       orders {
         id
