@@ -733,8 +733,11 @@
 
     textarea {
       padding: 3vw;
+      border: 0;
       width: 100%;
       resize: none;
+      -webkit-appearance: none;
+      border-radius: 0;
     }
   }
 

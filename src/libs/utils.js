@@ -50,6 +50,18 @@ Utils.setPhoneNumber = function setPhoneNumber(phone) {
   localStorage.setItem('user.p', phone || '');
 }
 
+Utils.getAdditionalComments = function getAdditionalComments() {
+  return sessionStorage.getItem('additionalComments');
+}
+
+Utils.setAdditionalComments = function setAdditionalComments(additionalComments) {
+  sessionStorage.setItem('additionalComments', additionalComments || '');
+}
+
+Utils.removeAdditionalComments = function removeAdditionalComments() {
+  sessionStorage.removeItem('additionalComments');
+}
+
 Utils.isProductSoldOut = (product) => {
   const { markedSoldOut, variations } = product;
 

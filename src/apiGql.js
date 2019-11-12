@@ -206,10 +206,12 @@ apiGql.GET_SHOPPING_CART = gql`
   query ShoppingCart($business: String!) {
     shoppingCart(
       business: $business,
-      userId: ""
+      userId: "",
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     ) {
       total
       subtotal
+      serviceCharge
       count
       discount
       tax
@@ -242,6 +244,7 @@ apiGql.GET_ORDER_DETAIL = gql`
       orderId
       status
       subtotal
+      serviceCharge
       total
       storeId
       tableId
@@ -252,9 +255,11 @@ apiGql.GET_ORDER_DETAIL = gql`
         title
         productId
         quantity
+        displayPrice
         unitPrice
         image
         variationTexts
+        itemType
       }
     }
   }
@@ -289,7 +294,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      platform: 2
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     }) {
       shoppingCartItem {
         id
