@@ -477,10 +477,10 @@ class BankCardPayment extends Component {
 							}
 						});
 
-						fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData.encryptedCardInfo });
-						fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData.expYearCardInfo });
-						fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData.expMonthCardInfo });
-						fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData.maskedCardInfo });
+						fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData ? window.encryptedCardData.encryptedCardInfo : undefined });
+						fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData ? window.encryptedCardData.expYearCardInfo : undefined });
+						fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData ? window.encryptedCardData.expMonthCardInfo : undefined });
+						fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData ? window.encryptedCardData.maskedCardInfo : undefined });
 
 						return fields;
 					}}
