@@ -96,7 +96,7 @@ class RecentActivities extends React.Component {
 
     return (
         <InfiniteScroll
-          pageStart={0}
+          pageStart={-1}
           loadMore={this.loadItems.bind(this)}
           hasMore={fetchState}
           loader={<div style={{clear:'both'}} key={0}>Loading ...</div>}
