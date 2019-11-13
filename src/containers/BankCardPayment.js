@@ -97,7 +97,7 @@ class BankCardPayment extends Component {
 				length: 19,
 			},
 			validCardNumber: {
-				message: 'Your card number isinvalid',
+				message: 'Your card number is invalid',
 			},
 		};
 
@@ -179,7 +179,7 @@ class BankCardPayment extends Component {
 	}
 
 	validateForm() {
-		const cardHolderNameOptions = this.getCardHolderNameValidationOpts()
+		const cardHolderNameOptions = this.getCardHolderNameValidationOpts();
 		const holderNameResult = FormValidate.validate('cardHolderName', cardHolderNameOptions);
 		const { invalidCardInfoFields, cardInfoError } = this.state;
 		let newCardHolderNameError = {
@@ -212,7 +212,7 @@ class BankCardPayment extends Component {
 	async payNow() {
 		this.validateForm();
 
-		const {
+		let {
 			cardInfoError,
 			cardHolderNameError
 		} = this.state;
@@ -221,6 +221,40 @@ class BankCardPayment extends Component {
 			return;
 		}
 
+		let isInvalidNum, isExpired;
+		window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
+			if (!errCode) {
+				window.encryptedCardData = encryptedData;
+			} else {
+				isInvalidNum = (errCode === 2);
+				isExpired = (errCode === 7);
+			}
+		});
+
+		if (isInvalidNum) {
+			cardInfoError.keys.push('cardNumber');
+			cardInfoError.messages.cardNumber = 'Your card number is invalid';
+
+			this.setState({
+				cardInfoError,
+				invalidCardInfoFields: ['cardNumber'],
+			});
+
+			return;
+		}
+
+		if (isExpired) {
+			cardInfoError.keys.push('validDate');
+			cardInfoError.messages.validDate = 'Your card number is invalid';
+
+			this.setState({
+				cardInfoError,
+				invalidCardInfoFields: ['validDate'],
+			});
+			
+			return;
+		}
+		
 		this.setState({
 			payNowLoading: true,
 			fire: true,
@@ -469,18 +503,12 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'paymentName', value: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY });
 						fields.push({ name: 'cardholderName', value: cardholderName });
 
-						window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
-							if (!errCode) {
-								window.encryptedCardData = encryptedData;
-							} else {
-								console.log(errDesc + "(" + errCode + ")");
-							}
-						});
-
-						fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData ? window.encryptedCardData.encryptedCardInfo : undefined });
-						fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData ? window.encryptedCardData.expYearCardInfo : undefined });
-						fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData ? window.encryptedCardData.expMonthCardInfo : undefined });
-						fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData ? window.encryptedCardData.maskedCardInfo : undefined });
+						if (window.encryptedCardData) {
+							fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData.encryptedCardInfo });
+							fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData.expYearCardInfo });
+							fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData.expMonthCardInfo });
+							fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData.maskedCardInfo });
+						}
 
 						return fields;
 					}}
