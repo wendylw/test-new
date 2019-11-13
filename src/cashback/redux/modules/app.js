@@ -4,6 +4,7 @@ import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
 
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -332,3 +333,7 @@ export const getOnlineStoreInfo = state => {
 };
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
+export const getBusinessInfo = state => {
+  const business = getBusiness(state);
+  return getBusinessByName(state, business);
+}

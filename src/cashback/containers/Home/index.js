@@ -11,7 +11,7 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
+import { actions as appActions, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { actions as homeActions, getCashbackHistorySummary } from '../../redux/modules/home';
 
 
@@ -33,17 +33,36 @@ class PageLoyalty extends React.Component {
     appActions.showMessageInfo();
   }
 
+  renderLocation() {
+    const { 
+      businessInfo,
+    } = this.props;
+    const {
+      stores,
+      name,
+      displayBusinessName
+    } = businessInfo || {};
+    const city = stores && stores[0] ? stores[0].city : '';
+    const addressInfo = [displayBusinessName || name, city].filter(v => v);
+    
+    return  (
+      <div className="location">
+        <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
+      </div>
+    );
+  }
+
   render() {
     const {
-      business,
       history,
+      businessInfo,
       onlineStoreInfo,
       cashbackHistorySummary,
     } = this.props;
     const {
       displayBusinessName,
       name,
-    } = business || {};
+    } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
     const { totalCredits } = cashbackHistorySummary || {};
 
@@ -65,9 +84,7 @@ class PageLoyalty extends React.Component {
             <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
             <IconInfo />
           </div>
-          <div className="location">
-            <span className="location__text gray-font-opacity text-middle">Polpetta Café, 10 Boulevard</span>
-          </div>
+          {this.renderLocation()}
           <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
         </div>
         <ReceiptList history={history}/>
@@ -79,7 +96,7 @@ class PageLoyalty extends React.Component {
 export default connect(
   (state) => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
-    business: getBusiness(state),
+    businessInfo: getBusinessInfo(state),
     cashbackHistorySummary: getCashbackHistorySummary(state)
   }),
   (dispatch) => ({
