@@ -25,7 +25,7 @@ export const actions = {
       ...Url.API_URLS.GET_CASHBACK,
       params: {
         receiptNumber,
-        source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+        source: Constants.CASHBACK_SOURCE.RECEIPT,
       },
     }
   }),

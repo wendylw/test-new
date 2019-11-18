@@ -25,7 +25,7 @@ export class ReceiptDetail extends Component {
   }
 
   backToThankYou() {
-    const { history, order } = this.props;
+    const { history } = this.props;
     const h = config.h();
 
     history.replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${h}`, history.location.state);
