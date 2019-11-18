@@ -27,6 +27,7 @@ class BankCardPayment extends Component {
 
 	state = {
 		payNowLoading: false,
+		domLoaded: false,
 		fire: false,
 		cardNumberSelectionStart: 0,
 		card: {},
@@ -46,8 +47,10 @@ class BankCardPayment extends Component {
 
 		const script = document.createElement('script');
 
-		script.src = 'https://demo2.2c2p.com/2C2PFrontEnd/SecurePayment/api/my2c2p.1.6.9.min.js';
+		script.src = config.storehubPaymentScriptSrc;
 		document.body.appendChild(script);
+
+		this.setState({ domLoaded: true });
 	}
 
 	getQueryObject(paramName) {
@@ -94,7 +97,7 @@ class BankCardPayment extends Component {
 				length: 19,
 			},
 			validCardNumber: {
-				message: 'Your card number isinvalid',
+				message: 'Your card number is invalid',
 			},
 		};
 
@@ -176,7 +179,7 @@ class BankCardPayment extends Component {
 	}
 
 	validateForm() {
-		const cardHolderNameOptions = this.getCardHolderNameValidationOpts()
+		const cardHolderNameOptions = this.getCardHolderNameValidationOpts();
 		const holderNameResult = FormValidate.validate('cardHolderName', cardHolderNameOptions);
 		const { invalidCardInfoFields, cardInfoError } = this.state;
 		let newCardHolderNameError = {
@@ -209,7 +212,7 @@ class BankCardPayment extends Component {
 	async payNow() {
 		this.validateForm();
 
-		const {
+		let {
 			cardInfoError,
 			cardHolderNameError
 		} = this.state;
@@ -218,6 +221,40 @@ class BankCardPayment extends Component {
 			return;
 		}
 
+		let isInvalidNum, isExpired;
+		window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
+			if (!errCode) {
+				window.encryptedCardData = encryptedData;
+			} else {
+				isInvalidNum = (errCode === 2);
+				isExpired = (errCode === 7);
+			}
+		});
+
+		if (isInvalidNum) {
+			cardInfoError.keys.push('cardNumber');
+			cardInfoError.messages.cardNumber = 'Your card number is invalid';
+
+			this.setState({
+				cardInfoError,
+				invalidCardInfoFields: ['cardNumber'],
+			});
+
+			return;
+		}
+
+		if (isExpired) {
+			cardInfoError.keys.push('validDate');
+			cardInfoError.messages.validDate = 'Your card number is invalid';
+
+			this.setState({
+				cardInfoError,
+				invalidCardInfoFields: ['validDate'],
+			});
+			
+			return;
+		}
+		
 		this.setState({
 			payNowLoading: true,
 			fire: true,
@@ -267,6 +304,7 @@ class BankCardPayment extends Component {
 		} = onlineStoreInfo || {};
 		const {
 			payNowLoading,
+			domLoaded,
 			fire,
 			card,
 			validDate,
@@ -461,23 +499,35 @@ class BankCardPayment extends Component {
 						fields.push({ name: 'businessName', value: config.business });
 						fields.push({ name: 'redirectURL', value: redirectURL });
 						fields.push({ name: 'webhookURL', value: webhookURL });
-						fields.push({ name: 'paymentName', value: 'CCPP' });
+						fields.push({ name: 'payActionWay', value: 1 });
+						fields.push({ name: 'paymentName', value: Constants.PAYMENT_METHODS.CREDIT_CARD_PAY });
 						fields.push({ name: 'cardholderName', value: cardholderName });
 
-						window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode, errDesc) {
-							if (!errCode) {
-								window.encryptedCardInfo = encryptedData.encryptedCardInfo;
-							} else {
-								console.log(errDesc + "(" + errCode + ")");
-							}
-						});
-
-						fields.push({ name: 'encryptedCardData', value: window.encryptedCardInfo });
+						if (window.encryptedCardData) {
+							fields.push({ name: 'encryptedCardInfo', value: window.encryptedCardData.encryptedCardInfo });
+							fields.push({ name: 'expYearCardInfo', value: window.encryptedCardData.expYearCardInfo });
+							fields.push({ name: 'expMonthCardInfo', value: window.encryptedCardData.expMonthCardInfo });
+							fields.push({ name: 'maskedCardInfo', value: window.encryptedCardData.maskedCardInfo });
+						}
 
 						return fields;
 					}}
 					fire={fire}
 				/>
+				{
+					!domLoaded
+						? (
+							<div className="loading-cover">
+								<div className="loader-wave">
+									<i className="dot dot1"></i>
+									<i className="dot dot2"></i>
+									<i className="dot dot3"></i>
+									<i className="dot dot4"></i>
+								</div>
+							</div>
+						)
+						: null
+				}
 			</section>
 		)
 	}
