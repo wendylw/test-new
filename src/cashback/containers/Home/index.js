@@ -39,16 +39,12 @@ class PageLoyalty extends React.Component {
       businessInfo,
     } = this.props;
     const {
-      stores,
-      name,
       displayBusinessName
     } = businessInfo || {};
-    const city = stores && stores[0] ? stores[0].city : '';
-    const addressInfo = [displayBusinessName || name, city].filter(v => v);
     
     return  (
       <div className="location">
-        <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
+        <span className="location__text gray-font-opacity text-middle">{displayBusinessName}</span>
       </div>
     );
   }
