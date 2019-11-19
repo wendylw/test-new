@@ -1,11 +1,10 @@
 import React from 'react';
 
 import Image from '../../../components/Image';
-import Header from '../../../components/Header';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
 import ReceiptList from './components/ReceiptList';
-import RecentActivities from '../RecentActivities';
+import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import qs from 'qs';
@@ -58,6 +57,10 @@ class PageLoyalty extends React.Component {
     this.setState({showRecentActivities:true})
   }
 
+  closeActivity() {
+    this.setState({showRecentActivities:false});
+  }
+
   render() {
     const {
       history,
@@ -76,11 +79,6 @@ class PageLoyalty extends React.Component {
     return (
       !showRecentActivities ? (
       <section className="loyalty__home">
-        <Header
-          className="transparent has-right"
-          isPage={true}
-          navFunc={() => { }}
-        />
         <div className="loyalty__content text-center">
           {
             logo ? (
@@ -100,7 +98,7 @@ class PageLoyalty extends React.Component {
         <ReceiptList history={history}/>
       </section>
       ):(
-        <RecentActivities history={history} customerId={customerId} />
+        <RecentActivities history={history} customerId={customerId} closeActivity={this.closeActivity.bind(this)}/>
       )
     );
   }

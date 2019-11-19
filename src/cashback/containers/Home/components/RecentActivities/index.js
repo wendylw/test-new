@@ -1,17 +1,17 @@
 import React from 'react';
-import CurrencyNumber from '../../components/CurrencyNumber';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
   IconPending,
   IconChecked,
   IconEarned,
-} from '../../../components/Icons';
-import Header from '../../../components/Header';
-import Constants from '../../../utils/constants';
+} from '../../../../../components/Icons';
+import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as homeActions, getCashbackHistory } from '../../redux/modules/home';
+import { actions as appActions, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { actions as homeActions, getCashbackHistory } from '../../../../redux/modules/home';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -132,6 +132,7 @@ class RecentActivities extends React.Component {
     const {
       history,
       customerId,
+      closeActivity
     } = this.props;
 
     return (
@@ -147,6 +148,7 @@ class RecentActivities extends React.Component {
               pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
               search: `?customerId=${customerId || ''}`
             });
+            closeActivity();
           }}
         />
         <article className="loyalty__content">
