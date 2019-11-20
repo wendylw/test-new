@@ -104,7 +104,7 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            <li
+            {/* <li
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
               onClick={this.savePaymentMethod.bind(this, ONLINE_BANKING_PAY)}
             >
@@ -116,7 +116,7 @@ class Payment extends Component {
                 <i className="radio__check-icon"></i>
                 <input type="radio"></input>
               </div>
-            </li>
+            </li> */}
             <li
               className="payment__item border__botton-divider flex flex-middle flex-space-between"
               onClick={this.savePaymentMethod.bind(this, CREDIT_CARD_PAY)}
