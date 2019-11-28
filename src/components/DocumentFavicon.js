@@ -1,14 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import GlobalConstans from '../Constants';
+import GlobalConstans from '../utils/constants';
 
 const { DEFAULT_FAVICON } = GlobalConstans;
 
 class DocumentFavicon extends React.Component {
-  static propTypes = {
-    icon: PropTypes.string,
-  };
-
   static icon = '';
 
   static setIcon(icon) {
@@ -64,5 +60,9 @@ class DocumentFavicon extends React.Component {
     );
   }
 }
+
+DocumentFavicon.propTypes = {
+  icon: PropTypes.string,
+};
 
 export default DocumentFavicon;

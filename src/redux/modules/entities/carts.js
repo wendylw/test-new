@@ -1,3 +1,5 @@
+import { APP_TYPES, HOME_TYPES } from '../../../ordering/redux/types';
+
 const initialState = {
   summary: {
     count: 0,
@@ -5,19 +7,18 @@ const initialState = {
     subtotal: 0,
     total: 0,
     tax: 0,
+    storeCreditsBalance: 0,
   },
   data: {},
 };
 
 const commonReducer = (state = initialState, action) => {
-  if (action.responseGql) {
-    const { shoppingCart } = action.responseGql.data || {};
-
-    if (!shoppingCart) {
+  if (action.type === HOME_TYPES.FETCH_SHOPPINGCART_SUCCESS) {
+    if (!action.response) {
       return state;
     }
 
-    const { items, unavailableItems, ...summary } = shoppingCart;
+    const { items, unavailableItems, ...summary } = action.response;
 
     // Only deal with response.data.shoppingCart
     const kvData = {};
@@ -33,18 +34,38 @@ const commonReducer = (state = initialState, action) => {
         _available: false, // attached field
       };
     });
-    return { ...state, summary, data: kvData };
+
+    return {
+      ...state,
+      summary,
+      data: kvData
+    };
   }
+
   return state;
 }
 
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
     const { emptyShoppingCart } = action.responseGql.data || {};
+
     if (emptyShoppingCart && emptyShoppingCart.success) {
       return { ...state, summary: initialState.summary, data: {} };
     }
+  } else if (action.type === APP_TYPES.FETCH_CUSTOMER_PROFILE_SUCCESS) {
+    //TODO: let's use schema name in the response from Api middleware, so that each entities can get response data from its name named data.
+
+    const { storeCreditsBalance } = action.response || {};
+
+    return {
+      ...state,
+      summary: {
+        ...state.summary,
+        storeCreditsBalance,
+      },
+    };
   }
+
   return commonReducer(state, action);
 }
 

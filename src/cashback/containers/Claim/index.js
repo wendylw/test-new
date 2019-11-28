@@ -1,0 +1,223 @@
+import React from 'react';
+import qs from 'qs';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import { IconPin } from '../../../components/Icons';
+import Image from '../../../components/Image';
+
+import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
+
+const ORDER_CAN_CLAIM = 'Can_Claim';
+
+class PageClaim extends React.Component {
+  state = {
+    phone: Utils.getLocalStorageVariable('user.p'),
+  }
+
+  setMessage(cashbackInfo) {
+    const { appActions } = this.props;
+    const { status } = cashbackInfo || {};
+
+    appActions.setMessageInfo({ key: status });
+  }
+
+  async componentDidMount() {
+    const {
+      user,
+      history,
+      appActions,
+      claimActions,
+    } = this.props;
+    const { isLogin } = user || {};
+    const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    appActions.setLoginPrompt('Claim with your mobile number');
+    await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
+
+    const { receiptNumber } = this.props;
+
+    if (receiptNumber) {
+      await claimActions.getCashbackInfo(receiptNumber);
+    }
+
+    if (isLogin) {
+      this.handleCreateCustomerCashbackInfo();
+    }
+
+    this.setMessage(this.props.cashbackInfo);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { cashbackInfo } = nextProps;
+    const { status } = cashbackInfo || {};
+    const { status: preCashbackInfo } = this.props.cashbackInfo || {};
+
+    if (status !== preCashbackInfo) {
+      this.setMessage(cashbackInfo);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      isFetching,
+      receiptNumber,
+      user,
+    } = this.props;
+    const {
+      isLogin,
+      customerId,
+    } = user || {};
+
+    if (isFetching || !isLogin || !receiptNumber || !customerId) {
+      return;
+    }
+
+    if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber || prevProps.user.customerId !== customerId) {
+      this.handleCreateCustomerCashbackInfo();
+    }
+  }
+
+  getOrderInfo() {
+    const { receiptNumber } = this.props;
+    const { phone } = this.state;
+
+    return {
+      phone,
+      receiptNumber,
+      source: Constants.CASHBACK_SOURCE.RECEIPT
+    };
+  }
+
+  async handleCreateCustomerCashbackInfo() {
+    const {
+      user,
+      history,
+      claimActions,
+      cashbackInfo,
+    } = this.props;
+    const { isWebview, customerId } = user || {};
+    const { status } = cashbackInfo || {};
+
+    if (status === ORDER_CAN_CLAIM) {
+      await claimActions.createCashbackInfo(this.getOrderInfo());
+    }
+
+    if (isWebview) {
+      this.handlePostLoyaltyPageMessage();
+    } else if (customerId) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+        search: `?customerId=${customerId || ''}`
+      });
+    }
+  }
+
+  handlePostLoyaltyPageMessage() {
+    const { user } = this.props;
+    const { isWebview } = user || {};
+
+    if (isWebview) {
+      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+    }
+
+    return;
+  }
+
+  renderCashback() {
+    const { cashbackInfo } = this.props;
+    const {
+      cashback,
+      defaultLoyaltyRatio,
+    } = cashbackInfo || {};
+    let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
+    const cashbackNumber = Number(cashback);
+
+    if (!cashback && !defaultLoyaltyRatio) {
+      return null;
+    }
+
+    if (!isNaN(cashbackNumber) && cashbackNumber) {
+      return <CurrencyNumber className="loyalty__money" money={cashback} />;
+    }
+
+    return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
+  }
+
+  renderLocation() {
+    const {
+      cashbackInfo,
+      businessInfo,
+    } = this.props;
+    const {
+      name,
+      displayBusinessName,
+    } = businessInfo || {};
+    const { store } = cashbackInfo || {};
+    const { city } = store || {};
+    const addressInfo = [displayBusinessName || name, city].filter(v => v);
+
+    return (
+      <div className="location">
+        <IconPin />
+        <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
+      </div>
+    );
+  }
+
+  render() {
+    const {
+      user,
+      onlineStoreInfo,
+      businessInfo,
+    } = this.props;
+    const { isLogin } = user;
+    const { logo } = onlineStoreInfo || {};
+    const {
+      name,
+      displayBusinessName,
+    } = businessInfo || {};
+
+    if (isLogin) {
+      return <div className="loading-cover"><i className="loader theme page-loader"></i></div>;
+    }
+
+    return (
+      <section className="loyalty__claim" style={{
+        // backgroundImage: `url(${theImage})`,
+      }}>
+        <article className="loyalty__content text-center">
+          {
+            logo
+              ? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+              : null
+          }
+          <h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
+
+          {this.renderCashback()}
+
+          {this.renderLocation()}
+        </article>
+      </section>
+    );
+  }
+}
+
+export default connect(
+  (state) => ({
+    user: getUser(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+    businessInfo: getBusinessInfo(state),
+    cashbackInfo: getCashbackInfo(state),
+    receiptNumber: getReceiptNumber(state),
+    isFetching: isFetchingCashbackInfo(state),
+  }),
+  (dispatch) => ({
+    appActions: bindActionCreators(appActions, dispatch),
+    claimActions: bindActionCreators(claimActions, dispatch),
+  })
+)(PageClaim);

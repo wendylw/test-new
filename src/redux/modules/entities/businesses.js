@@ -1,3 +1,5 @@
+import { APP_TYPES } from '../../../cashback/redux/types';
+
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
@@ -8,7 +10,12 @@ const reducer = (state = initialState, action) => {
       const { business } = data;
       return { ...state, [business.name]: business };
     }
+  } else if (action.type === APP_TYPES.FETCH_BUSINESS_SUCCESS) {
+    const { name } = action.response;
+
+    return { ...state, [name]: action.response };
   }
+
   return state;
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, BrowserRouter as Router} from 'react-router-dom';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
 import Constants from './Constants';
 import Scan from './containers/Scan';
 import Permission from './containers/Permission';

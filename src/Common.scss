@@ -5,7 +5,9 @@ $white: #FFFFFF;
 $black: #000000;
 $dark: #2c2c2c;
 $red: #FF5821;
-$green: #8bc34a;
+$yellow: #AB8D3F;
+$green: #8BC34A;
+$gray-0: #6B6B6B;
 $gray-1: #8D90A1;
 $gray-2: #909090;
 $gray-3: #DEDEDF;
@@ -14,15 +16,13 @@ $gray-5: #FAFAFA;
 $blue: #31728D;
 $link-blue: #2196F3;
 $theme-color: #FF9419;
+$theme-color-translucent: rgba(255, 148, 25, 0.5);
 $gray-1-active: #4f515f;
 $theme-color-active: #DE8115;
 $font-weight-light: 300;
 $font-weight-bold: 600;
 $border-radius-base: 4px;
 $line-height-base: 1.4em;
-
-// @import '~normalize.css';
-@import "~normalize.css/normalize.css";
 
 * {
   margin: 0;
@@ -88,6 +88,10 @@ img {
   max-width: 100%;
 }
 
+.hide {
+  display: none;
+}
+
 .reset-font-size {
   font-size: 0;
 }
@@ -119,6 +123,17 @@ img {
   }
 }
 
+.input {
+  &__error {
+    border-color: $red;
+    color: $red;
+  }
+
+  &__error-message {
+    color: $red;
+  }
+}
+
 form {
   select {
     position: relative;
@@ -131,9 +146,9 @@ form {
   }
 
   &.form .has-error {
+    @extend .input__error;
+
     position: relative;
-    border-color: $red;
-    color: $red;
     z-index: 1;
 
     input {
@@ -142,13 +157,23 @@ form {
   }
 
   .error-message {
+    @extend .input__error-message;
+
     display: inline-block;
     line-height: $line-height-base;
-    color: $red;
 
     &__container {
       margin: 10px 0;
     }
+  }
+}
+
+.form {
+  &__error-message {
+    display: inline-block;
+    margin: 10px 0;
+    color: $red;
+    font-size: 0.8rem;
   }
 }
 
@@ -236,12 +261,28 @@ form {
     width: 100%;
   }
 
+  &__outline {
+    border: 1px solid;
+    height: 14vw;
+    background-color: transparent;
+  }
+
+  &__block-link {
+    height: 14vw;
+  }
+
   &__disabled {
     pointer-events: none;
     color: $white;
     background-color: $gray-3;
     opacity: 0.8;
   }
+}
+
+.reset-button {
+  border: 0;
+  outline: none;
+  box-shadow: none;
 }
 
 .radio {
@@ -289,12 +330,6 @@ form {
       }
     }
   }
-}
-
-.reset-button {
-  border: 0;
-  outline: none;
-  box-shadow: none;
 }
 
 .flex {
@@ -377,6 +412,10 @@ form {
 
 .text-center {
   text-align: center;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-middle {

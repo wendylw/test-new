@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css';
-import Utils from '../libs/utils';
+import Utils from '../utils/utils';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class PhoneView extends React.Component {
   state = {
-    showVerify: false,
     isLoading: this.props.isLoading,
     errorMessage: {
       phone: null
@@ -23,22 +22,14 @@ class PhoneView extends React.Component {
     }
   }
 
-  toggleVerifyModal(flag) {
-    if (typeof flag === 'boolean') {
-      this.setState({ showVerify: flag });
-      return;
-    }
-
-    this.setState({ showVerify: !this.state.showVerify });
-  }
-
-  savePhoneNumber() {
+  async savePhoneNumber() {
     const { submitPhoneNumber, phone } = this.props;
 
     if (!isValidPhoneNumber(phone)) {
       return;
     }
 
+    await Utils.setLocalStorageVariable('user.p', phone);
     this.setState({ isLoading: true });
 
     submitPhoneNumber();
@@ -72,7 +63,9 @@ class PhoneView extends React.Component {
           onChange={phone => {
             const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
 
-            setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+            if (metadataMobile.countries[selectedCountry]) {
+              setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
+            }
           }}
         />
 
