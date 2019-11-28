@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import Constants from './Constants';
+import Constants from './utils/constants';
 
 const apiGql = {};
 
@@ -313,7 +313,6 @@ apiGql.CREATE_ORDER = gql`
     $business: String!,
     $storeId: String!,
     $tableId: String,
-    $pax: Int!,
     $additionalComments: String,
     $shoppingCartIds: [String]
   ) {

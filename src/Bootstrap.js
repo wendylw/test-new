@@ -1,81 +1,59 @@
-import React, { Component } from 'react';
-import Loadable from 'react-loadable';
-import { Route, Redirect, Switch } from "react-router-dom";
-import Constants from './Constants';
-import Utils from './libs/utils';
+import React, { Component, lazy, Suspense } from 'react';
+import { Route, Redirect, Switch, BrowserRouter as Router } from "react-router-dom";
+import Constants from './utils/constants';
+import Utils from './utils/utils';
 
-const Loading = () => <div className="loader theme page-loader"></div>;
+const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
 
-const AsyncOrderingApp = Loadable({
-  loader: () => import("./App"),
-  loading: Loading,
-})
+const AsyncNotFound = lazy(() => import('./containers/NotFound'));
 
-const AsyncCashbackApp = Loadable({
-  loader: () => import("./cashback/App"),
-  loading: Loading,
-})
+const AsyncStoresApp = lazy(() => import('./stores'));
 
-const AsyncQRScanner = Loadable({
-  loader: () => import("./qrscan"),
-  loading: Loading,
-})
+const AsyncOrdering = lazy(() => import('./ordering'));
 
-const AsyncStoresApp = Loadable({
-  loader: () => import("./containers/Stores/index"),
-  loading: Loading,
-})
+const AsyncCashbackApp = lazy(() => import('./cashback'));
 
-const AsyncTermsPrivacy = Loadable({
-  loader: () => import("./containers/TermsPrivacy"),
-  loading: Loading,
-})
+const AsyncQRScanner = lazy(() => import('./qrscan'));
 
-const AsyncReduxDemo = Loadable({
-  loader: () => import("./ordering-demo/index"),
-  loading: Loading,
-})
-
-const AsyncNotFound = Loadable({
-  loader: () => import("./containers/NotFound"),
-  loading: Loading,
-});
+const { ROUTER_PATHS } = Constants;
 
 class Bootstrap extends Component {
   render() {
     return (
-      <React.Fragment>
-        <Switch>
-          <Route path='/ordering-demo' component={AsyncReduxDemo} />
-          <Route exact path={Constants.ROUTER_PATHS.INDEX} render={(...args) => {
-            if (isQRScannerApp()) {
-              return (
-                <Redirect to={Constants.ROUTER_PATHS.QRSCAN} />
-              );
-            }
-            // goto stores when visit home page without scaning QR Code.
-            if (!Utils.getQueryString('h')) {
-              return <AsyncStoresApp />
-            }
+      <Router>
+        <Suspense fallback={<div className="loader theme page-loader"></div>}>
+          <Switch>
+            <Route
+              path={ROUTER_PATHS.TERMS_OF_USE}
+              render={props => <AsyncTermsPrivacy {...props} pageName='terms' />}
+            />
+            <Route
+              path={ROUTER_PATHS.PRIVACY}
+              render={props => <AsyncTermsPrivacy {...props} pageName='privacy' />}
+            />
+            <Route exact path={ROUTER_PATHS.STORES_HOME} render={(...args) => {
+              if (isQRScannerApp()) {
+                return (
+                  <Redirect to={ROUTER_PATHS.QRSCAN} />
+                );
+              }
 
-            return (
-              <Redirect to={Constants.ROUTER_PATHS.ORDERING} />
-            );
-          }} />
-          <Route path={Constants.ROUTER_PATHS.ORDERING} component={AsyncOrderingApp} />
-          <Route path={Constants.ROUTER_PATHS.CASHBACK} component={AsyncCashbackApp} />
-          <Route path={Constants.ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
-          <Route
-            path={Constants.ROUTER_PATHS.TERMS_OF_USE}
-            render={props => <AsyncTermsPrivacy {...props} pageName='terms' />}
-          />
-          <Route
-            path={Constants.ROUTER_PATHS.PRIVACY}
-            render={props => <AsyncTermsPrivacy {...props} pageName='privacy' />}
-          />
-          <Route component={AsyncNotFound} />
-        </Switch>
-      </React.Fragment>
+              // goto stores when visit home page without scaning QR Code.
+              if (!Utils.getQueryString('h')) {
+                return <AsyncStoresApp />
+              }
+
+              return (
+                <Redirect to={ROUTER_PATHS.ORDERING_BASE} />
+              );
+            }} />
+            <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
+            <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
+            <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
+            <Route component={AsyncNotFound} />
+          </Switch>
+        </Suspense>
+      </Router>
     );
   }
 }

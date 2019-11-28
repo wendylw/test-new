@@ -1,46 +1,80 @@
+import Constants from './constants';
+
+const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
   Accept: "application/json",
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 });
+
+class RequestError extends Error {
+  constructor(message, code) {
+    super();
+
+    this.message = message;
+    this.code = code;
+  }
+}
 
 function get(url) {
   return fetch(url, {
-    method: "GET",
-    headers: headers
+    method: 'GET',
+    headers,
+    credentials: 'include',
   })
     .then(response => {
       return handleResponse(url, response);
     })
     .catch(error => {
-      console.error(`Request failed. Url = ${url}. Message = ${error}`);
-      return Promise.reject({ error: { message: "Request failed." } });
+      return Promise.reject(error);
     });
 }
 
-function post(url, data) {
+const fetchData = function (url, requestOptions) {
+  const {
+    method,
+    data,
+    options,
+  } = requestOptions;
+
   return fetch(url, {
-    method: "POST",
+    method,
     headers: headers,
-    body: JSON.stringify(data)
+    credentials: options && options.mode ? 'omit' : 'include',
+    body: JSON.stringify(data),
+    ...options,
   })
     .then(response => {
       return handleResponse(url, response);
     })
     .catch(error => {
-      console.error(`Request failed. Url = ${url}. Message = ${error}`);
-      return Promise.reject({ error: { message: "Request failed." } });
+      return Promise.reject(error);
     });
+}
+
+function post(url, data, options) {
+  return fetchData(url, {
+    method: 'POST',
+    data,
+    options,
+  });
+}
+
+function put(url, data, options) {
+  return fetchData(url, {
+    method: 'PUT',
+    data,
+    options,
+  });
 }
 
 function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
   } else {
-    console.error(`Request failed. Url = ${url}`);
-    return Promise.reject({
-      error: { message: "Request failed due to server error" }
-    });
+    const code = response.code || response.status;
+
+    return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
   }
 }
 
-export { get, post };
+export { get, post, put, RequestError };

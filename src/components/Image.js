@@ -1,11 +1,14 @@
 import React from 'react';
-import placeholder from '../images/item-placeholder.svg';
-import config from '../config.js';
-
+import PropTypes from 'prop-types';
+import config from '../config';
 
 /* CONSTANTS variable */
 // --BEGIN-- different from marketplace
-const { imageS3Domain, imageCompressionDomain } = config;
+const placeholder = '/img/product-placeholder.jpg';
+const {
+  imageS3Domain,
+  imageCompressionDomain,
+} = config;
 window.storehub = window.storehub || { imageS3Domain, imageCompressionDomain };
 // ---END--- different from marketplace
 /**
@@ -23,7 +26,9 @@ const DIM = {
 };
 const FIT = 'outside';
 class Image extends React.Component {
-  el = null;
+  shouldComponentUpdate(nextProps) {
+    return nextProps.src !== this.props.src;
+  }
 
   /*
   * downlink [2.5, 1.5, 0.4, <0.4] MB/s
@@ -89,7 +94,6 @@ class Image extends React.Component {
 
     return (
       <figure
-        ref={ref => this.el = ref}
         className={className}
       >
         <img src={this.getImageURL() || placeholder} alt={alt} />;
@@ -97,5 +101,16 @@ class Image extends React.Component {
     );
   }
 }
+
+Image.propTypes = {
+  className: PropTypes.string,
+  alt: PropTypes.string,
+  src: PropTypes.string,
+};
+
+Image.defaultProps = {
+  className: '',
+  alt: '',
+};
 
 export default Image;

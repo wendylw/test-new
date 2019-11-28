@@ -1,21 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router } from "react-router-dom";
-import { ApolloProvider } from "react-apollo";
-import './config'; // import here for globally init
-import { client as apiClient } from './apiClient';
-import './index.css';
-import Bootstrap from './Bootstrap';
 import * as serviceWorker from './serviceWorker';
-import HeapJS from './views/components/HeapJS';
+import 'whatwg-fetch';
+import './config'; // import here for globally init
+
+import Bootstrap from './Bootstrap';
+import HeapJS from './components/HeapJS';
+
+import './index.css';
 
 ReactDOM.render(
   <HeapJS>
-    <ApolloProvider client={apiClient}>
-      <Router>
-        <Bootstrap />
-      </Router>
-    </ApolloProvider>
+    <Bootstrap />
   </HeapJS>,
   document.getElementById('root')
 );

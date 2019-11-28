@@ -7,12 +7,14 @@ const reducer = (state = initialState, action) => {
     if (data.onlineCategory) {
       const { onlineCategory } = data;
       const kvData = {};
+
       onlineCategory.forEach(category => {
         category.products.forEach(product => {
+          // Fetch product detail when _needMore is true
           kvData[product.id] = {
             ...product,
             // mark it as need more to fetch product detail
-            _needMore: true,
+            _needMore: product.variations && product.variations.length
           };
         });
       });
