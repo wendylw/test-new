@@ -51,11 +51,11 @@ const API_URLS = {
     ur: '/api/privacy',
     method: 'get',
   },
-  POST_OTP: {
-    url: 'https://auth-api.test.shub.us/authorize',
+  POST_OTP: (url) => ({
+    url,
     method: 'post',
     mode: 'cors',
-  },
+  }),
   GET_CUSTOMER_PROFILE: (consumerId) => ({
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',

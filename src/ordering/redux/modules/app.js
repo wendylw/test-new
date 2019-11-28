@@ -76,7 +76,7 @@ export const actions = {
         types.GET_OTP_SUCCESS,
         types.GET_OTP_FAILURE,
       ],
-      ...Url.API_URLS.POST_OTP,
+      ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
         client: AUTH_INFO.CLIENT,
@@ -93,7 +93,7 @@ export const actions = {
         types.CREATE_OTP_SUCCESS,
         types.CREATE_OTP_FAILURE,
       ],
-      ...Url.API_URLS.POST_OTP,
+      ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
         client: AUTH_INFO.CLIENT,
