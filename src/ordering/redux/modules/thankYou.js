@@ -12,7 +12,6 @@ const initialState = {
   orderId: null,
   cashbackInfo: null,
   isFetching: false,
-  createdCashbackInfo: false,
 };
 
 export const types = {
@@ -117,6 +116,7 @@ const reducer = (state = initialState, action) => {
           ...state.cashbackInfo,
           ...response,
           isFetching: false,
+          createdCashbackInfo: false,
         }
       };
     }

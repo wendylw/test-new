@@ -98,14 +98,10 @@ class PageClaim extends React.Component {
       user,
       history,
       claimActions,
-      cashbackInfo,
     } = this.props;
     const { isWebview, customerId } = user || {};
-    const { status } = cashbackInfo || {};
 
-    if (status === ORDER_CAN_CLAIM) {
-      await claimActions.createCashbackInfo(this.getOrderInfo());
-    }
+    await claimActions.createCashbackInfo(this.getOrderInfo());
 
     if (isWebview) {
       this.handlePostLoyaltyPageMessage();
