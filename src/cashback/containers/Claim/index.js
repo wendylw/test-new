@@ -68,16 +68,9 @@ class PageClaim extends React.Component {
       receiptNumber,
       user,
     } = this.props;
-    const {
-      isLogin,
-      customerId,
-    } = user || {};
+    const { isLogin } = user || {};
 
-    if (isFetching || !isLogin || !receiptNumber || !customerId) {
-      return;
-    }
-
-    if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber || prevProps.user.customerId !== customerId) {
+    if (!isFetching && isLogin && receiptNumber && (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber)) {
       this.handleCreateCustomerCashbackInfo();
     }
   }
@@ -99,16 +92,16 @@ class PageClaim extends React.Component {
       history,
       claimActions,
     } = this.props;
-    const { isWebview, customerId } = user || {};
+    const { isWebview } = user || {};
 
     await claimActions.createCashbackInfo(this.getOrderInfo());
 
     if (isWebview) {
       this.handlePostLoyaltyPageMessage();
-    } else if (customerId) {
+    } else if (this.props.user.customerId) {
       history.push({
         pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-        search: `?customerId=${customerId || ''}`
+        search: `?customerId=${this.props.user.customerId || ''}`
       });
     }
   }
