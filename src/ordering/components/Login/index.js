@@ -25,11 +25,11 @@ class Login extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber() {
+  handleSubmitPhoneNumber(phoneNumber) {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone });
+    appActions.getOtp({ phone: phoneNumber || phone });
   }
 
   async handleWebLogin(otp) {
