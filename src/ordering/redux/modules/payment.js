@@ -54,12 +54,18 @@ export const actions = {
       business,
       storeId,
       shoppingCartIds,
-      additionalComments: encodeURIComponent(additionalComments),
       tableId,
       cashback,
     };
 
-    return dispatch(createOrder(variables));
+    return dispatch(createOrder(
+      !additionalComments
+        ? variables
+        : {
+          ...variables,
+          additionalComments: encodeURIComponent(additionalComments),
+        }
+    ));
   },
 
   fetchOrder: (orderId) => (dispatch) => {

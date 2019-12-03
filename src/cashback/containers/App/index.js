@@ -15,42 +15,40 @@ import Message from '../../components/Message';
 import Login from '../../components/Login';
 
 class App extends Component {
-  async componentWillMount() {
+
+  async componentDidMount() {
     const { appActions } = this.props;
+
     await appActions.getLoginStatus();
+    await appActions.fetchOnlineStoreInfo();
+    await appActions.fetchBusiness();
 
     const { user } = this.props;
     const { isLogin } = user || {};
 
+    if (isLogin) {
+      appActions.loadCustomerProfile();
+    }
+
     this.getTokens(isLogin);
+    this.postAppMessage(user);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { user } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { appActions, user } = this.props;
     const {
       isExpired,
       isWebview,
+      isLogin,
     } = user || {};
 
-    if (isExpired && this.props.user.isExpired !== isExpired) {
-      if (isWebview) {
-        this.postAppMessage(user);
-      }
+    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+      this.postAppMessage(user);
     }
-  }
 
-  async componentDidMount() {
-    const {
-      fetchOnlineStoreInfo,
-      fetchBusiness,
-    } = this.props.appActions;
-
-    await fetchOnlineStoreInfo();
-    await fetchBusiness();
-
-    const { user } = this.props;
-
-    this.postAppMessage(user);
+    if (isLogin && prevProps.user.isLogin !== isLogin) {
+      appActions.loadCustomerProfile();
+    }
   }
 
   getTokens(isLogin) {

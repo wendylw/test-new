@@ -7,7 +7,7 @@ const Home = lazy(() => import('./Home'));
 const Cart = lazy(() => import('./Cart'));
 const Payment = lazy(() => import('./Payment'));
 const Receipt = lazy(() => import('./Receipt'));
-const BraintreePayment = lazy(() => import('./Payment/Braintree'));
+const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
 const ThankYou = lazy(() => import('./ThankYou'));
 const Sorry = lazy(() => import('./Sorry'));
@@ -24,7 +24,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
-            <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={BraintreePayment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />

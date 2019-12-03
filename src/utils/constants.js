@@ -50,7 +50,7 @@ const DOCUMENT_TITLE = {
 
 const PAYMENT_METHODS = {
   ONLINE_BANKING_PAY: 'CCPP',
-  CREDIT_CARD_PAY: 'BrainTree',
+  CREDIT_CARD_PAY: 'CCPPCreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
 };
@@ -92,10 +92,15 @@ const AUTH_INFO = {
 };
 
 const REQUEST_ERROR_KEYS = {
-  403: 'No permission',
-  404: 'Bad Request',
-  401: 'Token expired',
-  500: 'Server error',
+  403: 'No Permission',
+  400: 'Bad Request',
+  404: 'Not Found',
+  401: 'Token Expired',
+  500: 'Server Error',
+};
+
+const LOGIN_PROMPT = {
+  400: 'Your One Time Passcode is invalid.'
 };
 
 export default {
@@ -116,4 +121,5 @@ export default {
   PEOPLE_COUNT,
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
+  LOGIN_PROMPT,
 };

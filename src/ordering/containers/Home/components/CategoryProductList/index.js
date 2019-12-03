@@ -46,7 +46,14 @@ class CategoryProductList extends Component {
                 <ScrollObservable targetId={category.id} key={category.id}>
                   <h2 className="category__header flex flex-middle flex-space-between">
                     <label>{category.name}</label>
-                    <span className="gray-font-opacity">{`${category.cartQuantity || 0} Items`}</span>
+                    {
+                      category.cartQuantity
+                        ? (
+                          <span className="gray-font-opacity">{`${category.cartQuantity} Items`}</span>
+
+                        )
+                        : null
+                    }
                   </h2>
                   <ProductList
                     products={category.products}

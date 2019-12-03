@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { IconCart } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { actions as cartActions, getBusinessInfo } from '../../../../redux/modules/cart';
 import { actions as homeActions, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
 export class Footer extends Component {
@@ -24,10 +25,14 @@ export class Footer extends Component {
 
   render() {
     const {
+      history,
       onClickCart,
       cartSummary,
+      businessInfo,
       tableId,
     } = this.props;
+    const { qrOrderingSettings } = businessInfo || {};
+    const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
 
     return (
@@ -38,16 +43,31 @@ export class Footer extends Component {
               <IconCart />
               <span className="tag__number">{count || 0}</span>
             </div>
-            <label className="cart-bar__money text-middle">
+
+            <div className="cart-bar__money text-middle text-left">
               <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
-            </label>
+              {
+                this.getDisplayPrice() < Number(minimumConsumption || 0)
+                  ? (
+                    <label className="cart-bar__money-minimum">
+                      <span className="gray-font-opacity">{count ? 'Remaining ' : 'Min '}</span>
+                      <CurrencyNumber className="gray-font-opacity" money={Number(minimumConsumption || 0) - this.getDisplayPrice()} />
+                    </label>
+                  )
+                  : null
+              }
+            </div>
           </button>
           {
             tableId !== 'DEMO'
               ? (
-                <Link className="cart-bar__order-button" to="/cart">
+                <button
+                  className="cart-bar__order-button"
+                  disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
+                  onClick={() => history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART })}
+                >
                   Order now
-                </Link>
+                </button>
               )
               : null
           }
@@ -72,11 +92,13 @@ export default connect(
 
     return {
       cartSummary: getCartSummary(state),
+      businessInfo: getBusinessInfo(state),
       shoppingCart: getShoppingCart(state),
       categories: getCategoryProductList(state),
     };
   },
   dispatch => ({
+    cartActions: bindActionCreators(cartActions, dispatch),
     homeActions: bindActionCreators(homeActions, dispatch),
   }),
 )(Footer);

@@ -12,8 +12,9 @@ class ThankYou extends Component {
   state = {};
 
   componentDidMount() {
-    this.props.thankYouActions.loadOrder(this.getReceiptNumber());
-    this.props.thankYouActions.loadCoreBusiness();
+    const { thankYouActions } = this.props;
+
+    thankYouActions.loadOrder(this.getReceiptNumber());
   }
 
   getReceiptNumber = () => {

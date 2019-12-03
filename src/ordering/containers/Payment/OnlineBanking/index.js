@@ -41,8 +41,8 @@ class OnlineBanking extends Component {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', business)}${queryString}`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
       amount: currentOrder.total,
@@ -90,10 +90,10 @@ class OnlineBanking extends Component {
       payNowLoading: true
     }, async () => {
       const { paymentActions, cartSummary } = this.props;
-      const { cashback } = cartSummary || {};
+      const { totalCashback } = cartSummary || {};
       const { agentCode } = this.state;
 
-      await paymentActions.createOrder({ cashback });
+      await paymentActions.createOrder({ cashback: totalCashback });
       this.setState({ payNowLoading: !!agentCode });
     });
   }
@@ -204,7 +204,7 @@ class OnlineBanking extends Component {
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
           >{
-              payNowLoading && !agentCode
+              payNowLoading
                 ? <div className="loader"></div>
                 : (
                   <CurrencyNumber

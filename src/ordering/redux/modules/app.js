@@ -76,7 +76,7 @@ export const actions = {
         types.GET_OTP_SUCCESS,
         types.GET_OTP_FAILURE,
       ],
-      ...Url.API_URLS.POST_OTP,
+      ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
         client: AUTH_INFO.CLIENT,
@@ -93,7 +93,7 @@ export const actions = {
         types.CREATE_OTP_SUCCESS,
         types.CREATE_OTP_FAILURE,
       ],
-      ...Url.API_URLS.POST_OTP,
+      ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
         client: AUTH_INFO.CLIENT,
@@ -140,17 +140,45 @@ export const actions = {
     }
   }),
 
-  loadCustomerProfile: ({ consumerId }) => ({
-    [API_REQUEST]: {
-      types: [
-        types.FETCH_CUSTOMER_PROFILE_REQUEST,
-        types.FETCH_CUSTOMER_PROFILE_SUCCESS,
-        types.FETCH_CUSTOMER_PROFILE_FAILURE,
-      ],
-      ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId || config.consumerId),
+  loadCoreBusiness: () => (dispatch) => {
+    const { storeId, business } = config;
+
+    return dispatch(fetchCoreBusiness({ business, storeId }));
+  },
+
+  loadCustomerProfile: () => (dispatch, getState) => {
+    const { app } = getState();
+
+    if (app.user.consumerId) {
+      document.cookie = `consumerId=${app.user.consumerId}`;
     }
-  }),
+
+    return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
+  },
 };
+
+const fetchCoreBusiness = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [
+      types.FETCH_COREBUSINESS_REQUEST,
+      types.FETCH_COREBUSINESS_SUCCESS,
+      types.FETCH_COREBUSINESS_FAILURE,
+    ],
+    endpoint: Url.apiGql('CoreBusiness'),
+    variables,
+  }
+});
+
+const fetchCustomerProfile = (consumerId) => ({
+  [API_REQUEST]: {
+    types: [
+      types.FETCH_CUSTOMER_PROFILE_REQUEST,
+      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
+      types.FETCH_CUSTOMER_PROFILE_FAILURE,
+    ],
+    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
+  }
+});
 
 const user = (state = initialState.user, action) => {
   const {
@@ -159,7 +187,7 @@ const user = (state = initialState.user, action) => {
     code,
     prompt,
   } = action;
-  const { login } = response || {};
+  const { consumerId, login } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -196,8 +224,6 @@ const user = (state = initialState.user, action) => {
         delete state.refreshToken;
       }
 
-      const { consumerId } = response;
-
       return {
         ...state,
         consumerId,
@@ -209,6 +235,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         isLogin: login,
+        consumerId,
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
@@ -238,7 +265,17 @@ const error = (state = initialState.error, action) => {
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
   } else if (code && code !== 401) {
-    return { ...state, code, message };
+    let errorMessage = message;
+
+    if (type === types.CREATE_OTP_FAILURE) {
+      errorMessage = Constants.LOGIN_PROMPT[code];
+    }
+
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
   }
 
   return state;

@@ -200,7 +200,6 @@ apiGql.GET_ONLINE_CATEGORY = gql`
   }
 `;
 
-// revert serviceCharge when BEEP-163 is released
 apiGql.GET_SHOPPING_CART = gql`
   ${apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS}
   query ShoppingCart($business: String!) {
@@ -236,7 +235,6 @@ apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   }
 `;
 
-// revert serviceCharge when BEEP-163 is released
 apiGql.GET_ORDER_DETAIL = gql`
   query Order($orderId: String!) {
     order(orderId: $orderId) {
@@ -294,7 +292,7 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
       userId: "",
       quantity: $quantity,
       variations: $variations,
-      channel: 3
+      channel: ${Constants.CHANNEL_TYPE.BEEP}
     }) {
       shoppingCartItem {
         id

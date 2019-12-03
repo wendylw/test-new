@@ -21,9 +21,7 @@ export class Billing extends Component {
     return (
       <li className="billing__item flex flex-middle flex-space-between">
         <label>Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
-        <span>
-          {serviceCharge || 0}
-        </span>
+        <CurrencyNumber money={serviceCharge || 0} />
       </li>
     );
   }
@@ -50,17 +48,15 @@ export class Billing extends Component {
         <ul className="billing__list">
           <li className="billing__item flex flex-middle flex-space-between">
             <label>Subtotal</label>
-            <span>
-              {subtotal || 0}
-            </span>
+            <CurrencyNumber money={subtotal || 0} />
           </li>
           {
             creditsBalance
               ? (
                 <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
                   <label className="font-weight-bold">Beep Cashback</label>
-                  <span>
-                    - {creditsBalance}
+                  <span className="font-weight-bold">
+                    - <CurrencyNumber className="font-weight-bold" money={creditsBalance || 0} />
                   </span>
                 </li>
               )
@@ -68,16 +64,12 @@ export class Billing extends Component {
           }
           <li className="billing__item flex flex-middle flex-space-between">
             <label>{(receiptTemplateData || {}).taxName || `Tax`}</label>
-            <span>
-              {tax || 0}
-            </span>
+            <CurrencyNumber money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
           <li className="billing__item show flex flex-middle flex-space-between">
-            <label>Total</label>
-            <span className="font-weight-bold">
-              <CurrencyNumber money={total || 0} />
-            </span>
+            <label className="font-weight-bold">Total</label>
+            <CurrencyNumber className="font-weight-bold" money={total || 0} />
           </li>
         </ul>
       </section>

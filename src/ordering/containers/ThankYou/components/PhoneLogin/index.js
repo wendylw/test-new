@@ -23,48 +23,39 @@ class PhoneLogin extends React.Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
     isSavingPhone: false,
-    redirectURL: null,
     showCelebration: false,
     claimedAnimationGifSrc: null
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     const {
       history,
       thankYouActions,
     } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    this.initMessages();
-
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { user } = this.props;
 
     this.canClaimCheck(user);
-    this.setLoyaltyPageUrl(user);
-  }
+    this.initMessages();
 
-  componentWillReceiveProps(nextProps) {
-    const { user } = nextProps;
-    const { isLogin } = user;
-
-    if (this.props.user.isLogin === isLogin) {
-      return;
-    }
-
-    this.canClaimCheck(user);
-    this.setLoyaltyPageUrl(user);
-  }
-
-  componentDidMount() {
     this.setState({
       claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
     });
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (nextState.showCelebration && nextState.redirectURL) {
+  componentDidUpdate(prevProps, prevState) {
+    const { showCelebration } = this.state;
+    const { user } = this.props;
+    const { isLogin } = user;
+
+    if (prevProps.user.isLogin !== isLogin) {
+      this.canClaimCheck(user);
+    }
+
+    if (showCelebration && showCelebration !== prevState.showCelebration) {
       this.animationSetTimeout = setTimeout(() => {
         this.setState({ showCelebration: false });
 
@@ -73,21 +64,26 @@ class PhoneLogin extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.animationSetTimeout);
+  }
+
   initMessages() {
-    const { businessInfo } = this.props;
+    const {
+      businessInfo,
+      onlineStoreInfo,
+      cashbackInfo,
+    } = this.props;
     const { claimCashbackCountPerDay } = businessInfo || {};
+    const { currencySymbol } = onlineStoreInfo || {};
+    const { cashback } = cashbackInfo || {};
     const messages = {
       Default: 'Oops, please scan QR to claim again.',
       /* get Cash Back messages */
       Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
       /* save Cash Back messages */
-      Claimed_FirstTime: {
-        title: `Awesome, you've earned your first cashback! 🎉 `,
-        description: `Tap the button below to learn how to use your cashback.`,
-      },
-      Claimed_NotFirstTime: {
-        title: `You've earned more cashback! 🎉`,
-      },
+      Claimed_FirstTime: `Awesome, you've earned ${currencySymbol || ''} ${cashback || ''} your first cashback! 🎉 `,
+      Claimed_NotFirstTime: `You've earned ${currencySymbol || ''} ${cashback || ''} cashback! 🎉`,
       Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
       Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
       Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
@@ -119,41 +115,20 @@ class PhoneLogin extends React.Component {
   }
 
   async canClaimCheck(user) {
+    const { thankYouActions } = this.props;
+    const { phone } = this.state;
     const { isLogin } = user || {};
+    const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
 
-    if (isLogin) {
-      await this.handleCreateCustomerCashbackInfo();
+    if (isLogin && !isFetching && !createdCashbackInfo) {
+      Utils.setLocalStorageVariable('user.p', phone);
+      await thankYouActions.createCashbackInfo(this.getOrderInfo());
     }
 
     const { cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
 
     this.setState({ showCelebration: ORDER_CLAIMED_SUCCESSFUL.includes(status) && isLogin });
-  }
-
-  async setLoyaltyPageUrl(user) {
-    const { appActions } = this.props;
-    const {
-      isLogin,
-      consumerId,
-    } = user || {};
-    let redirectURL = null;
-
-    if (!isLogin) {
-      return;
-    }
-
-    await appActions.loadCustomerProfile({ consumerId });
-
-    const { customerId } = this.props.user || {};
-
-    if (customerId) {
-      redirectURL = `${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`;
-    }
-
-    this.setState({
-      redirectURL,
-    });
   }
 
   getOrderInfo() {
@@ -166,14 +141,6 @@ class PhoneLogin extends React.Component {
       receiptNumber,
       source: Constants.CASHBACK_SOURCE.QR_ORDERING
     };
-  }
-
-  async handleCreateCustomerCashbackInfo() {
-    const { thankYouActions } = this.props;
-    const { phone } = this.state;
-
-    Utils.setLocalStorageVariable('user.p', phone);
-    await thankYouActions.createCashbackInfo(this.getOrderInfo());
   }
 
   handleUpdatePhoneNumber(phone) {
@@ -219,14 +186,12 @@ class PhoneLogin extends React.Component {
       user,
       onlineStoreInfo,
     } = this.props;
-    const {
-      redirectURL,
-      phone,
-    } = this.state;
+    const { phone } = this.state;
     const {
       isFetching,
       isWebview,
       isLogin,
+      customerId,
     } = user || {};
     const { country } = onlineStoreInfo || {};
 
@@ -243,44 +208,45 @@ class PhoneLogin extends React.Component {
       );
     }
 
-    if (!redirectURL && !isWebview) {
+    if (!customerId && !isWebview) {
       return null;
     }
 
-    return !isWebview
-      ? (
+    if (!isWebview) {
+      return (
         <BrowserRouter basename="/">
           <Link
             className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
-            to={redirectURL}
+            to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             target="_blank"
           >Check My Balance</Link>
         </BrowserRouter>
-      )
-      : (
-        <button
-          className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
-          onClick={this.handlePostLoyaltyPageMessage.bind(this)}
-        >Check My Balance</button>
       );
+    }
+
+    return (
+      <button
+        className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+        onClick={this.handlePostLoyaltyPageMessage.bind(this)}
+      >Check My Balance</button>
+    );
   }
 
   render() {
     const {
-      cashbackInfo,
+      user,
       businessInfo,
       onlineStoreInfo,
     } = this.props;
     const {
       claimedAnimationGifSrc,
       showCelebration,
-      redirectURL,
     } = this.state;
-    const { cashback } = cashbackInfo || {};
+    const { customerId } = user || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
 
-    if (!country || !cashback || !enableCashback) {
+    if (!country || !enableCashback) {
       return null;
     }
 
@@ -298,7 +264,7 @@ class PhoneLogin extends React.Component {
             <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
           </BrowserRouter>
         </p>
-        <div className={`succeed-animation ${showCelebration && redirectURL ? 'active' : ''}`}>
+        <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>

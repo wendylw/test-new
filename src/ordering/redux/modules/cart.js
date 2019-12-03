@@ -1,6 +1,6 @@
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness } from './app';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
@@ -15,13 +15,6 @@ export const types = CART_TYPES;
 export const actions = {
   clearAll: () => (dispatch) => {
     return dispatch(emptyShoppingCart());
-  },
-
-  loadCoreBusiness: () => (dispatch, getState) => {
-    const { storeId } = getRequestInfo(getState());
-    const business = getBusiness(getState());
-
-    return dispatch(fetchCoreBusiness({ business, storeId }));
   },
 
   loadPendingPaymentList: () => ({
@@ -64,18 +57,6 @@ const emptyShoppingCart = () => {
     },
   };
 };
-
-const fetchCoreBusiness = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [
-      types.FETCH_COREBUSINESS_REQUEST,
-      types.FETCH_COREBUSINESS_SUCCESS,
-      types.FETCH_COREBUSINESS_FAILURE,
-    ],
-    endpoint: Url.apiGql('CoreBusiness'),
-    variables,
-  }
-});
 
 // reducers
 const reducer = (state = initialState, action) => {

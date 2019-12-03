@@ -15,7 +15,7 @@ class OtpModal extends React.Component {
     isSendingOtp: this.props.isLoading,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const { currentOtpTime } = this.state;
 
     this.countDown(currentOtpTime);
@@ -84,7 +84,6 @@ class OtpModal extends React.Component {
                 width: '16vw',
                 height: '16vw',
                 fontSize: '8vw',
-                color: '#303030',
               }}
             />
           </div>

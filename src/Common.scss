@@ -123,6 +123,17 @@ img {
   }
 }
 
+.input {
+  &__error {
+    border-color: $red;
+    color: $red;
+  }
+
+  &__error-message {
+    color: $red;
+  }
+}
+
 form {
   select {
     position: relative;
@@ -135,9 +146,9 @@ form {
   }
 
   &.form .has-error {
+    @extend .input__error;
+
     position: relative;
-    border-color: $red;
-    color: $red;
     z-index: 1;
 
     input {
@@ -146,9 +157,10 @@ form {
   }
 
   .error-message {
+    @extend .input__error-message;
+
     display: inline-block;
     line-height: $line-height-base;
-    color: $red;
 
     &__container {
       margin: 10px 0;
@@ -400,6 +412,10 @@ form {
 
 .text-center {
   text-align: center;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-middle {

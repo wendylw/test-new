@@ -1,0 +1,564 @@
+/* eslint-disable jsx-a11y/alt-text */
+import React, { Component } from 'react';
+import Loader from '../components/Loader';
+import Header from '../../../../components/Header';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+import FormValidate from '../../../../utils/form-validate';
+import RedirectForm from '../components/RedirectForm';
+import Constants from '../../../../utils/constants';
+import Utils from '../../../../utils/utils';
+import config from '../../../../config';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actions as homeActions } from '../../../redux/modules/home';
+import { getCartSummary } from '../../../../redux/modules/entities/carts';
+import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
+import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
+
+// Example URL: http://nike.storehub.local:3002/#/payment/bankcard
+
+class CreditCard extends Component {
+  static propTypes = {
+  }
+
+  form = null;
+  cardNumberEl = null;
+  prevCardNumber = '';
+  order = {};
+
+  state = {
+    payNowLoading: false,
+    domLoaded: false,
+    cardNumberSelectionStart: 0,
+    card: {},
+    validDate: '',
+    invalidCardInfoFields: [],
+    cardInfoError: {
+      keys: [],
+      messages: [],
+    },
+    cardHolderNameError: {
+      key: null,
+      message: null,
+    },
+  };
+
+  componentDidMount() {
+    const script = document.createElement('script');
+
+    script.src = config.storehubPaymentScriptSrc;
+    document.body.appendChild(script);
+
+    this.setState({ domLoaded: true });
+
+    const { homeActions } = this.props;
+
+    homeActions.loadShoppingCart();
+  }
+
+  getPaymentEntryRequestData = () => {
+    const {
+      onlineStoreInfo,
+      currentOrder,
+      currentPayment,
+      business,
+    } = this.props;
+    const { card } = this.state;
+    const {
+      cardholderName
+    } = card || {};
+    const h = config.h();
+    const queryString = `?h=${encodeURIComponent(h)}`;
+
+    if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
+      return null;
+    }
+
+    const {
+      encryptedCardInfo,
+      expYearCardInfo,
+      expMonthCardInfo,
+      maskedCardInfo,
+    } = window.encryptedCardData;
+
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
+
+    return {
+      amount: currentOrder.total,
+      currency: onlineStoreInfo.currency,
+      receiptNumber: currentOrder.orderId,
+      businessName: business,
+      redirectURL,
+      webhookURL,
+      payActionWay: 1,
+      paymentName: currentPayment,
+      cardholderName,
+      encryptedCardInfo,
+      expYearCardInfo,
+      expMonthCardInfo,
+      maskedCardInfo,
+    };
+  }
+
+  getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
+    const nameList = {
+      cardNumber: 'number',
+      validDate: 'expiration',
+      cvv: 'security code'
+    };
+    const inValidNameList = [];
+
+    inValidFixedlengthFiedls.forEach(item => {
+      inValidNameList.push(nameList[item]);
+    });
+
+    let nameString = '';
+    const verb = inValidNameList.length > 1 ? 'are' : 'is';
+
+    inValidNameList.forEach((name, index) => {
+      if (index) {
+        nameString += ((index === inValidNameList.length - 1) ? ` and ${name}` : `, ${name}`);
+      } else {
+        nameString += name;
+      }
+    });
+
+    let rules = {
+      required: {
+        message: 'Required'
+      },
+      fixedLength: {
+        message: `Your card's ${nameString} ${verb} incomplete.`,
+        length: 19,
+      },
+      validCardNumber: {
+        message: 'Your card number is invalid',
+      },
+    };
+
+    switch (id) {
+      case 'validDate':
+        rules.fixedLength.length = 7;
+        delete rules.validCardNumber;
+        break;
+      case 'cvv':
+        delete rules.fixedLength;
+        delete rules.validCardNumber;
+        break;
+      default:
+        break;
+    };
+
+    return {
+      rules,
+      validCardNumber: () => {
+        const { card } = this.state;
+
+        return Boolean(card.type);
+      },
+    };
+  }
+
+  getCardHolderNameValidationOpts() {
+    return {
+      rules: {
+        required: {
+          message: 'Required'
+        }
+      }
+    };
+  }
+
+  validCardInfo() {
+    let cardInfoResults = {};
+    const invalidCardInfoFields = ['cardNumber', 'validDate', 'cvv'].filter(id => {
+      const cardInfoItemResult = FormValidate.validate(id, this.getCardInfoValidationOpts(id, []));
+
+      if (!cardInfoItemResult.isValid) {
+        if (Object.keys(cardInfoResults).includes(cardInfoItemResult.validateKey)) {
+          cardInfoResults[cardInfoItemResult.validateKey].push(id);
+        } else {
+          cardInfoResults[cardInfoItemResult.validateKey] = [id];
+        }
+
+        return cardInfoItemResult.validateKey !== FormValidate.errorNames.required ? id : null;
+      }
+
+      return false;
+    });
+    const cardInfoError = {
+      messages: {}
+    };
+
+    cardInfoError.keys = Object.keys(cardInfoResults).filter(key => {
+      cardInfoResults[key].forEach(id => {
+        cardInfoError.messages[key] = FormValidate.getErrorMessage(
+          id,
+          this.getCardInfoValidationOpts(id, cardInfoResults.fixedLength || [])
+        );
+      });
+
+      if (key === FormValidate.errorNames.required) {
+        return null;
+      }
+
+      return key;
+    });
+
+    this.setState({
+      cardInfoError,
+      invalidCardInfoFields
+    });
+
+    return cardInfoResults.required;
+  }
+
+  validateForm() {
+    const cardHolderNameOptions = this.getCardHolderNameValidationOpts();
+    const holderNameResult = FormValidate.validate('cardholderName', cardHolderNameOptions);
+    const { invalidCardInfoFields, cardInfoError } = this.state;
+    let newCardHolderNameError = {
+      key: null,
+      message: null,
+    };
+    let newCardInfoError = cardInfoError;
+
+    if (this.validCardInfo() && this.validCardInfo().length) {
+      newCardInfoError.keys.push(FormValidate.errorNames.required);
+      newCardInfoError.messages.required = this.getCardInfoValidationOpts().rules.required.message;
+    }
+
+    if (!holderNameResult.isValid) {
+      Object.assign(newCardHolderNameError, {
+        key: holderNameResult.validateKey,
+        message: FormValidate.getErrorMessage('cardholderName', cardHolderNameOptions),
+      });
+    }
+
+    this.setState({
+      cardHolderNameError: newCardHolderNameError,
+      cardInfoError: newCardInfoError,
+      invalidCardInfoFields: Array.from(
+        [].concat(invalidCardInfoFields, this.validCardInfo() || [])
+      ),
+    });
+  }
+
+  async payNow() {
+    await this.validateForm();
+
+    const {
+      cardInfoError,
+      cardHolderNameError,
+    } = this.state;
+
+    if (cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length)) {
+      return;
+    }
+
+    let isInvalidNum = null
+    let isExpired = null;
+    let isInvalidCVV = null;
+
+    window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode) {
+      if (!errCode) {
+        window.encryptedCardData = encryptedData;
+      } else {
+        isInvalidNum = errCode === 2;
+        isExpired = errCode === 7;
+        isInvalidCVV = errCode === 10;
+      }
+    });
+    
+    if (isInvalidNum) {
+      cardInfoError.keys.push('cardNumber');
+      cardInfoError.messages.cardNumber = 'Your card number is invalid';
+
+      this.setState({
+        cardInfoError,
+        invalidCardInfoFields: ['cardNumber'],
+      });
+
+      return;
+    }
+
+    if (isExpired) {
+      cardInfoError.keys.push('validDate');
+      cardInfoError.messages.validDate = `Your card's expiration date is invalid`;
+
+      this.setState({
+        cardInfoError,
+        invalidCardInfoFields: ['validDate'],
+      });
+
+      return;
+    }
+
+    if (isInvalidCVV) {
+      cardInfoError.keys.push('cvv');
+      cardInfoError.messages.cvv = `Your card's CVV is invalid`;
+
+      this.setState({
+        cardInfoError,
+        invalidCardInfoFields: ['cvv'],
+      });
+
+      return;
+    }
+
+    const { paymentActions, cartSummary } = this.props;
+    const { totalCashback } = cartSummary || {};
+
+    await paymentActions.createOrder({ cashback: totalCashback });
+
+    this.setState({
+      payNowLoading: true,
+    });
+  }
+
+  handleChangeCardNumber(e) {
+    let cursor = e.target.selectionStart;
+
+    if (e.target.value.length % 5 === 1 && (e.target.selectionStart === e.target.value.length - 1)) {
+      cursor += 1;
+    }
+
+    this.setState({
+      card: Utils.creditCardDetector(e.target.value)
+    }, () => {
+      if (this.cardNumberEl !== null) {
+        this.cardNumberEl.selectionEnd = cursor;
+      }
+    });
+  }
+
+  handleChangeValidaDate(e) {
+    const { validDate } = this.state;
+    const isSpace = !validDate.replace(e.target.value, '').trim().length;
+
+    this.setState({
+      validDate: Utils.DateFormatter(e.target.value, e.target.value.length < validDate.length && isSpace)
+    });
+  }
+
+  handleChangeCardHolderName(e) {
+    const { card } = this.state;
+
+    this.setState({
+      card: {
+        ...card,
+        cardholderName: e.target.value
+      },
+    });
+  }
+
+  renderForm() {
+    const {
+      card,
+      validDate,
+      invalidCardInfoFields,
+      cardInfoError,
+      cardHolderNameError
+    } = this.state;
+    const { cardholderName } = card || {};
+    const cardNumber = card.formattedCardNumber;
+
+    return (
+      <form id="bank-2c2p-form" className="form">
+        <div className="payment-bank__form-item">
+          <div className="flex flex-middle flex-space-between">
+            <label className="payment-bank__label font-weight-bold">Card information</label>
+            {
+              cardInfoError.keys.includes(FormValidate.errorNames.required)
+                ? <span className="error-message font-weight-bold text-uppercase">
+                  {cardInfoError.messages.required}
+                </span>
+                : null
+            }
+          </div>
+          <div className="payment-bank__card-container">
+            <div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes('cardNumber') ? 'has-error' : ''}`}>
+              <input
+                ref={ref => this.cardNumberEl = ref}
+                id="cardNumber"
+                className="input input__block"
+                type="tel"
+                placeholder="1234 1234 1234 1234"
+                value={card.formattedCardNumber || ''}
+                onChange={this.handleChangeCardNumber.bind(this)}
+                onBlur={this.validCardInfo.bind(this)}
+              />
+              <div className="payment-bank__card-type-container flex flex-middle">
+                <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
+                  <img src="/img/payment-visa.svg" />
+                </i>
+                <i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === 'mastercard' ? 'active' : ''}`}>
+                  <img src="/img/payment-mastercard.svg" />
+                </i>
+              </div>
+            </div>
+            <div className="input__list-bottom flex flex-middle flex-space-between">
+              <input
+                id="validDate"
+                className={`input input__block ${invalidCardInfoFields.includes('validDate') ? 'has-error' : ''}`}
+                type="tel"
+                placeholder="MM / YY"
+                value={validDate || ''}
+                onChange={this.handleChangeValidaDate.bind(this)}
+                onBlur={this.validCardInfo.bind(this)}
+              />
+              <input
+                id="cvv"
+                data-encrypt="cvv"
+                className={`input input__block ${invalidCardInfoFields.includes('cvv') ? 'has-error' : ''}`}
+                type="password"
+                placeholder="CVV"
+                onBlur={this.validCardInfo.bind(this)}
+              />
+            </div>
+          </div>
+          <div className="error-message__container">
+            {
+              cardInfoError.keys.length
+                ? (cardInfoError.keys.map(key => {
+                  if (key === FormValidate.errorNames.required) {
+                    return null;
+                  }
+
+                  return <span key={key} className="error-message">{cardInfoError.messages[key]}</span>
+                }))
+                : null
+            }
+          </div>
+        </div>
+        <div className="payment-bank__form-item">
+          <div className="flex flex-middle flex-space-between">
+            <label className="payment-bank__label font-weight-bold">Name on card</label>
+            {
+              cardHolderNameError.key === FormValidate.errorNames.required
+                ?
+                <span className="error-message font-weight-bold text-uppercase">
+                  {cardHolderNameError.message}
+                </span>
+                : null
+            }
+          </div>
+          <input
+            id="cardholderName"
+            className={`input input__block border-radius-base ${cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''}`}
+            type="text"
+            value={cardholderName || ''}
+            onChange={this.handleChangeCardHolderName.bind(this)}
+          />
+          {
+            cardHolderNameError.key !== FormValidate.errorNames.required
+              ? <span className="error-message">{cardHolderNameError.message}</span>
+              : null
+          }
+        </div>
+
+        <input type="hidden" data-encrypt="cardnumber" value={(cardNumber || '').replace(/[^\d]/g, '')}></input>
+        <input type="hidden" data-encrypt="month" value={(validDate || '').substring(0, 2)}></input>
+        <input type="hidden" data-encrypt="year" value={`20${(validDate || '').substring(5, 7)}`}></input>
+        <input type="hidden" name="encryptedCardInfo" value=""></input>
+      </form>
+    );
+  }
+
+  render() {
+    const {
+      match,
+      history,
+      cartSummary,
+      onlineStoreInfo
+    } = this.props;
+    const { logo } = onlineStoreInfo || {};
+    const {
+      payNowLoading,
+      domLoaded,
+    } = this.state;
+    const { total } = cartSummary || {};
+    const paymentData = this.getPaymentEntryRequestData();
+
+    return (
+      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+        <Header
+          className="border__bottom-divider gray has-right"
+          isPage={true}
+          title="Pay via Card"
+          navFunc={() => {
+            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
+          }}
+        />
+        <div className="payment-bank">
+          <figure
+            className="logo-default__image-container"
+          >
+            <img src={logo} alt="" />
+          </figure>
+          <CurrencyNumber
+            className="payment-bank__money font-weight-bold text-center"
+            money={total || 0}
+          />
+
+          {this.renderForm()}
+        </div>
+
+        <div className="footer-operation">
+          <button
+            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            onClick={this.payNow.bind(this)}
+            disabled={payNowLoading}
+          >{
+              payNowLoading
+                ? <div className="loader"></div>
+                : (
+                  <CurrencyNumber
+                    className="font-weight-bold text-center" addonBefore="Pay"
+                    money={total || 0}
+                  />
+                )
+            }
+          </button>
+        </div>
+
+        {
+          paymentData
+            ? (
+              <RedirectForm
+                ref={ref => this.form = ref}
+                action={config.storeHubPaymentEntryURL}
+                method="POST"
+                data={paymentData}
+              />
+            )
+            : null
+        }
+
+        <Loader loaded={domLoaded} />
+      </section>
+    );
+  }
+}
+
+
+export default connect(
+  state => {
+    const currentOrderId = getCurrentOrderId(state);
+
+    return {
+      business: getBusiness(state),
+      cartSummary: getCartSummary(state),
+      currentPayment: getCurrentPayment(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      currentOrder: getOrderByOrderId(state, currentOrderId),
+    };
+  },
+  dispatch => ({
+    homeActions: bindActionCreators(homeActions, dispatch),
+    paymentActions: bindActionCreators(paymentActions, dispatch),
+  }),
+)(CreditCard);

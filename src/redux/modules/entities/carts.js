@@ -37,7 +37,7 @@ const commonReducer = (state = initialState, action) => {
 
     return {
       ...state,
-      summary: Object.assign(state.summary, summary),
+      summary,
       data: kvData
     };
   }

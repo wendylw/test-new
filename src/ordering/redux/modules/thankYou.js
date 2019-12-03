@@ -5,12 +5,13 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness } from './app';
 
 
 const initialState = {
   orderId: null,
   cashbackInfo: null,
+  isFetching: false,
 };
 
 export const types = {
@@ -18,11 +19,6 @@ export const types = {
   FETCH_ORDER_REQUEST: 'ORDERING/THANK_YOU/FETCH_ORDER_REQUEST',
   FETCH_ORDER_SUCCESS: 'ORDERING/THANK_YOU/FETCH_ORDER_SUCCESS',
   FETCH_ORDER_FAILURE: 'ORDERING/THANK_YOU/FETCH_ORDER_FAILURE',
-
-  // fetch coreBusiness
-  FETCH_COREBUSINESS_REQUEST: 'ORDERING/THANK_YOU/FETCH_COREBUSINESS_REQUEST',
-  FETCH_COREBUSINESS_SUCCESS: 'ORDERING/THANK_YOU/FETCH_COREBUSINESS_SUCCESS',
-  FETCH_COREBUSINESS_FAILURE: 'ORDERING/THANK_YOU/FETCH_COREBUSINESS_FAILURE',
 
   // fetch CashbackInfo
   FETCH_CASHBACKINFO_REQUEST: 'ORDERING/THANK_YOU/FETCH_CASHBACKINFO_REQUEST',
@@ -38,12 +34,6 @@ export const types = {
 export const actions = {
   loadOrder: (orderId) => (dispatch) => {
     return dispatch(fetchOrder({ orderId }));
-  },
-
-  loadCoreBusiness: () => (dispatch, getState) => {
-    const { storeId } = getRequestInfo(getState());
-    const business = getBusiness(getState());
-    return dispatch(fetchCoreBusiness({ business, storeId }));
   },
 
   getCashbackInfo: (receiptNumber) => ({
@@ -88,19 +78,7 @@ const fetchOrder = variables => ({
     endpoint: Url.apiGql('Order'),
     variables,
   }
-})
-
-const fetchCoreBusiness = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [
-      types.FETCH_COREBUSINESS_REQUEST,
-      types.FETCH_COREBUSINESS_SUCCESS,
-      types.FETCH_COREBUSINESS_FAILURE,
-    ],
-    endpoint: Url.apiGql('CoreBusiness'),
-    variables,
-  }
-})
+});
 
 // reducer
 const reducer = (state = initialState, action) => {
@@ -113,11 +91,45 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, orderId: order.orderId };
     }
+    case types.FETCH_CASHBACKINFO_REQUEST:
+    case types.CREATE_CASHBACKINFO_REQUEST:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: true,
+        }
+      };
+    case types.FETCH_CASHBACKINFO_FAILURE:
+    case types.CREATE_CASHBACKINFO_FAILURE:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: false,
+        }
+      };
     case types.FETCH_CASHBACKINFO_SUCCESS: {
-      return { ...state, cashbackInfo: response };
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          ...response,
+          isFetching: false,
+          createdCashbackInfo: false,
+        }
+      };
     }
     case types.CREATE_CASHBACKINFO_SUCCESS: {
-      return { ...state, cashbackInfo: Object.assign({}, state.cashbackInfo, response) };
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          ...response,
+          isFetching: false,
+          createdCashbackInfo: true,
+        }
+      };
     }
     default:
       return state;

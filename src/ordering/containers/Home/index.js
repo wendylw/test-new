@@ -109,6 +109,7 @@ class Home extends Component {
       categories,
       onlineStoreInfo,
       requestInfo,
+      ...otherProps
     } = this.props;
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
@@ -133,6 +134,7 @@ class Home extends Component {
           onToggle={this.handleToggleAside.bind(this)}
         />
         <Footer
+          {...otherProps}
           tableId={tableId}
           onlineStoreInfo={onlineStoreInfo}
           onClickCart={this.handleToggleAside.bind(this, ASIDE_NAMES.CART)}

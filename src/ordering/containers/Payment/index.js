@@ -49,18 +49,9 @@ class Payment extends Component {
   };
 
   componentWillMount() {
-    const {
-      user,
-      appActions,
-      homeActions,
-    } = this.props;
-    const { consumerId, isLogin } = user || {};
+    const { homeActions } = this.props;
 
     homeActions.loadShoppingCart();
-
-    if (isLogin) {
-      appActions.loadCustomerProfile({ consumerId });
-    }
   }
 
   getPaymentEntryRequestData = () => {
@@ -77,8 +68,8 @@ class Payment extends Component {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('{{business}}', business)}${queryString}`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('{{business}}', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
       amount: currentOrder.total,
@@ -105,7 +96,7 @@ class Payment extends Component {
       currentPayment,
       cartSummary,
     } = this.props;
-    const { cashback } = cartSummary || {};
+    const { totalCashback } = cartSummary || {};
 
     this.setState({
       payNowLoading: true,
@@ -119,7 +110,7 @@ class Payment extends Component {
       return;
     }
 
-    await this.props.paymentActions.createOrder({ cashback });
+    await this.props.paymentActions.createOrder({ cashback: totalCashback });
 
     const {
       currentOrder

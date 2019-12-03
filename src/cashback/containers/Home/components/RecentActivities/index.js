@@ -27,43 +27,44 @@ const DATE_OPTIONS = {
 
 class RecentActivities extends React.Component {
   state = {
+    fullScreen: false,
   }
 
-  async componentWillMount() {
-    const { user, appActions } = this.props;
-    const { isLogin, consumerId } = user || {};
+  componentDidMount() {
+    const { user } = this.props;
+    const { isLogin, customerId } = user || {};
 
-    if (isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
-      this.getLoyaltyHistory();
+    if (isLogin && customerId) {
+      this.getLoyaltyHistory(customerId);
     }
   }
 
-  async componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) {
     const {
       isFetching,
       user,
-      appActions,
     } = this.props;
-    const { isLogin, consumerId } = user || {};
+    const { isLogin, customerId } = user || {};
 
     if (isFetching || !isLogin) {
       return;
     }
 
-    if (prevProps.user.isLogin !== isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
-      this.getLoyaltyHistory();
+    if (customerId && prevProps.user.customerId !== customerId) {
+      this.getLoyaltyHistory(customerId);
     }
   }
 
-  getLoyaltyHistory() {
-    const { homeActions, user } = this.props;
-    const { customerId } = user || {};
+  getLoyaltyHistory(customerId) {
+    const { homeActions } = this.props;
 
     if (customerId) {
       homeActions.getCashbackHistory(customerId);
     }
+  }
+
+  toggleFullScreen() {
+    this.setState({ fullScreen: !this.state.fullScreen });
   }
 
   getType(type, props) {
@@ -94,7 +95,7 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-      <ul className="activity">
+      <ul className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}>
         {
           (cashbackHistory || []).map((activity, i) => {
             const {
@@ -102,13 +103,13 @@ class RecentActivities extends React.Component {
               eventTime,
             } = activity;
             const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-            const type = this.getType(eventType, { className: `activity__icon ${eventType}` });
+            const type = this.getType(eventType, { className: 'receipt-list__icon' });
 
             return (
-              <li key={`${i}`} className="activity__item flex flex-middle">
+              <li key={`${i}`} className="receipt-list__item flex flex-middle">
                 {type.icon}
                 <summary>
-                  <h4 className="activity__title">
+                  <h4 className="receipt-list__title">
                     <label>{type.text}&nbsp;</label>
                     {
                       activity.eventType !== 'pending'
@@ -116,7 +117,7 @@ class RecentActivities extends React.Component {
                         : null
                     }
                   </h4>
-                  <time className="activity__time">
+                  <time className="receipt-list__time">
                     {eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
                   </time>
                 </summary>

@@ -10,7 +10,7 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
-import { actions as homeActions, getCurrentProduct } from '../../../../redux/modules/home';
+import { actions as homeActionsCreator, getCurrentProduct } from '../../../../redux/modules/home';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -67,7 +67,7 @@ class ProductDetail extends Component {
       }
     });
 
-    this.currentProductId = product.id
+    this.currentProductId = product.id;
 
     this.setState({
       variationsByIdMap: newMap,
@@ -96,11 +96,13 @@ class ProductDetail extends Component {
     } = product || {};
     const { variationsByIdMap } = this.state;
     const selectedValues = [];
+    const selectedVariations = [];
     let totalPriceDiff = 0;
 
     Object.values(variationsByIdMap).forEach(function (options) {
       Object.values(options).forEach(item => {
         if (item.value) {
+          selectedVariations.push(item);
           totalPriceDiff += item.priceDiff;
 
           selectedValues.push(item.value);
@@ -109,13 +111,17 @@ class ProductDetail extends Component {
     });
 
     const childProduct = (childrenMap || []).find(({ variation }) => (
-      variation.sort().toString() === selectedValues.sort().toString()
+      variation.every(v => selectedValues.includes(v))
     ));
 
     if (childProduct) {
       this.currentProductId = childProduct.childId;
 
-      return childProduct.displayPrice;
+      childProduct.variation.forEach(cv => {
+        totalPriceDiff -= selectedVariations.find(sv => sv.value === cv).priceDiff;
+      });
+
+      return childProduct.displayPrice + totalPriceDiff;
     }
 
     const price = displayPrice || unitPrice || onlineUnitPrice;
@@ -226,7 +232,7 @@ class ProductDetail extends Component {
     this.handleHideProductDetail();
   }
 
-  renderVriations() {
+  renderVariations() {
     const { variations } = this.props.product || {};
 
     if (!variations || !variations.length) {
@@ -345,7 +351,7 @@ class ProductDetail extends Component {
             className="product-detail__options-container"
             style={{ maxHeight: this.getVariationsMaxHeight() || '30vh' }}
           >
-            {this.renderVriations()}
+            {this.renderVariations()}
           </div>
 
           {this.renderProductOperator()}
@@ -374,6 +380,6 @@ export default connect(
     };
   },
   dispatch => ({
-    homeActions: bindActionCreators(homeActions, dispatch),
+    homeActions: bindActionCreators(homeActionsCreator, dispatch),
   }),
 )(ProductDetail);

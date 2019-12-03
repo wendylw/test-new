@@ -17,38 +17,40 @@ import Login from '../../components/Login';
 class App extends Component {
   state = {};
 
-  async componentWillMount() {
+  async componentDidMount() {
     const { appActions } = this.props;
+
     await appActions.getLoginStatus();
+    await appActions.fetchOnlineStoreInfo();
+    await appActions.loadCoreBusiness();
 
     const { user } = this.props;
     const { isLogin } = user || {};
 
+    if (isLogin) {
+      appActions.loadCustomerProfile();
+    }
+
     this.getTokens(isLogin);
+    this.postAppMessage(user);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { user } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { appActions, user } = this.props;
     const {
       isExpired,
       isWebview,
+      isLogin,
+      isFetching,
     } = user || {};
 
-    if (isExpired && this.props.user.isExpired !== isExpired) {
-      if (isWebview) {
-        this.postAppMessage(user);
-      }
+    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+      this.postAppMessage(user);
     }
-  }
 
-  async componentDidMount() {
-    const { appActions } = this.props;
-
-    await appActions.fetchOnlineStoreInfo();
-
-    const { user } = this.props;
-
-    this.postAppMessage(user);
+    if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
+      appActions.loadCustomerProfile();
+    }
   }
 
   getTokens(isLogin) {
@@ -93,11 +95,9 @@ class App extends Component {
 
   render() {
     const {
-      user,
       error,
-      messageModal
+      messageModal,
     } = this.props;
-    const { isLogin } = user || {};
     const { message } = error || {};
 
     return (
@@ -117,11 +117,7 @@ class App extends Component {
             )
             : null
         }
-        {
-          !isLogin
-            ? <Login className="aside" />
-            : null
-        }
+        <Login className="aside" />
         <Routes />
       </main>
     );

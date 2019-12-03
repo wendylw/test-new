@@ -22,7 +22,20 @@ export class ReceiptDetail extends Component {
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     thankYouActions.loadOrder(receiptNumber);
-    thankYouActions.loadCoreBusiness();
+  }
+
+  getSpendCashback() {
+    const { order } = this.props;
+    const { loyaltyDiscounts } = order || {};
+    let totalSpendCashback = 0;
+
+    (loyaltyDiscounts || []).forEach(function (item) {
+      if (item.loyaltyType === 'cashback') {
+        totalSpendCashback += item.displayDiscount || 0;
+      }
+    });
+
+    return totalSpendCashback;
   }
 
   backToThankYou() {
@@ -89,7 +102,6 @@ export class ReceiptDetail extends Component {
       subtotal,
       total,
       tableId,
-      cashback,
     } = order || {};
 
     return (
@@ -119,7 +131,7 @@ export class ReceiptDetail extends Component {
           serviceCharge={serviceCharge}
           subtotal={subtotal}
           total={total}
-          creditsBalance={cashback}
+          creditsBalance={this.getSpendCashback()}
         />
       </section>
     )

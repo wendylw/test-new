@@ -12,13 +12,7 @@ import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
-const ORDER_CAN_CLAIM = 'Can_Claim';
-
 class PageClaim extends React.Component {
-  state = {
-    phone: Utils.getLocalStorageVariable('user.p'),
-  }
-
   setMessage(cashbackInfo) {
     const { appActions } = this.props;
     const { status } = cashbackInfo || {};
@@ -26,14 +20,14 @@ class PageClaim extends React.Component {
     appActions.setMessageInfo({ key: status });
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     const {
       user,
       history,
       appActions,
       claimActions,
     } = this.props;
-    const { isLogin, consumerId } = user || {};
+    const { isLogin } = user || {};
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     appActions.setLoginPrompt('Claim with your mobile number');
@@ -46,12 +40,9 @@ class PageClaim extends React.Component {
     }
 
     if (isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
       this.handleCreateCustomerCashbackInfo();
     }
-  }
 
-  componentDidMount() {
     this.setMessage(this.props.cashbackInfo);
   }
 
@@ -65,35 +56,24 @@ class PageClaim extends React.Component {
     }
   }
 
-  async componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) {
     const {
       isFetching,
       receiptNumber,
       user,
-      appActions,
     } = this.props;
-    const {
-      isLogin,
-      consumerId,
-      customerId,
-    } = user || {};
+    const { isLogin } = user || {};
 
-    if (isFetching || !isLogin || !receiptNumber || customerId) {
-      return;
-    }
-
-    if (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber) {
-      await appActions.loadCustomerProfile({ consumerId });
+    if (!isFetching && isLogin && receiptNumber && (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber)) {
       this.handleCreateCustomerCashbackInfo();
     }
   }
 
   getOrderInfo() {
     const { receiptNumber } = this.props;
-    const { phone } = this.state;
 
     return {
-      phone,
+      phone: Utils.getLocalStorageVariable('user.p'),
       receiptNumber,
       source: Constants.CASHBACK_SOURCE.RECEIPT
     };
@@ -104,25 +84,20 @@ class PageClaim extends React.Component {
       user,
       history,
       claimActions,
-      cashbackInfo,
     } = this.props;
-    const { isWebview, customerId } = user || {};
-    const { status } = cashbackInfo || {};
+    const { isWebview } = user || {};
 
-    if (status === ORDER_CAN_CLAIM) {
-      await claimActions.createCashbackInfo(this.getOrderInfo());
-    }
+    await claimActions.createCashbackInfo(this.getOrderInfo());
 
-    if (!customerId) {
-      return null;
-    }
+    const { cashbackInfo } = this.props;
+    const { customerId } = cashbackInfo;
 
     if (isWebview) {
       this.handlePostLoyaltyPageMessage();
     } else {
       history.push({
         pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-        search: `?customerId=${customerId || ''}`
+        search: `?customerId=${this.props.user.customerId || customerId || ''}`
       });
     }
   }

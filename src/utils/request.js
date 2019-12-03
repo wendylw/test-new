@@ -18,7 +18,8 @@ class RequestError extends Error {
 function get(url) {
   return fetch(url, {
     method: 'GET',
-    headers: headers
+    headers,
+    credentials: 'include',
   })
     .then(response => {
       return handleResponse(url, response);
@@ -38,6 +39,7 @@ const fetchData = function (url, requestOptions) {
   return fetch(url, {
     method,
     headers: headers,
+    credentials: options && options.mode ? 'omit' : 'include',
     body: JSON.stringify(data),
     ...options,
   })

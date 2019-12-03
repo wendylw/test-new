@@ -8,6 +8,7 @@ import {
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
+import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from "redux";
@@ -17,8 +18,8 @@ import {
 } from '../../redux/modules/app';
 import { actions as appActions } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
-import { actions as paymentActions, getThankYouPageUrl } from '../../redux/modules/payment';
 import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as paymentActions, getThankYouPageUrl } from '../../redux/modules/payment';
 import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
@@ -28,21 +29,22 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
   }
 
-  async componentWillMount() {
-    const {
-      cartActions,
-      homeActions,
-      user,
-    } = this.props;
-    const { consumerId, isLogin } = user || {};
+  async componentDidMount() {
+    const { homeActions } = this.props;
 
-
-    cartActions.loadCoreBusiness();
     await homeActions.loadShoppingCart();
+  }
 
-    if (isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
-    }
+  getDisplayPrice() {
+    const { shoppingCart } = this.props;
+    const { items } = shoppingCart || {};
+    let totalPrice = 0;
+
+    (items || []).forEach(item => {
+      totalPrice += item.displayPrice * item.quantity;
+    });
+
+    return totalPrice;
   }
 
   handleChangeAdditionalComments(e) {
@@ -66,7 +68,7 @@ class Cart extends Component {
       user,
     } = this.props;
     const { isLogin } = user;
-    const { cashback, total } = cartSummary || {};
+    const { total, totalCashback } = cartSummary || {};
 
     if (isLogin && !total) {
       const { paymentActions } = this.props;
@@ -75,7 +77,7 @@ class Cart extends Component {
         isCreatingOrder: true,
       });
 
-      await paymentActions.createOrder({ cashback });
+      await paymentActions.createOrder({ cashback: totalCashback });
 
       const { thankYouPageUrl } = this.props;
 
@@ -104,7 +106,8 @@ class Cart extends Component {
       <div className="cart__note flex flex-middle flex-space-between">
         <textarea
           rows="4"
-          placeholder="Add a note to your order?"
+          placeholder="Add a note to your order? (Limit 140 characters)"
+          maxLength="140"
           value={additionalComments || ''}
           onChange={this.handleChangeAdditionalComments.bind(this)}
         ></textarea>
@@ -131,6 +134,8 @@ class Cart extends Component {
       businessInfo,
     } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
+    const { qrOrderingSettings } = businessInfo || {};
+    const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const {
       count,
@@ -140,6 +145,9 @@ class Cart extends Component {
       serviceCharge,
       cashback,
     } = cartSummary || {};
+    const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
+    const buttonText = isInvalidTotal ? '*Min ' : 'Pay';
+    const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
 
     if (!(cartSummary && items)) {
       return null;
@@ -185,12 +193,17 @@ class Cart extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCheckPaymentStatus.bind(this)}
-              disabled={!items || !items.length || isCreatingOrder}
+              disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
             >
               {
                 isCreatingOrder
                   ? <div className="loader"></div>
-                  : 'Pay'
+                  : buttonText
+              }
+              {
+                isInvalidTotal
+                  ? <CurrencyNumber className="font-weight-bold" money={minTotal} />
+                  : null
               }
             </button>
           </div>

@@ -25,11 +25,11 @@ class Login extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber() {
+  handleSubmitPhoneNumber(phoneNumber) {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone });
+    appActions.getOtp({ phone: phoneNumber || phone });
   }
 
   async handleWebLogin(otp) {
@@ -81,6 +81,7 @@ class Login extends React.Component {
       onlineStoreInfo,
     } = this.props;
     const {
+      isLogin,
       showLoginPage,
       hasOtp,
       isFetching,
@@ -88,6 +89,10 @@ class Login extends React.Component {
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
     const classList = ['login'];
+
+    if (isLogin) {
+      return null;
+    }
 
     if (className) {
       classList.push(className);
@@ -137,6 +142,7 @@ Login.propTypes = {
 };
 
 Login.defaultProps = {
+  title: '',
 };
 
 export default connect(
