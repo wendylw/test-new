@@ -11,7 +11,7 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
+import { actions as appActions, getOnlineStoreInfo, getBusiness } from '../../redux/modules/app';
 import { actions as homeActions, getCashbackHistorySummary } from '../../redux/modules/home';
 
 
@@ -36,11 +36,11 @@ class PageLoyalty extends React.Component {
 
   renderLocation() {
     const { 
-      businessInfo,
+      business,
     } = this.props;
     const {
       displayBusinessName
-    } = businessInfo || {};
+    } = business || {};
     
     return  (
       <div className="location">
@@ -60,14 +60,14 @@ class PageLoyalty extends React.Component {
   render() {
     const {
       history,
-      businessInfo,
+      business,
       onlineStoreInfo,
       cashbackHistorySummary,
     } = this.props;
     const {
       displayBusinessName,
       name,
-    } = businessInfo || {};
+    } = business || {};
     const { logo } = onlineStoreInfo || {};
     const { totalCredits } = cashbackHistorySummary || {};
     const { showRecentActivities } = this.state;
@@ -103,7 +103,7 @@ class PageLoyalty extends React.Component {
 export default connect(
   (state) => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
-    businessInfo: getBusinessInfo(state),
+    business: getBusiness(state),
     cashbackHistorySummary: getCashbackHistorySummary(state)
   }),
   (dispatch) => ({

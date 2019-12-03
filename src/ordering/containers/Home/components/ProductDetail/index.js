@@ -10,7 +10,7 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
-import { actions as homeActionsCreator, getCurrentProduct } from '../../../../redux/modules/home';
+import { actions as homeActions, getCurrentProduct } from '../../../../redux/modules/home';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -380,6 +380,6 @@ export default connect(
     };
   },
   dispatch => ({
-    homeActions: bindActionCreators(homeActionsCreator, dispatch),
+    homeActions: bindActionCreators(homeActions, dispatch),
   }),
 )(ProductDetail);
