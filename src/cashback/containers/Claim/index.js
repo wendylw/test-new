@@ -12,13 +12,7 @@ import { bindActionCreators } from 'redux';
 import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
-const ORDER_CAN_CLAIM = 'Can_Claim';
-
 class PageClaim extends React.Component {
-  state = {
-    phone: Utils.getLocalStorageVariable('user.p'),
-  }
-
   setMessage(cashbackInfo) {
     const { appActions } = this.props;
     const { status } = cashbackInfo || {};
@@ -77,10 +71,9 @@ class PageClaim extends React.Component {
 
   getOrderInfo() {
     const { receiptNumber } = this.props;
-    const { phone } = this.state;
 
     return {
-      phone,
+      phone: Utils.getLocalStorageVariable('user.p'),
       receiptNumber,
       source: Constants.CASHBACK_SOURCE.RECEIPT
     };
@@ -96,12 +89,15 @@ class PageClaim extends React.Component {
 
     await claimActions.createCashbackInfo(this.getOrderInfo());
 
+    const { cashbackInfo } = this.props;
+    const { customerId } = cashbackInfo;
+
     if (isWebview) {
       this.handlePostLoyaltyPageMessage();
-    } else if (this.props.user.customerId) {
+    } else {
       history.push({
         pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-        search: `?customerId=${this.props.user.customerId || ''}`
+        search: `?customerId=${this.props.user.customerId || customerId || ''}`
       });
     }
   }

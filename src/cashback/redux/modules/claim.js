@@ -65,24 +65,46 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.FETCH_CASHBACKINFO_REQUEST:
     case types.CREATE_CASHBACKINFO_REQUEST:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: true,
+        }
+      };
     case types.FETCH_RECEIPTNUMBER_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_CASHBACKINFO_FAILURE:
     case types.CREATE_CASHBACKINFO_FAILURE:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: false,
+        }
+      };
     case types.FETCH_RECEIPTNUMBER_FAILURE:
       return { ...state, isFetching: false };
     case types.FETCH_CASHBACKINFO_SUCCESS: {
       return {
         ...state,
-        isFetching: false,
-        cashbackInfo: response,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          ...response,
+          isFetching: false,
+          createdCashbackInfo: false,
+        }
       };
     }
     case types.CREATE_CASHBACKINFO_SUCCESS: {
       return {
         ...state,
-        isFetching: false,
-        cashbackInfo: Object.assign({}, state.cashbackInfo, response),
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          ...response,
+          isFetching: false,
+          createdCashbackInfo: true,
+        }
       };
     }
     case types.FETCH_RECEIPTNUMBER_SUCCESS: {
