@@ -77,8 +77,8 @@ class PageLoyalty extends React.Component {
 
 export default connect(
   (state) => ({
-    onlineStoreInfo: getOnlineStoreInfo(state),
     business: getBusiness(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
     cashbackHistorySummary: getCashbackHistorySummary(state)
   }),
   (dispatch) => ({

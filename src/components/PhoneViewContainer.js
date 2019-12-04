@@ -5,6 +5,7 @@ import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+const DEFAULT_COUNTRY = 'MY';
 
 class PhoneViewContainer extends React.Component {
   state = {
@@ -63,11 +64,6 @@ class PhoneViewContainer extends React.Component {
     } = this.state;
     let buttonContent = buttonText;
 
-
-    if (!country) {
-      return null;
-    }
-
     if (isSavingPhone) {
       buttonContent = <div className="loader"></div>;
     }
@@ -82,7 +78,7 @@ class PhoneViewContainer extends React.Component {
         <PhoneInput
           placeholder="Enter phone number"
           value={formatPhoneNumberIntl(phone)}
-          country={country}
+          country={country || DEFAULT_COUNTRY}
           metadata={metadataMobile}
           onChange={phone => this.handleUpdatePhoneNumber(phone)}
         />
