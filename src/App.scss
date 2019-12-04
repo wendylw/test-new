@@ -1814,7 +1814,8 @@
       @extend .card-list__icon-svg;
     }
 
-    &.earned {
+    &.earned,
+    &.ticket {
       fill: $theme-color;
     }
   }
