@@ -9,8 +9,8 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
+import { actions as appActions, getBusinessInfo, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { actions as claimActions, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
 class PageClaim extends React.Component {
   setMessage(cashbackInfo) {
@@ -195,8 +195,8 @@ class PageClaim extends React.Component {
 export default connect(
   (state) => ({
     user: getUser(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
     businessInfo: getBusinessInfo(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
     cashbackInfo: getCashbackInfo(state),
     receiptNumber: getReceiptNumber(state),
     isFetching: isFetchingCashbackInfo(state),

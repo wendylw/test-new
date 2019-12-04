@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsMoney() {
@@ -39,11 +39,12 @@ CurrencyNumber.defaultProps = {
 
 export default connect(
   (state) => {
-    const { locale, currency } = getOnlineStoreInfo(state) || {};
+    const onlineStoreInfo = getOnlineStoreInfo(state) || {};
+    const businessInfo = getBusinessInfo(state) || {};
 
     return {
-      locale,
-      currency,
+      locale: onlineStoreInfo.locale || businessInfo.locale,
+      currency: onlineStoreInfo.currency || businessInfo.currency,
     };
   }
 )(CurrencyNumber);
