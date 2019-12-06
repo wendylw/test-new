@@ -7,7 +7,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActions, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
@@ -29,7 +29,8 @@ class Login extends React.Component {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone });
+    // appActions.getOtp({ phone });
+    appActions.phoneNumberLogin({ phone });
   }
 
   async handleWebLogin(otp) {
@@ -79,6 +80,7 @@ class Login extends React.Component {
       user,
       title,
       className,
+      businessInfo,
       onlineStoreInfo
     } = this.props;
     const {
@@ -86,6 +88,7 @@ class Login extends React.Component {
       isLogin,
     } = user || {};
     const { country } = onlineStoreInfo || {};
+    const { country: businessCountry } = businessInfo || {};
     const { phone } = this.state;
     const classList = ['login'];
 
@@ -103,7 +106,7 @@ class Login extends React.Component {
           className="aside-bottom not-full"
           title={title}
           phone={phone}
-          country={country}
+          country={country || businessCountry}
           buttonText="Continue"
           show={true}
           isLoading={isFetching}
@@ -136,6 +139,7 @@ Login.defaultProps = {
 export default connect(
   (state) => ({
     user: getUser(state),
+    businessInfo: getBusinessInfo(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
   }),
   (dispatch) => ({

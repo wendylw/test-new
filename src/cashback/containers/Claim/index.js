@@ -9,10 +9,14 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as claimActions, getBusinessInfo, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
+import { actions as appActions, getBusinessInfo, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { actions as claimActions, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
 class PageClaim extends React.Component {
+  state = {
+    claimed: false,
+  };
+
   setMessage(cashbackInfo) {
     const { appActions } = this.props;
     const { status } = cashbackInfo || {};
@@ -37,10 +41,13 @@ class PageClaim extends React.Component {
 
     if (receiptNumber) {
       await claimActions.getCashbackInfo(receiptNumber);
-    }
 
-    if (isLogin) {
-      this.handleCreateCustomerCashbackInfo();
+      const { cashbackInfo } = this.props;
+      const { loadedCashbackInfo, createdCashbackInfo } = cashbackInfo || {};
+
+      if (isLogin && loadedCashbackInfo && !createdCashbackInfo) {
+        this.handleCreateCustomerCashbackInfo();
+      }
     }
 
     this.setMessage(this.props.cashbackInfo);
@@ -61,11 +68,26 @@ class PageClaim extends React.Component {
       isFetching,
       receiptNumber,
       user,
+      cashbackInfo,
     } = this.props;
+    const { claimed } = this.state;
     const { isLogin } = user || {};
+    const { loadedCashbackInfo, createdCashbackInfo } = cashbackInfo || {};
 
-    if (!isFetching && isLogin && receiptNumber && (prevProps.user.isLogin !== isLogin || prevProps.receiptNumber !== receiptNumber)) {
+    if (!isFetching
+      && isLogin
+      && receiptNumber
+      && loadedCashbackInfo
+      && !createdCashbackInfo
+      && !claimed
+    ) {
       this.handleCreateCustomerCashbackInfo();
+    }
+  }
+
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
     }
   }
 
@@ -85,20 +107,24 @@ class PageClaim extends React.Component {
       history,
       claimActions,
     } = this.props;
+    const { claimed } = this.state;
     const { isWebview } = user || {};
 
-    await claimActions.createCashbackInfo(this.getOrderInfo());
+    if (!claimed) {
+      await this.setState({ claimed: true });
+      await claimActions.createCashbackInfo(this.getOrderInfo());
 
-    const { cashbackInfo } = this.props;
-    const { customerId } = cashbackInfo;
+      const { cashbackInfo } = this.props;
+      const { customerId } = cashbackInfo || {};
 
-    if (isWebview) {
-      this.handlePostLoyaltyPageMessage();
-    } else {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-        search: `?customerId=${this.props.user.customerId || customerId || ''}`
-      });
+      if (isWebview) {
+        this.handlePostLoyaltyPageMessage();
+      } else {
+        history.push({
+          pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+          search: `?customerId=${this.props.user.customerId || customerId || ''}`
+        });
+      }
     }
   }
 
@@ -195,8 +221,8 @@ class PageClaim extends React.Component {
 export default connect(
   (state) => ({
     user: getUser(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
     businessInfo: getBusinessInfo(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
     cashbackInfo: getCashbackInfo(state),
     receiptNumber: getReceiptNumber(state),
     isFetching: isFetchingCashbackInfo(state),

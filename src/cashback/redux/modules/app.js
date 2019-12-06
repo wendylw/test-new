@@ -7,6 +7,7 @@ import Url from '../../../utils/url';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const { AUTH_INFO } = Constants;
 
@@ -54,6 +55,18 @@ export const actions = {
         accessToken,
         refreshToken,
       },
+    }
+  }),
+
+  phoneNumberLogin: ({ phone }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.CREATE_LOGIN_REQUEST,
+        types.CREATE_LOGIN_SUCCESS,
+        types.CREATE_LOGIN_FAILURE,
+      ],
+      ...Url.API_URLS.PHONE_NUMBER_LOGIN,
+      payload: { phone },
     }
   }),
 
@@ -285,7 +298,17 @@ const error = (state = initialState.error, action) => {
   return state;
 }
 
-const business = (state = initialState.business, action) => state;
+const business = (state = initialState.business, action) => {
+  const { type, response } = action;
+
+  switch (type) {
+    case types.FETCH_BUSINESS_SUCCESS:
+      const { name } = response || {};
+      return name;
+    default:
+      return state;
+  }
+};
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
@@ -345,6 +368,9 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getBusiness = state => state.app.business;
+export const getBusinessInfo = (state) => {
+  return getBusinessByName(state, state.app.business);
+}
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
