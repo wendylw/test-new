@@ -33,6 +33,21 @@ class PageLoyalty extends React.Component {
     appActions.showMessageInfo();
   }
 
+  renderLocation() {
+    const { 
+      business,
+    } = this.props;
+    const {
+      displayBusinessName
+    } = business || {};
+
+    return  (
+      <div className="location">
+        <span className="location__text gray-font-opacity text-middle">{displayBusinessName}</span>
+      </div>
+    );
+  }
+
   render() {
     const {
       business,
@@ -64,9 +79,7 @@ class PageLoyalty extends React.Component {
             <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
             <IconInfo />
           </div>
-          <div className="location">
-            <span className="location__text gray-font-opacity text-middle">Polpetta Café, 10 Boulevard</span>
-          </div>
+          {this.renderLocation()}
           <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
         </div>
         <RecentActivities />
