@@ -77,7 +77,6 @@ class PageLoyalty extends React.Component {
           <h5 className="logo-default__title text-uppercase">Total cashback</h5>
           <div className="loyalty__money-info">
             <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
-            <IconInfo />
           </div>
           {this.renderLocation()}
           <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
