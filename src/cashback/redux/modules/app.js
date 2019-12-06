@@ -377,7 +377,3 @@ export const getOnlineStoreInfo = state => {
 };
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
-// export const getBusinessInfo = state => {
-//   const business = getBusiness(state);
-//   return getBusinessByName(state, business);
-// }
