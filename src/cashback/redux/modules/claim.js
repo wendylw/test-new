@@ -92,6 +92,7 @@ const reducer = (state = initialState, action) => {
           ...state.cashbackInfo,
           ...response,
           isFetching: false,
+          loadedCashbackInfo: true,
           createdCashbackInfo: false,
         }
       };
@@ -103,6 +104,7 @@ const reducer = (state = initialState, action) => {
           ...state.cashbackInfo,
           ...response,
           isFetching: false,
+          loadedCashbackInfo: false,
           createdCashbackInfo: true,
         }
       };

@@ -9,6 +9,8 @@ import { getUser, getBusiness } from './app';
 
 const initialState = {
   customerId: null,
+  receiptList: [],
+  fetchState: true,
   cashbackHistorySummary: null,
 };
 
@@ -18,6 +20,22 @@ export const actions = {
   setCustomerId: customerId => ({
     type: types.SET_CUSTOMER_ID_SUCCESS,
     customerId,
+  }),
+
+  getReceiptList: (business,page,pageSize) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_RECEIPT_LIST_REQUEST,
+        types.FETCH_RECEIPT_LIST_SUCCESS,
+        types.FETCH_RECEIPT_LIST_FAILURE
+      ],
+      ...Url.API_URLS.GET_RECEIPTS_LIST,
+      params: {
+        business,
+        page,
+        pageSize
+      }
+    }
   }),
 
   getCashbackHistory: customerId => ({
@@ -53,6 +71,15 @@ const reducer = (state = initialState, action) => {
         }
       };
     }
+    case types.FETCH_RECEIPT_LIST_SUCCESS: {
+      const {response} = action;
+      const { list } = response || {};
+      return {
+        ...state,
+        receiptList: state.receiptList.concat(list),
+        fetchState: list.length === 0 ? false: true
+      }
+    }
     default:
       return state;
   }
@@ -61,6 +88,8 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 
 export const getCustomerId = state => state.home.customerId;
+export const getReceiptList = state => state.home.receiptList;
+export const getFetchState = state => state.home.fetchState;
 export const getCashbackHistorySummary = state => state.home.cashbackHistorySummary;
 
 export const getBusinessInfo = state => {

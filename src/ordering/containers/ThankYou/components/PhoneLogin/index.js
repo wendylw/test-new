@@ -36,9 +36,13 @@ class PhoneLogin extends React.Component {
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
-    const { user } = this.props;
+    const { user, businessInfo } = this.props;
+    const { enableCashback } = businessInfo || {};
 
-    this.canClaimCheck(user);
+    if (enableCashback) {
+      this.canClaimCheck(user);
+    }
+
     this.initMessages();
 
     this.setState({
@@ -48,10 +52,13 @@ class PhoneLogin extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { showCelebration } = this.state;
-    const { user } = this.props;
-    const { isLogin } = user;
+    const { user, businessInfo } = this.props;
+    const { isLogin } = user || {};
+    const { enableCashback } = businessInfo || {};
+    const { enableCashback: prevEnableCashback } = prevProps.businessInfo || {};
+    const canCreateCashback = isLogin && enableCashback && (prevEnableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
 
-    if (prevProps.user.isLogin !== isLogin) {
+    if (canCreateCashback) {
       this.canClaimCheck(user);
     }
 
@@ -120,8 +127,11 @@ class PhoneLogin extends React.Component {
     const { isLogin } = user || {};
     const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
 
-    if (isLogin && !isFetching && !createdCashbackInfo) {
+    if (isLogin) {
       Utils.setLocalStorageVariable('user.p', phone);
+    }
+
+    if (isLogin && !isFetching && !createdCashbackInfo) {
       await thankYouActions.createCashbackInfo(this.getOrderInfo());
     }
 
@@ -151,7 +161,8 @@ class PhoneLogin extends React.Component {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone });
+    // appActions.getOtp({ phone }); use when otp will fixed
+    appActions.phoneNumberLogin({ phone });
   }
 
   handlePostLoyaltyPageMessage() {

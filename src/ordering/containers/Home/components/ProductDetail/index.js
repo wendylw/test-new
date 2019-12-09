@@ -103,8 +103,8 @@ class ProductDetail extends Component {
       Object.values(options).forEach(item => {
         if (item.value) {
           selectedVariations.push(item);
-
           totalPriceDiff += item.priceDiff;
+
           selectedValues.push(item.value);
         }
       });

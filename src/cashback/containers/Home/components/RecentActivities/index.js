@@ -6,6 +6,7 @@ import {
   IconEarned,
 } from '../../../../../components/Icons';
 import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -94,7 +95,7 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-      <ul className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}>
+      <ul className="activity">
         {
           (cashbackHistory || []).map((activity, i) => {
             const {
@@ -102,13 +103,13 @@ class RecentActivities extends React.Component {
               eventTime,
             } = activity;
             const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-            const type = this.getType(eventType, { className: 'receipt-list__icon' });
+            const type = this.getType(eventType, { className: `activity__icon ${eventType}` });
 
             return (
-              <li key={`${i}`} className="receipt-list__item flex flex-middle">
+              <li key={`${i}`} className="activity__item flex flex-middle">
                 {type.icon}
                 <summary>
-                  <h4 className="receipt-list__title">
+                  <h4 className="activity__title">
                     <label>{type.text}&nbsp;</label>
                     {
                       activity.eventType !== 'pending'
@@ -116,7 +117,7 @@ class RecentActivities extends React.Component {
                         : null
                     }
                   </h4>
-                  <time className="receipt-list__time">
+                  <time className="activity__time">
                     {eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
                   </time>
                 </summary>
@@ -129,25 +130,32 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { cashbackHistory, user } = this.props;
-    const { customerId } = user || {};
-
-    if (!Array.isArray(cashbackHistory) || !customerId) {
-      return null;
-    }
+    const {
+      history,
+      customerId,
+      closeActivity
+    } = this.props;
 
     return (
-      <div className={`aside-section ${this.state.fullScreen ? 'full' : ''}`}>
-        <aside className="aside-bottom">
-          {
-            !this.state.fullScreen
-              ? <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
-              : <Header navFunc={this.toggleFullScreen.bind(this)} />
-          }
-          <h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>Recent Activities</h3>
+      <section className="loyalty__activities" style={{
+        // backgroundImage: `url(${theImage})`,
+      }}>
+        <Header
+          className="transparent text-center"
+          title="Cashback History"
+          isPage={true}
+          navFunc={() => {
+            history.push({
+              pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+              search: `?customerId=${customerId || ''}`
+            });
+            closeActivity();
+          }}
+        />
+        <article className="loyalty__content">
           {this.renderLogList()}
-        </aside>
-      </div>
+        </article>
+      </section>
     );
   }
 }

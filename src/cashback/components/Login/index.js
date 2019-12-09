@@ -29,7 +29,8 @@ class Login extends React.Component {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone });
+    // appActions.getOtp({ phone });
+    appActions.phoneNumberLogin({ phone });
   }
 
   async handleWebLogin(otp) {

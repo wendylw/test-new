@@ -1,6 +1,7 @@
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 
+import { THANK_YOU_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -10,26 +11,10 @@ import { getBusiness } from './app';
 
 const initialState = {
   orderId: null,
-  cashbackInfo: null,
-  isFetching: false,
+  cashbackInfo: null, /* included: customerId, consumerId, status */
 };
 
-export const types = {
-  // fetch order
-  FETCH_ORDER_REQUEST: 'ORDERING/THANK_YOU/FETCH_ORDER_REQUEST',
-  FETCH_ORDER_SUCCESS: 'ORDERING/THANK_YOU/FETCH_ORDER_SUCCESS',
-  FETCH_ORDER_FAILURE: 'ORDERING/THANK_YOU/FETCH_ORDER_FAILURE',
-
-  // fetch CashbackInfo
-  FETCH_CASHBACKINFO_REQUEST: 'ORDERING/THANK_YOU/FETCH_CASHBACKINFO_REQUEST',
-  FETCH_CASHBACKINFO_SUCCESS: 'ORDERING/THANK_YOU/FETCH_CASHBACKINFO_SUCCESS',
-  FETCH_CASHBACKINFO_FAILURE: 'ORDERING/THANK_YOU/FETCH_CASHBACKINFO_FAILURE',
-
-  // create CashbackInfo
-  CREATE_CASHBACKINFO_REQUEST: 'ORDERING/THANK_YOU/CREATE_CASHBACKINFO_REQUEST',
-  CREATE_CASHBACKINFO_SUCCESS: 'ORDERING/THANK_YOU/CREATE_CASHBACKINFO_SUCCESS',
-  CREATE_CASHBACKINFO_FAILURE: 'ORDERING/THANK_YOU/CREATE_CASHBACKINFO_FAILURE',
-}
+export const types = THANK_YOU_TYPES;
 
 export const actions = {
   loadOrder: (orderId) => (dispatch) => {

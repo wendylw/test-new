@@ -373,6 +373,10 @@
     background-color: $white;
   }
 
+  &__cashback-receipt {
+    margin-top: 50px;
+  }
+
   &__prompt-page {
     @extend .main-section;
 
@@ -1810,7 +1814,8 @@
       @extend .card-list__icon-svg;
     }
 
-    &.earned {
+    &.earned,
+    &.ticket {
       fill: $theme-color;
     }
   }

@@ -65,6 +65,18 @@ export const actions = {
     }
   }),
 
+  phoneNumberLogin: ({ phone }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.CREATE_LOGIN_REQUEST,
+        types.CREATE_LOGIN_SUCCESS,
+        types.CREATE_LOGIN_FAILURE,
+      ],
+      ...Url.API_URLS.PHONE_NUMBER_LOGIN,
+      payload: { phone },
+    }
+  }),
+
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
   }),
