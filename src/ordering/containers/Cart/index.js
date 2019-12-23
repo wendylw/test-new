@@ -16,11 +16,11 @@ import {
   getOnlineStoreInfo,
   getUser,
 } from '../../redux/modules/app';
-import { actions as appActions } from '../../redux/modules/app';
+import { actions as appActionCreators } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
-import { actions as cartActions, getBusinessInfo } from '../../redux/modules/cart';
-import { actions as paymentActions, getThankYouPageUrl } from '../../redux/modules/payment';
-import { actions as homeActions, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
+import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as paymentActionCreators, getThankYouPageUrl } from '../../redux/modules/payment';
+import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 
 class Cart extends Component {
   state = {
@@ -224,9 +224,9 @@ export default connect(
     thankYouPageUrl: getThankYouPageUrl(state),
   }),
   dispatch => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    homeActions: bindActionCreators(homeActions, dispatch),
-    cartActions: bindActionCreators(cartActions, dispatch),
-    paymentActions: bindActionCreators(paymentActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    cartActions: bindActionCreators(cartActionCreators, dispatch),
+    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
   }),
 )(Cart);

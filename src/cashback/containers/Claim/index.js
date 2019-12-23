@@ -9,8 +9,8 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getBusinessInfo, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as claimActions, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
+import { actions as appActionCreators, getBusinessInfo, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { actions as claimActionCreators, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
 class PageClaim extends React.Component {
   state = {
@@ -228,7 +228,7 @@ export default connect(
     isFetching: isFetchingCashbackInfo(state),
   }),
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    claimActions: bindActionCreators(claimActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    claimActions: bindActionCreators(claimActionCreators, dispatch),
   })
 )(PageClaim);

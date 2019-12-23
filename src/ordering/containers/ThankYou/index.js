@@ -6,7 +6,7 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { getOrder, actions as thankYouActions } from '../../redux/modules/thankYou';
+import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 class ThankYou extends Component {
   state = {};
@@ -135,6 +135,6 @@ export default connect(
     order: getOrder(state),
   }),
   (dispatch) => ({
-    thankYouActions: bindActionCreators(thankYouActions, dispatch),
+    thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
   })
 )(ThankYou);

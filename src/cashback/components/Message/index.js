@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getBusiness, getMessageInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getBusiness, getMessageInfo } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import TopMessage from '../TopMessage';
 import ClaimedMessage from '../ClaimedMessage';
@@ -112,6 +112,6 @@ export default connect(
     }
   },
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
   }),
 )(Message);

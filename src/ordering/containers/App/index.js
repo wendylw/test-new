@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  actions as appActions,
+  actions as appActionCreators,
   getOnlineStoreInfo,
   getMessageModal,
   getError,
@@ -132,6 +132,6 @@ export default connect(
     messageModal: getMessageModal(state),
   }),
   dispatch => ({
-    appActions: bindActionCreators(appActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
   }),
 )(App);

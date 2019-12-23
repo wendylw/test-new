@@ -11,7 +11,7 @@ import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as thankYouActions, getOrder, getBusinessInfo } from '../../redux/modules/thankYou';
+import { actions as thankYouActionCreators, getOrder, getBusinessInfo } from '../../redux/modules/thankYou';
 
 export class ReceiptDetail extends Component {
   componentWillMount() {
@@ -144,6 +144,6 @@ export default connect(
     order: getOrder(state),
   }),
   (dispatch) => ({
-    thankYouActions: bindActionCreators(thankYouActions, dispatch),
+    thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
   })
 )(ReceiptDetail);
