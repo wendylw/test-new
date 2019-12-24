@@ -7,7 +7,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
@@ -151,6 +151,6 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
   }),
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
   })
 )(Login);

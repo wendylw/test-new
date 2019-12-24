@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProductItem from '../../../../components/ProductItem';
-import { actions as homeActions, getShoppingCart } from '../../../../redux/modules/home';
+import { actions as homeActionCreators, getShoppingCart } from '../../../../redux/modules/home';
 
 
 const isCartItemSoldOut = cartItem => {
@@ -111,6 +111,6 @@ export default connect(
     shoppingCart: getShoppingCart(state),
   }),
   dispatch => ({
-    homeActions: bindActionCreators(homeActions, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   }),
 )(CartList);

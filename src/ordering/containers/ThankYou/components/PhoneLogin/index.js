@@ -9,8 +9,8 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
-import { actions as thankYouActions, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { actions as thankYouActionCreators, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const ANIMATION_TIME = 3600;
@@ -291,7 +291,7 @@ export default connect(
     cashbackInfo: getCashbackInfo(state),
   }),
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    thankYouActions: bindActionCreators(thankYouActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
   })
 )(PhoneLogin);

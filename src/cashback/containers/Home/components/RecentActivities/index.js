@@ -10,8 +10,8 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
-import { actions as homeActions, getCashbackHistory } from '../../../../redux/modules/home';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -167,7 +167,7 @@ export default connect(
     cashbackHistory: getCashbackHistory(state),
   }),
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    homeActions: bindActionCreators(homeActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   })
 )(RecentActivities);

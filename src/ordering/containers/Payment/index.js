@@ -6,11 +6,11 @@ import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as homeActions } from '../../redux/modules/home';
+import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as appActions, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
+import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 
 const {
@@ -30,11 +30,11 @@ const dataSource = [
     label: 'Visa / MasterCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
-  /*{
-    name: PAYMENT_METHODS.BOOST_PAY,
-    logo: '/img/payment-boost.png',
-    label: 'Boost',
-  },*/
+  // {
+  //   name: PAYMENT_METHODS.BOOST_PAY,
+  //   logo: '/img/payment-boost.png',
+  //   label: 'Boost',
+  // },
   {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: '/img/payment-grab.png',
@@ -210,8 +210,8 @@ export default connect(
     };
   },
   dispatch => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    paymentActions: bindActionCreators(paymentActions, dispatch),
-    homeActions: bindActionCreators(homeActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   }),
 )(Payment);

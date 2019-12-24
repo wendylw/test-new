@@ -7,8 +7,8 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as cartActions, getBusinessInfo } from '../../../../redux/modules/cart';
-import { actions as homeActions, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
+import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
+import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
 export class Footer extends Component {
   getDisplayPrice() {
@@ -98,7 +98,7 @@ export default connect(
     };
   },
   dispatch => ({
-    cartActions: bindActionCreators(cartActions, dispatch),
-    homeActions: bindActionCreators(homeActions, dispatch),
+    cartActions: bindActionCreators(cartActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   }),
 )(Footer);

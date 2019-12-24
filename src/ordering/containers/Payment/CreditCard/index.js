@@ -11,11 +11,11 @@ import config from '../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as homeActions } from '../../../redux/modules/home';
+import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActions, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -272,7 +272,7 @@ class CreditCard extends Component {
         isInvalidCVV = errCode === 10;
       }
     });
-    
+
     if (isInvalidNum) {
       cardInfoError.keys.push('cardNumber');
       cardInfoError.messages.cardNumber = 'Your card number is invalid';
@@ -558,7 +558,7 @@ export default connect(
     };
   },
   dispatch => ({
-    homeActions: bindActionCreators(homeActions, dispatch),
-    paymentActions: bindActionCreators(paymentActions, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
   }),
 )(CreditCard);

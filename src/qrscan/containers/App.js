@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as appActions, getError } from "../redux/modules/app";
+import { actions as appActionCreators, getError } from "../redux/modules/app";
 import Error from "./components/Error";
 import Routes from "../Routes.js"
 import "../styles.scss";
@@ -35,6 +35,6 @@ export default connect(
     };
   },
   dispatch => ({
-    appActions: bindActionCreators(appActions, dispatch)
+    appActions: bindActionCreators(appActionCreators, dispatch)
   })
 )(App);

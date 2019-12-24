@@ -11,8 +11,8 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
-import { actions as homeActions, getCashbackHistorySummary } from '../../redux/modules/home';
+import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
+import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
 
 
 class PageLoyalty extends React.Component {
@@ -21,7 +21,7 @@ class PageLoyalty extends React.Component {
     showRecentActivities: false
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     const {
       history,
       appActions,
@@ -35,26 +35,26 @@ class PageLoyalty extends React.Component {
   }
 
   renderLocation() {
-    const { 
+    const {
       businessInfo,
     } = this.props;
     const {
       displayBusinessName,
       name
     } = businessInfo || {};
-    return  (
+    return (
       <div className="location">
-        <span className="location__text gray-font-opacity text-middle">{displayBusinessName||name}</span>
+        <span className="location__text gray-font-opacity text-middle">{displayBusinessName || name}</span>
       </div>
     );
   }
 
   showRecentActivities() {
-    this.setState({showRecentActivities:true})
+    this.setState({ showRecentActivities: true })
   }
 
   closeActivity() {
-    this.setState({showRecentActivities:false});
+    this.setState({ showRecentActivities: false });
   }
 
   render() {
@@ -74,28 +74,28 @@ class PageLoyalty extends React.Component {
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return (
       !showRecentActivities ? (
-      <section className="loyalty__home">
-        <div className="loyalty__content text-center">
-          {
-            logo ? (
-              <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
-            ) : null
-          }
-          <h5 className="logo-default__title text-uppercase">Total cashback</h5>
-          <div className="loyalty__money-info">
-            <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
-            <span onClick={this.showRecentActivities.bind(this)}>
-              <IconInfo/>
-            </span>
+        <section className="loyalty__home">
+          <div className="loyalty__content text-center">
+            {
+              logo ? (
+                <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+              ) : null
+            }
+            <h5 className="logo-default__title text-uppercase">Total cashback</h5>
+            <div className="loyalty__money-info">
+              <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
+              <span onClick={this.showRecentActivities.bind(this)}>
+                <IconInfo />
+              </span>
+            </div>
+            {this.renderLocation()}
+            <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
           </div>
-          {this.renderLocation()}
-          <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
-        </div>
-        <ReceiptList history={history}/>
-      </section>
-      ):(
-        <RecentActivities history={history} customerId={customerId} closeActivity={this.closeActivity.bind(this)}/>
-      )
+          <ReceiptList history={history} />
+        </section>
+      ) : (
+          <RecentActivities history={history} customerId={customerId} closeActivity={this.closeActivity.bind(this)} />
+        )
     );
   }
 }
@@ -107,7 +107,7 @@ export default connect(
     cashbackHistorySummary: getCashbackHistorySummary(state)
   }),
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    homeActions: bindActionCreators(homeActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   })
 )(PageLoyalty);

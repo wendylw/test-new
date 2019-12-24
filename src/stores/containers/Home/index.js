@@ -6,7 +6,7 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { actions as homeActions, getStoreHashCode, getAllStores, showStores } from '../../redux/modules/home';
+import { actions as homeActionCreators, getStoreHashCode, getAllStores, showStores } from '../../redux/modules/home';
 
 class App extends Component {
   state = {}
@@ -98,6 +98,6 @@ export default connect(
     error: getError(state),
   }),
   dispatch => ({
-    homeActions: bindActionCreators(homeActions, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   }),
 )(App);

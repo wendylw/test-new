@@ -6,8 +6,8 @@ import Header from '../../../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActions, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
-import { actions as homeActions, getCashbackHistory, getReceiptList, getFetchState } from '../../../../redux/modules/home';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
+import { actions as homeActionCreators, getCashbackHistory, getReceiptList, getFetchState } from '../../../../redux/modules/home';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -63,10 +63,10 @@ class RecentActivities extends React.Component {
   }
 
   loadItems(page) {
-    const { business, homeActions } = this.props; 
+    const { business, homeActions } = this.props;
     const pageSize = 10;
-    homeActions.getReceiptList(business,page,pageSize);
-  } 
+    homeActions.getReceiptList(business, page, pageSize);
+  }
 
   toggleFullScreen() {
     this.setState({ fullScreen: !this.state.fullScreen });
@@ -81,43 +81,43 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-        <InfiniteScroll
-          pageStart={-1}
-          loadMore={this.loadItems.bind(this)}
-          hasMore={fetchState}
-          loader={<div style={{clear:'both'}} key={0}>Loading ...</div>}
-          useWindow={false}
-        > 
-          <div>
-            {
-              (receiptList || []).map((receipt,i) => {
-                const {
-                  createdTime,
-                  total,
-                } = receipt;
-                const receiptTime = new Date(createdTime);
+      <InfiniteScroll
+        pageStart={-1}
+        loadMore={this.loadItems.bind(this)}
+        hasMore={fetchState}
+        loader={<div style={{ clear: 'both' }} key={0}>Loading ...</div>}
+        useWindow={false}
+      >
+        <div>
+          {
+            (receiptList || []).map((receipt, i) => {
+              const {
+                createdTime,
+                total,
+              } = receipt;
+              const receiptTime = new Date(createdTime);
 
-                return (
-                  <div 
-                    className="receipt-list__item flex flex-middle" 
-                    key={`${i}`}
-                    >
-                    <IconTicket className="activity__icon ticket" />
-                    <summary>
-                      <h4 className="receipt-list__title">
-                        <label>Receipt - </label>
-                        <CurrencyNumber money={Math.abs(total || 0)} />
-                      </h4>
-                      <time className="receipt-list__time">
-                        {receiptTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
-                      </time>
-                    </summary>
-                  </div>
-                );
-              })
-            }
-          </div>
-        </InfiniteScroll>
+              return (
+                <div
+                  className="receipt-list__item flex flex-middle"
+                  key={`${i}`}
+                >
+                  <IconTicket className="activity__icon ticket" />
+                  <summary>
+                    <h4 className="receipt-list__title">
+                      <label>Receipt - </label>
+                      <CurrencyNumber money={Math.abs(total || 0)} />
+                    </h4>
+                    <time className="receipt-list__time">
+                      {receiptTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                    </time>
+                  </summary>
+                </div>
+              );
+            })
+          }
+        </div>
+      </InfiniteScroll>
     );
   }
 
@@ -157,7 +157,7 @@ export default connect(
     fetchState: getFetchState(state)
   }),
   (dispatch) => ({
-    appActions: bindActionCreators(appActions, dispatch),
-    homeActions: bindActionCreators(homeActions, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   })
 )(RecentActivities);

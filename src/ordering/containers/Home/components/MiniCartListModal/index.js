@@ -9,9 +9,9 @@ import CartList from '../../../Cart/components/CartList';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as cartActions } from '../../../../redux/modules/cart';
+import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as homeActions } from '../../../../redux/modules/home';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
 
 class MiniCartListModal extends Component {
   handleClearAll = async () => {
@@ -80,7 +80,7 @@ export default connect(
     };
   },
   dispatch => ({
-    homeActions: bindActionCreators(homeActions, dispatch),
-    cartActions: bindActionCreators(cartActions, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    cartActions: bindActionCreators(cartActionCreators, dispatch),
   }),
 )(MiniCartListModal);

@@ -9,9 +9,9 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as cartActions } from '../../redux/modules/cart';
+import { actions as cartActionCreators } from '../../redux/modules/cart';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
-import { actions as homeActions, getCategoryProductList } from '../../redux/modules/home';
+import { actions as homeActionCreators, getCategoryProductList } from '../../redux/modules/home';
 
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
@@ -153,7 +153,7 @@ export default connect(
     };
   },
   dispatch => ({
-    homeActions: bindActionCreators(homeActions, dispatch),
-    cartActions: bindActionCreators(cartActions, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    cartActions: bindActionCreators(cartActionCreators, dispatch),
   }),
 )(Home);
