@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
-class ThankYou extends Component {
+export class ThankYou extends Component {
   state = {};
 
   componentDidMount() {
@@ -52,7 +52,7 @@ class ThankYou extends Component {
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
           <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
-          <span className="thanks-pickup__id-number">{pickUpId}</span>
+          <span className="thanks-pickup__id-number" data-testid="thanks__pickup-number">{pickUpId}</span>
         </div>
       </div>
     );
@@ -78,6 +78,7 @@ class ThankYou extends Component {
       <button
         className="thanks__link link font-weight-bold text-uppercase button__block"
         onClick={this.handleClickViewReceipt}
+        data-testid="thanks__view-receipt"
       >
         View Receipt
       </button>
@@ -103,8 +104,8 @@ class ThankYou extends Component {
           <span className="gray-font-opacity text-uppercase">
             {
               tableId
-                ? `Table ${tableId}`
-                : 'Self pick-up'
+                ? <span data-testid="thanks__table-id">{`Table ${tableId}`}</span>
+                : <span data-testid="thanks__self-pickup">Self pick-up</span>
             }
           </span>
         </Header>

@@ -80,3 +80,33 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+## i18n
+
+i18next v10+
+i18next-browser-languagedetector
+react-i18next
+
+### Load using a backend plugin
+
+github document: https://github.com/i18next/i18next-xhr-backend
+
+### localization json file rules
+
+```
+JSON file name rules:
+
+1. Please use upper camel case (eg: OrderingHome)
+
+Key name rules:
+
+1. Please use upper camel case no including underscores and spaces
+2. Phrase remove spaces as key (eg: "OrderNow": "Order now")
+3. Paragraphs use descriptive phrases as keys (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
+
+Content rules:
+
+1. Only the first letter can be capitalized for phrase, except for words like "OK" (eg: "OrderNow": "Order now")
+2. Paragraphs have only the first letter of each sentence capitalized (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
+3. Follow English written rules
+```
