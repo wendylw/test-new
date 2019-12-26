@@ -22,7 +22,7 @@ class Message extends React.Component {
     modalStatus: [''],
   }
 
-  componentWillMount() {
+  componentDidUpdate() {
     this.initMessages();
   }
 
