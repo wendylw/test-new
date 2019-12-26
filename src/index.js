@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import 'whatwg-fetch';
 import './config'; // import here for globally init
+import './i18n';
 
 import Bootstrap from './Bootstrap';
 import HeapJS from './components/HeapJS';

@@ -1,0 +1,40 @@
+export const onlineStoreInfo = {
+  id: '5de726067ed3949af8fdd117',
+  storeName: null,
+  logo: null,
+  favicon: null,
+  locale: 'MS-MY',
+  currency: 'MYR',
+  currencySymbol: 'RM',
+  country: 'MY',
+  state: null,
+  street: null
+};
+export const order = {
+  tax: 0,
+  orderId: '815022083405538',
+  status: 'paid',
+  subtotal: 15,
+  total: 15,
+  storeId: '5de71ef1e872af6ab28a6c74',
+  tableId: null,
+  pickUpId: '0006',
+  isClaimed: false,
+  serviceCharge: 0,
+  loyaltyDiscounts: 'Array[0]',
+  additionalComments: null,
+  items: [
+    {
+      id: '5df34d524d65d51b844c25a2',
+      title: 'red tea',
+      productId: '5de7304b5234055a7724a4e1',
+      quantity: 1,
+      unitPrice: 15,
+      image:
+        'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de7304b5234055a7724a4e1/251a3219-b3af-461f-ba28-4db4a55b6316',
+      variationTexts: 'Array[1]',
+      displayPrice: 15,
+      itemType: null
+    }
+  ]
+};
