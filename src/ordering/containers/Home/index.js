@@ -23,7 +23,7 @@ const localState = {
   blockScrollTop: 0,
 };
 
-class Home extends Component {
+export class Home extends Component {
   state = {
     viewAside: null,
   };

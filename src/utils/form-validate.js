@@ -63,7 +63,7 @@ const FormValidate = {
       switch (item) {
         case 'required':
           result = {
-            isValid: value || !!value.length,
+            isValid: !!value || !!value.length,
             validateKey: item
           };
           break;

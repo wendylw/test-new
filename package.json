@@ -3,15 +3,59 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://nike.storehub.net:7000",
+  "engines": {
+    "node": ">=8.17.0"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 50,
+        "lines": 50,
+        "statements": 50
+      }
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.(js|jsx|scss)": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "useTabs": false,
+    "printWidth": 120,
+    "overrides": [
+      {
+        "files": "*.scss",
+        "options": {
+          "singleQuote": false
+        }
+      }
+    ]
+  },
   "dependencies": {
     "apollo-boost": "^0.3.1",
     "graphql": "^14.2.1",
+    "lodash": "^4.17.15",
+    "i18next": "^19.0.2",
+    "i18next-browser-languagedetector": "^4.0.1",
+    "i18next-xhr-backend": "^3.2.2",
     "node-sass": "^4.12.0",
     "normalize.css": "^8.0.1",
     "qrcode-decoder": "^0.1.1",
     "qs": "^6.7.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-i18next": "^11.2.7",
     "react-infinite-scroller": "^1.2.4",
     "react-otp-input": "^0.3.3",
     "react-phone-number-input": "^2.3.13",
@@ -30,6 +74,9 @@
     "build": "react-scripts build && npm run build-sw && npm run clean-cra-sw && npm run move-to-backend",
     "move-to-backend": "mkdir -p ../backend/client/build && cp -pr build/* ../backend/client/build/",
     "test": "react-scripts test",
+    "test:watch": "react-scripts test --watchAll",
+    "test:coverage": "react-scripts test --coverage",
+    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -42,6 +89,15 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
+    "husky": "^3.1.0",
+    "jest-fetch-mock": "^2.1.2",
+    "react-test-renderer": "^16.12.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1",
     "workbox-build": "^4.3.0"
   }
 }
