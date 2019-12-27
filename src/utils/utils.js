@@ -291,16 +291,15 @@ Utils.polyfill = function polyfill() {
         throw new TypeError('Object.values called on a non-object');
       }
 
-      let val = [],
-        key;
+      const value = [];
 
-      for (key in obj) {
+      for (let key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          val.push(obj[key]);
+          value.push(obj[key]);
         }
       }
 
-      return val;
+      return value;
     };
   }
 };
