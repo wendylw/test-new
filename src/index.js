@@ -4,6 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import 'whatwg-fetch';
 import './config'; // import here for globally init
 import './i18n';
+import './utils/polyfill';
 
 import Bootstrap from './Bootstrap';
 import HeapJS from './components/HeapJS';

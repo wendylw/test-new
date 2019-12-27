@@ -18,10 +18,6 @@ const AsyncQRScanner = lazy(() => import('./qrscan'));
 const { ROUTER_PATHS } = Constants;
 
 class Bootstrap extends Component {
-  componentDidMount() {
-    Utils.polyfill();
-  }
-
   render() {
     return (
       <Router>
