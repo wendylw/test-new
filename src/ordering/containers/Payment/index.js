@@ -43,30 +43,6 @@ const dataSource = {
     label: 'GrabPay',
   },
 };
-// const dataSource = [
-//   {
-//     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-//     logo: '/img/payment-banking.png',
-//     label: 'Online Banking',
-//     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-//   },
-//   {
-//     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
-//     logo: '/img/payment-credit.png',
-//     label: 'Visa / MasterCard',
-//     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
-//   },
-//   {
-//     name: PAYMENT_METHODS.BOOST_PAY,
-//     logo: '/img/payment-boost.png',
-//     label: 'Boost',
-//   },
-//   {
-//     name: PAYMENT_METHODS.GRAB_PAY,
-//     logo: '/img/payment-grab.png',
-//     label: 'GrabPay',
-//   },
-// ];
 const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
