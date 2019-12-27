@@ -1,12 +1,5 @@
 /* Disable minification (remove `.min` from URL path) for more info */
 /* eslint-disable no-restricted-globals */
-// (function(undefined) {}.call(
-//   ('object' === typeof window && window) ||
-//     ('object' === typeof self && self) ||
-//     ('object' === typeof global && global) ||
-//     {}
-// ));
-
 if (!Object.values) {
   Object.values = function(obj) {
     if (obj !== Object(obj)) {

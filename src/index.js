@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
+import './utils/polyfill';
 import 'whatwg-fetch';
 import './config'; // import here for globally init
 import './i18n';
-import './utils/polyfill';
 
 import Bootstrap from './Bootstrap';
 import HeapJS from './components/HeapJS';
