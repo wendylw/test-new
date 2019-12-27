@@ -285,24 +285,6 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
 };
 
 Utils.polyfill = function polyfill() {
-  // if (!Object.values) {
-  //   Object.values = function(obj) {
-  //     if (obj !== Object(obj)) {
-  //       throw new TypeError('Object.values called on a non-object');
-  //     }
-
-  //     const value = [];
-
-  //     for (let key in obj) {
-  //       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-  //         value.push(obj[key]);
-  //       }
-  //     }
-
-  //     return value;
-  //   };
-  // }
-
   /* Disable minification (remove `.min` from URL path) for more info */
   (function(undefined) {}.call(
     ('object' === typeof window && window) ||
@@ -310,6 +292,24 @@ Utils.polyfill = function polyfill() {
       ('object' === typeof global && global) ||
       {}
   ));
+
+  if (!Object.values) {
+    Object.values = function(obj) {
+      if (obj !== Object(obj)) {
+        throw new TypeError('Object.values called on a non-object');
+      }
+
+      const value = [];
+
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          value.push(obj[key]);
+        }
+      }
+
+      return value;
+    };
+  }
 };
 
 export default Utils;
