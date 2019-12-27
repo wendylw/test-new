@@ -10,34 +10,63 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
+import {
+  actions as paymentActionCreators,
+  getCurrentPayment,
+  getCurrentOrderId,
+  getPaymentList,
+} from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
-const dataSource = [
-  {
+const dataSource = {
+  onlineBanking: {
     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
     logo: '/img/payment-banking.png',
     label: 'Online Banking',
     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
-  {
+  creditCard: {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: '/img/payment-credit.png',
     label: 'Visa / MasterCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
-  {
+  boost: {
     name: PAYMENT_METHODS.BOOST_PAY,
     logo: '/img/payment-boost.png',
     label: 'Boost',
   },
-  {
+  grabPay: {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: '/img/payment-grab.png',
     label: 'GrabPay',
   },
-];
+};
+// const dataSource = [
+//   {
+//     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
+//     logo: '/img/payment-banking.png',
+//     label: 'Online Banking',
+//     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
+//   },
+//   {
+//     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
+//     logo: '/img/payment-credit.png',
+//     label: 'Visa / MasterCard',
+//     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
+//   },
+//   {
+//     name: PAYMENT_METHODS.BOOST_PAY,
+//     logo: '/img/payment-boost.png',
+//     label: 'Boost',
+//   },
+//   {
+//     name: PAYMENT_METHODS.GRAB_PAY,
+//     logo: '/img/payment-grab.png',
+//     label: 'GrabPay',
+//   },
+// ];
 const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
@@ -45,9 +74,10 @@ class Payment extends Component {
     payNowLoading: false,
   };
 
-  componentWillMount() {
-    const { homeActions } = this.props;
+  componentDidMount() {
+    const { homeActions, paymentActions } = this.props;
 
+    paymentActions.fetchPaymentList();
     homeActions.loadShoppingCart();
   }
 
@@ -91,7 +121,7 @@ class Payment extends Component {
     });
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
+      const { pathname } = Object.values(dataSource).find(payment => payment.name === currentPayment) || {};
 
       history.push({ pathname });
 
@@ -113,7 +143,7 @@ class Payment extends Component {
   };
 
   render() {
-    const { currentPayment } = this.props;
+    const { currentPayment, paymentList } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -129,22 +159,30 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            {dataSource.map(payment => (
-              <li
-                key={payment.name}
-                className="payment__item border__bottom-divider flex flex-middle flex-space-between"
-                onClick={() => this.setCurrentPayment(payment.name)}
-              >
-                <figure className="payment__image-container">
-                  <img src={payment.logo} alt={payment.label}></img>
-                </figure>
-                <label className="payment__name font-weight-bold">{payment.label}</label>
-                <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
-                  <i className="radio__check-icon"></i>
-                  <input type="radio"></input>
-                </div>
-              </li>
-            ))}
+            {paymentList.map(paymentKey => {
+              const payment = dataSource[paymentKey];
+
+              if (!payment) {
+                return null;
+              }
+
+              return (
+                <li
+                  key={payment.name}
+                  className="payment__item border__bottom-divider flex flex-middle flex-space-between"
+                  onClick={() => this.setCurrentPayment(payment.name)}
+                >
+                  <figure className="payment__image-container">
+                    <img src={payment.logo} alt={payment.label}></img>
+                  </figure>
+                  <label className="payment__name font-weight-bold">{payment.label}</label>
+                  <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
+                    <i className="radio__check-icon"></i>
+                    <input type="radio"></input>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -182,6 +220,7 @@ export default connect(
       currentPayment: getCurrentPayment(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       currentOrder: getOrderByOrderId(state, currentOrderId),
+      paymentList: getPaymentList(state),
     };
   },
   dispatch => ({
