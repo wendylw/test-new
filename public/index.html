@@ -65,12 +65,6 @@
     <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"></script> -->
 
     <script>
-      (function (undefined) { }.call(
-        ('object' === typeof window && window) ||
-        ('object' === typeof self && self) ||
-        ('object' === typeof global && global) ||
-        {}
-      ));
       window.onload = function () {
         document.addEventListener('touchstart', function (event) {
           if (event.touches.length > 1) {
