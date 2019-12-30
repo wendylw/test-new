@@ -22,7 +22,7 @@ class Message extends React.Component {
     modalStatus: [''],
   }
 
-  componentWillMount() {
+  componentDidUpdate() {
     this.initMessages();
   }
 
@@ -48,7 +48,7 @@ class Message extends React.Component {
       NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
       NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
       NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,
-      NotClaimed_ReachMerchantLimit: 'Sorry, cashback claims are unavailable at the moment. Please speak to the cashier for more information.',
+      NotClaimed_ReachMerchantLimit: 'Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.',
       /* set Otp */
       NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
       /* verify phone */
