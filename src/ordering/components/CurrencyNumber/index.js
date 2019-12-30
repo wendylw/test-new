@@ -4,15 +4,6 @@ import { connect } from 'react-redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
-  componentDidMount() {
-    const script = document.createElement('script');
-
-    script.src = 'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en,Intl.~locale.th';
-    script.async = true;
-
-    document.body.appendChild(script);
-  }
-
   formatChildrenAsMoney() {
     const { locale, currency, money } = this.props;
 
