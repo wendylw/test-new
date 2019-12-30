@@ -10,7 +10,11 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
-import { actions as thankYouActionCreators, getBusinessInfo, getCashbackInfo } from '../../../../redux/modules/thankYou';
+import {
+  actions as thankYouActionCreators,
+  getBusinessInfo,
+  getCashbackInfo,
+} from '../../../../redux/modules/thankYou';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const ANIMATION_TIME = 3600;
@@ -24,14 +28,11 @@ class PhoneLogin extends React.Component {
     phone: Utils.getLocalStorageVariable('user.p'),
     isSavingPhone: false,
     showCelebration: false,
-    claimedAnimationGifSrc: null
-  }
+    claimedAnimationGifSrc: null,
+  };
 
   async componentDidMount() {
-    const {
-      history,
-      thankYouActions,
-    } = this.props;
+    const { history, thankYouActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     await thankYouActions.getCashbackInfo(receiptNumber);
@@ -46,7 +47,7 @@ class PhoneLogin extends React.Component {
     this.initMessages();
 
     this.setState({
-      claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF
+      claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF,
     });
   }
 
@@ -56,7 +57,8 @@ class PhoneLogin extends React.Component {
     const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
     const { enableCashback: prevEnableCashback } = prevProps.businessInfo || {};
-    const canCreateCashback = isLogin && enableCashback && (prevEnableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
+    const canCreateCashback =
+      isLogin && enableCashback && (prevEnableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
 
     if (canCreateCashback) {
       this.canClaimCheck(user);
@@ -76,18 +78,15 @@ class PhoneLogin extends React.Component {
   }
 
   initMessages() {
-    const {
-      businessInfo,
-      onlineStoreInfo,
-      cashbackInfo,
-    } = this.props;
+    const { businessInfo, onlineStoreInfo, cashbackInfo } = this.props;
     const { claimCashbackCountPerDay } = businessInfo || {};
     const { currencySymbol } = onlineStoreInfo || {};
     const { cashback } = cashbackInfo || {};
     const messages = {
       Default: 'Oops, please scan QR to claim again.',
       /* get Cash Back messages */
-      Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
+      Invalid:
+        'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
       /* save Cash Back messages */
       Claimed_FirstTime: `Awesome, you've earned ${currencySymbol || ''} ${cashback || ''} your first cashback! 🎉 `,
       Claimed_NotFirstTime: `You've earned ${currencySymbol || ''} ${cashback || ''} cashback! 🎉`,
@@ -97,14 +96,17 @@ class PhoneLogin extends React.Component {
       NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
       NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
       NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
-      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay ||
+        0} time(s) a day. 😭`,
+      NotClaimed_ReachMerchantLimit:
+        'Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.',
       /* set Otp */
       NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
       /* verify phone */
       Save_Cashback_Failed: 'Oops! please retry again later.',
       /* Activity */
       Activity_Incorrect: 'Activity incorrect, need retry.',
-    }
+    };
 
     this.MESSAGES = messages;
   }
@@ -149,7 +151,7 @@ class PhoneLogin extends React.Component {
     return {
       phone,
       receiptNumber,
-      source: Constants.CASHBACK_SOURCE.QR_ORDERING
+      source: Constants.CASHBACK_SOURCE.QR_ORDERING,
     };
   }
 
@@ -184,26 +186,13 @@ class PhoneLogin extends React.Component {
       return null;
     }
 
-    return (
-      <CurrencyNumber
-        className="font-weight-bold"
-        money={Math.abs(cashback || 0)}
-      />
-    );
+    return <CurrencyNumber className="font-weight-bold" money={Math.abs(cashback || 0)} />;
   }
 
   renderPhoneView() {
-    const {
-      user,
-      onlineStoreInfo,
-    } = this.props;
+    const { user, onlineStoreInfo } = this.props;
     const { phone } = this.state;
-    const {
-      isFetching,
-      isWebview,
-      isLogin,
-      customerId,
-    } = user || {};
+    const { isFetching, isWebview, isLogin, customerId } = user || {};
     const { country } = onlineStoreInfo || {};
 
     if (!isLogin) {
@@ -230,7 +219,9 @@ class PhoneLogin extends React.Component {
             className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             target="_blank"
-          >Check My Balance</Link>
+          >
+            Check My Balance
+          </Link>
         </BrowserRouter>
       );
     }
@@ -239,20 +230,15 @@ class PhoneLogin extends React.Component {
       <button
         className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
         onClick={this.handlePostLoyaltyPageMessage.bind(this)}
-      >Check My Balance</button>
+      >
+        Check My Balance
+      </button>
     );
   }
 
   render() {
-    const {
-      user,
-      businessInfo,
-      onlineStoreInfo,
-    } = this.props;
-    const {
-      claimedAnimationGifSrc,
-      showCelebration,
-    } = this.state;
+    const { user, businessInfo, onlineStoreInfo } = this.props;
+    const { claimedAnimationGifSrc, showCelebration } = this.state;
     const { customerId } = user || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
@@ -263,16 +249,21 @@ class PhoneLogin extends React.Component {
 
     return (
       <div className="thanks__phone-view">
-        <label className="phone-view-form__label text-center">
-          {this.getMessage() || ''}
-        </label>
+        <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
 
         <p className="terms-privacy text-center gray-font-opacity">
           By tapping to continue, you agree to our
           <br />
           <BrowserRouter basename="/">
-            <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+            <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+              <strong>Terms of Service</strong>
+            </Link>
+            , and{' '}
+            <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+              <strong>Privacy Policy</strong>
+            </Link>
+            .
           </BrowserRouter>
         </p>
         <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
@@ -284,13 +275,13 @@ class PhoneLogin extends React.Component {
 }
 
 export default connect(
-  (state) => ({
+  state => ({
     user: getUser(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     businessInfo: getBusinessInfo(state),
     cashbackInfo: getCashbackInfo(state),
   }),
-  (dispatch) => ({
+  dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
     thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
   })
