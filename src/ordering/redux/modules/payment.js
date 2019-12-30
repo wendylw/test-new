@@ -112,7 +112,6 @@ export const actions = {
   }),
 
   fetchPaymentList: () => dispatch => {
-    console.log(config.paymentList);
     return dispatch({
       type: types.FETCH_PAYMENTLIST_SUCCESS,
       response: {
