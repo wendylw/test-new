@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
@@ -19,30 +20,24 @@ export class ThankYou extends Component {
 
   getReceiptNumber = () => {
     const { history } = this.props;
-    const query = new URLSearchParams(history.location.search);
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    return query.get('receiptNumber');
-  }
+    return receiptNumber;
+  };
 
   handleClickViewReceipt = () => {
-    const {
-      history,
-      order,
-    } = this.props;
+    const { history, order } = this.props;
     const { orderId } = order || {};
 
     history.push({
       pathname: Constants.ROUTER_PATHS.RECEIPT_DETAIL,
-      search: `?receiptNumber=${orderId || ''}`
+      search: `?receiptNumber=${orderId || ''}`,
     });
   };
 
   renderPickupInfo() {
     const { order } = this.props;
-    const {
-      tableId,
-      pickUpId,
-    } = order || {};
+    const { tableId, pickUpId } = order || {};
 
     if (!pickUpId || tableId) {
       return null;
@@ -52,7 +47,9 @@ export class ThankYou extends Component {
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
           <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
-          <span className="thanks-pickup__id-number" data-testid="thanks__pickup-number">{pickUpId}</span>
+          <span className="thanks-pickup__id-number" data-testid="thanks__pickup-number">
+            {pickUpId}
+          </span>
         </div>
       </div>
     );
@@ -91,28 +88,39 @@ export class ThankYou extends Component {
     const { tableId } = order || {};
 
     return (
-      <section className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}>
+      <section
+        className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${
+          match.isExact ? '' : 'hide'
+        }`}
+      >
         <Header
           className="border__bottom-divider gray"
           isPage={true}
           title="Order Paid"
-          navFunc={() => history.replace({
-            pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-            search: `?table=${order.tableId}&storeId=${order.storeId}`
-          })}
+          navFunc={() =>
+            history.replace({
+              pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+              search: `?table=${order.tableId}&storeId=${order.storeId}`,
+            })
+          }
         >
           <span className="gray-font-opacity text-uppercase">
-            {
-              tableId
-                ? <span data-testid="thanks__table-id">{`Table ${tableId}`}</span>
-                : <span data-testid="thanks__self-pickup">Self pick-up</span>
-            }
+            {tableId ? (
+              <span data-testid="thanks__table-id">{`Table ${tableId}`}</span>
+            ) : (
+              <span data-testid="thanks__self-pickup">Self pick-up</span>
+            )}
           </span>
         </Header>
         <div className="thanks text-center">
           <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">Thank You!</h2>
-          <p>We're preparing your order now. <span role="img" aria-label="Goofy">😋</span></p>
+          <p>
+            We're preparing your order now.{' '}
+            <span role="img" aria-label="Goofy">
+              😋
+            </span>
+          </p>
 
           <div className="thanks__info-container">
             {this.renderPickupInfo()}
@@ -122,7 +130,12 @@ export class ThankYou extends Component {
         </div>
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
-            <li><span>&copy; {date.getFullYear()} </span><a className="link link__non-underline" href="https://www.storehub.com/">StoreHub</a></li>
+            <li>
+              <span>&copy; {date.getFullYear()} </span>
+              <a className="link link__non-underline" href="https://www.storehub.com/">
+                StoreHub
+              </a>
+            </li>
           </ul>
         </footer>
       </section>
@@ -131,11 +144,11 @@ export class ThankYou extends Component {
 }
 
 export default connect(
-  (state) => ({
+  state => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
     order: getOrder(state),
   }),
-  (dispatch) => ({
+  dispatch => ({
     thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
   })
 )(ThankYou);
