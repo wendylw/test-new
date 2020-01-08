@@ -1,61 +1,34 @@
 const collectCoverageFrom = [
-  // definition file won't be tested
-  '!src/**/*.d.ts',
+  // Freedom area
+  '!src/**/__fixtures__/**/*',
 
-  // root dir
-  'src/*.{ts,tsx,js,jsx}',
-  '!src/index.tsx',
-  '!src/serviceWorker.ts',
-  '!src/setupTests.ts',
+  // UI Components
+  // << do not collect UI coverage for now >>
 
-  // component should be tested eventually
-  // 'src/components/**/*.{ts,tsx,js,jsx}',
-  'src/components/ErrorScreen/index.tsx',
-  'src/components/Link/index.tsx',
+  // Utils
+  'src/utils/**/*.js',
+  '!src/utils/url.js',
+  '!src/utils/propTypes.js',
 
-  // constants doesn't need to be tested
-  '!src/constants/**/*.{ts,tsx,js,jsx}',
-
-  // containers should be tested eventually
-  // 'src/containers/**/*.{ts,tsx,js,jsx}',
-
-  // redux should be tested eventually
-  // 'src/redux/**/*.{ts,tsx,js,jsx}',
-
-  // util should be tested except several non-logical components
-  'src/utils/**/*.{ts,tsx,js,jsx}',
-  '!src/utils/antd-icons.ts',
-  '!src/utils/url.ts',
-  '!src/utils/bootstrap/fontawesome.ts'
+  // Redux
+  'src/redux/**/*.js',
+  'src/{cashback,ordering,qrscan,stores}/redux/**/*.js',
 ];
 
 module.exports = config => {
   const overrides = {
     collectCoverageFrom,
     coverageThreshold: {
-      'src/*.{ts,tsx,js,jsx}': {
-        branches: 50,
-        functions: 50,
-        lines: 50,
-        statements: 50
+      'src/utils': {
+        branches: 71,
+        functions: 89,
+        lines: 83,
+        statements: 83
       },
-      'src/components/**/*.{ts,tsx,js,jsx}': {
-        branches: 50,
-        functions: 50,
-        lines: 50,
-        statements: 50
-      },
-      'src/utils/**/*.{ts,tsx,js,jsx}': {
-        branches: 50,
-        functions: 50,
-        lines: 50,
-        statements: 50
-      }
+      // TODO: add 'src/redux' if done with test cases
+      // TODO: add 'src/{cashback,ordering,qrscan,stores}/redux' if done with test cases
+      // TODO: add 'global' if needed, but not for now we think.
     },
-    moduleNameMapper: {
-      // https://github.com/sindresorhus/ky/issues/170
-      '^ky$': require.resolve('ky').replace('index.js', 'umd.js')
-    }
   };
   return {
     ...config,
