@@ -2,6 +2,10 @@ const collectCoverageFrom = [
   // Freedom area
   '!src/**/__fixtures__/**/*',
 
+  // Root
+  // << do not collection root folder's coverage for now >>
+  'src/config.js',
+
   // UI Components
   // << do not collect UI coverage for now >>
 
