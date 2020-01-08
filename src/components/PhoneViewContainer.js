@@ -11,7 +11,7 @@ class PhoneViewContainer extends React.Component {
   state = {
     phone: this.props.phone,
     isSavingPhone: this.props.isLoading,
-  }
+  };
 
   componentWillReceiveProps(nextProps) {
     const { isLoading, phone } = nextProps;
@@ -51,17 +51,8 @@ class PhoneViewContainer extends React.Component {
   }
 
   render() {
-    const {
-      children,
-      title,
-      className,
-      country,
-      buttonText,
-    } = this.props;
-    const {
-      isSavingPhone,
-      phone,
-    } = this.state;
+    const { children, title, className, country, buttonText } = this.props;
+    const { isSavingPhone, phone } = this.state;
     let buttonContent = buttonText;
 
     if (isSavingPhone) {
@@ -70,12 +61,9 @@ class PhoneViewContainer extends React.Component {
 
     return (
       <aside className={className}>
-        {
-          title
-            ? <label className="phone-view-form__label text-center">{title}</label>
-            : null
-        }
+        {title ? <label className="phone-view-form__label text-center">{title}</label> : null}
         <PhoneInput
+          smartCaret={false}
           placeholder="Enter phone number"
           value={formatPhoneNumberIntl(phone)}
           country={country || DEFAULT_COUNTRY}
@@ -108,8 +96,8 @@ PhoneViewContainer.propTypes = {
 
 PhoneViewContainer.defaultProps = {
   isLoading: false,
-  updatePhoneNumber: () => { },
-  onSubmit: () => { },
+  updatePhoneNumber: () => {},
+  onSubmit: () => {},
 };
 
 export default PhoneViewContainer;
