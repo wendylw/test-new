@@ -29,15 +29,9 @@ class PhoneView extends React.Component {
       return;
     }
 
-    alert('phone');
-
     await Utils.setLocalStorageVariable('user.p', phone);
 
-    alert('setPhoneNumber');
-
     this.setState({ isLoading: true });
-
-    alert('setLoading');
 
     submitPhoneNumber();
   }
