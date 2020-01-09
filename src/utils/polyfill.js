@@ -1,27 +1,40 @@
+import Constatns from './constants';
 /* Disable minification (remove `.min` from URL path) for more info */
 /* eslint-disable no-restricted-globals */
-const script = document.createElement('script');
 
-script.src = 'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en,Intl.~locale.th';
-script.async = true;
+/* polyfill URL: https://polyfill.io/v3/url-builder/ */
+export const createPolyfill = () => {
+  const script = document.createElement('script');
 
-document.body.appendChild(script);
+  const featuresArray = Constatns.LANGUAGES.map(lang => `${Constatns.POLYFILL_FEATURES.join('%2C')}.~locale.${lang}`);
+  script.src = `${Constatns.POLYFILL_FEATURES_URL}${featuresArray.join(',')}`;
+  script.async = true;
 
-if (!Object.values) {
-  Object.values = function(obj) {
-    if (obj !== Object(obj)) {
-      throw new TypeError('Object.values called on a non-object');
-    }
+  document.body.appendChild(script);
+};
 
-    const value = [];
+createPolyfill();
 
-    for (let key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        value.push(obj[key]);
+export const objectValuePolyfill = () => {
+  if (!Object.values) {
+    Object.values = function(obj) {
+      if (obj !== Object(obj)) {
+        throw new TypeError('Object.values called on a non-object');
       }
-    }
 
-    return value;
-  };
-}
+      const value = [];
+
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          value.push(obj[key]);
+        }
+      }
+
+      return value;
+    };
+  }
+};
+
+objectValuePolyfill();
+
 /* eslint-enabled no-restricted-globals */

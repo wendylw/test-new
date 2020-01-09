@@ -100,8 +100,12 @@ const REQUEST_ERROR_KEYS = {
 };
 
 const LOGIN_PROMPT = {
-  400: 'Your One Time Passcode is invalid.'
+  400: 'Your One Time Passcode is invalid.',
 };
+
+const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
+const POLYFILL_FEATURES = ['Intl'];
+const LANGUAGES = ['en', 'th'];
 
 export default {
   OTP_CODE_SIZE,
@@ -122,4 +126,7 @@ export default {
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
   LOGIN_PROMPT,
+  POLYFILL_FEATURES_URL,
+  POLYFILL_FEATURES,
+  LANGUAGES,
 };
