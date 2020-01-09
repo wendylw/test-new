@@ -51,7 +51,11 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
 };
 
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
+  alert('settingPhoneNumber');
+
   localStorage.setItem(name, value || '');
+
+  alert('setteeeePhoneNumber');
 };
 
 Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
