@@ -163,8 +163,12 @@ class PhoneLogin extends React.Component {
     const { appActions } = this.props;
     const { phone } = this.state;
 
+    alert('start request');
+
     // appActions.getOtp({ phone }); use when otp will fixed
     appActions.phoneNumberLogin({ phone });
+
+    alert('end request');
   }
 
   handlePostLoyaltyPageMessage() {

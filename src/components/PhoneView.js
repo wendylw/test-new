@@ -25,14 +25,19 @@ class PhoneView extends React.Component {
   async savePhoneNumber() {
     const { submitPhoneNumber, phone } = this.props;
 
-    alert('test');
-
     if (!isValidPhoneNumber(phone)) {
       return;
     }
 
+    alert('phone');
+
     await Utils.setLocalStorageVariable('user.p', phone);
+
+    alert('setPhoneNumber');
+
     this.setState({ isLoading: true });
+
+    alert('setLoading');
 
     submitPhoneNumber();
   }
