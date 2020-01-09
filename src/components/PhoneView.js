@@ -26,7 +26,6 @@ class PhoneView extends React.Component {
     const { submitPhoneNumber, phone } = this.props;
 
     if (!isValidPhoneNumber(phone)) {
-      alert('invalidPhoneNumber');
       return;
     }
 
