@@ -53,13 +53,11 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   alert('settingPhoneNumber');
 
-  localStorage.setItem(name, value || '');
-
-  alert('setteeeePhoneNumber');
+  return localStorage.setItem(name, value || '');
 };
 
 Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
-  localStorage.removeItem(name);
+  return localStorage.removeItem(name);
 };
 
 Utils.getSessionVariable = function getSessionVariable(name) {
@@ -67,23 +65,11 @@ Utils.getSessionVariable = function getSessionVariable(name) {
 };
 
 Utils.setSessionVariable = function setSessionVariable(name, value) {
-  sessionStorage.setItem(name, value || '');
+  return sessionStorage.setItem(name, value || '');
 };
 
 Utils.removeSessionVariable = function removeSessionVariable(name) {
-  sessionStorage.removeItem(name);
-};
-
-Utils.getAdditionalComments = function getAdditionalComments() {
-  return sessionStorage.getItem('additionalComments');
-};
-
-Utils.setAdditionalComments = function setAdditionalComments(additionalComments) {
-  sessionStorage.setItem('additionalComments', additionalComments || '');
-};
-
-Utils.removeAdditionalComments = function removeAdditionalComments() {
-  sessionStorage.removeItem('additionalComments');
+  return sessionStorage.removeItem(name);
 };
 
 Utils.isProductSoldOut = product => {

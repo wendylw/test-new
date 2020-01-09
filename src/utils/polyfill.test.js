@@ -1,4 +1,4 @@
-import { createPolyfill } from './polyfill';
+import { createPolyfill, objectValuePolyfill } from './polyfill';
 import { JSDOM } from 'jsdom';
 
 const dom = new JSDOM();
@@ -23,6 +23,10 @@ describe('Create polyfill link', () => {
 describe('Compatible with Object.values in older browsers', () => {
   beforeAll(() => {
     global.window = dom.window;
+    testObject = {
+      key1: 'value1',
+      key2: 'value2',
+    };
   });
 
   it('Object.values is working when window does not define Object.values', () => {});
