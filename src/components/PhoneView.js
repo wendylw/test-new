@@ -25,6 +25,8 @@ class PhoneView extends React.Component {
   async savePhoneNumber() {
     const { submitPhoneNumber, phone } = this.props;
 
+    alert('test');
+
     if (!isValidPhoneNumber(phone)) {
       return;
     }
