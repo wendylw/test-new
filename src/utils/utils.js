@@ -47,18 +47,26 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
 };
 
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
-  return localStorage.getItem(name);
+  try {
+    return localStorage.getItem(name);
+  } catch {
+    return localStorage[name];
+  }
 };
 
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
-  if (localStorage && localStorage.setItem) {
-    //   localStorage.setItem(name, value || '');
+  try {
+    localStorage.setItem(name, value || '');
+  } catch (e) {
+    localStorage[name] = JSON.stringify(value);
   }
 };
 
 Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
-  if (localStorage && localStorage.removeItem) {
+  try {
     localStorage.removeItem(name);
+  } catch (e) {
+    delete localStorage[name];
   }
 };
 
