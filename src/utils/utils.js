@@ -58,7 +58,9 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
+    alert('setLocalStorage');
     localStorage[name] = JSON.stringify(value);
+    alert('setendLocalStorage');
   }
 };
 
