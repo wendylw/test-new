@@ -1,4 +1,4 @@
-import Constatns from './constants';
+import Constants from './constants';
 /* Disable minification (remove `.min` from URL path) for more info */
 /* eslint-disable no-restricted-globals */
 
@@ -6,8 +6,8 @@ import Constatns from './constants';
 export const createPolyfill = () => {
   const script = document.createElement('script');
 
-  const featuresArray = Constatns.LANGUAGES.map(lang => `${Constatns.POLYFILL_FEATURES.join('%2C')}.~locale.${lang}`);
-  script.src = `${Constatns.POLYFILL_FEATURES_URL}${featuresArray.join(',')}`;
+  const featuresArray = Constants.LANGUAGES.map(lang => `${Constants.POLYFILL_FEATURES.join('%2C')}.~locale.${lang}`);
+  script.src = `${Constants.POLYFILL_FEATURES_URL}${featuresArray.join(',')}`;
   script.async = true;
 
   document.body.appendChild(script);
