@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 import { withRouter } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
 
-const processQR = (qrData) => new Promise((resolve, reject) => {
-  let data = qrData.trim();
-  if (/^https?:/.test(data)) {
-    if (data.includes('beepit.co')) {
-      const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
-      data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
+const processQR = qrData =>
+  new Promise((resolve, reject) => {
+    let data = qrData.trim();
+    if (/^https?:/.test(data)) {
+      if (data.includes('beepit.co')) {
+        const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
+        data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
+      }
+      window.location.href = data;
+      resolve(data);
+    } else {
+      reject('Not Identified');
     }
-    window.location.href = data;
-    resolve(data)
-  } else {
-    reject('Not Identified')
-  }
-})
+  });
 
 class Scanner extends Component {
   componentDidMount() {
@@ -23,30 +25,31 @@ class Scanner extends Component {
   }
 
   getCamera() {
+    const { t } = this.props;
     //turn on the camera
     try {
       let that = this;
 
-      const videoObj = { video: { facingMode: "environment" }, audio: false },
-        MediaErr = function (error) {
+      const videoObj = { video: { facingMode: 'environment' }, audio: false },
+        MediaErr = function(error) {
           if (error.name === 'NotAllowedError') {
             that.props.history.push(Constants.ALL_ROUTER.permission);
           } else {
             if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
               this.props.history.push({
                 pathname: Constants.ALL_ROUTER.notSupport,
-                state: { isIOS: true }
-              })
+                state: { isIOS: true },
+              });
             } else if (/android/i.test(navigator.userAgent)) {
               this.props.history.push({
                 pathname: Constants.ALL_ROUTER.notSupport,
-                state: { isIOS: false }
-              })
+                state: { isIOS: false },
+              });
             } else {
               this.props.history.push({
                 pathname: Constants.ALL_ROUTER.notSupport,
-                state: { isIOS: false }
-              })
+                state: { isIOS: false },
+              });
             }
           }
         };
@@ -59,69 +62,71 @@ class Scanner extends Component {
           return false;
         }
 
-        navigator.mediaDevices.getUserMedia(videoObj)
-          .then(function (stream) {
+        navigator.mediaDevices
+          .getUserMedia(videoObj)
+          .then(function(stream) {
             const play = that.getViedoStream.bind(that, stream);
             play();
           })
-          .catch(function (err) {
+          .catch(function(err) {
             MediaErr(err);
           });
-
       } else if (navigator.mediaDevices.webkitGetUserMedia) {
-        navigator.webkitGetUserMedia(videoObj)
-          .then(function (stream) {
+        navigator
+          .webkitGetUserMedia(videoObj)
+          .then(function(stream) {
             const play = that.getViedoStream.bind(that, stream);
             play();
           })
-          .catch(function (err) {
+          .catch(function(err) {
             MediaErr(err);
           });
       } else if (navigator.mediaDevices.mozGetUserMedia) {
-        navigator.mozGetUserMedia(videoObj)
-          .then(function (stream) {
+        navigator
+          .mozGetUserMedia(videoObj)
+          .then(function(stream) {
             const play = that.getViedoStream.bind(that, stream);
             play();
           })
-          .catch(function (err) {
+          .catch(function(err) {
             MediaErr(err);
           });
       } else if (navigator.mediaDevices.msGetUserMedia) {
-        navigator.msGetUserMedia(videoObj)
-          .then(function (stream) {
+        navigator
+          .msGetUserMedia(videoObj)
+          .then(function(stream) {
             const play = that.getViedoStream.bind(that, stream);
             play();
           })
-          .catch(function (err) {
+          .catch(function(err) {
             MediaErr(err);
           });
       } else {
-        alert("Sorry, your browser doesn't support this feature");
+        alert(t('ScannerSorryText'));
         return false;
       }
-
     } catch (e) {
       if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
-          state: { isIOS: true }
-        })
+          state: { isIOS: true },
+        });
       } else if (/android/i.test(navigator.userAgent)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
-          state: { isIOS: false }
-        })
+          state: { isIOS: false },
+        });
       } else {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
-          state: { isIOS: false }
-        })
+          state: { isIOS: false },
+        });
       }
     }
   }
 
   getQRCode(video, canvas, context) {
-    let timer = setInterval(function () {
+    let timer = setInterval(function() {
       const imageWidth = video.videoWidth;
       const imageHeight = video.videoHeight;
 
@@ -131,40 +136,44 @@ class Scanner extends Component {
 
       let qr = new QrcodeDecoder();
 
-      qr.decodeFromImage(canvas.toDataURL("image/png")).then((res) => {
+      qr.decodeFromImage(canvas.toDataURL('image/png')).then(res => {
         if (res.data) {
           processQR(res.data).then(() => {
             window.clearInterval(timer);
-          })
+          });
         }
       });
-    }, 300)
+    }, 300);
   }
 
   getViedoStream(stream) {
     this.setState({
-      getPermission: true
+      getPermission: true,
     });
-    let canvas = null, context = null, video = null;
+    let canvas = null,
+      context = null,
+      video = null;
     canvas = this.refs.canvas;
-    context = canvas.getContext("2d");
+    context = canvas.getContext('2d');
     video = this.refs.video;
     video.srcObject = stream;
-    video.onloadedmetadata = function (e) {
+    video.onloadedmetadata = function(e) {
       video.play();
     };
     this.getQRCode(video, canvas, context);
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <div>
         <div id="contentHolder">
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
           <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
-            <img className="viedo-cover__logo" src="/img/Shape.png" alt=""/>
-            <span className="viedo-cover__tips">Align the QR code within the frame to scan</span>
+            <img className="viedo-cover__logo" src="/img/Shape.png" alt="" />
+            <span className="viedo-cover__tips">{t('ScanDescribeText')}</span>
             <div className="qrcode">
               <div></div>
               <div></div>
@@ -179,5 +188,4 @@ class Scanner extends Component {
   }
 }
 
-export default withRouter(Scanner);
-
+export default withRouter(withTranslation('Scanner')(Scanner));
