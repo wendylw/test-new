@@ -74,15 +74,30 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
 };
 
 Utils.getSessionVariable = function getSessionVariable(name) {
-  return sessionStorage.getItem(name);
+  try {
+    return sessionStorage.getItem(name);
+  } catch (e) {
+    return window.NameSessionStorage[name] || '';
+  }
 };
 
 Utils.setSessionVariable = function setSessionVariable(name, value) {
-  sessionStorage.setItem(name, value || '');
+  try {
+    sessionStorage.setItem(name, value || '');
+  } catch (e) {
+    window.NameSessionStorage = window.NameSessionStorage || {};
+    window.NameSessionStorage[name] = value;
+  }
 };
 
 Utils.removeSessionVariable = function removeSessionVariable(name) {
-  sessionStorage.removeItem(name);
+  try {
+    sessionStorage.removeItem(name);
+  } catch (e) {
+    if (window.NameSessionStorage[name]) {
+      delete window.NameSessionStorage[name];
+    }
+  }
 };
 
 Utils.isProductSoldOut = product => {
