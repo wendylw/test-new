@@ -49,8 +49,8 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
-  } catch {
-    return localStorage[name];
+  } catch (e) {
+    return window.NameStorage[name] || '';
   }
 };
 
@@ -58,9 +58,8 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    alert('setLocalStorage');
-    localStorage[name] = JSON.stringify(value);
-    alert('setendLocalStorage');
+    window.NameStorage = window.NameStorage || {};
+    window.NameStorage[name] = value;
   }
 };
 
@@ -68,7 +67,9 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    delete localStorage[name];
+    if (window.NameStorage[name]) {
+      delete window.NameStorage[name];
+    }
   }
 };
 
