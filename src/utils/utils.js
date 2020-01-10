@@ -51,9 +51,9 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
 };
 
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
-  // if (localStorage && localStorage.setItem) {
-  //   localStorage.setItem(name, value || '');
-  // }
+  if (localStorage && localStorage.setItem) {
+    //   localStorage.setItem(name, value || '');
+  }
 };
 
 Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {

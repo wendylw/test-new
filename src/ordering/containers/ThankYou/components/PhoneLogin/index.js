@@ -137,8 +137,6 @@ class PhoneLogin extends React.Component {
       await thankYouActions.createCashbackInfo(this.getOrderInfo());
     }
 
-    alert(JSON.stringify(cashbackInfo));
-
     const { cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
 
