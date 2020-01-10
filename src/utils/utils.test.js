@@ -1,5 +1,5 @@
 import Utils from "./utils";
-import {addressInfo, soldingProduct, soldoutProduct} from "./__fixtures__/utils.fixtures";
+import { addressInfo, soldingProduct, soldoutProduct } from "./__fixtures__/utils.fixtures";
 
 beforeEach(() => {
   jest.useFakeTimers()

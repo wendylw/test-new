@@ -80,7 +80,6 @@ export const actions = {
   // increase clicked on product item
   increaseProductInCart: (prod) => (dispatch, getState) => {
     const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
-
     if (prod.variations && prod.variations.length) {
       if (getState().home.currentProduct.id !== prod.id) {
         return dispatch(fetchProductDetail({ productId: prod.id }));
@@ -99,7 +98,7 @@ export const actions = {
   },
 };
 
-const fetchShoppingCart = () => {
+export const fetchShoppingCart = () => {
   return {
     [API_REQUEST]: {
       types: [
@@ -112,7 +111,7 @@ const fetchShoppingCart = () => {
   };
 }
 
-const fetchOnlineCategory = () => {
+export const fetchOnlineCategory = () => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
@@ -126,7 +125,7 @@ const fetchOnlineCategory = () => {
   };
 }
 // variables := { productId, variations }
-const removeShoppingCartItem = (variables) => {
+export const removeShoppingCartItem = (variables) => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -141,7 +140,7 @@ const removeShoppingCartItem = (variables) => {
   };
 };
 
-const addOrUpdateShoppingCartItem = (variables) => {
+export const addOrUpdateShoppingCartItem = (variables) => {
   const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -156,7 +155,7 @@ const addOrUpdateShoppingCartItem = (variables) => {
   };
 };
 
-const fetchProductDetail = (variables) => {
+export const fetchProductDetail = (variables) => {
   const endpoint = Url.apiGql('ProductDetail');
   return {
     [FETCH_GRAPHQL]: {
