@@ -6,9 +6,14 @@ import Constants from './constants';
 export const createPolyfill = () => {
   const script = document.createElement('script');
 
-  const featuresArray = Constants.LANGUAGES.map(lang => `${Constants.POLYFILL_FEATURES.join('%2C')}.~locale.${lang}`);
-  script.src = `${Constants.POLYFILL_FEATURES_URL}${featuresArray.join(',')}`;
+  const IntlStr = Constants.LANGUAGES.map(lang => `Intl.~locale.${lang}`).join(',');
+  const featuresArray = Constants.POLYFILL_FEATURES.filter(f => f !== 'Intl');
+
+  featuresArray.push(IntlStr);
+
+  script.src = `${Constants.POLYFILL_FEATURES_URL}${featuresArray.join('%2C')}`;
   script.async = true;
+  script.crossorigin = 'anonymous';
 
   document.body.appendChild(script);
 };
