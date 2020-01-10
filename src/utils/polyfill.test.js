@@ -3,7 +3,7 @@ import { createPolyfill } from './polyfill';
 describe('Create polyfill link', () => {
   it('Polyfill script link created successfully', () => {
     const polyfillLink =
-      'https://cdn.polyfill.io/v3/polyfill.min.js?features=Intl%2CObject.values.~locale.en,Intl%2CObject.values.~locale.th';
+      'https://cdn.polyfill.io/v3/polyfill.min.js?features=Object.values.~locale.en,Object.values.~locale.th';
     jest.spyOn(global.document.body, 'appendChild');
 
     createPolyfill();
