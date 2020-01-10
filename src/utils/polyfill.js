@@ -20,26 +20,4 @@ export const createPolyfill = () => {
 
 createPolyfill();
 
-// export const objectValuesPolyfill = () => {
-//   if (!Object.values) {
-//     Object.values = function (obj) {
-//       if (obj !== Object(obj)) {
-//         throw new TypeError('Object.values called on a non-object');
-//       }
-
-//       const value = [];
-
-//       for (let key in obj) {
-//         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-//           value.push(obj[key]);
-//         }
-//       }
-
-//       return value;
-//     };
-//   }
-// };
-
-// objectValuesPolyfill();
-
 /* eslint-enabled no-restricted-globals */

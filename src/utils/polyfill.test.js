@@ -17,25 +17,3 @@ describe('Create polyfill link', () => {
     );
   });
 });
-
-// describe('Compatible with Object.values in older browsers', () => {
-//   let testObject = null;
-//   let testResult = [];
-
-//   beforeAll(() => {
-//     testObject = {
-//       key1: 'value1',
-//       key2: 'value2',
-//     };
-//     testResult = ['value1', 'value2'];
-//   });
-
-//   it('Object.values is working when window does not defines Object.values', () => {
-//     global.window.Object.values = undefined;
-//     expect(global.window.Object.values).toBeUndefined();
-
-//     objectValuesPolyfill();
-
-//     expect(window.Object.values(testObject)).toEqual(expect.arrayContaining(testResult));
-//   });
-// });
