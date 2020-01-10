@@ -1,1 +1,23 @@
-{}
+{
+    "And": "and",
+    "Close": "Close",
+    "TappingToContinue": "By tapping to continue, you agree to our",
+    "TermsOfService": "Terms of Service",
+    "PrivacyPolicy": "Privacy Policy",
+    "DefaultMessage": "Oops, please scan QR to claim again.",
+    "InvalidMessage": "After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!",
+    "ClaimedFirstTimeTitle": "Awesome, you've earned your first cashback! 🎉",
+    "ClaimedFirstTimeDescription": "Tap the button below to learn how to use your cashback.",
+    "ClaimedNotFirstTimeTitle": "You've earned more cashback! 🎉",
+    "ClaimedProcessing": "You've earned more cashback! We'll add it once it's been processed.😉",
+    "ClaimedSomeoneElse": "Someone else has already earned cashback for this receipt.😅",
+    "ClaimedRepeat": "You've already earned cashback for this receipt.👍",
+    "NotClaimed": "Looks like something went wrong. Please scan the QR again, or ask the staff for help.",
+    "NotClaimedExpired": "This cashback has expired and cannot be earned anymore.😭",
+    "NotClaimedCancelled": "This transaction has been cancelled/refunded.",
+    "NotClaimedReachLimit": "Oops, you've exceeded your cashback limit for today. The limit is {{claimCashbackCountPerDay}} time(s) a day. 😭",
+    "NotClaimedReachMerchantLimit": "Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.",
+    "NotSentOTP": "Oops! OTP not sent, please check your phone number and send again.",
+    "SaveCashbackFailed": "Oops! please retry again later.",
+    "ActivityIncorrect": "Activity incorrect, need retry."
+}

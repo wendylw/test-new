@@ -6,7 +6,8 @@ import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
@@ -51,11 +52,7 @@ class Login extends React.Component {
 
   renderOtpModal() {
     const { user } = this.props;
-    const {
-      isFetching,
-      isLogin,
-      hasOtp,
-    } = user || {};
+    const { isFetching, isLogin, hasOtp } = user || {};
     const { phone } = this.state;
 
     if (!hasOtp || isLogin) {
@@ -76,17 +73,8 @@ class Login extends React.Component {
   }
 
   render() {
-    const {
-      user,
-      title,
-      className,
-      businessInfo,
-      onlineStoreInfo
-    } = this.props;
-    const {
-      isFetching,
-      isLogin,
-    } = user || {};
+    const { user, title, className, businessInfo, onlineStoreInfo, t } = this.props;
+    const { isFetching, isLogin } = user || {};
     const { country } = onlineStoreInfo || {};
     const { country: businessCountry } = businessInfo || {};
     const { phone } = this.state;
@@ -114,35 +102,43 @@ class Login extends React.Component {
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
           <p className="terms-privacy text-center gray-font-opacity">
-            By tapping to continue, you agree to our<br />
+            {t('TappingToContinue')}
+            <br />
             <BrowserRouter basename="/">
-              <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+              <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+                <strong>{t('TermsOfService')}</strong>
+              </Link>
+              , {t('And')}{' '}
+              <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+                <strong>{t('PrivacyPolicy')}</strong>
+              </Link>
+              .
             </BrowserRouter>
           </p>
         </PhoneViewContainer>
         {this.renderOtpModal()}
-
       </section>
     );
   }
 }
-
 
 Login.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
 };
 
-Login.defaultProps = {
-};
+Login.defaultProps = {};
 
-export default connect(
-  (state) => ({
-    user: getUser(state),
-    businessInfo: getBusinessInfo(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
-  }),
-  (dispatch) => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation('Common'),
+  connect(
+    state => ({
+      user: getUser(state),
+      businessInfo: getBusinessInfo(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+    }),
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
 )(Login);
