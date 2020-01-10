@@ -3,6 +3,7 @@
     "TotalCashback": "Total cashback",
     "Receipt": "Receipt",
     "Receipts": "Receipts",
+    "CashbackPercentage": "{{percentage}}% Cashback",
     "HowToUseCashback": "How to use Cashback?",
     "UseCashbackStep1": "When paying your bill, tell the cashier your phone number.",
     "UseCashbackStep2": "Your bill will be discounted based on your remaining cashback."

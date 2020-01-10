@@ -85,7 +85,7 @@ class RecentActivities extends React.Component {
         hasMore={fetchState}
         loader={
           <div style={{ clear: 'both' }} key={0}>
-            Loading ...
+            <div className="loader"></div>
           </div>
         }
         useWindow={false}

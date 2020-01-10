@@ -1,6 +1,8 @@
 {
+    "OK": "OK",
     "And": "and",
     "Close": "Close",
+    "Continue": "Continue",
     "TappingToContinue": "By tapping to continue, you agree to our",
     "TermsOfService": "Terms of Service",
     "PrivacyPolicy": "Privacy Policy",

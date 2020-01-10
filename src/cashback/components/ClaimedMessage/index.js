@@ -40,7 +40,7 @@ class ClaimedMessage extends React.Component {
                 {isFirstTime ? (
                   <RedeemInfo
                     buttonClassName="button__fill button__block border-radius-base font-weight-bold text-uppercase"
-                    buttonText="How to use Cashback?"
+                    buttonText={t('HowToUseCashback')}
                   />
                 ) : null}
 
@@ -77,4 +77,4 @@ ClaimedMessage.defaultProps = {
   hideMessage: () => {},
 };
 
-export default withTranslation('Common')(ClaimedMessage);
+export default withTranslation('Cashback')(ClaimedMessage);

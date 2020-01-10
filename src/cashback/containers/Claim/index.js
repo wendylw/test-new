@@ -126,7 +126,7 @@ class PageClaim extends React.Component {
   }
 
   renderCashback() {
-    const { cashbackInfo } = this.props;
+    const { cashbackInfo, t } = this.props;
     const { cashback, defaultLoyaltyRatio } = cashbackInfo || {};
     let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
     const cashbackNumber = Number(cashback);
@@ -139,7 +139,7 @@ class PageClaim extends React.Component {
       return <CurrencyNumber className="loyalty__money" money={cashback} />;
     }
 
-    return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
+    return <span className="loyalty__money">{t('CashbackPercentage', { percentage })}</span>;
   }
 
   renderLocation() {

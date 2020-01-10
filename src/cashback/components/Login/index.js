@@ -51,7 +51,7 @@ class Login extends React.Component {
   }
 
   renderOtpModal() {
-    const { user } = this.props;
+    const { user, t } = this.props;
     const { isFetching, isLogin, hasOtp } = user || {};
     const { phone } = this.state;
 
@@ -61,7 +61,7 @@ class Login extends React.Component {
 
     return (
       <OtpModal
-        buttonText="Ok"
+        buttonText={t('OK')}
         ResendOtpTime={20}
         phone={phone}
         onClose={this.handleCloseOtpModal.bind(this)}
@@ -95,7 +95,7 @@ class Login extends React.Component {
           title={title}
           phone={phone}
           country={country || businessCountry}
-          buttonText="Continue"
+          buttonText={t('Continue')}
           show={true}
           isLoading={isFetching}
           updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
