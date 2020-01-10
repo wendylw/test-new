@@ -104,7 +104,7 @@ const LOGIN_PROMPT = {
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
-const POLYFILL_FEATURES = ['Intl'];
+const POLYFILL_FEATURES = ['Intl', 'Object.values'];
 const LANGUAGES = ['en', 'th'];
 
 export default {
