@@ -29,7 +29,7 @@ class PhoneView extends React.Component {
       return;
     }
 
-    // await Utils.setLocalStorageVariable('user.p', phone);
+    await Utils.setLocalStorageVariable('user.p', phone);
 
     alert('setState');
 
