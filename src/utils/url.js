@@ -72,6 +72,11 @@ const API_URLS = {
     url: '/api/transactions/status',
     method: 'put'
   },
+  DELETE_CARTITEMS_BY_PRODUCTS: {
+    url: '/api/cart/items',
+    method: 'del'
+  }
+
 };
 
 export default {
