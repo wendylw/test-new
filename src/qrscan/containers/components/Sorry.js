@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { Trans, withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
 
 class Sorry extends Component {
@@ -10,15 +11,19 @@ class Sorry extends Component {
     if (this.props.location.state) {
       if (this.props.location.state.isIOS) {
         sorryText = (
-          <p i18nKey="SettingsHelper">
-            Please open beepit.co in <span className="text-bold">Safari</span>
-          </p>
+          <Trans ns="Scanner" i18nKey="IosSorryText">
+            <p>
+              Please open beepit.co in <span className="text-bold">Safari</span>
+            </p>
+          </Trans>
         );
       } else {
         sorryText = (
-          <p i18nKey="SettingsHelper">
-            Please open beepit.co in <span className="text-bold">Google Chrome</span>
-          </p>
+          <Trans ns="Scanner" i18nKey="AndroidSorryText">
+            <p>
+              Please open beepit.co in <span className="text-bold">Google Chrome</span>
+            </p>
+          </Trans>
         );
       }
     } else {
@@ -45,4 +50,4 @@ class Sorry extends Component {
   }
 }
 
-export default withRouter(Sorry);
+export default withRouter(withTranslation('Scanner')(Sorry));
