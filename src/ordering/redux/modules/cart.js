@@ -17,6 +17,7 @@ export const actions = {
     return dispatch(emptyShoppingCart());
   },
 
+  /**  do not find any place refer to these code
   loadPendingPaymentList: () => ({
     [API_REQUEST]: {
       types: [
@@ -42,9 +43,10 @@ export const actions = {
       },
     }
   }),
+  */
 };
 
-const emptyShoppingCart = () => {
+export const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
   return {
     [FETCH_GRAPHQL]: {

@@ -5,7 +5,8 @@ import {
     addOrUpdateShoppingCartItem,
     fetchProductDetail,
     getShoppingCart as getShoppingCartSelector,
-    getCategoryProductList as getCategoryProductListSelector
+    getCategoryProductList as getCategoryProductListSelector,
+
 } from './home';
 import {
     fetchShoppingCartData,
@@ -19,6 +20,7 @@ import {
 
 } from '../__fixtures__/home.fixture';
 import testStore from '../testStore';
+
 
 const getHomeState = (state) => {
     return state.getState().home;
@@ -46,6 +48,7 @@ describe('src/ordering/redux/modules/home: actions and reducers', () => {
             );
             // dispatch action
             await testStore.dispatch(fetchOnlineCategory());
+
             // get state value
             const homeState = getHomeState(testStore);
             expect(homeState.onlineCategory).toEqual(expectedState);

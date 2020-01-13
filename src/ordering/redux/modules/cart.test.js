@@ -1,27 +1,30 @@
 
-import { APIRequest } from './api';
 import testStore from '../testStore';
+import { emptyShoppingCartData } from '../__fixtures__/cart.fixture';
+import { emptyShoppingCart, getBusinessInfo } from './cart';
 
-const getHomeState = (state) => {
-    return state.getState().home;
-}
-describe('rc/ordering/redux/modules/cart:actions and reducers', () => {
+
+describe('src/ordering/redux/modules/cart:actions and reducers', () => {
     beforeEach(() => {
         fetch.resetMocks();
     });
-    it('hello world test', () => {
-        fetch.mockResponseOnce(JSON.stringify({ data: '12345' }))
+    it('clearAll', async () => {
+        const expectedState = {
+            ...testStore.getState(),
+        };
+        fetch.mockResponseOnce(JSON.stringify(emptyShoppingCartData));
+        await testStore.dispatch(emptyShoppingCart());
+        expect(testStore.getState()).toEqual(expectedState)
 
-        //assert on the response
-        APIRequest('google').then(res => {
-            expect(res.data).toEqual('12345')
-        });
-
-        // testStore.dispatch(actions.loadPendingPaymentList())
-        //     .then(() => {
-        //         const newState = testStore.getState();
-        //         expect(newState).toBe('hello');
-        //     });
-        // expect(fetch.mock.calls.length).toEqual(1);
     });
 });
+
+// describe('src/ordering/redux/modules/cart', () => {
+//     it('getBusinessInfo: get from state', () => {
+//         const expectedResult = 'hello';
+//         const res = getBusinessInfo(testStore.getState());
+//         console.log('测试----test---');
+//         console.log(testStore.getState().app)
+//         expect(res).toEqual(expectedResult);
+//     });
+// });

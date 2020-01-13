@@ -181,7 +181,7 @@ const fetchCoreBusiness = variables => ({
   }
 });
 
-const fetchCustomerProfile = (consumerId) => ({
+export const fetchCustomerProfile = (consumerId) => ({
   [API_REQUEST]: {
     types: [
       types.FETCH_CUSTOMER_PROFILE_REQUEST,
@@ -255,7 +255,7 @@ const user = (state = initialState.user, action) => {
         return { ...state, isExpired: true, isFetching: false };
       }
 
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
     case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
