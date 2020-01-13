@@ -1,8 +1,11 @@
-import { actions } from './cart';
-import testStore from '../testStore';
-import { APIRequest } from './api';
 
-describe('test action', () => {
+import { APIRequest } from './api';
+import testStore from '../testStore';
+
+const getHomeState = (state) => {
+    return state.getState().home;
+}
+describe('rc/ordering/redux/modules/cart:actions and reducers', () => {
     beforeEach(() => {
         fetch.resetMocks();
     });
