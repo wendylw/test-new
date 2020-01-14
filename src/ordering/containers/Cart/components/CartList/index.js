@@ -49,6 +49,7 @@ class CartList extends Component {
     return (
       <ProductItem
         key={id}
+        className="flex-middle"
         image={image}
         title={title}
         variation={(variationTexts || []).join(', ')}
