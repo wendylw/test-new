@@ -1,6 +1,7 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Image from './Image';
+import Tag from './Tag';
 
 export class Item extends Component {
   render() {
@@ -12,9 +13,12 @@ export class Item extends Component {
       title,
       variation,
       detail,
+      operateItemDetail,
+      productDetailImageRef,
+      hasTag,
     } = this.props;
-    const classList = ['item border__bottom-divider flex flex-top'];
-    const contentClassList = ['item__content flex flex-space-between'];
+    const classList = ['item border__bottom-divider flex flex-space-between'];
+    const contentClassList = ['item__content flex'];
 
     if (className) {
       classList.push(className);
@@ -26,18 +30,23 @@ export class Item extends Component {
 
     return (
       <li className={classList.join(' ')}>
-        <Image className="item__image-container" src={image} />
-        <div className={contentClassList.join(' ')}>
+        <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
+          <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
           <div className="item__detail">
+            {hasTag ? (
+              <div className="tag__card-container">
+                <Tag text="BEST SELLER" className="tag__card active downsize"></Tag>
+              </div>
+            ) : null}
             <summary className="item__title font-weight-bold">{title}</summary>
             {variation ? <p className="item__description">{variation}</p> : null}
             <span className="gray-font-opacity">{detail}</span>
           </div>
-
-          {children}
         </div>
+
+        {children}
       </li>
-    )
+    );
   }
 }
 
@@ -48,11 +57,16 @@ Item.propTypes = {
   title: PropTypes.string,
   variation: PropTypes.string,
   detail: PropTypes.any,
+  operateItemDetail: PropTypes.func,
+  productDetailImageRef: PropTypes.any,
+  hasTag: PropTypes.bool,
 };
 
 Item.defaultProps = {
   image: '',
   variation: '',
+  operateItemDetail: () => {},
+  hasTag: false,
 };
 
 export default Item;

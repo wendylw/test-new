@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 import qs from 'qs';
 import React, { Component } from 'react';
-import Item from '../../components/Item';
+import Item from '../../../components/Item';
 import Billing from '../../components/Billing';
 import Header from '../../../components/Header';
-import ItemOperator from '../../components/ItemOperator';
+import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
@@ -15,10 +15,7 @@ import { actions as thankYouActionCreators, getOrder, getBusinessInfo } from '..
 
 export class ReceiptDetail extends Component {
   componentWillMount() {
-    const {
-      history,
-      thankYouActions,
-    } = this.props;
+    const { history, thankYouActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     thankYouActions.loadOrder(receiptNumber);
@@ -29,7 +26,7 @@ export class ReceiptDetail extends Component {
     const { loyaltyDiscounts } = order || {};
     let totalSpendCashback = 0;
 
-    (loyaltyDiscounts || []).forEach(function (item) {
+    (loyaltyDiscounts || []).forEach(function(item) {
       if (item.loyaltyType === 'cashback') {
         totalSpendCashback += item.displayDiscount || 0;
       }
@@ -52,80 +49,51 @@ export class ReceiptDetail extends Component {
 
     return (
       <div className="list__container">
-        {
-          (items || []).map(item => {
-            const {
-              id,
-              title,
-              variationTexts,
-              displayPrice,
-              unitPrice,
-              quantity,
-              image,
-            } = item;
+        {(items || []).map(item => {
+          const { id, title, variationTexts, displayPrice, unitPrice, quantity, image } = item;
 
-            if (item.itemType) {
-              return null;
-            }
+          if (item.itemType) {
+            return null;
+          }
 
-            return (
-              <Item
-                contentClassName="flex-top"
-                key={id}
-                image={image}
-                title={title}
-                variation={(variationTexts || []).join(', ')}
-                detail={
-                  <CurrencyNumber money={displayPrice || unitPrice || 0} />
-                }
-              >
-
-                <ItemOperator
-                  className="flex-middle exhibit"
-                  quantity={quantity}
-                  decreaseDisabled={quantity === 0}
-                />
-              </Item>
-            );
-          })
-        }
+          return (
+            <Item
+              contentClassName="flex-top"
+              key={id}
+              image={image}
+              title={title}
+              variation={(variationTexts || []).join(', ')}
+              detail={<CurrencyNumber money={displayPrice || unitPrice || 0} />}
+            >
+              <ItemOperator className="flex-middle exhibit" quantity={quantity} decreaseDisabled={quantity === 0} />
+            </Item>
+          );
+        })}
       </div>
     );
   }
 
   render() {
     const { order, businessInfo } = this.props;
-    const {
-      orderId,
-      tax,
-      serviceCharge,
-      subtotal,
-      total,
-      tableId,
-    } = order || {};
+    const { orderId, tax, serviceCharge, subtotal, total, tableId, additionalComments } = order || {};
 
     return (
       <section className="table-ordering__receipt">
-        <Header
-          className="border__bottom-divider gray"
-          title="View Receipt"
-          navFunc={this.backToThankYou.bind(this)}
-        >
-          <span className="gray-font-opacity text-uppercase">
-            {
-              tableId
-                ? `Table ${tableId}`
-                : 'Self pick-up'
-            }
-          </span>
+        <Header className="border__bottom-divider gray" title="View Receipt" navFunc={this.backToThankYou.bind(this)}>
+          <span className="gray-font-opacity text-uppercase">{tableId ? `Table ${tableId}` : 'Self pick-up'}</span>
         </Header>
         <div className="receipt__content text-center">
           <label className="receipt__label gray-font-opacity font-weight-bold text-uppercase">Receipt Number</label>
           <span className="receipt__id-number">{orderId}</span>
         </div>
         {this.renderProductItem()}
+        {additionalComments ? (
+          <article className="receipt__note border__bottom-divider">
+            <h4 className="receipt__title font-weight-bold text-uppercase">Notes</h4>
+            <p className="receipt__text gray-font-opacity">{additionalComments}</p>
+          </article>
+        ) : null}
         <Billing
-          className="fixed"
           tax={tax}
           businessInfo={businessInfo}
           serviceCharge={serviceCharge}
@@ -134,16 +102,16 @@ export class ReceiptDetail extends Component {
           creditsBalance={this.getSpendCashback()}
         />
       </section>
-    )
+    );
   }
 }
 
 export default connect(
-  (state) => ({
+  state => ({
     businessInfo: getBusinessInfo(state),
     order: getOrder(state),
   }),
-  (dispatch) => ({
+  dispatch => ({
     thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
   })
 )(ReceiptDetail);

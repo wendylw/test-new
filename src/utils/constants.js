@@ -107,6 +107,14 @@ const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?featur
 const LANGUAGES = ['en', 'th'];
 const POLYFILL_FEATURES = ['Object.values', 'Intl'];
 
+const ASIDE_NAMES = {
+  PRODUCT_DETAIL: 'PRODUCT_DETAIL',
+  PRODUCT_DESCRIPTION: 'PRODUCT_DESCRIPTION',
+  MENU: 'MENU',
+  CART: 'CART',
+  PRODUCT_ITEM: 'PRODUCT_ITEM',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -129,4 +137,5 @@ export default {
   POLYFILL_FEATURES_URL,
   POLYFILL_FEATURES,
   LANGUAGES,
+  ASIDE_NAMES,
 };

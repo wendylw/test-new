@@ -20,7 +20,7 @@ class Message extends React.Component {
 
   state = {
     modalStatus: [''],
-  }
+  };
 
   componentDidUpdate() {
     this.initMessages();
@@ -32,7 +32,8 @@ class Message extends React.Component {
     const messages = {
       Default: 'Oops, please scan QR to claim again.',
       /* get Cash Back messages */
-      Invalid: 'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
+      Invalid:
+        'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
       /* save Cash Back messages */
       Claimed_FirstTime: {
         title: `Awesome, you've earned your first cashback! 🎉 `,
@@ -47,15 +48,17 @@ class Message extends React.Component {
       NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
       NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
       NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
-      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay || 0} time(s) a day. 😭`,
-      NotClaimed_ReachMerchantLimit: 'Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.',
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay ||
+        0} time(s) a day. 😭`,
+      NotClaimed_ReachMerchantLimit:
+        'Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.',
       /* set Otp */
       NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
       /* verify phone */
       Save_Cashback_Failed: 'Oops! please retry again later.',
       /* Activity */
       Activity_Incorrect: 'Activity incorrect, need retry.',
-    }
+    };
 
     this.MESSAGES = messages;
   }
@@ -73,45 +76,34 @@ class Message extends React.Component {
 
   render() {
     const { appActions, messageInfo } = this.props;
-    const {
-      show,
-      key,
-      message,
-    } = messageInfo || {};
+    const { show, key, message } = messageInfo || {};
 
     if (!show || (!key && !message)) {
       return null;
     }
 
-    return (
-      EARNED_STATUS.includes(key)
-        ? (
-          <ClaimedMessage
-            isFirstTime={key === 'Claimed_FirstTime'}
-            hideMessage={() => appActions.hideMessageInfo()}
-          />
-        )
-        : (
-          < TopMessage
-            className={ERROR_STATUS.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY}
-            hideMessage={() => appActions.hideMessageInfo()}
-            message={key ? (this.MESSAGES[key] || this.MESSAGES.Default) : message}
-          />
-        )
+    return EARNED_STATUS.includes(key) ? (
+      <ClaimedMessage isFirstTime={key === 'Claimed_FirstTime'} hideMessage={() => appActions.hideMessageInfo()} />
+    ) : (
+      <TopMessage
+        className={ERROR_STATUS.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY}
+        hideMessage={() => appActions.hideMessageInfo()}
+        message={key ? this.MESSAGES[key] || this.MESSAGES.Default : message}
+      />
     );
   }
 }
 
 export default connect(
-  (state) => {
+  state => {
     const business = getBusiness(state) || '';
 
     return {
       messageInfo: getMessageInfo(state),
       businessInfo: getBusinessByName(state, business),
-    }
+    };
   },
-  (dispatch) => ({
+  dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
-  }),
+  })
 )(Message);

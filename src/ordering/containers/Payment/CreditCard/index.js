@@ -20,8 +20,7 @@ import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
-  static propTypes = {
-  }
+  static propTypes = {};
 
   form = null;
   cardNumberEl = null;
@@ -59,16 +58,9 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const {
-      onlineStoreInfo,
-      currentOrder,
-      currentPayment,
-      business,
-    } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { card } = this.state;
-    const {
-      cardholderName
-    } = card || {};
+    const { cardholderName } = card || {};
     const h = config.h();
     const queryString = `?h=${encodeURIComponent(h)}`;
 
@@ -76,12 +68,7 @@ class CreditCard extends Component {
       return null;
     }
 
-    const {
-      encryptedCardInfo,
-      expYearCardInfo,
-      expMonthCardInfo,
-      maskedCardInfo,
-    } = window.encryptedCardData;
+    const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
 
     const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
@@ -101,13 +88,13 @@ class CreditCard extends Component {
       expMonthCardInfo,
       maskedCardInfo,
     };
-  }
+  };
 
   getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
     const nameList = {
       cardNumber: 'number',
       validDate: 'expiration',
-      cvv: 'security code'
+      cvv: 'security code',
     };
     const inValidNameList = [];
 
@@ -120,7 +107,7 @@ class CreditCard extends Component {
 
     inValidNameList.forEach((name, index) => {
       if (index) {
-        nameString += ((index === inValidNameList.length - 1) ? ` and ${name}` : `, ${name}`);
+        nameString += index === inValidNameList.length - 1 ? ` and ${name}` : `, ${name}`;
       } else {
         nameString += name;
       }
@@ -128,7 +115,7 @@ class CreditCard extends Component {
 
     let rules = {
       required: {
-        message: 'Required'
+        message: 'Required',
       },
       fixedLength: {
         message: `Your card's ${nameString} ${verb} incomplete.`,
@@ -150,7 +137,7 @@ class CreditCard extends Component {
         break;
       default:
         break;
-    };
+    }
 
     return {
       rules,
@@ -166,9 +153,9 @@ class CreditCard extends Component {
     return {
       rules: {
         required: {
-          message: 'Required'
-        }
-      }
+          message: 'Required',
+        },
+      },
     };
   }
 
@@ -190,7 +177,7 @@ class CreditCard extends Component {
       return false;
     });
     const cardInfoError = {
-      messages: {}
+      messages: {},
     };
 
     cardInfoError.keys = Object.keys(cardInfoResults).filter(key => {
@@ -210,7 +197,7 @@ class CreditCard extends Component {
 
     this.setState({
       cardInfoError,
-      invalidCardInfoFields
+      invalidCardInfoFields,
     });
 
     return cardInfoResults.required;
@@ -241,29 +228,24 @@ class CreditCard extends Component {
     this.setState({
       cardHolderNameError: newCardHolderNameError,
       cardInfoError: newCardInfoError,
-      invalidCardInfoFields: Array.from(
-        [].concat(invalidCardInfoFields, this.validCardInfo() || [])
-      ),
+      invalidCardInfoFields: Array.from([].concat(invalidCardInfoFields, this.validCardInfo() || [])),
     });
   }
 
   async payNow() {
     await this.validateForm();
 
-    const {
-      cardInfoError,
-      cardHolderNameError,
-    } = this.state;
+    const { cardInfoError, cardHolderNameError } = this.state;
 
     if (cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length)) {
       return;
     }
 
-    let isInvalidNum = null
+    let isInvalidNum = null;
     let isExpired = null;
     let isInvalidCVV = null;
 
-    window.My2c2p.getEncrypted("bank-2c2p-form", function (encryptedData, errCode) {
+    window.My2c2p.getEncrypted('bank-2c2p-form', function(encryptedData, errCode) {
       if (!errCode) {
         window.encryptedCardData = encryptedData;
       } else {
@@ -314,6 +296,13 @@ class CreditCard extends Component {
 
     await paymentActions.createOrder({ cashback: totalCashback });
 
+    const { currentOrder } = this.props;
+    const { orderId } = currentOrder || {};
+
+    if (orderId) {
+      Utils.removeSessionVariable('additionalComments');
+    }
+
     this.setState({
       payNowLoading: true,
     });
@@ -322,17 +311,20 @@ class CreditCard extends Component {
   handleChangeCardNumber(e) {
     let cursor = e.target.selectionStart;
 
-    if (e.target.value.length % 5 === 1 && (e.target.selectionStart === e.target.value.length - 1)) {
+    if (e.target.value.length % 5 === 1 && e.target.selectionStart === e.target.value.length - 1) {
       cursor += 1;
     }
 
-    this.setState({
-      card: Utils.creditCardDetector(e.target.value)
-    }, () => {
-      if (this.cardNumberEl !== null) {
-        this.cardNumberEl.selectionEnd = cursor;
+    this.setState(
+      {
+        card: Utils.creditCardDetector(e.target.value),
+      },
+      () => {
+        if (this.cardNumberEl !== null) {
+          this.cardNumberEl.selectionEnd = cursor;
+        }
       }
-    });
+    );
   }
 
   handleChangeValidaDate(e) {
@@ -340,7 +332,7 @@ class CreditCard extends Component {
     const isSpace = !validDate.replace(e.target.value, '').trim().length;
 
     this.setState({
-      validDate: Utils.DateFormatter(e.target.value, e.target.value.length < validDate.length && isSpace)
+      validDate: Utils.DateFormatter(e.target.value, e.target.value.length < validDate.length && isSpace),
     });
   }
 
@@ -350,19 +342,13 @@ class CreditCard extends Component {
     this.setState({
       card: {
         ...card,
-        cardholderName: e.target.value
+        cardholderName: e.target.value,
       },
     });
   }
 
   renderForm() {
-    const {
-      card,
-      validDate,
-      invalidCardInfoFields,
-      cardInfoError,
-      cardHolderNameError
-    } = this.state;
+    const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
     const { cardholderName } = card || {};
     const cardNumber = card.formattedCardNumber;
 
@@ -371,18 +357,18 @@ class CreditCard extends Component {
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
             <label className="payment-bank__label font-weight-bold">Card information</label>
-            {
-              cardInfoError.keys.includes(FormValidate.errorNames.required)
-                ? <span className="error-message font-weight-bold text-uppercase">
-                  {cardInfoError.messages.required}
-                </span>
-                : null
-            }
+            {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
+              <span className="error-message font-weight-bold text-uppercase">{cardInfoError.messages.required}</span>
+            ) : null}
           </div>
           <div className="payment-bank__card-container">
-            <div className={`input__list-top flex flex-middle flex-space-between ${invalidCardInfoFields.includes('cardNumber') ? 'has-error' : ''}`}>
+            <div
+              className={`input__list-top flex flex-middle flex-space-between ${
+                invalidCardInfoFields.includes('cardNumber') ? 'has-error' : ''
+              }`}
+            >
               <input
-                ref={ref => this.cardNumberEl = ref}
+                ref={ref => (this.cardNumberEl = ref)}
                 id="cardNumber"
                 className="input input__block"
                 type="tel"
@@ -395,7 +381,11 @@ class CreditCard extends Component {
                 <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
                   <img src="/img/payment-visa.svg" />
                 </i>
-                <i className={`payment-bank__card-type-icon mastercard text-middle ${card.type === 'mastercard' ? 'active' : ''}`}>
+                <i
+                  className={`payment-bank__card-type-icon mastercard text-middle ${
+                    card.type === 'mastercard' ? 'active' : ''
+                  }`}
+                >
                   <img src="/img/payment-mastercard.svg" />
                 </i>
               </div>
@@ -421,43 +411,40 @@ class CreditCard extends Component {
             </div>
           </div>
           <div className="error-message__container">
-            {
-              cardInfoError.keys.length
-                ? (cardInfoError.keys.map(key => {
+            {cardInfoError.keys.length
+              ? cardInfoError.keys.map(key => {
                   if (key === FormValidate.errorNames.required) {
                     return null;
                   }
 
-                  return <span key={key} className="error-message">{cardInfoError.messages[key]}</span>
-                }))
-                : null
-            }
+                  return (
+                    <span key={key} className="error-message">
+                      {cardInfoError.messages[key]}
+                    </span>
+                  );
+                })
+              : null}
           </div>
         </div>
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
             <label className="payment-bank__label font-weight-bold">Name on card</label>
-            {
-              cardHolderNameError.key === FormValidate.errorNames.required
-                ?
-                <span className="error-message font-weight-bold text-uppercase">
-                  {cardHolderNameError.message}
-                </span>
-                : null
-            }
+            {cardHolderNameError.key === FormValidate.errorNames.required ? (
+              <span className="error-message font-weight-bold text-uppercase">{cardHolderNameError.message}</span>
+            ) : null}
           </div>
           <input
             id="cardholderName"
-            className={`input input__block border-radius-base ${cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''}`}
+            className={`input input__block border-radius-base ${
+              cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''
+            }`}
             type="text"
             value={cardholderName || ''}
             onChange={this.handleChangeCardHolderName.bind(this)}
           />
-          {
-            cardHolderNameError.key !== FormValidate.errorNames.required
-              ? <span className="error-message">{cardHolderNameError.message}</span>
-              : null
-          }
+          {cardHolderNameError.key !== FormValidate.errorNames.required ? (
+            <span className="error-message">{cardHolderNameError.message}</span>
+          ) : null}
         </div>
 
         <input type="hidden" data-encrypt="cardnumber" value={(cardNumber || '').replace(/[^\d]/g, '')}></input>
@@ -469,17 +456,9 @@ class CreditCard extends Component {
   }
 
   render() {
-    const {
-      match,
-      history,
-      cartSummary,
-      onlineStoreInfo
-    } = this.props;
+    const { match, history, cartSummary, onlineStoreInfo } = this.props;
     const { logo } = onlineStoreInfo || {};
-    const {
-      payNowLoading,
-      domLoaded,
-    } = this.state;
+    const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
 
@@ -494,15 +473,10 @@ class CreditCard extends Component {
           }}
         />
         <div className="payment-bank">
-          <figure
-            className="logo-default__image-container"
-          >
+          <figure className="logo-default__image-container">
             <img src={logo} alt="" />
           </figure>
-          <CurrencyNumber
-            className="payment-bank__money font-weight-bold text-center"
-            money={total || 0}
-          />
+          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
 
           {this.renderForm()}
         </div>
@@ -512,38 +486,29 @@ class CreditCard extends Component {
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
-          >{
-              payNowLoading
-                ? <div className="loader"></div>
-                : (
-                  <CurrencyNumber
-                    className="font-weight-bold text-center" addonBefore="Pay"
-                    money={total || 0}
-                  />
-                )
-            }
+          >
+            {payNowLoading ? (
+              <div className="loader"></div>
+            ) : (
+              <CurrencyNumber className="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
+            )}
           </button>
         </div>
 
-        {
-          paymentData
-            ? (
-              <RedirectForm
-                ref={ref => this.form = ref}
-                action={config.storeHubPaymentEntryURL}
-                method="POST"
-                data={paymentData}
-              />
-            )
-            : null
-        }
+        {paymentData ? (
+          <RedirectForm
+            ref={ref => (this.form = ref)}
+            action={config.storeHubPaymentEntryURL}
+            method="POST"
+            data={paymentData}
+          />
+        ) : null}
 
         <Loader loaded={domLoaded} />
       </section>
     );
   }
 }
-
 
 export default connect(
   state => {
@@ -560,5 +525,5 @@ export default connect(
   dispatch => ({
     homeActions: bindActionCreators(homeActionCreators, dispatch),
     paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-  }),
+  })
 )(CreditCard);

@@ -1,33 +1,28 @@
 import React, { Component } from 'react';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
-import {
-  IconDelete,
-  IconClose,
-} from '../../../components/Icons';
+import { IconDelete, IconClose } from '../../../components/Icons';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-import {
-  getOnlineStoreInfo,
-  getUser,
-} from '../../redux/modules/app';
+import { bindActionCreators } from 'redux';
+import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
-import { actions as paymentActionCreators, getThankYouPageUrl } from '../../redux/modules/payment';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
+import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 
 class Cart extends Component {
   state = {
     expandBilling: false,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
-  }
+  };
 
   async componentDidMount() {
     const { homeActions } = this.props;
@@ -49,7 +44,7 @@ class Cart extends Component {
 
   handleChangeAdditionalComments(e) {
     this.setState({
-      additionalComments: e.target.value
+      additionalComments: e.target.value,
     });
 
     Utils.setSessionVariable('additionalComments', e.target.value);
@@ -59,14 +54,10 @@ class Cart extends Component {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
     });
-  }
+  };
 
   handleCheckPaymentStatus = async () => {
-    const {
-      history,
-      cartSummary,
-      user,
-    } = this.props;
+    const { history, cartSummary, user } = this.props;
     const { isLogin } = user;
     const { total, totalCashback } = cartSummary || {};
 
@@ -79,6 +70,13 @@ class Cart extends Component {
 
       await paymentActions.createOrder({ cashback: totalCashback });
 
+      const { currentOrder } = this.props;
+      const { orderId } = currentOrder || {};
+
+      if (orderId) {
+        Utils.removeSessionVariable('additionalComments');
+      }
+
       const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
@@ -89,7 +87,7 @@ class Cart extends Component {
     }
 
     history.push(Constants.ROUTER_PATHS.ORDERING_PAYMENT);
-  }
+  };
 
   handleClearAll = () => {
     this.props.cartActions.clearAll().then(() => {
@@ -97,6 +95,11 @@ class Cart extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
       });
     });
+  };
+
+  handleClearAdditionalComments() {
+    Utils.removeSessionVariable('additionalComments');
+    this.setState({ additionalComments: null });
   }
 
   renderAdditionalComments() {
@@ -111,40 +114,22 @@ class Cart extends Component {
           value={additionalComments || ''}
           onChange={this.handleChangeAdditionalComments.bind(this)}
         ></textarea>
-        {
-          additionalComments
-            ? (
-              <i
-                className="cart__close-button"
-                onClick={() => this.setState({ additionalComments: null })}
-              >
-                <IconClose />
-              </i>
-            )
-            : null
-        }
+        {additionalComments ? (
+          <i className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)}>
+            <IconClose />
+          </i>
+        ) : null}
       </div>
     );
   }
 
   render() {
-    const {
-      cartSummary,
-      shoppingCart,
-      businessInfo,
-    } = this.props;
+    const { cartSummary, shoppingCart, businessInfo } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const {
-      count,
-      subtotal,
-      total,
-      tax,
-      serviceCharge,
-      cashback,
-    } = cartSummary || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback } = cartSummary || {};
     const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
     const buttonText = isInvalidTotal ? '*Min ' : 'Pay';
     const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
@@ -171,7 +156,10 @@ class Cart extends Component {
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
-          <i className="aside-bottom__slide-button" onClick={() => this.setState({ expandBilling: !expandBilling })}></i>
+          <i
+            className="aside-bottom__slide-button"
+            onClick={() => this.setState({ expandBilling: !expandBilling })}
+          ></i>
           <Billing
             className={!expandBilling ? 'billing__collapse' : ''}
             tax={tax}
@@ -187,7 +175,9 @@ class Cart extends Component {
             <button
               className="billing__button button button__fill button__block dark font-weight-bold"
               onClick={this.handleClickBack.bind(this)}
-            >Back</button>
+            >
+              Back
+            </button>
           </div>
           <div className="footer-operation__item width-2-3">
             <button
@@ -195,16 +185,8 @@ class Cart extends Component {
               onClick={this.handleCheckPaymentStatus.bind(this)}
               disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
             >
-              {
-                isCreatingOrder
-                  ? <div className="loader"></div>
-                  : buttonText
-              }
-              {
-                isInvalidTotal
-                  ? <CurrencyNumber className="font-weight-bold" money={minTotal} />
-                  : null
-              }
+              {isCreatingOrder ? <div className="loader"></div> : buttonText}
+              {isInvalidTotal ? <CurrencyNumber className="font-weight-bold" money={minTotal} /> : null}
             </button>
           </div>
         </footer>
@@ -214,19 +196,24 @@ class Cart extends Component {
 }
 
 export default connect(
-  state => ({
-    user: getUser(state),
-    cartSummary: getCartSummary(state),
-    shoppingCart: getShoppingCart(state),
-    businessInfo: getBusinessInfo(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    currentProduct: getCurrentProduct(state),
-    thankYouPageUrl: getThankYouPageUrl(state),
-  }),
+  state => {
+    const currentOrderId = getCurrentOrderId(state);
+
+    return {
+      user: getUser(state),
+      cartSummary: getCartSummary(state),
+      shoppingCart: getShoppingCart(state),
+      businessInfo: getBusinessInfo(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      currentProduct: getCurrentProduct(state),
+      thankYouPageUrl: getThankYouPageUrl(state),
+      currentOrder: getOrderByOrderId(state, currentOrderId),
+    };
+  },
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
     homeActions: bindActionCreators(homeActionCreators, dispatch),
     cartActions: bindActionCreators(cartActionCreators, dispatch),
     paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-  }),
+  })
 )(Cart);
