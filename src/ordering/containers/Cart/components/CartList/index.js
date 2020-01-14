@@ -5,6 +5,7 @@ import ProductItem from '../../../../components/ProductItem';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/home';
 import Constants from '../../../../../utils/constants';
+import constants from '../../../../../utils/constants';
 
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;
@@ -98,21 +99,16 @@ class CartList extends Component {
     const cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items];
 
     const generateCartItemUI = () => {
-      let resultView = null;
-      switch (viewAside) {
-        case Constants.ASIDE_NAMES.PRODUCT_ITEM:
-          resultView = cartItems
-            .sort(sortFn)
-            .filter(x => x.productId === product.id || x.parentProductId === product.id)
-            .map(this.generateProductItemView);
-          break;
-        case Constants.ASIDE_NAMES.CART:
-          resultView = cartItems.sort(sortFn).map(this.generateProductItemView);
-          break;
-        default:
-          break;
+      if (viewAside === constants.ASIDE_NAMES.CARTMODAL_HIDE) {
+        return null;
       }
-      return resultView;
+      if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
+        return cartItems
+          .sort(sortFn)
+          .filter(x => x.productId === product.id || x.parentProductId === product.id)
+          .map(this.generateProductItemView);
+      }
+      return cartItems.sort(sortFn).map(this.generateProductItemView);
     };
 
     return <ul className="list">{generateCartItemUI()}</ul>;
