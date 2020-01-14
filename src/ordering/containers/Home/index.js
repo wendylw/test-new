@@ -18,7 +18,6 @@ import {
   getCategoryProductList,
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
-import constants from '../../../utils/constants';
 
 const localState = {
   blockScrollTop: 0,
@@ -145,7 +144,7 @@ export class Home extends Component {
         <MiniCartListModal
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
-          onToggle={this.handleToggleAside.bind(this, constants.ASIDE_NAMES.CARTMODAL_HIDE)}
+          onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
         <Footer
           {...otherProps}
