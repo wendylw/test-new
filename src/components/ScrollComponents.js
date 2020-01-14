@@ -8,21 +8,27 @@ let observableContainer = {};
 const TOP_BAR_HEIGHT = 50;
 const CATEGORY_BAR_HEIGHT = 50;
 const SCROLL_SPEED = {
-  x: 10,
-  y: 30,
-}
+  x: 30,
+  y: 50,
+};
 
-function scrollToSmoothly({
-  direction,
-  targetId,
-  containerId,
-  afterScroll,
-}) {
+function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
   const userAgentInfo = Utils.getUserAgentInfo();
   const el = document.getElementById(targetId);
   const container = document.getElementById(containerId);
+  const isVerticalMenuProductList = isVerticalMenu && !containerId;
+  const windowSize = {
+    w: document.documentElement.clientWidth || document.body.clientWidth,
+    h: document.documentElement.clientHeight || document.body.clientHeight,
+  };
 
-  if (!el || document.getElementById('root').getAttribute('class').includes('fixed')) {
+  if (
+    !el ||
+    document
+      .getElementById('root')
+      .getAttribute('class')
+      .includes('fixed')
+  ) {
     return;
   }
 
@@ -40,11 +46,12 @@ function scrollToSmoothly({
 
   const otherDistance = {
     x: 0,
-    y: TOP_BAR_HEIGHT + CATEGORY_BAR_HEIGHT,
-  }
+    y: TOP_BAR_HEIGHT + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
+  };
   const elOffset = {
     x: containerScrolledDistance.x + el.getBoundingClientRect().left,
     y: containerScrolledDistance.y + el.getBoundingClientRect().top,
+    w: el.offsetWidth || el.clientWidth,
   };
 
   if (!userAgentInfo.browser.includes('Safari')) {
@@ -63,16 +70,24 @@ function scrollToSmoothly({
   let scrollPosition = elOffset[direction] - otherDistance[direction];
 
   if (direction === 'x') {
-    scrollPosition = elOffset[direction] - containerScrolledDistance.w * 0.5;
+    scrollPosition = scrollPosition - (windowSize.w - elOffset.w) / 2;
   }
 
-  const changeSign = Math.sign(scrollPosition - containerScrolledDistance[direction]);
-  const changeDistance = changeSign * SCROLL_SPEED[direction];
-  const _run = function () {
+  let changeTotalDistance = scrollPosition - containerScrolledDistance[direction];
+  const changeSign = Math.sign(changeTotalDistance);
+  let changeDistance = changeSign * SCROLL_SPEED[direction];
+
+  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 3) {
+    changeDistance = changeTotalDistance;
+  }
+
+  const _run = function() {
     containerScrolledDistance[direction] = containerScrolledDistance[direction] + changeDistance;
 
-    if ((changeDistance === -SCROLL_SPEED[direction] && containerScrolledDistance[direction] < scrollPosition)
-      || (changeDistance === SCROLL_SPEED[direction] && containerScrolledDistance[direction] > scrollPosition)) {
+    if (
+      (changeDistance === -SCROLL_SPEED[direction] && containerScrolledDistance[direction] < scrollPosition) ||
+      (changeDistance === SCROLL_SPEED[direction] && containerScrolledDistance[direction] > scrollPosition)
+    ) {
       containerScrolledDistance[direction] = scrollPosition;
     }
 
@@ -89,39 +104,45 @@ function scrollToSmoothly({
 }
 
 window.addEventListener('scroll', () => {
-  const scrollid = getCurrentScrollId();
+  const scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
 
   if (!scrollid) {
     return;
   }
 
-  document.dispatchEvent(new CustomEvent('SCROLL_FOUND_TOP', {
-    detail: {
-      scrollid,
-    },
-  }));
+  document.dispatchEvent(
+    new CustomEvent('SCROLL_FOUND_TOP', {
+      detail: {
+        scrollid,
+      },
+    })
+  );
 });
 
-export function getCurrentScrollId() {
+export function getCurrentScrollId(isVerticalMenu) {
   const htmlDocumentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
   const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
   const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
   const elObjList = Object.values(observableContainer);
 
-  const [, elObj] = elObjList
-    .map(elObj => [Utils.elementPartialOffsetTop(
-      elObj,
-      TOP_BAR_HEIGHT + CATEGORY_BAR_HEIGHT * 2,
-      windowScrolledTop
-    ), elObj])
-    .sort(([nextDistance], [distance]) => nextDistance - distance)
-    .find(([distance]) => distance > 0) || [];
+  const [, elObj] =
+    elObjList
+      .map(elObj => [
+        Utils.elementPartialOffsetTop(
+          elObj,
+          TOP_BAR_HEIGHT + (isVerticalMenu ? 0 : CATEGORY_BAR_HEIGHT * 2),
+          windowScrolledTop
+        ),
+        elObj,
+      ])
+      .sort(([nextDistance], [distance]) => nextDistance - distance)
+      .find(([distance]) => distance > 0) || [];
 
   if (!elObj) {
     return null;
   }
 
-  const currentObj = (windowScrolledTop >= htmlDocumentHeight - windowHeight) ? elObjList[elObjList.length - 1] : elObj;
+  const currentObj = windowScrolledTop >= htmlDocumentHeight - windowHeight ? elObjList[elObjList.length - 1] : elObj;
 
   return currentObj.getAttribute('scrollid');
 }
@@ -144,13 +165,10 @@ export class ScrollObservable extends React.Component {
   }
 
   render() {
-    const {
-      children,
-      targetId,
-    } = this.props;
+    const { children, targetId } = this.props;
 
     return (
-      <div ref={ref => this.container = ref} scrollid={targetId}>
+      <div ref={ref => (this.container = ref)} scrollid={targetId}>
         {children}
       </div>
     );
@@ -167,10 +185,10 @@ export class ScrollObserver extends React.Component {
     drivenToScroll: false,
   };
 
-  componentWillReceiveProps(nextProps) {
-    const { defaultScrollId } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { defaultScrollId } = this.props;
 
-    if (defaultScrollId !== this.props.defaultScrollId) {
+    if (defaultScrollId !== prevProps.defaultScrollId) {
       this.setState({
         scrollid: defaultScrollId,
       });
@@ -187,10 +205,10 @@ export class ScrollObserver extends React.Component {
 
   handleRevertScrollEvent = () => {
     this.setState({ drivenToScroll: false });
-  }
+  };
 
-  handleScrollEvent = async (e) => {
-    const { containerId } = this.props;
+  handleScrollEvent = async e => {
+    const { isVerticalMenu, containerId, targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
 
     if (drivenToScroll) {
@@ -200,15 +218,15 @@ export class ScrollObserver extends React.Component {
     const { scrollid } = e.detail;
 
     await scrollToSmoothly({
-      direction: 'x',
-      targetId: `category-${scrollid}`,
+      direction: isVerticalMenu ? 'y' : 'x',
+      targetId: `${targetIdPrefix}-${scrollid}`,
       containerId,
     });
 
     this.setState({ scrollid });
-  }
+  };
 
-  handleSelectedTarget = async (options) => {
+  handleSelectedTarget = async options => {
     const { targetId } = options;
 
     this.setState({ drivenToScroll: true, scrollid: targetId });
@@ -217,7 +235,7 @@ export class ScrollObserver extends React.Component {
       ...options,
       afterScroll: this.handleRevertScrollEvent,
     });
-  }
+  };
 
   render() {
     const { render } = this.props;
@@ -233,7 +251,13 @@ export class ScrollObserver extends React.Component {
 ScrollObserver.protoTypes = {
   defaultScrollId: PropTypes.string,
   containerId: PropTypes.string,
+  targetIdPrefix: PropTypes.string,
+  isVerticalMenu: PropTypes.bool,
 };
 
 ScrollObserver.defaultProps = {
+  defaultScrollId: '',
+  containerId: '',
+  targetIdPrefix: '',
+  isVerticalMenu: false,
 };

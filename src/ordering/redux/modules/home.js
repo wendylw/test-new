@@ -9,10 +9,13 @@ import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
+import config from '../../../config';
 import { getBusiness } from './app';
 
-
 const initialState = {
+  domProperties: {
+    verticalMenuBusinesses: config.verticalMenuBusinesses,
+  },
   currentProduct: {
     id: '',
     cartId: '',
@@ -33,7 +36,6 @@ export const types = HOME_TYPES;
 
 // actions
 export const actions = {
-
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
     if (getState().home.onlineCategory.categoryIds.length) {
@@ -45,72 +47,81 @@ export const actions = {
   },
 
   // load shopping cart
-  loadShoppingCart: () => (dispatch) => {
+  loadShoppingCart: () => dispatch => {
     dispatch(fetchShoppingCart());
   },
 
-  removeShoppingCartItem: (variables) => (dispatch) => {
+  removeShoppingCartItem: variables => dispatch => {
     return dispatch(removeShoppingCartItem(variables));
   },
 
-  addOrUpdateShoppingCartItem: (variables) => (dispatch) => {
+  addOrUpdateShoppingCartItem: variables => dispatch => {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
 
   // decrease clicked on product item
   decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
-    const cartItem = (shoppingCart.items || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
+    const cartItem = (shoppingCart.items || []).find(
+      item => item.productId === prod.id || item.parentProductId === prod.id
+    );
 
     if (prod.cartQuantity === 1) {
-      return dispatch(removeShoppingCartItem({
-        productId: cartItem.productId,
-        variations: cartItem.variations,
-      }));
+      return dispatch(
+        removeShoppingCartItem({
+          productId: cartItem.productId,
+          variations: cartItem.variations,
+        })
+      );
     }
-
-    return dispatch(addOrUpdateShoppingCartItem({
-      action: 'edit',
-      business: getBusiness(getState()),
-      productId: cartItem.productId,
-      quantity: prod.cartQuantity - 1,
-      variations: cartItem.variations || [],
-    }));
+    return dispatch(
+      addOrUpdateShoppingCartItem({
+        action: 'edit',
+        business: getBusiness(getState()),
+        productId: cartItem.productId,
+        quantity: prod.cartQuantity - 1,
+        variations: cartItem.variations || [],
+      })
+    );
   },
 
   // increase clicked on product item
-  increaseProductInCart: (prod) => (dispatch, getState) => {
-    const cartItem = (prod.cartItems || []).find(item => item.productId === prod.id || item.parentProductId === prod.id);
+  increaseProductInCart: prod => (dispatch, getState) => {
+    const cartItem = (prod.cartItems || []).find(
+      item => item.productId === prod.id || item.parentProductId === prod.id
+    );
 
-    if (prod.variations && prod.variations.length) {
-      if (getState().home.currentProduct.id !== prod.id) {
-        return dispatch(fetchProductDetail({ productId: prod.id }));
-      }
-
+    if (prod.variations && prod.variations.length && getState().home.currentProduct.id === prod.id) {
       return;
     }
 
-    return dispatch(addOrUpdateShoppingCartItem({
-      action: 'edit',
-      business: getBusiness(getState()),
-      productId: prod.id,
-      quantity: prod.cartQuantity + 1,
-      variations: (prod.hasSingleChoice && prod.cartItems.length === 1) ? cartItem.variations : [],
-    }));
+    if (prod.variations && prod.variations.length) {
+      return dispatch(fetchProductDetail({ productId: prod.id }));
+    }
+
+    return dispatch(
+      addOrUpdateShoppingCartItem({
+        action: 'edit',
+        business: getBusiness(getState()),
+        productId: prod.id,
+        quantity: prod.cartQuantity + 1,
+        variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
+      })
+    );
+  },
+
+  loadProductDetail: prod => dispatch => {
+    return dispatch(fetchProductDetail({ productId: prod.id }));
   },
 };
 
 const fetchShoppingCart = () => {
   return {
     [API_REQUEST]: {
-      types: [
-        types.FETCH_SHOPPINGCART_REQUEST,
-        types.FETCH_SHOPPINGCART_SUCCESS,
-        types.FETCH_SHOPPINGCART_FAILURE,
-      ],
+      types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
       ...Url.API_URLS.GET_CART,
     },
   };
-}
+};
 
 const fetchOnlineCategory = () => {
   const endpoint = Url.apiGql('OnlineCategory');
@@ -124,54 +135,54 @@ const fetchOnlineCategory = () => {
       endpoint,
     },
   };
-}
+};
 // variables := { productId, variations }
-const removeShoppingCartItem = (variables) => {
+const removeShoppingCartItem = variables => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
       types: [
         types.REMOVE_SHOPPINGCARTITEM_REQUEST,
         types.REMOVE_SHOPPINGCARTITEM_SUCCESS,
-        types.REMOVE_SHOPPINGCARTITEM_FAILURE
+        types.REMOVE_SHOPPINGCARTITEM_FAILURE,
       ],
       endpoint,
       variables,
-    }
+    },
   };
 };
 
-const addOrUpdateShoppingCartItem = (variables) => {
+const addOrUpdateShoppingCartItem = variables => {
   const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
       types: [
         types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST,
         types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS,
-        types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE
+        types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE,
       ],
       endpoint,
       variables,
-    }
+    },
   };
 };
 
-const fetchProductDetail = (variables) => {
+const fetchProductDetail = variables => {
   const endpoint = Url.apiGql('ProductDetail');
   return {
     [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_PRODUCTDETAIL_REQUEST,
-        types.FETCH_PRODUCTDETAIL_SUCCESS,
-        types.FETCH_PRODUCTDETAIL_FAILURE
-      ],
+      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
       variables,
-    }
+    },
   };
-}
+};
 
 // reducers
+const domProperties = (state = initialState.domProperties, action) => {
+  return state;
+};
+
 const currentProduct = (state = initialState.currentProduct, action) => {
   if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true };
@@ -183,12 +194,11 @@ const currentProduct = (state = initialState.currentProduct, action) => {
       isFetching: false,
       id: product.id,
     };
-  }
-  else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
     return { ...state, isFetching: false };
   }
   return state;
-}
+};
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.responseGql) {
@@ -209,14 +219,14 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
         isFetching: false,
         itemIds: items.map(item => item.id),
         unavailableItemIds: unavailableItems.map(item => item.id),
-      }
+      };
     }
     case types.FETCH_SHOPPINGCART_FAILURE:
       return { ...state, isFetching: false };
     default:
       return state;
   }
-}
+};
 
 const onlineCategory = (state = initialState.onlineCategory, action) => {
   switch (action.type) {
@@ -234,20 +244,21 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
     default:
       return state;
   }
-}
+};
 
 export default combineReducers({
+  domProperties,
   currentProduct,
   shoppingCart,
   onlineCategory,
 });
 
 // selectors
-export const isFetched = (state) => state.home.shoppingCart.isFetched
+export const isFetched = state => state.home.shoppingCart.isFetched;
 
-export const getCartItemIds = (state) => state.home.shoppingCart.itemIds
+export const getCartItemIds = state => state.home.shoppingCart.itemIds;
 
-export const getCartUnavailableItemIds = (state) => state.home.shoppingCart.unavailableItemIds
+export const getCartUnavailableItemIds = state => state.home.shoppingCart.unavailableItemIds;
 
 export const getShoppingCart = createSelector(
   [getCartSummary, getCartItemIds, getCartUnavailableItemIds, getAllCartItems],
@@ -256,15 +267,41 @@ export const getShoppingCart = createSelector(
       summary,
       items: itemIds.map(id => carts[id]),
       unavailableItems: unavailableItemIds.map(id => carts[id]),
-    }
+    };
+  }
+);
+export const getCurrentProduct = state => state.home.currentProduct;
+
+// get cartItems of currentProduct
+export const getShoppingCartItemsByProducts = createSelector(
+  [getCartItemIds, getAllCartItems, getCurrentProduct],
+  (itemIds, carts, product) => {
+    const calcItems = itemIds
+      .map(id => carts[id])
+      .filter(x => x.productId === product.id || x.parentProductId === product.id);
+    const items = calcItems.map(x => {
+      return {
+        productId: x.productId,
+        variations: x.variations,
+      };
+    });
+    const count = calcItems.reduce((res, item) => {
+      res = res + item.quantity;
+      return res;
+    }, 0);
+
+    return {
+      items,
+      count,
+    };
   }
 );
 
-export const getCartItemList = (state) => {
+export const getCartItemList = state => {
   return state.home.shoppingCart.itemIds.map(id => getCartItemById(state, id));
-}
+};
 
-export const getCategoryIds = (state) => state.home.onlineCategory.categoryIds;
+export const getCategoryIds = state => state.home.onlineCategory.categoryIds;
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
   if (!Array.isArray(onlineCategory)) {
@@ -285,17 +322,16 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
       newItem.ids.push(item.id);
       newItem.products.push(item);
 
-
       shoppingCartNewSet[item.parentProductId || item.productId] = newItem;
     });
   }
 
-  return onlineCategory.map((category) => {
+  return onlineCategory.map(category => {
     const { products } = category;
 
     category.cartQuantity = 0;
 
-    products.forEach(function (product) {
+    products.forEach(function(product) {
       product.variations = product.variations || [];
       product.soldOut = Utils.isProductSoldOut(product);
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
@@ -314,7 +350,7 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
     return category;
   });
-}
+};
 
 export const getCategoryProductList = createSelector(
   [getAllProducts, getAllCategories, getCartItemList],
@@ -323,20 +359,24 @@ export const getCategoryProductList = createSelector(
       return [];
     }
 
-    const newCategories = Object.values(categories).map(category => {
-      return {
-        ...category,
-        products: category.products.map(id => {
-          const product = JSON.parse(JSON.stringify(products[id]));
-          return {
-            ...product,
-          };
-        }),
-      };
-    }).filter(c => c.products.length);
+    const newCategories = Object.values(categories)
+      .map(category => {
+        return {
+          ...category,
+          products: category.products.map(id => {
+            const product = JSON.parse(JSON.stringify(products[id]));
+            return {
+              ...product,
+            };
+          }),
+        };
+      })
+      .filter(c => c.products.length);
 
     return mergeWithShoppingCart(newCategories, carts);
   }
 );
 
-export const getCurrentProduct = (state) => state.home.currentProduct;
+export const isVerticalMenuBusiness = state => {
+  return (state.home.domProperties.verticalMenuBusinesses || []).includes(getBusiness(state));
+};
