@@ -79,7 +79,13 @@ export class Home extends Component {
   }
 
   handleToggleAside(asideName) {
-    this.toggleBodyScroll(!!asideName);
+    const stopBodyScroll =
+      this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
+      asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
+
+    if (!stopBodyScroll) {
+      this.toggleBodyScroll(!!asideName);
+    }
 
     this.setState({
       viewAside: asideName,
