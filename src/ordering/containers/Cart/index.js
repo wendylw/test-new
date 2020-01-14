@@ -28,6 +28,8 @@ class Cart extends Component {
     const { homeActions } = this.props;
 
     await homeActions.loadShoppingCart();
+
+    window.scrollTo(0, 0);
   }
 
   getDisplayPrice() {
