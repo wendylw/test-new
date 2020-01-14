@@ -82,6 +82,7 @@ class CartList extends Component {
       />
     );
   };
+
   render() {
     const { shoppingCart, viewAside, product } = this.props;
     if (!shoppingCart) {
@@ -93,19 +94,27 @@ class CartList extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
-
     const cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items];
 
-    return (
-      <ul className="list">
-        {viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM
-          ? cartItems
-              .sort(sortFn)
-              .filter(x => x.productId === product.id || x.parentProductId === product.id)
-              .map(this.generateProductItemView)
-          : cartItems.sort(sortFn).map(this.generateProductItemView)}
-      </ul>
-    );
+    const generateCartItemUI = () => {
+      let resultView = null;
+      switch (viewAside) {
+        case Constants.ASIDE_NAMES.PRODUCT_ITEM:
+          resultView = cartItems
+            .sort(sortFn)
+            .filter(x => x.productId === product.id || x.parentProductId === product.id)
+            .map(this.generateProductItemView);
+          break;
+        case Constants.ASIDE_NAMES.CART:
+          resultView = cartItems.sort(sortFn).map(this.generateProductItemView);
+          break;
+        default:
+          break;
+      }
+      return resultView;
+    };
+
+    return <ul className="list">{generateCartItemUI()}</ul>;
   }
 }
 
