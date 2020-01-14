@@ -10,7 +10,7 @@ describe('src/ordering/redux/modules/thankYou:actions and reducer', () => {
     fetch.resetMocks();
   });
   describe('loadOrder', () => {
-    it('FETCH_ORDER_SUCCESS', async () => {
+    it(':FETCH_ORDER_SUCCESS', async () => {
       const orderId = '815520056159098';
       const expectedThankyouState = {
         ...getThankyouState(),

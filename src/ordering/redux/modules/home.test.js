@@ -20,8 +20,8 @@ import {
 } from '../__fixtures__/home.fixture';
 import testStore from '../testStore';
 
-const getHomeState = state => {
-  return state.getState().home;
+const getHomeState = store => {
+  return store.getState().home;
 };
 
 describe('src/ordering/redux/modules/home: actions and reducers', () => {
@@ -33,7 +33,7 @@ describe('src/ordering/redux/modules/home: actions and reducers', () => {
       it(':FETCH_ONLINECATEGORY_SUCCESS', async () => {
         // mock expected state
         const expectedState = {
-          ...testStore.onlineCategory,
+          ...getHomeState(testStore).onlineCategory,
           isFetching: false,
           categoryIds: ['5da845cf2d7b4244276bddb2', '5cdce13be5fea1125c716dd5', '5cd159c1fb012d7c4b1c9f9d'],
         };
@@ -46,19 +46,20 @@ describe('src/ordering/redux/modules/home: actions and reducers', () => {
         const homeState = getHomeState(testStore);
         expect(homeState.onlineCategory).toEqual(expectedState);
       });
-      // it(":FETCH_ONLINECATEGORY_FAILURE", async () => {
-      //     const expectedState = {
-      //         ...testStore.onlineCategory,
-      //         isFetching: false,
-      //     }
-      //     // mock fail fetch
-      //     fetch.mockRejectOnce(req => Promise.reject(new RequestError('fake error message')));
-      //     // dispatch action
-      //     await testStore.dispatch(fetchOnlineCategory());
-      //     // get state value
-      //     const homeState = getHomeState(testStore);
-      //     expect(homeState.onlineCategory).toEqual(expectedState);
-      // });
+
+      it(':FETCH_ONLINECATEGORY_FAILURE', async () => {
+        const expectedState = {
+          ...getHomeState(testStore).onlineCategory,
+          isFetching: false,
+        };
+        // mock fail fetch
+        fetch.mockRejectOnce(req => Promise.reject(new RequestError('fake error message')));
+        // dispatch action
+        await testStore.dispatch(fetchOnlineCategory());
+        // get state value
+        const homeState = getHomeState(testStore);
+        expect(homeState.onlineCategory).toEqual(expectedState);
+      });
     });
   });
   describe('loadShoppingCart', () => {

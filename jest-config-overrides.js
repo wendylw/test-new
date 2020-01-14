@@ -16,7 +16,7 @@ const collectCoverageFrom = [
 
   // Redux
   'src/redux/**/*.js',
-  'src/{cashback,ordering,qrscan,stores}/redux/**/*.js',
+  'src/{cashback,ordering,stores}/redux/**/*.js',
 ];
 
 module.exports = config => {
