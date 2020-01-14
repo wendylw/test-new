@@ -100,16 +100,15 @@ const REQUEST_ERROR_KEYS = {
 };
 
 const LOGIN_PROMPT = {
-  400: 'Your One Time Passcode is invalid.'
+  400: 'Your One Time Passcode is invalid.',
 };
-
 
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
   PRODUCT_DESCRIPTION: 'PRODUCT_DESCRIPTION',
   MENU: 'MENU',
   CART: 'CART',
-  PRODUCT_ITEM: 'PRODUCT_ITEM'
+  PRODUCT_ITEM: 'PRODUCT_ITEM',
 };
 
 export default {
@@ -131,5 +130,5 @@ export default {
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
   LOGIN_PROMPT,
-  ASIDE_NAMES
+  ASIDE_NAMES,
 };

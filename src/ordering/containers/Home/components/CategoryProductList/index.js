@@ -133,7 +133,7 @@ CategoryProductList.propTypes = {
 };
 
 CategoryProductList.defaultProps = {
-  onToggle: () => { },
+  onToggle: () => {},
   isVerticalMenu: false,
 };
 

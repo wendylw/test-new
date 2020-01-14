@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  IconCartII,
-  IconDelete,
-} from '../../../../../components/Icons';
+import { IconCartII, IconDelete } from '../../../../../components/Icons';
 import CartList from '../../../Cart/components/CartList';
 import Constants from '../../../../../utils/constants';
 
@@ -19,13 +16,11 @@ class MiniCartListModal extends Component {
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       await this.props.cartActions.clearAllByProducts(this.props.selectedProductCart.items);
       this.props.homeActions.loadShoppingCart();
-    }
-    else {
+    } else {
       await this.props.cartActions.clearAll();
       this.props.homeActions.loadShoppingCart();
     }
-
-  }
+  };
 
   handleHideCart(e) {
     const { onToggle } = this.props;
@@ -38,11 +33,7 @@ class MiniCartListModal extends Component {
   }
 
   render() {
-    const {
-      show,
-      cartSummary,
-      viewAside
-    } = this.props;
+    const { show, cartSummary, viewAside } = this.props;
     let { count } = cartSummary || {};
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
@@ -56,8 +47,7 @@ class MiniCartListModal extends Component {
     }
 
     return (
-
-      <aside className={className.join(' ')} onClick={(e) => this.handleHideCart(e)}>
+      <aside className={className.join(' ')} onClick={e => this.handleHideCart(e)}>
         <div className="cart-pane">
           <div className="cart-pane__operation border__bottom-divider flex flex-middle flex-space-between">
             <h3 className="cart-pane__amount-container">
@@ -85,7 +75,7 @@ MiniCartListModal.propTypes = {
 
 MiniCartListModal.defaultProps = {
   show: false,
-  onToggle: () => { }
+  onToggle: () => {},
 };
 
 export default connect(
@@ -98,5 +88,5 @@ export default connect(
   dispatch => ({
     homeActions: bindActionCreators(homeActionCreators, dispatch),
     cartActions: bindActionCreators(cartActionCreators, dispatch),
-  }),
+  })
 )(MiniCartListModal);
