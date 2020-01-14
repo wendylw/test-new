@@ -6,6 +6,7 @@ import Header from '../../../../components/Header';
 import RedirectForm from '../components/RedirectForm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Constants from '../../../../utils/constants';
+import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
@@ -14,7 +15,12 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
+import {
+  actions as paymentActionCreators,
+  getCurrentPayment,
+  getCurrentOrderId,
+  getBankList,
+} from '../../../redux/modules/payment';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -27,12 +33,7 @@ class OnlineBanking extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const {
-      onlineStoreInfo,
-      currentOrder,
-      currentPayment,
-      business,
-    } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { agentCode } = this.state;
     const h = config.h();
     const queryString = `?h=${encodeURIComponent(h)}`;
@@ -54,7 +55,7 @@ class OnlineBanking extends Component {
       paymentName: currentPayment,
       agentCode,
     };
-  }
+  };
 
   async componentWillMount() {
     const { homeActions, paymentActions } = this.props;
@@ -80,22 +81,33 @@ class OnlineBanking extends Component {
   initAgentCode(bankingList) {
     if (bankingList && bankingList.length) {
       this.setState({
-        agentCode: bankingList[0].agentCode
+        agentCode: bankingList[0].agentCode,
       });
     }
   }
 
   async payNow() {
-    this.setState({
-      payNowLoading: true
-    }, async () => {
-      const { paymentActions, cartSummary } = this.props;
-      const { totalCashback } = cartSummary || {};
-      const { agentCode } = this.state;
+    this.setState(
+      {
+        payNowLoading: true,
+      },
+      async () => {
+        const { paymentActions, cartSummary } = this.props;
+        const { totalCashback } = cartSummary || {};
+        const { agentCode } = this.state;
 
-      await paymentActions.createOrder({ cashback: totalCashback });
-      this.setState({ payNowLoading: !!agentCode });
-    });
+        await paymentActions.createOrder({ cashback: totalCashback });
+
+        const { currentOrder } = this.props;
+        const { orderId } = currentOrder || {};
+
+        if (orderId) {
+          Utils.removeSessionVariable('additionalComments');
+        }
+
+        this.setState({ payNowLoading: !!agentCode });
+      }
+    );
   }
 
   handleSelectBank(e) {
@@ -117,38 +129,23 @@ class OnlineBanking extends Component {
 
     return (
       <select className="input__block" onChange={this.handleSelectBank.bind(this)}>
-        {
-          bankingList.map((banking, key) => {
-            return (
-              <option
-                key={`banking-${key}`}
-                value={banking.agentCode}
-              >
-                {banking.name}
-              </option>
-            );
-          })
-        }
+        {bankingList.map((banking, key) => {
+          return (
+            <option key={`banking-${key}`} value={banking.agentCode}>
+              {banking.name}
+            </option>
+          );
+        })}
       </select>
     );
   }
 
   render() {
-    const {
-      match,
-      history,
-      bankingList,
-      cartSummary,
-      onlineStoreInfo
-    } = this.props;
+    const { match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
-    const {
-      agentCode,
-      payNowLoading,
-    } = this.state;
+    const { agentCode, payNowLoading } = this.state;
     const paymentData = this.getPaymentEntryRequestData();
-
 
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -162,14 +159,8 @@ class OnlineBanking extends Component {
         />
 
         <div className="payment-bank">
-          <Image
-            className="logo-default__image-container"
-            src={logo}
-          />
-          <CurrencyNumber
-            className="payment-bank__money font-weight-bold text-center"
-            money={total || 0}
-          />
+          <Image className="logo-default__image-container" src={logo} />
+          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
 
           <form id="bank-2c2p-form" className="form">
             <div className="payment-bank__form-item">
@@ -184,15 +175,11 @@ class OnlineBanking extends Component {
                     <path d="M0 0h24v24H0z" fill="none" />
                   </svg>
                 </div>
-                {
-                  payNowLoading && !agentCode
-                    ? (
-                      <div className="error-message__container">
-                        <span className="error-message">Please select a bank to continue</span>
-                      </div>
-                    )
-                    : null
-                }
+                {payNowLoading && !agentCode ? (
+                  <div className="error-message__container">
+                    <span className="error-message">Please select a bank to continue</span>
+                  </div>
+                ) : null}
               </div>
             </div>
           </form>
@@ -203,32 +190,23 @@ class OnlineBanking extends Component {
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
-          >{
-              payNowLoading
-                ? <div className="loader"></div>
-                : (
-                  <CurrencyNumber
-                    className="font-weight-bold text-center"
-                    addonBefore="Pay"
-                    money={total || 0}
-                  />
-                )
-            }
+          >
+            {payNowLoading ? (
+              <div className="loader"></div>
+            ) : (
+              <CurrencyNumber className="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
+            )}
           </button>
         </div>
 
-        {
-          payNowLoading && paymentData
-            ? (
-              <RedirectForm
-                ref={ref => this.form = ref}
-                action={config.storeHubPaymentEntryURL}
-                method="POST"
-                data={paymentData}
-              />
-            )
-            : null
-        }
+        {payNowLoading && paymentData ? (
+          <RedirectForm
+            ref={ref => (this.form = ref)}
+            action={config.storeHubPaymentEntryURL}
+            method="POST"
+            data={paymentData}
+          />
+        ) : null}
 
         <Loader loaded={Boolean((bankingList || []).length)} />
       </section>
@@ -252,5 +230,5 @@ export default connect(
   dispatch => ({
     homeActions: bindActionCreators(homeActionCreators, dispatch),
     paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-  }),
+  })
 )(OnlineBanking);

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Item from '../Item';
+import Item from '../../../components/Item';
 import Tag from '../../../components/Tag';
-import ItemOperator from '../ItemOperator';
+import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 export class ProductItem extends Component {
@@ -18,34 +18,36 @@ export class ProductItem extends Component {
       decreaseDisabled,
       onDecrease,
       onIncrease,
+      isFeaturedProduct,
+      showProductDetail,
+      productDetailImageRef,
     } = this.props;
 
     return (
       <Item
         className={className}
         contentClassName="flex-middle"
+        productDetailImageRef={productDetailImageRef}
         image={image}
         title={title}
         variation={variation}
-        detail={
-          <CurrencyNumber money={price || 0} />
-        }
+        detail={<CurrencyNumber money={price || 0} />}
+        operateItemDetail={showProductDetail}
+        hasTag={isFeaturedProduct}
       >
-        {
-          soldOut
-            ? <Tag text="Sold Out" className="tag__card" />
-            : (
-              <ItemOperator
-                className="flex-middle"
-                quantity={cartQuantity}
-                decreaseDisabled={decreaseDisabled}
-                onDecrease={onDecrease}
-                onIncrease={onIncrease}
-              />
-            )
-        }
+        {soldOut ? (
+          <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+        ) : (
+          <ItemOperator
+            className="flex-middle"
+            quantity={cartQuantity}
+            decreaseDisabled={decreaseDisabled}
+            onDecrease={onDecrease}
+            onIncrease={onIncrease}
+          />
+        )}
       </Item>
-    )
+    );
   }
 }
 
@@ -60,6 +62,8 @@ ProductItem.propTypes = {
   decreaseDisabled: PropTypes.bool,
   onDecrease: PropTypes.func,
   onIncrease: PropTypes.func,
+  showProductDetail: PropTypes.func,
+  productDetailImageRef: PropTypes.any,
 };
 
 ProductItem.defaultProps = {
@@ -71,8 +75,9 @@ ProductItem.defaultProps = {
   price: 0,
   cartQuantity: 0,
   decreaseDisabled: false,
-  onDecrease: () => { },
-  onIncrease: () => { },
+  onDecrease: () => {},
+  onIncrease: () => {},
+  showProductDetail: () => {},
 };
 
 export default ProductItem;

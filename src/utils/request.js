@@ -67,6 +67,14 @@ function put(url, data, options) {
   });
 }
 
+function del(url, data, options) {
+  return fetchData(url, {
+    method: 'DELETE',
+    data,
+    options,
+  });
+}
+
 function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
@@ -77,4 +85,4 @@ function handleResponse(url, response) {
   }
 }
 
-export { get, post, put, RequestError };
+export { get, post, put, del, RequestError };

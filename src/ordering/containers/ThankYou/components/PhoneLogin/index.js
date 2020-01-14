@@ -17,6 +17,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
+const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
 const ANIMATION_TIME = 3600;
 const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
@@ -114,12 +115,16 @@ class PhoneLogin extends React.Component {
   getMessage() {
     const { user, cashbackInfo } = this.props;
     const { isLogin } = user || {};
-    const { status: key } = cashbackInfo || {};
+    const { status: key, cashback } = cashbackInfo || {};
 
     if (!key || !isLogin) {
       return 'Claim with your mobile number';
     }
-
+    /* if cashback is zero, hide the cashback tip */
+    const isCashbackZero = parseFloat(cashback) === 0;
+    if (isCashbackZero && CASHBACK_ZERO_CLAIMED.includes(key)) {
+      return '';
+    }
     return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
