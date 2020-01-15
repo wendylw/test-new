@@ -50,7 +50,16 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    return window.NameStorage[name] || '';
+    let keyEQ = name + '=';
+    let ca = document.cookie.split(';');
+
+    for (let i = 0, len = ca.length; i < len; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
+    }
+
+    return null;
   }
 };
 
@@ -58,8 +67,7 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    window.NameStorage = window.NameStorage || {};
-    window.NameStorage[name] = value;
+    document.cookie = name + '=' + value + '; path=/';
   }
 };
 
@@ -67,9 +75,7 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    if (window.NameStorage[name]) {
-      delete window.NameStorage[name];
-    }
+    document.cookie = name + '=' + '' + '; path=/';
   }
 };
 
@@ -77,7 +83,16 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    return window.NameSessionStorage[name] || '';
+    let keyEQ = name + '=';
+    let ca = document.cookie.split(';');
+
+    for (let i = 0, len = ca.length; i < len; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
+    }
+
+    return null;
   }
 };
 
@@ -85,8 +100,7 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    window.NameSessionStorage = window.NameSessionStorage || {};
-    window.NameSessionStorage[name] = value;
+    document.cookie = name + '=' + value + '; path=/';
   }
 };
 
@@ -94,9 +108,7 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    if (window.NameSessionStorage[name]) {
-      delete window.NameSessionStorage[name];
-    }
+    document.cookie = name + '=' + '' + '; path=/';
   }
 };
 
