@@ -25,7 +25,7 @@ module.exports = config => {
     coverageThreshold: {
       'src/utils': {
         branches: 70,
-        functions: 88,
+        functions: 85,
         lines: 82,
         statements: 82
       },
