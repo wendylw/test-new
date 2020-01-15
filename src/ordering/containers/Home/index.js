@@ -84,7 +84,7 @@ export class Home extends Component {
       asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
 
     if (!stopBodyScroll) {
-      this.toggleBodyScroll(!!asideName);
+      this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
     this.setState({
