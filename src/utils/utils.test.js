@@ -85,7 +85,7 @@ describe('utils/utils', () => {
     afterAll(() => {
       localStorage.clear();
     });
-    it('getLocalStorageVariable:request key does not exist', () => {
+    it('getLocalStorageVariable: request key does not exist', () => {
       expect(getLocalStorageVariable('years')).toBeNull();
     });
 
@@ -94,7 +94,7 @@ describe('utils/utils', () => {
       expect(getLocalStorageVariable('years')).toBe('10');
     });
 
-    it('getLocalStorageVariable:get the value of item', () => {
+    it('getLocalStorageVariable: get the value of item', () => {
       setLocalStorageVariable('years', '10');
       expect(getLocalStorageVariable('years')).toBe('10');
     });
