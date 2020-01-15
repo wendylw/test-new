@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import Swipe, { SwipeItem } from 'swipejs/react';
+import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
@@ -420,7 +421,7 @@ class ProductDetail extends Component {
   renderProductDescription() {
     const { show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title, description } = product || {};
+    const { images, title, soldOut, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
@@ -504,7 +505,7 @@ class ProductDetail extends Component {
         </div>
         <div className="aside__fix-bottom">
           <div
-            className="item border__bottom-divider flex flex-space-between aside__section-container"
+            className="item border__bottom-divider flex flex-space-between aside__section-container flex-middle"
             style={{ height: imageContainerMarginBottom }}
           >
             <div className="item__content flex flex-middle">
@@ -513,11 +514,16 @@ class ProductDetail extends Component {
                 <CurrencyNumber className="gray-font-opacity" money={Number(this.displayPrice()) || 0} />
               </div>
             </div>
-            <ItemOperator
-              className="flex-middle"
-              decreaseDisabled={false}
-              onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
-            />
+
+            {soldOut ? (
+              <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+            ) : (
+              <ItemOperator
+                className="flex-middle"
+                decreaseDisabled={false}
+                onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
+              />
+            )}
           </div>
           <article
             className="aside__section-container"
