@@ -444,7 +444,7 @@ class ProductDetail extends Component {
 
       imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
-      swipeHeight = `${asideHeight * 0.9 - productHeight}px`;
+      swipeHeight = `${(asideHeight * 0.9 - productHeight).toFixed(2)}px`;
     }
 
     return (
@@ -478,6 +478,7 @@ class ProductDetail extends Component {
             </Swipe>
           ) : (
             <Image
+              style={{ height: swipeHeight }}
               src={images && images.length ? images[0] : null}
               scalingRatioIndex={1}
               alt={`${storeName} ${title}`}
