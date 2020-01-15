@@ -46,6 +46,21 @@ const getMockProps = (props = {}) => {
 };
 
 describe('ordering/containers/Home', () => {
+  beforeAll(() => {
+    const root = document.createElement('div');
+    root.id = 'root';
+    root.className = 'root';
+    const list = document.createElement('div');
+    list.id = 'product-list';
+    root.appendChild(list);
+    document.body.appendChild(root);
+  });
+
+  afterAll(() => {
+    const root = document.getElementById('root');
+    root.parentElement.removeChild(root);
+  });
+
   it('should render correctly', () => {
     const mockLoadProductList = jest.fn();
     const props = getMockProps({
