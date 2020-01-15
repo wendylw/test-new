@@ -63,6 +63,7 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   }
 };
 
+/* If localStorage is not operational, cookies will be used to store global variables */
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
@@ -96,6 +97,7 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   }
 };
 
+/* If sessionStorage is not operational, cookies will be used to store global variables */
 Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
@@ -301,6 +303,7 @@ Utils.initSmoothAnimation = function initSmoothAnimation() {
 
 Utils.getUserAgentInfo = function getUserAgentInfo() {
   /* eslint-disable */
+  /* https://www.regextester.com/97574 */
   const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
   /* eslint-enabled */
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
