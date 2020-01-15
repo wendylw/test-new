@@ -25,7 +25,7 @@ const DIM_SCALING_RATIO = [1, 5, 8];
 const FIT = 'outside';
 class Image extends React.Component {
   shouldComponentUpdate(nextProps) {
-    return nextProps.src !== this.props.src || JSON.stringify(nextProps.style) !== JSON.stringify(this.props.style);
+    return nextProps.src !== this.props.src;
   }
 
   /*
@@ -81,10 +81,10 @@ class Image extends React.Component {
   }
 
   render() {
-    const { className, style, alt } = this.props;
+    const { className, alt } = this.props;
 
     return (
-      <figure className={className} style={style}>
+      <figure className={className}>
         <img src={this.getImageURL() || PLACEHOLDER} alt={alt} />;
       </figure>
     );
@@ -93,7 +93,6 @@ class Image extends React.Component {
 
 Image.propTypes = {
   className: PropTypes.string,
-  style: PropTypes.object,
   alt: PropTypes.string,
   src: PropTypes.string,
   scalingRatioIndex: PropTypes.number,
@@ -101,7 +100,6 @@ Image.propTypes = {
 
 Image.defaultProps = {
   className: '',
-  style: {},
   alt: '',
   scalingRatioIndex: 0,
 };

@@ -112,6 +112,7 @@ export const actions = {
   loadProductDetail: prod => dispatch => {
     return dispatch(fetchProductDetail({ productId: prod.id }));
   },
+
 };
 
 const fetchShoppingCart = () => {
@@ -276,14 +277,12 @@ export const getCurrentProduct = state => state.home.currentProduct;
 export const getShoppingCartItemsByProducts = createSelector(
   [getCartItemIds, getAllCartItems, getCurrentProduct],
   (itemIds, carts, product) => {
-    const calcItems = itemIds
-      .map(id => carts[id])
-      .filter(x => x.productId === product.id || x.parentProductId === product.id);
+    const calcItems = itemIds.map(id => carts[id]).filter(x => x.productId === product.id || x.parentProductId === product.id);
     const items = calcItems.map(x => {
       return {
         productId: x.productId,
         variations: x.variations,
-      };
+      }
     });
     const count = calcItems.reduce((res, item) => {
       res = res + item.quantity;
@@ -294,6 +293,7 @@ export const getShoppingCartItemsByProducts = createSelector(
       items,
       count,
     };
+
   }
 );
 
@@ -331,9 +331,9 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
     category.cartQuantity = 0;
 
-    products.forEach(function(product) {
+    products.forEach(function (product) {
       product.variations = product.variations || [];
-      product.soldOut = Utils.isProductSoldOut(product || {});
+      product.soldOut = Utils.isProductSoldOut(product);
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
       product.cartQuantity = 0;
 
@@ -376,6 +376,7 @@ export const getCategoryProductList = createSelector(
     return mergeWithShoppingCart(newCategories, carts);
   }
 );
+
 
 export const isVerticalMenuBusiness = state => {
   return (state.home.domProperties.verticalMenuBusinesses || []).includes(getBusiness(state));
