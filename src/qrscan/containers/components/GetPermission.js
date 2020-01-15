@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
 import Constants from '../../Constants';
+import Message from './Message';
 import { withRouter } from 'react-router-dom';
 
 class GetPermission extends Component {
   render() {
-    let showMessage;
-    if (!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAge) && window.navigator.userAgent.indexOf('Chrome') === -1) {
-      showMessage = (
-        <div className="top-message primary fixed">
-          <div className="top-message__text">We recommend that you use Google Chrome</div>
-        </div>
-      );
-    }
-
     return (
       <div>
         <div className="content-contenter">
-          <div className="content-header">{showMessage}</div>
+          <div className="content-header">
+            <Message></Message>
+          </div>
 
           <div className="content-body text-center">
             <div className="content-body__img-content">
