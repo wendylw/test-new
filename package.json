@@ -56,6 +56,7 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "swipejs": "^2.2.14",
     "whatwg-fetch": "^3.0.0"
   },
   "scripts": {

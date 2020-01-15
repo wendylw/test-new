@@ -16,6 +16,9 @@ export const actions = {
   clearAll: () => (dispatch) => {
     return dispatch(emptyShoppingCart());
   },
+  clearAllByProducts: (products) => (dispatch) => {
+    dispatch(clearShopcartItemByProducts(products));
+  },
 
   /**  do not find any place refer to these code
   loadPendingPaymentList: () => ({
@@ -42,11 +45,24 @@ export const actions = {
         receiptNumbers,
       },
     }
-  }),
-  */
+  }),*/
+
 };
 
-export const emptyShoppingCart = () => {
+const clearShopcartItemByProducts = (products) => {
+  return {
+    [API_REQUEST]: {
+      types: [
+        types.CLEARALL_BY_PRODUCTS_REQUEST,
+        types.CLEARALL_BY_PRODUCTS_SUCCESS,
+        types.CLEARALL_BY_PRODUCTS_FAILURE
+      ],
+      payload: products,
+      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS
+    },
+  }
+};
+const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
   return {
     [FETCH_GRAPHQL]: {
