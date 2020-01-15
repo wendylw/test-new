@@ -421,7 +421,7 @@ class ProductDetail extends Component {
   renderProductDescription() {
     const { show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title, markedSoldOut, description } = product || {};
+    const { images, title, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
