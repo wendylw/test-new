@@ -83,6 +83,8 @@ Utils.removeAdditionalComments = function removeAdditionalComments() {
 };
 
 Utils.isProductSoldOut = product => {
+  console.log(product);
+
   const { markedSoldOut, variations } = product;
 
   if (markedSoldOut) {
