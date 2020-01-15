@@ -24,10 +24,10 @@ module.exports = config => {
     collectCoverageFrom,
     coverageThreshold: {
       'src/utils': {
-        branches: 71,
-        functions: 89,
-        lines: 83,
-        statements: 83
+        branches: 70,
+        functions: 88,
+        lines: 82,
+        statements: 82
       },
       // TODO: add 'src/redux' if done with test cases
       // TODO: add 'src/{cashback,ordering,qrscan,stores}/redux' if done with test cases
