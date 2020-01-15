@@ -516,7 +516,7 @@ class ProductDetail extends Component {
               </div>
             </div>
 
-            {product && product.markedSoldOut ? (
+            {Utils.isProductSoldOut(product || {}) ? (
               <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
             ) : (
               <ItemOperator
