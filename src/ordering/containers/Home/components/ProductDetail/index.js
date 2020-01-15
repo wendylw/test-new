@@ -421,7 +421,7 @@ class ProductDetail extends Component {
   renderProductDescription() {
     const { show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title, soldOut, description } = product || {};
+    const { images, title, markedSoldOut, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
@@ -516,7 +516,7 @@ class ProductDetail extends Component {
               </div>
             </div>
 
-            {soldOut ? (
+            {markedSoldOut ? (
               <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
             ) : (
               <ItemOperator
