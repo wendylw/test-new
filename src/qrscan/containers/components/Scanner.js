@@ -31,6 +31,8 @@ class Scanner extends Component {
 
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = function(error) {
+          console.log(error);
+          return false;
           if (error.name === 'NotAllowedError') {
             that.props.history.push(Constants.ALL_ROUTER.permission);
           } else {
@@ -105,6 +107,8 @@ class Scanner extends Component {
         return false;
       }
     } catch (e) {
+      console.log(e);
+      return false;
       if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
         this.props.history.push({
           pathname: Constants.ALL_ROUTER.notSupport,
