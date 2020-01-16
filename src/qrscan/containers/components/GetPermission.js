@@ -9,7 +9,7 @@ class GetPermission extends Component {
       <div>
         <div className="content-contenter">
           <div className="content-header">
-            <Message></Message>
+            <Message />
           </div>
 
           <div className="content-body text-center">
@@ -23,7 +23,7 @@ class GetPermission extends Component {
           <div className="content-footer">
             <a
               className="text-center content-footer__button-fill content-footer__button-shadow content-footer__button-main"
-              href={Constants.BASE_URL + Constants.ALL_ROUTER.scan}
+              href={`${Constants.BASE_URL}${Constants.ALL_ROUTER.scan}`}
             >
               SCAN QR CODE
             </a>
