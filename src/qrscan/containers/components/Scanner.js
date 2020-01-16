@@ -56,6 +56,11 @@ class Scanner extends Component {
         };
 
       //get mediaDevices, only for（Firefox, Chrome, Opera）
+      console.log('mediaDevices', navigator.mediaDevices);
+      console.log('getUserMedia', navigator.mediaDevices.getUserMedia);
+      console.log('webkitGetUserMedia', navigator.mediaDevices.webkitGetUserMedia);
+      console.log('mozGetUserMedia', navigator.mediaDevices.mozGetUserMedia);
+      console.log('msGetUserMedia', navigator.mediaDevices.msGetUserMedia);
       if (navigator.mediaDevices.getUserMedia) {
         //QQ browser do not support
         if (navigator.userAgent.indexOf('MQQBrowser') > -1) {
@@ -66,6 +71,8 @@ class Scanner extends Component {
         navigator.mediaDevices
           .getUserMedia(videoObj)
           .then(function(stream) {
+            console.log('that', that);
+            console.log('getViedoStream', that.getViedoStream);
             const play = that.getViedoStream.bind(that, stream);
             play();
           })
@@ -76,6 +83,8 @@ class Scanner extends Component {
         navigator
           .webkitGetUserMedia(videoObj)
           .then(function(stream) {
+            console.log('that', that);
+            console.log('getViedoStream', that.getViedoStream);
             const play = that.getViedoStream.bind(that, stream);
             play();
           })
