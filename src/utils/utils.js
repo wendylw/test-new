@@ -10,11 +10,11 @@ Utils.getQueryString = key => {
   }
 
   return queries;
-}
+};
 
 Utils.isWebview = function isWebview() {
   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
-}
+};
 
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
@@ -43,46 +43,46 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
     }
   }
 
-  return (top + height) - windowScrolledTop - topAdjustment;
-}
+  return top + height - windowScrolledTop - topAdjustment;
+};
 
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   return localStorage.getItem(name);
-}
+};
 
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   localStorage.setItem(name, value || '');
-}
+};
 
 Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   localStorage.removeItem(name);
-}
+};
 
 Utils.getSessionVariable = function getSessionVariable(name) {
   return sessionStorage.getItem(name);
-}
+};
 
 Utils.setSessionVariable = function setSessionVariable(name, value) {
   sessionStorage.setItem(name, value || '');
-}
+};
 
 Utils.removeSessionVariable = function removeSessionVariable(name) {
   sessionStorage.removeItem(name);
-}
+};
 
 Utils.getAdditionalComments = function getAdditionalComments() {
   return sessionStorage.getItem('additionalComments');
-}
+};
 
 Utils.setAdditionalComments = function setAdditionalComments(additionalComments) {
   sessionStorage.setItem('additionalComments', additionalComments || '');
-}
+};
 
 Utils.removeAdditionalComments = function removeAdditionalComments() {
   sessionStorage.removeItem('additionalComments');
-}
+};
 
-Utils.isProductSoldOut = (product) => {
+Utils.isProductSoldOut = product => {
   const { markedSoldOut, variations } = product;
 
   if (markedSoldOut) {
@@ -108,7 +108,7 @@ Utils.isProductSoldOut = (product) => {
   }
 
   return false;
-}
+};
 
 Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   if (!countryCode) {
@@ -123,7 +123,7 @@ Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   }
 
   return phone;
-}
+};
 
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
   if (!dateString) {
@@ -165,12 +165,13 @@ Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
     }
 
     if (index !== datePattern.length - 1) {
-      dateArray[index] = (dateArray[index].length === blocks[index] && !deletedDelimiter) ? `${dateArray[index]} / ` : dateArray[index][0];
+      dateArray[index] =
+        dateArray[index].length === blocks[index] && !deletedDelimiter ? `${dateArray[index]} / ` : dateArray[index][0];
     }
   });
 
   return dateArray.join('');
-}
+};
 
 Utils.creditCardDetector = function creditCardDetector(cardNumberString) {
   if (!cardNumberString) {
@@ -193,21 +194,20 @@ Utils.creditCardDetector = function creditCardDetector(cardNumberString) {
   let cardNumber = cardNumberString.replace(/[^\d]/g, '').substring(0, 16);
 
   Object.assign(card, {
-    type: Object.keys(re).find(key => re[key].test(cardNumber)) || ''
+    type: Object.keys(re).find(key => re[key].test(cardNumber)) || '',
   });
 
   // Split the card number is groups of Block
-  const usingBlocks = (blocks[card.type] || defaultBlock);
+  const usingBlocks = blocks[card.type] || defaultBlock;
 
   usingBlocks.forEach((block, index) => {
     if (cardNumber.substring(0, block) && cardNumber.substring(0, block).length) {
-      const delimiter = (cardNumber.substring(0, block).length === block && index !== usingBlocks.length - 1) ? ' ' : '';
+      const delimiter = cardNumber.substring(0, block).length === block && index !== usingBlocks.length - 1 ? ' ' : '';
 
       cardNumberSections.push(cardNumber.substring(0, block) + delimiter);
       cardNumber = cardNumber.substring(block);
     }
   });
-
 
   if (cardNumberSections !== null) {
     Object.assign(card, {
@@ -216,18 +216,11 @@ Utils.creditCardDetector = function creditCardDetector(cardNumberString) {
   }
 
   return card;
-}
+};
 
 Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   const addressList = [];
-  const addressKeys = [
-    'street1',
-    'street2',
-    'postalCode',
-    'city',
-    'state',
-    'country',
-  ];
+  const addressKeys = ['street1', 'street2', 'postalCode', 'city', 'state', 'country'];
 
   addressKeys.forEach((item, index) => {
     if (addressInfo[item] && Boolean(addressInfo[item]) && index < splitLength) {
@@ -236,7 +229,7 @@ Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   });
 
   return addressList.join(', ');
-}
+};
 
 Utils.getQueryObject = function getQueryObject(history, paramName) {
   if (!history.location.search) {
@@ -246,7 +239,7 @@ Utils.getQueryObject = function getQueryObject(history, paramName) {
   const params = new URLSearchParams(history.location.search);
 
   return params.get(paramName);
-}
+};
 
 Utils.initSmoothAnimation = function initSmoothAnimation() {
   const vendors = ['webkit', 'moz'];
@@ -254,15 +247,15 @@ Utils.initSmoothAnimation = function initSmoothAnimation() {
 
   for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
     window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||    // name has changed in Webkit
-      window[vendors[x] + 'CancelRequestAnimationFrame'];
+    window.cancelAnimationFrame =
+      window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame']; // name has changed in Webkit
   }
 
   if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = function (callback, element) {
+    window.requestAnimationFrame = function(callback, element) {
       var currTime = new Date().getTime();
       var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
-      var id = window.setTimeout(function () {
+      var id = window.setTimeout(function() {
         callback(currTime + timeToCall);
       }, timeToCall);
       lastTime = currTime + timeToCall;
@@ -270,23 +263,29 @@ Utils.initSmoothAnimation = function initSmoothAnimation() {
     };
   }
   if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = function (id) {
+    window.cancelAnimationFrame = function(id) {
       clearTimeout(id);
     };
   }
-}
+};
 
 Utils.getUserAgentInfo = function getUserAgentInfo() {
   /* eslint-disable */
   const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
   /* eslint-enabled */
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
+    navigator.userAgent
+  );
   const browsers = navigator.userAgent.match(regex);
 
   return {
     isMobile,
     browser: browsers ? browsers[0] : '',
-  }
-}
+  };
+};
+
+Utils.removeHtmlTag = function removeHtmlTag(str) {
+  return str.replace(/<[^>]+>/g, '');
+};
 
 export default Utils;

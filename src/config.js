@@ -1,6 +1,9 @@
 const getTableId = () => {
   try {
-    return document.cookie.split(';').find(s => s.includes('__t')).split('=')[1];
+    return document.cookie
+      .split(';')
+      .find(s => s.includes('__t'))
+      .split('=')[1];
   } catch (e) {
     return null;
   }
@@ -8,7 +11,10 @@ const getTableId = () => {
 
 const getStoreId = () => {
   try {
-    return document.cookie.split(';').find(s => s.includes('__s')).split('=')[1];
+    return document.cookie
+      .split(';')
+      .find(s => s.includes('__s'))
+      .split('=')[1];
   } catch (e) {
     return null;
   }
@@ -16,13 +22,16 @@ const getStoreId = () => {
 
 const getConsumerId = () => {
   try {
-    return document.cookie.split(';').find(s => s.includes('__cid')).split('=')[1];
+    return document.cookie
+      .split(';')
+      .find(s => s.includes('__cid'))
+      .split('=')[1];
   } catch (e) {
     return null;
   }
 };
 
-const business = (d => d.length > 2 ? d.shift() : null)(window.location.hostname.split('.'));
+const business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
 
 const config = {
   termsPrivacyURLS: {
@@ -36,9 +45,13 @@ const config = {
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
   imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
+  verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
   h() {
     try {
-      return document.cookie.split(';').find(s => s.includes('__h')).split('=')[1];
+      return document.cookie
+        .split(';')
+        .find(s => s.includes('__h'))
+        .split('=')[1];
     } catch (e) {
       return null;
     }
@@ -55,7 +68,7 @@ Object.defineProperty(config, 'peopleCount', {
   },
   set(value) {
     localStorage.setItem('peopleCount', JSON.stringify(Number(value)));
-  }
-})
+  },
+});
 
 export default config;

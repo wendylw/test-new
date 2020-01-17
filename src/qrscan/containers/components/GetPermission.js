@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Constants from '../../Constants';
+import Message from './Message';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 
@@ -10,7 +11,9 @@ class GetPermission extends Component {
     return (
       <div>
         <div className="content-contenter">
-          <div className="content-header"></div>
+          <div className="content-header">
+            <Message />
+          </div>
 
           <div className="content-body text-center">
             <div className="content-body__img-content">

@@ -24,13 +24,7 @@ export class Footer extends Component {
   }
 
   render() {
-    const {
-      history,
-      onClickCart,
-      cartSummary,
-      businessInfo,
-      tableId,
-    } = this.props;
+    const { history, onClickCart, cartSummary, businessInfo, tableId, onToggle } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
@@ -46,50 +40,48 @@ export class Footer extends Component {
 
             <div className="cart-bar__money text-middle text-left">
               <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
-              {
-                this.getDisplayPrice() < Number(minimumConsumption || 0)
-                  ? (
-                    <label className="cart-bar__money-minimum">
-                      <span className="gray-font-opacity">{count ? 'Remaining ' : 'Min '}</span>
-                      <CurrencyNumber className="gray-font-opacity" money={Number(minimumConsumption || 0) - this.getDisplayPrice()} />
-                    </label>
-                  )
-                  : null
-              }
+              {this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
+                <label className="cart-bar__money-minimum">
+                  <span className="gray-font-opacity">{count ? 'Remaining ' : 'Min '}</span>
+                  <CurrencyNumber
+                    className="gray-font-opacity"
+                    money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                  />
+                </label>
+              ) : null}
             </div>
           </button>
-          {
-            tableId !== 'DEMO'
-              ? (
-                <button
-                  className="cart-bar__order-button"
-                  disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
-                  onClick={() => history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART })}
-                >
-                  Order now
-                </button>
-              )
-              : null
-          }
-
+          {tableId !== 'DEMO' ? (
+            <button
+              className="cart-bar__order-button"
+              disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
+              onClick={() => {
+                onToggle();
+                history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART });
+              }}
+            >
+              Order now
+            </button>
+          ) : null}
         </div>
       </footer>
-    )
+    );
   }
 }
 
 Footer.propTypes = {
   tableId: PropTypes.string,
+  onToggle: PropTypes.func,
   onClickCart: PropTypes.func,
 };
 
 Footer.defaultProps = {
-  onClickCart: () => { },
+  onToggle: () => {},
+  onClickCart: () => {},
 };
 
 export default connect(
   state => {
-
     return {
       cartSummary: getCartSummary(state),
       businessInfo: getBusinessInfo(state),
@@ -100,5 +92,5 @@ export default connect(
   dispatch => ({
     cartActions: bindActionCreators(cartActionCreators, dispatch),
     homeActions: bindActionCreators(homeActionCreators, dispatch),
-  }),
+  })
 )(Footer);

@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
+import Swipe, { SwipeItem } from 'swipejs/react';
+import Image from '../../../../../components/Image';
 import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
+import { IconLeftArrow } from '../../../../../components/Icons';
+import ItemOperator from '../../../../../components/ItemOperator';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
@@ -21,33 +26,85 @@ const EXECLUDE_KEYS = ['variationType'];
 class ProductDetail extends Component {
   currentProductId = null;
   productEl = null;
+  productDescriptionImage = null;
+  productDetailImage = null;
+  buttonEl = null;
   asideEl = null;
+  swipeEl = null;
+  descriptionTimeOut = null;
 
   state = {
     variationsByIdMap: {}, // Object<VariationId: Object<variationType, OptionId:option >>
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
+    resizedImage: false,
+    currentProductDescriptionImageIndex: 0,
+    productElHeight: 0,
   };
+
+  setProductElHeight() {
+    if (this.productEl) {
+      this.setState({
+        productElHeight: this.productEl.clientHeight,
+      });
+    }
+  }
 
   componentDidMount() {
     const { product } = this.props;
 
     this.initVariationsByIdMap(product);
+
+    if (this.swipeEl) {
+      this.swipeEl.stop();
+    }
+
+    this.setProductElHeight();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { product } = nextProps;
-    const {
-      variations,
-      id,
-    } = product || {};
+  componentDidUpdate(prevProps, prevState) {
+    const { show, product } = this.props;
+    const { variations, id } = product || {};
 
     if (!id || !variations) {
       return;
     }
 
-    if ((!this.props.product && id) || (id !== this.props.product.id)) {
+    if ((!prevProps.product && id) || id !== prevProps.product.id || (show && prevProps.show !== show)) {
       this.initVariationsByIdMap(product);
     }
+
+    if (!show && prevProps.show !== show) {
+      this.setState({ resizedImage: false });
+    }
+
+    if (prevState.productElHeight !== this.productEl.clientHeight) {
+      this.setProductElHeight();
+    }
+  }
+
+  resizeImage() {
+    const { show } = this.props;
+    const { resizedImage } = this.state;
+
+    if (!this.productDescriptionImage || !ReactDOM.findDOMNode(this.productDetailImage) || !show || !resizedImage) {
+      return {};
+    }
+
+    const pdI = this.productDescriptionImage;
+    const pdIS = ReactDOM.findDOMNode(this.productDetailImage);
+    const containerWidth = pdI.clientWidth;
+    const containerHeight = pdI.clientHeight;
+    const imageWidth = pdIS.clientWidth;
+    const imageHeight = pdIS.clientHeight;
+    const xOffset = pdIS.offsetLeft;
+    const yOffset = containerHeight - imageHeight - xOffset;
+
+    return {
+      transformOrigin: `${xOffset / (containerWidth / imageWidth - 1) + xOffset}px ${yOffset /
+        (containerHeight / imageHeight - 1) +
+        yOffset}px`,
+      transform: `scale(${imageWidth / containerWidth}, ${imageHeight / containerHeight})`,
+    };
   }
 
   initVariationsByIdMap(product) {
@@ -75,44 +132,26 @@ class ProductDetail extends Component {
     });
   }
 
-  getVariationsMaxHeight() {
-    if (!this.asideEl || !this.productEl) {
-      return null;
-    }
-
-    const asideHeight = ReactDOM.findDOMNode(this.asideEl).clientHeight;
-    const productHeight = ReactDOM.findDOMNode(this.productEl).clientHeight;
-
-    return `${(asideHeight * 0.9 - productHeight).toFixed(4)}px`;
-  }
-
   displayPrice() {
     const { product } = this.props;
-    const {
-      childrenMap,
-      unitPrice = 0,
-      onlineUnitPrice = 0,
-      displayPrice = 0
-    } = product || {};
+    const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
     const { variationsByIdMap } = this.state;
     const selectedValues = [];
     const selectedVariations = [];
     let totalPriceDiff = 0;
 
-    Object.values(variationsByIdMap).forEach(function (options) {
+    Object.values(variationsByIdMap).forEach(function(options) {
       Object.values(options).forEach(item => {
         if (item.value) {
           selectedVariations.push(item);
-          totalPriceDiff += item.priceDiff;
 
+          totalPriceDiff += item.priceDiff;
           selectedValues.push(item.value);
         }
       });
     });
 
-    const childProduct = (childrenMap || []).find(({ variation }) => (
-      variation.every(v => selectedValues.includes(v))
-    ));
+    const childProduct = (childrenMap || []).find(({ variation }) => variation.every(v => selectedValues.includes(v)));
 
     if (childProduct) {
       this.currentProductId = childProduct.childId;
@@ -136,24 +175,21 @@ class ProductDetail extends Component {
       return '';
     }
 
-    let variationText = [];
+    let variationTexts = [];
 
-    Object.values(variationsByIdMap).forEach(function (variation) {
+    Object.values(variationsByIdMap).forEach(function(variation) {
       Object.values(variation).forEach(option => {
         if (option.value) {
-          variationText.push(option.value);
+          variationTexts.push(option.value);
         }
       });
     });
 
-    return variationText.join(',');
+    return variationTexts.join(', ');
   }
 
   isSubmitable() {
-    const {
-      cartQuantity,
-      variationsByIdMap,
-    } = this.state;
+    const { cartQuantity, variationsByIdMap } = this.state;
     const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
 
     // check: cart should not empty
@@ -161,7 +197,9 @@ class ProductDetail extends Component {
 
     // check: if product has single variants, then they should be all selected.
     if (singleChoiceVariations.length > 0) {
-      const selectedAllSingleChoice = !singleChoiceVariations.find(variation => !Object.keys(variationsByIdMap).includes(variation.id));
+      const selectedAllSingleChoice = !singleChoiceVariations.find(
+        variation => !Object.keys(variationsByIdMap).includes(variation.id)
+      );
 
       submitable = submitable && Object.values(variationsByIdMap).length > 0 && selectedAllSingleChoice;
     }
@@ -174,8 +212,8 @@ class ProductDetail extends Component {
 
     if (!newMap[variation.id] || variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
       newMap[variation.id] = {
-        variationType: variation.variationType
-      }
+        variationType: variation.variationType,
+      };
     }
 
     if (newMap[variation.id] && !newMap[variation.id][option.id]) {
@@ -209,31 +247,74 @@ class ProductDetail extends Component {
   getChoiceVariations(type) {
     const { variations } = this.props.product || {};
 
-    return Array.isArray(variations)
-      ? variations.filter(v => v.variationType === type)
-      : [];
+    return Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
+  }
+
+  closeModal() {
+    const { onToggle } = this.props;
+
+    onToggle();
+
+    this.setState({
+      cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
+      resizedImage: false,
+      currentProductDescriptionImageIndex: 0,
+    });
   }
 
   handleHideProductDetail(e) {
-    const { onToggle } = this.props;
-
     if (e && e.target !== e.currentTarget) {
       return;
     }
 
-    onToggle();
+    this.closeModal();
   }
 
-  handleAddOrUpdateShoppingCartItem = async (variables) => {
+  handleAddOrUpdateShoppingCartItem = async variables => {
     const { homeActions } = this.props;
 
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
     this.handleHideProductDetail();
+  };
+
+  handleSwipeProductImage(index) {
+    this.setState({ currentProductDescriptionImageIndex: index });
   }
 
+  handleDescriptionAddOrShowDescription = async product => {
+    const { onToggle, homeActions } = this.props;
+    const { variations } = product;
+
+    if (!variations || !variations.length) {
+      await homeActions.addOrUpdateShoppingCartItem({
+        action: 'add',
+        business: config.business,
+        productId: product.id,
+        quantity: Constants.ADD_TO_CART_MIN_QUANTITY,
+        variations: [],
+      });
+      await homeActions.loadShoppingCart();
+      this.closeModal();
+
+      return;
+    } else {
+      homeActions.loadProductDetail(product);
+    }
+
+    this.setState({ resizedImage: true });
+
+    this.descriptionTimeOut = setTimeout(() => {
+      onToggle('PRODUCT_DETAIL');
+
+      clearTimeout(this.descriptionTimeOut);
+    }, 550);
+  };
+
   renderVariations() {
+    const { show } = this.props;
     const { variations } = this.props.product || {};
+    const { productElHeight } = this.state;
 
     if (!variations || !variations.length) {
       return null;
@@ -241,28 +322,35 @@ class ProductDetail extends Component {
 
     const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
     const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
+    let maxHeight = '30vh';
+
+    if (this.asideEl && this.productEl) {
+      const asideHeight = this.asideEl.clientHeight;
+
+      maxHeight = `${asideHeight * 0.9 - productElHeight}px`;
+    }
 
     return (
-      <ol className="product-detail__options-category">
-        {
-          singleChoiceVariations.map(variation => (
+      <div className="product-detail__options-container" style={{ maxHeight }}>
+        <ol className="product-detail__options-category">
+          {singleChoiceVariations.map(variation => (
             <VariationSelector
               key={variation.id}
               variation={variation}
+              initVariation={show}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
-          ))
-        }
-        {
-          multipleChoiceVariations.map(variation => (
+          ))}
+          {multipleChoiceVariations.map(variation => (
             <VariationSelector
               key={variation.id}
               variation={variation}
+              initVariation={show}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
-          ))
-        }
-      </ol>
+          ))}
+        </ol>
+      </div>
     );
   }
 
@@ -277,11 +365,9 @@ class ProductDetail extends Component {
     }
 
     return (
-      <div
-        ref={ref => this.productEl = ref}
-        className="aside__fix-bottom"
-      >
+      <div ref={ref => (this.productEl = ref)} className="aside__fix-bottom">
         <ProductItem
+          productDetailImageRef={ref => (this.productDetailImage = ref)}
           className="aside__section-container border__top-divider"
           image={imageUrl}
           title={title}
@@ -293,7 +379,7 @@ class ProductDetail extends Component {
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />
 
-        <div className="aside__section-container">
+        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container">
           <button
             className="button__fill button__block font-weight-bold"
             type="button"
@@ -302,7 +388,7 @@ class ProductDetail extends Component {
               const { variationsByIdMap } = this.state;
               let variations = [];
 
-              Object.keys(variationsByIdMap).forEach(function (variationId) {
+              Object.keys(variationsByIdMap).forEach(function(variationId) {
                 Object.keys(variationsByIdMap[variationId]).forEach(key => {
                   if (!EXECLUDE_KEYS.includes(key)) {
                     variations.push({
@@ -323,7 +409,121 @@ class ProductDetail extends Component {
                 });
               }
             }}
-          >OK</button>
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  renderProductDescription() {
+    const { show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
+    const { currentProductDescriptionImageIndex } = this.state;
+    const { images, title, description } = product || {};
+    const { storeName } = onlineStoreInfo || {};
+    const className = ['product-description'];
+    const resizeImageStyles = this.resizeImage();
+    const descriptionStr = Utils.removeHtmlTag(description || '');
+    let imageContainerHeight = '100vw';
+    let imageContainerMarginBottom = '-25vw';
+
+    if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
+      className.push('hide');
+    }
+
+    if (Object.keys(resizeImageStyles).length) {
+      className.push('transition');
+    }
+
+    if (this.asideEl && this.buttonEl && this.productEl) {
+      const productHeight = this.productEl.clientHeight;
+      const asideHeight = this.asideEl.clientHeight;
+      const buttonElHeight = this.buttonEl.clientHeight;
+
+      imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
+      imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
+    }
+
+    return (
+      <div className={className.join(' ')}>
+        <div
+          ref={ref => (this.productDescriptionImage = ref)}
+          className="product-description__image-container"
+          style={{
+            height: imageContainerHeight,
+            marginBottom: `-${imageContainerMarginBottom}`,
+            ...resizeImageStyles,
+          }}
+        >
+          <i className="product-description__back-icon" onClick={() => onToggle()}>
+            <IconLeftArrow />
+          </i>
+          {images && images.length > 1 ? (
+            <Swipe
+              ref={ref => (this.swipeEl = ref)}
+              continuous={images.length > 2 ? true : false}
+              callback={this.handleSwipeProductImage.bind(this)}
+            >
+              {images.map((imageItemUrl, key) => {
+                return (
+                  <SwipeItem key={`swipe-${key}`}>
+                    <Image src={imageItemUrl} scalingRatioIndex={1} alt={`${storeName} ${title}`} />
+                  </SwipeItem>
+                );
+              })}
+            </Swipe>
+          ) : (
+            <Image
+              src={images && images.length ? images[0] : null}
+              scalingRatioIndex={1}
+              alt={`${storeName} ${title}`}
+            />
+          )}
+          {images && images.length > 1 ? (
+            <ul
+              className="product-description__dot-list text-center"
+              style={{
+                bottom: imageContainerMarginBottom,
+              }}
+            >
+              {images.map((imageItemUrl, key) => {
+                const dotClassList = ['product-description__dot'];
+
+                if (key === currentProductDescriptionImageIndex) {
+                  dotClassList.push('active');
+                }
+
+                return <li key={`swipe-${key}-dot`} className={dotClassList.join(' ')}></li>;
+              })}
+            </ul>
+          ) : null}
+        </div>
+        <div className="aside__fix-bottom">
+          <div
+            className="item border__bottom-divider flex flex-space-between aside__section-container"
+            style={{ height: imageContainerMarginBottom }}
+          >
+            <div className="item__content flex flex-middle">
+              <div className="item__detail">
+                <summary className="item__title font-weight-bold">{title}</summary>
+                <CurrencyNumber className="gray-font-opacity" money={Number(this.displayPrice()) || 0} />
+              </div>
+            </div>
+            <ItemOperator
+              className="flex-middle"
+              decreaseDisabled={false}
+              onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
+            />
+          </div>
+          <article
+            className="aside__section-container"
+            style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
+          >
+            <p className="product-description__text gray-font-opacity">
+              {Boolean(descriptionStr) ? descriptionStr : 'No product description'}
+            </p>
+          </article>
         </div>
       </div>
     );
@@ -331,10 +531,7 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
-    const {
-      product,
-      show,
-    } = this.props;
+    const { product, show } = this.props;
 
     if (show && product && product.id && !product._needMore) {
       className.push('active');
@@ -342,20 +539,16 @@ class ProductDetail extends Component {
 
     return (
       <aside
-        ref={ref => this.asideEl = ref}
-        className={className.join(" ")}
-        onClick={(e) => this.handleHideProductDetail(e)}
+        ref={ref => (this.asideEl = ref)}
+        className={className.join(' ')}
+        onClick={e => this.handleHideProductDetail(e)}
       >
         <div className="product-detail">
-          <div
-            className="product-detail__options-container"
-            style={{ maxHeight: this.getVariationsMaxHeight() || '30vh' }}
-          >
-            {this.renderVariations()}
-          </div>
+          {this.renderVariations()}
 
           {this.renderProductOperator()}
         </div>
+        {this.renderProductDescription()}
       </aside>
     );
   }
@@ -363,12 +556,14 @@ class ProductDetail extends Component {
 
 ProductDetail.propTypes = {
   show: PropTypes.bool,
+  viewAside: PropTypes.string,
   onToggle: PropTypes.func,
 };
 
 ProductDetail.defaultProps = {
   show: false,
-  onToggle: () => { }
+  viewAside: '',
+  onToggle: () => {},
 };
 
 export default connect(
@@ -381,5 +576,5 @@ export default connect(
   },
   dispatch => ({
     homeActions: bindActionCreators(homeActionCreators, dispatch),
-  }),
+  })
 )(ProductDetail);

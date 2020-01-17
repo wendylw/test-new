@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
-import qs from 'qs';
+import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as cartActionCreators } from '../../redux/modules/cart';
-import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
-import { actions as homeActionCreators, getCategoryProductList } from '../../redux/modules/home';
-
-const ASIDE_NAMES = {
-  PRODUCT_DETAIL: 'PRODUCT_DETAIL',
-  MENU: 'MENU',
-  CART: 'CART'
-};
+import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import {
+  actions as homeActionCreators,
+  getCategoryProductList,
+  isVerticalMenuBusiness,
+} from '../../redux/modules/home';
 
 const localState = {
   blockScrollTop: 0,
@@ -28,12 +28,8 @@ export class Home extends Component {
     viewAside: null,
   };
 
-  componentWillMount() {
-    const {
-      history,
-      homeActions,
-      requestInfo
-    } = this.props;
+  componentDidMount() {
+    const { history, homeActions, requestInfo } = this.props;
     const { storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -46,40 +42,58 @@ export class Home extends Component {
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
-    const homeEl = document.getElementById('table-ordering-home');
+    const rootClassName = rootEl
+      .getAttribute('class')
+      .replace(/fixed/g, '')
+      .trim();
+    const listEl = document.getElementById('product-list');
 
-    if (rootEl && homeEl) {
-      rootEl.classList.toggle('fixed', blockScroll);
-
+    if (rootEl && listEl) {
       if (blockScroll) {
-        const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        const currentScrollTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+        let listElOffsetTop = currentScrollTop + listEl.getBoundingClientRect().top;
 
-        homeEl.style.top = `-${currentScrollTop}px`;
+        if (!Utils.getUserAgentInfo().browser.includes('Safari')) {
+          let currentParent = listEl.offsetParent;
+
+          listElOffsetTop = listEl.offsetTop;
+
+          while (currentParent !== null) {
+            listElOffsetTop += currentParent.offsetTop;
+            currentParent = currentParent.offsetParent;
+          }
+        }
+
+        listEl.style.top = `${listElOffsetTop - currentScrollTop}px`;
 
         Object.assign(localState, { blockScrollTop: currentScrollTop });
+        rootEl.setAttribute('class', `${rootClassName} fixed`);
       } else {
         const { blockScrollTop } = localState;
 
-        homeEl.style.top = null;
-        document.body.scrollTop = blockScrollTop;
-        document.documentElement.scrollTop = blockScrollTop;
+        rootEl.setAttribute('class', rootClassName);
+        listEl.style.top = '';
+        window.scrollTo(0, blockScrollTop);
       }
     }
   }
 
   handleToggleAside(asideName) {
-    this.toggleBodyScroll(!!asideName);
+    const stopBodyScroll =
+      this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
+      asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
+
+    if (!stopBodyScroll) {
+      this.toggleBodyScroll(!!asideName);
+    }
 
     this.setState({
-      viewAside: asideName
+      viewAside: asideName,
     });
   }
 
   renderHeader() {
-    const {
-      onlineStoreInfo,
-      requestInfo,
-    } = this.props;
+    const { onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
 
@@ -95,22 +109,13 @@ export class Home extends Component {
         logo={onlineStoreInfo.logo}
         title={onlineStoreInfo.storeName}
       >
-        {
-          tableId
-            ? <span className="gray-font-opacity text-uppercase">Table {tableId}</span>
-            : null
-        }
+        {tableId ? <span className="gray-font-opacity text-uppercase">Table {tableId}</span> : null}
       </Header>
     );
   }
 
   render() {
-    const {
-      categories,
-      onlineStoreInfo,
-      requestInfo,
-      ...otherProps
-    } = this.props;
+    const { business, categories, onlineStoreInfo, requestInfo, isVerticalMenu, ...otherProps } = this.props;
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
 
@@ -121,23 +126,31 @@ export class Home extends Component {
     return (
       <section className="table-ordering__home">
         {this.renderHeader()}
-        <CurrentCategoryBar
-          categories={categories}
+        <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
+        <CategoryProductList
+          isVerticalMenu={isVerticalMenu}
+          onToggle={this.handleToggleAside.bind(this)}
+          onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
         />
-        <CategoryProductList onToggle={this.handleToggleAside.bind(this)} />
         <ProductDetail
-          show={viewAside === ASIDE_NAMES.PRODUCT_DETAIL}
+          onlineStoreInfo={onlineStoreInfo}
+          show={
+            viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
+            viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
+          }
+          viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
         />
         <MiniCartListModal
-          show={viewAside === ASIDE_NAMES.CART}
+          viewAside={viewAside}
+          show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this)}
         />
         <Footer
           {...otherProps}
+          onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
-          onlineStoreInfo={onlineStoreInfo}
-          onClickCart={this.handleToggleAside.bind(this, ASIDE_NAMES.CART)}
+          onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}
         />
       </section>
     );
@@ -147,6 +160,8 @@ export class Home extends Component {
 export default connect(
   state => {
     return {
+      business: getBusiness(state),
+      isVerticalMenu: isVerticalMenuBusiness(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       requestInfo: getRequestInfo(state),
       categories: getCategoryProductList(state),
@@ -155,5 +170,5 @@ export default connect(
   dispatch => ({
     homeActions: bindActionCreators(homeActionCreators, dispatch),
     cartActions: bindActionCreators(cartActionCreators, dispatch),
-  }),
+  })
 )(Home);

@@ -1,5 +1,11 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## development mode with mock data
+
+run `yarn mockstart` in the backend <br>
+run `yarn start` in the frontend <br>
+this way allow you to start project with mock data.
+
 ## API demo
 
 Start up `marketplace-api`, and let's adapt it with `graphql-faker` tool (because our api project is not allowed with CORS).
@@ -9,7 +15,6 @@ graphql-faker --extend http://localhost:5000/graphql
 ```
 
 ## Customize Workbox Service Workers
-
 
 [Using Custom Workbox Service Workers with Create-React-App (without ejecting)
 ](https://karannagupta.com/using-custom-workbox-service-workers-with-create-react-app/)

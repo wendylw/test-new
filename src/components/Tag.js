@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 
 class Tag extends Component {
   render() {
-    const {
-      text,
-      className,
-    } = this.props;
+    const { text, className, style } = this.props;
     const classList = ['text-uppercase info font-weight-bold'];
 
     if (className) {
@@ -18,7 +15,7 @@ class Tag extends Component {
     }
 
     return (
-      <i className={classList.join(' ')}>
+      <i className={classList.join(' ')} style={style}>
         {text}
       </i>
     );
@@ -28,10 +25,12 @@ class Tag extends Component {
 Tag.propTypes = {
   className: PropTypes.string,
   text: PropTypes.string,
+  style: PropTypes.object,
 };
 
 Tag.defaultProps = {
   text: '',
+  style: {},
 };
 
 export default Tag;

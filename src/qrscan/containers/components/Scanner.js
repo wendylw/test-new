@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
+import Message from './Message';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
@@ -169,6 +170,7 @@ class Scanner extends Component {
     return (
       <div>
         <div id="contentHolder">
+          <Message />
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
           <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
