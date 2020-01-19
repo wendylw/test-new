@@ -1,10 +1,25 @@
-import React from "react";
-import DocumentTitle from "../components/DocumentTitle";
-import Constants from "../utils/constants";
+import React, { Component } from 'react';
 
-export default () =>
-  <DocumentTitle title={Constants.DOCUMENT_TITLE.NOT_FOUND}>
-    <div className="NotFound">
-      <h3>Sorry, page not found!</h3>
-    </div>
-  </DocumentTitle>;
+import '../Common.scss';
+
+export class NotFound extends Component {
+  render() {
+    const { title, message } = this.props;
+
+    return (
+      <section className="table-ordering__prompt-page">
+        <figure className="prompt-page__image-container text-center">
+          <img src="/img/beep-error.png" alt="error found" />
+        </figure>
+        <div className="prompt-page__content">
+          <h2 className="prompt-page__title text-center">{title}</h2>
+          <div className="prompt-page__paragraphs">
+            <p>{message}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+}
+
+export default NotFound;
