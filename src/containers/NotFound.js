@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import Constants from '../utils/constants';
 
 import '../Common.scss';
 import '../App.scss';
 export class NotFound extends Component {
   render() {
-    const { title, message } = this.props;
-
     return (
       <main className="table-ordering">
         <section className="table-ordering__prompt-page">
