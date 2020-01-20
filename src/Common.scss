@@ -231,10 +231,12 @@ form {
     }
 
     input:first-child {
+      border-radius: 0;
       border-bottom-left-radius: 4px;
     }
 
     input:last-child {
+      border-radius: 0;
       border-bottom-right-radius: 4px;
     }
   }

@@ -7,7 +7,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import { actions as appActionCreators, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
@@ -102,18 +102,20 @@ class Login extends React.Component {
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
           <p className="terms-privacy text-center gray-font-opacity">
-            {t('TappingToContinue')}
-            <br />
-            <BrowserRouter basename="/">
-              <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
-                <strong>{t('TermsOfService')}</strong>
-              </Link>
-              , {t('And')}{' '}
-              <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
-                <strong>{t('PrivacyPolicy')}</strong>
-              </Link>
-              .
-            </BrowserRouter>
+            <Trans i18nKey="TermsAndPrivacyDescription">
+              By tapping to continue, you agree to our
+              <br />
+              <BrowserRouter basename="/">
+                <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+                  Terms of Service
+                </Link>
+                , and{' '}
+                <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+                  Privacy Policy
+                </Link>
+                .
+              </BrowserRouter>
+            </Trans>
           </p>
         </PhoneViewContainer>
         {this.renderOtpModal()}

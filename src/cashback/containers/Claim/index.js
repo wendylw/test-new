@@ -31,11 +31,11 @@ class PageClaim extends React.Component {
   }
 
   async componentDidMount() {
-    const { user, history, appActions, claimActions } = this.props;
+    const { t, user, history, appActions, claimActions } = this.props;
     const { isLogin } = user || {};
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    appActions.setLoginPrompt('Claim with your mobile number');
+    appActions.setLoginPrompt(t('ClaimCashbackTitle'));
     await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
 
     const { receiptNumber } = this.props;

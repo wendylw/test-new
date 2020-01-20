@@ -34,6 +34,7 @@ class CartList extends Component {
       this.props.homeActions.loadShoppingCart();
     });
   };
+
   generateProductItemView = cartItem => {
     const {
       id,
@@ -82,6 +83,7 @@ class CartList extends Component {
       />
     );
   };
+
   render() {
     const { shoppingCart, viewAside, product } = this.props;
     if (!shoppingCart) {
