@@ -13,10 +13,7 @@ import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness 
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 
-const {
-  PAYMENT_METHODS,
-  ROUTER_PATHS,
-} = Constants;
+const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const dataSource = [
   {
     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
@@ -30,16 +27,16 @@ const dataSource = [
     label: 'Visa / MasterCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
-  // {
-  //   name: PAYMENT_METHODS.BOOST_PAY,
-  //   logo: '/img/payment-boost.png',
-  //   label: 'Boost',
-  // },
+  {
+    name: PAYMENT_METHODS.BOOST_PAY,
+    logo: '/img/payment-boost.png',
+    label: 'Boost',
+  },
   {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: '/img/payment-grab.png',
     label: 'GrabPay',
-  }
+  },
 ];
 const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
 
@@ -55,12 +52,7 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const {
-      onlineStoreInfo,
-      currentOrder,
-      currentPayment,
-      business,
-    } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const h = config.h();
     const queryString = `?h=${encodeURIComponent(h)}`;
 
@@ -80,22 +72,18 @@ class Payment extends Component {
       webhookURL: webhookURL,
       paymentName: currentPayment,
     };
-  }
+  };
 
   handleClickBack = () => {
     this.props.history.replace('/cart');
   };
 
-  setCurrentPayment = (paymentName) => {
+  setCurrentPayment = paymentName => {
     this.props.paymentActions.setCurrentPayment(paymentName);
-  }
+  };
 
   handleClickPayNow = async () => {
-    const {
-      history,
-      currentPayment,
-      cartSummary,
-    } = this.props;
+    const { history, currentPayment, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
 
     this.setState({
@@ -112,9 +100,7 @@ class Payment extends Component {
 
     await this.props.paymentActions.createOrder({ cashback: totalCashback });
 
-    const {
-      currentOrder
-    } = this.props;
+    const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
@@ -122,14 +108,14 @@ class Payment extends Component {
     }
 
     this.setState({
-      payNowLoading: orderId
+      payNowLoading: orderId,
     });
-  }
+  };
 
   render() {
     const { currentPayment } = this.props;
     const { payNowLoading } = this.state;
-    const className = ['table-ordering__payment'/*, 'hide' */];
+    const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
@@ -143,24 +129,22 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            {
-              dataSource.map(payment => (
-                <li
-                  key={payment.name}
-                  className="payment__item border__bottom-divider flex flex-middle flex-space-between"
-                  onClick={() => this.setCurrentPayment(payment.name)}
-                >
-                  <figure className="payment__image-container">
-                    <img src={payment.logo} alt={payment.label}></img>
-                  </figure>
-                  <label className="payment__name font-weight-bold">{payment.label}</label>
-                  <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
-                    <i className="radio__check-icon"></i>
-                    <input type="radio"></input>
-                  </div>
-                </li>
-              ))
-            }
+            {dataSource.map(payment => (
+              <li
+                key={payment.name}
+                className="payment__item border__bottom-divider flex flex-middle flex-space-between"
+                onClick={() => this.setCurrentPayment(payment.name)}
+              >
+                <figure className="payment__image-container">
+                  <img src={payment.logo} alt={payment.label}></img>
+                </figure>
+                <label className="payment__name font-weight-bold">{payment.label}</label>
+                <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
+                  <i className="radio__check-icon"></i>
+                  <input type="radio"></input>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -170,34 +154,25 @@ class Payment extends Component {
             disabled={payNowLoading}
             onClick={this.handleClickPayNow}
           >
-            {
-              payNowLoading
-                ? <div className="loader"></div>
-                : 'Pay now'
-            }
+            {payNowLoading ? <div className="loader"></div> : 'Pay now'}
           </button>
         </div>
 
-        {
-          paymentData
-            ? (
-              <RedirectForm
-                ref={ref => this.form = ref}
-                action={config.storeHubPaymentEntryURL}
-                method="POST"
-                data={paymentData}
-              />
-            )
-            : null
-        }
-
+        {paymentData ? (
+          <RedirectForm
+            ref={ref => (this.form = ref)}
+            action={config.storeHubPaymentEntryURL}
+            method="POST"
+            data={paymentData}
+          />
+        ) : null}
       </section>
     );
   }
 }
 
 export default connect(
-  (state) => {
+  state => {
     const currentOrderId = getCurrentOrderId(state);
 
     return {
@@ -213,5 +188,5 @@ export default connect(
     appActions: bindActionCreators(appActionCreators, dispatch),
     paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     homeActions: bindActionCreators(homeActionCreators, dispatch),
-  }),
+  })
 )(Payment);
