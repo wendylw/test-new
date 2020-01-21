@@ -50,7 +50,7 @@ const config = {
     try {
       return document.cookie
         .split(';')
-        .find(s => s.includes('__h'))
+        .find(s => s.includes('__h='))
         .split('=')[1];
     } catch (e) {
       return null;
