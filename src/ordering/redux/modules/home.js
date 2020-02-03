@@ -333,7 +333,7 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
     products.forEach(function(product) {
       product.variations = product.variations || [];
-      product.soldOut = Utils.isProductSoldOut(product);
+      product.soldOut = Utils.isProductSoldOut(product || {});
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
       product.cartQuantity = 0;
 
