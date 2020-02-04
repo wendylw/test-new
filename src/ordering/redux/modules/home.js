@@ -378,5 +378,11 @@ export const getCategoryProductList = createSelector(
 );
 
 export const isVerticalMenuBusiness = state => {
-  return (state.home.domProperties.verticalMenuBusinesses || []).includes(getBusiness(state));
+  const { verticalMenuBusinesses } = state.home.domProperties;
+
+  if (!verticalMenuBusinesses || !verticalMenuBusinesses.filter(b => Boolean(b)).length) {
+    return true;
+  } else {
+    return verticalMenuBusinesses.includes(getBusiness(state));
+  }
 };
