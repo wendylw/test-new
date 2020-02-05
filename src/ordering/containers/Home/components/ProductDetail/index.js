@@ -256,6 +256,11 @@ class ProductDetail extends Component {
 
     onToggle();
 
+    if (this.swipeEl) {
+      this.swipeEl.slide(0, 100);
+      this.swipeEl.stop();
+    }
+
     this.setState({
       cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
       resizedImage: false,
