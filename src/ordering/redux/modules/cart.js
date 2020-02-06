@@ -17,7 +17,7 @@ export const actions = {
     return dispatch(emptyShoppingCart());
   },
   clearAllByProducts: products => dispatch => {
-    dispatch(clearShopcartItemByProducts(products));
+    return dispatch(clearShopcartItemByProducts(products));
   },
 
   loadPendingPaymentList: () => ({

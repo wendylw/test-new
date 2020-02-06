@@ -85,7 +85,7 @@ export class Home extends Component {
       asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
 
     if (!stopBodyScroll) {
-      this.toggleBodyScroll(!!asideName);
+      this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
     this.setState({
@@ -145,7 +145,7 @@ export class Home extends Component {
         <MiniCartListModal
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
-          onToggle={this.handleToggleAside.bind(this)}
+          onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
         <Footer
           {...otherProps}

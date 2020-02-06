@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import { withTranslation } from 'react-i18next';
 import Swipe, { SwipeItem } from 'swipejs/react';
+import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
@@ -428,6 +429,7 @@ class ProductDetail extends Component {
     const descriptionStr = Utils.removeHtmlTag(description || '');
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
+    let swipeHeight = '80vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
       className.push('hide');
@@ -444,6 +446,7 @@ class ProductDetail extends Component {
 
       imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
+      swipeHeight = `${(asideHeight * 0.9 - productHeight).toFixed(2)}px`;
     }
 
     return (
@@ -465,6 +468,7 @@ class ProductDetail extends Component {
               ref={ref => (this.swipeEl = ref)}
               continuous={images.length > 2 ? true : false}
               callback={this.handleSwipeProductImage.bind(this)}
+              style={{ height: swipeHeight }}
             >
               {images.map((imageItemUrl, key) => {
                 return (
@@ -476,6 +480,7 @@ class ProductDetail extends Component {
             </Swipe>
           ) : (
             <Image
+              style={{ height: swipeHeight }}
               src={images && images.length ? images[0] : null}
               scalingRatioIndex={1}
               alt={`${storeName} ${title}`}
@@ -502,7 +507,7 @@ class ProductDetail extends Component {
         </div>
         <div className="aside__fix-bottom">
           <div
-            className="item border__bottom-divider flex flex-space-between aside__section-container"
+            className="item border__bottom-divider flex flex-space-between aside__section-container flex-middle"
             style={{ height: imageContainerMarginBottom }}
           >
             <div className="item__content flex flex-middle">
@@ -511,11 +516,16 @@ class ProductDetail extends Component {
                 <CurrencyNumber className="gray-font-opacity" money={Number(this.displayPrice()) || 0} />
               </div>
             </div>
-            <ItemOperator
-              className="flex-middle"
-              decreaseDisabled={false}
-              onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
-            />
+
+            {Utils.isProductSoldOut(product || {}) ? (
+              <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+            ) : (
+              <ItemOperator
+                className="flex-middle"
+                decreaseDisabled={false}
+                onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
+              />
+            )}
           </div>
           <article
             className="aside__section-container"

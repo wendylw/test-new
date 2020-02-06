@@ -109,6 +109,7 @@ const ASIDE_NAMES = {
   MENU: 'MENU',
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
+  CARTMODAL_HIDE: 'CARTMODAL_HIDE',
 };
 
 export default {

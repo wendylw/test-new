@@ -439,19 +439,21 @@ form {
 }
 
 .swipe {
+  position: relative;
   overflow: hidden;
   visibility: hidden;
-  position: relative;
 }
 
 .swipe-wrap {
-  overflow: hidden;
   position: relative;
-}
+  height: 100%;
+  overflow: hidden;
 
-.swipe-wrap > .swipe-item {
-  float: left;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
+  > .swipe-item {
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 }
