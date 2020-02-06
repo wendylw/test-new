@@ -1,5 +1,4 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## development mode with mock data
 
 run `yarn mockstart` in the backend <br>
