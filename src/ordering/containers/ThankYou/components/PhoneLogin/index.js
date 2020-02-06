@@ -113,12 +113,15 @@ class PhoneLogin extends React.Component {
   }
 
   getMessage() {
-    const { user, cashbackInfo } = this.props;
+    const { user, cashbackInfo, onlineStoreInfo } = this.props;
+    const { currencySymbol } = onlineStoreInfo || {};
     const { isLogin } = user || {};
     const { status: key, cashback } = cashbackInfo || {};
 
     if (!key || !isLogin) {
-      return 'Claim with your mobile number';
+      /* change messages for no session scenario */
+      // return 'Claim with your mobile number';
+      return `Earn ${currencySymbol || ''} ${cashback || ''}  CashBack with your Mobile Number`;
     }
     /* if cashback is zero, hide the cashback tip */
     const isCashbackZero = parseFloat(cashback) === 0;
