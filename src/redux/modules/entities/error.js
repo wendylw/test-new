@@ -1,19 +1,19 @@
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
-  const { type, code, message } = action;
+  const { code, message } = action;
 
-  if (code === 404) {
+  if (code === 40005) {
     return {
       ...state,
       code,
-      message: 'StoreNotFound',
+      message,
     };
-  } else if (code === 403) {
+  } else if (code === 40004) {
     return {
       ...state,
       code,
-      message: 'DisabledBeepOrdering',
+      message,
     };
   }
 
