@@ -1,7 +1,7 @@
 import { APP_TYPES } from '../../../cashback/redux/types';
 
 const initialState = {
-  businesses: {}
+  businesses: {},
 };
 
 const reducer = (state = initialState, action) => {
@@ -23,8 +23,6 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-// selectors
-
-export const getAllBusinesses = (state) => state.entities.businesses;
+export const getAllBusinesses = state => state.entities.businesses;
 
 export const getBusinessByName = (state, businessName) => getAllBusinesses(state)[businessName];
