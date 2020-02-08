@@ -28,10 +28,13 @@ function expectedActionsCheck(dispatchedAction, expectedActions) {
     expect(store.getActions()).toEqual(expectedActions);
   });
 }
-
+const getReducerNewState = (combinedReducers, action, nameField) => {
+  return combinedReducers(undefined, action)[nameField];
+};
 export {
   store,
   expectedActionsCheck,
+  getReducerNewState,
   mockErrorMsg,
   mockErrorCode,
   successMockFetch,
