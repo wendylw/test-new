@@ -5,8 +5,8 @@ import apiGql from '../redux/middlewares/apiGql';
 import { RequestError } from './request';
 
 const middlewares = [thunk, apiGql, api];
-const mockStore = configureMockStore(middlewares);
-const store = mockStore({});
+const configureMiddlewareStore = configureMockStore(middlewares);
+const store = configureMiddlewareStore({});
 
 const mockErrorMsg = 'fake error message';
 const mockErrorCode = 401;
@@ -38,4 +38,5 @@ export {
   failMockFetch,
   commonSuccessData,
   commonFailResponse,
+  configureMiddlewareStore,
 };
