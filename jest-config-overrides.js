@@ -27,7 +27,7 @@ module.exports = config => {
         branches: 70,
         functions: 85,
         lines: 82,
-        statements: 82
+        statements: 82,
       },
       // TODO: add 'src/redux' if done with test cases
       // TODO: add 'src/{cashback,ordering,qrscan,stores}/redux' if done with test cases
@@ -36,6 +36,6 @@ module.exports = config => {
   };
   return {
     ...config,
-    ...overrides
+    ...overrides,
   };
 };
