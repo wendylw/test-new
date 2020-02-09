@@ -1,4 +1,4 @@
-import appReducers, { initialState, actions } from './app';
+import appReducers, { initialState } from './app';
 import { APP_TYPES as types } from '../types';
 import { getReducerNewState } from '../../../utils/testHelper';
 

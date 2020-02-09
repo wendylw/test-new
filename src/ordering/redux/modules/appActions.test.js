@@ -1,7 +1,6 @@
 import { actions } from './app';
 import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
-//import { commonSuccessData, commonFailResponse } from '../__fixtures__/common.fixture';
 import {
   store,
   configureMiddlewareStore,
