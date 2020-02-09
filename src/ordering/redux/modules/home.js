@@ -12,7 +12,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness } from './app';
 
-const initialState = {
+export const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
   },
@@ -137,7 +137,7 @@ export const fetchOnlineCategory = () => {
   };
 };
 // variables := { productId, variations }
-export const removeShoppingCartItem = (variables) => {
+export const removeShoppingCartItem = variables => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -152,7 +152,7 @@ export const removeShoppingCartItem = (variables) => {
   };
 };
 
-export const addOrUpdateShoppingCartItem = (variables) => {
+export const addOrUpdateShoppingCartItem = variables => {
   const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -167,7 +167,7 @@ export const addOrUpdateShoppingCartItem = (variables) => {
   };
 };
 
-export const fetchProductDetail = (variables) => {
+export const fetchProductDetail = variables => {
   const endpoint = Url.apiGql('ProductDetail');
   return {
     [FETCH_GRAPHQL]: {
