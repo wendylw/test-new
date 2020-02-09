@@ -17,10 +17,9 @@ export const actions = {
     return dispatch(emptyShoppingCart());
   },
   clearAllByProducts: products => dispatch => {
-    dispatch(clearShopcartItemByProducts(products));
+    return dispatch(clearShopcartItemByProducts(products));
   },
 
-  /**  do not find any place refer to these code
   loadPendingPaymentList: () => ({
     [API_REQUEST]: {
       types: [
@@ -44,8 +43,8 @@ export const actions = {
         status,
         receiptNumbers,
       },
-    }
-  }),*/
+    },
+  }),
 };
 
 const clearShopcartItemByProducts = products => {
