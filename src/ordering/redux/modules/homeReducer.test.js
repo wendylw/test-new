@@ -1,4 +1,4 @@
-import homeReducers, { initialState } from './home';
+import homeReducers, { initialState, getShoppingCart } from './home';
 import rootReducer from './index';
 import { HOME_TYPES as types } from '../types';
 import { getReducerNewState, configureMiddlewareStore, expectedActionsCheck } from '../../../utils/testHelper';
@@ -145,14 +145,35 @@ describe('src/ordering/redux/modules/home.js:reducers', () => {
     });
   });
 });
-// describe('src/ordering/redux/modules/home: selectors', () => {
-//   const caseStore = configureMiddlewareStore(orderingState);
-//   it('getShoppingCart', () => {
-//     const getShoppingCartRes = getShoppingCartSelector(caseStore.getState());
-//     expect(getShoppingCartRes).toEqual(getShoppingCartSelectorResult);
-//   });
-//     it('getCategoryProductList', () => {
-//       const getCategoryProductListRes = getCategoryProductListSelector(selectorStore.getState());
-//       expect(getCategoryProductListRes).toEqual(getCategoryProductListSelectorResult);
-//     });
-// });
+describe('src/ordering/redux/modules/home: selectors', () => {
+  const caseStore = configureMiddlewareStore(orderingState);
+  it('getShoppingCart', () => {
+    // const getShoppingCartRes = getShoppingCartSelector(caseStore.getState());
+    // expect(getShoppingCartRes).toEqual(getShoppingCartSelectorResult);
+    const mockParams = {
+      summary: '100',
+      itemIds: ['1a', '3c'],
+      unavailableItemIds: ['2b'],
+      carts: { '1a': { id: 1, name: 'item1' }, '2b': { id: 2, name: 'item2' }, '3c': { id: 3, name: 'item3' } },
+    };
+    const selectorResult = getShoppingCart.resultFunc(
+      mockParams.summary,
+      mockParams.itemIds,
+      mockParams.unavailableItemIds,
+      mockParams.carts
+    );
+    const expectedResult = {
+      summary: '100',
+      items: [
+        { id: 1, name: 'item1' },
+        { id: 3, name: 'item3' },
+      ],
+      unavailableItems: [{ id: 2, name: 'item2' }],
+    };
+    expect(selectorResult).toEqual(expectedResult);
+  });
+  // it('getCategoryProductList', () => {
+  //   const getCategoryProductListRes = getCategoryProductListSelector(selectorStore.getState());
+  //   expect(getCategoryProductListRes).toEqual(getCategoryProductListSelectorResult);
+  // });
+});
