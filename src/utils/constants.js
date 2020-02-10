@@ -97,6 +97,8 @@ const REQUEST_ERROR_KEYS = {
   404: 'Not Found',
   401: 'Token Expired',
   500: 'Server Error',
+  40004: 'QROrdering Disabled',
+  40005: 'No Business',
 };
 
 const LOGIN_PROMPT = {

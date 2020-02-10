@@ -3,21 +3,13 @@ const initialState = {};
 const reducer = (state = initialState, action) => {
   const { code, message } = action;
 
-  if (code === 40005) {
-    return {
-      ...state,
-      code,
-      message,
-    };
-  } else if (code === 40004) {
-    return {
-      ...state,
-      code,
-      message,
-    };
+  switch (code) {
+    case 4004:
+    case 40005:
+      return { ...state, code, message };
+    default:
+      return state;
   }
-
-  return state;
 };
 
 export default reducer;

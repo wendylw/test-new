@@ -2,8 +2,8 @@ import Constants from './constants';
 
 const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
-  Accept: "application/json",
-  "Content-Type": "application/json",
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
 });
 
 class RequestError extends Error {
@@ -29,12 +29,8 @@ function get(url) {
     });
 }
 
-const fetchData = function (url, requestOptions) {
-  const {
-    method,
-    data,
-    options,
-  } = requestOptions;
+const fetchData = function(url, requestOptions) {
+  const { method, data, options } = requestOptions;
 
   return fetch(url, {
     method,
@@ -49,7 +45,7 @@ const fetchData = function (url, requestOptions) {
     .catch(error => {
       return Promise.reject(error);
     });
-}
+};
 
 function post(url, data, options) {
   return fetchData(url, {
@@ -75,13 +71,22 @@ function del(url, data, options) {
   });
 }
 
-function handleResponse(url, response) {
+async function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
   } else {
-    const code = response.code || response.status;
+    return response
+      .json()
+      .catch(e => {
+        console.error(e);
 
-    return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+        return Promise.reject(new RequestError('Error Page', '50000'));
+      })
+      .then(function(body) {
+        const code = body.code || response.status;
+
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+      });
   }
 }
 

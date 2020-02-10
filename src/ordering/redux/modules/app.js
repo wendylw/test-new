@@ -35,7 +35,7 @@ const initialState = {
   requestInfo: {
     tableId: config.table,
     storeId: config.storeId,
-  }
+  },
 };
 
 export const types = APP_TYPES;
@@ -52,29 +52,21 @@ export const actions = {
 
   loginApp: ({ accessToken, refreshToken }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_LOGIN_REQUEST,
-        types.CREATE_LOGIN_SUCCESS,
-        types.CREATE_LOGIN_FAILURE,
-      ],
+      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       ...Url.API_URLS.POST_LOGIN,
       payload: {
         accessToken,
         refreshToken,
       },
-    }
+    },
   }),
 
   phoneNumberLogin: ({ phone }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_LOGIN_REQUEST,
-        types.CREATE_LOGIN_SUCCESS,
-        types.CREATE_LOGIN_FAILURE,
-      ],
+      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       ...Url.API_URLS.PHONE_NUMBER_LOGIN,
       payload: { phone },
-    }
+    },
   }),
 
   resetOtpStatus: () => ({
@@ -83,11 +75,7 @@ export const actions = {
 
   getOtp: ({ phone }) => ({
     [API_REQUEST]: {
-      types: [
-        types.GET_OTP_REQUEST,
-        types.GET_OTP_SUCCESS,
-        types.GET_OTP_FAILURE,
-      ],
+      types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
       ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
@@ -95,16 +83,12 @@ export const actions = {
         business_name: config.business,
         username: phone,
       },
-    }
+    },
   }),
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_OTP_REQUEST,
-        types.CREATE_OTP_SUCCESS,
-        types.CREATE_OTP_FAILURE,
-      ],
+      types: [types.CREATE_OTP_REQUEST, types.CREATE_OTP_SUCCESS, types.CREATE_OTP_FAILURE],
       ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
@@ -113,22 +97,18 @@ export const actions = {
         username: Utils.getLocalStorageVariable('user.p'),
         password: otp,
       },
-    }
+    },
   }),
 
   getLoginStatus: () => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_LOGIN_STATUS_REQUEST,
-        types.FETCH_LOGIN_STATUS_SUCCESS,
-        types.FETCH_LOGIN_STATUS_FAILURE,
-      ],
-      ...Url.API_URLS.GET_LOGIN_STATUS
-    }
+      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+      ...Url.API_URLS.GET_LOGIN_STATUS,
+    },
   }),
 
   clearError: () => ({
-    type: types.CLEAR_ERROR
+    type: types.CLEAR_ERROR,
   }),
 
   showMessageModal: ({ message, description }) => ({
@@ -149,10 +129,10 @@ export const actions = {
         types.FETCH_ONLINESTOREINFO_FAILURE,
       ],
       endpoint: Url.apiGql('OnlineStoreInfo'),
-    }
+    },
   }),
 
-  loadCoreBusiness: () => (dispatch) => {
+  loadCoreBusiness: () => dispatch => {
     const { storeId, business } = config;
 
     return dispatch(fetchCoreBusiness({ business, storeId }));
@@ -171,17 +151,13 @@ export const actions = {
 
 const fetchCoreBusiness = variables => ({
   [FETCH_GRAPHQL]: {
-    types: [
-      types.FETCH_COREBUSINESS_REQUEST,
-      types.FETCH_COREBUSINESS_SUCCESS,
-      types.FETCH_COREBUSINESS_FAILURE,
-    ],
+    types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
     endpoint: Url.apiGql('CoreBusiness'),
     variables,
-  }
+  },
 });
 
-const fetchCustomerProfile = (consumerId) => ({
+const fetchCustomerProfile = consumerId => ({
   [API_REQUEST]: {
     types: [
       types.FETCH_CUSTOMER_PROFILE_REQUEST,
@@ -189,16 +165,11 @@ const fetchCustomerProfile = (consumerId) => ({
       types.FETCH_CUSTOMER_PROFILE_FAILURE,
     ],
     ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
-  }
+  },
 });
 
 const user = (state = initialState.user, action) => {
-  const {
-    type,
-    response,
-    code,
-    prompt,
-  } = action;
+  const { type, response, code, prompt } = action;
   const { consumerId, login } = response || {};
 
   switch (type) {
@@ -265,18 +236,14 @@ const user = (state = initialState.user, action) => {
     default:
       return state;
   }
-}
+};
 
 const error = (state = initialState.error, action) => {
-  const {
-    type,
-    code,
-    message,
-  } = action;
+  const { type, code, message } = action;
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401) {
+  } else if (code && code !== 401 && code < 40000) {
     let errorMessage = message;
 
     if (type === types.CREATE_OTP_FAILURE) {
@@ -291,7 +258,7 @@ const error = (state = initialState.error, action) => {
   }
 
   return state;
-}
+};
 
 const business = (state = initialState.business, action) => state;
 
@@ -312,7 +279,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
     default:
       return state;
   }
-}
+};
 
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
@@ -326,7 +293,7 @@ const messageModal = (state = initialState.messageModal, action) => {
     default:
       return state;
   }
-}
+};
 
 const requestInfo = (state = initialState.requestInfo, action) => state;
 
