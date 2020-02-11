@@ -8,6 +8,8 @@ import {
   getError,
   getUser,
 } from '../../redux/modules/app';
+import { getPageError } from '../../../redux/modules/entities/error';
+import Constants from '../../../utils/constants';
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
@@ -15,9 +17,12 @@ import Message from '../../components/Message';
 import Login from '../../components/Login';
 
 class App extends Component {
-
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { appActions, pageError } = this.props;
+
+    if (pageError) {
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
+    }
 
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
@@ -36,11 +41,7 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     const { appActions, user } = this.props;
-    const {
-      isExpired,
-      isWebview,
-      isLogin,
-    } = user || {};
+    const { isExpired, isWebview, isLogin } = user || {};
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       this.postAppMessage(user);
@@ -54,27 +55,28 @@ class App extends Component {
   getTokens(isLogin) {
     const { appActions } = this.props;
 
-    document.addEventListener('acceptTokens', (response) => {
-      const { data } = response || {};
+    document.addEventListener(
+      'acceptTokens',
+      response => {
+        const { data } = response || {};
 
-      if (data) {
-        const tokenList = data.split(',');
+        if (data) {
+          const tokenList = data.split(',');
 
-        if (!isLogin) {
-          appActions.loginApp({
-            accessToken: tokenList[0],
-            refreshToken: tokenList[1],
-          });
+          if (!isLogin) {
+            appActions.loginApp({
+              accessToken: tokenList[0],
+              refreshToken: tokenList[1],
+            });
+          }
         }
-      }
-    }, false);
+      },
+      false
+    );
   }
 
   postAppMessage(user) {
-    const {
-      isWebview,
-      isExpired
-    } = user || {};
+    const { isWebview, isExpired } = user || {};
 
     if (isWebview && isExpired) {
       window.ReactNativeWebView.postMessage('tokenExpired');
@@ -85,37 +87,22 @@ class App extends Component {
 
   handleClearError = () => {
     this.props.appActions.clearError();
-  }
+  };
 
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
-  }
+  };
 
   render() {
-    const {
-      user,
-      error,
-    } = this.props;
-    const {
-      isFetching,
-      prompt,
-      isLogin,
-    } = user || {};
+    const { user, error } = this.props;
+    const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
 
     return (
       <main className="loyalty">
-        {
-          message
-            ? <ErrorToast message={message} clearError={this.handleClearError} />
-            : null
-        }
+        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         <Message />
-        {
-          !isFetching || !isLogin
-            ? <Login className="aside" title={prompt} />
-            : null
-        }
+        {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
         <Routes />
       </main>
     );
@@ -128,8 +115,9 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
     messageInfo: getMessageInfo(state),
     error: getError(state),
+    pageError: getPageError(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
-  }),
+  })
 )(App);

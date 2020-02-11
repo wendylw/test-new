@@ -36,7 +36,7 @@ const initialState = {
   requestInfo: {
     tableId: config.table,
     storeId: config.storeId,
-  }
+  },
 };
 
 export const types = APP_TYPES;
@@ -45,29 +45,21 @@ export const types = APP_TYPES;
 export const actions = {
   loginApp: ({ accessToken, refreshToken }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_LOGIN_REQUEST,
-        types.CREATE_LOGIN_SUCCESS,
-        types.CREATE_LOGIN_FAILURE,
-      ],
+      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       ...Url.API_URLS.POST_LOGIN,
       payload: {
         accessToken,
         refreshToken,
       },
-    }
+    },
   }),
 
   phoneNumberLogin: ({ phone }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_LOGIN_REQUEST,
-        types.CREATE_LOGIN_SUCCESS,
-        types.CREATE_LOGIN_FAILURE,
-      ],
+      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       ...Url.API_URLS.PHONE_NUMBER_LOGIN,
       payload: { phone },
-    }
+    },
   }),
 
   resetOtpStatus: () => ({
@@ -76,11 +68,7 @@ export const actions = {
 
   getOtp: ({ phone }) => ({
     [API_REQUEST]: {
-      types: [
-        types.GET_OTP_REQUEST,
-        types.GET_OTP_SUCCESS,
-        types.GET_OTP_FAILURE,
-      ],
+      types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
       ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
@@ -88,16 +76,12 @@ export const actions = {
         business_name: config.business,
         username: phone,
       },
-    }
+    },
   }),
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_OTP_REQUEST,
-        types.CREATE_OTP_SUCCESS,
-        types.CREATE_OTP_FAILURE,
-      ],
+      types: [types.CREATE_OTP_REQUEST, types.CREATE_OTP_SUCCESS, types.CREATE_OTP_FAILURE],
       ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
         grant_type: AUTH_INFO.GRANT_TYPE,
@@ -106,22 +90,18 @@ export const actions = {
         username: Utils.getLocalStorageVariable('user.p'),
         password: otp,
       },
-    }
+    },
   }),
 
   getLoginStatus: () => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_LOGIN_STATUS_REQUEST,
-        types.FETCH_LOGIN_STATUS_SUCCESS,
-        types.FETCH_LOGIN_STATUS_FAILURE,
-      ],
-      ...Url.API_URLS.GET_LOGIN_STATUS
-    }
+      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+      ...Url.API_URLS.GET_LOGIN_STATUS,
+    },
   }),
 
   clearError: () => ({
-    type: types.CLEAR_ERROR
+    type: types.CLEAR_ERROR,
   }),
 
   setMessageInfo: ({ key, message }) => ({
@@ -130,7 +110,7 @@ export const actions = {
     message,
   }),
 
-  setCashbackMessage: () => (dispatch) => {
+  setCashbackMessage: () => dispatch => {
     const status = Utils.getLocalStorageVariable('cashback.status');
 
     if (status) {
@@ -150,7 +130,7 @@ export const actions = {
     type: types.HIDE_MESSAGE_MODAL,
   }),
 
-  setLoginPrompt: (prompt) => ({
+  setLoginPrompt: prompt => ({
     type: types.SET_LOGIN_PROMPT,
     prompt,
   }),
@@ -173,25 +153,21 @@ export const actions = {
         types.FETCH_ONLINESTOREINFO_FAILURE,
       ],
       endpoint: Url.apiGql('OnlineStoreInfo'),
-    }
+    },
   }),
 
   fetchBusiness: () => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_BUSINESS_REQUEST,
-        types.FETCH_BUSINESS_SUCCESS,
-        types.FETCH_BUSINESS_FAILURE,
-      ],
+      types: [types.FETCH_BUSINESS_REQUEST, types.FETCH_BUSINESS_SUCCESS, types.FETCH_BUSINESS_FAILURE],
       ...Url.API_URLS.GET_CASHBACK_BUSINESS,
       params: {
         storeId: config.storeId,
       },
-    }
+    },
   }),
 };
 
-const fetchCustomerProfile = (consumerId) => ({
+const fetchCustomerProfile = consumerId => ({
   [API_REQUEST]: {
     types: [
       types.FETCH_CUSTOMER_PROFILE_REQUEST,
@@ -199,16 +175,11 @@ const fetchCustomerProfile = (consumerId) => ({
       types.FETCH_CUSTOMER_PROFILE_FAILURE,
     ],
     ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
-  }
+  },
 });
 
 const user = (state = initialState.user, action) => {
-  const {
-    type,
-    response,
-    code,
-    prompt,
-  } = action;
+  const { type, response, code, prompt } = action;
   const { login, consumerId } = response || {};
 
   switch (type) {
@@ -256,7 +227,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (code && code === 401) {
+      if (code && code === 401 && code < 40000) {
         return { ...state, isExpired: true, isFetching: false };
       }
 
@@ -270,14 +241,10 @@ const user = (state = initialState.user, action) => {
     default:
       return state;
   }
-}
+};
 
 const error = (state = initialState.error, action) => {
-  const {
-    type,
-    code,
-    message,
-  } = action;
+  const { type, code, message } = action;
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
@@ -296,7 +263,7 @@ const error = (state = initialState.error, action) => {
   }
 
   return state;
-}
+};
 
 const business = (state = initialState.business, action) => {
   const { type, response } = action;
@@ -327,7 +294,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
     default:
       return state;
   }
-}
+};
 
 const messageInfo = (state = initialState.messageInfo, action) => {
   switch (action.type) {
@@ -352,7 +319,7 @@ const messageInfo = (state = initialState.messageInfo, action) => {
     default:
       return state;
   }
-}
+};
 
 const requestInfo = (state = initialState.requestInfo, action) => state;
 
@@ -368,9 +335,9 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getBusiness = state => state.app.business;
-export const getBusinessInfo = (state) => {
+export const getBusinessInfo = state => {
   return getBusinessByName(state, state.app.business);
-}
+};
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];

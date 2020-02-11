@@ -11,6 +11,7 @@ const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
 const ThankYou = lazy(() => import('./ThankYou'));
 const Sorry = lazy(() => import('./Sorry'));
+const ErrorPage = lazy(() => import('./Error'));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -28,6 +29,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
+            <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
           </Switch>
         </Suspense>

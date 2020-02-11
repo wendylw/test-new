@@ -7,8 +7,6 @@ const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
 
 const AsyncNotFound = lazy(() => import('./containers/NotFound'));
 
-const AsyncError = lazy(() => import('./stores/containers/Error'));
-
 const AsyncStoresApp = lazy(() => import('./stores'));
 
 const AsyncOrdering = lazy(() => import('./ordering'));
@@ -53,7 +51,6 @@ class Bootstrap extends Component {
             <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
             <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
             <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
-            <Route path={ROUTER_PATHS.ERROR} component={AsyncError} />
             <Route component={AsyncNotFound} />
           </Switch>
         </Suspense>
