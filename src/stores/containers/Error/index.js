@@ -1,10 +1,8 @@
-import ErrorPage from '../../../components/ErrorPage';
+import React, { Component } from 'react';
+import ErrorPage from '../../../containers/ErrorPage';
 
 import { connect } from 'react-redux';
-import { getError } from '../../redux/modules/entities/error';
-
-import '../Common.scss';
-import '../App.scss';
+import { getError } from '../../../redux/modules/entities/error';
 
 export class NotFound extends Component {
   render() {
