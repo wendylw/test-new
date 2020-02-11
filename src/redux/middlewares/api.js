@@ -10,15 +10,13 @@ export default store => next => action => {
     return next(action);
   }
 
-  const {
-    url,
-    method,
-    mode,
-    types,
-    params,
-    payload,
-  } = callAPI;
-  const requestParamsStr = params ? '?' + Object.keys(params).map(key => `${key}=${params[key]}`).join('&') : '';
+  const { url, method, mode, types, params, payload } = callAPI;
+  const requestParamsStr = params
+    ? '?' +
+      Object.keys(params)
+        .map(key => `${key}=${params[key]}`)
+        .join('&')
+    : '';
   const requestUrl = `${url}${requestParamsStr}`;
 
   if (typeof url !== 'string') {
@@ -36,43 +34,50 @@ export default store => next => action => {
 
     delete finalAction[API_REQUEST];
     return finalAction;
-  }
+  };
 
   const [requestType, successType, failureType] = types;
 
   next(actionWith({ type: requestType }));
 
   const methodMapToRequest = {
-    get: (url) => get(url),
+    get: url => get(url),
     post: (url, payload, options) => post(url, payload, options),
-    del: (url, payload, options) => del(url, payload, options)
+    del: (url, payload, options) => del(url, payload, options),
+    put: (url, payload, options) => del(url, payload, options),
   };
 
-  return methodMapToRequest[method](requestUrl, payload, { mode }).then(
-    response => {
+  return methodMapToRequest[method](requestUrl, payload, { mode })
+    .then(response => {
       const { error } = response;
 
       // handle error filed when 200 status
       if (error) {
-        return next(actionWith({
-          type: failureType,
-          ...error,
-        }));
+        return next(
+          actionWith({
+            type: failureType,
+            ...error,
+          })
+        );
       }
 
-      return next(actionWith({
-        type: successType,
-        params: {
-          ...payload,
-          ...params,
-        },
-        response,
-      }));
-    },
-  ).catch(error => {
-    return next(actionWith({
-      type: failureType,
-      ...error,
-    }));
-  });
-}
+      return next(
+        actionWith({
+          type: successType,
+          params: {
+            ...payload,
+            ...params,
+          },
+          response,
+        })
+      );
+    })
+    .catch(error => {
+      return next(
+        actionWith({
+          type: failureType,
+          ...error,
+        })
+      );
+    });
+};
