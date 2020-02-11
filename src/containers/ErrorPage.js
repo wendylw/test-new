@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import config from '../config';
 
 export class ErrorPage extends Component {
   getCurrentErrorType(type) {
@@ -42,7 +43,7 @@ export class ErrorPage extends Component {
           <button
             className="button button__block button__fill font-weight-bold text-center text-uppercase border-radius-base"
             onClick={() => {
-              return (window.location.href = '/');
+              return (window.location.href = config.qrScanPageUrl);
             }}
           >
             Back to home
