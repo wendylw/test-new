@@ -1,4 +1,5 @@
-import thankyouReducers, { initialState } from './thankYou';
+import thankyouReducers, { initialState, getOrder, getBusinessInfo, getCashbackInfo } from './thankYou';
+import rootReducer from './index';
 import { THANK_YOU_TYPES as types } from '../types';
 
 describe('src/ordering/redux/modules/payment.js: reducers', () => {
@@ -94,5 +95,18 @@ describe('src/ordering/redux/modules/payment.js: reducers', () => {
 
   it('default', () => {
     expect(thankyouReducers(undefined, { type: 'default' })).toEqual(initialState);
+  });
+});
+
+describe('src/ordering/redux/modules/payment.js: selectors', () => {
+  const state = rootReducer(undefined, { type: null });
+  it('getOrder', () => {
+    expect(getOrder(state)).toEqual(undefined);
+  });
+  it('getBusinessInfo', () => {
+    expect(getOrder(state)).toEqual(undefined);
+  });
+  it('getCashbackInfo', () => {
+    expect(getCashbackInfo(state)).toEqual(null);
   });
 });

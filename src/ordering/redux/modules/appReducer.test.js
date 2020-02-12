@@ -1,4 +1,13 @@
-import appReducers, { initialState } from './app';
+import appReducers, {
+  initialState,
+  getUser,
+  getBusiness,
+  getError,
+  getOnlineStoreInfo,
+  getRequestInfo,
+  getMessageModal,
+} from './app';
+import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import { getReducerNewState } from '../../../utils/testHelper';
 
@@ -265,5 +274,33 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
     it('should return initial requestInfo state', () => {
       expect(getReducerNewState(appReducers, { type: 'none' }, nameField)).toEqual(initialState.requestInfo);
     });
+  });
+});
+
+describe('src/ordering/redux/modules/app.js:selectors', () => {
+  const state = rootReducer(undefined, { type: null });
+  it('getUser', () => {
+    const expectedState = initialState.user;
+    expect(getUser(state)).toEqual(expectedState);
+  });
+  it('getBusiness', () => {
+    const expectedState = initialState.business;
+    expect(getBusiness(state)).toEqual(expectedState);
+  });
+  it('getError', () => {
+    const expectedState = initialState.error;
+    expect(getError(state)).toEqual(expectedState);
+  });
+  it('getOnlineStoreInfo', () => {
+    expect(getOnlineStoreInfo(state)).toEqual(undefined);
+  });
+  it('getRequestInfo', () => {
+    const expectedState = initialState.requestInfo;
+    expect(getRequestInfo(state)).toEqual(expectedState);
+  });
+
+  it('getMessageModal', () => {
+    const expectedState = initialState.messageModal;
+    expect(getMessageModal(state)).toEqual(expectedState);
   });
 });

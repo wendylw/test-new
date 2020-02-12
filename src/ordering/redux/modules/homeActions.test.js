@@ -1,16 +1,7 @@
 import { actions, initialState, fetchShoppingCart, fetchOnlineCategory } from './home';
 import rootReducer from './index';
 import { HOME_TYPES as types } from '../types';
-import {
-  fetchShoppingCartData,
-  fetchOnlineCategoryData,
-  RemoveShoppingCartItemData,
-  AddOrUpdateShoppingCartItemData,
-  fetchProductDetailData,
-  productParams,
-  getShoppingCartSelectorResult,
-  getCategoryProductListSelectorResult,
-} from '../__fixtures__/home.fixture';
+import { fetchShoppingCartData, productParams } from '../__fixtures__/home.fixture';
 import {
   store,
   configureMiddlewareStore,
@@ -66,6 +57,14 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         ];
         return expectedActionsCheck(actions.removeShoppingCartItem({}), expectedActions);
       });
+      it(':Fail', () => {
+        failMockFetch();
+        const expectedActions = [
+          { type: types.REMOVE_SHOPPINGCARTITEM_REQUEST },
+          { type: types.REMOVE_SHOPPINGCARTITEM_FAILURE, code: mockErrorCode, message: mockErrorMsg },
+        ];
+        return expectedActionsCheck(actions.removeShoppingCartItem({}), expectedActions);
+      });
     });
     describe('addOrUpdateShoppingCartItem', () => {
       it(':Success', () => {
@@ -76,6 +75,14 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         ];
         const reqParams = {};
         return expectedActionsCheck(actions.addOrUpdateShoppingCartItem(reqParams), expectedActions);
+      });
+      it(':Fail', () => {
+        failMockFetch();
+        const expectedActions = [
+          { type: types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST },
+          { type: types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE, code: mockErrorCode, message: mockErrorMsg },
+        ];
+        return expectedActionsCheck(actions.addOrUpdateShoppingCartItem({}), expectedActions);
       });
     });
     describe('decreaseProductInCart', () => {
@@ -166,6 +173,20 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
           {
             type: types.FETCH_PRODUCTDETAIL_SUCCESS,
             responseGql: commonSuccessData,
+          },
+        ];
+        return expectedActionsCheck(actions.loadProductDetail(productParams), expectedActions);
+      });
+      it(':Fail', () => {
+        failMockFetch();
+        const expectedActions = [
+          {
+            type: types.FETCH_PRODUCTDETAIL_REQUEST,
+          },
+          {
+            type: types.FETCH_PRODUCTDETAIL_FAILURE,
+            code: mockErrorCode,
+            message: mockErrorMsg,
           },
         ];
         return expectedActionsCheck(actions.loadProductDetail(productParams), expectedActions);

@@ -1,4 +1,13 @@
-import paymentReducers, { initialState, types } from './payment';
+import paymentReducers, {
+  initialState,
+  types,
+  getCurrentPayment,
+  getCurrentOrderId,
+  getThankYouPageUrl,
+  getBraintreeToken,
+  getBankList,
+} from './payment';
+import rootReducer from './index';
 
 describe('src/ordering/redux/modules/payment.js: reducers', () => {
   const paymentActionInfo = {
@@ -89,5 +98,23 @@ describe('src/ordering/redux/modules/payment.js: reducers', () => {
   });
   it('default', () => {
     expect(paymentReducers(undefined, { type: 'default' })).toEqual(initialState);
+  });
+});
+describe('src/ordering/redux/modules/payment.js: reducers', () => {
+  const state = rootReducer(undefined, { type: null });
+  it('getCurrentPayment', () => {
+    expect(getCurrentPayment(state)).toEqual(initialState.currentPayment);
+  });
+  it('getCurrentOrderId', () => {
+    expect(getCurrentOrderId(state)).toEqual(initialState.orderId);
+  });
+  it('getThankYouPageUrl', () => {
+    expect(getThankYouPageUrl(state)).toEqual(initialState.thankYouPageUrl);
+  });
+  it('getBraintreeToken', () => {
+    expect(getBraintreeToken(state)).toEqual(initialState.braintreeToken);
+  });
+  it('getBankList', () => {
+    expect(getBankList(state)).toEqual(initialState.bankingList);
   });
 });

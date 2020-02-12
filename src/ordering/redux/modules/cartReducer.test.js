@@ -1,4 +1,5 @@
-import cartReducers from './cart';
+import cartReducers, { initialState, getBusinessInfo, getPendingTransactionIds } from './cart';
+import rootReducer from './index';
 import { CART_TYPES as types } from '../types';
 
 describe('src/ordering/redux/modules/cart.js: reducers', () => {
@@ -29,5 +30,14 @@ describe('src/ordering/redux/modules/cart.js: reducers', () => {
   });
   it('default', () => {
     expect(cartReducers(undefined, { type: 'default' })).toEqual({ pendingTransactionsIds: [] });
+  });
+});
+describe('src/ordering/redux/modules/cart.js:selectors', () => {
+  const state = rootReducer(undefined, { type: null });
+  it('getBusinessInfo', () => {
+    expect(getBusinessInfo(state)).toEqual(undefined);
+  });
+  it('getPendingTransactionIds', () => {
+    expect(getPendingTransactionIds(state)).toEqual([]);
   });
 });
