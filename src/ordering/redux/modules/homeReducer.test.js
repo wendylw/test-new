@@ -4,15 +4,24 @@ import { HOME_TYPES as types } from '../types';
 import { getReducerNewState, configureMiddlewareStore, expectedActionsCheck } from '../../../utils/testHelper';
 
 import {
+  isFetched,
+  getCartItemIds,
+  getCartUnavailableItemIds,
+  getCurrentProduct,
+  getCartItemList,
+  isVerticalMenuBusiness,
   getShoppingCart as getShoppingCartSelector,
+  getShoppingCartItemsByProducts as getShoppingCartItemsByProductsSelector,
   getCategoryProductList as getCategoryProductListSelector,
 } from './home';
 
 import {
   fetchShoppingCartData,
   fetchOnlineCategoryData,
-  getShoppingCartSelectorResult,
-  getCategoryProductListSelectorResult,
+  getAllProductsParams,
+  getAllCategoriesParams,
+  getCartItemListParams,
+  getCategoryProductListResult,
 } from '../__fixtures__/home.fixture';
 const orderingState = rootReducer(undefined, {});
 
@@ -146,17 +155,53 @@ describe('src/ordering/redux/modules/home.js:reducers', () => {
   });
 });
 describe('src/ordering/redux/modules/home: selectors', () => {
-  const caseStore = configureMiddlewareStore(orderingState);
+  const itemIds = ['1a', '3c'];
+  const carts = {
+    '1a': { id: 1, productId: '123', variations: [], quantity: 11 },
+    '2b': {
+      id: 2,
+      productId: '456',
+      quantity: 22,
+      variations: [
+        { variationId: '5de4ca9a8f1b5f2526c87866', optionId: '5de4ca9a8f1b5f2526c87867', markedSoldOut: false },
+      ],
+    },
+    '3c': {
+      id: 3,
+      productId: '789',
+      quantity: 33,
+      variations: [
+        { variationId: '5de4ca9a8f1b5f2526c87866', optionId: '5de4ca9a8f1b5f2526c87868', markedSoldOut: false },
+      ],
+    },
+  };
+  const state = rootReducer(undefined, { type: null });
+  it('isFetched', () => {
+    expect(isFetched(state)).toEqual(undefined);
+  });
+  it('getCartItemIds', () => {
+    expect(getCartItemIds(state)).toEqual([]);
+  });
+  it('getCartUnavailableItemIds', () => {
+    expect(getCartUnavailableItemIds(state)).toEqual([]);
+  });
+  it('getCurrentProduct', () => {
+    expect(getCurrentProduct(state)).toEqual({ id: '', cartId: '', isFetching: false });
+  });
+  it('getCartItemList', () => {
+    expect(getCartItemList(state)).toEqual([]);
+  });
+  it('isVerticalMenuBusiness', () => {
+    expect(isVerticalMenuBusiness(state)).toEqual(true);
+  });
   it('getShoppingCart', () => {
-    // const getShoppingCartRes = getShoppingCartSelector(caseStore.getState());
-    // expect(getShoppingCartRes).toEqual(getShoppingCartSelectorResult);
     const mockParams = {
       summary: '100',
-      itemIds: ['1a', '3c'],
+      itemIds,
       unavailableItemIds: ['2b'],
-      carts: { '1a': { id: 1, name: 'item1' }, '2b': { id: 2, name: 'item2' }, '3c': { id: 3, name: 'item3' } },
+      carts,
     };
-    const selectorResult = getShoppingCart.resultFunc(
+    const selectorFunc = getShoppingCartSelector.resultFunc(
       mockParams.summary,
       mockParams.itemIds,
       mockParams.unavailableItemIds,
@@ -165,15 +210,70 @@ describe('src/ordering/redux/modules/home: selectors', () => {
     const expectedResult = {
       summary: '100',
       items: [
-        { id: 1, name: 'item1' },
-        { id: 3, name: 'item3' },
+        { id: 1, productId: '123', variations: [], quantity: 11 },
+        {
+          id: 3,
+          productId: '789',
+          quantity: 33,
+          variations: [
+            { variationId: '5de4ca9a8f1b5f2526c87866', optionId: '5de4ca9a8f1b5f2526c87868', markedSoldOut: false },
+          ],
+        },
       ],
-      unavailableItems: [{ id: 2, name: 'item2' }],
+      unavailableItems: [
+        {
+          id: 2,
+          productId: '456',
+          quantity: 22,
+          variations: [
+            { variationId: '5de4ca9a8f1b5f2526c87866', optionId: '5de4ca9a8f1b5f2526c87867', markedSoldOut: false },
+          ],
+        },
+      ],
     };
-    expect(selectorResult).toEqual(expectedResult);
+    expect(selectorFunc).toEqual(expectedResult);
   });
-  // it('getCategoryProductList', () => {
-  //   const getCategoryProductListRes = getCategoryProductListSelector(selectorStore.getState());
-  //   expect(getCategoryProductListRes).toEqual(getCategoryProductListSelectorResult);
-  // });
+
+  it('getShoppingCartItemsByProducts', () => {
+    const mockParams = {
+      itemIds,
+      carts,
+      product: { id: '789' },
+    };
+    const selectorFunc = getShoppingCartItemsByProductsSelector.resultFunc(
+      mockParams.itemIds,
+      mockParams.carts,
+      mockParams.product
+    );
+    const expectedResult = {
+      count: 33,
+      items: [
+        {
+          productId: '789',
+          variations: [
+            {
+              markedSoldOut: false,
+              optionId: '5de4ca9a8f1b5f2526c87868',
+              variationId: '5de4ca9a8f1b5f2526c87866',
+            },
+          ],
+        },
+      ],
+    };
+    expect(selectorFunc).toEqual(expectedResult);
+  });
+  it('getCategoryProductList', () => {
+    const mockParams = {
+      products: getAllProductsParams,
+      categories: getAllCategoriesParams,
+      carts: getCartItemListParams,
+    };
+    const selectorFunc = getCategoryProductListSelector.resultFunc(
+      mockParams.products,
+      mockParams.categories,
+      mockParams.carts
+    );
+    const expectedResult = getCategoryProductListResult;
+    expect(selectorFunc).toEqual(expectedResult);
+  });
 });

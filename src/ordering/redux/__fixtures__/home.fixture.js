@@ -280,117 +280,437 @@ const productParams = {
   canDecreaseQuantity: true,
 };
 
-const getShoppingCartSelectorResult = {
-  items: [
-    {
-      _available: true,
-      displayPrice: 0.94,
-      id: 'd79db2cd92d785e5d4c07e046052bb34',
-      image: '',
-      markedSoldOut: false,
-      parentProductId: null,
-      productId: '5de4dc12f90ac02b38b93f28',
-      quantity: 3,
-      title: 'RM 1 product',
-      variationTexts: [],
-      variations: [],
-    },
-    {
-      _available: true,
-      displayPrice: 10.8,
-      id: '41f0bafe441a059d8f76f2c966732b85',
-      image:
-        'https://d2ncjxd2rk2vpl.cloudfront.net/ectest/product/5cf9e124a868056e6ddf7dd3/a556990a-ae0a-40e0-87e5-e0ee9a67395d',
-      markedSoldOut: false,
-      parentProductId: '5cf9e124a868056e6ddf7dd3',
-      productId: '5de4cab68f1b5f2526c878e6',
-      quantity: 1,
-      title: 'testing online product(2)',
-      variationTexts: ['2'],
-      variations: [
-        {
-          markedSoldOut: false,
-          optionId: '5de4ca9a8f1b5f2526c87867',
-          variationId: '5de4ca9a8f1b5f2526c87866',
-        },
-      ],
-    },
-    {
-      _available: true,
-      displayPrice: 1.12,
-      id: '3c81558b01e1c770b6442b9fd0f6d763',
-      image:
-        'https://d2ncjxd2rk2vpl.cloudfront.net/ectest/product/5cf9e124a868056e6ddf7dd3/a556990a-ae0a-40e0-87e5-e0ee9a67395d',
-      markedSoldOut: false,
-      parentProductId: '5cf9e124a868056e6ddf7dd3',
-      productId: '5de4cab68f1b5f2526c878e2',
-      quantity: 1,
-      title: 'testing online product(1)',
-      variationTexts: ['1'],
-      variations: [
-        {
-          markedSoldOut: false,
-          optionId: '5de4ca9a8f1b5f2526c87868',
-          variationId: '5de4ca9a8f1b5f2526c87866',
-        },
-      ],
-    },
-  ],
-  summary: {
-    count: 5,
-    discount: 0,
-    loyaltyDiscounts: null,
-    serviceCharge: 0,
-    serviceChargeTax: 0,
-    subtotal: 14.75,
-    tax: 0.89,
-    total: 15.64,
-  },
-  unavailableItems: [],
-};
-
-const getCategoryProductListSelectorResult = [
-  {
-    cartQuantity: 0,
-    id: '5cd159c1fb012d7c4b1c9f9d',
-    isEnabled: true,
-    name: 'Desserts',
-    products: [
+const getAllProductsParams = {
+  '5e12b3f2ed43e34e37874636': {
+    id: '5e12b3f2ed43e34e37874636',
+    title: 'test',
+    displayPrice: 40,
+    trackInventory: false,
+    images: [],
+    markedSoldOut: false,
+    variations: [
       {
-        _needMore: 1,
-        cartQuantity: 0,
-        displayPrice: 11,
-        hasSingleChoice: false,
-        id: '5de0e8f48f1b5f2526c871c9',
-        images: [],
-        markedSoldOut: false,
-        soldOut: false,
-        title: 'test- minimum spend-2',
-        trackInventory: true,
-        variations: [
-          {
-            id: '5de0e9618f1b5f2526c8722c',
-            name: 'add',
-            optionValues: [
-              {
-                id: '5de0e9618f1b5f2526c8722e',
-                markedSoldOut: false,
-                value: '+1',
-              },
-              {
-                id: '5de0e9618f1b5f2526c8722d',
-                markedSoldOut: false,
-                value: '+0.3',
-              },
-            ],
-            variationType: 'MultipleChoice',
-          },
+        id: '5e12b6caed43e34e3787463c',
+        name: 'multipletest',
+        variationType: 'MultipleChoice',
+        optionValues: [
+          { markedSoldOut: false, id: '5e12b6caed43e34e3787463e', value: '11' },
+          { markedSoldOut: false, id: '5e12b6caed43e34e3787463d', value: '22' },
         ],
       },
     ],
+    isFeaturedProduct: true,
+    _needMore: 1,
+  },
+  '5de720aee872af6ab28a6ca3': {
+    id: '5de720aee872af6ab28a6ca3',
+    title: 'Latte',
+    displayPrice: 25,
+    trackInventory: false,
+    images: [
+      'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de720aee872af6ab28a6ca3/eec6ee3e-35db-40f8-9d09-305d05c547fc',
+    ],
+    markedSoldOut: false,
+    variations: [
+      {
+        id: '5de720aee872af6ab28a6ca4',
+        name: 'temperature',
+        variationType: 'SingleChoice',
+        optionValues: [
+          { markedSoldOut: false, id: '5de720aee872af6ab28a6ca6', value: 'cold' },
+          { markedSoldOut: false, id: '5de720aee872af6ab28a6ca5', value: 'hot' },
+        ],
+      },
+      {
+        id: '5e12b3e2ed43e34e37874632',
+        name: 'multiple tesrt',
+        variationType: 'MultipleChoice',
+        optionValues: [
+          { markedSoldOut: false, id: '5e12b3e2ed43e34e37874634', value: '1' },
+          { markedSoldOut: false, id: '5e12b3e2ed43e34e37874633', value: '2' },
+        ],
+      },
+    ],
+    isFeaturedProduct: true,
+    _needMore: 2,
+  },
+  '5de72ec75234055a77249c19': {
+    id: '5de72ec75234055a77249c19',
+    title: 'cappuccino',
+    displayPrice: 22,
+    trackInventory: false,
+    images: [
+      'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de72ec75234055a77249c19/4e731a07-a81f-4507-ae4c-b293bca3fc52',
+    ],
+    markedSoldOut: false,
+    variations: [
+      {
+        id: '5de72ec75234055a77249c1a',
+        name: 'Temperature',
+        variationType: 'SingleChoice',
+        optionValues: [
+          { markedSoldOut: false, id: '5de72ec75234055a77249c1c', value: 'cold' },
+          { markedSoldOut: false, id: '5de72ec75234055a77249c1b', value: 'hot' },
+        ],
+      },
+    ],
+    isFeaturedProduct: true,
+    _needMore: 1,
+  },
+  '5e12bd73ed43e34e37874640': {
+    id: '5e12bd73ed43e34e37874640',
+    title: 'newCoffee',
+    displayPrice: 20,
+    trackInventory: false,
+    images: [
+      'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5e12bd73ed43e34e37874640/21c3fd76-9f9c-4ce8-b558-9943ce239a94',
+    ],
+    markedSoldOut: false,
+    variations: [
+      {
+        id: '5e12bd73ed43e34e37874641',
+        name: 'test1',
+        variationType: 'SingleChoice',
+        optionValues: [
+          { markedSoldOut: false, id: '5e12bd73ed43e34e37874643', value: 't1' },
+          { markedSoldOut: false, id: '5e12bd73ed43e34e37874642', value: 't2' },
+        ],
+      },
+    ],
+    isFeaturedProduct: true,
+    _needMore: 1,
+  },
+  '5de7304b5234055a7724a4e1': {
+    id: '5de7304b5234055a7724a4e1',
+    title: 'red tea',
+    displayPrice: 15,
+    trackInventory: false,
+    images: [
+      'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de7304b5234055a7724a4e1/251a3219-b3af-461f-ba28-4db4a55b6316',
+    ],
+    markedSoldOut: false,
+    variations: [],
+    isFeaturedProduct: true,
+    _needMore: 0,
+  },
+};
+
+const getAllCategoriesParams = {
+  '5de72606e8fb5d6ac10fe39c': {
+    id: '5de72606e8fb5d6ac10fe39c',
+    name: 'All',
+    isEnabled: true,
+    products: [
+      '5e12b3f2ed43e34e37874636',
+      '5de720aee872af6ab28a6ca3',
+      '5de72ec75234055a77249c19',
+      '5e12bd73ed43e34e37874640',
+      '5de7304b5234055a7724a4e1',
+    ],
+  },
+  '5de732c45234055a7724a9d9': {
+    id: '5de732c45234055a7724a9d9',
+    name: 'coffee',
+    isEnabled: true,
+    products: ['5de720aee872af6ab28a6ca3', '5de72ec75234055a77249c19', '5e12bd73ed43e34e37874640'],
+  },
+  '5de733315234055a7724a9e1': {
+    id: '5de733315234055a7724a9e1',
+    name: 'tea',
+    isEnabled: true,
+    products: ['5de7304b5234055a7724a4e1'],
+  },
+};
+
+const getCartItemListParams = [
+  {
+    id: '366d5ee63410fb91a0e5c54febca984a',
+    productId: '5e12b3f2ed43e34e37874636',
+    parentProductId: null,
+    title: 'test',
+    variationTexts: [],
+    variations: [],
+    markedSoldOut: false,
+    displayPrice: 40,
+    quantity: 1,
+    image: '',
+    _available: true,
   },
 ];
 
+const getCategoryProductListResult = [
+  {
+    id: '5de72606e8fb5d6ac10fe39c',
+    name: 'All',
+    isEnabled: true,
+    products: [
+      {
+        id: '5e12b3f2ed43e34e37874636',
+        title: 'test',
+        displayPrice: 40,
+        trackInventory: false,
+        images: [],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5e12b6caed43e34e3787463c',
+            name: 'multipletest',
+            variationType: 'MultipleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5e12b6caed43e34e3787463e', value: '11' },
+              { markedSoldOut: false, id: '5e12b6caed43e34e3787463d', value: '22' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 1,
+        soldOut: false,
+        hasSingleChoice: false,
+        cartQuantity: 1,
+        cartItemIds: ['366d5ee63410fb91a0e5c54febca984a'],
+        cartItems: [
+          {
+            id: '366d5ee63410fb91a0e5c54febca984a',
+            productId: '5e12b3f2ed43e34e37874636',
+            parentProductId: null,
+            title: 'test',
+            variationTexts: [],
+            variations: [],
+            markedSoldOut: false,
+            displayPrice: 40,
+            quantity: 1,
+            image: '',
+            _available: true,
+          },
+        ],
+        canDecreaseQuantity: true,
+      },
+      {
+        id: '5de720aee872af6ab28a6ca3',
+        title: 'Latte',
+        displayPrice: 25,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de720aee872af6ab28a6ca3/eec6ee3e-35db-40f8-9d09-305d05c547fc',
+        ],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5de720aee872af6ab28a6ca4',
+            name: 'temperature',
+            variationType: 'SingleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5de720aee872af6ab28a6ca6', value: 'cold' },
+              { markedSoldOut: false, id: '5de720aee872af6ab28a6ca5', value: 'hot' },
+            ],
+          },
+          {
+            id: '5e12b3e2ed43e34e37874632',
+            name: 'multiple tesrt',
+            variationType: 'MultipleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5e12b3e2ed43e34e37874634', value: '1' },
+              { markedSoldOut: false, id: '5e12b3e2ed43e34e37874633', value: '2' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 2,
+        soldOut: false,
+        hasSingleChoice: true,
+        cartQuantity: 0,
+      },
+      {
+        id: '5de72ec75234055a77249c19',
+        title: 'cappuccino',
+        displayPrice: 22,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de72ec75234055a77249c19/4e731a07-a81f-4507-ae4c-b293bca3fc52',
+        ],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5de72ec75234055a77249c1a',
+            name: 'Temperature',
+            variationType: 'SingleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5de72ec75234055a77249c1c', value: 'cold' },
+              { markedSoldOut: false, id: '5de72ec75234055a77249c1b', value: 'hot' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 1,
+        soldOut: false,
+        hasSingleChoice: true,
+        cartQuantity: 0,
+      },
+      {
+        id: '5e12bd73ed43e34e37874640',
+        title: 'newCoffee',
+        displayPrice: 20,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5e12bd73ed43e34e37874640/21c3fd76-9f9c-4ce8-b558-9943ce239a94',
+        ],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5e12bd73ed43e34e37874641',
+            name: 'test1',
+            variationType: 'SingleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5e12bd73ed43e34e37874643', value: 't1' },
+              { markedSoldOut: false, id: '5e12bd73ed43e34e37874642', value: 't2' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 1,
+        soldOut: false,
+        hasSingleChoice: true,
+        cartQuantity: 0,
+      },
+      {
+        id: '5de7304b5234055a7724a4e1',
+        title: 'red tea',
+        displayPrice: 15,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de7304b5234055a7724a4e1/251a3219-b3af-461f-ba28-4db4a55b6316',
+        ],
+        markedSoldOut: false,
+        variations: [],
+        isFeaturedProduct: true,
+        _needMore: 0,
+        soldOut: false,
+        hasSingleChoice: false,
+        cartQuantity: 0,
+      },
+    ],
+    cartQuantity: 1,
+  },
+  {
+    id: '5de732c45234055a7724a9d9',
+    name: 'coffee',
+    isEnabled: true,
+    products: [
+      {
+        id: '5de720aee872af6ab28a6ca3',
+        title: 'Latte',
+        displayPrice: 25,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de720aee872af6ab28a6ca3/eec6ee3e-35db-40f8-9d09-305d05c547fc',
+        ],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5de720aee872af6ab28a6ca4',
+            name: 'temperature',
+            variationType: 'SingleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5de720aee872af6ab28a6ca6', value: 'cold' },
+              { markedSoldOut: false, id: '5de720aee872af6ab28a6ca5', value: 'hot' },
+            ],
+          },
+          {
+            id: '5e12b3e2ed43e34e37874632',
+            name: 'multiple tesrt',
+            variationType: 'MultipleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5e12b3e2ed43e34e37874634', value: '1' },
+              { markedSoldOut: false, id: '5e12b3e2ed43e34e37874633', value: '2' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 2,
+        soldOut: false,
+        hasSingleChoice: true,
+        cartQuantity: 0,
+      },
+      {
+        id: '5de72ec75234055a77249c19',
+        title: 'cappuccino',
+        displayPrice: 22,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de72ec75234055a77249c19/4e731a07-a81f-4507-ae4c-b293bca3fc52',
+        ],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5de72ec75234055a77249c1a',
+            name: 'Temperature',
+            variationType: 'SingleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5de72ec75234055a77249c1c', value: 'cold' },
+              { markedSoldOut: false, id: '5de72ec75234055a77249c1b', value: 'hot' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 1,
+        soldOut: false,
+        hasSingleChoice: true,
+        cartQuantity: 0,
+      },
+      {
+        id: '5e12bd73ed43e34e37874640',
+        title: 'newCoffee',
+        displayPrice: 20,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5e12bd73ed43e34e37874640/21c3fd76-9f9c-4ce8-b558-9943ce239a94',
+        ],
+        markedSoldOut: false,
+        variations: [
+          {
+            id: '5e12bd73ed43e34e37874641',
+            name: 'test1',
+            variationType: 'SingleChoice',
+            optionValues: [
+              { markedSoldOut: false, id: '5e12bd73ed43e34e37874643', value: 't1' },
+              { markedSoldOut: false, id: '5e12bd73ed43e34e37874642', value: 't2' },
+            ],
+          },
+        ],
+        isFeaturedProduct: true,
+        _needMore: 1,
+        soldOut: false,
+        hasSingleChoice: true,
+        cartQuantity: 0,
+      },
+    ],
+    cartQuantity: 0,
+  },
+  {
+    id: '5de733315234055a7724a9e1',
+    name: 'tea',
+    isEnabled: true,
+    products: [
+      {
+        id: '5de7304b5234055a7724a4e1',
+        title: 'red tea',
+        displayPrice: 15,
+        trackInventory: false,
+        images: [
+          'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de7304b5234055a7724a4e1/251a3219-b3af-461f-ba28-4db4a55b6316',
+        ],
+        markedSoldOut: false,
+        variations: [],
+        isFeaturedProduct: true,
+        _needMore: 0,
+        soldOut: false,
+        hasSingleChoice: false,
+        cartQuantity: 0,
+      },
+    ],
+    cartQuantity: 0,
+  },
+];
 export {
   fetchShoppingCartData,
   fetchOnlineCategoryData,
@@ -398,6 +718,8 @@ export {
   AddOrUpdateShoppingCartItemData,
   fetchProductDetailData,
   productParams,
-  getShoppingCartSelectorResult,
-  getCategoryProductListSelectorResult,
+  getAllProductsParams,
+  getAllCategoriesParams,
+  getCartItemListParams,
+  getCategoryProductListResult,
 };

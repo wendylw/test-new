@@ -1,5 +1,4 @@
 import paymentReducers, { initialState, types } from './payment';
-import { isLeafType } from 'graphql';
 
 describe('src/ordering/redux/modules/payment.js: reducers', () => {
   const paymentActionInfo = {

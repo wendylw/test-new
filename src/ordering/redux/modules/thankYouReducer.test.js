@@ -37,15 +37,62 @@ describe('src/ordering/redux/modules/payment.js: reducers', () => {
     const expectedState = {
       ...initialState,
       cashbackInfo: {
-        cashbackInfo: null,
         isFetching: true,
       },
     };
     expect(thankyouReducers(undefined, action)).toEqual(expectedState);
     expect(thankyouReducers(undefined, action1)).toEqual(expectedState);
   });
+  it('isFetching is cashbackInfo should be false', () => {
+    const action = {
+      type: types.FETCH_CASHBACKINFO_FAILURE,
+      ...thankyouActionInfo,
+    };
+    const action1 = {
+      type: types.CREATE_CASHBACKINFO_FAILURE,
+      ...thankyouActionInfo,
+    };
+    const expectedState = {
+      ...initialState,
+      cashbackInfo: {
+        isFetching: false,
+      },
+    };
+    expect(thankyouReducers(undefined, action)).toEqual(expectedState);
+    expect(thankyouReducers(undefined, action1)).toEqual(expectedState);
+  });
+  it('FETCH_CASHBACKINFO_SUCCESS', () => {
+    const action = {
+      type: types.FETCH_CASHBACKINFO_SUCCESS,
+      ...thankyouActionInfo,
+    };
+    const expectedState = {
+      ...initialState,
+      cashbackInfo: {
+        info: 'ok',
+        isFetching: false,
+        createdCashbackInfo: false,
+      },
+    };
+    expect(thankyouReducers(undefined, action)).toEqual(expectedState);
+  });
+  it('CREATE_CASHBACKINFO_SUCCESS', () => {
+    const action = {
+      type: types.CREATE_CASHBACKINFO_SUCCESS,
+      ...thankyouActionInfo,
+    };
+    const expectedState = {
+      ...initialState,
+      cashbackInfo: {
+        info: 'ok',
+        isFetching: false,
+        createdCashbackInfo: true,
+      },
+    };
+    expect(thankyouReducers(undefined, action)).toEqual(expectedState);
+  });
 
-  // it('default', () => {
-  //     expect(thankyouReducers(undefined, { type: 'default' })).toEqual(initialState);
-  // });
+  it('default', () => {
+    expect(thankyouReducers(undefined, { type: 'default' })).toEqual(initialState);
+  });
 });
