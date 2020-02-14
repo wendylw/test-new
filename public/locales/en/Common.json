@@ -41,12 +41,14 @@
   "BeepCashback": "Beep Cashback",
   "Tax": "Tax",
   "Total": "Total",
-  "SoldOut": "SoldOut",
+  "SoldOut": "Sold Out",
   "Eep": "Eep",
   "ErrorPageDescription": "Looks like something went wrong. Please scan the QR again, or ask the staff for help.",
   "BestSeller": "Best seller",
   "OTPSentTitle": "We’ve sent you a One Time Passcode (OTP) to {phone}. Enter it below to continue.",
   "OTPResendTitle": "Resend OTP{{currentOtpTime}}",
   "EnterPhoneNumber": "Enter phone number",
-  "PeopleCountModalTitle": "Welcome! How many of you are dining today?"
+  "PeopleCountModalTitle": "Welcome! How many of you are dining today?",
+  "SelectStoreDescription": "Please select a store to continue…",
+  "SelectStoreErrorMessage": "Something wrong, please try again later."
 }
