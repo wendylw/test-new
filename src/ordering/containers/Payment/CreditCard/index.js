@@ -473,7 +473,7 @@ class CreditCard extends Component {
         <Header
           className="border__bottom-divider gray has-right"
           isPage={true}
-          title={t('Pay via Card')}
+          title={t('PayViaCard')}
           navFunc={() => {
             history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
           }}
