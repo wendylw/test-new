@@ -96,7 +96,7 @@ export class ThankYou extends Component {
         <Header
           className="border__bottom-divider gray"
           isPage={true}
-          title="Order Paid"
+          title={t('OrderPaid')}
           navFunc={() =>
             history.replace({
               pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
