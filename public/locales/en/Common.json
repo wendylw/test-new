@@ -49,6 +49,7 @@
   "OTPResendTitle": "Resend OTP{{currentOtpTime}}",
   "EnterPhoneNumber": "Enter phone number",
   "PeopleCountModalTitle": "Welcome! How many of you are dining today?",
+  "ViewReceipt": "View Receipt",
   "SelectStoreDescription": "Please select a store to continue…",
   "SelectStoreErrorMessage": "Something wrong, please try again later."
 }
