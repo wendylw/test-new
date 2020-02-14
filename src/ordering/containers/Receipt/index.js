@@ -80,7 +80,11 @@ export class ReceiptDetail extends Component {
 
     return (
       <section className="table-ordering__receipt">
-        <Header className="border__bottom-divider gray" title="View Receipt" navFunc={this.backToThankYou.bind(this)}>
+        <Header
+          className="border__bottom-divider gray"
+          title={t('ViewReceipt')}
+          navFunc={this.backToThankYou.bind(this)}
+        >
           <span className="gray-font-opacity text-uppercase">
             {tableId ? t('TableIdText', { tableId }) : t('SelfPickUp')}
           </span>
