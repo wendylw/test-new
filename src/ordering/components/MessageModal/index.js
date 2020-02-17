@@ -7,7 +7,8 @@ class MessageModal extends Component {
   };
 
   render() {
-    const { t, message, description } = this.props.data;
+    const { t, data } = this.props;
+    const { message, description } = data;
 
     return (
       <section className="modal__align-middle modal flex flex-middle flex-space-between" style={styles.section}>
