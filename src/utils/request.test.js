@@ -20,8 +20,12 @@ describe('utils/request', () => {
     expect(fetch.mock.calls[0][0]).toBe('/url');
     expect(fetch.mock.calls[0][1].method).toBe('GET');
     expect(fetch.mock.calls[0][1].credentials).toBe('include');
-    expect(fetch.mock.calls[0][1].headers.get('Accept')).toBe('application/json');
-    expect(fetch.mock.calls[0][1].headers.get('Content-Type')).toBe('application/json');
+    expect(fetch.mock.calls[0][1].headers.get('Accept')).toBe(
+      'application/json'
+    );
+    expect(fetch.mock.calls[0][1].headers.get('Content-Type')).toBe(
+      'application/json'
+    );
     expect(response).toEqual({ greeting: 'hello' });
   });
 
@@ -42,8 +46,8 @@ describe('utils/request', () => {
         body: '{"ok":false}',
         init: {
           headers: { 'Content-Type': 'application/json' },
-          status: 404,
-        },
+          status: 404
+        }
       };
     });
 
@@ -65,8 +69,12 @@ describe('utils/request', () => {
     expect(fetch.mock.calls[0][0]).toBe('/url');
     expect(fetch.mock.calls[0][1].method).toBe('POST');
     expect(fetch.mock.calls[0][1].credentials).toBe('include');
-    expect(fetch.mock.calls[0][1].headers.get('Accept')).toBe('application/json');
-    expect(fetch.mock.calls[0][1].headers.get('Content-Type')).toBe('application/json');
+    expect(fetch.mock.calls[0][1].headers.get('Accept')).toBe(
+      'application/json'
+    );
+    expect(fetch.mock.calls[0][1].headers.get('Content-Type')).toBe(
+      'application/json'
+    );
     expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(req));
     expect(response).toEqual(res);
   });
@@ -89,8 +97,8 @@ describe('utils/request', () => {
         body: '{"ok":false}',
         init: {
           headers: { 'Content-Type': 'application/json' },
-          status: 404,
-        },
+          status: 404
+        }
       };
     });
 
@@ -112,8 +120,12 @@ describe('utils/request', () => {
     expect(fetch.mock.calls[0][0]).toBe('/url');
     expect(fetch.mock.calls[0][1].method).toBe('PUT');
     expect(fetch.mock.calls[0][1].credentials).toBe('include');
-    expect(fetch.mock.calls[0][1].headers.get('Accept')).toBe('application/json');
-    expect(fetch.mock.calls[0][1].headers.get('Content-Type')).toBe('application/json');
+    expect(fetch.mock.calls[0][1].headers.get('Accept')).toBe(
+      'application/json'
+    );
+    expect(fetch.mock.calls[0][1].headers.get('Content-Type')).toBe(
+      'application/json'
+    );
     expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(req));
     expect(response).toEqual(res);
   });
@@ -136,8 +148,8 @@ describe('utils/request', () => {
         body: '{"ok":false}',
         init: {
           headers: { 'Content-Type': 'application/json' },
-          status: 404,
-        },
+          status: 404
+        }
       };
     });
 

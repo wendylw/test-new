@@ -6,8 +6,7 @@ import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { withTranslation, Trans } from 'react-i18next';
+import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
@@ -51,8 +50,12 @@ class Login extends React.Component {
   }
 
   renderOtpModal() {
-    const { user, t } = this.props;
-    const { isFetching, isLogin, hasOtp } = user || {};
+    const { user } = this.props;
+    const {
+      isFetching,
+      isLogin,
+      hasOtp,
+    } = user || {};
     const { phone } = this.state;
 
     if (!hasOtp || isLogin) {
@@ -61,7 +64,7 @@ class Login extends React.Component {
 
     return (
       <OtpModal
-        buttonText={t('OK')}
+        buttonText="Ok"
         ResendOtpTime={20}
         phone={phone}
         onClose={this.handleCloseOtpModal.bind(this)}
@@ -73,8 +76,17 @@ class Login extends React.Component {
   }
 
   render() {
-    const { user, title, className, businessInfo, onlineStoreInfo, t } = this.props;
-    const { isFetching, isLogin } = user || {};
+    const {
+      user,
+      title,
+      className,
+      businessInfo,
+      onlineStoreInfo
+    } = this.props;
+    const {
+      isFetching,
+      isLogin,
+    } = user || {};
     const { country } = onlineStoreInfo || {};
     const { country: businessCountry } = businessInfo || {};
     const { phone } = this.state;
@@ -95,52 +107,42 @@ class Login extends React.Component {
           title={title}
           phone={phone}
           country={country || businessCountry}
-          buttonText={t('Continue')}
+          buttonText="Continue"
           show={true}
           isLoading={isFetching}
           updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
           <p className="terms-privacy text-center gray-font-opacity">
-            <Trans i18nKey="TermsAndPrivacyDescription">
-              By tapping to continue, you agree to our
-              <br />
-              <BrowserRouter basename="/">
-                <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
-                  Terms of Service
-                </Link>
-                , and{' '}
-                <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
-                  Privacy Policy
-                </Link>
-                .
-              </BrowserRouter>
-            </Trans>
+            By tapping to continue, you agree to our<br />
+            <BrowserRouter basename="/">
+              <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}><strong>Terms of Service</strong></Link>, and <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}><strong>Privacy Policy</strong></Link>.
+            </BrowserRouter>
           </p>
         </PhoneViewContainer>
         {this.renderOtpModal()}
+
       </section>
     );
   }
 }
+
 
 Login.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
 };
 
-Login.defaultProps = {};
+Login.defaultProps = {
+};
 
-export default compose(
-  withTranslation('Common'),
-  connect(
-    state => ({
-      user: getUser(state),
-      businessInfo: getBusinessInfo(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-    }),
-    dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
-    })
-  )
+export default connect(
+  (state) => ({
+    user: getUser(state),
+    businessInfo: getBusinessInfo(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+  }),
+  (dispatch) => ({
+    appActions: bindActionCreators(appActionCreators, dispatch),
+  })
 )(Login);

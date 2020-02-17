@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { withTranslation } from 'react-i18next';
+import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getBusiness, getMessageInfo } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import TopMessage from '../TopMessage';
@@ -28,34 +27,37 @@ class Message extends React.Component {
   }
 
   initMessages() {
-    const { businessInfo, t } = this.props;
+    const { businessInfo } = this.props;
     const { claimCashbackCountPerDay } = businessInfo || {};
     const messages = {
-      Default: t('DefaultMessage'),
+      Default: 'Oops, please scan QR to claim again.',
       /* get Cash Back messages */
-      Invalid: t('InvalidMessage'),
+      Invalid:
+        'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
       /* save Cash Back messages */
       Claimed_FirstTime: {
-        title: t('ClaimedFirstTimeTitle'),
-        description: t('ClaimedFirstTimeDescription'),
+        title: `Awesome, you've earned your first cashback! 🎉 `,
+        description: `Tap the button below to learn how to use your cashback.`,
       },
       Claimed_NotFirstTime: {
-        title: t('ClaimedNotFirstTimeTitle'),
+        title: `You've earned more cashback! 🎉`,
       },
-      Claimed_Processing: t('ClaimedProcessing'),
-      Claimed_Someone_Else: t('ClaimedSomeoneElse'),
-      Claimed_Repeat: t('ClaimedRepeat'),
-      NotClaimed: t('NotClaimed'),
-      NotClaimed_Expired: t('NotClaimedExpired'),
-      NotClaimed_Cancelled: t('NotClaimedCancelled'),
-      NotClaimed_ReachLimit: t('NotClaimedReachLimit', { claimCashbackCountPerDay: claimCashbackCountPerDay || 0 }),
-      NotClaimed_ReachMerchantLimit: t('NotClaimedReachMerchantLimit'),
+      Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
+      Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
+      Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
+      NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+      NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
+      NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay ||
+        0} time(s) a day. 😭`,
+      NotClaimed_ReachMerchantLimit:
+        'Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.',
       /* set Otp */
-      NotSent_OTP: t('NotSentOTP'),
+      NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
       /* verify phone */
-      Save_Cashback_Failed: t('SaveCashbackFailed'),
+      Save_Cashback_Failed: 'Oops! please retry again later.',
       /* Activity */
-      Activity_Incorrect: t('ActivityIncorrect'),
+      Activity_Incorrect: 'Activity incorrect, need retry.',
     };
 
     this.MESSAGES = messages;
@@ -92,19 +94,16 @@ class Message extends React.Component {
   }
 }
 
-export default compose(
-  withTranslation('Common'),
-  connect(
-    state => {
-      const business = getBusiness(state) || '';
+export default connect(
+  state => {
+    const business = getBusiness(state) || '';
 
-      return {
-        messageInfo: getMessageInfo(state),
-        businessInfo: getBusinessByName(state, business),
-      };
-    },
-    dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
-    })
-  )
+    return {
+      messageInfo: getMessageInfo(state),
+      businessInfo: getBusinessByName(state, business),
+    };
+  },
+  dispatch => ({
+    appActions: bindActionCreators(appActionCreators, dispatch),
+  })
 )(Message);

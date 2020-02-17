@@ -8,11 +8,11 @@ export const onlineStoreInfo = {
   currencySymbol: 'RM',
   country: 'MY',
   state: null,
-  street: null,
+  street: null
 };
 export const requestInfo = {
   tableId: '',
-  storeId: '5de71ef1e872af6ab28a6c74',
+  storeId: '5de71ef1e872af6ab28a6c74'
 };
 export const categories = [
   {
@@ -20,6 +20,6 @@ export const categories = [
     id: '5de72606e8fb5d6ac10fe39c',
     isEnabled: true,
     name: 'All',
-    products: [],
-  },
+    products: []
+  }
 ];

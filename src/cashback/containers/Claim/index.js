@@ -8,15 +8,9 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { withTranslation } from 'react-i18next';
+import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getBusinessInfo, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import {
-  actions as claimActionCreators,
-  getCashbackInfo,
-  getReceiptNumber,
-  isFetchingCashbackInfo,
-} from '../../redux/modules/claim';
+import { actions as claimActionCreators, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from '../../redux/modules/claim';
 
 class PageClaim extends React.Component {
   state = {
@@ -31,11 +25,16 @@ class PageClaim extends React.Component {
   }
 
   async componentDidMount() {
-    const { t, user, history, appActions, claimActions } = this.props;
+    const {
+      user,
+      history,
+      appActions,
+      claimActions,
+    } = this.props;
     const { isLogin } = user || {};
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    appActions.setLoginPrompt(t('ClaimCashbackTitle'));
+    appActions.setLoginPrompt('Claim with your mobile number');
     await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
 
     const { receiptNumber } = this.props;
@@ -65,12 +64,23 @@ class PageClaim extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { isFetching, receiptNumber, user, cashbackInfo } = this.props;
+    const {
+      isFetching,
+      receiptNumber,
+      user,
+      cashbackInfo,
+    } = this.props;
     const { claimed } = this.state;
     const { isLogin } = user || {};
     const { loadedCashbackInfo, createdCashbackInfo } = cashbackInfo || {};
 
-    if (!isFetching && isLogin && receiptNumber && loadedCashbackInfo && !createdCashbackInfo && !claimed) {
+    if (!isFetching
+      && isLogin
+      && receiptNumber
+      && loadedCashbackInfo
+      && !createdCashbackInfo
+      && !claimed
+    ) {
       this.handleCreateCustomerCashbackInfo();
     }
   }
@@ -78,7 +88,7 @@ class PageClaim extends React.Component {
   componentWillUnmount() {
     this.setState = (state, callback) => {
       return;
-    };
+    }
   }
 
   getOrderInfo() {
@@ -87,12 +97,16 @@ class PageClaim extends React.Component {
     return {
       phone: Utils.getLocalStorageVariable('user.p'),
       receiptNumber,
-      source: Constants.CASHBACK_SOURCE.RECEIPT,
+      source: Constants.CASHBACK_SOURCE.RECEIPT
     };
   }
 
   async handleCreateCustomerCashbackInfo() {
-    const { user, history, claimActions } = this.props;
+    const {
+      user,
+      history,
+      claimActions,
+    } = this.props;
     const { claimed } = this.state;
     const { isWebview } = user || {};
 
@@ -108,7 +122,7 @@ class PageClaim extends React.Component {
       } else {
         history.push({
           pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-          search: `?customerId=${this.props.user.customerId || customerId || ''}`,
+          search: `?customerId=${this.props.user.customerId || customerId || ''}`
         });
       }
     }
@@ -126,8 +140,11 @@ class PageClaim extends React.Component {
   }
 
   renderCashback() {
-    const { cashbackInfo, t } = this.props;
-    const { cashback, defaultLoyaltyRatio } = cashbackInfo || {};
+    const { cashbackInfo } = this.props;
+    const {
+      cashback,
+      defaultLoyaltyRatio,
+    } = cashbackInfo || {};
     let percentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5;
     const cashbackNumber = Number(cashback);
 
@@ -139,12 +156,18 @@ class PageClaim extends React.Component {
       return <CurrencyNumber className="loyalty__money" money={cashback} />;
     }
 
-    return <span className="loyalty__money">{t('CashbackPercentage', { percentage })}</span>;
+    return <span className="loyalty__money">{`${percentage}% Cashback`}</span>;
   }
 
   renderLocation() {
-    const { cashbackInfo, businessInfo } = this.props;
-    const { name, displayBusinessName } = businessInfo || {};
+    const {
+      cashbackInfo,
+      businessInfo,
+    } = this.props;
+    const {
+      name,
+      displayBusinessName,
+    } = businessInfo || {};
     const { store } = cashbackInfo || {};
     const { city } = store || {};
     const addressInfo = [displayBusinessName || name, city].filter(v => v);
@@ -158,33 +181,33 @@ class PageClaim extends React.Component {
   }
 
   render() {
-    const { user, onlineStoreInfo, businessInfo, t } = this.props;
+    const {
+      user,
+      onlineStoreInfo,
+      businessInfo,
+    } = this.props;
     const { isLogin } = user;
     const { logo } = onlineStoreInfo || {};
-    const { name, displayBusinessName } = businessInfo || {};
+    const {
+      name,
+      displayBusinessName,
+    } = businessInfo || {};
 
     if (isLogin) {
-      return (
-        <div className="loading-cover">
-          <i className="loader theme page-loader"></i>
-        </div>
-      );
+      return <div className="loading-cover"><i className="loader theme page-loader"></i></div>;
     }
 
     return (
-      <section
-        className="loyalty__claim"
-        style={
-          {
-            // backgroundImage: `url(${theImage})`,
-          }
-        }
-      >
+      <section className="loyalty__claim" style={{
+        // backgroundImage: `url(${theImage})`,
+      }}>
         <article className="loyalty__content text-center">
-          {logo ? (
-            <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
-          ) : null}
-          <h5 className="logo-default__title text-uppercase">{t('EarnCashbackNow')}</h5>
+          {
+            logo
+              ? <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+              : null
+          }
+          <h5 className="logo-default__title text-uppercase">Earn cashback now</h5>
 
           {this.renderCashback()}
 
@@ -195,20 +218,17 @@ class PageClaim extends React.Component {
   }
 }
 
-export default compose(
-  withTranslation(['Cashback']),
-  connect(
-    state => ({
-      user: getUser(state),
-      businessInfo: getBusinessInfo(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      cashbackInfo: getCashbackInfo(state),
-      receiptNumber: getReceiptNumber(state),
-      isFetching: isFetchingCashbackInfo(state),
-    }),
-    dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
-      claimActions: bindActionCreators(claimActionCreators, dispatch),
-    })
-  )
+export default connect(
+  (state) => ({
+    user: getUser(state),
+    businessInfo: getBusinessInfo(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+    cashbackInfo: getCashbackInfo(state),
+    receiptNumber: getReceiptNumber(state),
+    isFetching: isFetchingCashbackInfo(state),
+  }),
+  (dispatch) => ({
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    claimActions: bindActionCreators(claimActionCreators, dispatch),
+  })
 )(PageClaim);

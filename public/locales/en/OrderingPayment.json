@@ -1,18 +1,1 @@
-{
-  "SelectPayment": "Select Payment",
-  "OnlineBanking": "Online Banking",
-  "CreditCard": "Visa / MasterCard",
-  "Boost": "Boost",
-  "GrabPay": "GrabPay",
-  "RequiredMessage": "Required",
-  "CardNumberIncompleteMessage": "Your card's {{nameString}} {{verb}} incomplete.",
-  "CardNumberInvalidMessage": "Your card number is invalid",
-  "CardExpirationInvalidMessage": "Your card's expiration date is invalid",
-  "CardCVVInvalidMessage": "Your card's CVV is invalid",
-  "CardInformation": "Card information",
-  "NameOnCard": "Name on card",
-  "PayViaCard": "Pay via Card",
-  "PayViaOnlineBanking": "Pay via Online Banking",
-  "SelectABank": "Select a bank",
-  "PleaseSelectABankToContinue": "Please select a bank to continue"
-}
+{}

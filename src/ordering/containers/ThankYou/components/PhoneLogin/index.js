@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Link } from 'react-router-dom';
-import { withTranslation, Trans } from 'react-i18next';
 import PhoneView from '../../../../../components/PhoneView';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
@@ -9,7 +8,7 @@ import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import {
   actions as thankYouActionCreators,
@@ -80,49 +79,46 @@ class PhoneLogin extends React.Component {
   }
 
   initMessages() {
-    const { t, businessInfo, onlineStoreInfo, cashbackInfo } = this.props;
+    const { businessInfo, onlineStoreInfo, cashbackInfo } = this.props;
     const { claimCashbackCountPerDay } = businessInfo || {};
     const { currencySymbol } = onlineStoreInfo || {};
     const { cashback } = cashbackInfo || {};
     const messages = {
-      Default: t('DefaultMessage'),
+      Default: 'Oops, please scan QR to claim again.',
       /* get Cash Back messages */
-      Invalid: t('InvalidMessage'),
+      Invalid:
+        'After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!',
       /* save Cash Back messages */
-      Claimed_FirstTime: t('ClaimedFirstTimeTitleInThankYou', {
-        currencySymbol: currencySymbol || '',
-        cashback: cashback || '',
-      }),
-      Claimed_NotFirstTime: t('ClaimedNotFirstTimeTitleInThankYou', {
-        currencySymbol: currencySymbol || '',
-        cashback: cashback || '',
-      }),
-      Claimed_Processing: t('ClaimedProcessing'),
-      Claimed_Someone_Else: t('ClaimedSomeoneElse'),
-      Claimed_Repeat: t('ClaimedRepeat'),
-      NotClaimed: t('NotClaimed'),
-      NotClaimed_Expired: t('NotClaimedExpired'),
-      NotClaimed_Cancelled: t('NotClaimedCancelled'),
-      NotClaimed_ReachLimit: t('NotClaimedReachLimit', { claimCashbackCountPerDay: claimCashbackCountPerDay || 0 }),
-      NotClaimed_ReachMerchantLimit: t('NotClaimedReachMerchantLimit'),
+      Claimed_FirstTime: `Awesome, you've earned ${currencySymbol || ''} ${cashback || ''} your first cashback! 🎉 `,
+      Claimed_NotFirstTime: `You've earned ${currencySymbol || ''} ${cashback || ''} cashback! 🎉`,
+      Claimed_Processing: `You've earned more cashback! We'll add it once it's been processed.😉`,
+      Claimed_Someone_Else: `Someone else has already earned cashback for this receipt.😅`,
+      Claimed_Repeat: `You've already earned cashback for this receipt.👍`,
+      NotClaimed: 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
+      NotClaimed_Expired: `This cashback has expired and cannot be earned anymore.😭`,
+      NotClaimed_Cancelled: 'This transaction has been cancelled/refunded.',
+      NotClaimed_ReachLimit: `Oops, you've exceeded your cashback limit for today. The limit is ${claimCashbackCountPerDay ||
+        0} time(s) a day. 😭`,
+      NotClaimed_ReachMerchantLimit:
+        'Sorry, Your transaction is pending, you will receive a SMS confirmation once your cashback is processed.',
       /* set Otp */
-      NotSent_OTP: t('NotSentOTP'),
+      NotSent_OTP: 'Oops! OTP not sent, please check your phone number and send again.',
       /* verify phone */
-      Save_Cashback_Failed: t('SaveCashbackFailed'),
+      Save_Cashback_Failed: 'Oops! please retry again later.',
       /* Activity */
-      Activity_Incorrect: t('ActivityIncorrect'),
+      Activity_Incorrect: 'Activity incorrect, need retry.',
     };
 
     this.MESSAGES = messages;
   }
 
   getMessage() {
-    const { t, user, cashbackInfo } = this.props;
+    const { user, cashbackInfo } = this.props;
     const { isLogin } = user || {};
     const { status: key, cashback } = cashbackInfo || {};
 
     if (!key || !isLogin) {
-      return t('ClaimCashbackTitle');
+      return 'Claim with your mobile number';
     }
     /* if cashback is zero, hide the cashback tip */
     const isCashbackZero = parseFloat(cashback) === 0;
@@ -199,7 +195,7 @@ class PhoneLogin extends React.Component {
   }
 
   renderPhoneView() {
-    const { t, user, onlineStoreInfo } = this.props;
+    const { user, onlineStoreInfo } = this.props;
     const { phone } = this.state;
     const { isFetching, isWebview, isLogin, customerId } = user || {};
     const { country } = onlineStoreInfo || {};
@@ -212,7 +208,7 @@ class PhoneLogin extends React.Component {
           setPhone={this.handleUpdatePhoneNumber.bind(this)}
           submitPhoneNumber={this.handleSubmitPhoneNumber.bind(this)}
           isLoading={isFetching}
-          buttonText={t('Continue')}
+          buttonText="Continue"
         />
       );
     }
@@ -229,7 +225,7 @@ class PhoneLogin extends React.Component {
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             target="_blank"
           >
-            {t('CheckMyBalance')}
+            Check My Balance
           </Link>
         </BrowserRouter>
       );
@@ -240,7 +236,7 @@ class PhoneLogin extends React.Component {
         className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
         onClick={this.handlePostLoyaltyPageMessage.bind(this)}
       >
-        {t('CheckMyBalance')}
+        Check My Balance
       </button>
     );
   }
@@ -262,20 +258,18 @@ class PhoneLogin extends React.Component {
         {this.renderPhoneView()}
 
         <p className="terms-privacy text-center gray-font-opacity">
-          <Trans i18nKey="TermsAndPrivacyDescription">
-            By tapping to continue, you agree to our
-            <br />
-            <BrowserRouter basename="/">
-              <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
-                Terms of Service
-              </Link>
-              , and{' '}
-              <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
-                Privacy Policy
-              </Link>
-              .
-            </BrowserRouter>
-          </Trans>
+          By tapping to continue, you agree to our
+          <br />
+          <BrowserRouter basename="/">
+            <Link target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+              <strong>Terms of Service</strong>
+            </Link>
+            , and{' '}
+            <Link target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+              <strong>Privacy Policy</strong>
+            </Link>
+            .
+          </BrowserRouter>
         </p>
         <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
@@ -285,18 +279,15 @@ class PhoneLogin extends React.Component {
   }
 }
 
-export default compose(
-  withTranslation(),
-  connect(
-    state => ({
-      user: getUser(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      businessInfo: getBusinessInfo(state),
-      cashbackInfo: getCashbackInfo(state),
-    }),
-    dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-    })
-  )
+export default connect(
+  state => ({
+    user: getUser(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+    businessInfo: getBusinessInfo(state),
+    cashbackInfo: getCashbackInfo(state),
+  }),
+  dispatch => ({
+    appActions: bindActionCreators(appActionCreators, dispatch),
+    thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+  })
 )(PhoneLogin);

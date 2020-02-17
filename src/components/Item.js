@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
 import Image from './Image';
 import Tag from './Tag';
 
 export class Item extends Component {
   render() {
     const {
-      t,
       children,
       className,
       contentClassName,
@@ -37,7 +35,7 @@ export class Item extends Component {
           <div className="item__detail">
             {hasTag ? (
               <div className="tag__card-container">
-                <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
+                <Tag text="BEST SELLER" className="tag__card active downsize"></Tag>
               </div>
             ) : null}
             <summary className="item__title font-weight-bold">{title}</summary>
@@ -71,4 +69,4 @@ Item.defaultProps = {
   hasTag: false,
 };
 
-export default withTranslation()(Item);
+export default Item;

@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { bindActionCreators } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
 import { actions as homeActionCreators, getStoreHashCode, getAllStores, showStores } from '../../redux/modules/home';
 
 class App extends Component {
-  state = {};
+  state = {}
 
   async componentWillMount() {
     const { homeActions } = this.props;
@@ -42,8 +41,15 @@ class App extends Component {
   }
 
   render() {
-    const { t, show, stores, onlineStoreInfo } = this.props;
-    const { logo, storeName } = onlineStoreInfo || {};
+    const {
+      show,
+      stores,
+      onlineStoreInfo,
+    } = this.props;
+    const {
+      logo,
+      storeName
+    } = onlineStoreInfo || {};
 
     if (!show) {
       return null;
@@ -63,14 +69,19 @@ class App extends Component {
           title={storeName}
         />
         <section className="store-list__content">
-          <h2 className="text-center">{t('SelectStoreDescription')}</h2>
+          <h2 className="text-center">Please select a store to continue…</h2>
 
           <div className="list__container">
-            {!stores || !stores.length ? (
-              <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
-            ) : (
-              <StoreList storeList={stores} onSelect={this.handleSelectStore.bind(this)} />
-            )}
+            {
+              !stores || !stores.length
+                ? <h3 className="text-center">something wrong, please try again later.</h3>
+                : (
+                  <StoreList
+                    storeList={stores}
+                    onSelect={this.handleSelectStore.bind(this)}
+                  />
+                )
+            }
           </div>
         </section>
       </React.Fragment>
@@ -78,18 +89,15 @@ class App extends Component {
   }
 }
 
-export default compose(
-  withTranslation(),
-  connect(
-    state => ({
-      show: showStores(state),
-      hashCode: getStoreHashCode(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      stores: getAllStores(state),
-      error: getError(state),
-    }),
-    dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
-    })
-  )
+export default connect(
+  state => ({
+    show: showStores(state),
+    hashCode: getStoreHashCode(state),
+    onlineStoreInfo: getOnlineStoreInfo(state),
+    stores: getAllStores(state),
+    error: getError(state),
+  }),
+  dispatch => ({
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+  }),
 )(App);

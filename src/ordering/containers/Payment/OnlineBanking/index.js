@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
 import Header from '../../../../components/Header';
@@ -11,7 +10,7 @@ import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { bindActionCreators } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
@@ -142,7 +141,7 @@ class OnlineBanking extends Component {
   }
 
   render() {
-    const { t, match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
+    const { match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const { agentCode, payNowLoading } = this.state;
@@ -153,7 +152,7 @@ class OnlineBanking extends Component {
         <Header
           className="border__bottom-divider gray has-right"
           isPage={true}
-          title={t('PayViaOnlineBanking')}
+          title="Pay via Online Banking"
           navFunc={() => {
             history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
           }}
@@ -166,7 +165,7 @@ class OnlineBanking extends Component {
           <form id="bank-2c2p-form" className="form">
             <div className="payment-bank__form-item">
               <div className="flex flex-middle flex-space-between">
-                <label className="payment-bank__label font-weight-bold">{t('SelectABank')}</label>
+                <label className="payment-bank__label font-weight-bold">Select a bank</label>
               </div>
               <div className="payment-bank__card-container">
                 <div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
@@ -178,7 +177,7 @@ class OnlineBanking extends Component {
                 </div>
                 {payNowLoading && !agentCode ? (
                   <div className="error-message__container">
-                    <span className="error-message">{t('PleaseSelectABankToContinue')}</span>
+                    <span className="error-message">Please select a bank to continue</span>
                   </div>
                 ) : null}
               </div>
@@ -195,7 +194,7 @@ class OnlineBanking extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
             )}
           </button>
         </div>
@@ -215,24 +214,21 @@ class OnlineBanking extends Component {
   }
 }
 
-export default compose(
-  withTranslation(['OrderingPayment']),
-  connect(
-    state => {
-      const currentOrderId = getCurrentOrderId(state);
+export default connect(
+  state => {
+    const currentOrderId = getCurrentOrderId(state);
 
-      return {
-        bankingList: getBankList(state),
-        business: getBusiness(state),
-        cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
-      };
-    },
-    dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-    })
-  )
+    return {
+      bankingList: getBankList(state),
+      business: getBusiness(state),
+      cartSummary: getCartSummary(state),
+      currentPayment: getCurrentPayment(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      currentOrder: getOrderByOrderId(state, currentOrderId),
+    };
+  },
+  dispatch => ({
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+  })
 )(OnlineBanking);

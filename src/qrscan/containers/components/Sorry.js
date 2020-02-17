@@ -1,33 +1,19 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Trans, withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
 
 class Sorry extends Component {
   render() {
     let sorryText;
-    const { t } = this.props;
 
-    if (this.props.location.state) {
+    if(this.props.location.state) {
       if (this.props.location.state.isIOS) {
-        sorryText = (
-          <Trans ns="Scanner" i18nKey="IosSorryText">
-            <p>
-              Please open beepit.co in <span className="text-bold">Safari</span>
-            </p>
-          </Trans>
-        );
+        sorryText = <p>Please open beepit.co in <span className="text-bold">Safari</span></p>;
       } else {
-        sorryText = (
-          <Trans ns="Scanner" i18nKey="AndroidSorryText">
-            <p>
-              Please open beepit.co in <span className="text-bold">Google Chrome</span>
-            </p>
-          </Trans>
-        );
+        sorryText = <p>Please open beepit.co in <span className="text-bold">Google Chrome</span></p>
       }
-    } else {
-      this.props.history.push(Constants.ALL_ROUTER.permission);
+    }else{
+      this.props.history.push(Constants.ALL_ROUTER.permission)
     }
 
     return (
@@ -38,7 +24,7 @@ class Sorry extends Component {
           <div className="content-body text-center">
             <div className="content-body__img-content">
               <img className="content-body__logo-img" src="/img/beep-warning.png" alt="" />
-              <h2 className="content-body__body-title">{t('UnsupportedBrowser')}</h2>
+              <h2 className="content-body__body-title">Unsupported Browser</h2>
               {sorryText}
             </div>
           </div>
@@ -50,4 +36,4 @@ class Sorry extends Component {
   }
 }
 
-export default withRouter(withTranslation('Scanner')(Sorry));
+export default withRouter(Sorry);

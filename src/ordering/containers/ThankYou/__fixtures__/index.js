@@ -8,7 +8,7 @@ export const onlineStoreInfo = {
   currencySymbol: 'RM',
   country: 'MY',
   state: null,
-  street: null,
+  street: null
 };
 export const order = {
   tax: 0,
@@ -34,7 +34,7 @@ export const order = {
         'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de7304b5234055a7724a4e1/251a3219-b3af-461f-ba28-4db4a55b6316',
       variationTexts: 'Array[1]',
       displayPrice: 15,
-      itemType: null,
-    },
-  ],
+      itemType: null
+    }
+  ]
 };

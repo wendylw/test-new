@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
@@ -11,7 +10,7 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { bindActionCreators } from 'redux';
 import { actions as cartActionCreators } from '../../redux/modules/cart';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import {
@@ -94,7 +93,7 @@ export class Home extends Component {
   }
 
   renderHeader() {
-    const { t, onlineStoreInfo, requestInfo } = this.props;
+    const { onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
 
@@ -110,7 +109,7 @@ export class Home extends Component {
         logo={onlineStoreInfo.logo}
         title={onlineStoreInfo.storeName}
       >
-        {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
+        {tableId ? <span className="gray-font-opacity text-uppercase">Table {tableId}</span> : null}
       </Header>
     );
   }
@@ -158,21 +157,18 @@ export class Home extends Component {
   }
 }
 
-export default compose(
-  withTranslation(['OrderingHome']),
-  connect(
-    state => {
-      return {
-        business: getBusiness(state),
-        isVerticalMenu: isVerticalMenuBusiness(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        requestInfo: getRequestInfo(state),
-        categories: getCategoryProductList(state),
-      };
-    },
-    dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
-    })
-  )
+export default connect(
+  state => {
+    return {
+      business: getBusiness(state),
+      isVerticalMenu: isVerticalMenuBusiness(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      requestInfo: getRequestInfo(state),
+      categories: getCategoryProductList(state),
+    };
+  },
+  dispatch => ({
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    cartActions: bindActionCreators(cartActionCreators, dispatch),
+  })
 )(Home);

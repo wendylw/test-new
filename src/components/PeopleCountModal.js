@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 import Modal from './Modal';
 import Constants from '../utils/constants';
 import config from '../config';
@@ -9,62 +9,53 @@ class PeopleCountModal extends Component {
 
   state = {
     value: Constants.PEOPLE_COUNT.DEFAULT,
-  };
+  }
 
   render() {
-    const { t, history } = this.props;
+    const { history } = this.props;
     const mostNumbers = Array.from(new Array(Constants.PEOPLE_COUNT.MAX).fill(0), (_, index) => index + 1);
     const lastNumber = `${Constants.PEOPLE_COUNT.MAX}+ pax`;
     const showLastNumber = false; // hide the MAX+ pax button for API asking
 
     return (
       <Modal
-        ref={ref => (this.modal = ref)}
-        className="customer-numbers__modal"
+        ref={ref => this.modal = ref} className="customer-numbers__modal"
         show
         onHide={() => history.replace(Constants.ROUTER_PATHS.ORDERING_HOME)}
       >
         <Modal.Header>
-          <h4 className="font-weight-bold">{t('PeopleCountModalTitle')}</h4>
+          <h4 className="font-weight-bold">Welcome! How many of you are dining today?</h4>
         </Modal.Header>
         <Modal.Body>
           <ul className="customer-numbers grid">
-            {mostNumbers.map(n => (
+            {mostNumbers.map(n =>
               <li className="text-center width-1-3" key={`${n}`}>
                 <span
                   className={`tag__card ${this.state.value === n ? 'active' : ''}`}
                   onClick={() => this.setState({ value: n })}
-                >
-                  {n}
-                </span>
+                >{n}</span>
               </li>
-            ))}
+            )}
             {showLastNumber ? (
               <li className="text-center width-2-3" key={`${lastNumber}`}>
                 <span
                   className={`tag__card ${this.state.value === Constants.PEOPLE_COUNT.MAX_PLUS ? 'active' : ''}`}
                   onClick={() => this.setState({ value: Constants.PEOPLE_COUNT.MAX_PLUS })}
-                >
-                  {lastNumber}
-                </span>
+                >{lastNumber}</span>
               </li>
             ) : null}
           </ul>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            className="button__fill button__block"
-            onClick={() => {
-              config.peopleCount = this.state.value;
-              this.modal.hide();
-            }}
-          >
-            {t('OK')}
-          </button>
+          <button className="button__fill button__block" onClick={() => {
+            config.peopleCount = this.state.value;
+            this.modal.hide();
+          }}>OK</button>
         </Modal.Footer>
       </Modal>
     );
   }
 }
 
-export default withTranslation()(PeopleCountModal);
+
+export default withRouter(PeopleCountModal);

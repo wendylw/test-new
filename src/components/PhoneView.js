@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -11,9 +10,9 @@ class PhoneView extends React.Component {
   state = {
     isLoading: this.props.isLoading,
     errorMessage: {
-      phone: null,
-    },
-  };
+      phone: null
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
     const { isLoading } = nextProps;
@@ -37,8 +36,17 @@ class PhoneView extends React.Component {
   }
 
   render() {
-    const { t, className, phone, setPhone, country, buttonText } = this.props;
-    const { isLoading, errorMessage } = this.state;
+    const {
+      className,
+      phone,
+      setPhone,
+      country,
+      buttonText,
+    } = this.props;
+    const {
+      isLoading,
+      errorMessage,
+    } = this.state;
     let buttonContent = buttonText;
 
     if (isLoading) {
@@ -48,7 +56,7 @@ class PhoneView extends React.Component {
     return (
       <div className={className}>
         <PhoneInput
-          placeholder={t('EnterPhoneNumber')}
+          placeholder="Enter phone number"
           value={formatPhoneNumberIntl(phone)}
           country={country}
           metadata={metadataMobile}
@@ -61,7 +69,11 @@ class PhoneView extends React.Component {
           }}
         />
 
-        {errorMessage.phone ? <span className="error">{errorMessage.phone}</span> : null}
+        {
+          errorMessage.phone
+            ? <span className="error">{errorMessage.phone}</span>
+            : null
+        }
 
         <button
           className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
@@ -86,7 +98,7 @@ PhoneView.propTypes = {
 };
 
 PhoneView.defaultProps = {
-  isLoading: false,
+  isLoading: false
 };
 
-export default withTranslation()(PhoneView);
+export default PhoneView;
