@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import config from '../config';
 
-export class ErrorPage extends Component {
+export class ErrorPage extends PureComponent {
   getCurrentErrorType(type) {
     if (!type) {
-      return '';
+      return {};
     }
 
     const Errors = {
@@ -25,7 +25,7 @@ export class ErrorPage extends Component {
   render() {
     const { error } = this.props;
     const { message } = error || {};
-    const { title, description } = this.getCurrentErrorType(message) || {};
+    const { title, description } = this.getCurrentErrorType(message);
 
     return (
       <section className="table-ordering__prompt-page">
