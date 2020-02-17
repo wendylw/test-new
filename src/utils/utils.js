@@ -47,39 +47,71 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
 };
 
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
-  return localStorage.getItem(name);
+  try {
+    return localStorage.getItem(name);
+  } catch (e) {
+    let keyEQ = name + '=';
+    let ca = document.cookie.split(';');
+
+    for (let i = 0, len = ca.length; i < len; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
+    }
+
+    return null;
+  }
 };
 
+/* If localStorage is not operational, cookies will be used to store global variables */
 Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
-  localStorage.setItem(name, value || '');
+  try {
+    localStorage.setItem(name, value || '');
+  } catch (e) {
+    document.cookie = name + '=' + value + '; path=/';
+  }
 };
 
 Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
-  localStorage.removeItem(name);
+  try {
+    localStorage.removeItem(name);
+  } catch (e) {
+    document.cookie = name + '=; path=/';
+  }
 };
 
 Utils.getSessionVariable = function getSessionVariable(name) {
-  return sessionStorage.getItem(name);
+  try {
+    return sessionStorage.getItem(name);
+  } catch (e) {
+    let keyEQ = name + '=';
+    let ca = document.cookie.split(';');
+
+    for (let i = 0, len = ca.length; i < len; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
+    }
+
+    return null;
+  }
 };
 
+/* If sessionStorage is not operational, cookies will be used to store global variables */
 Utils.setSessionVariable = function setSessionVariable(name, value) {
-  sessionStorage.setItem(name, value || '');
+  try {
+    sessionStorage.setItem(name, value || '');
+  } catch (e) {
+    document.cookie = name + '=' + value + '; path=/';
+  }
 };
 
 Utils.removeSessionVariable = function removeSessionVariable(name) {
-  sessionStorage.removeItem(name);
-};
-
-Utils.getAdditionalComments = function getAdditionalComments() {
-  return sessionStorage.getItem('additionalComments');
-};
-
-Utils.setAdditionalComments = function setAdditionalComments(additionalComments) {
-  sessionStorage.setItem('additionalComments', additionalComments || '');
-};
-
-Utils.removeAdditionalComments = function removeAdditionalComments() {
-  sessionStorage.removeItem('additionalComments');
+  try {
+    sessionStorage.removeItem(name);
+  } catch (e) {
+    document.cookie = name + '=; path=/';
+  }
 };
 
 Utils.isProductSoldOut = product => {
@@ -271,6 +303,7 @@ Utils.initSmoothAnimation = function initSmoothAnimation() {
 
 Utils.getUserAgentInfo = function getUserAgentInfo() {
   /* eslint-disable */
+  /* https://www.regextester.com/97574 */
   const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
   /* eslint-enabled */
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
