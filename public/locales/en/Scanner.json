@@ -1,1 +1,9 @@
-{}
+{
+  "ScanQRCode": "SCAN QR CODE",
+  "ScannerSorryText": "Sorry, your browser doesn't support this feature",
+  "ScanDescribeText": "Align the QR code within the frame to scan",
+  "IosSorryText": "Please open beepit.co in <1>Safari</1>",
+  "AndroidSorryText": "Please open beepit.co in <1>Google Chrome</1>",
+  "UnsupportedBrowser": "Unsupported Browser",
+  "UseChromeMessage": "We recommend that you use Google Chrome"
+}
