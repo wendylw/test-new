@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import OtpInput from 'react-otp-input';
 import Header from './Header';
 import Constants from '../utils/constants';
@@ -48,18 +49,8 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const {
-      buttonText,
-      onClose,
-      getOtp,
-      sendOtp,
-      phone,
-    } = this.props;
-    const {
-      otp,
-      currentOtpTime,
-      isSendingOtp,
-    } = this.state;
+    const { t, buttonText, onClose, getOtp, sendOtp, phone } = this.props;
+    const { otp, currentOtpTime, isSendingOtp } = this.state;
     let buttonContent = buttonText;
 
     if (isSendingOtp) {
@@ -74,7 +65,7 @@ class OtpModal extends React.Component {
           <figure className="full-aside__image-container">
             <img src="/img/beep-otp.png" alt="otp" />
           </figure>
-          <h2 className="full-aside__title">We’ve sent you a One Time Passcode (OTP) to {phone}. Enter it below to continue.</h2>
+          <h2 className="full-aside__title">{t('OTPSentTitle')}</h2>
           <div className="otp-input">
             <OtpInput
               key="otp-input"
@@ -87,12 +78,8 @@ class OtpModal extends React.Component {
               }}
             />
           </div>
-          <button
-            className="otp-resend text-uppercase"
-            disabled={!!currentOtpTime}
-            onClick={() => getOtp(phone)}
-          >
-            {`Resend OTP${currentOtpTime ? `? (${currentOtpTime})` : ''}`}
+          <button className="otp-resend text-uppercase" disabled={!!currentOtpTime} onClick={() => getOtp(phone)}>
+            {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
           </button>
         </section>
 
@@ -101,13 +88,14 @@ class OtpModal extends React.Component {
             className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
             disabled={isSendingOtp || !otp || otp.length !== Constants.OTP_CODE_SIZE}
             onClick={() => sendOtp(otp)}
-          >{buttonContent}</button>
+          >
+            {buttonContent}
+          </button>
         </footer>
       </div>
     );
   }
 }
-
 
 OtpModal.propTypes = {
   phone: PropTypes.string,
@@ -122,8 +110,8 @@ OtpModal.propTypes = {
 OtpModal.defaultProps = {
   buttonText: '',
   ResendOtpTime: 0,
-  onClose: () => { },
-  sendOtp: () => { },
+  onClose: () => {},
+  sendOtp: () => {},
 };
 
-export default OtpModal;
+export default withTranslation()(OtpModal);
