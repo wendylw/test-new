@@ -5,6 +5,7 @@ import ProductItem from '../../../../components/ProductItem';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/home';
 import Constants from '../../../../../utils/constants';
+import constants from '../../../../../utils/constants';
 
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;
@@ -34,6 +35,7 @@ class CartList extends Component {
       this.props.homeActions.loadShoppingCart();
     });
   };
+
   generateProductItemView = cartItem => {
     const {
       id,
@@ -49,6 +51,7 @@ class CartList extends Component {
     return (
       <ProductItem
         key={id}
+        className="flex-middle"
         image={image}
         title={title}
         variation={(variationTexts || []).join(', ')}
@@ -82,6 +85,7 @@ class CartList extends Component {
       />
     );
   };
+
   render() {
     const { shoppingCart, viewAside, product } = this.props;
     if (!shoppingCart) {
@@ -93,19 +97,22 @@ class CartList extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
-
     const cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items];
 
-    return (
-      <ul className="list">
-        {viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM
-          ? cartItems
-              .sort(sortFn)
-              .filter(x => x.productId === product.id || x.parentProductId === product.id)
-              .map(this.generateProductItemView)
-          : cartItems.sort(sortFn).map(this.generateProductItemView)}
-      </ul>
-    );
+    const generateCartItemUI = () => {
+      if (viewAside === constants.ASIDE_NAMES.CARTMODAL_HIDE) {
+        return null;
+      }
+      if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
+        return cartItems
+          .sort(sortFn)
+          .filter(x => x.productId === product.id || x.parentProductId === product.id)
+          .map(this.generateProductItemView);
+      }
+      return cartItems.sort(sortFn).map(this.generateProductItemView);
+    };
+
+    return <ul className="list">{generateCartItemUI()}</ul>;
   }
 }
 

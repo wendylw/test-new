@@ -10,23 +10,19 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import qs from 'qs';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
-
 
 class PageLoyalty extends React.Component {
   state = {
     showModal: false,
-    showRecentActivities: false
-  }
+    showRecentActivities: false,
+  };
 
   async componentDidMount() {
-    const {
-      history,
-      appActions,
-      homeActions,
-    } = this.props;
+    const { history, appActions, homeActions } = this.props;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     await homeActions.setCustomerId(customerId);
@@ -35,13 +31,8 @@ class PageLoyalty extends React.Component {
   }
 
   renderLocation() {
-    const {
-      businessInfo,
-    } = this.props;
-    const {
-      displayBusinessName,
-      name
-    } = businessInfo || {};
+    const { businessInfo } = this.props;
+    const { displayBusinessName, name } = businessInfo || {};
     return (
       <div className="location">
         <span className="location__text gray-font-opacity text-middle">{displayBusinessName || name}</span>
@@ -50,7 +41,7 @@ class PageLoyalty extends React.Component {
   }
 
   showRecentActivities() {
-    this.setState({ showRecentActivities: true })
+    this.setState({ showRecentActivities: true });
   }
 
   closeActivity() {
@@ -58,56 +49,51 @@ class PageLoyalty extends React.Component {
   }
 
   render() {
-    const {
-      history,
-      businessInfo,
-      onlineStoreInfo,
-      cashbackHistorySummary,
-    } = this.props;
-    const {
-      displayBusinessName,
-      name,
-    } = businessInfo || {};
+    const { history, businessInfo, onlineStoreInfo, cashbackHistorySummary, t } = this.props;
+    const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
     const { totalCredits } = cashbackHistorySummary || {};
     const { showRecentActivities } = this.state;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    return (
-      !showRecentActivities ? (
-        <section className="loyalty__home">
-          <div className="loyalty__content text-center">
-            {
-              logo ? (
-                <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
-              ) : null
-            }
-            <h5 className="logo-default__title text-uppercase">Total cashback</h5>
-            <div className="loyalty__money-info">
-              <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
-              <span onClick={this.showRecentActivities.bind(this)}>
-                <IconInfo />
-              </span>
-            </div>
-            {this.renderLocation()}
-            <RedeemInfo className="redeem__button-container" buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase" buttonText="How to use Cashback?" />
+    return !showRecentActivities ? (
+      <section className="loyalty__home">
+        <div className="loyalty__content text-center">
+          {logo ? (
+            <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+          ) : null}
+          <h5 className="logo-default__title text-uppercase">{t('TotalCashback')}</h5>
+          <div className="loyalty__money-info">
+            <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
+            <span onClick={this.showRecentActivities.bind(this)}>
+              <IconInfo />
+            </span>
           </div>
-          <ReceiptList history={history} />
-        </section>
-      ) : (
-          <RecentActivities history={history} customerId={customerId} closeActivity={this.closeActivity.bind(this)} />
-        )
+          {this.renderLocation()}
+          <RedeemInfo
+            className="redeem__button-container"
+            buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase"
+            buttonText={t('HowToUseCashback')}
+          />
+        </div>
+        <ReceiptList history={history} />
+      </section>
+    ) : (
+      <RecentActivities history={history} customerId={customerId} closeActivity={this.closeActivity.bind(this)} />
     );
   }
 }
 
-export default connect(
-  (state) => ({
-    businessInfo: getBusinessInfo(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    cashbackHistorySummary: getCashbackHistorySummary(state)
-  }),
-  (dispatch) => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['Cashback']),
+  connect(
+    state => ({
+      businessInfo: getBusinessInfo(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      cashbackHistorySummary: getCashbackHistorySummary(state),
+    }),
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(PageLoyalty);
