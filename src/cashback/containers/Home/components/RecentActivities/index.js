@@ -1,15 +1,12 @@
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import {
-  IconPending,
-  IconChecked,
-  IconEarned,
-} from '../../../../../components/Icons';
+import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
 import Header from '../../../../../components/Header';
 import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 
@@ -28,7 +25,7 @@ const DATE_OPTIONS = {
 class RecentActivities extends React.Component {
   state = {
     fullScreen: false,
-  }
+  };
 
   componentDidMount() {
     const { user } = this.props;
@@ -40,10 +37,7 @@ class RecentActivities extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {
-      isFetching,
-      user,
-    } = this.props;
+    const { isFetching, user } = this.props;
     const { isLogin, customerId } = user || {};
 
     if (isFetching || !isLogin) {
@@ -68,18 +62,19 @@ class RecentActivities extends React.Component {
   }
 
   getType(type, props) {
+    const { t } = this.props;
     const TypesMap = {
       pending: {
-        text: 'Cashback Pending',
+        text: t('CashbackPending'),
         icon: <IconPending {...props} />,
       },
       /* expense is same as redeemed */
       expense: {
-        text: 'Redeemed',
+        text: t('Redeemed'),
         icon: <IconChecked {...props} />,
       },
       earned: {
-        text: 'You earned',
+        text: t('YouEarned'),
         icon: <IconEarned {...props} />,
       },
     };
@@ -88,86 +83,76 @@ class RecentActivities extends React.Component {
   }
 
   renderLogList() {
-    const {
-      cashbackHistory,
-      onlineStoreInfo,
-    } = this.props;
+    const { cashbackHistory, onlineStoreInfo } = this.props;
     const { country } = onlineStoreInfo || {};
 
     return (
       <ul className="activity">
-        {
-          (cashbackHistory || []).map((activity, i) => {
-            const {
-              eventType,
-              eventTime,
-            } = activity;
-            const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-            const type = this.getType(eventType, { className: `activity__icon ${eventType}` });
+        {(cashbackHistory || []).map((activity, i) => {
+          const { eventType, eventTime } = activity;
+          const eventDateTime = new Date(Number.parseInt(eventTime, 10));
+          const type = this.getType(eventType, { className: `activity__icon ${eventType}` });
 
-            return (
-              <li key={`${i}`} className="activity__item flex flex-middle">
-                {type.icon}
-                <summary>
-                  <h4 className="activity__title">
-                    <label>{type.text}&nbsp;</label>
-                    {
-                      activity.eventType !== 'pending'
-                        ? <CurrencyNumber money={Math.abs(activity.amount || 0)} />
-                        : null
-                    }
-                  </h4>
-                  <time className="activity__time">
-                    {eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
-                  </time>
-                </summary>
-              </li>
-            );
-          })
-        }
+          return (
+            <li key={`${i}`} className="activity__item flex flex-middle">
+              {type.icon}
+              <summary>
+                <h4 className="activity__title">
+                  <label>{type.text}&nbsp;</label>
+                  {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
+                </h4>
+                <time className="activity__time">
+                  {eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                </time>
+              </summary>
+            </li>
+          );
+        })}
       </ul>
     );
   }
 
   render() {
-    const {
-      history,
-      customerId,
-      closeActivity
-    } = this.props;
+    const { t, history, customerId, closeActivity } = this.props;
 
     return (
-      <section className="loyalty__activities" style={{
-        // backgroundImage: `url(${theImage})`,
-      }}>
+      <section
+        className="loyalty__activities"
+        style={
+          {
+            // backgroundImage: `url(${theImage})`,
+          }
+        }
+      >
         <Header
           className="transparent text-center"
-          title="Cashback History"
+          title={t('CashbackHistory')}
           isPage={true}
           navFunc={() => {
             history.push({
               pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-              search: `?customerId=${customerId || ''}`
+              search: `?customerId=${customerId || ''}`,
             });
             closeActivity();
           }}
         />
-        <article className="loyalty__content">
-          {this.renderLogList()}
-        </article>
+        <article className="loyalty__content">{this.renderLogList()}</article>
       </section>
     );
   }
 }
 
-export default connect(
-  (state) => ({
-    user: getUser(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    cashbackHistory: getCashbackHistory(state),
-  }),
-  (dispatch) => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['Cashback']),
+  connect(
+    state => ({
+      user: getUser(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      cashbackHistory: getCashbackHistory(state),
+    }),
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(RecentActivities);

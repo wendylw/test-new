@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import Item from '../../../components/Item';
 import Tag from '../../../components/Tag';
 import ItemOperator from '../../../components/ItemOperator';
@@ -8,6 +9,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 export class ProductItem extends Component {
   render() {
     const {
+      t,
       className,
       variation,
       image,
@@ -36,7 +38,7 @@ export class ProductItem extends Component {
         hasTag={isFeaturedProduct}
       >
         {soldOut ? (
-          <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+          <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
         ) : (
           <ItemOperator
             className="flex-middle"
@@ -80,4 +82,4 @@ ProductItem.defaultProps = {
   showProductDetail: () => {},
 };
 
-export default ProductItem;
+export default withTranslation()(ProductItem);

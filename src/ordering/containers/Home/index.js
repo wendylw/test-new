@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
@@ -10,7 +11,7 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../redux/modules/cart';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import {
@@ -84,7 +85,7 @@ export class Home extends Component {
       asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
 
     if (!stopBodyScroll) {
-      this.toggleBodyScroll(!!asideName);
+      this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
     this.setState({
@@ -93,7 +94,7 @@ export class Home extends Component {
   }
 
   renderHeader() {
-    const { onlineStoreInfo, requestInfo } = this.props;
+    const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
 
@@ -109,7 +110,7 @@ export class Home extends Component {
         logo={onlineStoreInfo.logo}
         title={onlineStoreInfo.storeName}
       >
-        {tableId ? <span className="gray-font-opacity text-uppercase">Table {tableId}</span> : null}
+        {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
       </Header>
     );
   }
@@ -144,7 +145,7 @@ export class Home extends Component {
         <MiniCartListModal
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
-          onToggle={this.handleToggleAside.bind(this)}
+          onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
         <Footer
           {...otherProps}
@@ -157,18 +158,21 @@ export class Home extends Component {
   }
 }
 
-export default connect(
-  state => {
-    return {
-      business: getBusiness(state),
-      isVerticalMenu: isVerticalMenuBusiness(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      requestInfo: getRequestInfo(state),
-      categories: getCategoryProductList(state),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-    cartActions: bindActionCreators(cartActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      return {
+        business: getBusiness(state),
+        isVerticalMenu: isVerticalMenuBusiness(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        requestInfo: getRequestInfo(state),
+        categories: getCategoryProductList(state),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
+    })
+  )
 )(Home);

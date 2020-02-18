@@ -6,18 +6,18 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const initialState = {
-  pendingTransactionsIds: []
+  pendingTransactionsIds: [],
 };
 
 export const types = CART_TYPES;
 
 // actions
 export const actions = {
-  clearAll: () => (dispatch) => {
+  clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
-  clearAllByProducts: (products) => (dispatch) => {
-    dispatch(clearShopcartItemByProducts(products));
+  clearAllByProducts: products => dispatch => {
+    return dispatch(clearShopcartItemByProducts(products));
   },
 
   loadPendingPaymentList: () => ({
@@ -43,33 +43,28 @@ export const actions = {
         status,
         receiptNumbers,
       },
-    }
+    },
   }),
-
 };
 
-const clearShopcartItemByProducts = (products) => {
+const clearShopcartItemByProducts = products => {
   return {
     [API_REQUEST]: {
       types: [
         types.CLEARALL_BY_PRODUCTS_REQUEST,
         types.CLEARALL_BY_PRODUCTS_SUCCESS,
-        types.CLEARALL_BY_PRODUCTS_FAILURE
+        types.CLEARALL_BY_PRODUCTS_FAILURE,
       ],
       payload: products,
-      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS
+      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
     },
-  }
+  };
 };
 const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
   return {
     [FETCH_GRAPHQL]: {
-      types: [
-        types.CLEARALL_REQUEST,
-        types.CLEARALL_SUCCESS,
-        types.CLEARALL_FAILURE,
-      ],
+      types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
       endpoint,
     },
   };
@@ -87,7 +82,7 @@ const reducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};
 
 export default reducer;
 

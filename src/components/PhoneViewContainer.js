@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
@@ -51,7 +52,7 @@ class PhoneViewContainer extends React.Component {
   }
 
   render() {
-    const { children, title, className, country, buttonText } = this.props;
+    const { t, children, title, className, country, buttonText } = this.props;
     const { isSavingPhone, phone } = this.state;
     let buttonContent = buttonText;
 
@@ -64,7 +65,7 @@ class PhoneViewContainer extends React.Component {
         {title ? <label className="phone-view-form__label text-center">{title}</label> : null}
         <PhoneInput
           smartCaret={false}
-          placeholder="Enter phone number"
+          placeholder={t('EnterPhoneNumber')}
           value={formatPhoneNumberIntl(phone)}
           country={country || DEFAULT_COUNTRY}
           metadata={metadataMobile}
@@ -100,4 +101,4 @@ PhoneViewContainer.defaultProps = {
   onSubmit: () => {},
 };
 
-export default PhoneViewContainer;
+export default withTranslation()(PhoneViewContainer);

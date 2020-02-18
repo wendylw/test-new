@@ -5,9 +5,7 @@ import { defaultsDeep } from 'lodash';
 import { ThankYou } from './';
 import { onlineStoreInfo, order } from './__fixtures__';
 
-jest.mock('./components/PhoneLogin', () => () => (
-  <div data-testid="phone-login--mock">Phone Login Component</div>
-));
+jest.mock('./components/PhoneLogin', () => () => <div data-testid="phone-login--mock">Phone Login Component</div>);
 
 const ThankYouWithRouter = withRouter(ThankYou);
 
@@ -18,8 +16,8 @@ const getMockProps = (props = {}) => {
     thankYouActions: {
       loadOrder: () => {},
       getCashbackInfo: () => {},
-      createCashbackInfo: () => {}
-    }
+      createCashbackInfo: () => {},
+    },
   };
   return defaultsDeep(props, defaultProps);
 };
@@ -29,8 +27,8 @@ describe('ordering/containers/ThankYou', () => {
     const mockLoadOrder = jest.fn();
     const props = getMockProps({
       thankYouActions: {
-        loadOrder: mockLoadOrder
-      }
+        loadOrder: mockLoadOrder,
+      },
     });
     const result = render(
       <MemoryRouter>
@@ -38,9 +36,7 @@ describe('ordering/containers/ThankYou', () => {
       </MemoryRouter>
     );
     expect(mockLoadOrder).toHaveBeenCalledTimes(1);
-    expect(result.queryByTestId('thanks__pickup-number')).toHaveTextContent(
-      order.pickUpId
-    );
+    expect(result.queryByTestId('thanks__pickup-number')).toHaveTextContent(order.pickUpId);
     expect(result.queryByTestId('thanks__view-receipt')).toBeInTheDocument();
     expect(result.queryByTestId('phone-login--mock')).toBeInTheDocument();
     expect(result.queryByTestId('thanks__self-pickup')).toBeInTheDocument();
@@ -49,8 +45,8 @@ describe('ordering/containers/ThankYou', () => {
   it('should render table id if provided', () => {
     const props = getMockProps({
       order: {
-        tableId: '234'
-      }
+        tableId: '234',
+      },
     });
     const result = render(
       <MemoryRouter>
@@ -62,7 +58,7 @@ describe('ordering/containers/ThankYou', () => {
 
   it('should render correctly without order info', () => {
     const props = getMockProps({
-      order: null
+      order: null,
     });
     const result = render(
       <MemoryRouter>
@@ -78,14 +74,14 @@ describe('ordering/containers/ThankYou', () => {
       match: {},
       history: {
         push: pushMock,
-        location: {}
-      }
+        location: {},
+      },
     });
     const result = render(<ThankYou {...props} />);
     fireEvent.click(result.getByTestId('thanks__view-receipt'));
     expect(pushMock).toHaveBeenCalledWith({
       pathname: '/receipt',
-      search: `?receiptNumber=${order.orderId}`
+      search: `?receiptNumber=${order.orderId}`,
     });
   });
 });
