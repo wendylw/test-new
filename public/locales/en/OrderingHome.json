@@ -1,1 +1,5 @@
-{}
+{
+  "OrderNow": "Order now",
+  "CartItemsInCategory": "{{cartQuantity}} Items",
+  "NoProductDescription": "No product description"
+}
