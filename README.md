@@ -101,7 +101,7 @@ github document: https://github.com/i18next/i18next-xhr-backend
 ```
 JSON file name rules:
 
-1. Please use upper camel case (eg: OrderingHome)
+1.  Please use upper camel case (eg: OrderingHome)
 
 Key name rules:
 
