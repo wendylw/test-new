@@ -333,7 +333,7 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
     products.forEach(function(product) {
       product.variations = product.variations || [];
-      product.soldOut = Utils.isProductSoldOut(product);
+      product.soldOut = Utils.isProductSoldOut(product || {});
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
       product.cartQuantity = 0;
 
@@ -378,5 +378,11 @@ export const getCategoryProductList = createSelector(
 );
 
 export const isVerticalMenuBusiness = state => {
-  return (state.home.domProperties.verticalMenuBusinesses || []).includes(getBusiness(state));
+  const { verticalMenuBusinesses } = state.home.domProperties;
+
+  if (!verticalMenuBusinesses || !verticalMenuBusinesses.filter(b => Boolean(b)).length) {
+    return true;
+  } else {
+    return verticalMenuBusinesses.includes(getBusiness(state));
+  }
 };

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -23,24 +24,24 @@ const dataSource = {
   onlineBanking: {
     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
     logo: '/img/payment-banking.png',
-    label: 'Online Banking',
+    labelKey: 'OnlineBanking',
     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   creditCard: {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: '/img/payment-credit.png',
-    label: 'Visa / MasterCard',
+    labelKey: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
   boost: {
     name: PAYMENT_METHODS.BOOST_PAY,
     logo: '/img/payment-boost.png',
-    label: 'Boost',
+    labelKey: 'Boost',
   },
   grabPay: {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: '/img/payment-grab.png',
-    label: 'GrabPay',
+    labelKey: 'GrabPay',
   },
 };
 const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
@@ -119,7 +120,7 @@ class Payment extends Component {
   };
 
   render() {
-    const { currentPayment, paymentList } = this.props;
+    const { t, currentPayment, paymentList } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -129,7 +130,7 @@ class Payment extends Component {
         <Header
           className="border__bottom-divider gray has-right"
           isPage={true}
-          title="Select Payment"
+          title={t('SelectPayment')}
           navFunc={this.handleClickBack}
         />
 
@@ -149,9 +150,9 @@ class Payment extends Component {
                   onClick={() => this.setCurrentPayment(payment.name)}
                 >
                   <figure className="payment__image-container">
-                    <img src={payment.logo} alt={payment.label}></img>
+                    <img src={payment.logo} alt={payment.labelKey}></img>
                   </figure>
-                  <label className="payment__name font-weight-bold">{payment.label}</label>
+                  <label className="payment__name font-weight-bold">{t(payment.labelKey)}</label>
                   <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
@@ -168,7 +169,7 @@ class Payment extends Component {
             disabled={payNowLoading}
             onClick={this.handleClickPayNow}
           >
-            {payNowLoading ? <div className="loader"></div> : 'Pay now'}
+            {payNowLoading ? <div className="loader"></div> : t('PayNow')}
           </button>
         </div>
 
@@ -185,23 +186,26 @@ class Payment extends Component {
   }
 }
 
-export default connect(
-  state => {
-    const currentOrderId = getCurrentOrderId(state);
+export default compose(
+  withTranslation(['OrderingPayment']),
+  connect(
+    state => {
+      const currentOrderId = getCurrentOrderId(state);
 
-    return {
-      user: getUser(state),
-      business: getBusiness(state),
-      cartSummary: getCartSummary(state),
-      currentPayment: getCurrentPayment(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      currentOrder: getOrderByOrderId(state, currentOrderId),
-      paymentList: getPaymentList(state),
-    };
-  },
-  dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+      return {
+        user: getUser(state),
+        business: getBusiness(state),
+        cartSummary: getCartSummary(state),
+        currentPayment: getCurrentPayment(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        currentOrder: getOrderByOrderId(state, currentOrderId),
+        paymentList: getPaymentList(state),
+      };
+    },
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(Payment);

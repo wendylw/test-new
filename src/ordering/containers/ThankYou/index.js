@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import qs from 'qs';
+import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
@@ -36,7 +37,7 @@ export class ThankYou extends Component {
   };
 
   renderPickupInfo() {
-    const { order } = this.props;
+    const { t, order } = this.props;
     const { tableId, pickUpId } = order || {};
 
     if (!pickUpId || tableId) {
@@ -46,7 +47,7 @@ export class ThankYou extends Component {
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="gray-font-opacity font-weight-bold text-uppercase">Your Order Number</label>
+          <label className="gray-font-opacity font-weight-bold text-uppercase">{t('YourOrderNumber')}</label>
           <span className="thanks-pickup__id-number" data-testid="thanks__pickup-number">
             {pickUpId}
           </span>
@@ -56,15 +57,15 @@ export class ThankYou extends Component {
   }
 
   renderNeedReceipt() {
-    const { order } = this.props;
+    const { t, order } = this.props;
     const { orderId } = order || {};
 
     if (this.state.needReceipt === 'detail') {
       return (
         <div className="thanks__receipt-info">
-          <h4 className="thanks__receipt-title font-weight-bold">Ping the staff for a receipt</h4>
+          <h4 className="thanks__receipt-title font-weight-bold">{t('PingStaffTitle')}</h4>
           <div>
-            <label className="thanks__receipt-label">Receipt Number: </label>
+            <label className="thanks__receipt-label">{t('ReceiptNumber')}: </label>
             <span className="thanks__receipt-number font-weight-bold">{orderId}</span>
           </div>
         </div>
@@ -77,13 +78,13 @@ export class ThankYou extends Component {
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
-        View Receipt
+        {t('ViewReceipt')}
       </button>
     );
   }
 
   render() {
-    const { history, match, order } = this.props;
+    const { t, history, match, order } = this.props;
     const date = new Date();
     const { tableId } = order || {};
 
@@ -96,7 +97,7 @@ export class ThankYou extends Component {
         <Header
           className="border__bottom-divider gray"
           isPage={true}
-          title="Order Paid"
+          title={t('OrderPaid')}
           navFunc={() =>
             history.replace({
               pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
@@ -106,17 +107,17 @@ export class ThankYou extends Component {
         >
           <span className="gray-font-opacity text-uppercase">
             {tableId ? (
-              <span data-testid="thanks__table-id">{`Table ${tableId}`}</span>
+              <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span>
             ) : (
-              <span data-testid="thanks__self-pickup">Self pick-up</span>
+              <span data-testid="thanks__self-pickup">{t('SelfPickUp')}</span>
             )}
           </span>
         </Header>
         <div className="thanks text-center">
           <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
-          <h2 className="thanks__title font-weight-light">Thank You!</h2>
+          <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
           <p>
-            We're preparing your order now.{' '}
+            {`${t('PrepareOrderDescription')} `}
             <span role="img" aria-label="Goofy">
               😋
             </span>
@@ -133,7 +134,7 @@ export class ThankYou extends Component {
             <li>
               <span>&copy; {date.getFullYear()} </span>
               <a className="link link__non-underline" href="https://www.storehub.com/">
-                StoreHub
+                {t('StoreHub')}
               </a>
             </li>
           </ul>
@@ -143,12 +144,15 @@ export class ThankYou extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    order: getOrder(state),
-  }),
-  dispatch => ({
-    thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingThankYou']),
+  connect(
+    state => ({
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      order: getOrder(state),
+    }),
+    dispatch => ({
+      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+    })
+  )
 )(ThankYou);

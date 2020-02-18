@@ -1,1 +1,4 @@
-{}
+{
+  "OrderNotesPlaceholder": "Add a note to your order? (Limit 140 characters)",
+  "ProductsInOrderText": "Order {{count}} Items"
+}

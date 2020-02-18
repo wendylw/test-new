@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import { IconCartII, IconDelete } from '../../../../../components/Icons';
 import CartList from '../../../Cart/components/CartList';
 import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators, getShoppingCartItemsByProducts } from '../../../../redux/modules/home';
@@ -33,7 +34,7 @@ class MiniCartListModal extends Component {
   }
 
   render() {
-    const { show, cartSummary, viewAside } = this.props;
+    const { t, show, cartSummary, viewAside } = this.props;
     let { count } = cartSummary || {};
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
@@ -52,11 +53,13 @@ class MiniCartListModal extends Component {
           <div className="cart-pane__operation border__bottom-divider flex flex-middle flex-space-between">
             <h3 className="cart-pane__amount-container">
               <IconCartII />
-              <span className="cart-pane__amount-label text-middle gray-font-opacity">{`${count || 0} Items`}</span>
+              <span className="cart-pane__amount-label text-middle gray-font-opacity">
+                {t('CartItemsInCategory', { cartQuantity: count })}
+              </span>
             </h3>
             <button className="warning__button" onClick={this.handleClearAll.bind(this)}>
               <IconDelete />
-              <span className="warning__label text-middle">Clear All</span>
+              <span className="warning__label text-middle">{t('ClearAll')}</span>
             </button>
           </div>
           <div className="cart-pane__list">
@@ -78,15 +81,18 @@ MiniCartListModal.defaultProps = {
   onToggle: () => {},
 };
 
-export default connect(
-  state => {
-    return {
-      cartSummary: getCartSummary(state),
-      selectedProductCart: getShoppingCartItemsByProducts(state),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-    cartActions: bindActionCreators(cartActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      return {
+        cartSummary: getCartSummary(state),
+        selectedProductCart: getShoppingCartItemsByProducts(state),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
+    })
+  )
 )(MiniCartListModal);

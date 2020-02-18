@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import ProductItem from '../../../../components/ProductItem';
 import { ScrollObserver, ScrollObservable } from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionsCreator, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
 class CategoryProductList extends Component {
@@ -50,7 +51,7 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { t, categories, isVerticalMenu } = this.props;
     const itemClassList = ['flex-middle'];
 
     if (isVerticalMenu) {
@@ -84,7 +85,9 @@ class CategoryProductList extends Component {
               <h2 className="category__header fixed flex flex-middle flex-space-between">
                 <label>{target.name}</label>
                 {target.cartQuantity ? (
-                  <span className="gray-font-opacity">{`${target.cartQuantity} Items`}</span>
+                  <span className="gray-font-opacity">
+                    {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
+                  </span>
                 ) : null}
               </h2>
             );
@@ -97,7 +100,9 @@ class CategoryProductList extends Component {
                 <h2 className="category__header flex flex-middle flex-space-between">
                   <label>{category.name}</label>
                   {category.cartQuantity ? (
-                    <span className="gray-font-opacity">{`${category.cartQuantity} Items`}</span>
+                    <span className="gray-font-opacity">
+                      {t('CartItemsInCategory', { cartQuantity: category.cartQuantity })}
+                    </span>
                   ) : null}
                 </h2>
                 <ul className="list">
@@ -137,14 +142,17 @@ CategoryProductList.defaultProps = {
   isVerticalMenu: false,
 };
 
-export default connect(
-  state => {
-    return {
-      shoppingCart: getShoppingCart(state),
-      categories: getCategoryProductList(state),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionsCreator, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      return {
+        shoppingCart: getShoppingCart(state),
+        categories: getCategoryProductList(state),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionsCreator, dispatch),
+    })
+  )
 )(CategoryProductList);
