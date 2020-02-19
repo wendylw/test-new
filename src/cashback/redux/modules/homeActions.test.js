@@ -1,9 +1,7 @@
 import { actions } from './home';
-import rootReducer from './index';
 import { HOME_TYPES as types } from '../types';
 import {
   store,
-  configureMiddlewareStore,
   successMockFetch,
   failMockFetch,
   expectedActionsCheck,
@@ -11,7 +9,6 @@ import {
   mockErrorMsg,
   mockErrorCode,
 } from '../../../utils/testHelper';
-const cashbackStore = rootReducer(undefined, {});
 
 describe('src/cashback/redux/modules/home.js:actions', () => {
   beforeEach(() => {
