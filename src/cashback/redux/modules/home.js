@@ -7,7 +7,7 @@ import { getLoyaltyHistoriesByCustomerId } from '../../../redux/modules/entities
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getUser, getBusiness } from './app';
 
-const initialState = {
+export const initialState = {
   customerId: null,
   receiptList: [],
   fetchState: true,
@@ -22,20 +22,16 @@ export const actions = {
     customerId,
   }),
 
-  getReceiptList: (business,page,pageSize) => ({
+  getReceiptList: (business, page, pageSize) => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_RECEIPT_LIST_REQUEST,
-        types.FETCH_RECEIPT_LIST_SUCCESS,
-        types.FETCH_RECEIPT_LIST_FAILURE
-      ],
+      types: [types.FETCH_RECEIPT_LIST_REQUEST, types.FETCH_RECEIPT_LIST_SUCCESS, types.FETCH_RECEIPT_LIST_FAILURE],
       ...Url.API_URLS.GET_RECEIPTS_LIST,
       params: {
         business,
         page,
-        pageSize
-      }
-    }
+        pageSize,
+      },
+    },
   }),
 
   getCashbackHistory: customerId => ({
@@ -49,7 +45,7 @@ export const actions = {
       params: {
         customerId,
       },
-    }
+    },
   }),
 };
 
@@ -67,23 +63,23 @@ const reducer = (state = initialState, action) => {
         ...state,
         cashbackHistorySummary: {
           ...state.cashbackHistorySummary,
-          totalCredits
-        }
+          totalCredits,
+        },
       };
     }
     case types.FETCH_RECEIPT_LIST_SUCCESS: {
-      const {response} = action;
+      const { response } = action;
       const { list } = response || {};
       return {
         ...state,
         receiptList: state.receiptList.concat(list),
-        fetchState: list.length === 0 ? false: true
-      }
+        fetchState: list.length === 0 ? false : true,
+      };
     }
     default:
       return state;
   }
-}
+};
 
 export default reducer;
 
@@ -95,11 +91,11 @@ export const getCashbackHistorySummary = state => state.home.cashbackHistorySumm
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
   return getBusinessByName(state, business);
-}
+};
 
 export const getCashbackHistory = state => {
   const user = getUser(state);
   const { customerId } = user || {};
 
   return getLoyaltyHistoriesByCustomerId(state, customerId);
-}
+};

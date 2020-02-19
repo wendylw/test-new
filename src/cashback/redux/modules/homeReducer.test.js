@@ -24,10 +24,11 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
       type: types.SET_CUSTOMER_ID_SUCCESS,
       ...homeActionInfo,
     };
-    expect(homeReducers, action).toEqual({
+    const expectedState = {
       ...initialState,
       customerId: '111111',
-    });
+    };
+    expect(homeReducers(undefined, action)).toEqual(expectedState);
   });
 
   it('GET_CASHBACK_HISTORIES_SUCCESS', () => {
@@ -35,7 +36,7 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
       type: types.GET_CASHBACK_HISTORIES_SUCCESS,
       ...homeActionInfo,
     };
-    expect(homeReducers, action).toEqual({
+    expect(homeReducers(undefined, action)).toEqual({
       ...initialState,
       cashbackHistorySummary: {
         ...initialState.cashbackHistorySummary,
@@ -49,7 +50,7 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
       type: types.FETCH_RECEIPT_LIST_SUCCESS,
       ...homeActionInfo,
     };
-    expect(homeReducers, action).toEqual({
+    expect(homeReducers(undefined, action)).toEqual({
       ...initialState,
       receiptList: [],
       fetchState: false,

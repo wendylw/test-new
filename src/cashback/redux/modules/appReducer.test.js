@@ -170,12 +170,14 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
   describe('business', () => {
     const nameField = 'business';
     const businessActionInfo = {
-      name: 'beep',
+      response: {
+        name: 'beep',
+      },
     };
 
     it('FETCH_BUSINESS_SUCCESS', () => {
       const action = { type: types.FETCH_BUSINESS_SUCCESS, ...businessActionInfo };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({ name: 'beep' });
+      expect(getReducerNewState(appReducers, action, nameField)).toEqual('beep');
     });
 
     it('should return initial business state', () => {
@@ -286,8 +288,8 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       const expectedState = {
         ...initialState.messageInfo,
         show: false,
-        message: '',
-        key: '',
+        message: null,
+        key: null,
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
@@ -299,7 +301,7 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       };
       const expectedState = {
         ...initialState.messageInfo,
-        key: 'mockStatus;',
+        key: 'mockStatus',
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });

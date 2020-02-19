@@ -53,14 +53,14 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
     });
 
     // not sure
-    it('setCashbackMessage', () => {
-      const reqParams = { status: 'Claimed_FirstTime' };
-      const expectedAction = {
-        type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-        status: reqParams.status,
-      };
-      return expect(actions.setCashbackMessage()).toEqual(expectedAction);
-    });
+    // it('setCashbackMessage', () => {
+    //   const reqParams = { status: 'Claimed_FirstTime' };
+    //   const expectedAction = {
+    //     type: types.SET_CASHBACK_MESSAGE_SUCCESS,
+    //     status: reqParams.status,
+    //   };
+    //   return expect(actions.setCashbackMessage()).toEqual(expectedAction);
+    // });
 
     it('hideMessageInfo', () => {
       const expectedAction = { type: types.HIDE_MESSAGE_MODAL };
@@ -73,7 +73,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
         type: types.SET_LOGIN_PROMPT,
         prompt: reqParams.prompt,
       };
-      return expect(actions.setLoginPrompt(reqParams)).toEqual(expectedAction);
+      return expect(actions.setLoginPrompt(reqParams.prompt)).toEqual(expectedAction);
     });
   });
 
@@ -238,7 +238,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_BUSINESS_REQUEST },
-          { type: types.FETCH_BUSINESS_SUCCESS, responseGql: commonSuccessData, params: { storeId: null } },
+          { type: types.FETCH_BUSINESS_SUCCESS, response: commonSuccessData, params: { storeId: null } },
         ];
         return expectedActionsCheck(actions.fetchBusiness(), expectedActions);
       });
