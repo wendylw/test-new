@@ -17,9 +17,6 @@ describe('utils/utils', () => {
     getSessionVariable,
     setSessionVariable,
     removeSessionVariable,
-    getAdditionalComments,
-    setAdditionalComments,
-    removeAdditionalComments,
     isProductSoldOut,
     getFormatPhoneNumber,
     DateFormatter,
@@ -83,12 +80,37 @@ describe('utils/utils', () => {
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
 
-  describe('utils.localStorage', () => {
-    beforeEach(() => localStorage.clear());
+  describe('utils.localStorage is normal', () => {
+    class LocalStorageMock {
+      constructor() {
+        this.store = {};
+      }
+
+      clear() {
+        this.store = {};
+      }
+
+      getItem(key) {
+        return this.store[key] || null;
+      }
+
+      setItem(key, value) {
+        this.store[key] = value.toString();
+      }
+
+      removeItem(key) {
+        delete this.store[key];
+      }
+    }
+
+    global.localStorage = new LocalStorageMock();
+
+    beforeEach(() => global.localStorage.clear());
     afterAll(() => {
-      localStorage.clear();
+      global.localStorage.clear();
     });
-    it('getLocalStorageVariable:request key does not exist', () => {
+
+    it('getLocalStorageVariable: request key does not exist', () => {
       expect(getLocalStorageVariable('years')).toBeNull();
     });
 
@@ -97,7 +119,39 @@ describe('utils/utils', () => {
       expect(getLocalStorageVariable('years')).toBe('10');
     });
 
-    it('getLocalStorageVariable:get the value of item', () => {
+    it('getLocalStorageVariable: get the value of item', () => {
+      setLocalStorageVariable('years', '10');
+      expect(getLocalStorageVariable('years')).toBe('10');
+    });
+
+    it('removeLocalStorageVariable', () => {
+      setLocalStorageVariable('years', '10');
+      removeLocalStorageVariable('years');
+      expect(getLocalStorageVariable('years')).toBeNull();
+    });
+  });
+
+  describe('utils.localStorage is broken', () => {
+    let originGlobalStorage = null;
+
+    beforeAll(() => {
+      originGlobalStorage = global.localStorage;
+      global.localStorage = null;
+    });
+    afterAll(() => {
+      global.localStorage = originGlobalStorage;
+    });
+
+    it('getLocalStorageVariable: request key does not exist', () => {
+      expect(getLocalStorageVariable('years')).toBeNull();
+    });
+
+    it('setLocalStorageVariable: sets the value of item', () => {
+      setLocalStorageVariable('years', '10');
+      expect(getLocalStorageVariable('years')).toBe('10');
+    });
+
+    it('getLocalStorageVariable: get the value of item', () => {
       setLocalStorageVariable('years', '10');
       expect(getLocalStorageVariable('years')).toBe('10');
     });
@@ -131,27 +185,6 @@ describe('utils/utils', () => {
       setSessionVariable('years', '10');
       removeSessionVariable('years');
       expect(getSessionVariable('years')).toBeNull();
-    });
-  });
-  describe('utils.getAdditionalComments', () => {
-    beforeEach(() => sessionStorage.clear());
-    afterAll(() => sessionStorage.clear());
-
-    it('getAdditionalComments:should not exist', () => {
-      expect(getAdditionalComments()).toBeNull();
-    });
-
-    it('setAdditionalComments:set with value', () => {
-      const value = 'hello world';
-      setAdditionalComments(value);
-      expect(getAdditionalComments()).toBe(value);
-    });
-
-    it('removeAdditionalComments', () => {
-      const value = 'hello world';
-      setAdditionalComments(value);
-      removeAdditionalComments();
-      expect(getAdditionalComments()).toBeNull();
     });
   });
 
