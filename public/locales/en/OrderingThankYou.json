@@ -1,1 +1,7 @@
-{}
+{
+  "OrderPaid": "Order Paid",
+  "YourOrderNumber": "Your Order Number",
+  "PingStaffTitle": "Ping the staff for a receipt",
+  "ThankYou": "Thank You",
+  "PrepareOrderDescription": "We're preparing your order now."
+}

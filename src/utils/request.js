@@ -2,8 +2,8 @@ import Constants from './constants';
 
 const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
-  Accept: "application/json",
-  "Content-Type": "application/json",
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
 });
 
 class RequestError extends Error {
@@ -29,12 +29,8 @@ function get(url) {
     });
 }
 
-const fetchData = function (url, requestOptions) {
-  const {
-    method,
-    data,
-    options,
-  } = requestOptions;
+const fetchData = function(url, requestOptions) {
+  const { method, data, options } = requestOptions;
 
   return fetch(url, {
     method,
@@ -49,7 +45,7 @@ const fetchData = function (url, requestOptions) {
     .catch(error => {
       return Promise.reject(error);
     });
-}
+};
 
 function post(url, data, options) {
   return fetchData(url, {
