@@ -90,13 +90,16 @@
       var featureArr = [];
 
       try {
-        POLYFILL_FEATURES.forEach(function goThroughFeatures(feature) {
+        for (var i=0; i<POLYFILL_FEATURES.length; i++) {
+          var feature = POLYFILL_FEATURES[i];
           if (feature === 'Intl') {
-            LANGUAGES.forEach(function getFeatureOfLanguage(lang) { featureArr.push(`Intl.~locale.${lang}`); });
+            for (var j=0; j<LANGUAGES.length; j++) {
+              featureArr.push(`Intl.~locale.${LANGUAGES[j]}`);
+            }
           } else {
             featureArr.push(feature);
           }
-        });
+        }
         polyfillUrl = polyfillUrl + encodeURIComponent(featureArr.join(','));
         document.write('<script src="' + polyfillUrl + '"><\/script>');
       } catch (e) {
