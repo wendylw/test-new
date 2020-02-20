@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import './utils/polyfill';
 import 'whatwg-fetch';
 import './config'; // import here for globally init
 import './i18n';
