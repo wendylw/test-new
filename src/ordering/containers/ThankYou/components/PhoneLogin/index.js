@@ -55,11 +55,11 @@ class PhoneLogin extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { showCelebration } = this.state;
-    const { user, businessInfo } = this.props;
+    const { user, businessInfo, onlineStoreInfo } = this.props;
     const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
-    // const { currencySymbol } = onlineStoreInfo || {};
-    // const { currencySymbol: prevCurrencySymbol } = prevProps.onlineStoreInfo || {};
+    const { currencySymbol } = onlineStoreInfo || {};
+    const { currencySymbol: prevCurrencySymbol } = prevProps.onlineStoreInfo || {};
     const { enableCashback: prevEnableCashback } = prevProps.businessInfo || {};
     const canCreateCashback =
       isLogin && enableCashback && (prevEnableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
@@ -76,9 +76,9 @@ class PhoneLogin extends React.Component {
       }, ANIMATION_TIME);
     }
 
-    // if (currencySymbol && prevCurrencySymbol !== currencySymbol) {
-    //   this.initMessages();
-    // }
+    if (currencySymbol && prevCurrencySymbol !== currencySymbol) {
+      this.initMessages();
+    }
   }
 
   componentWillUnmount() {
