@@ -55,9 +55,11 @@ class PhoneLogin extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { showCelebration } = this.state;
-    const { user, businessInfo } = this.props;
+    const { user, businessInfo, onlineStoreInfo } = this.props;
     const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
+    const { currencySymbol } = onlineStoreInfo || {};
+    const { currencySymbol: prevCurrencySymbol } = prevProps.onlineStoreInfo || {};
     const { enableCashback: prevEnableCashback } = prevProps.businessInfo || {};
     const canCreateCashback =
       isLogin && enableCashback && (prevEnableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
@@ -72,6 +74,10 @@ class PhoneLogin extends React.Component {
 
         clearTimeout(this.animationSetTimeout);
       }, ANIMATION_TIME);
+    }
+
+    if (currencySymbol && prevCurrencySymbol !== currencySymbol) {
+      this.initMessages();
     }
   }
 
@@ -117,12 +123,16 @@ class PhoneLogin extends React.Component {
   }
 
   getMessage() {
-    const { t, user, cashbackInfo } = this.props;
+    const { user, cashbackInfo, onlineStoreInfo, t } = this.props;
+    const { currencySymbol } = onlineStoreInfo || {};
     const { isLogin } = user || {};
     const { status: key, cashback } = cashbackInfo || {};
 
     if (!key || !isLogin) {
-      return t('ClaimCashbackTitle');
+      /* change messages for no session scenario */
+      // return 'Claim with your mobile number';
+      // return `Earn ${currencySymbol || ''} ${cashback || ''}  CashBack with your Mobile Number`;
+      return t('ClaimCashbackTitle', { currencySymbol: currencySymbol || '', cashback: cashback || '' });
     }
     /* if cashback is zero, hide the cashback tip */
     const isCashbackZero = parseFloat(cashback) === 0;
