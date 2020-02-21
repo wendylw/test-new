@@ -81,6 +81,32 @@
         }, false);
       }
     </script>
+
+  <script>
+    (function loadPolyfill() {
+      var polyfillUrl = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
+      var LANGUAGES = ['en', 'th'];
+      var POLYFILL_FEATURES = ['Object.values', 'Intl', 'Promise', 'Array.prototype.includes', 'localStorage'];
+      var featureArr = [];
+
+      try {
+        for (var i=0; i<POLYFILL_FEATURES.length; i++) {
+          var feature = POLYFILL_FEATURES[i];
+          if (feature === 'Intl') {
+            for (var j=0; j<LANGUAGES.length; j++) {
+              featureArr.push(`Intl.~locale.${LANGUAGES[j]}`);
+            }
+          } else {
+            featureArr.push(feature);
+          }
+        }
+        polyfillUrl = polyfillUrl + encodeURIComponent(featureArr.join(','));
+        document.write('<script src="' + polyfillUrl + '"><\/script>');
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  </script>
   </body>
 
 </html>
