@@ -132,7 +132,7 @@ class PhoneLogin extends React.Component {
       /* change messages for no session scenario */
       // return 'Claim with your mobile number';
       // return `Earn ${currencySymbol || ''} ${cashback || ''}  CashBack with your Mobile Number`;
-      return t('ClaimCashbackTitle', { currencySymbol: currencySymbol || '', cashback: cashback || '' });
+      return t('EarnClaimCashbackTitle', { currencySymbol: currencySymbol || '', cashback: cashback || '' });
     }
     /* if cashback is zero, hide the cashback tip */
     const isCashbackZero = parseFloat(cashback) === 0;
