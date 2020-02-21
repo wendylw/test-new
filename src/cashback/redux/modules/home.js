@@ -69,7 +69,7 @@ const reducer = (state = initialState, action) => {
     }
     case types.FETCH_RECEIPT_LIST_SUCCESS: {
       const { response } = action;
-      const { list } = response || {};
+      let { list = [] } = response || {};
       return {
         ...state,
         receiptList: state.receiptList.concat(list),

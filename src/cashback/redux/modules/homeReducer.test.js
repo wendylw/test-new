@@ -13,7 +13,17 @@ import { HOME_TYPES as types } from '../types';
 describe('src/cashback/redux/modules/home.js:reducers', () => {
   const homeActionInfo = {
     response: {
-      list: [],
+      list: [
+        {
+          id: '',
+          receiptNumber: '12345678',
+          business: 'beep',
+          createdTime: '',
+          storeId: '',
+          total: 40,
+          transactionType: 'Sale',
+        },
+      ],
       totalCredits: 20,
     },
     customerId: '111111',
@@ -31,6 +41,18 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
     expect(homeReducers(undefined, action)).toEqual(expectedState);
   });
 
+  it('GET_CASHBACK_HISTORIES_SUCCESS with no response', () => {
+    const action = {
+      type: types.GET_CASHBACK_HISTORIES_SUCCESS,
+    };
+    expect(homeReducers(undefined, action)).toEqual({
+      ...initialState,
+      cashbackHistorySummary: {
+        ...initialState.cashbackHistorySummary,
+      },
+    });
+  });
+
   it('GET_CASHBACK_HISTORIES_SUCCESS', () => {
     const action = {
       type: types.GET_CASHBACK_HISTORIES_SUCCESS,
@@ -45,6 +67,17 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
     });
   });
 
+  it('FETCH_RECEIPT_LIST_SUCCESS with no response', () => {
+    const action = {
+      type: types.FETCH_RECEIPT_LIST_SUCCESS,
+    };
+    expect(homeReducers(undefined, action)).toEqual({
+      ...initialState,
+      receiptList: [],
+      fetchState: false,
+    });
+  });
+
   it('FETCH_RECEIPT_LIST_SUCCESS', () => {
     const action = {
       type: types.FETCH_RECEIPT_LIST_SUCCESS,
@@ -52,8 +85,18 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
     };
     expect(homeReducers(undefined, action)).toEqual({
       ...initialState,
-      receiptList: [],
-      fetchState: false,
+      receiptList: [
+        {
+          id: '',
+          receiptNumber: '12345678',
+          business: 'beep',
+          createdTime: '',
+          storeId: '',
+          total: 40,
+          transactionType: 'Sale',
+        },
+      ],
+      fetchState: true,
     });
   });
 });
