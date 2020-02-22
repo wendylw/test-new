@@ -23,6 +23,7 @@
   "SaveCashbackFailed": "Oops! please retry again later.",
   "ActivityIncorrect": "Activity incorrect, need retry.",
   "ClaimCashbackTitle": "Claim with your mobile number",
+  "EarnClaimCashbackTitle": "Earn {{currencySymbol}} {{cashback}} CashBack with your Mobile Number",
   "CheckMyBalance": "Check My Balance",
   "Pay": "Pay",
   "PayNow": "Pay now",

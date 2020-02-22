@@ -76,14 +76,14 @@ class CategoryProductList extends Component {
                 .getAttribute('class')
                 .includes('fixed')
             ) {
-              target = this.prevCategory;
+              target = this.prevCategory || {};
             } else {
               this.prevCategory = currentTarget;
             }
 
             return (
               <h2 className="category__header fixed flex flex-middle flex-space-between">
-                <label>{target.name}</label>
+                <label>{target.name || ''}</label>
                 {target.cartQuantity ? (
                   <span className="gray-font-opacity">
                     {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
