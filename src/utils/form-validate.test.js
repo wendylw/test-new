@@ -16,11 +16,11 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="hello" />
     `;
     const result = FormValidate.validate('my-elem', {
-      rules: { required: { message: 'This field is required' } }
+      rules: { required: { message: 'This field is required' } },
     });
     expect(result).toEqual({
       isValid: true,
-      validateKey: 'required'
+      validateKey: 'required',
     });
   });
 
@@ -29,11 +29,11 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="" />
     `;
     const result = FormValidate.validate('my-elem', {
-      rules: { required: { message: 'This field is required' } }
+      rules: { required: { message: 'This field is required' } },
     });
     expect(result).toEqual({
       isValid: false,
-      validateKey: 'required'
+      validateKey: 'required',
     });
   });
 
@@ -42,11 +42,11 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="123456" />
     `;
     const result = FormValidate.validate('my-elem', {
-      rules: { fixedLength: { length: 6, message: 'length should be 6' } }
+      rules: { fixedLength: { length: 6, message: 'length should be 6' } },
     });
     expect(result).toEqual({
       isValid: true,
-      validateKey: 'fixedLength'
+      validateKey: 'fixedLength',
     });
   });
 
@@ -55,11 +55,11 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="1234567" />
     `;
     const result = FormValidate.validate('my-elem', {
-      rules: { fixedLength: { length: 6, message: 'length should be 6' } }
+      rules: { fixedLength: { length: 6, message: 'length should be 6' } },
     });
     expect(result).toEqual({
       isValid: false,
-      validateKey: 'fixedLength'
+      validateKey: 'fixedLength',
     });
   });
 
@@ -70,11 +70,11 @@ describe('utils/form-validate', () => {
     const result = FormValidate.validate('my-elem', {
       rules: { isMobileNumber: { message: 'should be mobile number' } },
       // there's actually some problem on current implementation: customized validator doesn't accept input's value
-      isMobileNumber: () => true
+      isMobileNumber: () => true,
     });
     expect(result).toEqual({
       isValid: true,
-      validateKey: 'isMobileNumber'
+      validateKey: 'isMobileNumber',
     });
   });
 
@@ -84,11 +84,11 @@ describe('utils/form-validate', () => {
     `;
     const result = FormValidate.validate('my-elem', {
       rules: { isMobileNumber: { message: 'should be mobile number' } },
-      isMobileNumber: () => false
+      isMobileNumber: () => false,
     });
     expect(result).toEqual({
       isValid: false,
-      validateKey: 'isMobileNumber'
+      validateKey: 'isMobileNumber',
     });
   });
 
@@ -100,9 +100,9 @@ describe('utils/form-validate', () => {
       rules: {
         required: { message: 'should not be empty' },
         fixedLength: { message: 'length should be 13', length: 13 },
-        isMobileNumber: { message: 'should be mobile number' }
+        isMobileNumber: { message: 'should be mobile number' },
       },
-      isMobileNumber: () => true
+      isMobileNumber: () => true,
     });
     expect(result).toHaveProperty('isValid', true);
   });
@@ -115,13 +115,13 @@ describe('utils/form-validate', () => {
       rules: {
         required: { message: 'should not be empty' },
         fixedLength: { message: 'length should be 13', length: 13 },
-        isMobileNumber: { message: 'should be mobile number' }
+        isMobileNumber: { message: 'should be mobile number' },
       },
-      isMobileNumber: () => true
+      isMobileNumber: () => true,
     });
     expect(result).toEqual({
       isValid: false,
-      validateKey: 'fixedLength'
+      validateKey: 'fixedLength',
     });
   });
 
@@ -130,7 +130,7 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="hello" />
     `;
     const result = FormValidate.getErrorMessage('my-elem', {
-      rules: { required: { message: 'should not be empty' } }
+      rules: { required: { message: 'should not be empty' } },
     });
     expect(result).toBe(null);
   });
@@ -140,7 +140,7 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="" />
     `;
     const result = FormValidate.getErrorMessage('my-elem', {
-      rules: { required: { message: 'should not be empty' } }
+      rules: { required: { message: 'should not be empty' } },
     });
     expect(result).toBe('should not be empty');
   });
@@ -150,7 +150,7 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="123456" />
     `;
     const result = FormValidate.getErrorMessage('my-elem', {
-      rules: { fixedLength: { length: 6, message: 'length should be 6' } }
+      rules: { fixedLength: { length: 6, message: 'length should be 6' } },
     });
     expect(result).toBe(null);
   });
@@ -160,7 +160,7 @@ describe('utils/form-validate', () => {
       <input id="my-elem" value="1234567" />
     `;
     const result = FormValidate.getErrorMessage('my-elem', {
-      rules: { fixedLength: { length: 6, message: 'length should be 6' } }
+      rules: { fixedLength: { length: 6, message: 'length should be 6' } },
     });
     expect(result).toBe('length should be 6');
   });
@@ -172,7 +172,7 @@ describe('utils/form-validate', () => {
     const result = FormValidate.getErrorMessage('my-elem', {
       rules: { isMobileNumber: { message: 'should be mobile number' } },
       // there's actually some problem on current implementation: customized validator doesn't accept input's value
-      isMobileNumber: () => true
+      isMobileNumber: () => true,
     });
     expect(result).toBe(null);
   });
@@ -184,7 +184,7 @@ describe('utils/form-validate', () => {
     const result = FormValidate.getErrorMessage('my-elem', {
       rules: { isMobileNumber: { message: 'should be mobile number' } },
       // there's actually some problem on current implementation: customized validator doesn't accept input's value
-      isMobileNumber: () => false
+      isMobileNumber: () => false,
     });
     expect(result).toBe('should be mobile number');
   });
@@ -197,9 +197,9 @@ describe('utils/form-validate', () => {
       rules: {
         required: { message: 'should not be empty' },
         fixedLength: { message: 'length should be 13', length: 13 },
-        isMobileNumber: { message: 'should be mobile number' }
+        isMobileNumber: { message: 'should be mobile number' },
       },
-      isMobileNumber: () => true
+      isMobileNumber: () => true,
     });
     expect(result).toBe(null);
   });
@@ -212,9 +212,9 @@ describe('utils/form-validate', () => {
       rules: {
         required: { message: 'should not be empty' },
         fixedLength: { message: 'length should be 13', length: 13 },
-        isMobileNumber: { message: 'should be mobile number' }
+        isMobileNumber: { message: 'should be mobile number' },
       },
-      isMobileNumber: () => true
+      isMobileNumber: () => true,
     });
     expect(result).toEqual('length should be 13');
   });

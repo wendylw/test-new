@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 
 class Error extends React.Component {
   render() {
-    const {
-      title = 'Eep!',
-      message = 'Looks like something went wrong. Please scan the QR again, or ask the staff for help.',
-    } = this.props.location.state || {};
+    const { t } = this.props;
+    const { title = `${t('Eep')}!`, message = t('ErrorPageDescription') } = this.props.location.state || {};
 
     return (
       <section className="table-ordering__prompt-page">
         <figure className="prompt-page__image-container text-center">
-          <img src="/img/beep-error.png" alt="error found" />
+          <img src="/img/beep-error.png" alt="Error found" />
         </figure>
         <div className="prompt-page__content">
           <h2 className="prompt-page__title text-center">{title}</h2>
@@ -33,4 +32,4 @@ Error.defaultProps = {
   message: '',
 };
 
-export default Error;
+export default withTranslation()(Error);
