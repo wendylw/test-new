@@ -1,6 +1,6 @@
 import { APP_TYPES, HOME_TYPES } from '../../../ordering/redux/types';
 
-const initialState = {
+export const initialState = {
   summary: {
     count: 0,
     discount: 0,
@@ -38,12 +38,12 @@ const commonReducer = (state = initialState, action) => {
     return {
       ...state,
       summary,
-      data: kvData
+      data: kvData,
     };
   }
 
   return state;
-}
+};
 
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
@@ -67,20 +67,20 @@ const reducer = (state = initialState, action) => {
   }
 
   return commonReducer(state, action);
-}
+};
 
 export default reducer;
 
 // selectors
 
-export const getAllCartItems = (state) => {
+export const getAllCartItems = state => {
   return state.entities.carts.data;
-}
+};
 
 export const getCartItemById = (state, id) => {
   return state.entities.carts.data[id];
-}
+};
 
-export const getCartSummary = (state) => {
+export const getCartSummary = state => {
   return state.entities.carts.summary;
-}
+};
