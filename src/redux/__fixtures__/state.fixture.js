@@ -246,8 +246,8 @@ const mockState = {
     stores: {},
     businesses: {
       businesses: {},
-      caipinfang: {
-        name: 'caipinfang',
+      mockName: {
+        name: 'mockName',
         enablePax: false,
         enableServiceCharge: false,
         enableCashback: true,
