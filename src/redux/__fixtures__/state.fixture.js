@@ -60,7 +60,11 @@ const mockState = {
         products: ['5de7304b5234055a7724a4e1'],
       },
     },
-    loyaltyHistories: {},
+    loyaltyHistories: {
+      '123': {
+        test: 'hello',
+      },
+    },
     onlineStores: {
       '5de726067ed3949af8fdd117': {
         id: '5de726067ed3949af8fdd117',
