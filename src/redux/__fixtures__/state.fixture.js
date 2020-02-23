@@ -243,7 +243,11 @@ const mockState = {
         _needMore: 0,
       },
     },
-    stores: {},
+    stores: {
+      '123456': {
+        name: 'mockStore',
+      },
+    },
     businesses: {
       businesses: {},
       mockName: {
