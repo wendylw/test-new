@@ -79,7 +79,16 @@ const mockState = {
         street: null,
       },
     },
-    orders: {},
+    orders: {
+      '815520056159098': {
+        id: '105e09a7-6c04-4886-9000-e2fa2373b8e5',
+        orderId: '815520056159098',
+        status: 'pendingPayment',
+        storeId: '5bb7127e92efcf71784c1727',
+        tableId: null,
+        total: 1,
+      },
+    },
     products: {
       '5e12b3f2ed43e34e37874636': {
         id: '5e12b3f2ed43e34e37874636',
