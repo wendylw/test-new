@@ -11,6 +11,9 @@ describe('utils/utils', () => {
     isWebview,
     debounce,
     elementPartialOffsetTop,
+    getCookieVariable,
+    setCookieVariable,
+    removeCookieVariable,
     getLocalStorageVariable,
     setLocalStorageVariable,
     removeLocalStorageVariable,
@@ -80,7 +83,41 @@ describe('utils/utils', () => {
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
 
-  describe('utils.localStorage is normal', () => {
+  describe('utils.Cookie', () => {
+    let originGlobalDocument = global.document;
+
+    beforeAll(() => {
+      const document = {
+        cookie: '',
+      };
+      global.document = document;
+    });
+    afterAll(() => {
+      global.document = originGlobalDocument;
+    });
+
+    it('getCookieVariable: request key does not exist', () => {
+      expect(getCookieVariable('years', 'localStorage')).toBeNull();
+    });
+
+    it('setCookieVariable: sets the value of item', () => {
+      setCookieVariable('years', '10', 'localStorage');
+      expect(getCookieVariable('years', 'localStorage')).toBe('10');
+    });
+
+    it('getCookieVariable: get the value of item', () => {
+      setCookieVariable('years', '10', 'localStorage');
+      expect(getCookieVariable('years', 'localStorage')).toBe('10');
+    });
+
+    it('removeCookieVariable', () => {
+      setCookieVariable('years', '10', 'localStorage');
+      removeCookieVariable('years', 'localStorage');
+      expect(getCookieVariable('years', 'localStorage')).toBeNull();
+    });
+  });
+
+  describe('utils.localStorage', () => {
     class LocalStorageMock {
       constructor() {
         this.store = {};
@@ -131,39 +168,31 @@ describe('utils/utils', () => {
     });
   });
 
-  describe('utils.localStorage is broken', () => {
-    let originGlobalStorage = null;
-
-    beforeAll(() => {
-      originGlobalStorage = global.localStorage;
-      global.localStorage = null;
-    });
-    afterAll(() => {
-      global.localStorage = originGlobalStorage;
-    });
-
-    it('getLocalStorageVariable: request key does not exist', () => {
-      expect(getLocalStorageVariable('years')).toBeNull();
-    });
-
-    it('setLocalStorageVariable: sets the value of item', () => {
-      setLocalStorageVariable('years', '10');
-      expect(getLocalStorageVariable('years')).toBe('10');
-    });
-
-    it('getLocalStorageVariable: get the value of item', () => {
-      setLocalStorageVariable('years', '10');
-      expect(getLocalStorageVariable('years')).toBe('10');
-    });
-
-    it('removeLocalStorageVariable', () => {
-      setLocalStorageVariable('years', '10');
-      removeLocalStorageVariable('years');
-      expect(getLocalStorageVariable('years')).toBeNull();
-    });
-  });
-
   describe('utils.sessionStorage', () => {
+    class sessionStorageMock {
+      constructor() {
+        this.store = {};
+      }
+
+      clear() {
+        this.store = {};
+      }
+
+      getItem(key) {
+        return this.store[key] || null;
+      }
+
+      setItem(key, value) {
+        this.store[key] = value.toString();
+      }
+
+      removeItem(key) {
+        delete this.store[key];
+      }
+    }
+
+    global.sessionStorage = new sessionStorageMock();
+
     beforeEach(() => sessionStorage.clear());
     afterAll(() => sessionStorage.clear());
 

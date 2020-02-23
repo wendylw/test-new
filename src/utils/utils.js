@@ -53,13 +53,14 @@ Utils.getCookieVariable = function getCookieVariable(name, scope) {
   for (let i = 0, len = ca.length; i < len; i++) {
     let c = ca[i];
     while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
+    if (c.indexOf(keyEQ) === 0 && c.substring(keyEQ.length, c.length) !== '')
+      return c.substring(keyEQ.length, c.length);
   }
 
   return null;
 };
 
-Utils.setCookieVariable = function getCookieVariable(name, value, scope) {
+Utils.setCookieVariable = function setCookieVariable(name, value, scope) {
   document.cookie = scope + name + '=' + value + '; path=/';
 };
 
