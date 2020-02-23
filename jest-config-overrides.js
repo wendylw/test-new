@@ -23,12 +23,18 @@ module.exports = config => {
   const overrides = {
     collectCoverageFrom,
     coverageThreshold: {
-      'src/utils': {
-        branches: 70,
-        functions: 85,
-        lines: 82,
-        statements: 82,
-      },
+      'global': {
+        branches: 80,
+        functions: 94,
+        lines: 91,
+        statements: 91,
+      }
+      // 'src/utils': {
+      //   branches: 70,
+      //   functions: 85,
+      //   lines: 82,
+      //   statements: 82,
+      // },
       // TODO: add 'src/redux' if done with test cases
       // TODO: add 'src/{cashback,ordering,qrscan,stores}/redux' if done with test cases
       // TODO: add 'global' if needed, but not for now we think.
