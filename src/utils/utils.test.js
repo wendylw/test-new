@@ -95,6 +95,11 @@ describe('utils/utils', () => {
       originGlobalDocument = global.document;
       global.document = document;
     });
+    beforeEach(() => {
+      global.document = {
+        cookie: '',
+      };
+    });
     afterAll(() => {
       global.document = originGlobalDocument;
     });
@@ -104,14 +109,7 @@ describe('utils/utils', () => {
       expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
     });
 
-    it('setCookieVariable: sets the value of item', () => {
-      setCookieVariable('years', '10', 'localStorage');
-      setCookieVariable('years', '2010', 'sessionStorage');
-      expect(getCookieVariable('years', 'localStorage')).toBe('10');
-      expect(getCookieVariable('years', 'sessionStorage')).toBe('2010');
-    });
-
-    it('getCookieVariable: get the value of item', () => {
+    it('setCookieVariable and getCookieVariable: sets the value of item', () => {
       setCookieVariable('years', '10', 'localStorage');
       setCookieVariable('years', '2010', 'sessionStorage');
       expect(getCookieVariable('years', 'localStorage')).toBe('10');
@@ -140,12 +138,7 @@ describe('utils/utils', () => {
       expect(getLocalStorageVariable('years')).toBeNull();
     });
 
-    it('setLocalStorageVariable: sets the value of item', () => {
-      setLocalStorageVariable('years', '10');
-      expect(getLocalStorageVariable('years')).toBe('10');
-    });
-
-    it('getLocalStorageVariable: get the value of item', () => {
+    it('setLocalStorageVariable and getLocalStorageVariable: sets the value of item', () => {
       setLocalStorageVariable('years', '10');
       expect(getLocalStorageVariable('years')).toBe('10');
     });
@@ -167,12 +160,7 @@ describe('utils/utils', () => {
       expect(getSessionVariable('years')).toBeNull();
     });
 
-    it('setSessionVariable: sets the value of item', () => {
-      setSessionVariable('years', '10');
-      expect(getSessionVariable('years')).toBe('10');
-    });
-
-    it('getSessionVariable:get the value of item', () => {
+    it('setSessionVariable and getSessionVariable: sets the value of item', () => {
       setSessionVariable('years', '10');
       expect(getSessionVariable('years')).toBe('10');
     });
