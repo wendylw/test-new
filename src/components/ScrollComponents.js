@@ -9,7 +9,7 @@ const TOP_BAR_HEIGHT = 50;
 const CATEGORY_BAR_HEIGHT = 50;
 const SCROLL_SPEED = {
   x: 30,
-  y: 60,
+  y: 80,
   faster_y: 120,
 };
 
@@ -84,7 +84,7 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
 
   let changeDistance = changeSign * scrollSpeed;
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5.5) {
+  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5) {
     changeDistance = changeTotalDistance;
   }
 
