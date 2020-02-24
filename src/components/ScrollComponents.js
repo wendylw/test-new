@@ -84,7 +84,7 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
 
   let changeDistance = changeSign * scrollSpeed;
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5.5) {
+  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5) {
     changeDistance = changeTotalDistance;
   }
 
