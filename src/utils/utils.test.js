@@ -84,13 +84,14 @@ describe('utils/utils', () => {
   });
 
   describe('utils.Cookie', () => {
-    let originGlobalDocument = global.document;
+    let originGlobalDocument = null;
 
     beforeAll(() => {
       const document = {
         cookie: '',
       };
 
+      originGlobalDocument = global.document;
       global.document = document;
     });
     afterAll(() => {
