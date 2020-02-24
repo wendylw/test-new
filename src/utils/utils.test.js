@@ -90,6 +90,7 @@ describe('utils/utils', () => {
       const document = {
         cookie: '',
       };
+
       global.document = document;
     });
     afterAll(() => {
@@ -98,22 +99,30 @@ describe('utils/utils', () => {
 
     it('getCookieVariable: request key does not exist', () => {
       expect(getCookieVariable('years', 'localStorage')).toBeNull();
+      expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
     });
 
     it('setCookieVariable: sets the value of item', () => {
       setCookieVariable('years', '10', 'localStorage');
+      setCookieVariable('years', '2010', 'sessionStorage');
       expect(getCookieVariable('years', 'localStorage')).toBe('10');
+      expect(getCookieVariable('years', 'sessionStorage')).toBe('2010');
     });
 
     it('getCookieVariable: get the value of item', () => {
       setCookieVariable('years', '10', 'localStorage');
+      setCookieVariable('years', '2010', 'sessionStorage');
       expect(getCookieVariable('years', 'localStorage')).toBe('10');
+      expect(getCookieVariable('years', 'sessionStorage')).toBe('2010');
     });
 
     it('removeCookieVariable', () => {
       setCookieVariable('years', '10', 'localStorage');
+      setCookieVariable('years', '2010', 'sessionStorage');
       removeCookieVariable('years', 'localStorage');
       expect(getCookieVariable('years', 'localStorage')).toBeNull();
+      removeCookieVariable('years', 'sessionStorage');
+      expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
     });
   });
 
