@@ -1,3 +1,4 @@
+import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
@@ -14,6 +15,7 @@ const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
+  paymentList: [],
 };
 
 export const types = {
@@ -41,6 +43,11 @@ export const types = {
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
   FETCH_BANKLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_BANKLIST_FAILURE',
+
+  // getPaymentList
+  FETCH_PAYMENTLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_REQUEST',
+  FETCH_PAYMENTLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_SUCCESS',
+  FETCH_PAYMENTLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_FAILURE',
 };
 
 // action creators
@@ -58,26 +65,28 @@ export const actions = {
       cashback,
     };
 
-    return dispatch(createOrder(
-      !additionalComments
-        ? variables
-        : {
-          ...variables,
-          additionalComments: encodeURIComponent(additionalComments),
-        }
-    ));
+    return dispatch(
+      createOrder(
+        !additionalComments
+          ? variables
+          : {
+              ...variables,
+              additionalComments: encodeURIComponent(additionalComments),
+            }
+      )
+    );
   },
 
-  fetchOrder: (orderId) => (dispatch) => {
+  fetchOrder: orderId => dispatch => {
     return dispatch(fetchOrder({ orderId }));
   },
 
   setCurrentPayment: paymentName => ({
     type: types.SET_CURRENT_PAYMENT,
-    paymentName
+    paymentName,
   }),
 
-  fetchBraintreeToken: (paymentName) => ({
+  fetchBraintreeToken: paymentName => ({
     [API_REQUEST]: {
       types: [
         types.FETCH_BRAINTREE_TOKEN_REQUEST,
@@ -88,7 +97,7 @@ export const actions = {
       params: {
         paymentName,
       },
-    }
+    },
   }),
 
   clearBraintreeToken: () => ({
@@ -97,14 +106,19 @@ export const actions = {
 
   fetchBankList: () => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_BANKLIST_REQUEST,
-        types.FETCH_BANKLIST_SUCCESS,
-        types.FETCH_BANKLIST_FAILURE,
-      ],
+      types: [types.FETCH_BANKLIST_REQUEST, types.FETCH_BANKLIST_SUCCESS, types.FETCH_BANKLIST_FAILURE],
       ...Url.API_URLS.GET_BANKING_LIST,
-    }
+    },
   }),
+
+  fetchPaymentList: () => dispatch => {
+    return dispatch({
+      type: types.FETCH_PAYMENTLIST_SUCCESS,
+      response: {
+        paymentList: config.paymentList,
+      },
+    });
+  },
 };
 
 const createOrder = variables => {
@@ -112,14 +126,10 @@ const createOrder = variables => {
 
   return {
     [FETCH_GRAPHQL]: {
-      types: [
-        types.CREATEORDER_REQUEST,
-        types.CREATEORDER_SUCCESS,
-        types.CREATEORDER_FAILURE
-      ],
+      types: [types.CREATEORDER_REQUEST, types.CREATEORDER_SUCCESS, types.CREATEORDER_FAILURE],
       endpoint,
-      variables
-    }
+      variables,
+    },
   };
 };
 
@@ -128,14 +138,10 @@ const fetchOrder = variables => {
 
   return {
     [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ORDER_REQUEST,
-        types.FETCH_ORDER_SUCCESS,
-        types.FETCH_ORDER_FAILURE
-      ],
+      types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
       endpoint,
-      variables
-    }
+      variables,
+    },
   };
 };
 
@@ -177,6 +183,11 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, bankingList };
     }
+    case types.FETCH_PAYMENTLIST_SUCCESS: {
+      const { paymentList } = response || {};
+
+      return { ...state, paymentList };
+    }
     default:
       return state;
   }
@@ -187,10 +198,12 @@ export default reducer;
 // selectors
 export const getCurrentPayment = state => state.payment.currentPayment;
 
-export const getCurrentOrderId = (state) => state.payment.orderId;
+export const getCurrentOrderId = state => state.payment.orderId;
 
-export const getThankYouPageUrl = (state) => state.payment.thankYouPageUrl;
+export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
+
+export const getPaymentList = state => state.payment.paymentList;

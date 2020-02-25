@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
@@ -20,9 +21,9 @@ export class ThankYou extends Component {
 
   getReceiptNumber = () => {
     const { history } = this.props;
-    const query = new URLSearchParams(history.location.search);
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    return query.get('receiptNumber');
+    return receiptNumber;
   };
 
   handleClickViewReceipt = () => {

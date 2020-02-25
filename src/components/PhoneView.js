@@ -31,6 +31,7 @@ class PhoneView extends React.Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
+
     this.setState({ isLoading: true });
 
     submitPhoneNumber();
@@ -87,6 +88,7 @@ PhoneView.propTypes = {
 
 PhoneView.defaultProps = {
   isLoading: false,
+  submitPhoneNumber: () => {},
 };
 
 export default withTranslation()(PhoneView);
