@@ -46,20 +46,33 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return top + height - windowScrolledTop - topAdjustment;
 };
 
+Utils.getCookieVariable = function getCookieVariable(name, scope) {
+  let keyEQ = scope + name + '=';
+  let ca = document.cookie.split(';');
+
+  for (let i = 0, len = ca.length; i < len; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(keyEQ) === 0 && c.substring(keyEQ.length, c.length) !== '')
+      return c.substring(keyEQ.length, c.length);
+  }
+
+  return null;
+};
+
+Utils.setCookieVariable = function setCookieVariable(name, value, scope) {
+  document.cookie = scope + name + '=' + value + '; path=/';
+};
+
+Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
+  document.cookie = scope + name + '=; path=/';
+};
+
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    let keyEQ = name + '=';
-    let ca = document.cookie.split(';');
-
-    for (let i = 0, len = ca.length; i < len; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-      if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
-    }
-
-    return null;
+    Utils.getCookieVariable(name, 'localStorage_');
   }
 };
 
@@ -68,7 +81,7 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    document.cookie = name + '=' + value + '; path=/';
+    Utils.setCookieVariable(name, value, 'localStorage_');
   }
 };
 
@@ -76,7 +89,7 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    document.cookie = name + '=' + '' + '; path=/';
+    Utils.removeCookieVariable(name, 'localStorage_');
   }
 };
 
@@ -84,16 +97,7 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    let keyEQ = name + '=';
-    let ca = document.cookie.split(';');
-
-    for (let i = 0, len = ca.length; i < len; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-      if (c.indexOf(keyEQ) === 0) return c.substring(keyEQ.length, c.length);
-    }
-
-    return null;
+    Utils.getCookieVariable(name, 'sessionStorage_');
   }
 };
 
@@ -102,7 +106,7 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    document.cookie = name + '=' + value + '; path=/';
+    Utils.setCookieVariable(name, value, 'sessionStorage_');
   }
 };
 
@@ -110,7 +114,7 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    document.cookie = name + '=' + '' + '; path=/';
+    Utils.removeCookieVariable(name, 'sessionStorage_');
   }
 };
 
