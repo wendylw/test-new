@@ -9,7 +9,8 @@ const TOP_BAR_HEIGHT = 50;
 const CATEGORY_BAR_HEIGHT = 50;
 const SCROLL_SPEED = {
   x: 30,
-  y: 50,
+  y: 80,
+  faster_y: 120,
 };
 
 function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
@@ -75,9 +76,15 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
 
   let changeTotalDistance = scrollPosition - containerScrolledDistance[direction];
   const changeSign = Math.sign(changeTotalDistance);
-  let changeDistance = changeSign * SCROLL_SPEED[direction];
+  let scrollSpeed = SCROLL_SPEED[direction];
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 3) {
+  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 1.5) {
+    scrollSpeed = SCROLL_SPEED['faster_y'];
+  }
+
+  let changeDistance = changeSign * scrollSpeed;
+
+  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5) {
     changeDistance = changeTotalDistance;
   }
 
@@ -85,8 +92,8 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
     containerScrolledDistance[direction] = containerScrolledDistance[direction] + changeDistance;
 
     if (
-      (changeDistance === -SCROLL_SPEED[direction] && containerScrolledDistance[direction] < scrollPosition) ||
-      (changeDistance === SCROLL_SPEED[direction] && containerScrolledDistance[direction] > scrollPosition)
+      (changeDistance === -scrollSpeed && containerScrolledDistance[direction] < scrollPosition) ||
+      (changeDistance === scrollSpeed && containerScrolledDistance[direction] > scrollPosition)
     ) {
       containerScrolledDistance[direction] = scrollPosition;
     }
