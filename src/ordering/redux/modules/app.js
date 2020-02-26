@@ -107,6 +107,11 @@ export const actions = {
     },
   }),
 
+  setLoginPrompt: prompt => ({
+    type: types.SET_LOGIN_PROMPT,
+    prompt,
+  }),
+
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),

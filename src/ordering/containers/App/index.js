@@ -97,15 +97,16 @@ class App extends Component {
   };
 
   render() {
-    const { error, messageModal } = this.props;
+    const { user, error, messageModal } = this.props;
     const { message } = error || {};
+    const { prompt } = user || {};
 
     return (
       <main className="table-ordering">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
-        <Login className="aside" />
         <Routes />
+        <Login className="aside" title={prompt} />
       </main>
     );
   }
