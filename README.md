@@ -115,3 +115,7 @@ Content rules:
 2. Paragraphs have only the first letter of each sentence capitalized (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
 3. Follow English written rules
 ```
+
+PS:
+1. When you want to use html tag in translation, please use like:
+<Trans ns="Ordering" i18nKey="Greeting">hello, <span>User</span></Trans>

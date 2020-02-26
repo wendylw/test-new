@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import qs from 'qs';
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import Item from '../../../components/Item';
 import Billing from '../../components/Billing';
 import Header from '../../../components/Header';
@@ -10,7 +11,7 @@ import Constants from '../../../utils/constants';
 import config from '../../../config';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as thankYouActionCreators, getOrder, getBusinessInfo } from '../../redux/modules/thankYou';
 
 export class ReceiptDetail extends Component {
@@ -74,22 +75,30 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { order, businessInfo } = this.props;
+    const { t, order, businessInfo } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, tableId, additionalComments } = order || {};
 
     return (
       <section className="table-ordering__receipt">
-        <Header className="border__bottom-divider gray" title="View Receipt" navFunc={this.backToThankYou.bind(this)}>
-          <span className="gray-font-opacity text-uppercase">{tableId ? `Table ${tableId}` : 'Self pick-up'}</span>
+        <Header
+          className="border__bottom-divider gray"
+          title={t('ViewReceipt')}
+          navFunc={this.backToThankYou.bind(this)}
+        >
+          <span className="gray-font-opacity text-uppercase">
+            {tableId ? t('TableIdText', { tableId }) : t('SelfPickUp')}
+          </span>
         </Header>
         <div className="receipt__content text-center">
-          <label className="receipt__label gray-font-opacity font-weight-bold text-uppercase">Receipt Number</label>
+          <label className="receipt__label gray-font-opacity font-weight-bold text-uppercase">
+            {t('ReceiptNumber')}
+          </label>
           <span className="receipt__id-number">{orderId}</span>
         </div>
         {this.renderProductItem()}
         {additionalComments ? (
           <article className="receipt__note border__bottom-divider">
-            <h4 className="receipt__title font-weight-bold text-uppercase">Notes</h4>
+            <h4 className="receipt__title font-weight-bold text-uppercase">{t('Notes')}</h4>
             <p className="receipt__text gray-font-opacity">{additionalComments}</p>
           </article>
         ) : null}
@@ -106,12 +115,15 @@ export class ReceiptDetail extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    businessInfo: getBusinessInfo(state),
-    order: getOrder(state),
-  }),
-  dispatch => ({
-    thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(),
+  connect(
+    state => ({
+      businessInfo: getBusinessInfo(state),
+      order: getOrder(state),
+    }),
+    dispatch => ({
+      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+    })
+  )
 )(ReceiptDetail);

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import QrcodeDecoder from 'qrcode-decoder';
 import Message from './Message';
 import { withRouter } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
 
 const processQR = qrData =>
@@ -25,6 +26,7 @@ class Scanner extends Component {
   }
 
   getCamera() {
+    const { t } = this.props;
     //turn on the camera
     try {
       let that = this;
@@ -101,7 +103,7 @@ class Scanner extends Component {
             MediaErr(err);
           });
       } else {
-        alert("Sorry, your browser doesn't support this feature");
+        alert(t('ScannerSorryText'));
         return false;
       }
     } catch (e) {
@@ -163,6 +165,8 @@ class Scanner extends Component {
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <div>
         <div id="contentHolder">
@@ -171,7 +175,7 @@ class Scanner extends Component {
           <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
             <img className="viedo-cover__logo" src="/img/Shape.png" alt="" />
-            <span className="viedo-cover__tips">Align the QR code within the frame to scan</span>
+            <span className="viedo-cover__tips">{t('ScanDescribeText')}</span>
             <div className="qrcode">
               <div></div>
               <div></div>
@@ -186,4 +190,4 @@ class Scanner extends Component {
   }
 }
 
-export default withRouter(Scanner);
+export default withRouter(withTranslation('Scanner')(Scanner));
