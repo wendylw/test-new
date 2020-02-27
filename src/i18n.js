@@ -10,7 +10,7 @@ const i18nextConfig = {
   defaultNS: 'Common', // this defines which namespace to use when no namespace is provided (to withTranslation, etc.)
   ns: ['Common'], // this is the preloaded namespace when page first loads.
   fallbackNS: 'Common',
-  load: 'currentOnly', // setting to 'currentOnly' will avoid loading 'zh' when current language is 'zh-CN'
+  load: 'languageOnly', // setting to 'currentOnly' will avoid loading 'zh' when current language is 'zh-CN'
   debug: process.env.NODE_ENV !== 'production',
   keySeparator: false, // we do not use keys in form messages.welcome
   backend: {
