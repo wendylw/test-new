@@ -638,6 +638,16 @@
     display: inline-block;
     min-width: 26vw;
   }
+
+  &.has-right {
+    .header__title {
+      max-width: 66vw;
+    }
+
+    &::after {
+      min-width: 16vw;
+    }
+  }
 }
 
 .category-nav {
