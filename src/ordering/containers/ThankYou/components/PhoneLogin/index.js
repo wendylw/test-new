@@ -17,10 +17,11 @@ import {
   getCashbackInfo,
 } from '../../../../redux/modules/thankYou';
 
+import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
+
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
 const ANIMATION_TIME = 3600;
-const CLAIMED_ANIMATION_GIF = '/img/succeed-animation.gif';
 
 class PhoneLogin extends React.Component {
   MESSAGES = {};
@@ -49,7 +50,7 @@ class PhoneLogin extends React.Component {
     this.initMessages();
 
     this.setState({
-      claimedAnimationGifSrc: CLAIMED_ANIMATION_GIF,
+      claimedAnimationGifSrc: succeedAnimationGif,
     });
   }
 

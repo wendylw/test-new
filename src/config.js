@@ -60,6 +60,7 @@ const config = {
   table: getTableId(),
   storeId: getStoreId(),
   consumerId: getConsumerId(),
+  PUBLIC_URL: process.env.PUBLIC_URL || '',
 };
 
 Object.defineProperty(config, 'peopleCount', {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Trans, withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
+import beepWarningImage from '../../../images/beep-warning.png';
 
 class Sorry extends Component {
   render() {
@@ -37,7 +38,7 @@ class Sorry extends Component {
 
           <div className="content-body text-center">
             <div className="content-body__img-content">
-              <img className="content-body__logo-img" src="/img/beep-warning.png" alt="" />
+              <img className="content-body__logo-img" src={beepWarningImage} alt="" />
               <h2 className="content-body__body-title">{t('UnsupportedBrowser')}</h2>
               {sorryText}
             </div>

@@ -4,6 +4,7 @@ import Message from './Message';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
+import shapeImage from '../../../images/Shape.png';
 
 const processQR = qrData =>
   new Promise((resolve, reject) => {
@@ -174,7 +175,7 @@ class Scanner extends Component {
           <video className="viedo-player" ref="video" autoPlay playsInline></video>
           <canvas className="canvas-content" ref="canvas"></canvas>
           <div className="viedo-cover">
-            <img className="viedo-cover__logo" src="/img/Shape.png" alt="" />
+            <img className="viedo-cover__logo" src={shapeImage} alt="" />
             <span className="viedo-cover__tips">{t('ScanDescribeText')}</span>
             <div className="qrcode">
               <div></div>

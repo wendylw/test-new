@@ -3,6 +3,7 @@ import i18n from 'i18next';
 import Backend from 'i18next-xhr-backend';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import config from './config';
 
 const i18nextConfig = {
   fallbackLng: 'en', // this will lead an extra request for en translation file for each namespace
@@ -14,8 +15,16 @@ const i18nextConfig = {
   keySeparator: false, // we do not use keys in form messages.welcome
   backend: {
     // for all available options read the backend's repository readme file
-    loadPath: '/locales/{{lng}}/{{ns}}.json',
-    crossDomain: false,
+    loadPath: (lng, ns) => {
+      let path = `/locales/${lng}/${ns}.json`;
+      // in built code, i18n filenames contains hash.
+      // in dev mode, they are just placed at 'public/locales'.
+      if (window.I18N_FOLDER_PATH_MAPPING) {
+        path = window.I18N_FOLDER_PATH_MAPPING[`${lng}/${ns}`] || path;
+      }
+      return `${config.PUBLIC_URL}${path}`;
+    },
+    crossDomain: true,
   },
   detection: {
     order: ['cookie', 'navigator'],

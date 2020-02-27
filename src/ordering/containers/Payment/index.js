@@ -13,29 +13,33 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
+import paymentBankingImage from '../../../images/payment-banking.png';
+import paymentCreditImage from '../../../images/payment-credit.png';
+// import paymentBoostImage from '../../../images/payment-boost.png';
+import paymenbGrabImage from '../../../images/payment-grab.png';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const dataSource = [
   {
     name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-    logo: '/img/payment-banking.png',
+    logo: paymentBankingImage,
     labelKey: 'OnlineBanking',
     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
-    logo: '/img/payment-credit.png',
+    logo: paymentCreditImage,
     labelKey: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
   // {
   //   name: PAYMENT_METHODS.BOOST_PAY,
-  //   logo: '/img/payment-boost.png',
+  //   logo: paymentBoostImage,
   //   labelKey: 'Boost',
   // },
   {
     name: PAYMENT_METHODS.GRAB_PAY,
-    logo: '/img/payment-grab.png',
+    logo: paymenbGrabImage,
     labelKey: 'GrabPay',
   },
 ];
