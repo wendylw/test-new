@@ -12,6 +12,7 @@ import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import Routes from '../Routes';
 import '../../../App.scss';
+import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
@@ -97,7 +98,7 @@ class App extends Component {
   };
 
   render() {
-    const { user, error, messageModal } = this.props;
+    const { user, error, messageModal, onlineStoreInfo } = this.props;
     const { message } = error || {};
     const { prompt } = user || {};
 
@@ -107,6 +108,7 @@ class App extends Component {
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         <Routes />
         <Login className="aside" title={prompt} />
+        {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
       </main>
     );
   }

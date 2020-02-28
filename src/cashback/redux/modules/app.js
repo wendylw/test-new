@@ -279,8 +279,10 @@ const business = (state = initialState.business, action) => {
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
+  const { data } = responseGql || {};
+  const { onlineStoreInfo } = data || {};
 
-  if (!(responseGql && responseGql.data.onlineStoreInfo)) {
+  if (!(responseGql && onlineStoreInfo)) {
     return state;
   }
 
@@ -288,7 +290,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
     case types.FETCH_ONLINESTOREINFO_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
-      return { ...state, isFetching: false, id: action.responseGql.data.onlineStoreInfo.id };
+      return { ...state, isFetching: false, id: onlineStoreInfo.id || '' };
     case types.FETCH_ONLINESTOREINFO_FAILURE:
       return { ...state, isFetching: false };
     default:

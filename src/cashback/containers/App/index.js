@@ -15,6 +15,7 @@ import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
+import DocumentFavicon from '../../../components/DocumentFavicon';
 
 class App extends Component {
   async componentDidMount() {
@@ -94,9 +95,10 @@ class App extends Component {
   };
 
   render() {
-    const { user, error } = this.props;
+    const { user, error, onlineStoreInfo } = this.props;
     const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
+    const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="loyalty">
@@ -104,6 +106,7 @@ class App extends Component {
         <Message />
         {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
         <Routes />
+        <DocumentFavicon icon={favicon || `${process.env.PUBLIC_URL}/favicon.ico`} />
       </main>
     );
   }
