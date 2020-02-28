@@ -29,30 +29,63 @@ is now so popular for quick started and production friendly.
 
 ### Quick Start
 
-1. Init project
+1. Init projects
 
-    ```shell script
+    install dependency
+
+    ```bash
     nvm use v8.17.0
     
-    cd ./frontend
-    yarn install
+    (cd ./frontend; yarn install)
+   
+    (cd ./backend; git submodule update --init && yarn install)
     ```
+   
+    > PS, once you change the domain, you need to update
+    > 1. `"proxy": "http://nike.storehub.net:7000",` in `./frontend/package.json` file
+    > 2. `HOST=nike.storehub.net` in `./frontend/.env` file, if you connect backend
+    > 3. restart frontend
 
-2. Setup to use production back-end. Let's say to use https://ck.beep.test12.shub.us of production as api server. 
+2. Init env files
 
-    $ `sudo vim /etc/hosts`
+    $ `(cd ./frontend; cp .env.example .env)`
+    
+    $ `(cd ./backend; cp .env.example .env)`
 
-    Fill in  `127.0.0.1 ck.local.beep.test12.shub.us`
-    
-    $ `cp .env.example .env`
 
-    $ `vim .env`
+#### when use local mockdata as backend
+
+3. Init local domain
+
+    add `127.0.0.1 nike.storehub.net` into `/etc/hosts` file.
+
     
-    Fill in `HOST=ck.local.beep.test12.shub.us`, to help CRA can open browser for correct domain of dev server.
+4. Start mock mode backend and assets server
+
+    start backend in mock api mode:
+
+    $ `(cd ./backend; yarn mockstart)`
     
-    $ `vim ./package.json`
+    start assets server making a show of cdn 😊
+
+    $ `(cd ./backend; yarn publicstart)`
+
+5. Start frontend dev server
+
+    $ `(cd ./frontend; yarn start)`
     
-    Fill in `"proxy": "https://ck.beep.test12.shub.us",`
+    then browse http://nike.storehub.net:3000/ see result 
+
+#### when use UAT as backend
+
+3. Setup to use production back-end. Let's say to use https://ck.beep.test12.shub.us of production as api server. 
+
+    Fill in  `127.0.0.1 ck.local.beep.test12.shub.us` in `/etc/hosts` file
+    
+    Fill in `HOST=ck.local.beep.test12.shub.us` in `./frontend/.env` file,
+    so that dev server bypass domain from frontend to backend.
+
+    Fill in `"proxy": "https://ck.beep.test12.shub.us",` in `./frontend/package.json` file
 
 3. Start up dev
 
@@ -69,16 +102,6 @@ is now so popular for quick started and production friendly.
 5. See result
 
     Browse dev server site http://ck.local.beep.test12.shub.us
-
-## Mock data
-
-### Development Mode With Mock Data
-
-> TODO: we have a standalone mock server named `frontend-dev-mock-server` 
-
-run `yarn mockstart` in the backend <br>
-run `yarn start` in the frontend <br>
-this way allow you to start project with mock data.
 
 ## Customize Workbox Service Workers
 
@@ -113,8 +136,7 @@ When you want to use html tag in translation, please use like:
 ## Analyzing Bundle Size
 
 ```shell script
-yarn build
-yarn analyze
+yarn build && yarn analyze
 ```
 
 You will get a web page tool automatically opened for you.

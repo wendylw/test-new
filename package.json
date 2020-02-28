@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://ck.beep.test12.shub.us",
+  "proxy": "http://nike.storehub.net:7000",
   "engines": {
     "node": ">=8.17.0"
   },
