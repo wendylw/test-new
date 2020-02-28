@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import config from '../config';
+import beepErrorImage from '../images/beep-error.png';
 
 export class ErrorPage extends PureComponent {
   getCurrentErrorType(type) {
@@ -8,14 +10,16 @@ export class ErrorPage extends PureComponent {
       return {};
     }
 
+    const { t } = this.props;
+
     const Errors = {
       NoBusiness: {
-        title: 'Store Not Found',
-        description: 'This store does not exist, please check your store name and try again.',
+        title: t('NoBusinessTitle'),
+        description: t('NoBusinessDescription'),
       },
       QROrderingDisabled: {
-        title: 'Sorry',
-        description: 'Oops, seems like this store no longer supports QR Ordering.',
+        title: t('Sorry'),
+        description: t('QROrderingDisabledDescription'),
       },
     };
 
@@ -23,14 +27,14 @@ export class ErrorPage extends PureComponent {
   }
 
   render() {
-    const { error } = this.props;
+    const { t, error } = this.props;
     const { message } = error || {};
     const { title, description } = this.getCurrentErrorType(message);
 
     return (
       <section className="table-ordering__prompt-page">
         <figure className="prompt-page__image-container text-center">
-          <img src="/img/beep-error.png" alt="error found" />
+          <img src={beepErrorImage} alt="error found" />
         </figure>
         <div className="prompt-page__content">
           <h2 className="prompt-page__title text-center">{title}</h2>
@@ -46,7 +50,7 @@ export class ErrorPage extends PureComponent {
               return (window.location.href = config.qrScanPageUrl);
             }}
           >
-            Back to home
+            {t('BackToHome')}
           </button>
         </div>
       </section>
@@ -62,4 +66,4 @@ ErrorPage.defaultProps = {
   error: {},
 };
 
-export default ErrorPage;
+export default withTranslation()(ErrorPage);
