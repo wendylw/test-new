@@ -1,4 +1,5 @@
 import Utils from './utils';
+import { LocalStorageMock, sessionStorageMock } from './test.mock';
 import { addressInfo, soldingProduct, soldoutProduct } from './__fixtures__/utils.fixtures';
 
 beforeEach(() => {
@@ -11,15 +12,15 @@ describe('utils/utils', () => {
     isWebview,
     debounce,
     elementPartialOffsetTop,
+    getCookieVariable,
+    setCookieVariable,
+    removeCookieVariable,
     getLocalStorageVariable,
     setLocalStorageVariable,
     removeLocalStorageVariable,
     getSessionVariable,
     setSessionVariable,
     removeSessionVariable,
-    getAdditionalComments,
-    setAdditionalComments,
-    removeAdditionalComments,
     isProductSoldOut,
     getFormatPhoneNumber,
     DateFormatter,
@@ -83,21 +84,61 @@ describe('utils/utils', () => {
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
 
-  describe('utils.localStorage', () => {
-    beforeEach(() => localStorage.clear());
-    afterAll(() => {
-      localStorage.clear();
+  describe('utils.Cookie', () => {
+    let originGlobalDocument = null;
+
+    beforeAll(() => {
+      const document = {
+        cookie: '',
+      };
+
+      originGlobalDocument = global.document;
+      global.document = document;
     });
-    it('getLocalStorageVariable:request key does not exist', () => {
+    beforeEach(() => {
+      global.document = {
+        cookie: '',
+      };
+    });
+    afterAll(() => {
+      global.document = originGlobalDocument;
+    });
+
+    it('getCookieVariable: request key does not exist', () => {
+      expect(getCookieVariable('years', 'localStorage')).toBeNull();
+      expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
+    });
+
+    it('setCookieVariable and getCookieVariable: sets the value of item', () => {
+      setCookieVariable('years', '10', 'localStorage');
+      setCookieVariable('years', '2010', 'sessionStorage');
+      expect(getCookieVariable('years', 'localStorage')).toBe('10');
+      expect(getCookieVariable('years', 'sessionStorage')).toBe('2010');
+    });
+
+    it('removeCookieVariable', () => {
+      setCookieVariable('years', '10', 'localStorage');
+      setCookieVariable('years', '2010', 'sessionStorage');
+      removeCookieVariable('years', 'localStorage');
+      expect(getCookieVariable('years', 'localStorage')).toBeNull();
+      removeCookieVariable('years', 'sessionStorage');
+      expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
+    });
+  });
+
+  describe('utils.localStorage', () => {
+    global.localStorage = new LocalStorageMock();
+
+    beforeEach(() => global.localStorage.clear());
+    afterAll(() => {
+      global.localStorage.clear();
+    });
+
+    it('getLocalStorageVariable: request key does not exist', () => {
       expect(getLocalStorageVariable('years')).toBeNull();
     });
 
-    it('setLocalStorageVariable: sets the value of item', () => {
-      setLocalStorageVariable('years', '10');
-      expect(getLocalStorageVariable('years')).toBe('10');
-    });
-
-    it('getLocalStorageVariable:get the value of item', () => {
+    it('setLocalStorageVariable and getLocalStorageVariable: sets the value of item', () => {
       setLocalStorageVariable('years', '10');
       expect(getLocalStorageVariable('years')).toBe('10');
     });
@@ -110,6 +151,8 @@ describe('utils/utils', () => {
   });
 
   describe('utils.sessionStorage', () => {
+    global.sessionStorage = new sessionStorageMock();
+
     beforeEach(() => sessionStorage.clear());
     afterAll(() => sessionStorage.clear());
 
@@ -117,12 +160,7 @@ describe('utils/utils', () => {
       expect(getSessionVariable('years')).toBeNull();
     });
 
-    it('setSessionVariable: sets the value of item', () => {
-      setSessionVariable('years', '10');
-      expect(getSessionVariable('years')).toBe('10');
-    });
-
-    it('getSessionVariable:get the value of item', () => {
+    it('setSessionVariable and getSessionVariable: sets the value of item', () => {
       setSessionVariable('years', '10');
       expect(getSessionVariable('years')).toBe('10');
     });
@@ -131,27 +169,6 @@ describe('utils/utils', () => {
       setSessionVariable('years', '10');
       removeSessionVariable('years');
       expect(getSessionVariable('years')).toBeNull();
-    });
-  });
-  describe('utils.getAdditionalComments', () => {
-    beforeEach(() => sessionStorage.clear());
-    afterAll(() => sessionStorage.clear());
-
-    it('getAdditionalComments:should not exist', () => {
-      expect(getAdditionalComments()).toBeNull();
-    });
-
-    it('setAdditionalComments:set with value', () => {
-      const value = 'hello world';
-      setAdditionalComments(value);
-      expect(getAdditionalComments()).toBe(value);
-    });
-
-    it('removeAdditionalComments', () => {
-      const value = 'hello world';
-      setAdditionalComments(value);
-      removeAdditionalComments();
-      expect(getAdditionalComments()).toBeNull();
     });
   });
 
