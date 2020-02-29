@@ -322,7 +322,14 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
 };
 
 Utils.removeHtmlTag = function removeHtmlTag(str) {
-  return str.replace(/<[^>]+>/g, '');
+  const tempDiv = document.createElement('div');
+
+  tempDiv.innerHTML = str.replace(/<[^>]+>/g, '');
+  const output = tempDiv.innerText || tempDiv.textContent;
+
+  tempDiv = null;
+
+  return output;
 };
 
 export default Utils;
