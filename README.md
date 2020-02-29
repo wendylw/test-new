@@ -1,5 +1,6 @@
 # BEEP Project
 
+<a name="abstraction"></a>
 ## Abstraction
 
 BEEP project contains some sub applications, they are
@@ -11,8 +12,23 @@ BEEP project contains some sub applications, they are
 This project is bootstrapped by [CRA (Create React App)](https://create-react-app.dev/docs/getting-started), which
 is now so popular for quick started and production friendly.
 
-## Get Started
+## Table of contents
 
+1. [Abstraction](#abstraction)
+1. [Get started](#get-started)
+    1. [Pre install stuffs](#pre-install-stuffs)
+    1. [Quick start](#quick-start)
+    1. [when use local mockdata as backend](#quick-start-mockdata-mode)
+    1. [when use UAT as backend](#quick-start-uat-integration-mode)
+1. [Customize Workbox Service Workers](#customize-workbox-service-workers)
+1. [I18N JSON File Style Guide](#i18n-json-style-guide)
+1. [Analyzing bundle size](#analyzing-bundle-size)
+
+
+<a name="get-started"></a>
+## Get started
+
+<a name="pre-install-stuffs"></a>
 ### Pre install stuffs
 
 1. Install `nvm` with Homebrew
@@ -27,7 +43,8 @@ is now so popular for quick started and production friendly.
 
     $ `brew install yarn`
 
-### Quick Start
+<a name="quick-start"></a>
+### Quick start
 
 1. Init projects
 
@@ -59,7 +76,7 @@ is now so popular for quick started and production friendly.
     build frontend will automatically trigger copy `./frontend/build` to `./backend/client/build`. 
     So backend will use it as static folder to load `index.html` file in it for browsering urls directly.
 
-
+<a name="quick-start-mockdata-mode"></a>
 #### when use local mockdata as backend
 
 1. Init local domain
@@ -85,6 +102,7 @@ is now so popular for quick started and production friendly.
 
     then browse http://nike.storehub.net:3000/ to see result
 
+<a name="quick-start-uat-integration-mode"></a>
 #### when use UAT as backend
 
 1. Setup to use production back-end. Let's say to use https://ck.beep.test12.shub.us of production as api server. 
@@ -112,13 +130,14 @@ is now so popular for quick started and production friendly.
 
     Browse dev server site http://ck.local.beep.test12.shub.us
 
+<a name="customize-workbox-service-workers"></a>
 ## Customize Workbox Service Workers
 
 Get more from [Using Custom Workbox Service Workers with Create-React-App (without ejecting)
 ](https://karannagupta.com/using-custom-workbox-service-workers-with-create-react-app/)
 
-
-### I18N JSON File Style Guilde
+<a name="i18n-json-style-guide"></a>
+## I18N JSON File Style Guide
 
 JSON file name rules:
     
@@ -142,7 +161,8 @@ When you want to use html tag in translation, please use like:
   <Trans ns="Ordering" i18nKey="Greeting">hello, <span>User</span></Trans>
   ```
 
-## Analyzing Bundle Size
+<a name="analyzing-bundle-size"></a>
+## Analyzing bundle size
 
 ```shell script
 yarn build && yarn analyze
