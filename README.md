@@ -52,15 +52,22 @@ is now so popular for quick started and production friendly.
     
     $ `(cd ./backend; cp .env.example .env)`
 
+3. Init backend static folder from frontend
+
+    $ `(cd ./frontend; yarn build)`
+    
+    build frontend will automatically trigger copy `./frontend/build` to `./backend/client/build`. 
+    So backend will use it as static folder to load `index.html` file in it for browsering urls directly.
+
 
 #### when use local mockdata as backend
 
-3. Init local domain
+1. Init local domain
 
     add `127.0.0.1 nike.storehub.net` into `/etc/hosts` file.
 
     
-4. Start mock mode backend and assets server
+2. Start mock mode backend and assets server
 
     start backend in mock api mode:
 
@@ -69,16 +76,18 @@ is now so popular for quick started and production friendly.
     start assets server making a show of cdn 😊
 
     $ `(cd ./backend; yarn publicstart)`
+    
+    then browse http://nike.storehub.net:7000/ to see result, and this triggers to make cookies ready for frontend dev server as well.
 
-5. Start frontend dev server
+3. Start frontend dev server
 
     $ `(cd ./frontend; yarn start)`
-    
-    then browse http://nike.storehub.net:3000/ see result 
+
+    then browse http://nike.storehub.net:3000/ to see result
 
 #### when use UAT as backend
 
-3. Setup to use production back-end. Let's say to use https://ck.beep.test12.shub.us of production as api server. 
+1. Setup to use production back-end. Let's say to use https://ck.beep.test12.shub.us of production as api server. 
 
     Fill in  `127.0.0.1 ck.local.beep.test12.shub.us` in `/etc/hosts` file
     
@@ -87,19 +96,19 @@ is now so popular for quick started and production friendly.
 
     Fill in `"proxy": "https://ck.beep.test12.shub.us",` in `./frontend/package.json` file
 
-3. Start up dev
+2. Start up dev
 
     $ `yarn start`
     
     Browser will open for you.
 
-4. Adjust cookie
+3. Adjust cookie
 
     Browse origin site which is behind proxy https://ck.beep.test12.shub.us,
     and edit `domain` of cookies make them `.beep.test12.shub.us` 
     to share with the domain of dev server.
     
-5. See result
+4. See result
 
     Browse dev server site http://ck.local.beep.test12.shub.us
 
