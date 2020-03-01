@@ -75,6 +75,14 @@ is now so popular for quick started and production friendly.
     
     build frontend will automatically trigger copy `./frontend/build` to `./backend/client/build`. 
     So backend will use it as static folder to load `index.html` file in it for browsering urls directly.
+    
+    if you want page to load **static** files from another domain, just set env `PUBLIC_URL` in `.env` file, 
+    Eg. `PUBLIC_URL=http://localhost:7070`, means page will load all **static** files from it.
+    
+    if you want page to call api to **bff** when in development, set up `proxy` in `package.json`, 
+    Eg. `"proxy": "http://localhost:7000`, means dev server proxies requests to the **bff**.
+    
+    Read more to get help from [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development).
 
 <a name="quick-start-mockdata-mode"></a>
 #### when use local mockdata as backend
