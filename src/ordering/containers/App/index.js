@@ -24,7 +24,7 @@ class App extends Component {
     const { appActions, pageError } = this.props;
     const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
 
-    if (pageError && window.location.pathname !== errorPageUrl) {
+    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
       return (window.location.href = errorPageUrl);
     }
 
