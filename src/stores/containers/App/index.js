@@ -15,6 +15,8 @@ class App extends Component {
     const { appActions, pageError } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
+    alert('pageErrorCode===>', pageError.code);
+
     if (pageError && pageError.code) {
       return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
