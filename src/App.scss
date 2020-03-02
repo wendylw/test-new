@@ -1799,9 +1799,16 @@
     height: 40px;
   }
 
-  &__phone-view {
+  &__phone-view,
+  &__receipt-info {
     position: relative;
     padding: 4vw;
+  }
+
+  &__receipt-title,
+  &__receipt-label,
+  &__receipt-number {
+    line-height: 1.5em;
   }
 }
 

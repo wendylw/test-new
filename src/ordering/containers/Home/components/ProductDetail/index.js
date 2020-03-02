@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
+import { withTranslation } from 'react-i18next';
 import Swipe, { SwipeItem } from 'swipejs/react';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
@@ -14,7 +15,7 @@ import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
 
@@ -356,7 +357,7 @@ class ProductDetail extends Component {
   }
 
   renderProductOperator() {
-    const { product } = this.props;
+    const { t, product } = this.props;
     const { cartQuantity } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
@@ -411,7 +412,7 @@ class ProductDetail extends Component {
               }
             }}
           >
-            OK
+            {t('OK')}
           </button>
         </div>
       </div>
@@ -419,7 +420,7 @@ class ProductDetail extends Component {
   }
 
   renderProductDescription() {
-    const { show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
+    const { t, show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
     const { images, title, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
@@ -531,7 +532,7 @@ class ProductDetail extends Component {
             style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
           >
             <p className="product-description__text gray-font-opacity">
-              {Boolean(descriptionStr) ? descriptionStr : 'No product description'}
+              {Boolean(descriptionStr) ? descriptionStr : t('NoProductDescription')}
             </p>
           </article>
         </div>
@@ -576,15 +577,18 @@ ProductDetail.defaultProps = {
   onToggle: () => {},
 };
 
-export default connect(
-  state => {
-    const currentProductInfo = getCurrentProduct(state);
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      const currentProductInfo = getCurrentProduct(state);
 
-    return {
-      product: getProductById(state, currentProductInfo.id),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+      return {
+        product: getProductById(state, currentProductInfo.id),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(ProductDetail);

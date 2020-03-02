@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import CurrencyNumber from '../../../components/CurrencyNumber';
@@ -10,12 +11,15 @@ import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
+
+import paymentVisaImage from '../../../../images/payment-visa.svg';
+import paymentMasterImage from '../../../../images/payment-mastercard.svg';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -91,6 +95,7 @@ class CreditCard extends Component {
   };
 
   getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
+    const { t } = this.props;
     const nameList = {
       cardNumber: 'number',
       validDate: 'expiration',
@@ -115,14 +120,14 @@ class CreditCard extends Component {
 
     let rules = {
       required: {
-        message: 'Required',
+        message: t('RequiredMessage'),
       },
       fixedLength: {
-        message: `Your card's ${nameString} ${verb} incomplete.`,
+        message: t('CardNumberIncompleteMessage', { nameString, verb }),
         length: 19,
       },
       validCardNumber: {
-        message: 'Your card number is invalid',
+        message: t('CardNumberInvalidMessage'),
       },
     };
 
@@ -150,10 +155,12 @@ class CreditCard extends Component {
   }
 
   getCardHolderNameValidationOpts() {
+    const { t } = this.props;
+
     return {
       rules: {
         required: {
-          message: 'Required',
+          message: t('RequiredMessage'),
         },
       },
     };
@@ -235,6 +242,7 @@ class CreditCard extends Component {
   async payNow() {
     await this.validateForm();
 
+    const { t } = this.props;
     const { cardInfoError, cardHolderNameError } = this.state;
 
     if (cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length)) {
@@ -257,7 +265,7 @@ class CreditCard extends Component {
 
     if (isInvalidNum) {
       cardInfoError.keys.push('cardNumber');
-      cardInfoError.messages.cardNumber = 'Your card number is invalid';
+      cardInfoError.messages.cardNumber = t('CardNumberInvalidMessage');
 
       this.setState({
         cardInfoError,
@@ -269,7 +277,7 @@ class CreditCard extends Component {
 
     if (isExpired) {
       cardInfoError.keys.push('validDate');
-      cardInfoError.messages.validDate = `Your card's expiration date is invalid`;
+      cardInfoError.messages.validDate = t('CardExpirationInvalidMessage');
 
       this.setState({
         cardInfoError,
@@ -281,7 +289,7 @@ class CreditCard extends Component {
 
     if (isInvalidCVV) {
       cardInfoError.keys.push('cvv');
-      cardInfoError.messages.cvv = `Your card's CVV is invalid`;
+      cardInfoError.messages.cvv = t('CardCVVInvalidMessage');
 
       this.setState({
         cardInfoError,
@@ -348,6 +356,7 @@ class CreditCard extends Component {
   }
 
   renderForm() {
+    const { t } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
     const { cardholderName } = card || {};
     const cardNumber = card.formattedCardNumber;
@@ -356,7 +365,7 @@ class CreditCard extends Component {
       <form id="bank-2c2p-form" className="form">
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bold">Card information</label>
+            <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
             {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
               <span className="error-message font-weight-bold text-uppercase">{cardInfoError.messages.required}</span>
             ) : null}
@@ -379,14 +388,14 @@ class CreditCard extends Component {
               />
               <div className="payment-bank__card-type-container flex flex-middle">
                 <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-                  <img src="/img/payment-visa.svg" />
+                  <img src={paymentVisaImage} />
                 </i>
                 <i
                   className={`payment-bank__card-type-icon mastercard text-middle ${
                     card.type === 'mastercard' ? 'active' : ''
                   }`}
                 >
-                  <img src="/img/payment-mastercard.svg" />
+                  <img src={paymentMasterImage} />
                 </i>
               </div>
             </div>
@@ -428,7 +437,7 @@ class CreditCard extends Component {
         </div>
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bold">Name on card</label>
+            <label className="payment-bank__label font-weight-bold">{t('NameOnCard')}</label>
             {cardHolderNameError.key === FormValidate.errorNames.required ? (
               <span className="error-message font-weight-bold text-uppercase">{cardHolderNameError.message}</span>
             ) : null}
@@ -456,7 +465,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { match, history, cartSummary, onlineStoreInfo } = this.props;
+    const { t, match, history, cartSummary, onlineStoreInfo } = this.props;
     const { logo } = onlineStoreInfo || {};
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
@@ -467,7 +476,7 @@ class CreditCard extends Component {
         <Header
           className="border__bottom-divider gray has-right"
           isPage={true}
-          title="Pay via Card"
+          title={t('PayViaCard')}
           navFunc={() => {
             history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
           }}
@@ -490,7 +499,7 @@ class CreditCard extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bold text-center" addonBefore="Pay" money={total || 0} />
+              <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </button>
         </div>
@@ -510,20 +519,23 @@ class CreditCard extends Component {
   }
 }
 
-export default connect(
-  state => {
-    const currentOrderId = getCurrentOrderId(state);
+export default compose(
+  withTranslation(['OrderingPayment']),
+  connect(
+    state => {
+      const currentOrderId = getCurrentOrderId(state);
 
-    return {
-      business: getBusiness(state),
-      cartSummary: getCartSummary(state),
-      currentPayment: getCurrentPayment(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      currentOrder: getOrderByOrderId(state, currentOrderId),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-  })
+      return {
+        business: getBusiness(state),
+        cartSummary: getCartSummary(state),
+        currentPayment: getCurrentPayment(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        currentOrder: getOrderByOrderId(state, currentOrderId),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+    })
+  )
 )(CreditCard);

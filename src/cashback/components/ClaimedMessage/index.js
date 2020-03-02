@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 
 import Modal from '../../../components/Modal';
 import RedeemInfo from '../RedeemInfo';
+import succeedAnimationGif from '../../../images/succeed-animation.gif';
+import beepRewardImage from '../../../images/beep-reward.jpg';
 
 const ANIMATION_TIME = 3600;
 
@@ -11,10 +14,10 @@ class ClaimedMessage extends React.Component {
 
   state = {
     animationGifSrc: null,
-  }
+  };
 
   componentDidMount() {
-    this.setState({ animationGifSrc: '/img/succeed-animation.gif' });
+    this.setState({ animationGifSrc: succeedAnimationGif });
 
     this.animationSetTimeout = setTimeout(() => {
       this.setState({ animationGifSrc: null });
@@ -24,12 +27,7 @@ class ClaimedMessage extends React.Component {
   }
 
   render() {
-    const {
-      title,
-      description,
-      isFirstTime,
-      hideMessage,
-    } = this.props;
+    const { title, description, isFirstTime, hideMessage, t } = this.props;
     const { animationGifSrc } = this.state;
 
     return (
@@ -37,21 +35,23 @@ class ClaimedMessage extends React.Component {
         <div className="aside__section-content border-radius-base">
           <Modal show={true} className="align-middle">
             <Modal.Body className="active">
-              <img src="/img/beep-reward.jpg" alt="beep reward" />
+              <img src={beepRewardImage} alt="beep reward" />
               <div className="modal__detail text-center">
                 <h4 className="modal__title font-weight-bold">{title}</h4>
-                {
-                  description
-                    ? <p className="modal__text">{description}</p>
-                    : null
-                }
-                {
-                  isFirstTime
-                    ? <RedeemInfo buttonClassName="button__fill button__block border-radius-base font-weight-bold text-uppercase" buttonText="How to use Cashback?" />
-                    : null
-                }
+                {description ? <p className="modal__text">{description}</p> : null}
+                {isFirstTime ? (
+                  <RedeemInfo
+                    buttonClassName="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+                    buttonText={t('HowToUseCashback')}
+                  />
+                ) : null}
 
-                <button className="button__block button__block-link link text-uppercase font-weight-bold" onClick={() => hideMessage()}>Close</button>
+                <button
+                  className="button__block button__block-link link text-uppercase font-weight-bold"
+                  onClick={() => hideMessage()}
+                >
+                  {t('Close')}
+                </button>
 
                 <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
                   <img src={animationGifSrc} alt="Beep Claimed" />
@@ -76,7 +76,7 @@ ClaimedMessage.defaultProps = {
   title: '',
   description: '',
   isFirstTime: false,
-  hideMessage: () => { },
+  hideMessage: () => {},
 };
 
-export default ClaimedMessage;
+export default withTranslation('Cashback')(ClaimedMessage);
