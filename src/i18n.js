@@ -11,19 +11,23 @@ const i18nextConfig = {
   ns: ['Common'], // this is the preloaded namespace when page first loads.
   fallbackNS: 'Common',
   load: 'languageOnly', // setting to 'languageOnly' will avoid loading 'en' when current language is 'en-US'.
+  preload: ['en'], // array of languages to preload. Important on serverside to assert translations are loaded before rendering views.
+  cleanCode: true, // language will be lowercased EN --> en while leaving full locales like en-US
   debug: process.env.NODE_ENV !== 'production',
   keySeparator: false, // we do not use keys in form messages.welcome
   nonExplicitWhitelist: true, // if true will pass eg. en-US if finding en in whitelist
-  lngWhitelist: ['en'],
+  whitelist: ['en'], // array of allowed languages, default value is `false`
   backend: {
     // for all available options read the backend's repository readme file
     loadPath: (lng, ns) => {
       let path = `/locales/${lng}/${ns}.json`;
+
       // in built code, i18n filenames contains hash.
       // in dev mode, they are just placed at 'public/locales'.
       if (window.I18N_FOLDER_PATH_MAPPING) {
         path = window.I18N_FOLDER_PATH_MAPPING[`${lng}/${ns}`] || path;
       }
+
       return `${config.PUBLIC_URL}${path}`;
     },
     crossDomain: true,
