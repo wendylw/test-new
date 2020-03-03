@@ -13,6 +13,8 @@ const i18nextConfig = {
   load: 'currentOnly', // setting to 'currentOnly' will avoid loading 'zh' when current language is 'zh-CN'
   debug: process.env.NODE_ENV !== 'production',
   keySeparator: false, // we do not use keys in form messages.welcome
+  nonExplicitWhitelist: true, // if true will pass eg. en-US if finding en in whitelist
+  lngWhitelist: ['en'],
   backend: {
     // for all available options read the backend's repository readme file
     loadPath: (lng, ns) => {
