@@ -83,7 +83,7 @@
     "test:coverage": "react-scripts test --coverage",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
-    "deploy": "deploy-aws-s3-cloudfront --react"
+    "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -98,7 +98,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "debug": "^4.1.1",
-    "deploy-aws-s3-cloudfront": "^2.3.1",
+    "deploy-aws-s3-cloudfront": "https://github.com/storehubnet/deploy-aws-s3-cloudfront.git",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "fs-extra": "^8.1.0",
