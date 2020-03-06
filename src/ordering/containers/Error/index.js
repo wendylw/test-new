@@ -4,7 +4,7 @@ import ErrorPage from '../../../containers/ErrorPage';
 import { connect } from 'react-redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 
-export class NotFound extends Component {
+export class Error extends Component {
   render() {
     const { error } = this.props;
 
@@ -17,4 +17,4 @@ export default connect(
     error: getPageError(state),
   }),
   dispatch => ({})
-)(NotFound);
+)(Error);
