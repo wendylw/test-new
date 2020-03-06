@@ -21,6 +21,7 @@ class App extends Component {
   async componentDidMount() {
     const { appActions } = this.props;
 
+    this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.fetchBusiness();
@@ -37,8 +38,13 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { appActions, user } = this.props;
+    const { appActions, user, pageError } = this.props;
     const { isExpired, isWebview, isLogin } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       this.postAppMessage(user);
@@ -46,6 +52,14 @@ class App extends Component {
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
       appActions.loadCustomerProfile();
+    }
+  }
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+
+    if (pageError && pageError.code) {
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
   }
 
@@ -91,14 +105,10 @@ class App extends Component {
   };
 
   render() {
-    const { user, error, pageError, onlineStoreInfo } = this.props;
+    const { user, error, onlineStoreInfo } = this.props;
     const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
-
-    if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
-    }
 
     return (
       <main className="loyalty">

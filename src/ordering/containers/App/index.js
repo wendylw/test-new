@@ -23,6 +23,8 @@ class App extends Component {
   async componentDidMount() {
     const { appActions } = this.props;
 
+    this.visitErrorPage();
+
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
@@ -39,8 +41,13 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { appActions, user } = this.props;
+    const { appActions, user, pageError } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       this.postAppMessage(user);
@@ -48,6 +55,15 @@ class App extends Component {
 
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
       appActions.loadCustomerProfile();
+    }
+  }
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+    const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
+
+    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
+      return (window.location.href = errorPageUrl);
     }
   }
 
@@ -93,14 +109,9 @@ class App extends Component {
   };
 
   render() {
-    const { user, error, pageError, messageModal, onlineStoreInfo } = this.props;
+    const { user, error, messageModal, onlineStoreInfo } = this.props;
     const { message } = error || {};
     const { prompt } = user || {};
-    const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
-
-    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
-      return (window.location.href = errorPageUrl);
-    }
 
     return (
       <main className="table-ordering">

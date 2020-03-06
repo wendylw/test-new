@@ -15,7 +15,17 @@ class App extends Component {
     const { appActions } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
+    this.visitErrorPage();
     fetchOnlineStoreInfo();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { pageError } = this.props;
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
   }
 
   handleClearError = () => {
@@ -26,12 +36,16 @@ class App extends Component {
     this.props.appActions.hideMessageModal();
   };
 
-  render() {
-    const { error, pageError, onlineStoreInfo } = this.props;
+  visitErrorPage() {
+    const { pageError } = this.props;
 
     if (pageError && pageError.code) {
       return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
+  }
+
+  render() {
+    const { error, pageError, onlineStoreInfo } = this.props;
 
     return (
       <main className="store-list">
