@@ -12,12 +12,8 @@ const Home = lazy(() => import('../Home'));
 
 class App extends Component {
   componentDidMount() {
-    const { appActions, pageError } = this.props;
+    const { appActions } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
-
-    if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
-    }
 
     fetchOnlineStoreInfo();
   }
@@ -32,6 +28,10 @@ class App extends Component {
 
   render() {
     const { error, pageError, onlineStoreInfo } = this.props;
+
+    if (pageError && pageError.code) {
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
+    }
 
     return (
       <main className="store-list">

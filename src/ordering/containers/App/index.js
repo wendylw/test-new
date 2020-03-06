@@ -21,12 +21,7 @@ class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const { appActions, pageError } = this.props;
-    const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
-
-    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
-      return (window.location.href = errorPageUrl);
-    }
+    const { appActions } = this.props;
 
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
@@ -98,9 +93,14 @@ class App extends Component {
   };
 
   render() {
-    const { user, error, messageModal, onlineStoreInfo } = this.props;
+    const { user, error, pageError, messageModal, onlineStoreInfo } = this.props;
     const { message } = error || {};
     const { prompt } = user || {};
+    const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
+
+    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
+      return (window.location.href = errorPageUrl);
+    }
 
     return (
       <main className="table-ordering">

@@ -19,11 +19,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 
 class App extends Component {
   async componentDidMount() {
-    const { appActions, pageError } = this.props;
-
-    if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
-    }
+    const { appActions } = this.props;
 
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
@@ -95,10 +91,14 @@ class App extends Component {
   };
 
   render() {
-    const { user, error, onlineStoreInfo } = this.props;
+    const { user, error, pageError, onlineStoreInfo } = this.props;
     const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
+
+    if (pageError && pageError.code) {
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
+    }
 
     return (
       <main className="loyalty">
