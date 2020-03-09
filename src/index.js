@@ -11,7 +11,7 @@ import './index.css';
 
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
-if (heap) {
+if (heap && heap.addUserProperties) {
   heap.addUserProperties({
     account: config.business,
   });
