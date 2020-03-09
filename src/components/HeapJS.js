@@ -6,9 +6,9 @@ import config from '../config';
 class HeapJS extends Component {
   componentWillMount() {
     try {
-      if (heap) {
+      if (heap && heap.addUserProperties) {
         heap.addUserProperties({
-          'account': config.business,
+          account: config.business,
         });
       }
     } catch (e) {
@@ -17,9 +17,7 @@ class HeapJS extends Component {
   }
 
   render() {
-    return (
-      <React.Fragment>{this.props.children}</React.Fragment>
-    );
+    return <React.Fragment>{this.props.children}</React.Fragment>;
   }
 }
 
