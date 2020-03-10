@@ -1,11 +1,10 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
-
+import Home from './Home';
+import Cart from './Cart';
+import Payment from './Payment';
 import Constants from '../../utils/constants';
 
-const Home = lazy(() => import('./Home'));
-const Cart = lazy(() => import('./Cart'));
-const Payment = lazy(() => import('./Payment'));
 const Receipt = lazy(() => import('./Receipt'));
 const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
