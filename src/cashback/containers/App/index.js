@@ -16,6 +16,7 @@ import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
+import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
   async componentDidMount() {
@@ -116,7 +117,7 @@ class App extends Component {
         <Message />
         {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
         <Routes />
-        <DocumentFavicon icon={favicon || `${process.env.PUBLIC_URL}/favicon.ico`} />
+        <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
   }

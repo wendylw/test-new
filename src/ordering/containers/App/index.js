@@ -16,6 +16,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
+import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
   state = {};
@@ -112,6 +113,7 @@ class App extends Component {
     const { user, error, messageModal, onlineStoreInfo } = this.props;
     const { message } = error || {};
     const { prompt } = user || {};
+    const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="table-ordering">
@@ -119,7 +121,7 @@ class App extends Component {
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         <Routes />
         <Login className="aside" title={prompt} />
-        {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
+        <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
   }
