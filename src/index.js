@@ -11,13 +11,20 @@ import './index.css';
 
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
-if (heap && heap.addUserProperties) {
-  heap.addUserProperties({
-    account: config.business,
-  });
+try {
+  if (heap && heap.addUserProperties) {
+    heap.addUserProperties({
+      account: config.business,
+    });
+  } else {
+    throw new Error('heap or heap.addUserProperties not defined');
+  }
+} catch (e) {
+  throw e;
+} finally {
+  ReactDOM.render(<Bootstrap />, document.getElementById('root'));
 }
 
-ReactDOM.render(<Bootstrap />, document.getElementById('root'));
 /* eslint-enabled jsx-a11y/iframe-has-title */
 /* eslint-enabled no-undef */
 
