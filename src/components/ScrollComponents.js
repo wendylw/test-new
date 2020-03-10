@@ -193,30 +193,6 @@ export class ScrollObserver extends React.Component {
       return;
     }
 
-    document.dispatchEvent(
-      new CustomEvent('SCROLL_FOUND_TOP', {
-        detail: {
-          scrollid,
-        },
-      })
-    );
-  };
-
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
-    document.addEventListener('SCROLL_FOUND_TOP', this.handleScrollEvent);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-    document.removeEventListener('SCROLL_FOUND_TOP', this.handleScrollEvent);
-  }
-
-  handleRevertScrollEvent = () => {
-    this.setState({ drivenToScroll: false });
-  };
-
-  handleScrollEvent = async e => {
     const { isVerticalMenu, containerId, targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
 
@@ -224,15 +200,25 @@ export class ScrollObserver extends React.Component {
       return;
     }
 
-    const { scrollid } = e.detail;
-
-    await scrollToSmoothly({
+    scrollToSmoothly({
       direction: isVerticalMenu ? 'y' : 'x',
       targetId: `${targetIdPrefix}-${scrollid}`,
       containerId,
     });
 
     this.setState({ scrollid });
+  };
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
+
+  handleRevertScrollEvent = () => {
+    this.setState({ drivenToScroll: false });
   };
 
   handleSelectedTarget = async options => {
