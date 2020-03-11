@@ -52,7 +52,7 @@ class CategoryProductList extends Component {
 
   render() {
     const { t, categories, isVerticalMenu } = this.props;
-    const itemClassList = ['flex-middle'];
+    const itemClassList = ['flex-top'];
 
     if (isVerticalMenu) {
       itemClassList.push('flex-column');

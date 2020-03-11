@@ -682,8 +682,9 @@
   }
 
   &__vertical &__item {
+    color: $gray-1;
+
     label {
-      color: $gray-1;
       opacity: 0.8;
       word-break: break-word;
       -webkit-hyphens: auto;
@@ -696,7 +697,6 @@
       background-color: $white;
 
       label {
-        color: initial;
         font-weight: normal;
         opacity: 0.8;
       }
@@ -790,8 +790,8 @@
     @extend .border-radius-base;
 
     position: relative;
-    min-width: 17vw;
-    min-height: 17vw;
+    min-width: 21vw;
+    min-height: 21vw;
     background-color: $gray-5;
     background-repeat: no-repeat;
     background-size: contain;
@@ -960,6 +960,7 @@
     display: block;
     margin: 2.5vw;
     width: 7vw;
+    max-width: 24px;
     border-width: 2px;
     border-style: solid;
     border-radius: 50%;

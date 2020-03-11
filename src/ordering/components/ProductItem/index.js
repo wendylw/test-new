@@ -28,7 +28,7 @@ export class ProductItem extends Component {
     return (
       <Item
         className={className}
-        contentClassName="flex-middle"
+        contentClassName="flex-top"
         productDetailImageRef={productDetailImageRef}
         image={image}
         title={title}
