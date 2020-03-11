@@ -823,10 +823,10 @@
 
   &__detail {
     width: 79vw;
+  }
 
-    > * ~ * {
-      margin-top: 5px;
-    }
+  &__detail-content > * ~ * {
+    margin-top: 5px;
   }
 
   &__description {

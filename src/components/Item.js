@@ -35,7 +35,7 @@ export class Item extends Component {
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
           <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
           <div className="item__detail flex flex-column flex-space-between">
-            <div>
+            <div className="item__detail-content">
               {hasTag ? (
                 <div className="tag__card-container">
                   <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
