@@ -5,6 +5,7 @@ import { withTranslation } from 'react-i18next';
 import OtpInput from 'react-otp-input';
 import Header from './Header';
 import Constants from '../utils/constants';
+import beepOtpImage from '../images/beep-otp.png';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -63,7 +64,7 @@ class OtpModal extends React.Component {
 
         <section className="full-aside__content text-center">
           <figure className="full-aside__image-container">
-            <img src="/img/beep-otp.png" alt="otp" />
+            <img src={beepOtpImage} alt="otp" />
           </figure>
           <h2 className="full-aside__title">{t('OTPSentTitle')}</h2>
           <div className="otp-input">

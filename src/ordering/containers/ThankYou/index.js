@@ -9,6 +9,8 @@ import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
+import beepSuccessImage from '../../../images/beep-success.png';
+
 export class ThankYou extends Component {
   state = {};
 
@@ -113,7 +115,7 @@ export class ThankYou extends Component {
           </span>
         </Header>
         <div className="thanks text-center">
-          <img className="thanks__image" src="/img/beep-success.png" alt="Beep Success" />
+          <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
           <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
           <p>
             {`${t('PrepareOrderDescription')} `}
