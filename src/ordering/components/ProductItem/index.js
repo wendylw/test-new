@@ -33,7 +33,7 @@ export class ProductItem extends Component {
         image={image}
         title={title}
         variation={variation}
-        detail={<CurrencyNumber money={price || 0} />}
+        detail={<CurrencyNumber className="font-weight-bold" money={price || 0} />}
         operateItemDetail={showProductDetail}
         hasTag={isFeaturedProduct}
       >

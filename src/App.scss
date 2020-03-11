@@ -295,7 +295,7 @@
     }
 
     .category-nav__vertical ~ .list__container {
-      width: 70%;
+      width: 75%;
     }
 
     .category-nav__horizontal ~ .list__container {
@@ -1326,9 +1326,10 @@
 
     display: inline-block;
     padding: 2vw 4vw;
-    border: 1px solid $gray-3;
+    border: 1px solid $white;
     margin: 2vw;
     background-color: transparent;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
   &__card-container {
