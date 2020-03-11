@@ -683,6 +683,7 @@
 
   &__vertical &__item {
     label {
+      color: $gray-1;
       opacity: 0.8;
       word-break: break-word;
       -webkit-hyphens: auto;
@@ -695,6 +696,7 @@
       background-color: $white;
 
       label {
+        color: initial;
         font-weight: normal;
         opacity: 0.8;
       }
@@ -704,11 +706,11 @@
   &__vertical {
     bottom: 21.6vw;
     height: auto;
-    width: 30%;
+    width: 25%;
 
     ~ .list__container {
-      left: 30%;
-      width: 70%;
+      left: 25%;
+      width: 75%;
     }
   }
 
@@ -719,7 +721,7 @@
 
   &__vertical &__item {
     padding: 3.8vw;
-    border-left: 3px solid transparent;
+    border-left: 6px solid transparent;
   }
 
   &__horizontal {
@@ -760,13 +762,13 @@
     width: 100%;
     padding: 10px 3.8vw;
     height: 50px;
-    background-color: $gray-4;
+    background-color: $gray-5;
 
     &.fixed {
       position: fixed;
       top: 50px;
-      left: 30%;
-      width: 70%;
+      left: 25%;
+      width: 75%;
       z-index: 1;
     }
   }
