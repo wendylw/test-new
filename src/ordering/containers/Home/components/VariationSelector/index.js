@@ -104,7 +104,7 @@ export class VariationSelector extends Component {
         <ul className="tag__cards">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
-            const className = ['tag__card'];
+            const className = ['tag__card variation'];
 
             if (markedSoldOut) {
               className.push('disabled');

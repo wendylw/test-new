@@ -775,12 +775,12 @@
 }
 
 .item {
+  position: relative;
   padding: 2.4vw;
   background-color: $white;
 
   &.flex-column {
-    .sold-out,
-    .item__cart-ctrl {
+    .sold-out {
       margin-left: 35vw;
     }
   }
@@ -821,7 +821,7 @@
   }
 
   &__detail {
-    max-width: 44vw;
+    max-width: 79vw;
 
     > * {
       display: block;
@@ -845,7 +845,9 @@
   }
 
   &__cart-ctrl {
-    margin-right: -1vw;
+    position: absolute;
+    right: 0;
+    bottom: 0;
     min-width: 30vw;
 
     &::before {
@@ -1329,11 +1331,14 @@
     border: 1px solid $white;
     margin: 2vw;
     background-color: transparent;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
   &__card-container {
     height: 4vw;
+  }
+
+  &__card.variation {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
   &__card.info {
