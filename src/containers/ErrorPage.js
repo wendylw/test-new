@@ -14,11 +14,11 @@ export class ErrorPage extends PureComponent {
 
     const Errors = {
       NoBusiness: {
-        title: t('NoBusinessTitle'),
+        title: `${t('NoBusinessTitle')}!`,
         description: t('NoBusinessDescription'),
       },
       QROrderingDisabled: {
-        title: t('Sorry'),
+        title: `${t('Sorry')}!`,
         description: t('QROrderingDisabledDescription'),
       },
     };
