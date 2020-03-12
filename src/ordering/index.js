@@ -6,7 +6,9 @@ import ErrorPage from '../containers/ErrorPage';
 
 class index extends Component {
   render() {
-    return <Provider store={store}>{process.env.REACT_APP_BLOCK_ORDERING === true ? <ErrorPage /> : <App />}</Provider>;
+    return (
+      <Provider store={store}>{process.env.REACT_APP_BLOCK_ORDERING === 'true' ? <ErrorPage /> : <App />}</Provider>
+    );
   }
 }
 
