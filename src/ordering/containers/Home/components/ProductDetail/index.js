@@ -381,7 +381,7 @@ class ProductDetail extends Component {
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />
 
-        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container">
+        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container bottom">
           <button
             className="button__fill button__block font-weight-bold"
             type="button"

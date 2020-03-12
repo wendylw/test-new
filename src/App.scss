@@ -352,7 +352,7 @@
       width: 50vw;
     }
 
-    .item__cart-ctrl {
+    .category__list .item__cart-ctrl {
       top: auto;
       bottom: 0;
     }
@@ -791,6 +791,7 @@
   position: relative;
   padding: 2.4vw;
   background-color: $white;
+  list-style: none;
 
   &.flex-column {
     .sold-out {
@@ -1109,7 +1110,11 @@
   -webkit-transition: opacity 0.01s 0.3s, z-index 0.01s 0.3s;
 
   &__section-container {
-    padding: 4vw;
+    padding: 2.4vw;
+
+    &.bottom {
+      padding: 3.5vw 5.5vw;
+    }
   }
 
   &__product-detail,
