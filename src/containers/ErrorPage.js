@@ -10,11 +10,11 @@ export class ErrorPage extends PureComponent {
 
     return (
       <main className="table-ordering">
-        <section className="table-ordering__prompt-page">
-          <figure className="prompt-page__image-container text-center">
-            <img src={beepErrorImage} alt="error found" />
-          </figure>
+        <section className="table-ordering__prompt-page flex flex-column flex-space-between">
           <div className="prompt-page__content">
+            <figure className="prompt-page__image-container text-center">
+              <img src={beepErrorImage} alt="error found" />
+            </figure>
             <h2 className="prompt-page__title text-center">504</h2>
           </div>
 
