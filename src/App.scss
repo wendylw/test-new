@@ -1235,14 +1235,16 @@
   position: absolute;
   width: 100%;
 
-  .item {
-    position: relative;
-
+  .item__content {
     &::before {
       content: "";
       width: 0;
-      min-height: 17vw;
+      min-height: 21vw;
     }
+  }
+
+  .item__detail {
+    min-height: 21vw;
   }
 
   &__image-container {
