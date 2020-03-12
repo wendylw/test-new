@@ -18,6 +18,9 @@ import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
 
+import paymentVisaImage from '../../../../images/payment-visa.svg';
+import paymentMasterImage from '../../../../images/payment-mastercard.svg';
+
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -385,14 +388,14 @@ class CreditCard extends Component {
               />
               <div className="payment-bank__card-type-container flex flex-middle">
                 <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-                  <img src="/img/payment-visa.svg" />
+                  <img src={paymentVisaImage} />
                 </i>
                 <i
                   className={`payment-bank__card-type-icon mastercard text-middle ${
                     card.type === 'mastercard' ? 'active' : ''
                   }`}
                 >
-                  <img src="/img/payment-mastercard.svg" />
+                  <img src={paymentMasterImage} />
                 </i>
               </div>
             </div>

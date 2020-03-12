@@ -1,5 +1,6 @@
 import React, { Component, lazy } from 'react';
 import ErrorToast from '../../../components/ErrorToast';
+import DocumentFavicon from '../../../components/DocumentFavicon';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -16,23 +17,20 @@ class App extends Component {
 
   handleClearError = () => {
     this.props.appActions.clearError();
-  }
+  };
 
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
-  }
+  };
 
   render() {
-    const { error } = this.props;
+    const { error, onlineStoreInfo } = this.props;
 
     return (
       <main className="store-list">
         <Home />
-        {
-          error
-            ? <ErrorToast message={error} clearError={this.handleClearError} />
-            : null
-        }
+        {error ? <ErrorToast message={error} clearError={this.handleClearError} /> : null}
+        {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
       </main>
     );
   }
@@ -45,5 +43,5 @@ export default connect(
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
-  }),
+  })
 )(App);
