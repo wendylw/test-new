@@ -15,7 +15,10 @@ export class ErrorPage extends PureComponent {
             <figure className="prompt-page__image-container text-center">
               <img src={beepErrorImage} alt="error found" />
             </figure>
-            <h2 className="prompt-page__title text-center">504</h2>
+            <h2 className="prompt-page__title text-center">Payment gateway temporarily unavailable</h2>
+            <div className="prompt-page__paragraphs text-center">
+              <p>We're sorry for the inconvenience caused.</p>
+            </div>
           </div>
 
           <div className="prompt-page__button-container">
