@@ -2,7 +2,7 @@ const getTableId = () => {
   try {
     return document.cookie
       .split(';')
-      .find(s => s.includes('__t'))
+      .find(s => s.includes('__t='))
       .split('=')[1];
   } catch (e) {
     return null;
@@ -13,7 +13,7 @@ const getStoreId = () => {
   try {
     return document.cookie
       .split(';')
-      .find(s => s.includes('__s'))
+      .find(s => s.includes('__s='))
       .split('=')[1];
   } catch (e) {
     return null;
@@ -24,7 +24,7 @@ const getConsumerId = () => {
   try {
     return document.cookie
       .split(';')
-      .find(s => s.includes('__cid'))
+      .find(s => s.includes('__cid='))
       .split('=')[1];
   } catch (e) {
     return null;
@@ -50,7 +50,7 @@ const config = {
     try {
       return document.cookie
         .split(';')
-        .find(s => s.includes('__h'))
+        .find(s => s.includes('__h='))
         .split('=')[1];
     } catch (e) {
       return null;
@@ -60,6 +60,7 @@ const config = {
   table: getTableId(),
   storeId: getStoreId(),
   consumerId: getConsumerId(),
+  PUBLIC_URL: process.env.PUBLIC_URL || '',
 };
 
 Object.defineProperty(config, 'peopleCount', {

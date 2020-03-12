@@ -2,20 +2,31 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import 'whatwg-fetch';
-import './config'; // import here for globally init
+import config from './config';
 import './i18n';
 
 import Bootstrap from './Bootstrap';
-import HeapJS from './components/HeapJS';
 
 import './index.css';
 
-ReactDOM.render(
-  <HeapJS>
-    <Bootstrap />
-  </HeapJS>,
-  document.getElementById('root')
-);
+/* eslint-disable no-undef */
+/* eslint-disable jsx-a11y/iframe-has-title */
+try {
+  if (heap && heap.addUserProperties) {
+    heap.addUserProperties({
+      account: config.business,
+    });
+  } else {
+    throw new Error('heap or heap.addUserProperties not defined');
+  }
+} catch (e) {
+  throw e;
+} finally {
+  ReactDOM.render(<Bootstrap />, document.getElementById('root'));
+}
+
+/* eslint-enabled jsx-a11y/iframe-has-title */
+/* eslint-enabled no-undef */
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import beepErrorImage from '../images/beep-error.png';
 
 class Error extends React.Component {
   render() {
@@ -10,7 +11,7 @@ class Error extends React.Component {
     return (
       <section className="table-ordering__prompt-page">
         <figure className="prompt-page__image-container text-center">
-          <img src="/img/beep-error.png" alt="Error found" />
+          <img src={beepErrorImage} alt="Error found" />
         </figure>
         <div className="prompt-page__content">
           <h2 className="prompt-page__title text-center">{title}</h2>
