@@ -58,6 +58,7 @@
     "react-dom": "^16.8.6",
     "react-i18next": "^11.2.7",
     "react-infinite-scroller": "^1.2.4",
+    "react-lazyload": "^2.6.5",
     "react-otp-input": "^0.3.3",
     "react-phone-number-input": "^2.3.13",
     "react-redux": "^7.0.3",

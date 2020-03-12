@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import LazyLoad from 'react-lazyload';
 import Item from '../../../components/Item';
 import Tag from '../../../components/Tag';
 import ItemOperator from '../../../components/ItemOperator';
@@ -26,29 +27,31 @@ export class ProductItem extends Component {
     } = this.props;
 
     return (
-      <Item
-        className={className}
-        contentClassName="flex-middle"
-        productDetailImageRef={productDetailImageRef}
-        image={image}
-        title={title}
-        variation={variation}
-        detail={<CurrencyNumber money={price || 0} />}
-        operateItemDetail={showProductDetail}
-        hasTag={isFeaturedProduct}
-      >
-        {soldOut ? (
-          <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
-        ) : (
-          <ItemOperator
-            className="flex-middle"
-            quantity={cartQuantity}
-            decreaseDisabled={decreaseDisabled}
-            onDecrease={onDecrease}
-            onIncrease={onIncrease}
-          />
-        )}
-      </Item>
+      <LazyLoad height={190}>
+        <Item
+          className={className}
+          contentClassName="flex-middle"
+          productDetailImageRef={productDetailImageRef}
+          image={image}
+          title={title}
+          variation={variation}
+          detail={<CurrencyNumber money={price || 0} />}
+          operateItemDetail={showProductDetail}
+          hasTag={isFeaturedProduct}
+        >
+          {soldOut ? (
+            <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
+          ) : (
+            <ItemOperator
+              className="flex-middle"
+              quantity={cartQuantity}
+              decreaseDisabled={decreaseDisabled}
+              onDecrease={onDecrease}
+              onIncrease={onIncrease}
+            />
+          )}
+        </Item>
+      </LazyLoad>
     );
   }
 }
