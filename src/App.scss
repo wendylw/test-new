@@ -347,6 +347,15 @@
     .item__content {
       width: 70%;
     }
+
+    .item__detail {
+      width: 50vw;
+    }
+
+    .item__cart-ctrl {
+      top: auto;
+      bottom: 0;
+    }
   }
 
   &__order {
@@ -822,7 +831,7 @@
   }
 
   &__detail {
-    width: 50vw;
+    width: 47vw;
   }
 
   &__detail-content > * ~ * {
@@ -852,7 +861,7 @@
   &__cart-ctrl {
     position: absolute;
     right: 0;
-    bottom: 0;
+    top: 0;
     min-width: 30vw;
     z-index: 1;
 
