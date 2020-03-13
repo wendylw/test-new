@@ -710,7 +710,6 @@
       background-color: $white;
 
       label {
-        font-weight: normal;
         opacity: 0.8;
       }
     }
@@ -864,7 +863,6 @@
     right: 0;
     top: 0;
     min-width: 30vw;
-    z-index: 1;
 
     &::before {
       content: "";
