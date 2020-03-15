@@ -9,8 +9,8 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 
 export class ProductItem extends Component {
   setItemHeight() {
-    // 33.8 equal (item padding + item image + item cart controller button height) / window width
-    this.ItemMinHeight = (document.body.clientWidth || window.innerWidth) * 33.8;
+    // 33.8% equal (item padding + item image + item cart controller button height) / window width
+    return (document.body.clientWidth || window.innerWidth) * 0.338;
   }
 
   render() {
@@ -35,12 +35,12 @@ export class ProductItem extends Component {
       <LazyLoad height={this.setItemHeight()}>
         <Item
           className={className}
-          contentClassName="flex-middle"
+          contentClassName="flex-top"
           productDetailImageRef={productDetailImageRef}
           image={image}
           title={title}
           variation={variation}
-          detail={<CurrencyNumber money={price || 0} />}
+          detail={<CurrencyNumber className="price item__text font-weight-bold gray-font-opacity" money={price || 0} />}
           operateItemDetail={showProductDetail}
           hasTag={isFeaturedProduct}
         >
