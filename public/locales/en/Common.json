@@ -52,5 +52,7 @@
   "PeopleCountModalTitle": "Welcome! How many of you are dining today?",
   "ViewReceipt": "View Receipt",
   "SelectStoreDescription": "Please select a store to continue…",
-  "SelectStoreErrorMessage": "Something wrong, please try again later."
+  "SelectStoreErrorMessage": "Something wrong, please try again later.",
+  "FoodDelivery": "Food Delivery",
+  "SelfPickup": "Self Pickup"
 }
