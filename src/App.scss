@@ -1673,7 +1673,8 @@
   }
 }
 
-.payment {
+.payment,
+.delivery {
   &__item {
     padding: 4vw 0 4vw 4vw;
     margin: 0;
@@ -1688,6 +1689,19 @@
     padding: 0 20px;
     font-size: 1.3rem;
     width: 60vw;
+  }
+}
+
+.delivery {
+  @extend .main-section;
+  background-color: $white;
+
+  &__next-icon {
+    padding: 3.2vw 3.8vw;
+
+    svg {
+      fill: $theme-color;
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import paymentBankingImage from '../../../../../images/payment-banking.png';
 import paymentCreditImage from '../../../../../images/payment-credit.png';
+import Header from '../../../../../components/Header';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const METHODS_LIST = [
@@ -29,19 +30,22 @@ class DeliveryMethods extends Component {
     const { t } = this.props;
 
     return (
-      <section className="table-ordering__payment">
-        <ul className="payment__list">
+      <section className="delivery">
+        <Header className="border__bottom-divider gray has-right" isPage={true} title={t('SelectYourPreference')} />
+        <ul className="delivery__list">
           {METHODS_LIST.map(method => (
             <li
               key={method.name}
-              className="payment__item border__bottom-divider flex flex-middle flex-space-between"
+              className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
               onClick={() => this.setCurrentDelivery(method.name)}
             >
-              <figure className="payment__image-container">
+              <figure className="delivery__image-container">
                 <img src={method.logo} alt={t(method.labelKey)}></img>
               </figure>
-              <label className="payment__name font-weight-bold">{t(method.labelKey)}</label>
-              <IconNext />
+              <label className="delivery__name font-weight-bold">{t(method.labelKey)}</label>
+              <i className="delivery__next-icon">
+                <IconNext />
+              </i>
             </li>
           ))}
         </ul>
