@@ -636,16 +636,19 @@
     content: "";
     text-align: right;
     display: inline-block;
+  }
+
+  &__title + span {
     min-width: 26vw;
   }
 
   &.has-right {
     .header__title {
-      max-width: 66vw;
+      max-width: 76vw;
     }
 
     &::after {
-      min-width: 16vw;
+      min-width: 8vw;
     }
   }
 }
