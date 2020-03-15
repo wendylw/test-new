@@ -7,12 +7,11 @@ import Tag from '../../../components/Tag';
 import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
-export class ProductItem extends Component {
-  setItemHeight() {
-    // 33.8% equal (item padding + item image + item cart controller button height) / window width
-    return (document.body.clientWidth || window.innerWidth) * 0.338;
-  }
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { getProductItemMinHeight } from '../../redux/modules/home';
 
+export class ProductItem extends Component {
   render() {
     const {
       t,
@@ -29,10 +28,11 @@ export class ProductItem extends Component {
       isFeaturedProduct,
       showProductDetail,
       productDetailImageRef,
+      productItemMinHeight,
     } = this.props;
 
     return (
-      <LazyLoad height={this.setItemHeight()}>
+      <LazyLoad height={productItemMinHeight}>
         <Item
           className={className}
           contentClassName="flex-top"
@@ -85,9 +85,20 @@ ProductItem.defaultProps = {
   price: 0,
   cartQuantity: 0,
   decreaseDisabled: false,
+  productItemMinHeight: 100,
   onDecrease: () => {},
   onIncrease: () => {},
   showProductDetail: () => {},
 };
 
-export default withTranslation()(ProductItem);
+export default compose(
+  withTranslation(),
+  connect(
+    state => {
+      return {
+        productItemMinHeight: getProductItemMinHeight(state),
+      };
+    },
+    dispatch => ({})
+  )
+)(ProductItem);
