@@ -8,12 +8,6 @@ import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 export class ProductItem extends Component {
-  ItemMinHeight = 190;
-
-  componentDidMount() {
-    this.setItemHeight();
-  }
-
   setItemHeight() {
     // 33.8 equal (item padding + item image + item cart controller button height) / window width
     this.ItemMinHeight = (document.body.clientWidth || window.innerWidth) * 33.8;
@@ -38,7 +32,7 @@ export class ProductItem extends Component {
     } = this.props;
 
     return (
-      <LazyLoad height={this.ItemMinHeight}>
+      <LazyLoad height={this.setItemHeight()}>
         <Item
           className={className}
           contentClassName="flex-middle"
