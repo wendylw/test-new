@@ -644,11 +644,11 @@
 
   &.has-right {
     .header__title {
-      max-width: 76vw;
+      max-width: 80vw;
     }
 
     &::after {
-      min-width: 8vw;
+      min-width: 6vw;
     }
   }
 }
