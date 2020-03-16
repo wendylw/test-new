@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
-import DeliveryMethods from './components/DeliveryMethods';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -38,7 +37,7 @@ class App extends Component {
     const { hashCode } = this.props;
 
     if (hashCode) {
-      // window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
     }
   }
 
@@ -46,13 +45,13 @@ class App extends Component {
     const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
 
-    // if (!show) {
-    //   return null;
-    // }
+    if (!show) {
+      return null;
+    }
 
-    // if (stores && stores.length === 1) {
-    //   return null;
-    // }
+    if (stores && stores.length === 1) {
+      return null;
+    }
 
     return (
       <React.Fragment>
@@ -63,18 +62,17 @@ class App extends Component {
           logo={logo}
           title={storeName}
         />
-        <DeliveryMethods />
-        {/* <section className="store-list__content">
+        <section className="store-list__content">
           <h2 className="text-center">{t('SelectStoreDescription')}</h2>
 
           <div className="list__container">
             {!stores || !stores.length ? (
               <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
             ) : (
-                <StoreList storeList={stores} onSelect={this.handleSelectStore.bind(this)} />
-              )}
+              <StoreList storeList={stores} onSelect={this.handleSelectStore.bind(this)} />
+            )}
           </div>
-        </section> */}
+        </section>
       </React.Fragment>
     );
   }

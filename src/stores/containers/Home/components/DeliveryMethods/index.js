@@ -13,13 +13,11 @@ const METHODS_LIST = [
     name: 'Delivery',
     logo: DeliveryImage,
     labelKey: 'FoodDelivery',
-    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: PickUpImage,
     labelKey: 'PickUp',
-    pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
 ];
 

@@ -55,5 +55,6 @@
   "SelectStoreErrorMessage": "Something wrong, please try again later.",
   "FoodDelivery": "Food Delivery",
   "SelfPickup": "Self Pickup",
-  "SelectYourPreference": "Select Your Preference"
+  "SelectYourPreference": "Select Your Preference",
+  "DeliverTo": "Deliver To"
 }
