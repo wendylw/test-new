@@ -16,6 +16,7 @@ const ROUTER_PATHS = {
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOCATION: '/location',
   ORDERING_CART: '/cart',
   ORDERING_PAYMENT: '/payment',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',

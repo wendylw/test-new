@@ -123,6 +123,18 @@ img {
   }
 }
 
+.input-group {
+  background-color: $white;
+
+  &.outline {
+    border: 1px solid $gray-3;
+
+    .input {
+      border: 0;
+    }
+  }
+}
+
 .input {
   &__error {
     border-color: $red;

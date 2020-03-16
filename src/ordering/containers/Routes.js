@@ -5,6 +5,7 @@ import Cart from './Cart';
 import Payment from './Payment';
 import Constants from '../../utils/constants';
 
+const Location = lazy(() => import('./Location'));
 const Receipt = lazy(() => import('./Receipt'));
 const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
@@ -21,6 +22,7 @@ class Routes extends Component {
         <Suspense fallback={<div className="loader theme page-loader"></div>}>
           <Switch>
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
+            <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
             <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
