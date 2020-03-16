@@ -15,6 +15,8 @@ import { getBusiness } from './app';
 const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
+    // 33.8% equal (item padding + item image + item cart controller button height) / window width
+    productItemMinHeight: (document.body.clientWidth || window.innerWidth) * 0.338,
   },
   currentProduct: {
     id: '',
@@ -376,6 +378,8 @@ export const getCategoryProductList = createSelector(
     return mergeWithShoppingCart(newCategories, carts);
   }
 );
+
+export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
 
 export const isVerticalMenuBusiness = state => {
   const { verticalMenuBusinesses } = state.home.domProperties;
