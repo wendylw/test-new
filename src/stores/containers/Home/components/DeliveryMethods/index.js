@@ -3,22 +3,22 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
-import paymentBankingImage from '../../../../../images/payment-banking.png';
-import paymentCreditImage from '../../../../../images/payment-credit.png';
+import DeliveryImage from '../../../../../images/icon-delivery.png';
+import PickUpImage from '../../../../../images/icon-pickup.png';
 import Header from '../../../../../components/Header';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const METHODS_LIST = [
   {
-    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-    logo: paymentBankingImage,
+    name: 'Delivery',
+    logo: DeliveryImage,
     labelKey: 'FoodDelivery',
     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
-    logo: paymentCreditImage,
-    labelKey: 'SelfPickup',
+    logo: PickUpImage,
+    labelKey: 'PickUp',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
 ];
