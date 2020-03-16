@@ -52,11 +52,6 @@ class CategoryProductList extends Component {
 
   render() {
     const { t, categories, isVerticalMenu } = this.props;
-    const itemClassList = ['flex-middle'];
-
-    if (isVerticalMenu) {
-      itemClassList.push('flex-column');
-    }
 
     return (
       <div id="product-list" className="list__container">
@@ -109,7 +104,6 @@ class CategoryProductList extends Component {
                   {(category.products || []).map(product => (
                     <ProductItem
                       key={product.id}
-                      className={itemClassList.join(' ')}
                       image={product.images[0]}
                       title={product.title}
                       price={product.displayPrice}
