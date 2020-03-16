@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
+import DeliveryMethods from './components/DeliveryMethods';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -12,12 +13,10 @@ import { actions as homeActionCreators, getStoreHashCode, getAllStores, showStor
 class App extends Component {
   state = {};
 
-  async componentWillMount() {
+  async componentDidMount() {
     const { homeActions } = this.props;
 
     await homeActions.loadCoreStores();
-
-    this.redirectPage(this.props.stores);
   }
 
   redirectPage(stores) {
@@ -50,11 +49,11 @@ class App extends Component {
     }
 
     if (stores && stores.length === 1) {
-      return null;
+      return <DeliveryMethods store={stores[0]} />;
     }
 
     return (
-      <React.Fragment>
+      <section className="store-list__content">
         <Header
           className="border__bottom-divider gray has-right"
           isPage={true}
@@ -62,18 +61,16 @@ class App extends Component {
           logo={logo}
           title={storeName}
         />
-        <section className="store-list__content">
-          <h2 className="text-center">{t('SelectStoreDescription')}</h2>
+        <h2 className="text-center">{t('SelectStoreDescription')}</h2>
 
-          <div className="list__container">
-            {!stores || !stores.length ? (
-              <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
-            ) : (
-              <StoreList storeList={stores} onSelect={this.handleSelectStore.bind(this)} />
-            )}
-          </div>
-        </section>
-      </React.Fragment>
+        <div className="list__container">
+          {!stores || !stores.length ? (
+            <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
+          ) : (
+            <StoreList storeList={stores} onSelect={this.handleSelectStore.bind(this)} />
+          )}
+        </div>
+      </section>
     );
   }
 }

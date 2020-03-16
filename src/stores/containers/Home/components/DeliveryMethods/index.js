@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import DeliveryImage from '../../../../../images/icon-delivery.png';
 import PickUpImage from '../../../../../images/icon-pickup.png';
 import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
 
-const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import { actions as homeActionCreators, getStoreHashCode } from '../../../../redux/modules/home';
+
 const METHODS_LIST = [
   {
     name: 'Delivery',
@@ -15,14 +18,24 @@ const METHODS_LIST = [
     labelKey: 'FoodDelivery',
   },
   {
-    name: PAYMENT_METHODS.CREDIT_CARD_PAY,
+    name: 'PickUp',
     logo: PickUpImage,
     labelKey: 'PickUp',
   },
 ];
 
 class DeliveryMethods extends Component {
-  setCurrentDelivery() {}
+  async handleVisitStore(methodName) {
+    const { store, homeActions } = this.props;
+
+    await homeActions.getStoreHashData(store.id);
+
+    const { hashCode } = this.props;
+
+    if (hashCode) {
+      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+    }
+  }
 
   render() {
     const { t } = this.props;
@@ -35,7 +48,7 @@ class DeliveryMethods extends Component {
             <li
               key={method.name}
               className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
-              onClick={() => this.setCurrentDelivery(method.name)}
+              onClick={() => this.handleVisitStore(method.name)}
             >
               <figure className="delivery__image-container">
                 <img src={method.logo} alt={t(method.labelKey)}></img>
@@ -53,11 +66,21 @@ class DeliveryMethods extends Component {
 }
 
 DeliveryMethods.propTypes = {
-  onSelect: PropTypes.func,
+  store: PropTypes.object,
 };
 
 DeliveryMethods.defaultProps = {
-  onSelect: () => {},
+  store: {},
 };
 
-export default withTranslation()(DeliveryMethods);
+export default compose(
+  withTranslation(),
+  connect(
+    state => ({
+      hashCode: getStoreHashCode(state),
+    }),
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
+)(DeliveryMethods);
