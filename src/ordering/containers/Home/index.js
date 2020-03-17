@@ -99,9 +99,13 @@ export class Home extends Component {
 
   renderDeliverToBar() {
     const { t } = this.props;
+    const fillInDelivertAddress = () => {
+      const search = window.location.search;
+      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
+    };
 
     return (
-      <div className="location-page__entry item">
+      <div className="location-page__entry item" onClick={fillInDelivertAddress}>
         <div className="item__detail-content flex flex-middle flex-space-between">
           <div className="location-page__base-info">
             <summary className="item__title">{t('DeliverTo')}</summary>

@@ -27,7 +27,17 @@ export class Billing extends Component {
   }
 
   render() {
-    const { t, className, subtotal, total, tax, creditsBalance, businessInfo } = this.props;
+    const {
+      t,
+      className,
+      subtotal,
+      total,
+      tax,
+      creditsBalance,
+      businessInfo,
+      isDeliveryType,
+      deliveryFee = 11,
+    } = this.props;
     const { stores = [] } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
     const classList = ['billing'];
@@ -56,6 +66,14 @@ export class Billing extends Component {
             <CurrencyNumber money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
+
+          {isDeliveryType ? (
+            <li className="billing__item flex flex-middle flex-space-between">
+              <label>Delivery fee</label>
+              <CurrencyNumber money={deliveryFee || 0} />
+            </li>
+          ) : null}
+
           <li className="billing__item show flex flex-middle flex-space-between">
             <label className="font-weight-bold">{t('Total')}</label>
             <CurrencyNumber className="font-weight-bold" money={total || 0} />

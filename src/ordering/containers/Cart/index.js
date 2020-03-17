@@ -126,6 +126,9 @@ class Cart extends Component {
       </div>
     );
   }
+  isDeliveryType = () => {
+    return true;
+  };
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
@@ -179,6 +182,7 @@ class Cart extends Component {
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
+            isDeliveryType={this.isDeliveryType()}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
