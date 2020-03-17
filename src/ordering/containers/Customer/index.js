@@ -94,6 +94,27 @@ class Customer extends Component {
             </div>
           </form>
         </div>
+
+        <aside className="aside active">
+          <div className="form-text">
+            <label className="gray-font-opacity">Add address details *</label>
+            <div className="form__group">
+              <textarea
+                rows="4"
+                maxLength="140"
+                className="input input__textarea input__block gray-font-opacity"
+              ></textarea>
+            </div>
+            <button
+              className="button button__fill button__block font-weight-bold border-radius-base"
+              onClick={() => {}}
+              disabled={false}
+            >
+              {t('Save')}
+            </button>
+          </div>
+        </aside>
+
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button

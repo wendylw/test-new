@@ -214,6 +214,7 @@ form {
   outline: none;
   box-shadow: none;
   -webkit-appearance: none;
+  resize: none;
 
   select + svg {
     position: absolute;
@@ -239,6 +240,10 @@ form {
     display: block;
     margin: 10px 0;
     text-align: left;
+  }
+
+  &__textarea {
+    height: auto;
   }
 
   &__list-top {
