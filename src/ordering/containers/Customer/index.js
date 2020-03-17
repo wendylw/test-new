@@ -16,10 +16,14 @@ import { bindActionCreators, compose } from 'redux';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
+const { ROUTER_PATHS, ADDRESS_RANGE, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
+    addressDetails: null,
     deliveryComments: null,
+    formTextareaTitle: null,
+    asideName: null,
   };
 
   async savePhoneNumber() {
@@ -35,12 +39,24 @@ class Customer extends Component {
     // submitPhoneNumber();
   }
 
-  handleChangeDriverComments(deliveryComments) {
+  handleDriverComments(deliveryComments) {
     this.setState({
       deliveryComments,
     });
 
     Utils.setSessionVariable('deliveryComments', deliveryComments);
+  }
+
+  handleAddressDetails(addressDetails) {
+    this.setState({
+      addressDetails,
+    });
+
+    Utils.setLocalStorageVariable('addressDetails', addressDetails);
+  }
+
+  handleToggleFormTextarea(asideName) {
+    this.setState({ asideName });
   }
 
   renderDeliveryAddress() {
@@ -49,12 +65,8 @@ class Customer extends Component {
     let addressString = null;
 
     if (addressInfo) {
-      addressString = Utils.getValidAddress(addressInfo, Constants.ADDRESS_RANGE.COUNTRY);
+      addressString = Utils.getValidAddress(addressInfo, ADDRESS_RANGE.COUNTRY);
     }
-    // const deliveryAddressInfo = {
-    //   ...JSON.parse(Utils.getLocalStorageVariable('addressInfo')),
-    //   street1: "",
-    // };
 
     return (
       <React.Fragment>
@@ -89,7 +101,8 @@ class Customer extends Component {
 
   render() {
     const { t, history } = this.props;
-    const { phone } = this.state;
+    const { phone, asideName, formTextareaTitle } = this.state;
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     return (
       <section className={`table-ordering__customer` /* hide */}>
@@ -97,7 +110,12 @@ class Customer extends Component {
           className="text-center gray has-right"
           isPage={true}
           title={t('DeliveryDetails')}
-          navFunc={() => {}}
+          navFunc={() => {
+            history.push({
+              pathname: ROUTER_PATHS.ORDERING_CART,
+              search: type ? `?type=${type}` : '',
+            });
+          }}
         ></Header>
         <div className="customer__content">
           {/* <ul className="flex">
@@ -146,17 +164,24 @@ class Customer extends Component {
           </form>
         </div>
 
-        <FormTextarea />
+        <FormTextarea
+          show={!!asideName}
+          onToggle={this.handleToggleFormTextarea.bind(this)}
+          title={formTextareaTitle}
+          onUpdateText={
+            asideName === ASIDE_NAMES.ADD_DRIVER_NOTE
+              ? this.handleDriverComments.bind(this)
+              : this.handleAddressDetails.bind(this)
+          }
+        />
 
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
               className="billing__button button button__fill button__block dark font-weight-bold"
               onClick={() => {
-                const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
                 history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+                  pathname: ROUTER_PATHS.ORDERING_CART,
                   search: type ? `?type=${type}` : '',
                 });
               }}
