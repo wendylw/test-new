@@ -1,5 +1,5 @@
 // todo: remove it
-import { mockGeocodingResponse } from './mockResponse';
+// import { mockGeocodingResponse } from './mockResponse';
 
 // todo: move into environment
 const GOOGLE_MAP_API_KEY = 'AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c';
@@ -42,13 +42,13 @@ export const getCurrentAddress = () =>
         console.log(`More or less ${crd.accuracy} meters.`);
 
         // todo: remove
-        const ret = {
-          coords: position.coords,
-          geoPositions: mockGeocodingResponse,
-          address: mockGeocodingResponse[0].formatted_address,
-        };
-        console.warn('with mock of result', ret);
-        return resolve(ret);
+        // const ret = {
+        //   coords: position.coords,
+        //   geoPositions: mockGeocodingResponse,
+        //   address: mockGeocodingResponse[0].formatted_address,
+        // };
+        // console.warn('with mock of result', ret);
+        // return resolve(ret);
 
         renderGoogleMapApiScript().then(() => {
           // geolocation transforms to google position

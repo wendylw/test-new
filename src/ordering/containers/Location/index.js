@@ -11,6 +11,7 @@ class Location extends Component {
   };
 
   componentDidMount = async () => {
+    // will show prompt of permission once entry the page
     await this.tryGeolocation();
   };
 
@@ -18,6 +19,7 @@ class Location extends Component {
     try {
       // getCurrentAddress with fire a permission prompt
       const { address } = await getCurrentAddress();
+      // todo: save into locale storage for sharing user device address between pages
       this.setState({
         address,
       });
