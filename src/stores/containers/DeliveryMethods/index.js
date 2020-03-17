@@ -22,12 +22,18 @@ const METHODS_LIST = [
   {
     name: 'pickup',
     logo: PickUpImage,
-    labelKey: 'PickUp',
+    labelKey: 'SelfPickup',
     pathname: '',
   },
 ];
 
 class DeliveryMethods extends Component {
+  handleClickBack() {
+    const { homeActions } = this.props;
+
+    homeActions.clearCurrentStore();
+  }
+
   async handleVisitStore(methodName) {
     const { store, homeActions } = this.props;
 
@@ -48,7 +54,12 @@ class DeliveryMethods extends Component {
 
     return (
       <section className="delivery">
-        <Header className="border__bottom-divider gray has-right" isPage={true} title={t('SelectYourPreference')} />
+        <Header
+          className="border__bottom-divider gray has-right"
+          isPage={true}
+          title={t('SelectYourPreference')}
+          navFunc={this.handleClickBack.bind(this)}
+        />
         <ul className="delivery__list">
           {METHODS_LIST.map(method => (
             <li

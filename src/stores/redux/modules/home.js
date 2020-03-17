@@ -24,8 +24,9 @@ export const types = {
   FETCH_STORE_HASHCODE_SUCCESS: 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS',
   FETCH_STORE_HASHCODE_FAILURE: 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE',
 
-  // set current store
+  // operate current store
   SET_CURRENT_STORE: 'STORES/HOME/SET_CURRENT_STORE',
+  CLEAR_CURRENT_STORE: 'STORES/HOME/CLEAR_CURRENT_STORE',
 };
 
 export const actions = {
@@ -48,6 +49,10 @@ export const actions = {
   setCurrentStore: storeId => ({
     type: types.SET_CURRENT_STORE,
     storeId,
+  }),
+
+  clearCurrentStore: () => ({
+    type: types.CLEAR_CURRENT_STORE,
   }),
 };
 
@@ -73,8 +78,11 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, currentStoreId: storeId };
     }
-    case types.FETCH_CORESTORES_REQUEST: {
-      return { ...state, isFetching: true };
+    case types.SET_CURRENT_STORE:
+    case types.CLEAR_CURRENT_STORE: {
+      const { storeId } = action;
+
+      return { ...state, currentStoreId: storeId };
     }
     case types.FETCH_CORESTORES_SUCCESS: {
       const { business } = action.responseGql.data;
