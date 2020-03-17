@@ -3,8 +3,32 @@ import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { IconPin, IconAdjust } from '../../../components/Icons';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
+import { getCurrentAddress } from './utils';
 
 class Location extends Component {
+  state = {
+    address: '',
+  };
+
+  componentDidMount = async () => {
+    // will show prompt of permission once entry the page
+    await this.tryGeolocation();
+  };
+
+  tryGeolocation = async () => {
+    try {
+      // getCurrentAddress with fire a permission prompt
+      const { address } = await getCurrentAddress();
+      // todo: save into locale storage for sharing user device address between pages
+      this.setState({
+        address,
+      });
+    } catch (e) {
+      console.error(e);
+      alert(`error found, address is not identified, use empty`);
+    }
+  };
+
   render() {
     const { t } = this.props;
 
@@ -14,10 +38,20 @@ class Location extends Component {
         <div className="location-page__info">
           <form className="location-page__form">
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-              <i className="location-page__icon-pin">
+              <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
                 <IconPin />
               </i>
-              <input className="input input__block" type="text" />
+              <input
+                className="input input__block"
+                type="text"
+                defaultValue={this.state.address}
+                onChange={event => {
+                  console.log('typed:', event.currentTarget.value);
+                  this.setState({
+                    address: event.currentTarget.value,
+                  });
+                }}
+              />
             </div>
           </form>
           <address className="location-page__address item border__bottom-divider">
