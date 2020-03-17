@@ -68,8 +68,8 @@ class Customer extends Component {
 
   renderDeliveryAddress() {
     const { t } = this.props;
-    const { addressDetail, deliveryComments } = this.state;
-    const addressInfo = JSON.parse(Utils.getLocalStorageVariable('addressInfo'));
+    const { addressDetails, deliveryComments } = this.state;
+    const addressInfo = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
     let addressString = null;
 
     if (addressInfo) {
@@ -88,11 +88,9 @@ class Customer extends Component {
           <p className="form__textarea gray-font-opacity">{addressString || t('AddAddressPlaceholder')}</p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
-          <label className="form__label font-weight-bold gray-font-opacity">
-            {addressDetail || t('AddressDetails')}
-          </label>
+          <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
           <div className="flex flex-middle flex-space-between">
-            <p className="gray-font-opacity">{t('AddressDetailsPlaceholder')}</p>
+            <p className="gray-font-opacity">{addressDetails || t('AddressDetailsPlaceholder')}</p>
             <i className="customer__edit-icon">
               <IconEdit />
             </i>

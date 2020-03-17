@@ -160,7 +160,7 @@ export class Home extends Component {
       deliveryFee,
       minOrder,
       storeAddress,
-      deliveryToAddress: 'tt',
+      deliveryToAddress: JSON.parse(Utils.getLocalStorageVariable('currentAddress')).address,
       telephone: phone,
       validDays,
       validTimeFrom,
