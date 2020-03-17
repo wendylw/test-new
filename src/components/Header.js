@@ -5,6 +5,7 @@ import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
+import CurrencyNumber from '../ordering/components/CurrencyNumber';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -26,9 +27,18 @@ class Header extends Component {
   }
 
   render() {
-    const { className, isStoreHome, title, children, onClickHandler, isDeliveryType } = this.props;
-    /* TODO: judge is homepage and delivery */
+    const {
+      className,
+      isStoreHome,
+      title,
+      children,
+      onClickHandler,
+      isDeliveryType,
+      deliveryFee,
+      minOrder,
+    } = this.props;
 
+    /* TODO: judge is homepage and delivery */
     const fixedClassList = ['header flex  flex-space-between'];
     const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
 
@@ -56,10 +66,14 @@ class Header extends Component {
                 <i className="header__motor-icon text-middle">
                   <IconMotorcycle />
                 </i>
-                <span className="text-middle">RM 5.00ddd</span>
+                {/* <span className="text-middle">RM 5.00</span> */}
+                <CurrencyNumber money={deliveryFee || 0} />
               </li>
               <li className="header__info-item">
-                <span>Min Order. RM 20.00</span>
+                {/* <span>Min Order. RM 20.00</span> */}
+                <span>
+                  Min Order. <CurrencyNumber money={minOrder || 0} />
+                </span>
               </li>
             </ul>
           </div>

@@ -2,10 +2,22 @@ import React, { Component } from 'react';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import { IconMotorcycle } from '../../../../../components/Icons';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
+  getDeliveryHourUI = () => {
+    const { deliveryHour } = this.props;
+    return deliveryHour.map(x => {
+      return (
+        <li className="store-info__item flex flex-middle flex-space-between">
+          <span>Sun</span>
+          <time>11:00 - 22:30</time>
+        </li>
+      );
+    });
+  };
   render() {
-    const { onlineStoreInfo, show, onToggle } = this.props;
+    const { onlineStoreInfo, show, onToggle, storeAddress, telephone, deliveryFee, minOrder } = this.props;
     const getClassName = show => {
       return show ? 'aside active' : 'aside';
     };
@@ -27,21 +39,23 @@ class DeliveryDetailModal extends Component {
                   <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
                 </div>
               </h1>
-              <p className="store-info__address gray-font-opacity">
-                34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur
-              </p>
+              <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href="tel:+6001298765432">
-                +60 012 98765432
+                {telephone}
               </a>
               <ul className="header__info-list">
                 <li className="header__info-item">
                   <i className="header__motor-icon text-middle">
                     <IconMotorcycle />
                   </i>
-                  <span className="text-middle">RM 5.00</span>
+                  <span className="text-middle">
+                    <CurrencyNumber money={deliveryFee || 0} />
+                  </span>
                 </li>
                 <li className="header__info-item">
-                  <span>Min Order. RM 20.00</span>
+                  <span>
+                    Min Order. <CurrencyNumber money={minOrder || 0} />
+                  </span>
                 </li>
               </ul>
             </div>
@@ -50,34 +64,35 @@ class DeliveryDetailModal extends Component {
           <div className="store-info__delivery-hours flex flex-top flex-space-between">
             <label className="font-weight-bold gray-font-opacity">Delivery Hours</label>
             <ul className="store-info__list">
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
-              <li className="store-info__item flex flex-middle flex-space-between">
-                <span>Sun</span>
-                <time>11:00 - 22:30</time>
-              </li>
+              {this.getDeliveryHourUI()}
+              {/* <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li>
+                            <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li>
+                            <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li>
+                            <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li>
+                            <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li>
+                            <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li>
+                            <li className="store-info__item flex flex-middle flex-space-between">
+                                <span>Sun</span>
+                                <time>11:00 - 22:30</time>
+                            </li> */}
             </ul>
           </div>
         </div>

@@ -36,7 +36,7 @@ export class Billing extends Component {
       creditsBalance,
       businessInfo,
       isDeliveryType,
-      deliveryFee = 11,
+      deliveryFee,
     } = this.props;
     const { stores = [] } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
@@ -69,7 +69,7 @@ export class Billing extends Component {
 
           {isDeliveryType ? (
             <li className="billing__item flex flex-middle flex-space-between">
-              <label>Delivery fee</label>
+              <label>{t('Delivery fee')}</label>
               <CurrencyNumber money={deliveryFee || 0} />
             </li>
           ) : null}

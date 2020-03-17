@@ -83,7 +83,6 @@ export class Home extends Component {
   }
 
   handleToggleAside(asideName) {
-    console.log('--handleToggleAside-', asideName);
     const stopBodyScroll =
       this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
       asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
@@ -98,20 +97,17 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t } = this.props;
+    const { t, deliveryToAddress } = this.props;
     const fillInDelivertAddress = () => {
       const search = window.location.search;
       window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
     };
-
     return (
       <div className="location-page__entry item" onClick={fillInDelivertAddress}>
         <div className="item__detail-content flex flex-middle flex-space-between">
           <div className="location-page__base-info">
             <summary className="item__title">{t('DeliverTo')}</summary>
-            <p className="location-page__entry-address gray-font-opacity">
-              Unit C-3, 10 Boulevard, Leburhraya Sprint, PJU 6A, 47400 Peta
-            </p>
+            <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
           </div>
           <i className="location-page__edit">
             <IconEdit />
@@ -125,7 +121,7 @@ export class Home extends Component {
   };
 
   renderHeader() {
-    const { t, onlineStoreInfo, requestInfo } = this.props;
+    const { t, onlineStoreInfo, requestInfo, deliveryFee, minOrder } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
     const isDeliveryType = this.isDeliveryType();
@@ -143,6 +139,8 @@ export class Home extends Component {
         title={onlineStoreInfo.storeName}
         onClickHandler={this.handleToggleAside.bind(this)}
         isDeliveryType={isDeliveryType}
+        deliveryFee={deliveryFee}
+        minOrder={minOrder}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
         {/* TODO: judge is delivery */}
@@ -157,7 +155,19 @@ export class Home extends Component {
   }
 
   render() {
-    const { business, categories, onlineStoreInfo, requestInfo, isVerticalMenu, ...otherProps } = this.props;
+    const {
+      business,
+      categories,
+      onlineStoreInfo,
+      requestInfo,
+      isVerticalMenu,
+      deliveryFee,
+      minOrder,
+      telephone,
+      storeAddress,
+      deliveryHour,
+      ...otherProps
+    } = this.props;
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
 
@@ -193,6 +203,11 @@ export class Home extends Component {
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
           onToggle={this.handleToggleAside.bind(this)}
+          deliveryFee={deliveryFee}
+          minOrder={minOrder}
+          storeAddress={storeAddress}
+          telephone={telephone}
+          deliveryHour={deliveryHour}
         />
         <Footer
           {...otherProps}
@@ -205,6 +220,7 @@ export class Home extends Component {
   }
 }
 
+/* TODO: backend data */
 export default compose(
   withTranslation(['OrderingHome']),
   connect(
@@ -215,6 +231,12 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
+        deliveryFee: 5.5,
+        minOrder: 21,
+        deliveryToAddress: 'Unit C-3, 10 Boulevard, Leburhraya Sprint, PJU 6A, 47400 Peta',
+        storeAddress: ' 34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur',
+        telephone: '+60 012 98765432',
+        deliveryHour: [1, 2, 3, 4, 5, 6],
       };
     },
     dispatch => ({
