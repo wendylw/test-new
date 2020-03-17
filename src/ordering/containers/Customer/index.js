@@ -21,7 +21,7 @@ class Customer extends Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
     addressDetails: Utils.getLocalStorageVariable('addressDetails'),
-    deliveryComments: Utils.setSessionVariable('deliveryComments'),
+    deliveryComments: Utils.getSessionVariable('deliveryComments'),
     formTextareaTitle: null,
     asideName: null,
   };
