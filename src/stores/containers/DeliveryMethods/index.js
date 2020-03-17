@@ -48,11 +48,7 @@ class DeliveryMethods extends Component {
 
     return (
       <section className="delivery">
-        <Header
-          className="flex-middle border__bottom-divider gray has-right"
-          isPage={true}
-          title={t('SelectYourPreference')}
-        />
+        <Header className="border__bottom-divider gray has-right" isPage={true} title={t('SelectYourPreference')} />
         <ul className="delivery__list">
           {METHODS_LIST.map(method => (
             <li

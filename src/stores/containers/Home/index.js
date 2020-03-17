@@ -54,7 +54,7 @@ class App extends Component {
     return (
       <section className="store-list__content">
         <Header
-          className="border__bottom-divider flex-middle gray has-right"
+          className="border__bottom-divider gray has-right"
           isPage={true}
           isStoreHome={true}
           logo={logo}
