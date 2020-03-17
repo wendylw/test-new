@@ -8,6 +8,7 @@ import { getBusiness } from './app';
 
 const initialState = {
   storeHashCode: null,
+  currentStoreId: null,
   storeIds: [],
 };
 
@@ -43,8 +44,9 @@ export const actions = {
     },
   }),
 
-  setCurrentStore: store => ({
+  setCurrentStore: storeId => ({
     type: types.SET_CURRENT_STORE,
+    storeId,
   }),
 };
 
@@ -65,6 +67,13 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: redirectTo };
     }
+    case types.SET_CURRENT_STORE: {
+      const { storeId } = action;
+
+      console.log(storeId);
+
+      return { ...state, currentStoreId: storeId };
+    }
     case types.FETCH_CORESTORES_REQUEST: {
       return { ...state, isFetching: true };
     }
@@ -72,8 +81,9 @@ const reducer = (state = initialState, action) => {
       const { business } = action.responseGql.data;
       const { stores } = business || {};
       const validStores = (stores || []).filter(s => s.isOnline && !s.isDeleted);
+      const currentStoreId = stores && stores.length === 1 ? stores[0].id : null;
 
-      return { ...state, isFetching: false, storeIds: validStores.map(s => s.id) };
+      return { ...state, isFetching: false, storeIds: validStores.map(s => s.id), currentStoreId };
     }
     case types.FETCH_CORESTORES_FAILURE: {
       return { ...state, isFetching: false };
@@ -93,5 +103,6 @@ export const getOneStoreInfo = (state, storeId) => {
   return getStoreById(state, storeId);
 };
 
+export const getCurrentStoreId = state => state.home.currentStoreId;
 export const getStoreHashCode = state => state.home.storeHashCode;
 export const showStores = state => !state.home.isFetching;
