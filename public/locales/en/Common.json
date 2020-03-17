@@ -58,5 +58,12 @@
   "SelectYourPreference": "Select Your Preference",
   "DeliverTo": "Deliver To",
   "DeliverToErrorMessage": "Sorry order location is too far from store",
-  "Closed": "Closed"
+  "Closed": "Closed",
+  "DeliveryDetails": "Delivery Details",
+  "Name": "Name",
+  "MobileNumber": "Mobile Number",
+  "AddressDetails": "Address Details",
+  "AddAddressPlaceholder": "Add in your address*",
+  "AddressDetailsPlaceholder": "e.g Floor, unit number",
+  "AddNoteToDriverPlaceholder": "Add a note to driver *"
 }

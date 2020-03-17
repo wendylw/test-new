@@ -3,6 +3,7 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 import Home from './Home';
 import Cart from './Cart';
 import Payment from './Payment';
+import Customer from './Customer';
 import Constants from '../../utils/constants';
 
 const Location = lazy(() => import('./Location'));
@@ -22,9 +23,10 @@ class Routes extends Component {
         <Suspense fallback={<div className="loader theme page-loader"></div>}>
           <Switch>
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
-            <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={Customer} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />

@@ -17,6 +17,7 @@ const ROUTER_PATHS = {
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
   ORDERING_LOCATION: '/location',
+  ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
   ORDERING_PAYMENT: '/payment',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',

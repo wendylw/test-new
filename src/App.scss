@@ -395,6 +395,13 @@
     }
   }
 
+  &__customer {
+    @extend .main-section;
+
+    background-color: $white;
+    padding-bottom: 21.6vw;
+  }
+
   &__payment {
     @extend .main-section;
     padding-bottom: 43.2vw;
@@ -2470,6 +2477,33 @@
 
   &__time {
     @extend .card-list__time;
+  }
+}
+
+.customer {
+  &__method {
+    width: 50%;
+  }
+
+  &__method-label {
+    display: inline-block;
+    font-size: 1.2rem;
+  }
+
+  &__form {
+    padding: 0 3.8vw;
+
+    .input,
+    .react-phone-number-input .react-phone-number-input__input {
+      font-size: 1.4rem;
+      height: 50px;
+    }
+  }
+
+  &__edit-icon {
+    svg {
+      fill: $theme-color;
+    }
   }
 }
 
