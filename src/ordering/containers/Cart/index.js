@@ -11,11 +11,10 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as appActionCreators } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 
@@ -68,8 +67,10 @@ class Cart extends Component {
     const { history, cartSummary, user } = this.props;
     const { isLogin } = user;
     const { total, totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const pathname = type ? Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO : Constants.ROUTER_PATHS.ORDERING_PAYMENT;
 
-    if (isLogin && !total) {
+    if (isLogin && !total && !type) {
       const { paymentActions } = this.props;
 
       this.setState({
@@ -94,7 +95,10 @@ class Cart extends Component {
       return;
     }
 
-    history.push(Constants.ROUTER_PATHS.ORDERING_PAYMENT);
+    history.push({
+      pathname,
+      search: type ? `?type=${type}` : '',
+    });
   };
 
   handleClearAll = () => {
