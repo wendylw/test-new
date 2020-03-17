@@ -5,6 +5,7 @@ import Cart from './Cart';
 import Payment from './Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
+import NeedHelp from './NeedHelp';
 
 const Location = lazy(() => import('./Location'));
 const Receipt = lazy(() => import('./Receipt'));
@@ -31,6 +32,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
+            <Route exact path={ROUTER_PATHS.NEEDHELP} component={NeedHelp} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
           </Switch>
         </Suspense>

@@ -117,7 +117,9 @@ export class Home extends Component {
     );
   }
   isDeliveryType = () => {
-    return true;
+    //return true;
+    const type = Utils.getQueryString('type');
+    return type === 'delivery';
   };
 
   renderHeader() {
