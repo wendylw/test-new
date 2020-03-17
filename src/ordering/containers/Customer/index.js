@@ -34,9 +34,6 @@ class Customer extends Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
-    // this.setState({ isLoading: true });
-
-    // submitPhoneNumber();
   }
 
   handleDriverComments(deliveryComments) {
