@@ -87,6 +87,7 @@ Header.propTypes = {
   className: PropTypes.string,
   isPage: PropTypes.bool,
   isStoreHome: PropTypes.bool,
+  isDeliveryType: PropTypes.bool,
   logo: PropTypes.string,
   title: PropTypes.string,
   navFunc: PropTypes.func,
@@ -95,6 +96,7 @@ Header.propTypes = {
 Header.defaultProps = {
   isPage: false,
   isStoreHome: false,
+  isDeliveryType: false,
   title: '',
   navFunc: () => {},
 };

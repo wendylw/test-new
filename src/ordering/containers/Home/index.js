@@ -44,6 +44,13 @@ export class Home extends Component {
     homeActions.loadProductList();
   }
 
+  isDeliveryType = () => {
+    const { history } = this.props;
+    const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    return type === 'delivery';
+  };
+
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
     const rootClassName = rootEl
@@ -116,11 +123,6 @@ export class Home extends Component {
       </div>
     );
   }
-  isDeliveryType = () => {
-    //return true;
-    const type = Utils.getQueryString('type');
-    return type === 'delivery';
-  };
 
   renderHeader() {
     const { t, onlineStoreInfo, requestInfo, deliveryFee, minOrder } = this.props;
@@ -128,8 +130,8 @@ export class Home extends Component {
     const classList = ['border__bottom-divider gray'];
     const isDeliveryType = this.isDeliveryType();
     // TODO: judge is delivery
-    if (!tableId) {
-      // classList.push('has-right');
+    if (!tableId || !isDeliveryType) {
+      classList.push('has-right');
     }
 
     return (

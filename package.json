@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:7000",
+  "proxy": "https://wenjingzhang.beep.test12.shub.us",
   "engines": {
     "node": ">=8.17.0"
   },
