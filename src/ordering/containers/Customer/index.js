@@ -38,13 +38,15 @@ class Customer extends Component {
     await Utils.setLocalStorageVariable('user.p', phone);
   }
 
-  handleCreateOrder() {
+  async handleCreateOrder() {
     this.savePhoneNumber();
 
-    const { paymentActions, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
+    const { history } = this.props;
 
-    paymentActions.createOrder({ cashback: totalCashback });
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+      search: window.location.search,
+    });
   }
 
   handleUpdateName(e) {
