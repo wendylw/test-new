@@ -1204,7 +1204,8 @@
 
     > .cart-pane,
     > .product-detail,
-    > .product-description {
+    > .product-description,
+    > .store-info {
       transform: translateY(0%);
       -webkit-transform: translateY(0%);
     }
@@ -1393,6 +1394,35 @@
     .product-description__back-icon {
       opacity: 0;
     }
+  }
+}
+
+.store-info {
+  @extend .aside-content;
+  @extend .animation__slide-up;
+
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0 4vw;
+
+  &__address,
+  &__phone {
+    display: block;
+    margin: 5px 0;
+    padding: 0 5vw;
+  }
+
+  &__delivery-hours {
+    margin: 24px 0;
+  }
+
+  &__list {
+    width: 60%;
+  }
+
+  &__item {
+    margin: 10px 0;
   }
 }
 
