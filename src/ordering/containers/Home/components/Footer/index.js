@@ -71,10 +71,12 @@ export class Footer extends Component {
               disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
               onClick={() => {
                 onToggle();
-                const { history } = this.props;
                 const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-                history.push({ pathname: `${Constants.ROUTER_PATHS.ORDERING_CART}${type ? `?type=${type}` : ''}` });
+                history.push({
+                  pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+                  search: type ? `?type=${type}` : '',
+                });
               }}
             >
               {t('OrderNow')}

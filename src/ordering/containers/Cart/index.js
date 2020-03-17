@@ -59,7 +59,8 @@ class Cart extends Component {
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     this.props.history.push({
-      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}${type ? `?type=${type}` : ''}`,
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: type ? `?type=${type}` : '',
     });
   };
 
