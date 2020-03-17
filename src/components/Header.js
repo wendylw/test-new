@@ -4,6 +4,7 @@ import { IconLeftArrow, IconClose, IconMotorcycle } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
+import Constants from '../utils/constants';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -25,9 +26,11 @@ class Header extends Component {
   }
 
   render() {
-    const { className, isStoreHome, title, children } = this.props;
+    const { className, isStoreHome, title, children, onClickHandler, isDeliveryType } = this.props;
     /* TODO: judge is homepage and delivery */
-    const classList = ['header flex flex-top flex-space-between'];
+
+    const fixedClassList = ['header flex  flex-space-between'];
+    const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
 
     if (className) {
       classList.push(className);
@@ -37,8 +40,11 @@ class Header extends Component {
     return (
       <header className={classList.join(' ')}>
         {this.renderLogoAndNavDom()}
-        {isStoreHome ? (
-          <div className="header__title-container">
+        {isStoreHome && isDeliveryType ? (
+          <div
+            className="header__title-container"
+            onClick={() => onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL)}
+          >
             <h1 className="header__title">
               <span className="font-weight-bold text-middle">{title}</span>
               <div className="tag__card-container">
@@ -50,7 +56,7 @@ class Header extends Component {
                 <i className="header__motor-icon text-middle">
                   <IconMotorcycle />
                 </i>
-                <span className="text-middle">RM 5.00</span>
+                <span className="text-middle">RM 5.00ddd</span>
               </li>
               <li className="header__info-item">
                 <span>Min Order. RM 20.00</span>
