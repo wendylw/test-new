@@ -9,6 +9,7 @@ import { getBusiness } from './app';
 const initialState = {
   storeHashCode: null,
   currentStoreId: null,
+  enableDelivery: false,
   storeIds: [],
 };
 
@@ -70,8 +71,6 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_STORE: {
       const { storeId } = action;
 
-      console.log(storeId);
-
       return { ...state, currentStoreId: storeId };
     }
     case types.FETCH_CORESTORES_REQUEST: {
@@ -79,11 +78,12 @@ const reducer = (state = initialState, action) => {
     }
     case types.FETCH_CORESTORES_SUCCESS: {
       const { business } = action.responseGql.data;
-      const { stores } = business || {};
+      const { qrOrderingSettings, stores } = business || {};
+      const { enableDelivery } = qrOrderingSettings || {};
       const validStores = (stores || []).filter(s => s.isOnline && !s.isDeleted);
       const currentStoreId = stores && stores.length === 1 ? stores[0].id : null;
 
-      return { ...state, isFetching: false, storeIds: validStores.map(s => s.id), currentStoreId };
+      return { ...state, isFetching: false, enableDelivery, storeIds: validStores.map(s => s.id), currentStoreId };
     }
     case types.FETCH_CORESTORES_FAILURE: {
       return { ...state, isFetching: false };
@@ -103,6 +103,7 @@ export const getOneStoreInfo = (state, storeId) => {
   return getStoreById(state, storeId);
 };
 
+export const getDeliveryStatus = state => state.home.enableDelivery;
 export const getCurrentStoreId = state => state.home.currentStoreId;
 export const getStoreHashCode = state => state.home.storeHashCode;
 export const showStores = state => !state.home.isFetching;

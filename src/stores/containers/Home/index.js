@@ -2,12 +2,20 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
+import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { actions as homeActionCreators, getStoreHashCode, getAllStores, showStores } from '../../redux/modules/home';
+import {
+  actions as homeActionCreators,
+  getStoreHashCode,
+  getDeliveryStatus,
+  getAllStores,
+  showStores,
+} from '../../redux/modules/home';
 
+const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {};
 
@@ -17,6 +25,18 @@ class App extends Component {
     await homeActions.loadCoreStores();
   }
 
+  async visitStore(storeId) {
+    const { homeActions } = this.props;
+
+    await homeActions.getStoreHashData(storeId);
+
+    const { hashCode } = this.props;
+
+    if (hashCode) {
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+    }
+  }
+
   setCurrentStoreId(storeId) {
     const { homeActions } = this.props;
 
@@ -24,7 +44,7 @@ class App extends Component {
   }
 
   render() {
-    const { t, show, stores, onlineStoreInfo } = this.props;
+    const { t, show, stores, enableDelivery, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
 
     if (!show) {
@@ -46,7 +66,10 @@ class App extends Component {
           {!stores || !stores.length ? (
             <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
           ) : (
-            <StoreList storeList={stores} onSelect={this.setCurrentStoreId.bind(this)} />
+            <StoreList
+              storeList={stores}
+              onSelect={enableDelivery ? this.setCurrentStoreId.bind(this) : this.visitStore.bind(this)}
+            />
           )}
         </div>
       </section>
@@ -60,6 +83,7 @@ export default compose(
     state => ({
       show: showStores(state),
       hashCode: getStoreHashCode(state),
+      enableDelivery: getDeliveryStatus(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       stores: getAllStores(state),
       error: getError(state),

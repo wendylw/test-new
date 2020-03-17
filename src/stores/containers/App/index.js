@@ -5,7 +5,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { getCurrentStoreId, getAllStores } from '../../redux/modules/home';
+import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/modules/home';
 import '../../../App.scss';
 import Home from '../Home';
 import DeliveryMethods from '../DeliveryMethods';
@@ -26,11 +26,15 @@ class App extends Component {
   };
 
   render() {
-    const { error, onlineStoreInfo, stores, currentStoreId } = this.props;
+    const { error, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
 
     return (
       <main className="store-list">
-        {currentStoreId ? <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} /> : <Home />}
+        {currentStoreId && enableDelivery ? (
+          <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} />
+        ) : (
+          <Home />
+        )}
 
         {error ? <ErrorToast message={error} clearError={this.handleClearError} /> : null}
         {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
@@ -42,6 +46,7 @@ class App extends Component {
 export default connect(
   state => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
+    enableDelivery: getDeliveryStatus(state),
     currentStoreId: getCurrentStoreId(state),
     stores: getAllStores(state),
     error: getError(state),
