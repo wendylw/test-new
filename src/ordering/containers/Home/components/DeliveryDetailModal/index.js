@@ -6,15 +6,18 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
   getDeliveryHourUI = () => {
-    const { deliveryHour } = this.props;
-    return deliveryHour.map((x, index) => {
-      return (
-        <li key={index} className="store-info__item flex flex-middle flex-space-between">
-          <span>Sun</span>
-          <time>11:00 - 22:30</time>
-        </li>
-      );
-    });
+    const { validDays } = this.props;
+    return (
+      validDays &&
+      validDays.map(x => {
+        return (
+          <li className="store-info__item flex flex-middle flex-space-between">
+            <span>Sun</span>
+            <time>11:00 - 22:30</time>
+          </li>
+        );
+      })
+    );
   };
   render() {
     const { onlineStoreInfo, show, onToggle, storeAddress, telephone, deliveryFee, minOrder } = this.props;

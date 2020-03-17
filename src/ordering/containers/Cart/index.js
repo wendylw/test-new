@@ -11,11 +11,12 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 
 class Cart extends Component {
@@ -135,12 +136,21 @@ class Cart extends Component {
       </div>
     );
   }
+  getDeliveryFee = () => {
+    const { allBusinessInfo, business } = this.props;
+    const originalInfo = allBusinessInfo[business] || {};
+    const deliveryFee =
+      originalInfo.qrOrderingSettings &&
+      originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
+    return deliveryFee;
+  };
   isDeliveryType = () => {
-    return true;
+    const type = Utils.getQueryString('type');
+    return type === 'delivery';
   };
 
   render() {
-    const { t, cartSummary, shoppingCart, businessInfo, deliveryFee } = this.props;
+    const { t, cartSummary, shoppingCart, businessInfo } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -192,7 +202,7 @@ class Cart extends Component {
             total={total}
             creditsBalance={cashback}
             isDeliveryType={this.isDeliveryType()}
-            deliveryFee={deliveryFee}
+            deliveryFee={this.getDeliveryFee()}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -227,6 +237,8 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        business: getBusiness(state),
+        //business: 'wenjingzhang',
         user: getUser(state),
         cartSummary: getCartSummary(state),
         shoppingCart: getShoppingCart(state),
@@ -235,7 +247,7 @@ export default compose(
         currentProduct: getCurrentProduct(state),
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        deliveryFee: 5.1,
+        allBusinessInfo: getAllBusinesses(state),
       };
     },
     dispatch => ({

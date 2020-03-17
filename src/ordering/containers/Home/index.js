@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../redux/modules/cart';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
   getCategoryProductList,
@@ -104,7 +105,8 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t, deliveryToAddress } = this.props;
+    const { t } = this.props;
+    const { deliveryToAddress } = this.getDeliveryInfo();
     const fillInDelivertAddress = () => {
       const search = window.location.search;
       window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
@@ -123,12 +125,53 @@ export class Home extends Component {
       </div>
     );
   }
+  isDeliveryType = () => {
+    const type = Utils.getQueryString('type');
+    return type === 'delivery';
+  };
+  getDeliveryInfo = () => {
+    const { allBusinessInfo, business, stores } = this.props;
+    const originalInfo = allBusinessInfo[business] || {};
+    const deliveryFee =
+      originalInfo.qrOrderingSettings &&
+      originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
+    const minOrder = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.minimumConsumption;
+    const validDays = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validDays;
+    const validTimeFrom = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeFrom;
+    const validTimeTo = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeTo;
 
+    // const mockStore = {
+    //   id: "5e5dd6c7407cf700063ba869",
+    //   name: "Ice Dreams Cafe",
+    //   phone: "0122555358",
+    //   isOnline: true,
+    //   isDeleted: null,
+    //   street1: "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
+    //   street2: "Taman Sri Hartamas",
+    //   city: "Kuala Lumpur",
+    //   state: "Selangor",
+    //   country: "Malaysia",
+    // }
+    // const { street1, street2, city, state, country, phone } = mockStore;
+    const { street1, street2, city, state, country, phone } = stores[0] || {};
+    const storeAddress = `${street1} ${street2} ${city} ${state} ${country} `;
+    return {
+      deliveryFee,
+      minOrder,
+      storeAddress,
+      deliveryToAddress: 'tt',
+      telephone: phone,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+    };
+  };
   renderHeader() {
-    const { t, onlineStoreInfo, requestInfo, deliveryFee, minOrder } = this.props;
+    const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
     const isDeliveryType = this.isDeliveryType();
+    const { deliveryFee, minOrder } = this.getDeliveryInfo();
     // TODO: judge is delivery
     if (!tableId || !isDeliveryType) {
       classList.push('has-right');
@@ -163,13 +206,20 @@ export class Home extends Component {
       onlineStoreInfo,
       requestInfo,
       isVerticalMenu,
-      deliveryFee,
-      minOrder,
-      telephone,
-      storeAddress,
-      deliveryHour,
+      allBusinessInfo,
       ...otherProps
     } = this.props;
+
+    const {
+      deliveryFee,
+      minOrder,
+      storeAddress,
+      telephone,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+    } = this.getDeliveryInfo();
+
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
 
@@ -209,7 +259,9 @@ export class Home extends Component {
           minOrder={minOrder}
           storeAddress={storeAddress}
           telephone={telephone}
-          deliveryHour={deliveryHour}
+          validDays={validDays}
+          validTimeFrom={validTimeFrom}
+          validTimeTo={validTimeTo}
         />
         <Footer
           {...otherProps}
@@ -229,16 +281,16 @@ export default compose(
     state => {
       return {
         business: getBusiness(state),
+        //business: 'wenjingzhang',
         isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
-        deliveryFee: 5.5,
-        minOrder: 21,
-        deliveryToAddress: 'Unit C-3, 10 Boulevard, Leburhraya Sprint, PJU 6A, 47400 Peta',
-        storeAddress: ' 34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur',
+
+        //storeAddress: ' 34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur',
         telephone: '+60 012 98765432',
         deliveryHour: [1, 2, 3, 4, 5, 6],
+        allBusinessInfo: getAllBusinesses(state),
       };
     },
     dispatch => ({
