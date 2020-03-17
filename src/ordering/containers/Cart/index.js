@@ -126,9 +126,12 @@ class Cart extends Component {
       </div>
     );
   }
+  isDeliveryType = () => {
+    return true;
+  };
 
   render() {
-    const { t, cartSummary, shoppingCart, businessInfo } = this.props;
+    const { t, cartSummary, shoppingCart, businessInfo, deliveryFee } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -179,6 +182,8 @@ class Cart extends Component {
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
+            isDeliveryType={this.isDeliveryType()}
+            deliveryFee={deliveryFee}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -205,7 +210,7 @@ class Cart extends Component {
     );
   }
 }
-
+/* TODO: backend data */
 export default compose(
   withTranslation(['OrderingCart']),
   connect(
@@ -221,6 +226,7 @@ export default compose(
         currentProduct: getCurrentProduct(state),
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        deliveryFee: 5.1,
       };
     },
     dispatch => ({

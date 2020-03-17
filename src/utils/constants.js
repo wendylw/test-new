@@ -28,6 +28,7 @@ const ROUTER_PATHS = {
   CASHBACK_CLAIM: '/claim',
   // Qrscan App basename
   QRSCAN: '/qrscan',
+  NEEDHELP: '/needhelp',
 };
 
 const CASHBACK_SOURCE = {
@@ -111,6 +112,7 @@ const ASIDE_NAMES = {
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
   CARTMODAL_HIDE: 'CARTMODAL_HIDE',
+  DELIVERY_DETAIL: 'DELIVERY_DETAIL',
 };
 
 export default {

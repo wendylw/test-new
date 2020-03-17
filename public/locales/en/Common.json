@@ -66,5 +66,6 @@
   "AddressDetails": "Address Details",
   "AddAddressPlaceholder": "Add in your address*",
   "AddressDetailsPlaceholder": "e.g Floor, unit number",
-  "AddNoteToDriverPlaceholder": "Add a note to driver *"
+  "AddNoteToDriverPlaceholder": "Add a note to driver *",
+  "Delivery fee": "Delivery fee"
 }

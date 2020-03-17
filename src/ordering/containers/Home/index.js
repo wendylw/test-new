@@ -3,11 +3,11 @@ import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
-import Tag from '../../../components/Tag';
-import Image from '../../../components/Image';
-import { IconEdit, IconInfoOutline, IconMotorcycle } from '../../../components/Icons';
+
+import { IconEdit, IconInfoOutline } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
+import DeliveryDetailModal from './components/DeliveryDetailModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import Utils from '../../../utils/utils';
@@ -97,16 +97,17 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t } = this.props;
-
+    const { t, deliveryToAddress } = this.props;
+    const fillInDelivertAddress = () => {
+      const search = window.location.search;
+      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
+    };
     return (
-      <div className="location-page__entry item">
+      <div className="location-page__entry item" onClick={fillInDelivertAddress}>
         <div className="item__detail-content flex flex-middle flex-space-between">
           <div className="location-page__base-info">
             <summary className="item__title">{t('DeliverTo')}</summary>
-            <p className="location-page__entry-address gray-font-opacity">
-              Unit C-3, 10 Boulevard, Leburhraya Sprint, PJU 6A, 47400 Peta
-            </p>
+            <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
           </div>
           <i className="location-page__edit">
             <IconEdit />
@@ -115,12 +116,17 @@ export class Home extends Component {
       </div>
     );
   }
+  isDeliveryType = () => {
+    //return true;
+    const type = Utils.getQueryString('type');
+    return type === 'delivery';
+  };
 
   renderHeader() {
-    const { t, onlineStoreInfo, requestInfo } = this.props;
+    const { t, onlineStoreInfo, requestInfo, deliveryFee, minOrder } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
-
+    const isDeliveryType = this.isDeliveryType();
     // TODO: judge is delivery
     if (!tableId) {
       // classList.push('has-right');
@@ -133,18 +139,37 @@ export class Home extends Component {
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={onlineStoreInfo.storeName}
+        onClickHandler={this.handleToggleAside.bind(this)}
+        isDeliveryType={isDeliveryType}
+        deliveryFee={deliveryFee}
+        minOrder={minOrder}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
         {/* TODO: judge is delivery */}
-        <i className="header__info-icon">
-          <IconInfoOutline />
-        </i>
+
+        {isDeliveryType ? (
+          <i className="header__info-icon">
+            <IconInfoOutline />
+          </i>
+        ) : null}
       </Header>
     );
   }
 
   render() {
-    const { business, categories, onlineStoreInfo, requestInfo, isVerticalMenu, ...otherProps } = this.props;
+    const {
+      business,
+      categories,
+      onlineStoreInfo,
+      requestInfo,
+      isVerticalMenu,
+      deliveryFee,
+      minOrder,
+      telephone,
+      storeAddress,
+      deliveryHour,
+      ...otherProps
+    } = this.props;
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
 
@@ -154,7 +179,7 @@ export class Home extends Component {
 
     return (
       <section className="table-ordering__home">
-        {this.renderDeliverToBar()}
+        {this.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
@@ -176,78 +201,16 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        <aside className="aside active">
-          <div className="store-info">
-            <i className="aside-bottom__slide-button"></i>
-
-            <div className="flex flex-top flex-space-between">
-              <Image
-                className="header__image-container text-middle"
-                src={onlineStoreInfo.logo}
-                alt={onlineStoreInfo.title}
-              />
-              <div className="header__title-container">
-                <h1 className="header__title">
-                  <span className="font-weight-bold text-middle">{onlineStoreInfo.storeName}</span>
-                  <div className="tag__card-container">
-                    <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
-                  </div>
-                </h1>
-                <p className="store-info__address gray-font-opacity">
-                  34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur
-                </p>
-                <a className="store-info__phone link link__non-underline" href="tel:+6001298765432">
-                  +60 012 98765432
-                </a>
-                <ul className="header__info-list">
-                  <li className="header__info-item">
-                    <i className="header__motor-icon text-middle">
-                      <IconMotorcycle />
-                    </i>
-                    <span className="text-middle">RM 5.00</span>
-                  </li>
-                  <li className="header__info-item">
-                    <span>Min Order. RM 20.00</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="store-info__delivery-hours flex flex-top flex-space-between">
-              <label className="font-weight-bold gray-font-opacity">Delivery Hours</label>
-              <ul className="store-info__list">
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-                <li className="store-info__item flex flex-middle flex-space-between">
-                  <span>Sun</span>
-                  <time>11:00 - 22:30</time>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </aside>
+        <DeliveryDetailModal
+          onlineStoreInfo={onlineStoreInfo}
+          show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
+          onToggle={this.handleToggleAside.bind(this)}
+          deliveryFee={deliveryFee}
+          minOrder={minOrder}
+          storeAddress={storeAddress}
+          telephone={telephone}
+          deliveryHour={deliveryHour}
+        />
         <Footer
           {...otherProps}
           onToggle={this.handleToggleAside.bind(this)}
@@ -259,6 +222,7 @@ export class Home extends Component {
   }
 }
 
+/* TODO: backend data */
 export default compose(
   withTranslation(['OrderingHome']),
   connect(
@@ -269,6 +233,12 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
+        deliveryFee: 5.5,
+        minOrder: 21,
+        deliveryToAddress: 'Unit C-3, 10 Boulevard, Leburhraya Sprint, PJU 6A, 47400 Peta',
+        storeAddress: ' 34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur',
+        telephone: '+60 012 98765432',
+        deliveryHour: [1, 2, 3, 4, 5, 6],
       };
     },
     dispatch => ({
