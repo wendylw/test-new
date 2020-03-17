@@ -73,11 +73,6 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: redirectTo };
     }
-    case types.SET_CURRENT_STORE: {
-      const { storeId } = action;
-
-      return { ...state, currentStoreId: storeId };
-    }
     case types.SET_CURRENT_STORE:
     case types.CLEAR_CURRENT_STORE: {
       const { storeId } = action;
