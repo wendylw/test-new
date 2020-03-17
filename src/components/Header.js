@@ -27,7 +27,7 @@ class Header extends Component {
   render() {
     const { className, isStoreHome, title, children } = this.props;
     /* TODO: judge is homepage and delivery */
-    const classList = ['header flex flex-top flex-space-between'];
+    const classList = ['header flex flex-space-between'];
 
     if (className) {
       classList.push(className);

@@ -11,16 +11,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getStoreHashCode } from '../../../../redux/modules/home';
 
+const { ROUTER_PATHS } = Constants;
 const METHODS_LIST = [
   {
-    name: 'Delivery',
+    name: 'delivery',
     logo: DeliveryImage,
     labelKey: 'FoodDelivery',
+    pathname: ROUTER_PATHS.ORDERING_LOCATION,
   },
   {
-    name: 'PickUp',
+    name: 'pickup',
     logo: PickUpImage,
     labelKey: 'PickUp',
+    pathname: '',
   },
 ];
 
@@ -33,7 +36,10 @@ class DeliveryMethods extends Component {
     const { hashCode } = this.props;
 
     if (hashCode) {
-      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+      const currentMethod = METHODS_LIST.find(method => method.name === methodName);
+
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
+        ''}&type=${methodName}`;
     }
   }
 
@@ -42,7 +48,11 @@ class DeliveryMethods extends Component {
 
     return (
       <section className="delivery">
-        <Header className="border__bottom-divider gray has-right" isPage={true} title={t('SelectYourPreference')} />
+        <Header
+          className="flex-middle border__bottom-divider gray has-right"
+          isPage={true}
+          title={t('SelectYourPreference')}
+        />
         <ul className="delivery__list">
           {METHODS_LIST.map(method => (
             <li

@@ -19,26 +19,26 @@ class App extends Component {
     await homeActions.loadCoreStores();
   }
 
-  redirectPage(stores) {
-    // auto redirect when there only one store in the list
-    if (stores.length === 1) {
-      this.handleSelectStore(stores[0].id);
+  // redirectPage(stores) {
+  //   // auto redirect when there only one store in the list
+  //   if (stores.length === 1) {
+  //     this.handleSelectStore(stores[0].id);
 
-      return;
-    }
-  }
+  //     return;
+  //   }
+  // }
 
-  async handleSelectStore(storeId) {
-    const { homeActions } = this.props;
+  // async handleSelectStore(storeId) {
+  //   const { homeActions } = this.props;
 
-    await homeActions.getStoreHashData(storeId);
+  //   await homeActions.getStoreHashData(storeId);
 
-    const { hashCode } = this.props;
+  //   const { hashCode } = this.props;
 
-    if (hashCode) {
-      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
-    }
-  }
+  //   if (hashCode) {
+  //     window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}`;
+  //   }
+  // }
 
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
@@ -67,7 +67,7 @@ class App extends Component {
           {!stores || !stores.length ? (
             <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
           ) : (
-            <StoreList storeList={stores} onSelect={this.handleSelectStore.bind(this)} />
+            <StoreList storeList={stores} onSelect={() => {}} />
           )}
         </div>
       </section>
