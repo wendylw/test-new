@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import { IconCart } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';

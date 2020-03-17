@@ -129,6 +129,7 @@ export class Home extends Component {
     const type = Utils.getQueryString('type');
     return type === 'delivery';
   };
+
   getDeliveryInfo = () => {
     const { allBusinessInfo, business, stores } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
@@ -140,20 +141,20 @@ export class Home extends Component {
     const validTimeFrom = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeFrom;
     const validTimeTo = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeTo;
 
-    // const mockStore = {
-    //   id: "5e5dd6c7407cf700063ba869",
-    //   name: "Ice Dreams Cafe",
-    //   phone: "0122555358",
-    //   isOnline: true,
-    //   isDeleted: null,
-    //   street1: "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
-    //   street2: "Taman Sri Hartamas",
-    //   city: "Kuala Lumpur",
-    //   state: "Selangor",
-    //   country: "Malaysia",
-    // }
-    // const { street1, street2, city, state, country, phone } = mockStore;
-    const { street1, street2, city, state, country, phone } = stores[0] || {};
+    const mockStore = {
+      id: '5e5dd6c7407cf700063ba869',
+      name: 'Ice Dreams Cafe',
+      phone: '0122555358',
+      isOnline: true,
+      isDeleted: null,
+      street1: 'Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1',
+      street2: 'Taman Sri Hartamas',
+      city: 'Kuala Lumpur',
+      state: 'Selangor',
+      country: 'Malaysia',
+    };
+    const { street1, street2, city, state, country, phone } = mockStore;
+    // const { street1, street2, city, state, country, phone } = stores[0] || {};
     const storeAddress = `${street1} ${street2} ${city} ${state} ${country} `;
     return {
       deliveryFee,
@@ -166,6 +167,7 @@ export class Home extends Component {
       validTimeTo,
     };
   };
+
   renderHeader() {
     const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};

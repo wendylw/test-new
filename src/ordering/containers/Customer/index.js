@@ -20,8 +20,8 @@ const { ROUTER_PATHS, ADDRESS_RANGE, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
-    addressDetails: null,
-    deliveryComments: null,
+    addressDetails: Utils.getLocalStorageVariable('addressDetails'),
+    deliveryComments: Utils.setSessionVariable('deliveryComments'),
     formTextareaTitle: null,
     asideName: null,
   };
@@ -56,11 +56,19 @@ class Customer extends Component {
   }
 
   handleToggleFormTextarea(asideName) {
-    this.setState({ asideName });
+    const { t } = this.props;
+
+    this.setState({
+      asideName,
+      formTextareaTitle: t(
+        asideName === ASIDE_NAMES.ADD_DRIVER_NOTE ? 'AddNoteToDriverPlaceholder' : 'AddAddressDetailsPlaceholder'
+      ),
+    });
   }
 
   renderDeliveryAddress() {
     const { t } = this.props;
+    const { addressDetail, deliveryComments } = this.state;
     const addressInfo = JSON.parse(Utils.getLocalStorageVariable('addressInfo'));
     let addressString = null;
 
@@ -77,11 +85,12 @@ class Customer extends Component {
               <IconEdit />
             </i>
           </div>
-          {/* TODO: fill in to remove gray-font-opacity */}
           <p className="form__textarea gray-font-opacity">{addressString || t('AddAddressPlaceholder')}</p>
         </div>
-        <div className="form__group" onClick={() => {}}>
-          <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
+        <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
+          <label className="form__label font-weight-bold gray-font-opacity">
+            {addressDetail || t('AddressDetails')}
+          </label>
           <div className="flex flex-middle flex-space-between">
             <p className="gray-font-opacity">{t('AddressDetailsPlaceholder')}</p>
             <i className="customer__edit-icon">
@@ -89,8 +98,11 @@ class Customer extends Component {
             </i>
           </div>
         </div>
-        <div className="form__group flex flex-middle flex-space-between">
-          <p className="gray-font-opacity">{t('AddNoteToDriverPlaceholder')}</p>
+        <div
+          className="form__group flex flex-middle flex-space-between"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
+        >
+          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
           <i className="customer__edit-icon">
             <IconEdit />
           </i>
