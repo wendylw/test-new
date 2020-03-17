@@ -70,7 +70,7 @@ export class Footer extends Component {
               disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
               onClick={() => {
                 onToggle();
-                history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART });
+                history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: window.location.search });
               }}
             >
               {t('OrderNow')}
