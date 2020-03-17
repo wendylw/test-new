@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
@@ -54,8 +55,11 @@ class Cart extends Component {
   }
 
   handleClickBack = () => {
+    const { history } = this.props;
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
     this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}${type ? `?type=${type}` : ''}`,
     });
   };
 

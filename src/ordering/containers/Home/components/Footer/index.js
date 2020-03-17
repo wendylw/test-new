@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import { IconCart } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
@@ -70,7 +71,10 @@ export class Footer extends Component {
               disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
               onClick={() => {
                 onToggle();
-                history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART });
+                const { history } = this.props;
+                const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+                history.push({ pathname: `${Constants.ROUTER_PATHS.ORDERING_CART}${type ? `?type=${type}` : ''}` });
               }}
             >
               {t('OrderNow')}

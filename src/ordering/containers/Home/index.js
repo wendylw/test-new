@@ -147,8 +147,6 @@ export class Home extends Component {
         minOrder={minOrder}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
-        {/* TODO: judge is delivery */}
-
         {isDeliveryType ? (
           <i className="header__info-icon">
             <IconInfoOutline />
