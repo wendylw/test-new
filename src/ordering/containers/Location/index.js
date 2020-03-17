@@ -40,7 +40,7 @@ class Location extends Component {
             </li>
           </ul>
           <div className="text-center">
-            <img src={DeliveryErrorImage} />
+            <img src={DeliveryErrorImage} alt="" />
             <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
           </div>
         </div>

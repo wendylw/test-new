@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
+import { IconEdit, IconInfoOutline } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
@@ -93,13 +94,34 @@ export class Home extends Component {
     });
   }
 
+  renderDeliverToBar() {
+    const { t } = this.props;
+
+    return (
+      <div className="location-page__entry item">
+        <div className="item__detail-content flex flex-middle flex-space-between">
+          <div className="location-page__base-info">
+            <summary className="item__title">{t('DeliverTo')}</summary>
+            <p className="location-page__entry-address gray-font-opacity">
+              Unit C-3, 10 Boulevard, Leburhraya Sprint, PJU 6A, 47400 Peta
+            </p>
+          </div>
+          <i className="location-page__edit">
+            <IconEdit />
+          </i>
+        </div>
+      </div>
+    );
+  }
+
   renderHeader() {
     const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
 
+    // TODO: judge is delivery
     if (!tableId) {
-      classList.push('has-right');
+      // classList.push('has-right');
     }
 
     return (
@@ -111,6 +133,10 @@ export class Home extends Component {
         title={onlineStoreInfo.storeName}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
+        {/* TODO: judge is delivery */}
+        <i className="header__info-icon">
+          <IconInfoOutline />
+        </i>
       </Header>
     );
   }
@@ -126,6 +152,7 @@ export class Home extends Component {
 
     return (
       <section className="table-ordering__home">
+        {this.renderDeliverToBar()}
         {this.renderHeader()}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList

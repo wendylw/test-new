@@ -57,5 +57,6 @@
   "SelfPickup": "Self Pickup",
   "SelectYourPreference": "Select Your Preference",
   "DeliverTo": "Deliver To",
-  "DeliverToErrorMessage": "Sorry order location is too far from store"
+  "DeliverToErrorMessage": "Sorry order location is too far from store",
+  "Closed": "Closed"
 }
