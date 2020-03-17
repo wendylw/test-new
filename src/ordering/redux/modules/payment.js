@@ -49,35 +49,51 @@ export const actions = {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
+    const deliveryComments = Utils.getSessionVariable('deliveryComments');
+    const shippingType = 'delivery';
+    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const addressDetails = Utils.getLocalStorageVariable('addressDetails');
     const { storeId, tableId } = getRequestInfo(getState());
+    const address = currentAddress.street1 + currentAddress.street2;
     const variables = {
       business,
       storeId,
       shoppingCartIds,
       tableId,
       cashback,
+      shippingType,
+      deliveryComments,
+      deliveryAddressInfo: {
+        ...currentAddress,
+        addressDetails,
+        address,
+        phone: Utils.getLocalStorageVariable('user.p'),
+        name: Utils.getLocalStorageVariable('user.name'),
+      },
     };
 
-    return dispatch(createOrder(
-      !additionalComments
-        ? variables
-        : {
-          ...variables,
-          additionalComments: encodeURIComponent(additionalComments),
-        }
-    ));
+    return dispatch(
+      createOrder(
+        !additionalComments
+          ? variables
+          : {
+              ...variables,
+              additionalComments: encodeURIComponent(additionalComments),
+            }
+      )
+    );
   },
 
-  fetchOrder: (orderId) => (dispatch) => {
+  fetchOrder: orderId => dispatch => {
     return dispatch(fetchOrder({ orderId }));
   },
 
   setCurrentPayment: paymentName => ({
     type: types.SET_CURRENT_PAYMENT,
-    paymentName
+    paymentName,
   }),
 
-  fetchBraintreeToken: (paymentName) => ({
+  fetchBraintreeToken: paymentName => ({
     [API_REQUEST]: {
       types: [
         types.FETCH_BRAINTREE_TOKEN_REQUEST,
@@ -88,7 +104,7 @@ export const actions = {
       params: {
         paymentName,
       },
-    }
+    },
   }),
 
   clearBraintreeToken: () => ({
@@ -97,13 +113,9 @@ export const actions = {
 
   fetchBankList: () => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_BANKLIST_REQUEST,
-        types.FETCH_BANKLIST_SUCCESS,
-        types.FETCH_BANKLIST_FAILURE,
-      ],
+      types: [types.FETCH_BANKLIST_REQUEST, types.FETCH_BANKLIST_SUCCESS, types.FETCH_BANKLIST_FAILURE],
       ...Url.API_URLS.GET_BANKING_LIST,
-    }
+    },
   }),
 };
 
@@ -112,14 +124,10 @@ const createOrder = variables => {
 
   return {
     [FETCH_GRAPHQL]: {
-      types: [
-        types.CREATEORDER_REQUEST,
-        types.CREATEORDER_SUCCESS,
-        types.CREATEORDER_FAILURE
-      ],
+      types: [types.CREATEORDER_REQUEST, types.CREATEORDER_SUCCESS, types.CREATEORDER_FAILURE],
       endpoint,
-      variables
-    }
+      variables,
+    },
   };
 };
 
@@ -128,14 +136,10 @@ const fetchOrder = variables => {
 
   return {
     [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ORDER_REQUEST,
-        types.FETCH_ORDER_SUCCESS,
-        types.FETCH_ORDER_FAILURE
-      ],
+      types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
       endpoint,
-      variables
-    }
+      variables,
+    },
   };
 };
 
@@ -187,9 +191,9 @@ export default reducer;
 // selectors
 export const getCurrentPayment = state => state.payment.currentPayment;
 
-export const getCurrentOrderId = (state) => state.payment.orderId;
+export const getCurrentOrderId = state => state.payment.orderId;
 
-export const getThankYouPageUrl = (state) => state.payment.thankYouPageUrl;
+export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 
 export const getBraintreeToken = state => state.payment.braintreeToken;
 

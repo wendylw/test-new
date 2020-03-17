@@ -10,6 +10,8 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { actions as appActionCreators } from '../../redux/modules/app';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { actions as paymentActionCreators } from '../../redux/modules/payment';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -34,6 +36,19 @@ class Customer extends Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
+  }
+
+  handleCreateOrder() {
+    this.savePhoneNumber();
+
+    const { paymentActions, cartSummary } = this.props;
+    const { totalCashback } = cartSummary || {};
+
+    paymentActions.createOrder({ cashback: totalCashback });
+  }
+
+  handleUpdateName(e) {
+    Utils.setLocalStorageVariable('user.name', e.target.value);
   }
 
   handleDriverComments(deliveryComments) {
@@ -145,7 +160,7 @@ class Customer extends Component {
           <form className="customer__form">
             <div className="form__group">
               <label className="form__label gray-font-opacity">{t('Name')}</label>
-              <input className="input input__block" type="text" />
+              <input className="input input__block" type="text" onChange={this.handleUpdateName.bind(this)} />
             </div>
 
             <div className="form__group border__bottom-divider">
@@ -199,7 +214,7 @@ class Customer extends Component {
           <div className="footer-operation__item width-2-3">
             <button
               className="billing__link button button__fill button__block font-weight-bold"
-              onClick={() => {}}
+              onClick={this.handleCreateOrder.bind(this)}
               disabled={!isValidPhoneNumber(phone)}
             >
               {t('Continue')}
@@ -215,10 +230,13 @@ export default compose(
   withTranslation(),
   connect(
     state => {
-      return {};
+      return {
+        cartSummary: getCartSummary(state),
+      };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })
   )
 )(Customer);
