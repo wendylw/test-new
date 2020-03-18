@@ -195,7 +195,7 @@ export class Home extends Component {
     const isDeliveryType = this.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
     // TODO: judge is delivery
-    if (!tableId || !isDeliveryType) {
+    if (!tableId && !isDeliveryType) {
       classList.push('has-right');
     }
 

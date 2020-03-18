@@ -9,7 +9,8 @@ import { getCurrentAddressInfoByAddress, getCurrentAddressInfo } from './utils';
 class Location extends Component {
   state = {
     address: '',
-    placeId: '', // placeId of the address user selected
+    placeId: '', // placeId of the address user selected,
+    hasError: false,
   };
 
   initializeAddress = async () => {
@@ -55,10 +56,12 @@ class Location extends Component {
 
       this.setState({
         address,
+        hasError: false,
       });
     } catch (e) {
       console.error(e);
       alert(`error found, address is not identified, use empty`);
+      this.setState({ hasError: true });
     }
   };
 
@@ -106,7 +109,7 @@ class Location extends Component {
           ) : null}
         </div>
         <div className="location-page__list-wrapper">
-          <ul className="location-page__list">
+          {/* <ul className="location-page__list">
             <li className="location-page__item flex flex-middle">
               <i className="location-page__icon-adjust">
                 <IconAdjust />
@@ -116,11 +119,13 @@ class Location extends Component {
                 <p className="gray-font-opacity">3.03km . Near Block C</p>
               </div>
             </li>
-          </ul>
-          <div className="text-center">
-            <img src={DeliveryErrorImage} alt="" />
-            <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
-          </div>
+          </ul> */}
+          {hasError ? (
+            <div className="text-center">
+              <img src={DeliveryErrorImage} alt="" />
+              <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
+            </div>
+          ) : null}
         </div>
       </section>
     );
