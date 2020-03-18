@@ -61,7 +61,7 @@ class Location extends Component {
               className="location-page__address item border__bottom-divider"
               onClick={() => {
                 history.push({
-                  pathname: Constant.ROUTER_PATHS.ORDERING_BASE,
+                  pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
                   search: window.location.search,
                 });
               }}
