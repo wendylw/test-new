@@ -5,12 +5,15 @@ import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { IconPin } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 import beepSuccessImage from '../../../images/beep-success.png';
+import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
+import beepOnTheWayImage from '../../../images/beep-on-the-way.png';
 
 export class ThankYou extends Component {
   state = {};
@@ -80,7 +83,7 @@ export class ThankYou extends Component {
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
-        {t('ViewReceipt')}
+        {Utils.isDeliveryType() ? t('ViewDetails') : t('ViewReceipt')}
       </button>
     );
   }
@@ -159,9 +162,15 @@ export class ThankYou extends Component {
       }
     }
   };
+
   getDeliveryUI() {
     const { t, history, order } = this.props;
-    const { orderId, logs, storeInfo, total } = order || {};
+    const { orderId, logs, storeInfo, total, status } = order || {};
+    let bannerImage = beepSuccessImage;
+
+    if (Utils.isDeliveryType()) {
+      bannerImage = status === 'shipped' ? beepOnTheWayImage : beepDeliverySuccessImage;
+    }
 
     // const total = 11;
     // const storeInfo = {
@@ -173,9 +182,9 @@ export class ThankYou extends Component {
     //   "street1": "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
     //   "street2": "Taman Sri Hartamas"
     // };
-    const { city, country, name, state, street1, street2 } = storeInfo || {};
+    const { name } = storeInfo || {};
+    const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
 
-    const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
     return (
       <React.Fragment>
         <Header
@@ -195,24 +204,32 @@ export class ThankYou extends Component {
           </span>
         </Header>
         <div className="thanks text-center">
-          <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
+          <img className="thanks__image" src={bannerImage} alt="Beep Success" />
+          <div className="thanks__delivery-status-container">
+            <ul className="text-left">
+              <li style={this.getStatusStyle('confirm', logs)}>Order Confirmed</li>
+              <li style={this.getStatusStyle('riderPending', logs)}>Pending Rider Confirm</li>
+              <li style={this.getStatusStyle('picking', logs)}>Rider is on the way to pick up order</li>
+            </ul>
+          </div>
           <div className="thanks__info-container">
-            <div>
-              <ul>
-                <li style={this.getStatusStyle('confirm', logs)}>Order Confirmed</li>
-                <li style={this.getStatusStyle('riderPending', logs)}>Pending Rider Confirm</li>
-                <li style={this.getStatusStyle('picking', logs)}>Rider is on the way to pick up order</li>
-              </ul>
-            </div>
-            <div>
-              <div>
-                <div>{name}</div>
+            <div className="thanks__delivery-info text-left">
+              <div className="flex flex-middle flex-space-between">
+                <label className="thanks__text font-weight-bold">{name}</label>
                 <div>
-                  Total <CurrencyNumber money={total || 0} />
+                  <span className="thanks__text">Total</span>
+                  <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
                 </div>
               </div>
-              <span>{storeAddress}</span>
+              <p className="thanks__address-details gray-font-opacity">34, Jalan Ambong 4, Kepong Baru, 52100 Kuala</p>
+              <p className="thanks__address-pin flex flex-top">
+                <i className="thanks__pin-icon">
+                  <IconPin />
+                </i>
+                <span className="gray-font-opacity">{storeAddress}</span>
+              </p>
             </div>
+
             {this.renderNeedReceipt()}
           </div>
         </div>
