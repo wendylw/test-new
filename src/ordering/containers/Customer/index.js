@@ -18,7 +18,7 @@ import { bindActionCreators, compose } from 'redux';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ADDRESS_RANGE, ASIDE_NAMES } = Constants;
+const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
@@ -109,7 +109,15 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <div className="form__group">
+        <div
+          className="form__group"
+          onClick={() => {
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              search: window.location.search,
+            });
+          }}
+        >
           <div className="flex flex-middle flex-space-between">
             <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverTo')}</label>
             <i className="customer__edit-icon">
