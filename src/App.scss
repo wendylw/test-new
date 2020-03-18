@@ -2119,6 +2119,31 @@
     margin-top: 8vw;
   }
 
+  &__delivery-status-item {
+    .access-time-icon {
+      display: inline-block;
+      font-size: 0;
+
+      svg {
+        fill: $theme-color;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .access-time-icon + span {
+      margin-left: 6px;
+    }
+  }
+
+  &__delivery-status-time {
+    margin: 10px 0;
+  }
+
+  &__delivery-status-label {
+    font-size: 1.2rem;
+  }
+
   &__delivery-info {
     padding: 3.8vw;
   }

@@ -5,7 +5,7 @@ import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { IconPin } from '../../../components/Icons';
+import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
@@ -125,9 +125,7 @@ export class ThankYou extends Component {
     // ];
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
     if (targetType === 'confirm') {
-      return {
-        color: 'orange',
-      };
+      return 'active';
     }
     const logisticConfirmed = () => {
       const tt =
@@ -141,24 +139,16 @@ export class ThankYou extends Component {
     };
     if (targetType === 'riderPending') {
       if (logisticConfirmed() !== undefined) {
-        return {
-          display: 'none',
-        };
+        return 'hide';
       } else {
-        return {
-          color: 'gray',
-        };
+        return 'normal';
       }
     }
     if (targetType === 'picking') {
       if (logisticConfirmed() !== undefined) {
-        return {
-          color: 'orange',
-        };
+        return 'active';
       } else {
-        return {
-          display: 'none',
-        };
+        return 'hide';
       }
     }
   };
@@ -207,9 +197,29 @@ export class ThankYou extends Component {
           <img className="thanks__image" src={bannerImage} alt="Beep Success" />
           <div className="thanks__delivery-status-container">
             <ul className="text-left">
-              <li style={this.getStatusStyle('confirm', logs)}>Order Confirmed</li>
-              <li style={this.getStatusStyle('riderPending', logs)}>Pending Rider Confirm</li>
-              <li style={this.getStatusStyle('picking', logs)}>Rider is on the way to pick up order</li>
+              <li className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)}`}>
+                <label className="thanks__delivery-status-label font-weight-bold">Order Confirmed</label>
+                <div className="thanks__delivery-status-time">
+                  <i className="access-time-icon text-middle">
+                    <IconAccessTime />
+                  </i>
+                  <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
+                </div>
+              </li>
+              <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
+                <label className="thanks__delivery-status-label font-weight-bold">Pending Rider Confirm</label>
+              </li>
+              <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
+                <label className="thanks__delivery-status-label font-weight-bold">
+                  Rider is on the way to pick up order
+                </label>
+                <div className="thanks__delivery-status-time">
+                  <i className="access-time-icon text-middle">
+                    <IconAccessTime />
+                  </i>
+                  <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
+                </div>
+              </li>
             </ul>
           </div>
           <div className="thanks__info-container">
