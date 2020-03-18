@@ -24,9 +24,8 @@ class DeliveryDetailModal extends Component {
         return (
           <li className="store-info__item flex flex-middle flex-space-between">
             <span>{weekInfo[x]}</span>
-            {/* <time>11:00 - 22:30</time> */}
             <time>
-              {`${validTimeFrom}:00`} - {`${validTimeTo}:00`}
+              {`${validTimeFrom}`} - {`${validTimeTo}`}
             </time>
           </li>
         );
