@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import { IconPin, IconAdjust } from '../../../components/Icons';
+import { IconPin /*IconAdjust*/ } from '../../../components/Icons';
 import Constant from '../../../utils/constants';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
 import { getCurrentAddressInfoByAddress, getCurrentAddressInfo } from './utils';
