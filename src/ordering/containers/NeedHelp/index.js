@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getBusinessInfo } from '../../redux/modules/thankYou';
 
 export class NeedHelp extends Component {
@@ -44,7 +43,6 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
-      onlineStoreInfo: getOnlineStoreInfo(state),
       business: getBusinessInfo(state),
     }),
     dispatch => ({
