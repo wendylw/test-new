@@ -13,11 +13,11 @@ class Location extends Component {
   };
 
   initializeAddress = async () => {
-    const currentAddress = localStorage.getItem('currentAddress');
+    const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
     if (currentAddress) {
       console.log('use address info from localStorage');
       return this.setState({
-        address: JSON.parse(currentAddress).address,
+        address: currentAddress.address,
       });
     }
     await this.tryGeolocation();
@@ -31,7 +31,10 @@ class Location extends Component {
   handleBackLicked = async () => {
     try {
       const currentAddress = await getCurrentAddressInfoByAddress(this.state.address);
-      localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+      // TODO: has bug here.
+      if (currentAddress) {
+        localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+      }
       window.history.back();
     } catch (e) {
       console.error(e);
