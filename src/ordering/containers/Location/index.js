@@ -29,13 +29,16 @@ class Location extends Component {
   };
 
   handleBackLicked = async () => {
+    const { history } = this.props;
+
     try {
       const currentAddress = await getCurrentAddressInfoByAddress(this.state.address);
       // TODO: has bug here.
       if (currentAddress) {
         localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
       }
-      window.history.back();
+
+      history.goBack();
     } catch (e) {
       console.error(e);
     }
@@ -67,13 +70,7 @@ class Location extends Component {
       <section className="table-ordering__location">
         <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackLicked} />
         <div className="location-page__info">
-          <form
-            className="location-page__form"
-            onSubmit={event => {
-              event.preventDefault();
-              this.handleBackLicked();
-            }}
-          >
+          <div className="location-page__form">
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
                 <IconPin />
@@ -90,7 +87,7 @@ class Location extends Component {
                 }}
               />
             </div>
-          </form>
+          </div>
           {address ? (
             <address
               className="location-page__address item border__bottom-divider"
