@@ -31,7 +31,7 @@ class Location extends Component {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, history } = this.props;
     const { address } = this.state;
 
     return (

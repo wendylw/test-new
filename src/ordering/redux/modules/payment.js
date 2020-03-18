@@ -54,7 +54,6 @@ export const actions = {
       phone: Utils.getLocalStorageVariable('user.p'),
       name: Utils.getLocalStorageVariable('user.name'),
     };
-    let deliveryAddressInfo = {};
     let variables = {
       business,
       storeId,
