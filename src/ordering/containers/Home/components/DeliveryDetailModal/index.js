@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withTranslation, Trans } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import { IconMotorcycle } from '../../../../../components/Icons';
@@ -71,18 +72,19 @@ class DeliveryDetailModal extends Component {
                 {telephone}
               </a>
               <ul className="header__info-list">
-                <li className="header__info-item">
+                <li className="header__info-item text-middle">
                   <i className="header__motor-icon text-middle">
                     <IconMotorcycle />
                   </i>
-                  <span className="text-middle">
+                  <span className="header__info-text text-middle font-weight-bold">
                     <CurrencyNumber money={deliveryFee || 0} />
                   </span>
                 </li>
-                <li className="header__info-item">
-                  <span>
-                    Min Order. <CurrencyNumber money={minOrder || 0} />
-                  </span>
+                <li className="header__info-item text-middle">
+                  <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
+                    <label className="text-middle">Min Order.</label>
+                    <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
+                  </Trans>
                 </li>
               </ul>
             </div>
@@ -128,4 +130,4 @@ class DeliveryDetailModal extends Component {
   }
 }
 
-export default DeliveryDetailModal;
+export default withTranslation()(DeliveryDetailModal);
