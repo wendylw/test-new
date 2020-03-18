@@ -43,10 +43,15 @@ class Location extends Component {
   fetchPlacesByText = async () => {
     this.setState({ isFetching: true });
     // todo: later need to use store position after we have exact position
-    const places = await getPlacesByText(this.state.address, {
-      lat: this.position.latitude,
-      lng: this.position.longitude,
-    });
+    const places = await getPlacesByText(
+      this.state.address,
+      this.position
+        ? {
+            lat: this.position.latitude,
+            lng: this.position.longitude,
+          }
+        : null
+    );
     console.log('fetchPlacesByText: places =', places);
     this.setState({
       places,
@@ -57,12 +62,16 @@ class Location extends Component {
   debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
 
   componentDidMount = async () => {
-    // will show prompt of permission once entry the page
-    await this.initializeAddress();
-    this.store = await getStoreInfo();
-    this.storePosition = await getStorePosition(this.store);
-    console.log('this.storePosition', this.storePosition);
-    this.fetchPlacesByText();
+    try {
+      // will show prompt of permission once entry the page
+      await this.initializeAddress();
+      this.store = await getStoreInfo();
+      this.storePosition = await getStorePosition(this.store);
+      console.log('this.storePosition', this.storePosition);
+      this.fetchPlacesByText();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   handleBackLicked = async () => {
@@ -92,7 +101,6 @@ class Location extends Component {
       });
     } catch (e) {
       console.error(e);
-      alert(`error found, address is not identified, use empty`);
       this.setState({ hasError: true });
     }
   };

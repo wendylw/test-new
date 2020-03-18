@@ -143,9 +143,8 @@ const getSessionToken = () => {
   // ---End--- sessionToken to reduce request billing when user search addresses
 };
 
-export const getPlacesByText = async (input, position) => {
-  const { lat, lng } = position;
-  const google_map_position = new window.google.maps.LatLng(lat, lng);
+export const getPlacesByText = async (input, position = null) => {
+  const google_map_position = position && new window.google.maps.LatLng(position.lat, position.lng);
 
   const autocomplete = new window.google.maps.places.AutocompleteService();
 
