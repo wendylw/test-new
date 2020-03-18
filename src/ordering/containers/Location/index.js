@@ -12,6 +12,7 @@ import {
   getPlacesByText,
   getPlaceDetails,
   standardizeGeoAddress,
+  fetchDevicePosition,
 } from './utils';
 
 class Location extends Component {
@@ -25,14 +26,17 @@ class Location extends Component {
   };
 
   position = null; // user position
+  devicePosition = null;
   store = null;
   storePosition = null;
 
   initializeAddress = async () => {
     const currentAddress = JSON.parse(sessionStorage.getItem('currentAddress'));
-    if (currentAddress) {
+    const devicePosition = fetchDevicePosition();
+    if (currentAddress && devicePosition) {
       console.log('use address info from sessionStorage');
       this.position = currentAddress.coords;
+      this.devicePosition = devicePosition;
       return this.setState({
         address: currentAddress.address,
       });
@@ -40,19 +44,16 @@ class Location extends Component {
     await this.tryGeolocation();
   };
 
-  fetchPlacesByText = async () => {
+  fetchPlacesByText = async (needDefault = false) => {
     this.setState({ isFetching: true });
     // todo: later need to use store position after we have exact position
-    const places = await getPlacesByText(
-      this.state.address,
-      this.position
-        ? {
-            lat: this.position.latitude,
-            lng: this.position.longitude,
-          }
-        : null
-    );
+    const places = await getPlacesByText(this.state.address);
     console.log('fetchPlacesByText: places =', places);
+
+    if (needDefault && places[0]) {
+      this.selectPlace(places[0]);
+    }
+
     this.setState({
       places,
       isFetching: false,
@@ -62,26 +63,18 @@ class Location extends Component {
   debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
 
   componentDidMount = async () => {
-    const { history } = this.props;
-    // todo: remove it
-    sessionStorage.setItem(
-      'currentAddress',
-      '{"coords":{"latitude":35.86166,"longitude":104.195397,"accuracy":1803339},"address":"Unnamed Road, 榆中县兰州市甘肃省中国","addressInfo":{"street1":"","street2":"Unnamed Road, 榆中县","city":"兰州市","state":"甘肃省","country":"CN"}}'
-    );
-    history.push({
-      pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
-      search: window.location.search,
-    });
-
     try {
       // will show prompt of permission once entry the page
       await this.initializeAddress();
       this.store = await getStoreInfo();
       this.storePosition = await getStorePosition(this.store);
       console.log('this.storePosition', this.storePosition);
-      this.fetchPlacesByText();
+      this.fetchPlacesByText(true);
     } catch (e) {
       console.error(e);
+      this.setState({
+        isFetching: false,
+      });
     }
   };
 
@@ -96,6 +89,8 @@ class Location extends Component {
   };
 
   tryGeolocation = async () => {
+    console.warn('tryGeolocation entry');
+
     try {
       // getCurrentAddress with fire a permission prompt
       const currentAddress = await getCurrentAddressInfo();
@@ -112,8 +107,18 @@ class Location extends Component {
       });
     } catch (e) {
       console.error(e);
-      this.setState({ hasError: true });
+      this.setState({ hasError: true, isFetching: false });
     }
+  };
+
+  selectPlace = place => {
+    if (!place) return null;
+
+    this.setState({
+      address: place.description,
+      placeId: place.place_id,
+      place: place,
+    });
   };
 
   render() {
@@ -132,7 +137,7 @@ class Location extends Component {
               <input
                 className="input input__block"
                 type="text"
-                defaultValue={this.state.address}
+                placeholder={'Type in address'}
                 onChange={event => {
                   console.log('typed:', event.currentTarget.value);
                   this.setState(
@@ -177,35 +182,36 @@ class Location extends Component {
                 <p className="gray-font-opacity">{this.state.place.structured_formatting.secondary_text}</p>
               </div>
             </address>
-          ) : null}
+          ) : (
+            <address className="location-page__address item border__bottom-divider">No available address</address>
+          )}
         </div>
         <div className="location-page__list-wrapper">
           {this.state.isFetching ? <div className="loader theme"></div> : null}
           <ul className="location-page__list">
-            {this.state.places.map(place => (
-              <li
-                className="location-page__item flex flex-middle"
-                key={place.id}
-                onClick={e => {
-                  e.preventDefault();
-                  this.setState({
-                    address: place.description,
-                    placeId: place.place_id,
-                    place: place,
-                  });
-                }}
-              >
-                <i className="location-page__icon-adjust">
-                  <IconAdjust />
-                </i>
-                <div className="item border__bottom-divider">
-                  <summary>{place.structured_formatting.main_text}</summary>
-                  <p className="gray-font-opacity">
-                    {place.distance_meters / 1000}km . {place.structured_formatting.secondary_text}
-                  </p>
-                </div>
-              </li>
-            ))}
+            {this.state.places.length
+              ? this.state.places.map(place => (
+                  <li
+                    className="location-page__item flex flex-middle"
+                    key={place.id}
+                    onClick={e => {
+                      e.preventDefault();
+                      this.selectPlace(place);
+                    }}
+                  >
+                    <i className="location-page__icon-adjust">
+                      <IconAdjust />
+                    </i>
+                    <div className="item border__bottom-divider">
+                      <summary>{place.structured_formatting.main_text}</summary>
+                      <p className="gray-font-opacity">
+                        {place.distance_meters ? `${place.distance_meters / 1000}km . ` : null}
+                        {place.structured_formatting.secondary_text}
+                      </p>
+                    </div>
+                  </li>
+                ))
+              : null}
           </ul>
           {false && hasError ? (
             <div className="text-center">
