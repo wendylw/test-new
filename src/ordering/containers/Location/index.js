@@ -62,6 +62,17 @@ class Location extends Component {
   debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
 
   componentDidMount = async () => {
+    const { history } = this.props;
+    // todo: remove it
+    sessionStorage.setItem(
+      'currentAddress',
+      '{"coords":{"latitude":35.86166,"longitude":104.195397,"accuracy":1803339},"address":"Unnamed Road, 榆中县兰州市甘肃省中国","addressInfo":{"street1":"","street2":"Unnamed Road, 榆中县","city":"兰州市","state":"甘肃省","country":"CN"}}'
+    );
+    history.push({
+      pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
+
     try {
       // will show prompt of permission once entry the page
       await this.initializeAddress();
