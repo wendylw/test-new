@@ -161,8 +161,8 @@ class Location extends Component {
           ) : null}
         </div>
         <div className="location-page__list-wrapper">
+          {this.state.isFetching ? <div className="loader theme"></div> : null}
           <ul className="location-page__list">
-            {this.state.isFetching ? <li>Loading..</li> : null}
             {this.state.places.map(place => (
               <li
                 className="location-page__item flex flex-middle"
@@ -188,7 +188,7 @@ class Location extends Component {
               </li>
             ))}
           </ul>
-          {hasError ? (
+          {false && hasError ? (
             <div className="text-center">
               <img src={DeliveryErrorImage} alt="" />
               <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
