@@ -196,8 +196,12 @@ export class ThankYou extends Component {
         <div className="thanks text-center">
           <img className="thanks__image" src={bannerImage} alt="Beep Success" />
           <div className="thanks__delivery-status-container">
-            <ul className="text-left">
-              <li className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)}`}>
+            <ul className="thanks__delivery-status-list text-left">
+              <li
+                className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)} ${
+                  this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
+                }`}
+              >
                 <label className="thanks__delivery-status-label font-weight-bold">Order Confirmed</label>
                 <div className="thanks__delivery-status-time">
                   <i className="access-time-icon text-middle">
@@ -206,20 +210,24 @@ export class ThankYou extends Component {
                   <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
                 </div>
               </li>
-              <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-                <label className="thanks__delivery-status-label font-weight-bold">Pending Rider Confirm</label>
-              </li>
-              <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-                <label className="thanks__delivery-status-label font-weight-bold">
-                  Rider is on the way to pick up order
-                </label>
-                <div className="thanks__delivery-status-time">
-                  <i className="access-time-icon text-middle">
-                    <IconAccessTime />
-                  </i>
-                  <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
-                </div>
-              </li>
+              {this.getStatusStyle('riderPending', logs) !== 'hide' ? (
+                <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
+                  <label className="thanks__delivery-status-label font-weight-bold">Pending Rider Confirm</label>
+                </li>
+              ) : null}
+              {this.getStatusStyle('picking', logs) !== 'hide' ? (
+                <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
+                  <label className="thanks__delivery-status-label font-weight-bold">
+                    Rider is on the way to pick up order
+                  </label>
+                  <div className="thanks__delivery-status-time">
+                    <i className="access-time-icon text-middle">
+                      <IconAccessTime />
+                    </i>
+                    <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
+                  </div>
+                </li>
+              ) : null}
             </ul>
           </div>
           <div className="thanks__info-container">
