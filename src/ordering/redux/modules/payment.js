@@ -45,32 +45,47 @@ export const types = {
 
 // action creators
 export const actions = {
-  createOrder: ({ cashback }) => (dispatch, getState) => {
+  createOrder: ({ cashback, shippingType }) => (dispatch, getState) => {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
-    const deliveryComments = Utils.getSessionVariable('deliveryComments');
-    const shippingType = 'delivery';
-    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
-    const addressDetails = Utils.getLocalStorageVariable('addressDetails');
     const { storeId, tableId } = getRequestInfo(getState());
-    const address = currentAddress.street1 + currentAddress.street2;
-    const variables = {
+    const pickupAddressInfo = {
+      phone: Utils.getLocalStorageVariable('user.p'),
+      name: Utils.getLocalStorageVariable('user.name'),
+    };
+    let deliveryAddressInfo = {};
+    let variables = {
       business,
       storeId,
       shoppingCartIds,
       tableId,
       cashback,
       shippingType,
-      deliveryComments,
-      deliveryAddressInfo: {
-        ...currentAddress,
-        addressDetails,
-        address,
-        phone: Utils.getLocalStorageVariable('user.p'),
-        name: Utils.getLocalStorageVariable('user.name'),
-      },
     };
+
+    if (shippingType === 'delivery') {
+      const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+      const addressDetails = Utils.getLocalStorageVariable('addressDetails');
+      const address = currentAddress.street1 + currentAddress.street2;
+      const deliveryComments = Utils.getSessionVariable('deliveryComments');
+
+      variables = {
+        ...variables,
+        deliveryAddressInfo: {
+          ...pickupAddressInfo,
+          ...currentAddress,
+          addressDetails,
+          address,
+        },
+        deliveryComments,
+      };
+    } else if (shippingType === 'pickup') {
+      variables = {
+        ...variables,
+        pickupAddressInfo,
+      };
+    }
 
     return dispatch(
       createOrder(
