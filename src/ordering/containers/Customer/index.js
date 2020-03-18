@@ -9,7 +9,7 @@ import FormTextarea from './components/FormTextarea';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators } from '../../redux/modules/payment';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 
@@ -29,6 +29,7 @@ class Customer extends Component {
   };
 
   async savePhoneNumber() {
+    const { appActions } = this.props;
     const { phone } = this.state;
 
     if (!isValidPhoneNumber(phone)) {
@@ -36,17 +37,18 @@ class Customer extends Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
+    await appActions.getOtp({ phone });
   }
 
   async handleCreateOrder() {
     this.savePhoneNumber();
 
-    const { history } = this.props;
+    // const { history } = this.props;
 
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-      search: window.location.search,
-    });
+    // history.push({
+    //   pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+    //   search: window.location.search,
+    // });
   }
 
   handleUpdateName(e) {
@@ -240,6 +242,7 @@ export default compose(
   connect(
     state => {
       return {
+        user: getUser(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
       };
