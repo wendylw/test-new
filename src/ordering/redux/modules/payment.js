@@ -67,7 +67,8 @@ export const actions = {
     if (shippingType === 'delivery') {
       const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
       const addressDetails = Utils.getLocalStorageVariable('addressDetails');
-      const address = currentAddress.street1 + currentAddress.street2;
+      const { street1, street2 } = currentAddress || {};
+      const address = street1 || '' + street2 || '';
       const deliveryComments = Utils.getSessionVariable('deliveryComments');
 
       variables = {
