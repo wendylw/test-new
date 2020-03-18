@@ -3,12 +3,24 @@
 
 import config from '../../../config';
 
-export const saveDevicePosition = async position => {
+export const saveDevicePosition = position => {
   return sessionStorage.setItem('device.position', position);
 };
 
-export const fetchDevicePosition = async () => {
-  return sessionStorage.getItem('device.position');
+export const fetchDevicePosition = () => {
+  try {
+    let position = sessionStorage.getItem('device.position');
+    const [lat, lng] = position.split(',');
+    if (lat && lng) {
+      return {
+        lat: Number(lat),
+        lng: Number(lng),
+      };
+    }
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 export const getStoreInfo = () => {
@@ -152,7 +164,14 @@ const getSessionToken = () => {
 };
 
 export const getPlacesByText = async (input, position = null) => {
-  const google_map_position = position && new window.google.maps.LatLng(position.lat, position.lng);
+  let positionPair = position;
+
+  if (!positionPair) {
+    positionPair = fetchDevicePosition();
+    console.log('getPlacesByText: positionPair =', positionPair);
+  }
+
+  const google_map_position = positionPair && new window.google.maps.LatLng(positionPair.lat, positionPair.lng);
 
   const autocomplete = new window.google.maps.places.AutocompleteService();
 
@@ -161,9 +180,13 @@ export const getPlacesByText = async (input, position = null) => {
       {
         input,
         sessionToken: getSessionToken(),
-        location: google_map_position,
-        origin: google_map_position,
-        radius: 10000, // 10km around location
+        ...(google_map_position
+          ? {
+              location: google_map_position,
+              origin: google_map_position,
+              radius: 10000, // 10km around location
+            }
+          : null),
       },
       (results, status) => {
         console.log('getPlaceDetails: results', results);
@@ -238,6 +261,8 @@ export const getCurrentAddressInfo = () =>
         console.log(`Latitude : ${crd.latitude}`);
         console.log(`Longitude: ${crd.longitude}`);
         console.log(`More or less ${crd.accuracy} meters.`);
+
+        saveDevicePosition(`${crd.latitude},${crd.longitude}`);
 
         // geolocation transforms to google position
         const lat = position.coords.latitude;

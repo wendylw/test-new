@@ -40,6 +40,21 @@ export class ThankYou extends Component {
       search: `?receiptNumber=${orderId || ''}`,
     });
   };
+  handleClickViewDetail = () => {
+    const { history, order } = this.props;
+    const { orderId } = order || {};
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDER_DETAILS,
+      search: `?receiptNumber=${orderId || ''}`,
+    });
+  };
+  handleNeedHelp = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.NEED_HELP,
+    });
+  };
 
   renderPickupInfo() {
     const { t, order } = this.props;
@@ -87,65 +102,44 @@ export class ThankYou extends Component {
       </button>
     );
   }
-  getStatusStyle = (targetType, logs) => {
-    // const logs = [
-    //   {
-    //     info: [
-    //       {
-    //         key: 'status',
-    //         value: 'shipped',
-    //       },
-    //     ],
-    //     receiptNumber: '816771340025309',
-    //     time: '2020-03-17T13:51:26.000Z',
-    //     type: 'status_updated',
-    //   },
-    //   {
-    //     info: [
-    //       {
-    //         key: 'status',
-    //         value: 'confrimed',
-    //       },
-    //     ],
-    //     receiptNumber: '816771340025309',
-    //     time: '2020-03-17T13:51:26.000Z',
-    //     type: 'status_updated',
-    //   },
-    //   {
-    //     info: [
-    //       {
-    //         key: 'status',
-    //         value: 'logisticConfirmed',
-    //       },
-    //     ],
-    //     receiptNumber: '816771340025309',
-    //     time: '2020-03-17T13:51:26.000Z',
-    //     type: 'status_updated',
-    //   },
-    // ];
+  renderVeiwDetail() {
+    return (
+      <button
+        className="thanks__link link font-weight-bold text-uppercase button__block"
+        onClick={this.handleClickViewDetail}
+        data-testid="thanks__view-receipt"
+      >
+        VIEW DETAILS
+      </button>
+    );
+  }
+
+  getLogsInfoByStatus = (logs, statusType) => {
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
+    const targetInfo =
+      statusUpdateLogs &&
+      statusUpdateLogs.find(x => {
+        const statusObject = x.info.find(info => info.key === 'status');
+        return statusObject && statusObject.value === statusType;
+      });
+
+    return targetInfo;
+  };
+  getStatusStyle = (targetType, logs) => {
     if (targetType === 'confirm') {
       return 'active';
     }
-    const logisticConfirmed = () => {
-      const tt =
-        statusUpdateLogs &&
-        statusUpdateLogs.find(x => {
-          const statusObject = x.info.find(info => info.key === 'status');
-          return statusObject && statusObject.value === 'logisticConfirmed';
-        });
+    const logisticObject = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
 
-      return tt;
-    };
     if (targetType === 'riderPending') {
-      if (logisticConfirmed() !== undefined) {
+      if (logisticObject !== undefined) {
         return 'hide';
       } else {
         return 'normal';
       }
     }
     if (targetType === 'picking') {
-      if (logisticConfirmed() !== undefined) {
+      if (logisticObject !== undefined) {
         return 'active';
       } else {
         return 'hide';
@@ -155,23 +149,19 @@ export class ThankYou extends Component {
 
   getDeliveryUI() {
     const { t, history, order } = this.props;
-    const { orderId, logs, storeInfo, total, status } = order || {};
+    const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
+    const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
+    const pickkingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    //const { city, country, name, state, street1, street2 } = storeInfo || {};
+    const { address } = (deliveryInformation && deliveryInformation[0]) || {};
+    const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
+    //const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
+    //const { orderId, logs, storeInfo, total, status } = order || {};
     let bannerImage = beepSuccessImage;
 
     if (Utils.isDeliveryType()) {
       bannerImage = status === 'shipped' ? beepOnTheWayImage : beepDeliverySuccessImage;
     }
-
-    // const total = 11;
-    // const storeInfo = {
-    //   "city": "Kuala Lumpur",
-    //   "country": "Malaysia",
-    //   "name": "Ice Dreams Cafe",
-    //   "phone": "0122555358",
-    //   "state": "Selangor",
-    //   "street1": "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
-    //   "street2": "Taman Sri Hartamas"
-    // };
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
 
@@ -189,7 +179,7 @@ export class ThankYou extends Component {
             })
           }
         >
-          <span className="gray-font-opacity text-uppercase">
+          <span className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
             <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
           </span>
         </Header>
@@ -202,29 +192,31 @@ export class ThankYou extends Component {
                   this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
                 }`}
               >
-                <label className="thanks__delivery-status-label font-weight-bold">Order Confirmed</label>
+                <label className="thanks__delivery-status-label font-weight-bold">{t('OrderConfirmed')}</label>
                 <div className="thanks__delivery-status-time">
                   <i className="access-time-icon text-middle">
                     <IconAccessTime />
                   </i>
-                  <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
+                  {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
+                  <time className="text-middle gray-font-opacity">{(paidStatusObj && paidStatusObj.time) || ''}</time>
                 </div>
               </li>
               {this.getStatusStyle('riderPending', logs) !== 'hide' ? (
                 <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-                  <label className="thanks__delivery-status-label font-weight-bold">Pending Rider Confirm</label>
+                  <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
                 </li>
               ) : null}
               {this.getStatusStyle('picking', logs) !== 'hide' ? (
                 <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-                  <label className="thanks__delivery-status-label font-weight-bold">
-                    Rider is on the way to pick up order
-                  </label>
+                  <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
                   <div className="thanks__delivery-status-time">
                     <i className="access-time-icon text-middle">
                       <IconAccessTime />
                     </i>
-                    <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time>
+                    {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
+                    <time className="text-middle gray-font-opacity">
+                      {(pickkingStatusObj && pickkingStatusObj.time) || ''}
+                    </time>
                   </div>
                 </li>
               ) : null}
@@ -239,16 +231,17 @@ export class ThankYou extends Component {
                   <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
                 </div>
               </div>
-              <p className="thanks__address-details gray-font-opacity">34, Jalan Ambong 4, Kepong Baru, 52100 Kuala</p>
+              {/* <p className="thanks__address-details gray-font-opacity">34, Jalan Ambong 4, Kepong Baru, 52100 Kuala</p> */}
+              <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
               <p className="thanks__address-pin flex flex-top">
                 <i className="thanks__pin-icon">
                   <IconPin />
                 </i>
-                <span className="gray-font-opacity">{storeAddress}</span>
+                <span className="gray-font-opacity">{deliveryAddress}</span>
               </p>
             </div>
 
-            {this.renderNeedReceipt()}
+            {this.renderVeiwDetail()}
           </div>
         </div>
       </React.Fragment>
