@@ -9,9 +9,9 @@ import FormTextarea from './components/FormTextarea';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import { actions as appActionCreators } from '../../redux/modules/app';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as paymentActionCreators } from '../../redux/modules/payment';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -130,8 +130,9 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history } = this.props;
+    const { t, history, onlineStoreInfo } = this.props;
     const { phone, asideName, formTextareaTitle } = this.state;
+    const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     return (
@@ -176,7 +177,7 @@ class Customer extends Component {
               <PhoneInput
                 placeholder=""
                 value={formatPhoneNumberIntl('')}
-                country={''}
+                country={country}
                 metadata={metadataMobile}
                 onChange={phone => {
                   const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
@@ -240,6 +241,7 @@ export default compose(
     state => {
       return {
         cartSummary: getCartSummary(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
       };
     },
     dispatch => ({

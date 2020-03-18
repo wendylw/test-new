@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { IconPin, IconAdjust } from '../../../components/Icons';
+import Constant from '../../../utils/constants';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
 import { getCurrentAddress } from './utils';
 
@@ -30,13 +31,21 @@ class Location extends Component {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, history } = this.props;
+    const { address } = this.state;
 
     return (
       <section className="table-ordering__location">
         <Header className="has-right" isPage={true} title={t('DeliverTo')} />
         <div className="location-page__info">
-          <form className="location-page__form">
+          <form
+            className="location-page__form"
+            onSubmit={event => {
+              this.setState({
+                address: event.currentTarget.value,
+              });
+            }}
+          >
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
                 <IconPin />
@@ -54,12 +63,22 @@ class Location extends Component {
               />
             </div>
           </form>
-          <address className="location-page__address item border__bottom-divider">
-            <div className="item__detail-content">
-              <summary className="item__title font-weight-bold">10 Boulevard</summary>
-              <p className="gray-font-opacity">3.03km . Lebuhraya Sprint, PJU 6A, PJ 47400</p>
-            </div>
-          </address>
+          {address ? (
+            <address
+              className="location-page__address item border__bottom-divider"
+              onClick={() => {
+                history.push({
+                  pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
+                  search: window.location.search,
+                });
+              }}
+            >
+              <div className="item__detail-content">
+                <summary className="item__title font-weight-bold">10 Boulevard</summary>
+                <p className="gray-font-opacity">{address}</p>
+              </div>
+            </address>
+          ) : null}
         </div>
         <div className="location-page__list-wrapper">
           <ul className="location-page__list">

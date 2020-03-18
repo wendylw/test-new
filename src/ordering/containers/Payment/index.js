@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import Constants from '../../../utils/constants';
@@ -90,6 +91,7 @@ class Payment extends Component {
   handleClickPayNow = async () => {
     const { history, currentPayment, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     this.setState({
       payNowLoading: true,
@@ -103,7 +105,7 @@ class Payment extends Component {
       return;
     }
 
-    await this.props.paymentActions.createOrder({ cashback: totalCashback });
+    await this.props.paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};

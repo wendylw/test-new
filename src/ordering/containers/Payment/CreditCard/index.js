@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
@@ -299,10 +300,11 @@ class CreditCard extends Component {
       return;
     }
 
-    const { paymentActions, cartSummary } = this.props;
+    const { history, paymentActions, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await paymentActions.createOrder({ cashback: totalCashback });
+    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
