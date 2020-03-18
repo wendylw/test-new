@@ -178,7 +178,7 @@ class Cart extends Component {
           </button>
         </Header>
         <div className="list__container">
-          <CartList shoppingCart={shoppingCart} />
+          <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
