@@ -57,21 +57,19 @@ const getPlaceId = async address => {
   return placeId;
 };
 
-const getPlaceDetails = async placeId => {
+export const getPlaceDetails = async placeId => {
   const places = new window.google.maps.places.PlacesService(document.createElement('div'));
 
   const placeDetails = await new Promise(resolve => {
     places.getDetails(
       {
-        fields: ['geometry', 'formatted_address', 'place_id'],
+        fields: ['geometry', 'formatted_address', 'place_id', 'address_components'],
         placeId,
+        sessionToken: getSessionToken(),
       },
       (result, status) => {
         if (result) {
-          resolve({
-            lat: result.geometry.location.lat(),
-            lng: result.geometry.location.lng(),
-          });
+          resolve(result);
         } else {
           resolve(null);
         }
@@ -82,6 +80,8 @@ const getPlaceDetails = async placeId => {
 
   return placeDetails;
 };
+
+window.getPlaceDetails = getPlaceDetails;
 
 export const getStorePosition = async store => {
   console.log('store', store);
@@ -108,8 +108,8 @@ export const getStorePosition = async store => {
     address,
     placeId,
     coords: {
-      lat: placeDetails.lat,
-      lng: placeDetails.lng,
+      lat: placeDetails.geometry.location.lat(),
+      lng: placeDetails.geometry.location.lng(),
     },
   };
 
@@ -120,7 +120,7 @@ export const getStorePosition = async store => {
   return storePosition;
 };
 
-export const getPlacesByText = async (input, position) => {
+const getSessionToken = () => {
   // --Begin-- sessionToken to reduce request billing when user search addresses
   // let sessionToken = JSON.parse(sessionStorage.getItem('map.sessionToken'));
   //
@@ -132,13 +132,18 @@ export const getPlacesByText = async (input, position) => {
   //  InvalidValueError: in property sessionToken: not an instance of AutocompleteSessionToken
   const sessionToken =
     window.sessionToken ||
-    (function getSessionToken() {
+    (function getSessionToken__createOne() {
       const sessionToken = new window.google.maps.places.AutocompleteSessionToken();
       window.sessionToken = sessionToken;
       return sessionToken;
     })();
-  // ---End--- sessionToken to reduce request billing when user search addresses
 
+  console.log('sessionToken =', sessionToken);
+  return sessionToken;
+  // ---End--- sessionToken to reduce request billing when user search addresses
+};
+
+export const getPlacesByText = async (input, position) => {
   const { lat, lng } = position;
   const google_map_position = new window.google.maps.LatLng(lat, lng);
 
@@ -148,7 +153,7 @@ export const getPlacesByText = async (input, position) => {
     autocomplete.getPlacePredictions(
       {
         input,
-        sessionToken,
+        sessionToken: getSessionToken(),
         location: google_map_position,
         origin: google_map_position,
         radius: 10000, // 10km around location
@@ -181,7 +186,11 @@ export const standardizeGeoAddress = addressComponents => {
   const isCountry = types => types.includes('country');
   const isState = types => types.includes('administrative_area_level_1');
   const isCity = types => types.includes('locality') || types.includes('administrative_area_level_3');
-  const isStreet2 = types => types.includes('route') || types.includes('neighborhood') || types.includes('sublocality');
+  const isStreet2 = types =>
+    types.includes('street_number') ||
+    types.includes('route') ||
+    types.includes('neighborhood') ||
+    types.includes('sublocality');
 
   const street2 = [];
 
@@ -203,11 +212,6 @@ export const standardizeGeoAddress = addressComponents => {
 
   return address;
 };
-
-export const getCurrentAddressInfoByAddress = () =>
-  new Promise(resolve => {
-    resolve(null);
-  });
 
 export const getCurrentAddressInfo = () =>
   new Promise((resolve, reject) => {

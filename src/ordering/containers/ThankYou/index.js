@@ -3,7 +3,8 @@ import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
-
+import Utils from '../../../utils/utils';
+import CurrencyNumber from '../../components/CurrencyNumber';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
@@ -83,22 +84,105 @@ export class ThankYou extends Component {
       </button>
     );
   }
+  getStatusStyle = (targetType, logs) => {
+    // const logs = [
+    //   {
+    //     info: [
+    //       {
+    //         key: 'status',
+    //         value: 'shipped',
+    //       },
+    //     ],
+    //     receiptNumber: '816771340025309',
+    //     time: '2020-03-17T13:51:26.000Z',
+    //     type: 'status_updated',
+    //   },
+    //   {
+    //     info: [
+    //       {
+    //         key: 'status',
+    //         value: 'confrimed',
+    //       },
+    //     ],
+    //     receiptNumber: '816771340025309',
+    //     time: '2020-03-17T13:51:26.000Z',
+    //     type: 'status_updated',
+    //   },
+    //   {
+    //     info: [
+    //       {
+    //         key: 'status',
+    //         value: 'logisticConfirmed',
+    //       },
+    //     ],
+    //     receiptNumber: '816771340025309',
+    //     time: '2020-03-17T13:51:26.000Z',
+    //     type: 'status_updated',
+    //   },
+    // ];
+    const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
+    if (targetType === 'confirm') {
+      return {
+        color: 'orange',
+      };
+    }
+    const logisticConfirmed = () => {
+      const tt =
+        statusUpdateLogs &&
+        statusUpdateLogs.find(x => {
+          const statusObject = x.info.find(info => info.key === 'status');
+          return statusObject && statusObject.value === 'logisticConfirmed';
+        });
 
-  render() {
-    const { t, history, match, order } = this.props;
-    const date = new Date();
-    const { tableId } = order || {};
+      return tt;
+    };
+    if (targetType === 'riderPending') {
+      if (logisticConfirmed() !== undefined) {
+        return {
+          display: 'none',
+        };
+      } else {
+        return {
+          color: 'gray',
+        };
+      }
+    }
+    if (targetType === 'picking') {
+      if (logisticConfirmed() !== undefined) {
+        return {
+          color: 'orange',
+        };
+      } else {
+        return {
+          display: 'none',
+        };
+      }
+    }
+  };
+  getDeliveryUI() {
+    const { t, history, order } = this.props;
+    const { orderId, logs, storeInfo, total } = order || {};
 
+    // const total = 11;
+    // const storeInfo = {
+    //   "city": "Kuala Lumpur",
+    //   "country": "Malaysia",
+    //   "name": "Ice Dreams Cafe",
+    //   "phone": "0122555358",
+    //   "state": "Selangor",
+    //   "street1": "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
+    //   "street2": "Taman Sri Hartamas"
+    // };
+    const { city, country, name, state, street1, street2 } = storeInfo;
+
+    const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
     return (
-      <section
-        className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${
-          match.isExact ? '' : 'hide'
-        }`}
-      >
+      <React.Fragment>
         <Header
           className="border__bottom-divider gray"
           isPage={true}
-          title={t('OrderPaid')}
+          //title={t('OrderPaid')}
+          title={`#${orderId}`}
           navFunc={() =>
             history.replace({
               pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
@@ -107,29 +191,87 @@ export class ThankYou extends Component {
           }
         >
           <span className="gray-font-opacity text-uppercase">
-            {tableId ? (
-              <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span>
-            ) : (
-              <span data-testid="thanks__self-pickup">{t('SelfPickUp')}</span>
-            )}
+            <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
           </span>
         </Header>
         <div className="thanks text-center">
           <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
-          <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
-          <p>
-            {`${t('PrepareOrderDescription')} `}
-            <span role="img" aria-label="Goofy">
-              😋
-            </span>
-          </p>
-
           <div className="thanks__info-container">
-            {this.renderPickupInfo()}
+            <div>
+              <ul>
+                <li style={this.getStatusStyle('confirm', logs)}>Order Confirmed</li>
+                <li style={this.getStatusStyle('riderPending', logs)}>Pending Rider Confirm</li>
+                <li style={this.getStatusStyle('picking', logs)}>Rider is on the way to pick up order</li>
+              </ul>
+            </div>
+            <div>
+              <div>
+                <div>{name}</div>
+                <div>
+                  Total <CurrencyNumber money={total || 0} />
+                </div>
+              </div>
+              <span>{storeAddress}</span>
+            </div>
             {this.renderNeedReceipt()}
-            <PhoneLogin history={history} />
           </div>
         </div>
+      </React.Fragment>
+    );
+  }
+
+  render() {
+    const { t, history, match, order } = this.props;
+    const date = new Date();
+    const { tableId } = order || {};
+    const isDeliveryType = Utils.isDeliveryType();
+    return (
+      <section
+        className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${
+          match.isExact ? '' : 'hide'
+        }`}
+      >
+        {isDeliveryType ? (
+          this.getDeliveryUI()
+        ) : (
+          <React.Fragment>
+            <Header
+              className="border__bottom-divider gray"
+              isPage={true}
+              title={t('OrderPaid')}
+              navFunc={() =>
+                history.replace({
+                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                  search: `?table=${order.tableId}&storeId=${order.storeId}`,
+                })
+              }
+            >
+              <span className="gray-font-opacity text-uppercase">
+                {tableId ? (
+                  <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span>
+                ) : (
+                  <span data-testid="thanks__self-pickup">{t('SelfPickUp')}</span>
+                )}
+              </span>
+            </Header>
+            <div className="thanks text-center">
+              <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
+              <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
+              <p>
+                {`${t('PrepareOrderDescription')} `}
+                <span role="img" aria-label="Goofy">
+                  😋
+                </span>
+              </p>
+
+              <div className="thanks__info-container">
+                {this.renderPickupInfo()}
+                {this.renderNeedReceipt()}
+                <PhoneLogin history={history} />
+              </div>
+            </div>
+          </React.Fragment>
+        )}
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
             <li>
