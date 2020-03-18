@@ -145,8 +145,6 @@ export class Home extends Component {
       (hourInfo === timeFrom[0] && minutesInfo < timeFrom[1]) ||
       (hourInfo === timeTo[0] && minutesInfo > timeTo[1]);
 
-    console.log(validDays && validDays.includes(weekInfo) && !isClosed);
-
     if (validDays && validDays.includes(weekInfo) && !isClosed) {
       return true;
     } else {
