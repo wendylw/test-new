@@ -7,6 +7,14 @@ class FormTextarea extends Component {
     textValue: null,
   };
 
+  componentDidUpdate(prevProps) {
+    const { show } = prevProps;
+
+    if (!show && show !== this.props.show) {
+      this.setState({ textValue: null });
+    }
+  }
+
   handleHideAside(e) {
     const { onToggle } = this.props;
 
@@ -41,6 +49,7 @@ class FormTextarea extends Component {
               rows="4"
               maxLength="140"
               className="input input__textarea input__block gray-font-opacity"
+              value={textValue || ''}
               onChange={this.handleUpdateText.bind(this)}
             ></textarea>
           </div>

@@ -150,7 +150,7 @@ class Customer extends Component {
 
   render() {
     const { t, history, onlineStoreInfo } = this.props;
-    const { phone, asideName, formTextareaTitle } = this.state;
+    const { phone, asideName, formTextareaTitle, addressDetails } = this.state;
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -243,7 +243,7 @@ class Customer extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
-              disabled={!isValidPhoneNumber(phone)}
+              disabled={!addressDetails || !isValidPhoneNumber(phone)}
             >
               {t('Continue')}
             </button>
