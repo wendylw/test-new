@@ -243,7 +243,7 @@ class Customer extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
-              disabled={!addressDetails || !isValidPhoneNumber(phone)}
+              disabled={(type === 'delivery' && !addressDetails) || !isValidPhoneNumber(phone)}
             >
               {t('Continue')}
             </button>
