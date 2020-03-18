@@ -69,7 +69,7 @@ class DeliveryDetailModal extends Component {
               </h1>
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
-                {telephone}+60 012 98765432
+                {telephone}
               </a>
               <ul className="header__info-list">
                 <li className="header__info-item text-middle">
