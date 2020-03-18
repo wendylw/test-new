@@ -5,22 +5,22 @@ export const mockGeocodingResponse = [
         long_name: 'Unnamed Road',
         short_name: 'Unnamed Road',
         types: ['route'],
-      },
+      }, // street2 #1
       {
         long_name: 'Sanhe Shi',
         short_name: 'Sanhe Shi',
         types: ['political', 'sublocality', 'sublocality_level_1'],
-      },
+      }, // street2 #2
       {
         long_name: 'Langfang Shi',
         short_name: 'Langfang Shi',
         types: ['locality', 'political'],
-      },
+      }, // city
       {
         long_name: 'Hebei Sheng',
         short_name: 'Hebei Sheng',
         types: ['administrative_area_level_1', 'political'],
-      },
+      }, // state
       {
         long_name: 'China',
         short_name: 'CN',
