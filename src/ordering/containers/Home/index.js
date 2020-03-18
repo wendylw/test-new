@@ -180,7 +180,7 @@ export class Home extends Component {
     //const { street1, street2, city, state, country, phone } = mockStore;
     const { phone } = (stores && stores[0]) || {};
     const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
     const { address } = currentAddress || {};
     return {
       deliveryFee,

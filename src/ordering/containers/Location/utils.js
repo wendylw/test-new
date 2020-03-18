@@ -3,6 +3,14 @@
 
 import config from '../../../config';
 
+export const saveDevicePosition = async position => {
+  return sessionStorage.setItem('device.position', position);
+};
+
+export const fetchDevicePosition = async () => {
+  return sessionStorage.getItem('device.position');
+};
+
 export const getStoreInfo = () => {
   const business = config.business;
   const storeId = config.storeId;

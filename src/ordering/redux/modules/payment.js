@@ -63,7 +63,7 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+      const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
       const { address: addressString, addressInfo } = currentAddress || {};
       const addressDetails = Utils.getLocalStorageVariable('addressDetails');
       const { street1, street2 } = addressInfo || {};
