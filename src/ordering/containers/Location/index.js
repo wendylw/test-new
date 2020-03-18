@@ -31,6 +31,7 @@ class Location extends Component {
 
   render() {
     const { t } = this.props;
+    const { address } = this.state;
 
     return (
       <section className="table-ordering__location">
@@ -57,7 +58,7 @@ class Location extends Component {
           <address className="location-page__address item border__bottom-divider">
             <div className="item__detail-content">
               <summary className="item__title font-weight-bold">10 Boulevard</summary>
-              <p className="gray-font-opacity">3.03km . Lebuhraya Sprint, PJU 6A, PJ 47400</p>
+              <p className="gray-font-opacity">{address}</p>
             </div>
           </address>
         </div>
