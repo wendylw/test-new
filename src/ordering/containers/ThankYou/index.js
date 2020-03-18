@@ -37,6 +37,21 @@ export class ThankYou extends Component {
       search: `?receiptNumber=${orderId || ''}`,
     });
   };
+  handleClickViewDetail = () => {
+    const { history, order } = this.props;
+    const { orderId } = order || {};
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDER_DETAILS,
+      search: `?receiptNumber=${orderId || ''}`,
+    });
+  };
+  handleNeedHelp = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.NEEDHELP,
+    });
+  };
 
   renderPickupInfo() {
     const { t, order } = this.props;
@@ -84,6 +99,18 @@ export class ThankYou extends Component {
       </button>
     );
   }
+  renderVeiwDetail() {
+    return (
+      <button
+        className="thanks__link link font-weight-bold text-uppercase button__block"
+        onClick={this.handleClickViewDetail}
+        data-testid="thanks__view-receipt"
+      >
+        VIEW DETAILS
+      </button>
+    );
+  }
+
   getLogsInfoByStatus = (logs, statusType) => {
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
     const targetInfo =
@@ -126,6 +153,7 @@ export class ThankYou extends Component {
       }
     }
   };
+
   getDeliveryUI() {
     const { t, history, order } = this.props;
     const { orderId, logs, storeInfo, total, deliveryInformation } = order || {};
@@ -150,7 +178,7 @@ export class ThankYou extends Component {
             })
           }
         >
-          <span className="gray-font-opacity text-uppercase">
+          <span className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
             <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
           </span>
         </Header>
@@ -179,7 +207,7 @@ export class ThankYou extends Component {
 
               <div style={{ border: 'solid 1px red' }}>delivery add: {deliveryAddress}</div>
             </div>
-            {this.renderNeedReceipt()}
+            {this.renderVeiwDetail()}
           </div>
         </div>
       </React.Fragment>
