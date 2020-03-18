@@ -146,6 +146,7 @@ export class Home extends Component {
       return false;
     }
   };
+
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};

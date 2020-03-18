@@ -29,6 +29,7 @@ class Header extends Component {
 
   render() {
     const {
+      t,
       className,
       isStoreHome,
       title,
@@ -58,7 +59,7 @@ class Header extends Component {
               <span className="font-weight-bold text-middle">{title}</span>
               {isValidTimeToOrder ? null : (
                 <div className="tag__card-container">
-                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                  <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
                 </div>
               )}
             </h1>
