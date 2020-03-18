@@ -114,6 +114,7 @@ class CategoryProductList extends Component {
                       onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
+                      isValidTimeToOrder={this.props.isValidTimeToOrder}
                     />
                   ))}
                 </ul>
@@ -129,6 +130,7 @@ class CategoryProductList extends Component {
 CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
   isVerticalMenu: PropTypes.bool,
+  isValidTimeToOrder: PropTypes.bool,
 };
 
 CategoryProductList.defaultProps = {

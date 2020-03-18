@@ -48,7 +48,6 @@ export class Home extends Component {
   isDeliveryType = () => {
     const { history } = this.props;
     const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
     return type === 'delivery';
   };
 
@@ -130,9 +129,27 @@ export class Home extends Component {
     return type === 'delivery';
   };
 
+  isValidTimeToOrder = () => {
+    if (!this.isDeliveryType()) {
+      return true;
+    }
+    const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    let weekInfo = new Date().getDay();
+    const hourInfo = new Date().getHours();
+    if (weekInfo === 0) {
+      /** backend use 7 refer to sunday,but getDay use 0 */
+      weekInfo = 7;
+    }
+    if (validDays && validDays.includes(weekInfo) && hourInfo > validTimeFrom && hourInfo < validTimeTo) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   getDeliveryInfo = () => {
-    const { allBusinessInfo, business, stores } = this.props;
+    const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
+    const { stores } = originalInfo;
     const deliveryFee =
       originalInfo.qrOrderingSettings &&
       originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
@@ -141,20 +158,21 @@ export class Home extends Component {
     const validTimeFrom = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeFrom;
     const validTimeTo = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeTo;
 
-    const mockStore = {
-      id: '5e5dd6c7407cf700063ba869',
-      name: 'Ice Dreams Cafe',
-      phone: '0122555358',
-      isOnline: true,
-      isDeleted: null,
-      street1: 'Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1',
-      street2: 'Taman Sri Hartamas',
-      city: 'Kuala Lumpur',
-      state: 'Selangor',
-      country: 'Malaysia',
-    };
-    const { street1, street2, city, state, country, phone } = mockStore;
-    // const { street1, street2, city, state, country, phone } = stores[0] || {};
+    // const mockStore = {
+    //   id: '5e5dd6c7407cf700063ba869',
+    //   name: 'Ice Dreams Cafe',
+    //   phone: '0122555358',
+    //   isOnline: true,
+    //   isDeleted: null,
+    //   street1: 'Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1',
+    //   street2: 'Taman Sri Hartamas',
+    //   city: 'Kuala Lumpur',
+    //   state: 'Selangor',
+    //   country: 'Malaysia',
+    // };
+
+    //const { street1, street2, city, state, country, phone } = mockStore;
+    const { street1, street2, city, state, country, phone } = (stores && stores[0]) || {};
     const storeAddress = `${street1} ${street2} ${city} ${state} ${country} `;
     const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
     const { address } = currentAddress || {};
@@ -192,6 +210,7 @@ export class Home extends Component {
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         minOrder={minOrder}
+        isValidTimeToOrder={this.isValidTimeToOrder()}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
         {isDeliveryType ? (
@@ -240,6 +259,7 @@ export class Home extends Component {
           isVerticalMenu={isVerticalMenu}
           onToggle={this.handleToggleAside.bind(this)}
           onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
+          isValidTimeToOrder={this.isValidTimeToOrder()}
         />
         <ProductDetail
           onlineStoreInfo={onlineStoreInfo}
@@ -266,12 +286,14 @@ export class Home extends Component {
           validDays={validDays}
           validTimeFrom={validTimeFrom}
           validTimeTo={validTimeTo}
+          isValidTimeToOrder={this.isValidTimeToOrder()}
         />
         <Footer
           {...otherProps}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
           onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}
+          isValidTimeToOrder={this.isValidTimeToOrder()}
         />
       </section>
     );
@@ -290,10 +312,7 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
-
         //storeAddress: ' 34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur',
-        telephone: '+60 012 98765432',
-        deliveryHour: [1, 2, 3, 4, 5, 6],
         allBusinessInfo: getAllBusinesses(state),
       };
     },

@@ -36,6 +36,7 @@ class Header extends Component {
       isDeliveryType,
       deliveryFee,
       minOrder,
+      isValidTimeToOrder,
     } = this.props;
     const fixedClassList = ['header flex  flex-space-between'];
     const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
@@ -54,9 +55,11 @@ class Header extends Component {
           >
             <h1 className="header__title">
               <span className="font-weight-bold text-middle">{title}</span>
-              <div className="tag__card-container">
-                <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
-              </div>
+              {isValidTimeToOrder ? null : (
+                <div className="tag__card-container">
+                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                </div>
+              )}
             </h1>
             <ul className="header__info-list">
               <li className="header__info-item">
@@ -91,6 +94,7 @@ Header.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   navFunc: PropTypes.func,
+  isValidTimeToOrder: PropTypes.bool,
 };
 
 Header.defaultProps = {

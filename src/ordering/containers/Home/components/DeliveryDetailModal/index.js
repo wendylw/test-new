@@ -6,21 +6,43 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
   getDeliveryHourUI = () => {
-    const { validDays } = this.props;
+    const weekInfo = {
+      1: 'Mon',
+      2: 'Tue',
+      3: 'Wed',
+      4: 'Thu',
+      5: 'Fri',
+      6: 'Sat',
+      7: 'Sun',
+    };
+    const { validDays, validTimeFrom, validTimeTo } = this.props;
+
     return (
       validDays &&
       validDays.map(x => {
         return (
           <li className="store-info__item flex flex-middle flex-space-between">
-            <span>Sun</span>
-            <time>11:00 - 22:30</time>
+            <span>{weekInfo[x]}</span>
+            {/* <time>11:00 - 22:30</time> */}
+            <time>
+              {`${validTimeFrom}:00`} - {`${validTimeTo}:00`}
+            </time>
           </li>
         );
       })
     );
   };
   render() {
-    const { onlineStoreInfo, show, onToggle, storeAddress, telephone, deliveryFee, minOrder } = this.props;
+    const {
+      onlineStoreInfo,
+      show,
+      onToggle,
+      storeAddress,
+      telephone,
+      deliveryFee,
+      minOrder,
+      isValidTimeToOrder,
+    } = this.props;
     const getClassName = show => {
       return show ? 'aside active' : 'aside';
     };
@@ -38,9 +60,11 @@ class DeliveryDetailModal extends Component {
             <div className="header__title-container">
               <h1 className="header__title">
                 <span className="font-weight-bold text-middle">{onlineStoreInfo.storeName}</span>
-                <div className="tag__card-container">
-                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
-                </div>
+                {isValidTimeToOrder ? null : (
+                  <div className="tag__card-container">
+                    <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                  </div>
+                )}
               </h1>
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href="tel:+6001298765432">

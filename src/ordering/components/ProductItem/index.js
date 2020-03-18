@@ -53,6 +53,7 @@ export class ProductItem extends Component {
               decreaseDisabled={decreaseDisabled}
               onDecrease={onDecrease}
               onIncrease={onIncrease}
+              increaseDisabled={!this.props.isValidTimeToOrder}
             />
           )}
         </Item>
@@ -74,6 +75,7 @@ ProductItem.propTypes = {
   onIncrease: PropTypes.func,
   showProductDetail: PropTypes.func,
   productDetailImageRef: PropTypes.any,
+  isValidTimeToOrder: PropTypes.bool,
 };
 
 ProductItem.defaultProps = {
