@@ -29,6 +29,7 @@ export class ProductItem extends Component {
       showProductDetail,
       productDetailImageRef,
       productItemMinHeight,
+      isValidTimeToOrder,
     } = this.props;
 
     return (
@@ -53,7 +54,7 @@ export class ProductItem extends Component {
               decreaseDisabled={decreaseDisabled}
               onDecrease={onDecrease}
               onIncrease={onIncrease}
-              increaseDisabled={!this.props.isValidTimeToOrder}
+              increaseDisabled={isValidTimeToOrder ? !isValidTimeToOrder : isValidTimeToOrder}
             />
           )}
         </Item>

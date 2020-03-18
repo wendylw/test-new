@@ -45,11 +45,11 @@ export class Home extends Component {
     homeActions.loadProductList();
   }
 
-  isDeliveryType = () => {
-    const { history } = this.props;
-    const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    return type === 'delivery';
-  };
+  // isDeliveryType = () => {
+  //   const { history } = this.props;
+  //   const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+  //   return type === 'delivery';
+  // };
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
@@ -124,13 +124,13 @@ export class Home extends Component {
       </div>
     );
   }
-  isDeliveryType = () => {
-    const type = Utils.getQueryString('type');
-    return type === 'delivery';
-  };
+  // isDeliveryType = () => {
+  //   const type = Utils.getQueryString('type');
+  //   return type === 'delivery';
+  // };
 
   isValidTimeToOrder = () => {
-    if (!this.isDeliveryType()) {
+    if (!Utils.isDeliveryType()) {
       return true;
     }
     const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
@@ -192,7 +192,7 @@ export class Home extends Component {
     const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
     const classList = ['border__bottom-divider gray'];
-    const isDeliveryType = this.isDeliveryType();
+    const isDeliveryType = Utils.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
     // TODO: judge is delivery
     if (!tableId || !isDeliveryType) {
@@ -230,6 +230,7 @@ export class Home extends Component {
       requestInfo,
       isVerticalMenu,
       allBusinessInfo,
+      history,
       ...otherProps
     } = this.props;
 
@@ -250,9 +251,12 @@ export class Home extends Component {
       return null;
     }
 
+    console.log('------test');
+    console.log(this.isValidTimeToOrder());
+
     return (
       <section className="table-ordering__home">
-        {this.isDeliveryType() ? this.renderDeliverToBar() : null}
+        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
@@ -294,6 +298,7 @@ export class Home extends Component {
           tableId={tableId}
           onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}
           isValidTimeToOrder={this.isValidTimeToOrder()}
+          history={history}
         />
       </section>
     );

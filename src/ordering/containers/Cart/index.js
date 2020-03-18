@@ -144,10 +144,6 @@ class Cart extends Component {
       originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
     return deliveryFee;
   };
-  isDeliveryType = () => {
-    const type = Utils.getQueryString('type');
-    return type === 'delivery';
-  };
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
@@ -201,7 +197,7 @@ class Cart extends Component {
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
-            isDeliveryType={this.isDeliveryType()}
+            isDeliveryType={Utils.isDeliveryType()}
             deliveryFee={this.getDeliveryFee()}
           />
         </aside>
