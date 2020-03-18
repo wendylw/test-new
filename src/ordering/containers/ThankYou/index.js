@@ -84,60 +84,27 @@ export class ThankYou extends Component {
       </button>
     );
   }
-  getStatusStyle = (targetType, logs) => {
-    // const logs = [
-    //   {
-    //     info: [
-    //       {
-    //         key: 'status',
-    //         value: 'shipped',
-    //       },
-    //     ],
-    //     receiptNumber: '816771340025309',
-    //     time: '2020-03-17T13:51:26.000Z',
-    //     type: 'status_updated',
-    //   },
-    //   {
-    //     info: [
-    //       {
-    //         key: 'status',
-    //         value: 'confrimed',
-    //       },
-    //     ],
-    //     receiptNumber: '816771340025309',
-    //     time: '2020-03-17T13:51:26.000Z',
-    //     type: 'status_updated',
-    //   },
-    //   {
-    //     info: [
-    //       {
-    //         key: 'status',
-    //         value: 'logisticConfirmed',
-    //       },
-    //     ],
-    //     receiptNumber: '816771340025309',
-    //     time: '2020-03-17T13:51:26.000Z',
-    //     type: 'status_updated',
-    //   },
-    // ];
+  getLogsInfoByStatus = (logs, statusType) => {
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
+    const targetInfo =
+      statusUpdateLogs &&
+      statusUpdateLogs.find(x => {
+        const statusObject = x.info.find(info => info.key === 'status');
+        return statusObject && statusObject.value === statusType;
+      });
+
+    return targetInfo;
+  };
+  getStatusStyle = (targetType, logs) => {
     if (targetType === 'confirm') {
       return {
         color: 'orange',
       };
     }
-    const logisticConfirmed = () => {
-      const tt =
-        statusUpdateLogs &&
-        statusUpdateLogs.find(x => {
-          const statusObject = x.info.find(info => info.key === 'status');
-          return statusObject && statusObject.value === 'logisticConfirmed';
-        });
+    const logisticObject = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
 
-      return tt;
-    };
     if (targetType === 'riderPending') {
-      if (logisticConfirmed() !== undefined) {
+      if (logisticObject !== undefined) {
         return {
           display: 'none',
         };
@@ -148,7 +115,7 @@ export class ThankYou extends Component {
       }
     }
     if (targetType === 'picking') {
-      if (logisticConfirmed() !== undefined) {
+      if (logisticObject !== undefined) {
         return {
           color: 'orange',
         };
@@ -161,21 +128,14 @@ export class ThankYou extends Component {
   };
   getDeliveryUI() {
     const { t, history, order } = this.props;
-    const { orderId, logs, storeInfo, total } = order || {};
-
-    // const total = 11;
-    // const storeInfo = {
-    //   "city": "Kuala Lumpur",
-    //   "country": "Malaysia",
-    //   "name": "Ice Dreams Cafe",
-    //   "phone": "0122555358",
-    //   "state": "Selangor",
-    //   "street1": "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
-    //   "street2": "Taman Sri Hartamas"
-    // };
+    const { orderId, logs, storeInfo, total, deliveryInformation } = order || {};
+    const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
+    const pickkingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
     const { city, country, name, state, street1, street2 } = storeInfo || {};
-
+    const { address } = (deliveryInformation && deliveryInformation[0]) || {};
+    const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
     const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
+
     return (
       <React.Fragment>
         <Header
@@ -199,9 +159,13 @@ export class ThankYou extends Component {
           <div className="thanks__info-container">
             <div>
               <ul>
-                <li style={this.getStatusStyle('confirm', logs)}>Order Confirmed</li>
+                <li style={this.getStatusStyle('confirm', logs)}>
+                  Order Confirmed---{paidStatusObj && paidStatusObj.time}
+                </li>
                 <li style={this.getStatusStyle('riderPending', logs)}>Pending Rider Confirm</li>
-                <li style={this.getStatusStyle('picking', logs)}>Rider is on the way to pick up order</li>
+                <li style={this.getStatusStyle('picking', logs)}>
+                  Rider is on the way to pick up order--{pickkingStatusObj && pickkingStatusObj.time}
+                </li>
               </ul>
             </div>
             <div>
@@ -211,7 +175,9 @@ export class ThankYou extends Component {
                   Total <CurrencyNumber money={total || 0} />
                 </div>
               </div>
-              <span>{storeAddress}</span>
+              <div>{storeAddress}</div>
+
+              <div style={{ border: 'solid 1px red' }}>delivery add: {deliveryAddress}</div>
             </div>
             {this.renderNeedReceipt()}
           </div>
