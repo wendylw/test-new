@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { IconPin, IconAdjust } from '../../../components/Icons';
+import Constant from '../../../utils/constants';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
 import { getCurrentAddress } from './utils';
 
@@ -55,7 +56,15 @@ class Location extends Component {
               />
             </div>
           </form>
-          <address className="location-page__address item border__bottom-divider">
+          <address
+            className="location-page__address item border__bottom-divider"
+            onClick={() => {
+              history.push({
+                pathname: Constant.ROUTER_PATHS.ORDERING_BASE,
+                search: window.location.search,
+              });
+            }}
+          >
             <div className="item__detail-content">
               <summary className="item__title font-weight-bold">10 Boulevard</summary>
               <p className="gray-font-opacity">{address}</p>
