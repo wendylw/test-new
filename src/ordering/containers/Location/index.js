@@ -4,23 +4,49 @@ import Header from '../../../components/Header';
 import { IconPin, IconAdjust } from '../../../components/Icons';
 import Constant from '../../../utils/constants';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
-import { getCurrentAddress } from './utils';
+import { getCurrentAddressInfoByAddress, getCurrentAddressInfo } from './utils';
 
 class Location extends Component {
   state = {
     address: '',
+    placeId: '', // placeId of the address user selected
+  };
+
+  initializeAddress = async () => {
+    const currentAddress = localStorage.getItem('currentAddress');
+    if (currentAddress) {
+      console.log('use address info from localStorage');
+      return this.setState({
+        address: JSON.parse(currentAddress).address,
+      });
+    }
+    await this.tryGeolocation();
   };
 
   componentDidMount = async () => {
     // will show prompt of permission once entry the page
-    await this.tryGeolocation();
+    await this.initializeAddress();
+  };
+
+  handleBackLicked = async () => {
+    try {
+      const currentAddress = await getCurrentAddressInfoByAddress(this.state.address);
+      localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+      window.history.back();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   tryGeolocation = async () => {
     try {
       // getCurrentAddress with fire a permission prompt
-      const { address } = await getCurrentAddress();
-      // todo: save into locale storage for sharing user device address between pages
+      const currentAddress = await getCurrentAddressInfo();
+      const { address } = currentAddress;
+
+      // Save into localstorage
+      localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+
       this.setState({
         address,
       });
@@ -36,14 +62,13 @@ class Location extends Component {
 
     return (
       <section className="table-ordering__location">
-        <Header className="has-right" isPage={true} title={t('DeliverTo')} />
+        <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackLicked} />
         <div className="location-page__info">
           <form
             className="location-page__form"
             onSubmit={event => {
-              this.setState({
-                address: event.currentTarget.value,
-              });
+              event.preventDefault();
+              this.handleBackLicked();
             }}
           >
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">

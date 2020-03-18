@@ -1,3 +1,11 @@
+// To mock data
+if (process.env.NODE_ENV === 'development' && process.env.HTTPS) {
+  document.cookie = 'business=nike; path=/';
+  document.cookie = '__h=U2FsdGVkX19EBhV2Qu2EKqNLYfpH%252BnkF%252F7OKbNg19ytv5o0JGVywrz13xoTpM0ZM; path=/';
+  document.cookie = '__s=5b432464eccd4c7eb52018c6; path=/';
+  document.cookie = '__t=10; path=/';
+}
+
 const getTableId = () => {
   try {
     return document.cookie
