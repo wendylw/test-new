@@ -1,5 +1,8 @@
+let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
+
 // To mock data
-if (process.env.NODE_ENV === 'development' && process.env.HTTPS) {
+if (process.env.NODE_ENV === 'development') {
+  business = 'nike';
   document.cookie = 'business=nike; path=/';
   document.cookie = '__h=U2FsdGVkX19EBhV2Qu2EKqNLYfpH%252BnkF%252F7OKbNg19ytv5o0JGVywrz13xoTpM0ZM; path=/';
   document.cookie = '__s=5b432464eccd4c7eb52018c6; path=/';
@@ -64,8 +67,6 @@ const getConsumerId = () => {
     return null;
   }
 };
-
-const business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
 
 const config = {
   termsPrivacyURLS: {

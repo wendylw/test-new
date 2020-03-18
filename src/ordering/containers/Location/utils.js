@@ -1,20 +1,173 @@
 // todo: remove it
 // import { mockGeocodingResponse } from './mockResponse';
 
-/**
- * getAddressDetails
- * @param address
- * @returns {Promise<{
- *   placeId: string,
- *   address: string,
- *   originAddr: string,
- *   geometry: {
- *     lan: number,
- *     lng: number,
- *   },
- * }>}
- */
-export const getAddressDetails = async address => {};
+import config from '../../../config';
+
+export const getStoreInfo = () => {
+  const business = config.business;
+  const storeId = config.storeId;
+
+  if (!business || !storeId) {
+    throw new Error(`business=${business} and storeId=${storeId} param are required.`);
+  }
+
+  return fetch('/api/gql/CoreBusiness', {
+    method: 'POST',
+    body: JSON.stringify({ business, storeId }),
+    credentials: 'include',
+  })
+    .then(response => response.json())
+    .then(response => {
+      console.log(response.data);
+
+      if (response.data.business) {
+        const { stores } = response.data.business;
+        return stores[0];
+      } else {
+        return null;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      throw error;
+    });
+};
+
+const getPlaceId = async address => {
+  const autocomplete = new window.google.maps.places.AutocompleteService();
+
+  const placeId = await new Promise(resolve => {
+    autocomplete.getPlacePredictions(
+      {
+        input: address,
+      },
+      (results, status) => {
+        console.log('getPlaceDetails: results', results);
+
+        if (results && results.length) {
+          resolve(results[0].place_id);
+        } else {
+          resolve('');
+        }
+      }
+    );
+  });
+  console.log('placeId =', placeId);
+
+  return placeId;
+};
+
+const getPlaceDetails = async placeId => {
+  const places = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+  const placeDetails = await new Promise(resolve => {
+    places.getDetails(
+      {
+        fields: ['geometry', 'formatted_address', 'place_id'],
+        placeId,
+      },
+      (result, status) => {
+        if (result) {
+          resolve({
+            lat: result.geometry.location.lat(),
+            lng: result.geometry.location.lng(),
+          });
+        } else {
+          resolve(null);
+        }
+      }
+    );
+  });
+  console.log('placeDetails =', placeDetails);
+
+  return placeDetails;
+};
+
+export const getStorePosition = async store => {
+  console.log('store', store);
+
+  const address = ['street2', 'city', 'country']
+    .map(field => store[field])
+    .filter(v => !!v)
+    .join(', ');
+
+  console.log('address =', address);
+
+  let storePosition = JSON.parse(localStorage.getItem('store.position'));
+
+  if (storePosition && storePosition.address === address) {
+    console.log('getStorePosition from localStorage');
+    console.log('storePosition =', storePosition);
+    return storePosition;
+  }
+
+  console.warn('fetch store location from map');
+  const placeId = await getPlaceId(address);
+  const placeDetails = await getPlaceDetails(placeId);
+  storePosition = {
+    address,
+    placeId,
+    coords: {
+      lat: placeDetails.lat,
+      lng: placeDetails.lng,
+    },
+  };
+
+  // cache result
+  localStorage.setItem('store.position', JSON.stringify(storePosition));
+  console.log('storePosition =', storePosition);
+
+  return storePosition;
+};
+
+export const getPlacesByText = async (input, storePosition) => {
+  // --Begin-- sessionToken to reduce request billing when user search addresses
+  // let sessionToken = JSON.parse(sessionStorage.getItem('map.sessionToken'));
+  //
+  // if (!sessionToken) {
+  //   sessionToken = new window.google.maps.places.AutocompleteSessionToken();
+  //   sessionStorage.setItem('map.sessionToken', JSON.stringify(sessionToken));
+  // }
+  // ==> Error ==>
+  //  InvalidValueError: in property sessionToken: not an instance of AutocompleteSessionToken
+  const sessionToken =
+    window.sessionToken ||
+    (function getSessionToken() {
+      const sessionToken = new window.google.maps.places.AutocompleteSessionToken();
+      window.sessionToken = sessionToken;
+      return sessionToken;
+    })();
+  // ---End--- sessionToken to reduce request billing when user search addresses
+
+  const { lat, lng } = storePosition.coords;
+  const google_map_position = new window.google.maps.LatLng(lat, lng);
+
+  const autocomplete = new window.google.maps.places.AutocompleteService();
+
+  const places = await new Promise(resolve => {
+    autocomplete.getPlacePredictions(
+      {
+        input,
+        sessionToken,
+        location: google_map_position,
+        origin: google_map_position,
+        radius: 10000, // 10km around location
+      },
+      (results, status) => {
+        console.log('getPlaceDetails: results', results);
+
+        if (results && results.length) {
+          resolve(results);
+        } else {
+          resolve([]);
+        }
+      }
+    );
+  });
+  console.log('places =', places);
+
+  return places;
+};
 
 export const standardizeGeoAddress = addressComponents => {
   const address = {

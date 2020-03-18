@@ -1,17 +1,29 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import { IconPin /*IconAdjust*/ } from '../../../components/Icons';
+import _ from 'lodash';
+import { IconPin, IconAdjust } from '../../../components/Icons';
 import Constant from '../../../utils/constants';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
-import { getCurrentAddressInfoByAddress, getCurrentAddressInfo } from './utils';
+import {
+  getCurrentAddressInfoByAddress,
+  getCurrentAddressInfo,
+  getStoreInfo,
+  getStorePosition,
+  getPlacesByText,
+} from './utils';
 
 class Location extends Component {
   state = {
     address: '',
     placeId: '', // placeId of the address user selected,
     hasError: false,
+    places: [],
+    isFetching: false,
   };
+
+  store = null;
+  storePosition = null;
 
   initializeAddress = async () => {
     const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
@@ -24,9 +36,25 @@ class Location extends Component {
     await this.tryGeolocation();
   };
 
+  fetchPlacesByText = async () => {
+    this.setState({ isFetching: true });
+    const places = await getPlacesByText(this.state.address, this.storePosition);
+    console.log('fetchPlacesByText: places =', places);
+    this.setState({
+      places,
+      isFetching: false,
+    });
+  };
+
+  debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
+
   componentDidMount = async () => {
     // will show prompt of permission once entry the page
     await this.initializeAddress();
+    this.store = await getStoreInfo();
+    this.storePosition = await getStorePosition(this.store);
+    console.log('this.storePosition', this.storePosition);
+    this.fetchPlacesByText();
   };
 
   handleBackLicked = async () => {
@@ -84,9 +112,12 @@ class Location extends Component {
                 defaultValue={this.state.address}
                 onChange={event => {
                   console.log('typed:', event.currentTarget.value);
-                  this.setState({
-                    address: event.currentTarget.value,
-                  });
+                  this.setState(
+                    {
+                      address: event.currentTarget.value,
+                    },
+                    this.debounceFetchPlaces
+                  );
                 }}
               />
             </div>
@@ -109,17 +140,22 @@ class Location extends Component {
           ) : null}
         </div>
         <div className="location-page__list-wrapper">
-          {/* <ul className="location-page__list">
-            <li className="location-page__item flex flex-middle">
-              <i className="location-page__icon-adjust">
-                <IconAdjust />
-              </i>
-              <div className="item border__bottom-divider">
-                <summary>Block Camilia</summary>
-                <p className="gray-font-opacity">3.03km . Near Block C</p>
-              </div>
-            </li>
-          </ul> */}
+          <ul className="location-page__list">
+            {this.state.isFetching ? <li>Loading..</li> : null}
+            {this.state.places.map(place => (
+              <li className="location-page__item flex flex-middle" key={place.id}>
+                <i className="location-page__icon-adjust">
+                  <IconAdjust />
+                </i>
+                <div className="item border__bottom-divider">
+                  <summary>{place.structured_formatting.main_text}</summary>
+                  <p className="gray-font-opacity">
+                    {place.distance_meters / 1000}km . {place.structured_formatting.secondary_text}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
           {hasError ? (
             <div className="text-center">
               <img src={DeliveryErrorImage} alt="" />
