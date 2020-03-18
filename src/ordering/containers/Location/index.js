@@ -67,7 +67,7 @@ class Location extends Component {
 
   render() {
     const { t, history } = this.props;
-    const { address } = this.state;
+    const { address, hasError } = this.state;
 
     return (
       <section className="table-ordering__location">
