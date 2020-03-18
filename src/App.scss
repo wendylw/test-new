@@ -2034,12 +2034,15 @@
     }
 
     & ~ .list__container {
-      top: 70px;
+      // top: 70px;
+      top: 13px;
     }
 
     & ~ .category-nav,
-    & ~ .list__container .category__header.fixed {
-      top: 121px;
+    & ~ .list__container .category__header.fixed,
+    & ~ .aside {
+      // top: 121px;
+      top: 64px;
     }
   }
 

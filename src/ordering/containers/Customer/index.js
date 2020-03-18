@@ -22,6 +22,7 @@ const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
+    deliverToAddress: Utils.getLocalStorageVariable('address'),
     addressDetails: Utils.getLocalStorageVariable('addressDetails'),
     deliveryComments: Utils.getSessionVariable('deliveryComments'),
     formTextareaTitle: null,
@@ -71,12 +72,12 @@ class Customer extends Component {
     Utils.setLocalStorageVariable('user.name', e.target.value);
   }
 
-  handleDriverComments(deliveryComments) {
+  handleDeliverToAddress(deliverToAddress) {
     this.setState({
-      deliveryComments,
+      deliverToAddress,
     });
 
-    Utils.setSessionVariable('deliveryComments', deliveryComments);
+    Utils.setLocalStorageVariable('address', deliverToAddress);
   }
 
   handleAddressDetails(addressDetails) {
@@ -87,14 +88,27 @@ class Customer extends Component {
     Utils.setLocalStorageVariable('addressDetails', addressDetails);
   }
 
+  handleDriverComments(deliveryComments) {
+    this.setState({
+      deliveryComments,
+    });
+
+    Utils.setSessionVariable('deliveryComments', deliveryComments);
+  }
+
   handleToggleFormTextarea(asideName) {
     const { t } = this.props;
+    let formTextareaTitle = 'Add in your address*';
+
+    if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
+      formTextareaTitle = t('AddNoteToDriverPlaceholder');
+    } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
+      formTextareaTitle = t('AddAddressDetailsPlaceholder');
+    }
 
     this.setState({
       asideName,
-      formTextareaTitle: t(
-        asideName === ASIDE_NAMES.ADD_DRIVER_NOTE ? 'AddNoteToDriverPlaceholder' : 'AddAddressDetailsPlaceholder'
-      ),
+      formTextareaTitle,
     });
   }
 
@@ -106,19 +120,20 @@ class Customer extends Component {
       return null;
     }
 
-    const { addressDetails, deliveryComments } = this.state;
-    const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-    const { address } = currentAddress || {};
+    const { deliverToAddress, addressDetails, deliveryComments } = this.state;
+    // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
+    // const { address } = currentAddress || {};
 
     return (
       <React.Fragment>
         <div
           className="form__group"
           onClick={() => {
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-              search: window.location.search,
-            });
+            // history.push({
+            //   pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+            //   search: window.location.search,
+            // });
+            this.handleToggleFormTextarea('DELIVER_TO_ADDRESS');
           }}
         >
           <div className="flex flex-middle flex-space-between">
@@ -127,7 +142,9 @@ class Customer extends Component {
               <IconEdit />
             </i>
           </div>
-          <p className="form__textarea gray-font-opacity">{address || t('AddAddressPlaceholder')}</p>
+          <p className="form__textarea gray-font-opacity">
+            {/*address ||*/ deliverToAddress || t('AddAddressPlaceholder')}
+          </p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
@@ -156,6 +173,13 @@ class Customer extends Component {
     const { phone, asideName, formTextareaTitle, addressDetails } = this.state;
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let updateTextFunc = this.handleDeliverToAddress.bind(this);
+
+    if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
+      updateTextFunc = this.handleDriverComments.bind(this);
+    } else if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
+      updateTextFunc = this.handleAddressDetails.bind(this);
+    }
 
     return (
       <section className={`table-ordering__customer` /* hide */}>
@@ -221,11 +245,7 @@ class Customer extends Component {
           show={!!asideName}
           onToggle={this.handleToggleFormTextarea.bind(this)}
           title={formTextareaTitle}
-          onUpdateText={
-            asideName === ASIDE_NAMES.ADD_DRIVER_NOTE
-              ? this.handleDriverComments.bind(this)
-              : this.handleAddressDetails.bind(this)
-          }
+          onUpdateText={updateTextFunc}
         />
 
         <footer className="footer-operation grid flex flex-middle flex-space-between">
