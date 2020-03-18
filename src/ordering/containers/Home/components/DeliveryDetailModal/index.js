@@ -44,8 +44,9 @@ class DeliveryDetailModal extends Component {
       isValidTimeToOrder,
     } = this.props;
     const getClassName = show => {
-      return show ? 'aside active' : 'aside';
+      return show ? 'store-info__aside aside active' : 'store-info__aside aside';
     };
+
     return (
       <aside className={getClassName(show)} onClick={() => onToggle(null)}>
         <div className="store-info">
@@ -67,8 +68,8 @@ class DeliveryDetailModal extends Component {
                 )}
               </h1>
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
-              <a className="store-info__phone link link__non-underline" href="tel:+6001298765432">
-                {telephone}
+              <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
+                {telephone}+60 012 98765432
               </a>
               <ul className="header__info-list">
                 <li className="header__info-item text-middle">

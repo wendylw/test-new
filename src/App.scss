@@ -1425,23 +1425,35 @@
   width: 100%;
   padding: 0 4vw;
 
+  .header__info-list {
+    margin-top: 10px;
+  }
+
+  &__aside.aside {
+    top: 0;
+  }
+
   &__address,
   &__phone {
     display: block;
-    margin: 5px 0;
+    margin-top: 6px;
     padding: 0 5vw;
   }
 
+  &__address {
+    font-size: 0.85rem;
+  }
+
   &__delivery-hours {
-    margin: 24px 0;
+    margin: 34px 0;
   }
 
   &__list {
     width: 60%;
   }
 
-  &__item {
-    margin: 10px 0;
+  &__item ~ &__item {
+    margin: 10px 0 0;
   }
 }
 
