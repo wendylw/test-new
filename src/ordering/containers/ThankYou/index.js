@@ -8,7 +8,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { getOnlineStoreInfo, types } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 import beepSuccessImage from '../../../images/beep-success.png';
@@ -158,6 +158,7 @@ export class ThankYou extends Component {
     //const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
     //const { orderId, logs, storeInfo, total, status } = order || {};
     let bannerImage = beepSuccessImage;
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     if (Utils.isDeliveryType()) {
       bannerImage = status === 'shipped' ? beepOnTheWayImage : beepDeliverySuccessImage;
@@ -175,7 +176,7 @@ export class ThankYou extends Component {
           navFunc={() =>
             history.replace({
               pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-              search: `?table=${order.tableId}&storeId=${order.storeId}`,
+              search: `?table=${order.tableId}&storeId=${order.storeId}${type ? '&type=' + type : ''}`,
             })
           }
         >
