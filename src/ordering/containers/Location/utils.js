@@ -4,6 +4,46 @@
 // todo: move into environment
 const GOOGLE_MAP_API_KEY = 'AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c';
 
+export const standardizeGeoAddress = addressComponents => {
+  const address = {
+    street1: '',
+    street2: '',
+    city: '',
+    state: '',
+    country: '',
+  };
+
+  const isCountry = types => types.includes('country');
+  const isState = types => types.includes('administrative_area_level_1');
+  const isCity = types => types.includes('locality');
+  const isStreet2 = types => types.includes('route') || types.includes('sublocality');
+
+  const street2 = [];
+
+  addressComponents.forEach(({ types, short_name }) => {
+    if (isCountry(types)) {
+      address.country = short_name;
+    } else if (isState(types)) {
+      address.state = short_name;
+    } else if (isCity(types)) {
+      address.city = short_name;
+    } else if (isStreet2(types)) {
+      street2.push(short_name);
+    }
+  });
+
+  address.street2 = street2.join(', ');
+
+  console.log('address =', address);
+
+  return address;
+};
+
+export const getCurrentAddressInfoByAddress = () =>
+  new Promise(resolve => {
+    resolve(null);
+  });
+
 export const renderGoogleMapApiScript = () =>
   new Promise(resolve => {
     if (document.getElementById('googleMap__getCurrentAddress')) {
@@ -22,7 +62,7 @@ export const renderGoogleMapApiScript = () =>
     document.body.appendChild(script);
   });
 
-export const getCurrentAddress = () =>
+export const getCurrentAddressInfo = () =>
   new Promise((resolve, reject) => {
     /* Chrome need SSL! */
     const is_chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
@@ -43,9 +83,13 @@ export const getCurrentAddress = () =>
 
         // todo: remove
         // const ret = {
-        //   coords: position.coords,
-        //   geoPositions: mockGeocodingResponse,
+        //   coords: {
+        //     latitude: position.coords.latitude,
+        //     longitude: position.coords.longitude,
+        //     accuracy: position.coords.accuracy,
+        //   },
         //   address: mockGeocodingResponse[0].formatted_address,
+        //   addressInfo: standardizeGeoAddress(mockGeocodingResponse[0].address_components),
         // };
         // console.warn('with mock of result', ret);
         // return resolve(ret);
@@ -70,14 +114,20 @@ export const getCurrentAddress = () =>
                 geometry : {}
                 place_id : '',
             }]
+
+            see more from: https://developers.google.com/maps/documentation/geocoding/intro
            */
             console.log('final location', results);
             if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
               console.log(results[0].formatted_address);
               resolve({
-                coords: position.coords,
-                geoPositions: results,
+                coords: {
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude,
+                  accuracy: position.coords.accuracy,
+                },
                 address: results[0].formatted_address,
+                addressInfo: standardizeGeoAddress(results[0].address_components),
               });
             }
           });

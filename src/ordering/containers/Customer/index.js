@@ -29,7 +29,7 @@ class Customer extends Component {
   };
 
   async savePhoneNumber() {
-    const { appActions } = this.props;
+    // const { appActions } = this.props;
     const { phone } = this.state;
 
     if (!isValidPhoneNumber(phone)) {
@@ -37,18 +37,18 @@ class Customer extends Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
-    await appActions.getOtp({ phone });
+    // await appActions.getOtp({ phone });
   }
 
   async handleCreateOrder() {
     this.savePhoneNumber();
 
-    // const { history } = this.props;
+    const { history } = this.props;
 
-    // history.push({
-    //   pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-    //   search: window.location.search,
-    // });
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+      search: window.location.search,
+    });
   }
 
   handleUpdateName(e) {
@@ -178,7 +178,7 @@ class Customer extends Component {
               <label className="form__label gray-font-opacity">{t('MobileNumber')}</label>
               <PhoneInput
                 placeholder=""
-                value={formatPhoneNumberIntl('')}
+                value={formatPhoneNumberIntl(phone)}
                 country={country}
                 metadata={metadataMobile}
                 onChange={phone => {

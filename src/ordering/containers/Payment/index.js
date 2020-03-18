@@ -100,7 +100,10 @@ class Payment extends Component {
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
 
-      history.push({ pathname });
+      history.push({
+        pathname,
+        search: window.location.search,
+      });
 
       return;
     }
