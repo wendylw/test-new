@@ -1,17 +1,29 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import Header from '../../../components/Header';
+import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as thankYouActionCreators, getBusinessInfo } from '../../redux/modules/thankYou';
 
 export class NeedHelp extends Component {
   render() {
-    const { business, t } = this.props;
+    const { history, business, t } = this.props;
     const { stores } = business || '';
     const { name, phone, street1 } = stores ? stores[0] : [];
     return (
       <section className="store-list__content">
-        <header className="header flex flex-space-between flex-middle gray text-uppercase">{t('NeedHelp')}</header>
+        <Header
+          className=""
+          isPage={true}
+          title={t('NeedHelp')}
+          navFunc={() =>
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.THANK_YOU,
+              search: window.location.search,
+            })
+          }
+        ></Header>
         <div className="list_container">
           <ul className="list">
             <li className="item border__bottom-divider">
