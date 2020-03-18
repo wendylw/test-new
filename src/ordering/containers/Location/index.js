@@ -3,20 +3,22 @@ import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import _ from 'lodash';
 import { IconPin, IconAdjust } from '../../../components/Icons';
-import Constant from '../../../utils/constants';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
+import Constant from '../../../utils/constants';
 import {
-  getCurrentAddressInfoByAddress,
   getCurrentAddressInfo,
   getStoreInfo,
   getStorePosition,
   getPlacesByText,
+  getPlaceDetails,
+  standardizeGeoAddress,
 } from './utils';
 
 class Location extends Component {
   state = {
     address: '', // user address
     placeId: '', // placeId of the address user selected,
+    place: null,
     hasError: false,
     places: [],
     isFetching: false,
@@ -67,12 +69,6 @@ class Location extends Component {
     const { history } = this.props;
 
     try {
-      const currentAddress = await getCurrentAddressInfoByAddress(this.state.address);
-      // TODO: has bug here.
-      if (currentAddress) {
-        localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
-      }
-
       history.goBack();
     } catch (e) {
       console.error(e);
@@ -103,7 +99,7 @@ class Location extends Component {
 
   render() {
     const { t, history } = this.props;
-    const { address, hasError } = this.state;
+    const { hasError } = this.state;
 
     return (
       <section className="table-ordering__location">
@@ -130,10 +126,25 @@ class Location extends Component {
               />
             </div>
           </div>
-          {address ? (
+          {this.state.place ? (
             <address
               className="location-page__address item border__bottom-divider"
-              onClick={() => {
+              onClick={async () => {
+                const placeDetails = await getPlaceDetails(this.state.place.place_id);
+                console.log('user placeDetails =', placeDetails);
+                const addressInfo = standardizeGeoAddress(placeDetails.address_components);
+                const currentAddress = {
+                  addressInfo,
+                  address: this.state.place.description, // save place description as user address
+                  coords: {
+                    latitude: placeDetails.geometry.location.lat(),
+                    longitude: placeDetails.geometry.location.lng(),
+                  },
+                };
+                localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+                console.log('user currentAddress =', currentAddress);
+
+                // todo: should use modal to hide this address picker
                 history.push({
                   pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
                   search: window.location.search,
@@ -141,8 +152,10 @@ class Location extends Component {
               }}
             >
               <div className="item__detail-content">
-                <summary className="item__title font-weight-bold">10 Boulevard</summary>
-                <p className="gray-font-opacity">{address}</p>
+                <summary className="item__title font-weight-bold">
+                  {this.state.place.structured_formatting.main_text}
+                </summary>
+                <p className="gray-font-opacity">{this.state.place.structured_formatting.secondary_text}</p>
               </div>
             </address>
           ) : null}
@@ -151,7 +164,18 @@ class Location extends Component {
           <ul className="location-page__list">
             {this.state.isFetching ? <li>Loading..</li> : null}
             {this.state.places.map(place => (
-              <li className="location-page__item flex flex-middle" key={place.id}>
+              <li
+                className="location-page__item flex flex-middle"
+                key={place.id}
+                onClick={e => {
+                  e.preventDefault();
+                  this.setState({
+                    address: place.description,
+                    placeId: place.place_id,
+                    place: place,
+                  });
+                }}
+              >
                 <i className="location-page__icon-adjust">
                   <IconAdjust />
                 </i>
