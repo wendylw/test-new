@@ -251,9 +251,6 @@ export class Home extends Component {
       return null;
     }
 
-    console.log('------test');
-    console.log(this.isValidTimeToOrder());
-
     return (
       <section className="table-ordering__home">
         {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
