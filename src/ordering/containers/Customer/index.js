@@ -21,6 +21,7 @@ const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
+    username: Utils.getLocalStorageVariable('user.name'),
     phone: Utils.getLocalStorageVariable('user.p'),
     deliverToAddress: Utils.getLocalStorageVariable('address'),
     addressDetails: Utils.getLocalStorageVariable('addressDetails'),
@@ -69,6 +70,10 @@ class Customer extends Component {
   }
 
   handleUpdateName(e) {
+    this.setState({
+      username: e.target.value,
+    });
+
     Utils.setLocalStorageVariable('user.name', e.target.value);
   }
 
@@ -170,7 +175,15 @@ class Customer extends Component {
 
   render() {
     const { t, history, onlineStoreInfo } = this.props;
-    const { phone, asideName, formTextareaTitle, deliverToAddress, addressDetails, deliveryComments } = this.state;
+    const {
+      username,
+      phone,
+      asideName,
+      formTextareaTitle,
+      deliverToAddress,
+      addressDetails,
+      deliveryComments,
+    } = this.state;
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let textareaValue = deliverToAddress;
@@ -218,7 +231,12 @@ class Customer extends Component {
           <form className="customer__form">
             <div className="form__group">
               <label className="form__label gray-font-opacity">{t('Name')}</label>
-              <input className="input input__block" type="text" onChange={this.handleUpdateName.bind(this)} />
+              <input
+                className="input input__block"
+                type="text"
+                defaultValue={this.state.username}
+                onChange={this.handleUpdateName.bind(this)}
+              />
             </div>
 
             <div className="form__group border__bottom-divider">
@@ -271,7 +289,8 @@ class Customer extends Component {
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
-                (type === 'delivery' && (!Boolean(addressDetails) || !Boolean(deliverToAddress))) ||
+                (type === 'delivery' &&
+                  (!Boolean(username) || !Boolean(addressDetails) || !Boolean(deliverToAddress))) ||
                 !isValidPhoneNumber(phone)
               }
             >
