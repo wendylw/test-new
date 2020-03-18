@@ -708,7 +708,7 @@
 
   &__info-list {
     padding: 0 5vw;
-    margin: 0 -10px;
+    margin: 5px -10px 0;
 
     label,
     span {
@@ -2028,17 +2028,17 @@
 
     & + .header {
       top: 57px;
-      height: 57px;
+      height: 64px;
       background-color: $white;
     }
 
     & ~ .list__container {
-      top: 63px;
+      top: 70px;
     }
 
     & ~ .category-nav,
     & ~ .list__container .category__header.fixed {
-      top: 114px;
+      top: 121px;
     }
   }
 
