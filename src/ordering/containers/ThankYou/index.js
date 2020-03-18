@@ -173,7 +173,7 @@ export class ThankYou extends Component {
     //   "street1": "Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1",
     //   "street2": "Taman Sri Hartamas"
     // };
-    const { city, country, name, state, street1, street2 } = storeInfo;
+    const { city, country, name, state, street1, street2 } = storeInfo || {};
 
     const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
     return (
