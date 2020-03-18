@@ -55,12 +55,9 @@ class Cart extends Component {
   }
 
   handleClickBack = () => {
-    const { history } = this.props;
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: type ? `?type=${type}` : '',
+      search: window.location.search,
     });
   };
 

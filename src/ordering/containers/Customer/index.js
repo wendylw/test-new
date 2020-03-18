@@ -26,13 +26,15 @@ class Customer extends Component {
     deliveryComments: Utils.getSessionVariable('deliveryComments'),
     formTextareaTitle: null,
     asideName: null,
+    sentOtp: false,
   };
 
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isLogin } = user || {};
+    const { sentOtp } = this.state;
 
-    if (this.props.user.hasOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
+    if (sentOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
@@ -59,6 +61,7 @@ class Customer extends Component {
 
     if (!isLogin) {
       await appActions.getOtp({ phone });
+      this.setState({ sentOtp: true });
     } else {
       this.visitPaymentPage();
     }
