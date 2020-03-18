@@ -120,7 +120,7 @@ class Customer extends Component {
       return null;
     }
 
-    const { deliverToAddress, addressDetails, deliveryComments } = this.state;
+    const { deliverToAddress, addressDetails /*, deliveryComments*/ } = this.state;
     // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
     // const { address } = currentAddress || {};
 
@@ -155,7 +155,7 @@ class Customer extends Component {
             </i>
           </div>
         </div>
-        <div
+        {/* <div
           className="form__group flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
@@ -163,21 +163,24 @@ class Customer extends Component {
           <i className="customer__edit-icon">
             <IconEdit />
           </i>
-        </div>
+        </div> */}
       </React.Fragment>
     );
   }
 
   render() {
     const { t, history, onlineStoreInfo } = this.props;
-    const { phone, asideName, formTextareaTitle, addressDetails } = this.state;
+    const { phone, asideName, formTextareaTitle, deliverToAddress, addressDetails, deliveryComments } = this.state;
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let textareaValue = deliverToAddress;
     let updateTextFunc = this.handleDeliverToAddress.bind(this);
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
+      textareaValue = deliveryComments;
       updateTextFunc = this.handleDriverComments.bind(this);
-    } else if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
+    } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
+      textareaValue = addressDetails;
       updateTextFunc = this.handleAddressDetails.bind(this);
     }
 
@@ -245,6 +248,7 @@ class Customer extends Component {
           show={!!asideName}
           onToggle={this.handleToggleFormTextarea.bind(this)}
           title={formTextareaTitle}
+          textareaValue={textareaValue}
           onUpdateText={updateTextFunc}
         />
 
@@ -266,7 +270,10 @@ class Customer extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
-              disabled={(type === 'delivery' && !addressDetails) || !isValidPhoneNumber(phone)}
+              disabled={
+                (type === 'delivery' && (!Boolean(addressDetails) || !Boolean(deliverToAddress))) ||
+                !isValidPhoneNumber(phone)
+              }
             >
               {t('Continue')}
             </button>

@@ -13,6 +13,10 @@ class FormTextarea extends Component {
     if (!show && show !== this.props.show) {
       this.setState({ textValue: null });
     }
+
+    if (this.props.show && show !== this.props.show) {
+      this.setState({ textValue: this.props.textareaValue });
+    }
   }
 
   handleHideAside(e) {
@@ -74,10 +78,12 @@ FormTextarea.propTypes = {
   onToggle: PropTypes.func,
   title: PropTypes.string,
   onUpdateText: PropTypes.func,
+  textareaValue: PropTypes.string,
 };
 
 FormTextarea.defaultProps = {
   show: false,
+  textareaValue: '',
   onToggle: () => {},
   title: false,
   onUpdateText: () => {},
