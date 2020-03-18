@@ -40,7 +40,7 @@ class Location extends Component {
         <div className="location-page__info">
           <form
             className="location-page__form"
-            onSubmit={e => {
+            onSubmit={event => {
               this.setState({
                 address: event.currentTarget.value,
               });
