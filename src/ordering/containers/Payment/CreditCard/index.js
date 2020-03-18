@@ -311,6 +311,7 @@ class CreditCard extends Component {
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
+      Utils.removeSessionVariable('deliveryComments');
     }
 
     this.setState({
