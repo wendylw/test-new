@@ -1,43 +1,51 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-// import Header from '../../../components/Header';
-// import PhoneLogin from './components/PhoneLogin';
-import Constants from '../../../utils/constants';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
+import { actions as thankYouActionCreators, getBusinessInfo } from '../../redux/modules/thankYou';
 
 export class NeedHelp extends Component {
   render() {
+    const { business, t } = this.props;
+    const { stores } = business || '';
+    const { name, phone, street1 } = stores ? stores[0] : [];
     return (
-      <section>
-        <ul>
-          <li>
-            <p>Store Name</p>
-            <span>testing</span>
-          </li>
-          <li>
-            <p>Contact information</p>
-            <span>111111</span>
-          </li>
-          <li>
-            <p>Store Address</p>
-            <span>testing....</span>
-          </li>
-        </ul>
+      <section className="store-list__content">
+        <header className="header flex flex-space-between flex-middle gray text-uppercase">{t('NeedHelp')}</header>
+        <div className="list_container">
+          <ul className="list">
+            <li className="item border__bottom-divider">
+              <div>
+                <summary className="item__title store-info__item font-weight-bold">{t('StoreName')}</summary>
+                <span className="gray-font-opacity">{name}</span>
+              </div>
+            </li>
+            <li className="item border__bottom-divider">
+              <div>
+                <summary className="item__title store-info__item font-weight-bold">{t('ContactInfo')}</summary>
+                <span className="gray-font-opacity">{phone}</span>
+              </div>
+            </li>
+            <li className="item border__bottom-divider">
+              <div>
+                <summary className="item__title store-info__item font-weight-bold">{t('StoreAddress')}</summary>
+                <span className="gray-font-opacity">{street1}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
       </section>
     );
   }
 }
 
 export default compose(
-  withTranslation(['OrderingThankYou']),
+  withTranslation(['OrderingDelivery']),
   connect(
     state => ({
       onlineStoreInfo: getOnlineStoreInfo(state),
-      order: getOrder(state),
+      business: getBusinessInfo(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

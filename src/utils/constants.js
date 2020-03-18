@@ -29,6 +29,7 @@ const ROUTER_PATHS = {
   // Qrscan App basename
   QRSCAN: '/qrscan',
   NEEDHELP: '/needhelp',
+  ORDER_DETAILS: '/orderdetails',
 };
 
 const CASHBACK_SOURCE = {
