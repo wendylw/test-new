@@ -38,7 +38,14 @@ class Location extends Component {
       <section className="table-ordering__location">
         <Header className="has-right" isPage={true} title={t('DeliverTo')} />
         <div className="location-page__info">
-          <form className="location-page__form">
+          <form
+            className="location-page__form"
+            onSubmit={e => {
+              this.setState({
+                address: event.currentTarget.value,
+              });
+            }}
+          >
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
                 <IconPin />
