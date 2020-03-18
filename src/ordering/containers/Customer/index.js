@@ -37,18 +37,18 @@ class Customer extends Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
-    await appActions.getOtp({ phone });
+    // await appActions.getOtp({ phone });
   }
 
   async handleCreateOrder() {
     this.savePhoneNumber();
 
-    // const { history } = this.props;
+    const { history } = this.props;
 
-    // history.push({
-    //   pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-    //   search: window.location.search,
-    // });
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+      search: window.location.search,
+    });
   }
 
   handleUpdateName(e) {
