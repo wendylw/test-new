@@ -29,9 +29,9 @@ class Location extends Component {
   storePosition = null;
 
   initializeAddress = async () => {
-    const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
+    const currentAddress = JSON.parse(sessionStorage.getItem('currentAddress'));
     if (currentAddress) {
-      console.log('use address info from localStorage');
+      console.log('use address info from sessionStorage');
       this.position = currentAddress.coords;
       return this.setState({
         address: currentAddress.address,
@@ -93,7 +93,7 @@ class Location extends Component {
       console.log('coords', coords);
 
       // Save into localstorage
-      localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+      sessionStorage.setItem('currentAddress', JSON.stringify(currentAddress));
 
       this.setState({
         address,
@@ -149,7 +149,7 @@ class Location extends Component {
                     longitude: placeDetails.geometry.location.lng(),
                   },
                 };
-                localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+                sessionStorage.setItem('currentAddress', JSON.stringify(currentAddress));
                 console.log('user currentAddress =', currentAddress);
 
                 // todo: should use modal to hide this address picker
