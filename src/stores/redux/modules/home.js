@@ -84,7 +84,7 @@ const reducer = (state = initialState, action) => {
       const { qrOrderingSettings, stores } = business || {};
       const { enableDelivery } = qrOrderingSettings || {};
       const validStores = (stores || []).filter(s => s.isOnline && !s.isDeleted);
-      const currentStoreId = stores && stores.length === 1 ? stores[0].id : null;
+      const currentStoreId = validStores && validStores.length === 1 ? validStores[0].id : null;
 
       return { ...state, isFetching: false, enableDelivery, storeIds: validStores.map(s => s.id), currentStoreId };
     }
