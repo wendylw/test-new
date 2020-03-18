@@ -2040,7 +2040,7 @@
 
     & ~ .category-nav,
     & ~ .list__container .category__header.fixed,
-    & ~ .aside {
+    & ~ .aside:not(.store-info__aside) {
       // top: 121px;
       top: 64px;
     }
