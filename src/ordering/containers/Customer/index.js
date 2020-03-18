@@ -166,7 +166,7 @@ class Customer extends Component {
           navFunc={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
-              search: type ? `?type=${type}` : '',
+              search: window.location.search,
             });
           }}
         ></Header>
@@ -235,7 +235,7 @@ class Customer extends Component {
               onClick={() => {
                 history.push({
                   pathname: ROUTER_PATHS.ORDERING_CART,
-                  search: type ? `?type=${type}` : '',
+                  search: window.location.search,
                 });
               }}
             >

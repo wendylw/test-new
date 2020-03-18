@@ -95,7 +95,7 @@ class Cart extends Component {
 
     history.push({
       pathname,
-      search: type ? `?type=${type}` : '',
+      search: window.location.search,
     });
   };
 

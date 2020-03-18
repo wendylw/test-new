@@ -708,21 +708,24 @@
 
   &__info-list {
     padding: 0 5vw;
+    margin: 5px -10px 0;
 
+    label,
     span {
-      margin: 0 5px;
       font-size: 0.85rem;
     }
   }
 
   &__info-item {
     display: inline-block;
+    margin: 0 10px;
+    font-size: 0;
   }
 
   &__motor-icon {
     svg {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -731,6 +734,10 @@
       width: 20px;
       height: 20px;
     }
+  }
+
+  &__info-text {
+    margin-left: 5px;
   }
 }
 
@@ -1418,23 +1425,35 @@
   width: 100%;
   padding: 0 4vw;
 
+  .header__info-list {
+    margin-top: 10px;
+  }
+
+  &__aside.aside {
+    top: 0;
+  }
+
   &__address,
   &__phone {
     display: block;
-    margin: 5px 0;
+    margin-top: 6px;
     padding: 0 5vw;
   }
 
+  &__address {
+    font-size: 0.85rem;
+  }
+
   &__delivery-hours {
-    margin: 24px 0;
+    margin: 34px 0;
   }
 
   &__list {
     width: 60%;
   }
 
-  &__item {
-    margin: 10px 0;
+  &__item ~ &__item {
+    margin: 10px 0 0;
   }
 }
 
@@ -1974,7 +1993,7 @@
   }
 
   &__icon-adjust {
-    padding: 2.4vw;
+    padding: 2.4vw 0;
 
     svg {
       width: 12px;
@@ -2007,23 +2026,19 @@
       background-color: $gray-3;
     }
 
-    * {
-      font-size: 14px;
-    }
-
     & + .header {
       top: 57px;
-      height: 57px;
+      height: 64px;
       background-color: $white;
     }
 
     & ~ .list__container {
-      top: 63px;
+      top: 70px;
     }
 
     & ~ .category-nav,
     & ~ .list__container .category__header.fixed {
-      top: 114px;
+      top: 121px;
     }
   }
 
@@ -2032,6 +2047,8 @@
   }
 
   &__entry-address {
+    margin-top: 5px;
+    font-size: 0.85rem;
     max-height: 16px;
     max-width: 100%;
     white-space: nowrap;

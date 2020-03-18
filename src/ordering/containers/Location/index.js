@@ -1,22 +1,38 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import { IconPin /*IconAdjust*/ } from '../../../components/Icons';
-import Constant from '../../../utils/constants';
+import _ from 'lodash';
+import { IconPin, IconAdjust } from '../../../components/Icons';
 import DeliveryErrorImage from '../../../images/delivery-error.png';
-import { getCurrentAddressInfoByAddress, getCurrentAddressInfo } from './utils';
+import Constant from '../../../utils/constants';
+import {
+  getCurrentAddressInfo,
+  getStoreInfo,
+  getStorePosition,
+  getPlacesByText,
+  getPlaceDetails,
+  standardizeGeoAddress,
+} from './utils';
 
 class Location extends Component {
   state = {
-    address: '',
+    address: '', // user address
     placeId: '', // placeId of the address user selected,
+    place: null,
     hasError: false,
+    places: [],
+    isFetching: false,
   };
+
+  position = null; // user position
+  store = null;
+  storePosition = null;
 
   initializeAddress = async () => {
     const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
     if (currentAddress) {
       console.log('use address info from localStorage');
+      this.position = currentAddress.coords;
       return this.setState({
         address: currentAddress.address,
       });
@@ -24,21 +40,35 @@ class Location extends Component {
     await this.tryGeolocation();
   };
 
+  fetchPlacesByText = async () => {
+    this.setState({ isFetching: true });
+    // todo: later need to use store position after we have exact position
+    const places = await getPlacesByText(this.state.address, {
+      lat: this.position.latitude,
+      lng: this.position.longitude,
+    });
+    console.log('fetchPlacesByText: places =', places);
+    this.setState({
+      places,
+      isFetching: false,
+    });
+  };
+
+  debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
+
   componentDidMount = async () => {
     // will show prompt of permission once entry the page
     await this.initializeAddress();
+    this.store = await getStoreInfo();
+    this.storePosition = await getStorePosition(this.store);
+    console.log('this.storePosition', this.storePosition);
+    this.fetchPlacesByText();
   };
 
   handleBackLicked = async () => {
     const { history } = this.props;
 
     try {
-      const currentAddress = await getCurrentAddressInfoByAddress(this.state.address);
-      // TODO: has bug here.
-      if (currentAddress) {
-        localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
-      }
-
       history.goBack();
     } catch (e) {
       console.error(e);
@@ -49,7 +79,9 @@ class Location extends Component {
     try {
       // getCurrentAddress with fire a permission prompt
       const currentAddress = await getCurrentAddressInfo();
-      const { address } = currentAddress;
+      const { address, coords } = currentAddress;
+      this.position = coords;
+      console.log('coords', coords);
 
       // Save into localstorage
       localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
@@ -67,7 +99,7 @@ class Location extends Component {
 
   render() {
     const { t, history } = this.props;
-    const { address, hasError } = this.state;
+    const { hasError } = this.state;
 
     return (
       <section className="table-ordering__location">
@@ -84,17 +116,35 @@ class Location extends Component {
                 defaultValue={this.state.address}
                 onChange={event => {
                   console.log('typed:', event.currentTarget.value);
-                  this.setState({
-                    address: event.currentTarget.value,
-                  });
+                  this.setState(
+                    {
+                      address: event.currentTarget.value,
+                    },
+                    this.debounceFetchPlaces
+                  );
                 }}
               />
             </div>
           </div>
-          {address ? (
+          {this.state.place ? (
             <address
               className="location-page__address item border__bottom-divider"
-              onClick={() => {
+              onClick={async () => {
+                const placeDetails = await getPlaceDetails(this.state.place.place_id);
+                console.log('user placeDetails =', placeDetails);
+                const addressInfo = standardizeGeoAddress(placeDetails.address_components);
+                const currentAddress = {
+                  addressInfo,
+                  address: this.state.place.description, // save place description as user address
+                  coords: {
+                    latitude: placeDetails.geometry.location.lat(),
+                    longitude: placeDetails.geometry.location.lng(),
+                  },
+                };
+                localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+                console.log('user currentAddress =', currentAddress);
+
+                // todo: should use modal to hide this address picker
                 history.push({
                   pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
                   search: window.location.search,
@@ -102,24 +152,42 @@ class Location extends Component {
               }}
             >
               <div className="item__detail-content">
-                <summary className="item__title font-weight-bold">10 Boulevard</summary>
-                <p className="gray-font-opacity">{address}</p>
+                <summary className="item__title font-weight-bold">
+                  {this.state.place.structured_formatting.main_text}
+                </summary>
+                <p className="gray-font-opacity">{this.state.place.structured_formatting.secondary_text}</p>
               </div>
             </address>
           ) : null}
         </div>
         <div className="location-page__list-wrapper">
-          {/* <ul className="location-page__list">
-            <li className="location-page__item flex flex-middle">
-              <i className="location-page__icon-adjust">
-                <IconAdjust />
-              </i>
-              <div className="item border__bottom-divider">
-                <summary>Block Camilia</summary>
-                <p className="gray-font-opacity">3.03km . Near Block C</p>
-              </div>
-            </li>
-          </ul> */}
+          <ul className="location-page__list">
+            {this.state.isFetching ? <li>Loading..</li> : null}
+            {this.state.places.map(place => (
+              <li
+                className="location-page__item flex flex-middle"
+                key={place.id}
+                onClick={e => {
+                  e.preventDefault();
+                  this.setState({
+                    address: place.description,
+                    placeId: place.place_id,
+                    place: place,
+                  });
+                }}
+              >
+                <i className="location-page__icon-adjust">
+                  <IconAdjust />
+                </i>
+                <div className="item border__bottom-divider">
+                  <summary>{place.structured_formatting.main_text}</summary>
+                  <p className="gray-font-opacity">
+                    {place.distance_meters / 1000}km . {place.structured_formatting.secondary_text}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
           {hasError ? (
             <div className="text-center">
               <img src={DeliveryErrorImage} alt="" />

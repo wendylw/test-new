@@ -1,8 +1,178 @@
 // todo: remove it
 // import { mockGeocodingResponse } from './mockResponse';
 
-// todo: move into environment
-const GOOGLE_MAP_API_KEY = 'AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c';
+import config from '../../../config';
+
+export const getStoreInfo = () => {
+  const business = config.business;
+  const storeId = config.storeId;
+
+  if (!business || !storeId) {
+    throw new Error(`business=${business} and storeId=${storeId} param are required.`);
+  }
+
+  return fetch('/api/gql/CoreBusiness', {
+    method: 'POST',
+    body: JSON.stringify({ business, storeId }),
+    credentials: 'include',
+  })
+    .then(response => response.json())
+    .then(response => {
+      console.log(response.data);
+
+      if (response.data.business) {
+        const { stores } = response.data.business;
+        return stores[0];
+      } else {
+        return null;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      throw error;
+    });
+};
+
+const getPlaceId = async address => {
+  const autocomplete = new window.google.maps.places.AutocompleteService();
+
+  const placeId = await new Promise(resolve => {
+    autocomplete.getPlacePredictions(
+      {
+        input: address,
+      },
+      (results, status) => {
+        console.log('getPlaceDetails: results', results);
+
+        if (results && results.length) {
+          resolve(results[0].place_id);
+        } else {
+          resolve('');
+        }
+      }
+    );
+  });
+  console.log('placeId =', placeId);
+
+  return placeId;
+};
+
+export const getPlaceDetails = async placeId => {
+  const places = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+  const placeDetails = await new Promise(resolve => {
+    places.getDetails(
+      {
+        fields: ['geometry', 'formatted_address', 'place_id', 'address_components'],
+        placeId,
+        sessionToken: getSessionToken(),
+      },
+      (result, status) => {
+        if (result) {
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      }
+    );
+  });
+  console.log('placeDetails =', placeDetails);
+
+  return placeDetails;
+};
+
+window.getPlaceDetails = getPlaceDetails;
+
+export const getStorePosition = async store => {
+  console.log('store', store);
+
+  const address = ['street2', 'city', 'country']
+    .map(field => store[field])
+    .filter(v => !!v)
+    .join(', ');
+
+  console.log('address =', address);
+
+  let storePosition = JSON.parse(localStorage.getItem('store.position'));
+
+  if (storePosition && storePosition.address === address) {
+    console.log('getStorePosition from localStorage');
+    console.log('storePosition =', storePosition);
+    return storePosition;
+  }
+
+  console.warn('fetch store location from map');
+  const placeId = await getPlaceId(address);
+  const placeDetails = await getPlaceDetails(placeId);
+  storePosition = {
+    address,
+    placeId,
+    coords: {
+      lat: placeDetails.geometry.location.lat(),
+      lng: placeDetails.geometry.location.lng(),
+    },
+  };
+
+  // cache result
+  localStorage.setItem('store.position', JSON.stringify(storePosition));
+  console.log('storePosition =', storePosition);
+
+  return storePosition;
+};
+
+const getSessionToken = () => {
+  // --Begin-- sessionToken to reduce request billing when user search addresses
+  // let sessionToken = JSON.parse(sessionStorage.getItem('map.sessionToken'));
+  //
+  // if (!sessionToken) {
+  //   sessionToken = new window.google.maps.places.AutocompleteSessionToken();
+  //   sessionStorage.setItem('map.sessionToken', JSON.stringify(sessionToken));
+  // }
+  // ==> Error ==>
+  //  InvalidValueError: in property sessionToken: not an instance of AutocompleteSessionToken
+  const sessionToken =
+    window.sessionToken ||
+    (function getSessionToken__createOne() {
+      const sessionToken = new window.google.maps.places.AutocompleteSessionToken();
+      window.sessionToken = sessionToken;
+      return sessionToken;
+    })();
+
+  console.log('sessionToken =', sessionToken);
+  return sessionToken;
+  // ---End--- sessionToken to reduce request billing when user search addresses
+};
+
+export const getPlacesByText = async (input, position) => {
+  const { lat, lng } = position;
+  const google_map_position = new window.google.maps.LatLng(lat, lng);
+
+  const autocomplete = new window.google.maps.places.AutocompleteService();
+
+  const places = await new Promise(resolve => {
+    autocomplete.getPlacePredictions(
+      {
+        input,
+        sessionToken: getSessionToken(),
+        location: google_map_position,
+        origin: google_map_position,
+        radius: 10000, // 10km around location
+      },
+      (results, status) => {
+        console.log('getPlaceDetails: results', results);
+
+        if (results && results.length) {
+          resolve(results);
+        } else {
+          resolve([]);
+        }
+      }
+    );
+  });
+  console.log('places =', places);
+
+  return places;
+};
 
 export const standardizeGeoAddress = addressComponents => {
   const address = {
@@ -15,8 +185,12 @@ export const standardizeGeoAddress = addressComponents => {
 
   const isCountry = types => types.includes('country');
   const isState = types => types.includes('administrative_area_level_1');
-  const isCity = types => types.includes('locality');
-  const isStreet2 = types => types.includes('route') || types.includes('sublocality');
+  const isCity = types => types.includes('locality') || types.includes('administrative_area_level_3');
+  const isStreet2 = types =>
+    types.includes('street_number') ||
+    types.includes('route') ||
+    types.includes('neighborhood') ||
+    types.includes('sublocality');
 
   const street2 = [];
 
@@ -39,29 +213,6 @@ export const standardizeGeoAddress = addressComponents => {
   return address;
 };
 
-export const getCurrentAddressInfoByAddress = () =>
-  new Promise(resolve => {
-    resolve(null);
-  });
-
-export const renderGoogleMapApiScript = () =>
-  new Promise(resolve => {
-    if (document.getElementById('googleMap__getCurrentAddress')) {
-      console.info('google api [googleMap__getCurrentAddress] loaded already');
-      resolve();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${GOOGLE_MAP_API_KEY}&ver=3.exp`;
-    script.id = 'googleMap__getCurrentAddress';
-    script.onload = function googleApiOnLoad() {
-      console.info('google api [googleMap__getCurrentAddress] on load');
-      resolve();
-    };
-    document.body.appendChild(script);
-  });
-
 export const getCurrentAddressInfo = () =>
   new Promise((resolve, reject) => {
     /* Chrome need SSL! */
@@ -73,7 +224,7 @@ export const getCurrentAddressInfo = () =>
 
     /* get geolocation position and transfer to address info */
     navigator.geolocation.getCurrentPosition(
-      function successCallback(position) {
+      function getCurrentPosition__successCallback(position) {
         const crd = position.coords;
 
         console.log('Your current position is:');
@@ -81,59 +232,30 @@ export const getCurrentAddressInfo = () =>
         console.log(`Longitude: ${crd.longitude}`);
         console.log(`More or less ${crd.accuracy} meters.`);
 
-        // todo: remove
-        // const ret = {
-        //   coords: {
-        //     latitude: position.coords.latitude,
-        //     longitude: position.coords.longitude,
-        //     accuracy: position.coords.accuracy,
-        //   },
-        //   address: mockGeocodingResponse[0].formatted_address,
-        //   addressInfo: standardizeGeoAddress(mockGeocodingResponse[0].address_components),
-        // };
-        // console.warn('with mock of result', ret);
-        // return resolve(ret);
+        // geolocation transforms to google position
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const google_map_position = new window.google.maps.LatLng(lat, lng);
 
-        renderGoogleMapApiScript().then(() => {
-          // geolocation transforms to google position
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const google_map_position = new window.google.maps.LatLng(lat, lng);
+        // get google address info of google position
+        const google_maps_geocoder = new window.google.maps.Geocoder();
+        google_maps_geocoder.geocode({ latLng: google_map_position }, function geocode(results, status) {
+          console.log('final location', results);
 
-          // get google address info of google position
-          const google_maps_geocoder = new window.google.maps.Geocoder();
-          google_maps_geocoder.geocode({ latLng: google_map_position }, function geocode(results, status) {
-            /*
-            results = [{
-                address_components : {
-                    0 : 'street name',
-                    1 : 'city',
-                    2 : '..',
-                },
-                formatted_address : 'Nicely formatted address',
-                geometry : {}
-                place_id : '',
-            }]
-
-            see more from: https://developers.google.com/maps/documentation/geocoding/intro
-           */
-            console.log('final location', results);
-            if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
-              console.log(results[0].formatted_address);
-              resolve({
-                coords: {
-                  latitude: position.coords.latitude,
-                  longitude: position.coords.longitude,
-                  accuracy: position.coords.accuracy,
-                },
-                address: results[0].formatted_address,
-                addressInfo: standardizeGeoAddress(results[0].address_components),
-              });
-            }
-          });
+          if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
+            resolve({
+              coords: {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+              },
+              address: results[0].formatted_address,
+              addressInfo: standardizeGeoAddress(results[0].address_components),
+            });
+          }
         });
       },
-      function errorCallback(err) {
+      function getCurrentPosition__errorCallback(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
         reject(err);
       },

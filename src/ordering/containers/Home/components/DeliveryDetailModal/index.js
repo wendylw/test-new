@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withTranslation, Trans } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import { IconMotorcycle } from '../../../../../components/Icons';
@@ -23,9 +24,8 @@ class DeliveryDetailModal extends Component {
         return (
           <li className="store-info__item flex flex-middle flex-space-between">
             <span>{weekInfo[x]}</span>
-            {/* <time>11:00 - 22:30</time> */}
             <time>
-              {`${validTimeFrom}:00`} - {`${validTimeTo}:00`}
+              {`${validTimeFrom}`} - {`${validTimeTo}`}
             </time>
           </li>
         );
@@ -44,8 +44,9 @@ class DeliveryDetailModal extends Component {
       isValidTimeToOrder,
     } = this.props;
     const getClassName = show => {
-      return show ? 'aside active' : 'aside';
+      return show ? 'store-info__aside aside active' : 'store-info__aside aside';
     };
+
     return (
       <aside className={getClassName(show)} onClick={() => onToggle(null)}>
         <div className="store-info">
@@ -67,22 +68,23 @@ class DeliveryDetailModal extends Component {
                 )}
               </h1>
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
-              <a className="store-info__phone link link__non-underline" href="tel:+6001298765432">
+              <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
               </a>
               <ul className="header__info-list">
-                <li className="header__info-item">
+                <li className="header__info-item text-middle">
                   <i className="header__motor-icon text-middle">
                     <IconMotorcycle />
                   </i>
-                  <span className="text-middle">
+                  <span className="header__info-text text-middle font-weight-bold">
                     <CurrencyNumber money={deliveryFee || 0} />
                   </span>
                 </li>
-                <li className="header__info-item">
-                  <span>
-                    Min Order. <CurrencyNumber money={minOrder || 0} />
-                  </span>
+                <li className="header__info-item text-middle">
+                  <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
+                    <label className="text-middle">Min Order.</label>
+                    <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
+                  </Trans>
                 </li>
               </ul>
             </div>
@@ -128,4 +130,4 @@ class DeliveryDetailModal extends Component {
   }
 }
 
-export default DeliveryDetailModal;
+export default withTranslation()(DeliveryDetailModal);

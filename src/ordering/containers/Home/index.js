@@ -133,19 +133,27 @@ export class Home extends Component {
     if (!Utils.isDeliveryType()) {
       return true;
     }
-    const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
-    let weekInfo = new Date().getDay();
+    let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    const weekInfo = new Date().getDay() + 1;
     const hourInfo = new Date().getHours();
-    if (weekInfo === 0) {
-      /** backend use 7 refer to sunday,but getDay use 0 */
-      weekInfo = 7;
-    }
-    if (validDays && validDays.includes(weekInfo) && hourInfo > validTimeFrom && hourInfo < validTimeTo) {
+    const minutesInfo = new Date().getMinutes();
+    const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
+    const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+    const isClosed =
+      hourInfo < timeFrom[0] ||
+      hourInfo > timeTo[0] ||
+      (hourInfo === timeFrom[0] && minutesInfo < timeFrom[1]) ||
+      (hourInfo === timeTo[0] && minutesInfo > timeTo[1]);
+
+    console.log(validDays && validDays.includes(weekInfo) && !isClosed);
+
+    if (validDays && validDays.includes(weekInfo) && !isClosed) {
       return true;
     } else {
       return false;
     }
   };
+
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
@@ -172,8 +180,8 @@ export class Home extends Component {
     // };
 
     //const { street1, street2, city, state, country, phone } = mockStore;
-    const { street1, street2, city, state, country, phone } = (stores && stores[0]) || {};
-    const storeAddress = `${street1} ${street2} ${city} ${state} ${country} `;
+    const { phone } = (stores && stores[0]) || {};
+    const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
     const { address } = currentAddress || {};
     return {
@@ -191,12 +199,16 @@ export class Home extends Component {
   renderHeader() {
     const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
-    const classList = ['border__bottom-divider gray'];
+    const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
     // TODO: judge is delivery
     if (!tableId && !isDeliveryType) {
       classList.push('has-right');
+    }
+
+    if (!isDeliveryType) {
+      classList.push('border__bottom-divider gray');
     }
 
     return (

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation, Trans } from 'react-i18next';
 import { IconLeftArrow, IconClose, IconMotorcycle } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
@@ -28,6 +29,7 @@ class Header extends Component {
 
   render() {
     const {
+      t,
       className,
       isStoreHome,
       title,
@@ -57,7 +59,7 @@ class Header extends Component {
               <span className="font-weight-bold text-middle">{title}</span>
               {isValidTimeToOrder ? null : (
                 <div className="tag__card-container">
-                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                  <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
                 </div>
               )}
             </h1>
@@ -66,14 +68,13 @@ class Header extends Component {
                 <i className="header__motor-icon text-middle">
                   <IconMotorcycle />
                 </i>
-                {/* <span className="text-middle">RM 5.00</span> */}
-                <CurrencyNumber money={deliveryFee || 0} />
+                <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={deliveryFee || 0} />
               </li>
               <li className="header__info-item">
-                {/* <span>Min Order. RM 20.00</span> */}
-                <span>
-                  Min Order. <CurrencyNumber money={minOrder || 0} />
-                </span>
+                <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
+                  <label className="text-middle">Min Order.</label>
+                  <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
+                </Trans>
               </li>
             </ul>
           </div>
@@ -105,4 +106,4 @@ Header.defaultProps = {
   navFunc: () => {},
 };
 
-export default Header;
+export default withTranslation()(Header);
