@@ -24,7 +24,6 @@ export class NeedHelp extends Component {
             })
           }
         ></Header>
-        <header className="header flex flex-space-between flex-middle gray text-uppercase">{t('NeedHelp')}</header>
         <div className="list_container">
           <ul className="list">
             <li className="item border__bottom-divider">

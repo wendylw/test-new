@@ -17,7 +17,8 @@ const METHODS_LIST = [
     name: 'delivery',
     logo: DeliveryImage,
     labelKey: 'FoodDelivery',
-    pathname: ROUTER_PATHS.ORDERING_LOCATION,
+    // pathname: ROUTER_PATHS.ORDERING_LOCATION,
+    pathname: '',
   },
   {
     name: 'pickup',
