@@ -63,10 +63,11 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
@@ -75,7 +76,9 @@ class CreditCard extends Component {
 
     const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
+      type ? '&type=' + type : ''
+    }`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
