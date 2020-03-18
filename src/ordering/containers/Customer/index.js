@@ -9,7 +9,7 @@ import FormTextarea from './components/FormTextarea';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import { actions as appActionCreators, types } from '../../redux/modules/app';
+import { actions as appActionCreators } from '../../redux/modules/app';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { actions as paymentActionCreators } from '../../redux/modules/payment';
 
@@ -81,13 +81,13 @@ class Customer extends Component {
   }
 
   renderDeliveryAddress() {
+    const { t, history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     if (type !== 'delivery') {
       return null;
     }
 
-    const { t } = this.props;
     const { addressDetails, deliveryComments } = this.state;
     const addressInfo = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
     let addressString = null;
