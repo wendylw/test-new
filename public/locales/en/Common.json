@@ -47,7 +47,7 @@
   "Eep": "Eep",
   "ErrorPageDescription": "Looks like something went wrong. Please scan the QR again, or ask the staff for help.",
   "BestSeller": "Best seller",
-  "OTPSentTitle": "We’ve sent you a One Time Passcode (OTP) to {phone}. Enter it below to continue.",
+  "OTPSentTitle": "We’ve sent you a One Time Passcode (OTP) to {{phone}}. Enter it below to continue.",
   "OTPResendTitle": "Resend OTP{{currentOtpTime}}",
   "EnterPhoneNumber": "Enter phone number",
   "PeopleCountModalTitle": "Welcome! How many of you are dining today?",

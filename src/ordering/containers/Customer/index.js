@@ -18,7 +18,7 @@ import { bindActionCreators, compose } from 'redux';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ADDRESS_RANGE, ASIDE_NAMES } = Constants;
+const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
     phone: Utils.getLocalStorageVariable('user.p'),
@@ -28,27 +28,40 @@ class Customer extends Component {
     asideName: null,
   };
 
-  async savePhoneNumber() {
-    // const { appActions } = this.props;
-    const { phone } = this.state;
+  componentDidUpdate(prevProps) {
+    const { user } = prevProps;
+    const { isLogin } = user || {};
 
-    if (!isValidPhoneNumber(phone)) {
-      return;
+    if (isLogin && isLogin !== this.props.user.isLogin) {
+      this.visitPaymentPage();
     }
-
-    await Utils.setLocalStorageVariable('user.p', phone);
-    // await appActions.getOtp({ phone });
   }
 
-  async handleCreateOrder() {
-    this.savePhoneNumber();
-
+  visitPaymentPage() {
     const { history } = this.props;
 
     history.push({
       pathname: ROUTER_PATHS.ORDERING_PAYMENT,
       search: window.location.search,
     });
+  }
+
+  async handleCreateOrder() {
+    const { appActions, user } = this.props;
+    const { phone } = this.state;
+    const { isLogin } = user || {};
+
+    if (!isValidPhoneNumber(phone)) {
+      return;
+    }
+
+    await Utils.setLocalStorageVariable('user.p', phone);
+
+    if (!isLogin) {
+      await appActions.getOtp({ phone });
+    } else {
+      this.visitPaymentPage();
+    }
   }
 
   handleUpdateName(e) {
@@ -91,23 +104,27 @@ class Customer extends Component {
     }
 
     const { addressDetails, deliveryComments } = this.state;
-    const addressInfo = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
-    let addressString = null;
-
-    if (addressInfo) {
-      addressString = Utils.getValidAddress(addressInfo, ADDRESS_RANGE.COUNTRY);
-    }
+    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const { address } = currentAddress || {};
 
     return (
       <React.Fragment>
-        <div className="form__group">
+        <div
+          className="form__group"
+          onClick={() => {
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              search: window.location.search,
+            });
+          }}
+        >
           <div className="flex flex-middle flex-space-between">
             <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverTo')}</label>
             <i className="customer__edit-icon">
               <IconEdit />
             </i>
           </div>
-          <p className="form__textarea gray-font-opacity">{addressString || t('AddAddressPlaceholder')}</p>
+          <p className="form__textarea gray-font-opacity">{address || t('AddAddressPlaceholder')}</p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>

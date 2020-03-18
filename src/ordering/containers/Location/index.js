@@ -9,15 +9,16 @@ import { getCurrentAddressInfoByAddress, getCurrentAddressInfo } from './utils';
 class Location extends Component {
   state = {
     address: '',
-    placeId: '', // placeId of the address user selected
+    placeId: '', // placeId of the address user selected,
+    hasError: false,
   };
 
   initializeAddress = async () => {
-    const currentAddress = localStorage.getItem('currentAddress');
+    const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
     if (currentAddress) {
       console.log('use address info from localStorage');
       return this.setState({
-        address: JSON.parse(currentAddress).address,
+        address: currentAddress.address,
       });
     }
     await this.tryGeolocation();
@@ -29,10 +30,16 @@ class Location extends Component {
   };
 
   handleBackLicked = async () => {
+    const { history } = this.props;
+
     try {
       const currentAddress = await getCurrentAddressInfoByAddress(this.state.address);
-      localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
-      window.history.back();
+      // TODO: has bug here.
+      if (currentAddress) {
+        localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+      }
+
+      history.goBack();
     } catch (e) {
       console.error(e);
     }
@@ -49,28 +56,24 @@ class Location extends Component {
 
       this.setState({
         address,
+        hasError: false,
       });
     } catch (e) {
       console.error(e);
       alert(`error found, address is not identified, use empty`);
+      this.setState({ hasError: true });
     }
   };
 
   render() {
     const { t, history } = this.props;
-    const { address } = this.state;
+    const { address, hasError } = this.state;
 
     return (
       <section className="table-ordering__location">
         <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackLicked} />
         <div className="location-page__info">
-          <form
-            className="location-page__form"
-            onSubmit={event => {
-              event.preventDefault();
-              this.handleBackLicked();
-            }}
-          >
+          <div className="location-page__form">
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
                 <IconPin />
@@ -87,7 +90,7 @@ class Location extends Component {
                 }}
               />
             </div>
-          </form>
+          </div>
           {address ? (
             <address
               className="location-page__address item border__bottom-divider"
@@ -106,7 +109,7 @@ class Location extends Component {
           ) : null}
         </div>
         <div className="location-page__list-wrapper">
-          <ul className="location-page__list">
+          {/* <ul className="location-page__list">
             <li className="location-page__item flex flex-middle">
               <i className="location-page__icon-adjust">
                 <IconAdjust />
@@ -116,11 +119,13 @@ class Location extends Component {
                 <p className="gray-font-opacity">3.03km . Near Block C</p>
               </div>
             </li>
-          </ul>
-          <div className="text-center">
-            <img src={DeliveryErrorImage} alt="" />
-            <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
-          </div>
+          </ul> */}
+          {hasError ? (
+            <div className="text-center">
+              <img src={DeliveryErrorImage} alt="" />
+              <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
+            </div>
+          ) : null}
         </div>
       </section>
     );
