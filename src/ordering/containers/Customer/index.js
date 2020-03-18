@@ -29,7 +29,7 @@ class Customer extends Component {
   };
 
   async savePhoneNumber() {
-    const { appActions } = this.props;
+    // const { appActions } = this.props;
     const { phone } = this.state;
 
     if (!isValidPhoneNumber(phone)) {

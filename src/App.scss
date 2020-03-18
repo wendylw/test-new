@@ -2509,6 +2509,8 @@
     padding: 0 3.8vw;
 
     .input,
+    .react-phone-number-input--focus .react-phone-number-input__input,
+    .react-phone-number-input .react-phone-number-input__input:focus,
     .react-phone-number-input .react-phone-number-input__input {
       text-align: left;
       font-size: 1.4rem;
