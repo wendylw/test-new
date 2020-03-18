@@ -60,7 +60,6 @@ export const actions = {
       shoppingCartIds,
       tableId,
       cashback,
-      shippingType,
     };
 
     if (shippingType === 'delivery') {
@@ -72,6 +71,7 @@ export const actions = {
 
       variables = {
         ...variables,
+        shippingType,
         deliveryAddressInfo: {
           ...pickupAddressInfo,
           ...currentAddress,
@@ -80,12 +80,14 @@ export const actions = {
         },
         deliveryComments,
       };
-    } else if (shippingType === 'pickup') {
-      variables = {
-        ...variables,
-        pickupAddressInfo,
-      };
     }
+
+    // else if (shippingType === 'pickup') {
+    //   variables = {
+    //     ...variables,
+    //     pickupAddressInfo,
+    //   };
+    // }
 
     return dispatch(
       createOrder(
