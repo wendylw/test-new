@@ -93,6 +93,7 @@ Footer.propTypes = {
 Footer.defaultProps = {
   onToggle: () => {},
   onClickCart: () => {},
+  isValidTimeToOrder: true,
 };
 
 export default compose(

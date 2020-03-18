@@ -136,6 +136,7 @@ CategoryProductList.propTypes = {
 CategoryProductList.defaultProps = {
   onToggle: () => {},
   isVerticalMenu: false,
+  isValidTimeToOrder: true,
 };
 
 export default compose(

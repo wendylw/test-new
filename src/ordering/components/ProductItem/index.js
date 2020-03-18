@@ -92,6 +92,7 @@ ProductItem.defaultProps = {
   price: 0,
   cartQuantity: 0,
   decreaseDisabled: false,
+  isValidTimeToOrder: true,
   isList: true,
   productItemMinHeight: 100,
   onDecrease: () => {},

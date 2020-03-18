@@ -102,6 +102,7 @@ Header.defaultProps = {
   isPage: false,
   isStoreHome: false,
   isDeliveryType: false,
+  isValidTimeToOrder: true,
   title: '',
   navFunc: () => {},
 };
