@@ -208,8 +208,6 @@ class Customer extends Component {
           }
         />
 
-        {this.renderOtpModal()}
-
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
