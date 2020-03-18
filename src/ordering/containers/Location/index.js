@@ -15,13 +15,14 @@ import {
 
 class Location extends Component {
   state = {
-    address: '',
+    address: '', // user address
     placeId: '', // placeId of the address user selected,
     hasError: false,
     places: [],
     isFetching: false,
   };
 
+  position = null; // user position
   store = null;
   storePosition = null;
 
@@ -29,6 +30,7 @@ class Location extends Component {
     const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
     if (currentAddress) {
       console.log('use address info from localStorage');
+      this.position = currentAddress.coords;
       return this.setState({
         address: currentAddress.address,
       });
@@ -38,7 +40,11 @@ class Location extends Component {
 
   fetchPlacesByText = async () => {
     this.setState({ isFetching: true });
-    const places = await getPlacesByText(this.state.address, this.storePosition);
+    // todo: later need to use store position after we have exact position
+    const places = await getPlacesByText(this.state.address, {
+      lat: this.position.latitude,
+      lng: this.position.longitude,
+    });
     console.log('fetchPlacesByText: places =', places);
     this.setState({
       places,
@@ -77,7 +83,9 @@ class Location extends Component {
     try {
       // getCurrentAddress with fire a permission prompt
       const currentAddress = await getCurrentAddressInfo();
-      const { address } = currentAddress;
+      const { address, coords } = currentAddress;
+      this.position = coords;
+      console.log('coords', coords);
 
       // Save into localstorage
       localStorage.setItem('currentAddress', JSON.stringify(currentAddress));

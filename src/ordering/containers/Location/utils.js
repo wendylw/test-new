@@ -120,7 +120,7 @@ export const getStorePosition = async store => {
   return storePosition;
 };
 
-export const getPlacesByText = async (input, storePosition) => {
+export const getPlacesByText = async (input, position) => {
   // --Begin-- sessionToken to reduce request billing when user search addresses
   // let sessionToken = JSON.parse(sessionStorage.getItem('map.sessionToken'));
   //
@@ -139,7 +139,7 @@ export const getPlacesByText = async (input, storePosition) => {
     })();
   // ---End--- sessionToken to reduce request billing when user search addresses
 
-  const { lat, lng } = storePosition.coords;
+  const { lat, lng } = position;
   const google_map_position = new window.google.maps.LatLng(lat, lng);
 
   const autocomplete = new window.google.maps.places.AutocompleteService();
