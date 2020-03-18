@@ -29,9 +29,9 @@ class Location extends Component {
   storePosition = null;
 
   initializeAddress = async () => {
-    const currentAddress = JSON.parse(localStorage.getItem('currentAddress'));
+    const currentAddress = JSON.parse(sessionStorage.getItem('currentAddress'));
     if (currentAddress) {
-      console.log('use address info from localStorage');
+      console.log('use address info from sessionStorage');
       this.position = currentAddress.coords;
       return this.setState({
         address: currentAddress.address,
@@ -43,10 +43,15 @@ class Location extends Component {
   fetchPlacesByText = async () => {
     this.setState({ isFetching: true });
     // todo: later need to use store position after we have exact position
-    const places = await getPlacesByText(this.state.address, {
-      lat: this.position.latitude,
-      lng: this.position.longitude,
-    });
+    const places = await getPlacesByText(
+      this.state.address,
+      this.position
+        ? {
+            lat: this.position.latitude,
+            lng: this.position.longitude,
+          }
+        : null
+    );
     console.log('fetchPlacesByText: places =', places);
     this.setState({
       places,
@@ -57,12 +62,27 @@ class Location extends Component {
   debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
 
   componentDidMount = async () => {
-    // will show prompt of permission once entry the page
-    await this.initializeAddress();
-    this.store = await getStoreInfo();
-    this.storePosition = await getStorePosition(this.store);
-    console.log('this.storePosition', this.storePosition);
-    this.fetchPlacesByText();
+    const { history } = this.props;
+    // todo: remove it
+    sessionStorage.setItem(
+      'currentAddress',
+      '{"coords":{"latitude":35.86166,"longitude":104.195397,"accuracy":1803339},"address":"Unnamed Road, 榆中县兰州市甘肃省中国","addressInfo":{"street1":"","street2":"Unnamed Road, 榆中县","city":"兰州市","state":"甘肃省","country":"CN"}}'
+    );
+    history.push({
+      pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
+
+    try {
+      // will show prompt of permission once entry the page
+      await this.initializeAddress();
+      this.store = await getStoreInfo();
+      this.storePosition = await getStorePosition(this.store);
+      console.log('this.storePosition', this.storePosition);
+      this.fetchPlacesByText();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   handleBackLicked = async () => {
@@ -84,7 +104,7 @@ class Location extends Component {
       console.log('coords', coords);
 
       // Save into localstorage
-      localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+      sessionStorage.setItem('currentAddress', JSON.stringify(currentAddress));
 
       this.setState({
         address,
@@ -92,7 +112,6 @@ class Location extends Component {
       });
     } catch (e) {
       console.error(e);
-      alert(`error found, address is not identified, use empty`);
       this.setState({ hasError: true });
     }
   };
@@ -141,7 +160,7 @@ class Location extends Component {
                     longitude: placeDetails.geometry.location.lng(),
                   },
                 };
-                localStorage.setItem('currentAddress', JSON.stringify(currentAddress));
+                sessionStorage.setItem('currentAddress', JSON.stringify(currentAddress));
                 console.log('user currentAddress =', currentAddress);
 
                 // todo: should use modal to hide this address picker

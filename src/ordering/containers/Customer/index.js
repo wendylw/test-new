@@ -107,7 +107,7 @@ class Customer extends Component {
     }
 
     const { addressDetails, deliveryComments } = this.state;
-    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
     const { address } = currentAddress || {};
 
     return (

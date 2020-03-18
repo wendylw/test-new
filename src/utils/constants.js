@@ -22,13 +22,13 @@ const ROUTER_PATHS = {
   ORDERING_PAYMENT: '/payment',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
   // Qrscan App basename
   QRSCAN: '/qrscan',
-  NEEDHELP: '/needhelp',
   ORDER_DETAILS: '/orderdetails',
 };
 

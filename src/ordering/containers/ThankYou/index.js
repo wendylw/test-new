@@ -5,12 +5,15 @@ import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 import beepSuccessImage from '../../../images/beep-success.png';
+import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
+import beepOnTheWayImage from '../../../images/beep-on-the-way.png';
 
 export class ThankYou extends Component {
   state = {};
@@ -49,7 +52,7 @@ export class ThankYou extends Component {
   handleNeedHelp = () => {
     const { history } = this.props;
     history.push({
-      pathname: Constants.ROUTER_PATHS.NEEDHELP,
+      pathname: Constants.ROUTER_PATHS.NEED_HELP,
     });
   };
 
@@ -95,7 +98,7 @@ export class ThankYou extends Component {
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
-        {t('ViewReceipt')}
+        {Utils.isDeliveryType() ? t('ViewDetails') : t('ViewReceipt')}
       </button>
     );
   }
@@ -124,45 +127,43 @@ export class ThankYou extends Component {
   };
   getStatusStyle = (targetType, logs) => {
     if (targetType === 'confirm') {
-      return {
-        color: 'orange',
-      };
+      return 'active';
     }
     const logisticObject = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
 
     if (targetType === 'riderPending') {
       if (logisticObject !== undefined) {
-        return {
-          display: 'none',
-        };
+        return 'hide';
       } else {
-        return {
-          color: 'gray',
-        };
+        return 'normal';
       }
     }
     if (targetType === 'picking') {
       if (logisticObject !== undefined) {
-        return {
-          color: 'orange',
-        };
+        return 'active';
       } else {
-        return {
-          display: 'none',
-        };
+        return 'hide';
       }
     }
   };
 
   getDeliveryUI() {
     const { t, history, order } = this.props;
-    const { orderId, logs, storeInfo, total, deliveryInformation } = order || {};
+    const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
     const pickkingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
-    const { city, country, name, state, street1, street2 } = storeInfo || {};
+    //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
-    const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
+    //const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
+    //const { orderId, logs, storeInfo, total, status } = order || {};
+    let bannerImage = beepSuccessImage;
+
+    if (Utils.isDeliveryType()) {
+      bannerImage = status === 'shipped' ? beepOnTheWayImage : beepDeliverySuccessImage;
+    }
+    const { name } = storeInfo || {};
+    const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
 
     return (
       <React.Fragment>
@@ -183,30 +184,63 @@ export class ThankYou extends Component {
           </span>
         </Header>
         <div className="thanks text-center">
-          <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
+          <img className="thanks__image" src={bannerImage} alt="Beep Success" />
+          <div className="thanks__delivery-status-container">
+            <ul className="thanks__delivery-status-list text-left">
+              <li
+                className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)} ${
+                  this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
+                }`}
+              >
+                <label className="thanks__delivery-status-label font-weight-bold">{t('OrderConfirmed')}</label>
+                <div className="thanks__delivery-status-time">
+                  <i className="access-time-icon text-middle">
+                    <IconAccessTime />
+                  </i>
+                  {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
+                  <time className="text-middle gray-font-opacity">{(paidStatusObj && paidStatusObj.time) || ''}</time>
+                </div>
+              </li>
+              {this.getStatusStyle('riderPending', logs) !== 'hide' ? (
+                <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
+                  <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
+                </li>
+              ) : null}
+              {this.getStatusStyle('picking', logs) !== 'hide' ? (
+                <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
+                  <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
+                  <div className="thanks__delivery-status-time">
+                    <i className="access-time-icon text-middle">
+                      <IconAccessTime />
+                    </i>
+                    {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
+                    <time className="text-middle gray-font-opacity">
+                      {(pickkingStatusObj && pickkingStatusObj.time) || ''}
+                    </time>
+                  </div>
+                </li>
+              ) : null}
+            </ul>
+          </div>
           <div className="thanks__info-container">
-            <div>
-              <ul>
-                <li style={this.getStatusStyle('confirm', logs)}>
-                  Order Confirmed---{paidStatusObj && paidStatusObj.time}
-                </li>
-                <li style={this.getStatusStyle('riderPending', logs)}>Pending Rider Confirm</li>
-                <li style={this.getStatusStyle('picking', logs)}>
-                  Rider is on the way to pick up order--{pickkingStatusObj && pickkingStatusObj.time}
-                </li>
-              </ul>
-            </div>
-            <div>
-              <div>
-                <div>{name}</div>
+            <div className="thanks__delivery-info text-left">
+              <div className="flex flex-middle flex-space-between">
+                <label className="thanks__text font-weight-bold">{name}</label>
                 <div>
-                  Total <CurrencyNumber money={total || 0} />
+                  <span className="thanks__text">Total</span>
+                  <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
                 </div>
               </div>
-              <div>{storeAddress}</div>
-
-              <div style={{ border: 'solid 1px red' }}>delivery add: {deliveryAddress}</div>
+              {/* <p className="thanks__address-details gray-font-opacity">34, Jalan Ambong 4, Kepong Baru, 52100 Kuala</p> */}
+              <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
+              <p className="thanks__address-pin flex flex-top">
+                <i className="thanks__pin-icon">
+                  <IconPin />
+                </i>
+                <span className="gray-font-opacity">{deliveryAddress}</span>
+              </p>
             </div>
+
             {this.renderVeiwDetail()}
           </div>
         </div>
