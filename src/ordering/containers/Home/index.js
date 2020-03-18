@@ -110,6 +110,7 @@ export class Home extends Component {
       const search = window.location.search;
       window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
     };
+
     return (
       <div className="location-page__entry item" onClick={fillInDelivertAddress}>
         <div className="item__detail-content flex flex-middle flex-space-between">
@@ -263,7 +264,8 @@ export class Home extends Component {
 
     return (
       <section className="table-ordering__home">
-        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
+        {Utils.isDeliveryType() && false ? this.renderDeliverToBar() : null}
+        <div className="location-page__entry"></div>
         {this.renderHeader()}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
