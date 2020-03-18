@@ -157,7 +157,10 @@ class OnlineBanking extends Component {
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
-            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
+              search: window.location.search,
+            });
           }}
         />
 

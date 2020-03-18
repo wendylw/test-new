@@ -480,7 +480,10 @@ class CreditCard extends Component {
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
-            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
+              search: window.location.search,
+            });
           }}
         />
         <div className="payment-bank">

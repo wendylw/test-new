@@ -81,7 +81,12 @@ class Payment extends Component {
   };
 
   handleClickBack = () => {
-    this.props.history.replace('/cart');
+    const { history } = this.props;
+
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_CART,
+      search: window.location.search,
+    });
   };
 
   setCurrentPayment = paymentName => {

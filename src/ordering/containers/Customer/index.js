@@ -32,7 +32,7 @@ class Customer extends Component {
     const { user } = prevProps;
     const { isLogin } = user || {};
 
-    if (isLogin && isLogin !== this.props.user.isLogin) {
+    if (this.props.user.hasOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
