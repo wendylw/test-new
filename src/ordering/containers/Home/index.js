@@ -192,12 +192,16 @@ export class Home extends Component {
   renderHeader() {
     const { t, onlineStoreInfo, requestInfo } = this.props;
     const { tableId } = requestInfo || {};
-    const classList = ['border__bottom-divider gray'];
+    const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
     // TODO: judge is delivery
     if (!tableId && !isDeliveryType) {
       classList.push('has-right');
+    }
+
+    if (!isDeliveryType) {
+      classList.push('border__bottom-divider gray');
     }
 
     return (
