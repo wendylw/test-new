@@ -178,7 +178,7 @@ class Customer extends Component {
               <label className="form__label gray-font-opacity">{t('MobileNumber')}</label>
               <PhoneInput
                 placeholder=""
-                value={formatPhoneNumberIntl('')}
+                value={formatPhoneNumberIntl(phone)}
                 country={country}
                 metadata={metadataMobile}
                 onChange={phone => {
