@@ -156,11 +156,13 @@ export class Home extends Component {
     const { street1, street2, city, state, country, phone } = mockStore;
     // const { street1, street2, city, state, country, phone } = stores[0] || {};
     const storeAddress = `${street1} ${street2} ${city} ${state} ${country} `;
+    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const { address } = currentAddress || {};
     return {
       deliveryFee,
       minOrder,
       storeAddress,
-      deliveryToAddress: JSON.parse(Utils.getLocalStorageVariable('currentAddress')).address,
+      deliveryToAddress: address,
       telephone: phone,
       validDays,
       validTimeFrom,
