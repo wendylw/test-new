@@ -28,27 +28,40 @@ class Customer extends Component {
     asideName: null,
   };
 
-  async savePhoneNumber() {
-    // const { appActions } = this.props;
-    const { phone } = this.state;
+  componentDidUpdate(prevProps) {
+    const { user } = prevProps;
+    const { isLogin } = user || {};
 
-    if (!isValidPhoneNumber(phone)) {
-      return;
+    if (isLogin && isLogin !== this.props.user.isLogin) {
+      this.visitPaymentPage();
     }
-
-    await Utils.setLocalStorageVariable('user.p', phone);
-    // await appActions.getOtp({ phone });
   }
 
-  async handleCreateOrder() {
-    this.savePhoneNumber();
-
+  visitPaymentPage() {
     const { history } = this.props;
 
     history.push({
       pathname: ROUTER_PATHS.ORDERING_PAYMENT,
       search: window.location.search,
     });
+  }
+
+  async handleCreateOrder() {
+    const { appActions, user } = this.props;
+    const { phone } = this.state;
+    const { isLogin } = user || {};
+
+    if (!isValidPhoneNumber(phone)) {
+      return;
+    }
+
+    await Utils.setLocalStorageVariable('user.p', phone);
+
+    if (!isLogin) {
+      await appActions.getOtp({ phone });
+    } else {
+      this.visitPaymentPage();
+    }
   }
 
   handleUpdateName(e) {
