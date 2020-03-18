@@ -6,6 +6,32 @@ if (process.env.NODE_ENV === 'development' && process.env.HTTPS) {
   document.cookie = '__t=10; path=/';
 }
 
+/* eslint-disable */
+function guid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+/* eslint-enable */
+
+const getClientSID = () => {
+  try {
+    return (
+      sessionStorage.getItem('client.sid') ||
+      (function generateSID() {
+        const clientSID = guid();
+        sessionStorage.setItem('client.sid', clientSID);
+        console.info('client.sid generated! [%s]', clientSID);
+        return clientSID;
+      })()
+    );
+  } catch (e) {
+    return null;
+  }
+};
+
 const getTableId = () => {
   try {
     return document.cookie
@@ -67,6 +93,7 @@ const config = {
   business,
   table: getTableId(),
   storeId: getStoreId(),
+  clientSID: getClientSID(),
   consumerId: getConsumerId(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
 };
