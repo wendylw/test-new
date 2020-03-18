@@ -104,11 +104,12 @@ class Customer extends Component {
     }
 
     const { addressDetails, deliveryComments } = this.state;
-    const addressInfo = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const currentAddress = JSON.parse(Utils.getLocalStorageVariable('currentAddress'));
+    const { address } = currentAddress || {};
     let addressString = null;
 
-    if (addressInfo) {
-      addressString = Utils.getValidAddress(addressInfo, ADDRESS_RANGE.COUNTRY);
+    if (address) {
+      addressString = Utils.getValidAddress(address, ADDRESS_RANGE.COUNTRY);
     }
 
     return (
