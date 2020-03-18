@@ -2026,10 +2026,6 @@
       background-color: $gray-3;
     }
 
-    * {
-      font-size: 14px;
-    }
-
     & + .header {
       top: 57px;
       height: 57px;
@@ -2051,6 +2047,8 @@
   }
 
   &__entry-address {
+    margin-top: 5px;
+    font-size: 0.85rem;
     max-height: 16px;
     max-width: 100%;
     white-space: nowrap;

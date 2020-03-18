@@ -369,6 +369,7 @@ class ProductDetail extends Component {
     return (
       <div ref={ref => (this.productEl = ref)} className="aside__fix-bottom">
         <ProductItem
+          isList={false}
           productDetailImageRef={ref => (this.productDetailImage = ref)}
           className="aside__section-container border__top-divider"
           image={imageUrl}
