@@ -133,6 +133,7 @@ class Cart extends Component {
       </div>
     );
   }
+
   getDeliveryFee = () => {
     const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
@@ -233,7 +234,6 @@ export default compose(
 
       return {
         business: getBusiness(state),
-        //business: 'wenjingzhang',
         user: getUser(state),
         cartSummary: getCartSummary(state),
         shoppingCart: getShoppingCart(state),
