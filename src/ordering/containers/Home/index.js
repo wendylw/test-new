@@ -211,8 +211,6 @@ export class Home extends Component {
       classList.push('border__bottom-divider gray');
     }
 
-    console.log(deliveryFee);
-
     return (
       <Header
         className={classList.join(' ')}
