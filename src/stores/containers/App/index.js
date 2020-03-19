@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 import ErrorToast from '../../../components/ErrorToast';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 
@@ -26,25 +25,13 @@ class App extends Component {
     this.props.appActions.hideMessageModal();
   };
 
-  getStoreIdFromRouterState = () => {
-    const { location } = this.props;
-    return location.state && location.state.storeId;
-  };
-
-  isDeliveryMethodsRouter = () => {
-    const { location } = this.props;
-    return location.search.includes('delivery-methods') && this.getStoreIdFromRouterState();
-  };
-
-  render = () => {
+  render() {
     const { error, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
 
     return (
       <main className="store-list">
-        {(this.isDeliveryMethodsRouter() || currentStoreId) && enableDelivery ? (
-          <DeliveryMethods
-            store={stores.find(store => store.id === currentStoreId || this.getStoreIdFromRouterState())}
-          />
+        {currentStoreId && enableDelivery ? (
+          <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} />
         ) : (
           <Home />
         )}
@@ -53,7 +40,7 @@ class App extends Component {
         {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
       </main>
     );
-  };
+  }
 }
 
 export default connect(
@@ -67,4 +54,4 @@ export default connect(
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
   })
-)(withRouter(App));
+)(App);
