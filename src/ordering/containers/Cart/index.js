@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
@@ -10,17 +11,17 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as appActionCreators } from '../../redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 
 class Cart extends Component {
   state = {
-    expandBilling: false,
+    expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
   };
@@ -56,6 +57,7 @@ class Cart extends Component {
   handleClickBack = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
     });
   };
 
@@ -63,8 +65,10 @@ class Cart extends Component {
     const { history, cartSummary, user } = this.props;
     const { isLogin } = user;
     const { total, totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const pathname = type ? Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO : Constants.ROUTER_PATHS.ORDERING_PAYMENT;
 
-    if (isLogin && !total) {
+    if (isLogin && !total && !type) {
       const { paymentActions } = this.props;
 
       this.setState({
@@ -89,7 +93,10 @@ class Cart extends Component {
       return;
     }
 
-    history.push(Constants.ROUTER_PATHS.ORDERING_PAYMENT);
+    history.push({
+      pathname,
+      search: window.location.search,
+    });
   };
 
   handleClearAll = () => {
@@ -126,6 +133,14 @@ class Cart extends Component {
       </div>
     );
   }
+  getDeliveryFee = () => {
+    const { allBusinessInfo, business } = this.props;
+    const originalInfo = allBusinessInfo[business] || {};
+    const deliveryFee =
+      originalInfo.qrOrderingSettings &&
+      originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
+    return deliveryFee;
+  };
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
@@ -163,7 +178,7 @@ class Cart extends Component {
           </button>
         </Header>
         <div className="list__container">
-          <CartList shoppingCart={shoppingCart} />
+          <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
@@ -179,6 +194,8 @@ class Cart extends Component {
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
+            isDeliveryType={Utils.isDeliveryType()}
+            deliveryFee={this.getDeliveryFee()}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -205,7 +222,7 @@ class Cart extends Component {
     );
   }
 }
-
+/* TODO: backend data */
 export default compose(
   withTranslation(['OrderingCart']),
   connect(
@@ -213,6 +230,8 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        business: getBusiness(state),
+        //business: 'wenjingzhang',
         user: getUser(state),
         cartSummary: getCartSummary(state),
         shoppingCart: getShoppingCart(state),
@@ -221,6 +240,7 @@ export default compose(
         currentProduct: getCurrentProduct(state),
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        allBusinessInfo: getAllBusinesses(state),
       };
     },
     dispatch => ({

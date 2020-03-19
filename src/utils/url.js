@@ -3,6 +3,13 @@ const API_URLS = {
     url: '/api/cart',
     method: 'get',
   },
+  GET_CART_TYPE: isDeliveryType => {
+    let CartObj = API_URLS.GET_CART;
+    if (isDeliveryType) {
+      CartObj.url = '/api/cart?shippingType=delivery';
+    }
+    return CartObj;
+  },
   GET_BRAINTREE_TOKEN: {
     url: '/payment/initToken',
     method: 'get',

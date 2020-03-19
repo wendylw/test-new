@@ -52,11 +52,6 @@ class CategoryProductList extends Component {
 
   render() {
     const { t, categories, isVerticalMenu } = this.props;
-    const itemClassList = ['flex-middle'];
-
-    if (isVerticalMenu) {
-      itemClassList.push('flex-column');
-    }
 
     return (
       <div id="product-list" className="list__container">
@@ -109,7 +104,6 @@ class CategoryProductList extends Component {
                   {(category.products || []).map(product => (
                     <ProductItem
                       key={product.id}
-                      className={itemClassList.join(' ')}
                       image={product.images[0]}
                       title={product.title}
                       price={product.displayPrice}
@@ -120,6 +114,7 @@ class CategoryProductList extends Component {
                       onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
+                      isValidTimeToOrder={this.props.isValidTimeToOrder}
                     />
                   ))}
                 </ul>
@@ -135,11 +130,13 @@ class CategoryProductList extends Component {
 CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
   isVerticalMenu: PropTypes.bool,
+  isValidTimeToOrder: PropTypes.bool,
 };
 
 CategoryProductList.defaultProps = {
   onToggle: () => {},
   isVerticalMenu: false,
+  isValidTimeToOrder: true,
 };
 
 export default compose(
