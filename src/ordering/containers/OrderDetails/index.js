@@ -35,22 +35,28 @@ export class OrderDetails extends Component {
   renderOrderBillings() {
     const { order } = this.props;
     const { items } = order || {};
-    return (items || []).map(value => {
-      const { title, displayPrice } = value;
-      return (
-        <div className="product-detail__options flex flex-space-between flex-middle">
-          <span className="gray-font-opacity">{title}</span>
-          <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
-        </div>
-      );
-    });
+
+    return (
+      <ul className="list">
+        {(items || []).map((value, index) => {
+          const { title, displayPrice } = value;
+
+          return (
+            <li key={`title-${index}`} className="item flex flex-space-between flex-top">
+              <label className="gray-font-opacity">{title}</label>
+              <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
+            </li>
+          );
+        })}
+      </ul>
+    );
   }
 
   render() {
     const { order, history, t } = this.props;
     const { shippingFee, subtotal, total } = order || '';
     return (
-      <section className="store-list__content">
+      <section className="order-detail">
         <Header
           isPage={false}
           title={t('OrderDetails')}
@@ -62,34 +68,30 @@ export class OrderDetails extends Component {
           }
         >
           <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
+            <span data-testid="thanks__self-pickup">{`${t('NeedHelp')}?`}</span>
           </button>
         </Header>
-        <div className="list_container">
-          <ul className="list">
-            <li className="item border__bottom-divider">
-              <summary className="store-info__item font-weight-bold">{t('YourOrder')}</summary>
-              <div>{this.renderOrderBillings()}</div>
-            </li>
-            <li className="item border__bottom-divider">
-              <div>
-                <div className="product-detail__options flex flex-space-between flex-middle">
-                  <span className="gray-font-opacity">{t('Subtotal')}</span>
-                  <CurrencyNumber className="gray-font-opacity" money={subtotal} />
-                </div>
-                <div className="product-detail__options flex flex-space-between flex-middle">
-                  <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
-                  <CurrencyNumber className="gray-font-opacity" money={shippingFee} />
-                </div>
-                <summary className="item__title product-detail__options">
-                  <div className="flex flex-space-between flex-middle">
-                    <span className="font-weight-bold ">{t('Total')}</span>
-                    <CurrencyNumber className="font-weight-bold" money={total} />
-                  </div>
-                </summary>
-              </div>
-            </li>
-          </ul>
+        <div className="order-detail__info-container">
+          <div className="border__bottom-divider">
+            <h3 className="font-weight-bold text-uppercase">{t('YourOrder')}</h3>
+            {this.renderOrderBillings()}
+          </div>
+          <div>
+            <ul className="list">
+              <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('Subtotal')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={subtotal} />
+              </li>
+              <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={shippingFee} />
+              </li>
+            </ul>
+            <div className="flex flex-space-between flex-middle">
+              <span className="font-weight-bold">{t('Total')}</span>
+              <CurrencyNumber className="font-weight-bold" money={total} />
+            </div>
+          </div>
         </div>
       </section>
     );
