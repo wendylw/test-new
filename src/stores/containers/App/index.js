@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import ErrorToast from '../../../components/ErrorToast';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 
@@ -26,12 +27,13 @@ class App extends Component {
   };
 
   render() {
-    const { error, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
+    const { error, onlineStoreInfo, stores, enableDelivery, currentStoreId, location } = this.props;
+    const storeId = currentStoreId || (location.state && location.state.storeId);
 
     return (
       <main className="store-list">
-        {currentStoreId && enableDelivery ? (
-          <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} />
+        {location.search.includes('delivery-methods') && storeId && enableDelivery ? (
+          <DeliveryMethods store={stores.find(store => store.id === storeId)} />
         ) : (
           <Home />
         )}
@@ -54,4 +56,4 @@ export default connect(
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
   })
-)(App);
+)(withRouter(App));
