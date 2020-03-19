@@ -181,12 +181,12 @@ export class ThankYou extends Component {
 
   getDeliveryUI() {
     const { t, history, order, onlineStoreInfo } = this.props;
-    const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
+    const { orderId, createdTime, logs, storeInfo, total, deliveryInformation, status } = order || {};
     const { country } = onlineStoreInfo || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
     const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticsConfirmed');
     const cancelledStatusObj = this.getLogsInfoByStatus(logs, 'cancelled');
-    const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || '');
+    const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || createdTime || '');
     const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
     const cancelledStatusObjTime = new Date((cancelledStatusObj && cancelledStatusObj.time) || '');
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
