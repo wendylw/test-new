@@ -16,6 +16,21 @@ import beepSuccessImage from '../../../images/beep-success.png';
 import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
 import beepOnTheWayImage from '../../../images/beep-on-the-way.png';
 
+const LANGUAGES = {
+  MY: 'EN',
+  TH: 'EN',
+  PH: 'EN',
+};
+const TIME_OPTIONS = {
+  hour: 'numeric',
+  minute: 'numeric',
+};
+const DATE_OPTIONS = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
+
 export class ThankYou extends Component {
   state = {};
 
@@ -154,10 +169,13 @@ export class ThankYou extends Component {
   };
 
   getDeliveryUI() {
-    const { t, history, order } = this.props;
+    const { t, history, order, onlineStoreInfo } = this.props;
     const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
+    const { country } = onlineStoreInfo || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
-    const pickkingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || '');
+    const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
@@ -204,8 +222,12 @@ export class ThankYou extends Component {
                   <i className="access-time-icon text-middle">
                     <IconAccessTime />
                   </i>
-                  {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
-                  <time className="text-middle gray-font-opacity">{(paidStatusObj && paidStatusObj.time) || ''}</time>
+                  <time className="text-middle gray-font-opacity">
+                    {`${paidStatusObjTime.toLocaleTimeString(
+                      LANGUAGES[country || 'MY'],
+                      TIME_OPTIONS
+                    )}, ${paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
+                  </time>
                 </div>
               </li>
               {this.getStatusStyle('riderPending', logs) !== 'hide' ? (
@@ -220,9 +242,11 @@ export class ThankYou extends Component {
                     <i className="access-time-icon text-middle">
                       <IconAccessTime />
                     </i>
-                    {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
                     <time className="text-middle gray-font-opacity">
-                      {(pickkingStatusObj && pickkingStatusObj.time) || ''}
+                      {`${pickingStatusObjTime.toLocaleTimeString(
+                        LANGUAGES[country || 'MY'],
+                        TIME_OPTIONS
+                      )}, ${pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
                     </time>
                   </div>
                 </li>
