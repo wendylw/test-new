@@ -54,7 +54,7 @@ export class OrderDetails extends Component {
 
   render() {
     const { order, history, t } = this.props;
-    const { shippingFee, subtotal, total } = order || '';
+    const { shippingFee, subtotal, total, tax } = order || '';
     return (
       <section className="order-detail">
         <Header
@@ -81,6 +81,10 @@ export class OrderDetails extends Component {
               <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('Subtotal')}</span>
                 <CurrencyNumber className="gray-font-opacity" money={subtotal || 0} />
+              </li>
+              <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('Tax')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={tax || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
