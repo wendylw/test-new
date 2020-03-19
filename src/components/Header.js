@@ -40,7 +40,7 @@ class Header extends Component {
       minOrder,
       isValidTimeToOrder,
     } = this.props;
-    const fixedClassList = ['header flex  flex-space-between'];
+    const fixedClassList = ['header flex flex-space-between'];
     const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
 
     if (className) {

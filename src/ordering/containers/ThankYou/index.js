@@ -41,15 +41,17 @@ export class ThankYou extends Component {
       search: `?receiptNumber=${orderId || ''}`,
     });
   };
+
   handleClickViewDetail = () => {
     const { history, order } = this.props;
     const { orderId } = order || {};
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDER_DETAILS,
-      search: `?receiptNumber=${orderId || ''}`,
+      search: window.location.search,
     });
   };
+
   handleNeedHelp = () => {
     const { history } = this.props;
     history.push({
@@ -100,18 +102,20 @@ export class ThankYou extends Component {
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
-        {Utils.isDeliveryType() ? t('ViewDetails') : t('ViewReceipt')}
+        {t('ViewReceipt')}
       </button>
     );
   }
+
   renderVeiwDetail() {
+    const { t } = this.props;
     return (
       <button
         className="thanks__link link font-weight-bold text-uppercase button__block"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
       >
-        VIEW DETAILS
+        {t('ViewDetails')}
       </button>
     );
   }

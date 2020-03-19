@@ -14,17 +14,7 @@ export class NeedHelp extends Component {
 
     return (
       <section className="store-list__content">
-        <Header
-          className="text-center has-right"
-          isPage={false}
-          title={t('NeedHelp')}
-          navFunc={() =>
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.THANK_YOU,
-              search: window.location.search,
-            })
-          }
-        ></Header>
+        <Header className="has-right" isPage={false} title={t('NeedHelp')} navFunc={() => history.goBack()} />
         <div className="list_container">
           <ul className="list">
             <li className="item border__bottom-divider">

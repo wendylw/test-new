@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import Constants from '../../../utils/constants';
+
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 export class OrderDetails extends Component {
@@ -21,6 +24,14 @@ export class OrderDetails extends Component {
     return query.get('receiptNumber');
   };
 
+  handleNeedHelp = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.NEED_HELP,
+      search: window.location.search,
+    });
+  };
+
   renderOrderBillings() {
     const { order } = this.props;
     const { items } = order || {};
@@ -36,11 +47,24 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, t } = this.props;
+    const { order, history, t } = this.props;
     const { shippingFee, subtotal, total } = order || '';
     return (
       <section className="store-list__content">
-        <header className="header flex flex-space-between flex-middle gray text-uppercase">{t('OrderDetails')}</header>
+        <Header
+          isPage={false}
+          title={t('OrderDetails')}
+          navFunc={() =>
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.THANK_YOU,
+              search: window.location.search,
+            })
+          }
+        >
+          <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
+            <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
+          </button>
+        </Header>
         <div className="list_container">
           <ul className="list">
             <li className="item border__bottom-divider">
