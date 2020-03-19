@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
@@ -8,7 +9,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo, types } from '../../redux/modules/app';
+import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 import beepSuccessImage from '../../../images/beep-success.png';

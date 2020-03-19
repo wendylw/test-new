@@ -87,7 +87,7 @@ class Payment extends Component {
     const { history } = this.props;
 
     history.push({
-      pathname: ROUTER_PATHS.ORDERING_CART,
+      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
       search: window.location.search,
     });
   };
