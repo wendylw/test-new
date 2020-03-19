@@ -58,8 +58,7 @@ export class ThankYou extends Component {
   };
 
   handleClickViewDetail = () => {
-    const { history, order } = this.props;
-    const { orderId } = order || {};
+    const { history } = this.props;
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDER_DETAILS,
