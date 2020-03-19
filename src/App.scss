@@ -393,6 +393,24 @@
     .aside-bottom {
       bottom: 21.6vw;
     }
+
+    .billing__list {
+      margin-bottom: 10px;
+    }
+
+    .billing__item {
+      font-size: 1.2rem;
+
+      label,
+      span {
+        font-size: inherit;
+      }
+
+      label:not(.font-weight-bold),
+      span:not(.font-weight-bold) {
+        @extend .gray-font-opacity;
+      }
+    }
   }
 
   &__customer {
@@ -1825,11 +1843,6 @@
 
   &__item {
     padding: 2.4vw;
-    font-size: 1.2rem;
-
-    * {
-      font-size: inherit;
-    }
 
     &.primary {
       background-color: $theme-color-translucent;
