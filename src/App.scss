@@ -2665,9 +2665,14 @@
 
   padding: 5vw;
 
+  .item {
+    padding: 2.4vw 0;
+  }
+
   .item__title,
   .item__text {
-    margin: 5px 0;
+    display: block;
+    padding: 5px 0;
   }
 
   &__info-container {

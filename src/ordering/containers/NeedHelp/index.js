@@ -19,19 +19,17 @@ export class NeedHelp extends Component {
           <ul className="list">
             <li className="item border__bottom-divider">
               <summary className="item__title store-info__item font-weight-bold">{t('StoreName')}</summary>
-              <span className="item__text gray-font-opacity">{name}Uppercuppa</span>
+              <span className="item__text gray-font-opacity">{name}</span>
             </li>
             <li className="item border__bottom-divider">
               <summary className="item__title store-info__item font-weight-bold">{t('ContactInfo')}</summary>
               <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
-                {phone}+60 012 98765432
+                {phone}
               </a>
             </li>
             <li className="item">
               <summary className="item__title store-info__item font-weight-bold">{t('StoreAddress')}</summary>
-              <span className="item__text gray-font-opacity">
-                {street1}34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur
-              </span>
+              <span className="item__text gray-font-opacity">{street1}</span>
             </li>
           </ul>
         </div>
