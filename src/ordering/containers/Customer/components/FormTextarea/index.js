@@ -16,8 +16,6 @@ class FormTextarea extends Component {
 
   componentDidMount = () => {
     const textarea = document.getElementById('address-textarea');
-    const addressAside = document.getElementById('address-aside');
-    const addressAsideInner = document.getElementById('address-aside-inner');
 
     // const oldInnerHeight = addressAsideInner.style.top;
 
@@ -28,10 +26,13 @@ class FormTextarea extends Component {
       },
       false
     );
+
     textarea.addEventListener(
       'blur',
       () => {
-        this.addressAsideInnerRef.current.style.top = '';
+        setTimeout(() => {
+          this.addressAsideInnerRef.current.style.top = '';
+        }, 100);
       },
       false
     );
