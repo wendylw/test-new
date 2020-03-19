@@ -45,12 +45,6 @@ export class Home extends Component {
     homeActions.loadProductList();
   }
 
-  // isDeliveryType = () => {
-  //   const { history } = this.props;
-  //   const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-  //   return type === 'delivery';
-  // };
-
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
     const rootClassName = rootEl
@@ -125,10 +119,6 @@ export class Home extends Component {
       </div>
     );
   }
-  // isDeliveryType = () => {
-  //   const type = Utils.getQueryString('type');
-  //   return type === 'delivery';
-  // };
 
   isValidTimeToOrder = () => {
     if (!Utils.isDeliveryType()) {
@@ -156,29 +146,14 @@ export class Home extends Component {
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
-    const { stores } = originalInfo;
-    const deliveryFee =
-      originalInfo.qrOrderingSettings &&
-      originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
-    const minOrder = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.minimumConsumption;
-    const validDays = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validDays;
-    const validTimeFrom = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeFrom;
-    const validTimeTo = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeTo;
+    const { stores } = originalInfo || {};
+    const { qrOrderingSettings } = originalInfo || {};
+    const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { rate } = defaultShippingZoneMethod || {};
+    const deliveryFee = rate || 0;
+    const minOrder = minimumConsumption || 0;
 
-    // const mockStore = {
-    //   id: '5e5dd6c7407cf700063ba869',
-    //   name: 'Ice Dreams Cafe',
-    //   phone: '0122555358',
-    //   isOnline: true,
-    //   isDeleted: null,
-    //   street1: 'Plaza Damas, Block F-0-5, Jalan Sri Hartamas 1',
-    //   street2: 'Taman Sri Hartamas',
-    //   city: 'Kuala Lumpur',
-    //   state: 'Selangor',
-    //   country: 'Malaysia',
-    // };
-
-    //const { street1, street2, city, state, country, phone } = mockStore;
     const { phone } = (stores && stores[0]) || {};
     const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
@@ -203,7 +178,7 @@ export class Home extends Component {
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
-    // TODO: judge is delivery
+
     if (!tableId && !isDeliveryType) {
       classList.push('has-right');
     }
@@ -317,7 +292,6 @@ export class Home extends Component {
   }
 }
 
-/* TODO: backend data */
 export default compose(
   withTranslation(['OrderingHome']),
   connect(
@@ -330,7 +304,6 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
-        //storeAddress: ' 34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur',
         allBusinessInfo: getAllBusinesses(state),
       };
     },
