@@ -1,10 +1,10 @@
 {
-    "NeedHelp": "Need Help",
-    "StoreName": "Store name",
-    "ContactInfo": "Contact information",
-    "StoreAddress": "Store Address",
-    "OrderDetails": "Order Details",
-    "Total": "Total",
-    "Subtotal": "Subtotal",
-    "DeliveryCharge": "Delivery Charge"
+  "NeedHelp": "Need Help",
+  "StoreName": "Store Name",
+  "ContactInfo": "Contact Information",
+  "StoreAddress": "Store Address",
+  "OrderDetails": "Order Details",
+  "Total": "Total",
+  "Subtotal": "Subtotal",
+  "DeliveryCharge": "Delivery Charge"
 }

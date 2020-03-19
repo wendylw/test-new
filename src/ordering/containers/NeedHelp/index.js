@@ -8,14 +8,15 @@ import { actions as thankYouActionCreators, getBusinessInfo } from '../../redux/
 
 export class NeedHelp extends Component {
   render() {
-    const { history, business, t } = this.props;
-    const { stores } = business || '';
+    const { history, businessInfo, t } = this.props;
+    const { stores } = businessInfo || '';
     const { name, phone, street1 } = stores ? stores[0] : [];
+
     return (
       <section className="store-list__content">
         <Header
-          className=""
-          isPage={true}
+          className="text-center has-right"
+          isPage={false}
           title={t('NeedHelp')}
           navFunc={() =>
             history.replace({
@@ -55,7 +56,7 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
-      business: getBusinessInfo(state),
+      businessInfo: getBusinessInfo(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

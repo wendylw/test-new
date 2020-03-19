@@ -54,6 +54,7 @@ export class ThankYou extends Component {
     const { history } = this.props;
     history.push({
       pathname: Constants.ROUTER_PATHS.NEED_HELP,
+      search: window.location.search,
     });
   };
 
@@ -181,9 +182,9 @@ export class ThankYou extends Component {
             })
           }
         >
-          <span className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
+          <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
             <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
-          </span>
+          </button>
         </Header>
         <div className="thanks text-center">
           <img className="thanks__image" src={bannerImage} alt="Beep Success" />
@@ -235,7 +236,7 @@ export class ThankYou extends Component {
               </div>
               {/* <p className="thanks__address-details gray-font-opacity">34, Jalan Ambong 4, Kepong Baru, 52100 Kuala</p> */}
               <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
-              <p className="thanks__address-pin flex flex-top">
+              <p className="thanks__address-pin flex flex-middle">
                 <i className="thanks__pin-icon">
                   <IconPin />
                 </i>
