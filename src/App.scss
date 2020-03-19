@@ -2148,6 +2148,10 @@
       background-color: $theme-color;
     }
 
+    &.error::before {
+      background-color: $red;
+    }
+
     &::after {
       content: "";
       position: absolute;
@@ -2171,6 +2175,12 @@
         fill: $theme-color;
         width: 20px;
         height: 20px;
+      }
+    }
+
+    &.error .access-time-icon {
+      svg {
+        fill: $red;
       }
     }
 
