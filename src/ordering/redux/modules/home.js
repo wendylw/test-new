@@ -43,14 +43,13 @@ export const actions = {
     if (getState().home.onlineCategory.categoryIds.length) {
       return;
     }
-
     dispatch(fetchOnlineCategory());
-    dispatch(fetchShoppingCart());
+    dispatch(fetchShoppingCart(Utils.isDeliveryType()));
   },
 
   // load shopping cart
   loadShoppingCart: () => dispatch => {
-    dispatch(fetchShoppingCart());
+    dispatch(fetchShoppingCart(Utils.isDeliveryType()));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -116,11 +115,12 @@ export const actions = {
   },
 };
 
-const fetchShoppingCart = () => {
+const fetchShoppingCart = isDeliveryType => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART,
+      //...Url.API_URLS.GET_CART,
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType),
     },
   };
 };
