@@ -15,7 +15,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as cartActionCreators } from '../../redux/modules/cart';
+import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import {
@@ -196,8 +196,10 @@ export class Home extends Component {
   };
 
   renderHeader() {
-    const { t, onlineStoreInfo, requestInfo } = this.props;
+    const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
+    const { stores, multipleStores } = businessInfo || {};
     const { tableId } = requestInfo || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
@@ -216,7 +218,7 @@ export class Home extends Component {
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
-        title={onlineStoreInfo.storeName}
+        title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
         onClickHandler={this.handleToggleAside.bind(this)}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
@@ -238,13 +240,13 @@ export class Home extends Component {
       business,
       categories,
       onlineStoreInfo,
+      businessInfo,
       requestInfo,
       isVerticalMenu,
       allBusinessInfo,
       history,
       ...otherProps
     } = this.props;
-
     const {
       deliveryFee,
       minOrder,
@@ -290,6 +292,7 @@ export class Home extends Component {
         />
         <DeliveryDetailModal
           onlineStoreInfo={onlineStoreInfo}
+          businessInfo={businessInfo}
           show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
           onToggle={this.handleToggleAside.bind(this)}
           deliveryFee={deliveryFee}
@@ -322,6 +325,7 @@ export default compose(
       return {
         business: getBusiness(state),
         //business: 'wenjingzhang',
+        businessInfo: getBusinessInfo(state),
         isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),

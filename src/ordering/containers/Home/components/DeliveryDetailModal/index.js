@@ -34,6 +34,7 @@ class DeliveryDetailModal extends Component {
   };
   render() {
     const {
+      businessInfo,
       onlineStoreInfo,
       show,
       onToggle,
@@ -43,6 +44,8 @@ class DeliveryDetailModal extends Component {
       minOrder,
       isValidTimeToOrder,
     } = this.props;
+    const { stores, multipleStores } = businessInfo || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const getClassName = show => {
       return show ? 'store-info__aside aside active' : 'store-info__aside aside';
     };
@@ -59,14 +62,17 @@ class DeliveryDetailModal extends Component {
               alt={onlineStoreInfo.title}
             />
             <div className="header__title-container">
-              <h1 className="header__title">
-                <span className="font-weight-bold text-middle">{onlineStoreInfo.storeName}</span>
+              <h2 className="header__title">
+                <span className="font-weight-bold text-middle">
+                  {onlineStoreInfo.storeName}
+                  {name ? ` (${name})` : ''}
+                </span>
                 {isValidTimeToOrder ? null : (
                   <div className="tag__card-container">
                     <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
                   </div>
                 )}
-              </h1>
+              </h2>
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
