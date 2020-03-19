@@ -65,31 +65,27 @@ export class OrderDetails extends Component {
             <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
           </button>
         </Header>
-        <div className="list_container">
-          <ul className="list">
-            <li className="item border__bottom-divider">
-              <summary className="store-info__item font-weight-bold">{t('YourOrder')}</summary>
-              <div>{this.renderOrderBillings()}</div>
-            </li>
-            <li className="item border__bottom-divider">
-              <div>
-                <div className="product-detail__options flex flex-space-between flex-middle">
-                  <span className="gray-font-opacity">{t('Subtotal')}</span>
-                  <CurrencyNumber className="gray-font-opacity" money={subtotal} />
-                </div>
-                <div className="product-detail__options flex flex-space-between flex-middle">
-                  <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
-                  <CurrencyNumber className="gray-font-opacity" money={shippingFee} />
-                </div>
-                <summary className="item__title product-detail__options">
-                  <div className="flex flex-space-between flex-middle">
-                    <span className="font-weight-bold ">{t('Total')}</span>
-                    <CurrencyNumber className="font-weight-bold" money={total} />
-                  </div>
-                </summary>
-              </div>
-            </li>
-          </ul>
+        <div className="order-detail__info-container">
+          <div className="border__bottom-divider">
+            <h3 className="order-detail__title font-weight-bold text-uppercase">{t('YourOrder')}</h3>
+            {this.renderOrderBillings()}
+          </div>
+          <div>
+            <ul className="list">
+              <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('Subtotal')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={subtotal || 0} />
+              </li>
+              <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={shippingFee || 0} />
+              </li>
+            </ul>
+            <div className="flex flex-space-between flex-middle">
+              <label className="order-detail__title  font-weight-bold">{t('Total')}</label>
+              <CurrencyNumber className="font-weight-bold" money={total || 0} />
+            </div>
+          </div>
         </div>
       </section>
     );

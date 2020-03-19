@@ -2684,6 +2684,16 @@
   }
 }
 
+.order-detail {
+  &__title {
+    font-size: 1.2rem;
+  }
+
+  .list {
+    padding: 2.4vw 0;
+  }
+}
+
 main.transition {
   padding-top: 0;
 }
