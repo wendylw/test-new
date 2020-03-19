@@ -262,7 +262,6 @@ export class ThankYou extends Component {
                   <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
                 </div>
               </div>
-              {/* <p className="thanks__address-details gray-font-opacity">34, Jalan Ambong 4, Kepong Baru, 52100 Kuala</p> */}
               <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
               <p className="thanks__address-pin flex flex-middle">
                 <i className="thanks__pin-icon">
