@@ -197,8 +197,7 @@ export class Home extends Component {
 
   renderHeader() {
     const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
-    let { stores } = businessInfo || {};
-    stores = [{ name: 'idc' }];
+    const { stores } = businessInfo || {};
     const { tableId } = requestInfo || {};
     const { name } = (stores && stores[0]) || {};
     const classList = [];
