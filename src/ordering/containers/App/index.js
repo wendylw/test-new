@@ -98,8 +98,8 @@ class App extends Component {
       <main className="table-ordering">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
-        <Routes />
         <Login className="aside" />
+        <Routes />
         {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
       </main>
     );

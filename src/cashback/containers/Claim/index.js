@@ -1,7 +1,7 @@
 import React from 'react';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { IconLocation } from '../../../components/Icons';
+import { IconPin } from '../../../components/Icons';
 import Image from '../../../components/Image';
 
 import Utils from '../../../utils/utils';
@@ -151,7 +151,7 @@ class PageClaim extends React.Component {
 
     return (
       <div className="location">
-        <IconLocation />
+        <IconPin />
         <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
       </div>
     );

@@ -59,16 +59,12 @@ export class ReceiptDetail extends Component {
 
           return (
             <Item
+              contentClassName="flex-top"
               key={id}
               image={image}
               title={title}
               variation={(variationTexts || []).join(', ')}
-              detail={
-                <CurrencyNumber
-                  className="price item__text font-weight-bold gray-font-opacity"
-                  money={displayPrice || unitPrice || 0}
-                />
-              }
+              detail={<CurrencyNumber money={displayPrice || unitPrice || 0} />}
             >
               <ItemOperator className="flex-middle exhibit" quantity={quantity} decreaseDisabled={quantity === 0} />
             </Item>

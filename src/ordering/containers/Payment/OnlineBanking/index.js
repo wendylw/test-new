@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
@@ -35,19 +34,16 @@ class OnlineBanking extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { agentCode } = this.state;
     const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !agentCode) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -97,19 +93,17 @@ class OnlineBanking extends Component {
         payNowLoading: true,
       },
       async () => {
-        const { history, paymentActions, cartSummary } = this.props;
+        const { paymentActions, cartSummary } = this.props;
         const { totalCashback } = cartSummary || {};
         const { agentCode } = this.state;
-        const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-        await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+        await paymentActions.createOrder({ cashback: totalCashback });
 
         const { currentOrder } = this.props;
         const { orderId } = currentOrder || {};
 
         if (orderId) {
           Utils.removeSessionVariable('additionalComments');
-          Utils.removeSessionVariable('deliveryComments');
         }
 
         this.setState({ payNowLoading: !!agentCode });
@@ -161,10 +155,7 @@ class OnlineBanking extends Component {
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
-              search: window.location.search,
-            });
+            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
           }}
         />
 

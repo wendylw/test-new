@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import Constants from '../../../utils/constants';
@@ -58,18 +57,15 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -84,12 +80,7 @@ class Payment extends Component {
   };
 
   handleClickBack = () => {
-    const { history } = this.props;
-
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      search: window.location.search,
-    });
+    this.props.history.replace('/cart');
   };
 
   setCurrentPayment = paymentName => {
@@ -99,7 +90,6 @@ class Payment extends Component {
   handleClickPayNow = async () => {
     const { history, currentPayment, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     this.setState({
       payNowLoading: true,
@@ -108,22 +98,18 @@ class Payment extends Component {
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
 
-      history.push({
-        pathname,
-        search: window.location.search,
-      });
+      history.push({ pathname });
 
       return;
     }
 
-    await this.props.paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+    await this.props.paymentActions.createOrder({ cashback: totalCashback });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
     }
 
     this.setState({

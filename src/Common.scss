@@ -123,18 +123,6 @@ img {
   }
 }
 
-.input-group {
-  background-color: $white;
-
-  &.outline {
-    border: 1px solid $gray-3;
-
-    .input {
-      border: 0;
-    }
-  }
-}
-
 .input {
   &__error {
     border-color: $red;
@@ -187,20 +175,6 @@ form {
     color: $red;
     font-size: 0.8rem;
   }
-
-  &__group {
-    padding: 15px 0;
-  }
-
-  &__label {
-    display: block;
-    margin: 5px 0;
-    font-size: 1.2rem;
-  }
-
-  &__textarea {
-    min-height: 60px;
-  }
 }
 
 .input {
@@ -214,7 +188,6 @@ form {
   outline: none;
   box-shadow: none;
   -webkit-appearance: none;
-  resize: none;
 
   select + svg {
     position: absolute;
@@ -240,10 +213,6 @@ form {
     display: block;
     margin: 10px 0;
     text-align: left;
-  }
-
-  &__textarea {
-    height: auto;
   }
 
   &__list-top {

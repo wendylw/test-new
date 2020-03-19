@@ -325,9 +325,4 @@ Utils.removeHtmlTag = function removeHtmlTag(str) {
   return str.replace(/<[^>]+>/g, '');
 };
 
-Utils.isDeliveryType = () => {
-  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-  return type === 'delivery';
-};
-
 export default Utils;

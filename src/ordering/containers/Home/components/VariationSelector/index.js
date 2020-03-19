@@ -100,11 +100,11 @@ export class VariationSelector extends Component {
 
     return (
       <li className="product-detail__options" key={variation.id}>
-        <h4 className="product-detail__options-title gray-font-opacity text-uppercase">{variation.name}</h4>
+        <h4 className="product-detail__options-title gray-font-opacity">{variation.name}</h4>
         <ul className="tag__cards">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
-            const className = ['tag__card variation'];
+            const className = ['tag__card'];
 
             if (markedSoldOut) {
               className.push('disabled');

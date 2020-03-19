@@ -1,40 +1,3 @@
-let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
-
-// To mock data
-if (process.env.NODE_ENV === 'development') {
-  business = 'nike';
-  document.cookie = 'business=nike; path=/';
-  document.cookie = '__h=U2FsdGVkX19EBhV2Qu2EKqNLYfpH%252BnkF%252F7OKbNg19ytv5o0JGVywrz13xoTpM0ZM; path=/';
-  document.cookie = '__s=5b432464eccd4c7eb52018c6; path=/';
-  document.cookie = '__t=10; path=/';
-}
-
-/* eslint-disable */
-function guid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-/* eslint-enable */
-
-const getClientSID = () => {
-  try {
-    return (
-      sessionStorage.getItem('client.sid') ||
-      (function generateSID() {
-        const clientSID = guid();
-        sessionStorage.setItem('client.sid', clientSID);
-        console.info('client.sid generated! [%s]', clientSID);
-        return clientSID;
-      })()
-    );
-  } catch (e) {
-    return null;
-  }
-};
-
 const getTableId = () => {
   try {
     return document.cookie
@@ -68,6 +31,8 @@ const getConsumerId = () => {
   }
 };
 
+const business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
+
 const config = {
   termsPrivacyURLS: {
     terms: process.env.REACT_APP_TERMS_URL,
@@ -94,7 +59,6 @@ const config = {
   business,
   table: getTableId(),
   storeId: getStoreId(),
-  clientSID: getClientSID(),
   consumerId: getConsumerId(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
 };

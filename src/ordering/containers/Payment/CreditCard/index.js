@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
@@ -63,11 +62,10 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
@@ -76,9 +74,7 @@ class CreditCard extends Component {
 
     const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -303,18 +299,16 @@ class CreditCard extends Component {
       return;
     }
 
-    const { history, paymentActions, cartSummary } = this.props;
+    const { paymentActions, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+    await paymentActions.createOrder({ cashback: totalCashback });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
     }
 
     this.setState({
@@ -484,10 +478,7 @@ class CreditCard extends Component {
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
-              search: window.location.search,
-            });
+            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
           }}
         />
         <div className="payment-bank">
