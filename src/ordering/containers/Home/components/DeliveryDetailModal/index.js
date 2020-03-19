@@ -22,7 +22,7 @@ class DeliveryDetailModal extends Component {
       validDays &&
       validDays.map(x => {
         return (
-          <li className="store-info__item flex flex-middle flex-space-between">
+          <li key={x} className="store-info__item flex flex-middle flex-space-between">
             <span>{weekInfo[x]}</span>
             <time>
               {`${validTimeFrom}`} - {`${validTimeTo}`}
