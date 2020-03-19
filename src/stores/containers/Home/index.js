@@ -14,17 +14,24 @@ import {
   getDeliveryStatus,
   getAllStores,
   showStores,
-  getCurrentStoreId,
 } from '../../redux/modules/home';
 
 const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {};
 
+  redirectToDelivery = storeId => {
+    const { history } = this.props;
+
+    history.push('/?p=delivery-methods', {
+      storeId,
+    });
+  };
+
   componentDidMount = async () => {
     const { homeActions } = this.props;
 
-    await homeActions.loadCoreStores();
+    await homeActions.loadCoreStores(this.redirectToDelivery);
   };
 
   async visitStore(storeId) {
@@ -40,12 +47,9 @@ class App extends Component {
   }
 
   setCurrentStoreId(storeId) {
-    const { homeActions, history } = this.props;
+    const { homeActions } = this.props;
     homeActions.setCurrentStore(storeId);
-
-    history.push('/?p=delivery-methods', {
-      storeId,
-    });
+    this.redirectToDelivery(storeId);
   }
 
   render() {
