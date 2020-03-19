@@ -89,6 +89,7 @@ class Header extends Component {
 
 Header.propTypes = {
   className: PropTypes.string,
+  deliveryFee: PropTypes.number,
   isPage: PropTypes.bool,
   isStoreHome: PropTypes.bool,
   isDeliveryType: PropTypes.bool,
@@ -104,6 +105,7 @@ Header.defaultProps = {
   isDeliveryType: false,
   isValidTimeToOrder: true,
   title: '',
+  deliveryFee: 0,
   navFunc: () => {},
 };
 
