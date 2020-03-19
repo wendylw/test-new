@@ -26,14 +26,25 @@ class App extends Component {
     this.props.appActions.hideMessageModal();
   };
 
-  render() {
-    const { error, onlineStoreInfo, stores, enableDelivery, currentStoreId, location } = this.props;
-    const storeId = currentStoreId || (location.state && location.state.storeId);
+  getStoreIdFromRouterState = () => {
+    const { location } = this.props;
+    return location.state && location.state.storeId;
+  };
+
+  isDeliveryMethodsRouter = () => {
+    const { location } = this.props;
+    return location.search.includes('delivery-methods') && this.getStoreIdFromRouterState();
+  };
+
+  render = () => {
+    const { error, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
 
     return (
       <main className="store-list">
-        {location.search.includes('delivery-methods') && storeId && enableDelivery ? (
-          <DeliveryMethods store={stores.find(store => store.id === storeId)} />
+        {(this.isDeliveryMethodsRouter() || currentStoreId) && enableDelivery ? (
+          <DeliveryMethods
+            store={stores.find(store => store.id === currentStoreId || this.getStoreIdFromRouterState())}
+          />
         ) : (
           <Home />
         )}
@@ -42,7 +53,7 @@ class App extends Component {
         {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
       </main>
     );
-  }
+  };
 }
 
 export default connect(
