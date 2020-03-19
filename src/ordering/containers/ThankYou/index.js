@@ -16,6 +16,18 @@ import beepSuccessImage from '../../../images/beep-success.png';
 import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
 import beepOnTheWayImage from '../../../images/beep-on-the-way.png';
 
+const LANGUAGES = {
+  MY: 'EN',
+  TH: 'EN',
+  PH: 'EN',
+};
+const DATE_OPTIONS = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
+
 export class ThankYou extends Component {
   state = {};
 
@@ -157,7 +169,8 @@ export class ThankYou extends Component {
     const { t, history, order } = this.props;
     const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
-    const pickkingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const paidStatusObjTime = new Date(Number.parseInt((paidStatusObj && paidStatusObj.time) || '', 10));
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
@@ -205,7 +218,9 @@ export class ThankYou extends Component {
                     <IconAccessTime />
                   </i>
                   {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
-                  <time className="text-middle gray-font-opacity">{(paidStatusObj && paidStatusObj.time) || ''}</time>
+                  <time className="text-middle gray-font-opacity">
+                    {paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                  </time>
                 </div>
               </li>
               {this.getStatusStyle('riderPending', logs) !== 'hide' ? (
@@ -222,7 +237,7 @@ export class ThankYou extends Component {
                     </i>
                     {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
                     <time className="text-middle gray-font-opacity">
-                      {(pickkingStatusObj && pickkingStatusObj.time) || ''}
+                      {(pickingStatusObj && pickingStatusObj.time) || ''}
                     </time>
                   </div>
                 </li>
