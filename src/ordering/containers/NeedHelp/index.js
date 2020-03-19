@@ -13,27 +13,25 @@ export class NeedHelp extends Component {
     const { name, phone, street1 } = stores ? stores[0] : [];
 
     return (
-      <section className="store-list__content">
+      <section className="need-help">
         <Header className="has-right" isPage={false} title={t('NeedHelp')} navFunc={() => history.goBack()} />
-        <div className="list_container">
+        <div className="need-help__info-container">
           <ul className="list">
             <li className="item border__bottom-divider">
-              <div>
-                <summary className="item__title store-info__item font-weight-bold">{t('StoreName')}</summary>
-                <span className="gray-font-opacity">{name}</span>
-              </div>
+              <summary className="item__title store-info__item font-weight-bold">{t('StoreName')}</summary>
+              <span className="item__text gray-font-opacity">{name}Uppercuppa</span>
             </li>
             <li className="item border__bottom-divider">
-              <div>
-                <summary className="item__title store-info__item font-weight-bold">{t('ContactInfo')}</summary>
-                <span className="gray-font-opacity">{phone}</span>
-              </div>
+              <summary className="item__title store-info__item font-weight-bold">{t('ContactInfo')}</summary>
+              <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
+                {phone}+60 012 98765432
+              </a>
             </li>
-            <li className="item border__bottom-divider">
-              <div>
-                <summary className="item__title store-info__item font-weight-bold">{t('StoreAddress')}</summary>
-                <span className="gray-font-opacity">{street1}</span>
-              </div>
+            <li className="item">
+              <summary className="item__title store-info__item font-weight-bold">{t('StoreAddress')}</summary>
+              <span className="item__text gray-font-opacity">
+                {street1}34, Jalan Ambong 4, Kepong Baru, 52100 Kuala Lumpur
+              </span>
             </li>
           </ul>
         </div>
