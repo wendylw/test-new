@@ -20,12 +20,12 @@ import paymenbGrabImage from '../../../images/payment-grab.png';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const dataSource = [
-  {
-    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-    logo: paymentBankingImage,
-    labelKey: 'OnlineBanking',
-    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-  },
+  // {
+  //   name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  //   logo: paymentBankingImage,
+  //   labelKey: 'OnlineBanking',
+  //   pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
+  // },
   {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: paymentCreditImage,
