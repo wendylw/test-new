@@ -2660,19 +2660,21 @@
   }
 }
 
-.need-help {
+.need-help,
+.order-detail {
   @extend .main-section;
 
   padding: 5vw;
 
-  .item {
+  .item,
+  .item__title,
+  .item__text {
     padding: 2.4vw 0;
   }
 
   .item__title,
   .item__text {
     display: block;
-    padding: 5px 0;
   }
 
   &__info-container {
@@ -2685,6 +2687,10 @@
 }
 
 .order-detail {
+  .list {
+    padding: 2.4vw 0;
+  }
+
   &__title {
     font-size: 1.2rem;
   }

@@ -35,22 +35,28 @@ export class OrderDetails extends Component {
   renderOrderBillings() {
     const { order } = this.props;
     const { items } = order || {};
-    return (items || []).map(value => {
-      const { title, displayPrice } = value;
-      return (
-        <div className="product-detail__options flex flex-space-between flex-middle">
-          <span className="gray-font-opacity">{title}</span>
-          <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
-        </div>
-      );
-    });
+
+    return (
+      <ul className="list">
+        {(items || []).map(value => {
+          const { title, displayPrice } = value;
+
+          return (
+            <li className="item flex flex-space-between flex-middle">
+              <span className="gray-font-opacity">{title}</span>
+              <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
+            </li>
+          );
+        })}
+      </ul>
+    );
   }
 
   render() {
     const { order, history, t } = this.props;
     const { shippingFee, subtotal, total } = order || '';
     return (
-      <section className="store-list__content">
+      <section className="order-detail">
         <Header
           isPage={false}
           title={t('OrderDetails')}
