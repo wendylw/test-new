@@ -216,6 +216,7 @@ class Customer extends Component {
             <div className="form__group border__bottom-divider">
               <label className="form__label gray-font-opacity">{t('MobileNumber')}</label>
               <PhoneInput
+                smartCaret={false}
                 placeholder=""
                 value={formatPhoneNumberIntl(deliveryDetails.phone)}
                 country={country}
