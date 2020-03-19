@@ -190,7 +190,7 @@ export class ThankYou extends Component {
     const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
     const cancelledStatusObjTime = new Date((cancelledStatusObj && cancelledStatusObj.time) || '');
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
-    const { address } = (deliveryInformation && deliveryInformation[0]) || {};
+    let { address, useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
     //const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
     //const { orderId, logs, storeInfo, total, status } = order || {};
@@ -242,12 +242,12 @@ export class ThankYou extends Component {
                   </time>
                 </div>
               </li>
-              {this.getStatusStyle('riderPending', logs) !== 'hide' ? (
+              {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
                 <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
                   <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
                 </li>
               ) : null}
-              {this.getStatusStyle('picking', logs) !== 'hide' ? (
+              {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
                 <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
                   <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
                   <div className="thanks__delivery-status-time">
@@ -263,7 +263,7 @@ export class ThankYou extends Component {
                   </div>
                 </li>
               ) : null}
-              {this.getStatusStyle('cancelled', logs) !== 'hide' ? (
+              {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
                 <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
                   <label className="thanks__delivery-status-label font-weight-bold">{t('OrderCancelledNoRide')}</label>
                   <div className="thanks__delivery-status-time">
