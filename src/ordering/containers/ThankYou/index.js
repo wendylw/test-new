@@ -146,24 +146,35 @@ export class ThankYou extends Component {
 
     return targetInfo;
   };
+
   getStatusStyle = (targetType, logs) => {
     if (targetType === 'confirm') {
       return 'active';
     }
     const logisticObject = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const cancelledObject = this.getLogsInfoByStatus(logs, 'cancelled');
 
-    if (targetType === 'riderPending') {
-      if (logisticObject !== undefined) {
-        return 'hide';
-      } else {
-        return 'normal';
-      }
-    }
     if (targetType === 'picking') {
       if (logisticObject !== undefined) {
         return 'active';
       } else {
         return 'hide';
+      }
+    }
+
+    if (targetType === 'cancelled') {
+      if (cancelledObject !== undefined) {
+        return 'error';
+      } else {
+        return 'hide';
+      }
+    }
+
+    if (targetType === 'riderPending') {
+      if (logisticObject !== undefined || cancelledObject !== undefined) {
+        return 'hide';
+      } else {
+        return 'normal';
       }
     }
   };
@@ -174,8 +185,10 @@ export class ThankYou extends Component {
     const { country } = onlineStoreInfo || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
     const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const cancelledStatusObj = this.getLogsInfoByStatus(logs, 'cancelled');
     const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || '');
     const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
+    const cancelledStatusObjTime = new Date((cancelledStatusObj && cancelledStatusObj.time) || '');
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
@@ -195,7 +208,6 @@ export class ThankYou extends Component {
         <Header
           className="border__bottom-divider gray"
           isPage={true}
-          //title={t('OrderPaid')}
           title={`#${orderId}`}
           navFunc={() =>
             history.replace({
@@ -247,6 +259,22 @@ export class ThankYou extends Component {
                         LANGUAGES[country || 'MY'],
                         TIME_OPTIONS
                       )}, ${pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
+                    </time>
+                  </div>
+                </li>
+              ) : null}
+              {this.getStatusStyle('cancelled', logs) !== 'hide' ? (
+                <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
+                  <label className="thanks__delivery-status-label font-weight-bold">{t('OrderCancelledNoRide')}</label>
+                  <div className="thanks__delivery-status-time">
+                    <i className="access-time-icon text-middle">
+                      <IconAccessTime />
+                    </i>
+                    <time className="text-middle gray-font-opacity">
+                      {`${cancelledStatusObjTime.toLocaleTimeString(
+                        LANGUAGES[country || 'MY'],
+                        TIME_OPTIONS
+                      )}, ${cancelledStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
                     </time>
                   </div>
                 </li>

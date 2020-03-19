@@ -6,5 +6,6 @@
   "PrepareOrderDescription": "We're preparing your order now.",
   "OrderConfirmed": "Order Confirmed",
   "RiderPendingTips": "Pending Rider Confirm",
-  "RiderOnTheWay": " Rider is on the way to pick up order"
+  "RiderOnTheWay": "Rider is on the way to pick up order",
+  "OrderCancelledNoRide": "Order Cancelled. No rider available"
 }
