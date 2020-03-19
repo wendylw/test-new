@@ -44,8 +44,8 @@ class DeliveryDetailModal extends Component {
       minOrder,
       isValidTimeToOrder,
     } = this.props;
-    const { stores } = businessInfo || {};
-    const { name } = stores && stores.length === 1 ? stores[0] : {};
+    const { stores, multipleStores } = businessInfo || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const getClassName = show => {
       return show ? 'store-info__aside aside active' : 'store-info__aside aside';
     };

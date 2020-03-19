@@ -197,9 +197,9 @@ export class Home extends Component {
 
   renderHeader() {
     const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
-    const { stores } = businessInfo || {};
+    const { stores, multipleStores } = businessInfo || {};
     const { tableId } = requestInfo || {};
-    const { name } = (stores && stores[0]) || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryFee, minOrder } = this.getDeliveryInfo();
