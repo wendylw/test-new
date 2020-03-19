@@ -21,7 +21,7 @@ import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId
 
 class Cart extends Component {
   state = {
-    expandBilling: false,
+    expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
   };

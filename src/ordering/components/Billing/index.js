@@ -69,7 +69,7 @@ export class Billing extends Component {
 
           {isDeliveryType ? (
             <li className="billing__item flex flex-middle flex-space-between">
-              <label>{t('Delivery fee')}</label>
+              <label>{t('DeliveryFee')}</label>
               <CurrencyNumber money={deliveryFee || 0} />
             </li>
           ) : null}

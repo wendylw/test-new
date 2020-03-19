@@ -1825,6 +1825,11 @@
 
   &__item {
     padding: 2.4vw;
+    font-size: 1.2rem;
+
+    * {
+      font-size: inherit;
+    }
 
     &.primary {
       background-color: $theme-color-translucent;
