@@ -151,7 +151,7 @@ export class ThankYou extends Component {
     if (targetType === 'confirm') {
       return 'active';
     }
-    const logisticObject = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const logisticObject = this.getLogsInfoByStatus(logs, 'logisticsConfirmed');
     const cancelledObject = this.getLogsInfoByStatus(logs, 'cancelled');
 
     if (targetType === 'picking') {
@@ -184,7 +184,7 @@ export class ThankYou extends Component {
     const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
     const { country } = onlineStoreInfo || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
-    const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
+    const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticsConfirmed');
     const cancelledStatusObj = this.getLogsInfoByStatus(logs, 'cancelled');
     const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || '');
     const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
