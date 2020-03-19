@@ -30,9 +30,15 @@ export const types = {
 };
 
 export const actions = {
-  loadCoreStores: () => (dispatch, getState) => {
+  loadCoreStores: callback => async (dispatch, getState) => {
     const business = getBusiness(getState());
-    return dispatch(fetchCoreStores({ business }));
+    await dispatch(fetchCoreStores({ business }));
+
+    // if has selected an store, then directly go to next step
+    const currentStoreId = getCurrentStoreId(getState());
+    if (currentStoreId) {
+      callback(currentStoreId);
+    }
   },
 
   getStoreHashData: storeId => ({
