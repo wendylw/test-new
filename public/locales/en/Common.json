@@ -63,6 +63,7 @@
   "DeliverToErrorMessage": "Sorry order location is too far from store",
   "Closed": "Closed",
   "DeliveryDetails": "Delivery Details",
+  "PickUpDetails": "Pickup Details",
   "Name": "Name",
   "MobileNumber": "Mobile Number",
   "AddressDetails": "Address Details",

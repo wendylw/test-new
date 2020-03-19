@@ -174,7 +174,7 @@ class Customer extends Component {
         <Header
           className="text-center gray has-right"
           isPage={true}
-          title={t('DeliveryDetails')}
+          title={type === 'delivery' ? t('DeliveryDetails') : t('PickUpDetails')}
           navFunc={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
@@ -264,9 +264,8 @@ class Customer extends Component {
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
                 (type === 'delivery' &&
-                  (!Boolean(deliveryDetails.username) ||
-                    !Boolean(deliveryDetails.addressDetails) ||
-                    !Boolean(deliveryDetails.deliverToAddress))) ||
+                  (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryDetails.deliverToAddress))) ||
+                !Boolean(deliveryDetails.username) ||
                 !isValidPhoneNumber(deliveryDetails.phone)
               }
             >
