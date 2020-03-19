@@ -85,9 +85,10 @@ class Payment extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     history.push({
-      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      pathname: type ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : ROUTER_PATHS.ORDERING_CART,
       search: window.location.search,
     });
   };
