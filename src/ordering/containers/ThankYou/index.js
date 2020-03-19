@@ -171,6 +171,7 @@ export class ThankYou extends Component {
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
     const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
     const paidStatusObjTime = new Date(Number.parseInt((paidStatusObj && paidStatusObj.time) || '', 10));
+    const pickingStatusObjTime = new Date(Number.parseInt((pickingStatusObj && pickingStatusObj.time) || '', 10));
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
@@ -237,7 +238,7 @@ export class ThankYou extends Component {
                     </i>
                     {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
                     <time className="text-middle gray-font-opacity">
-                      {(pickingStatusObj && pickingStatusObj.time) || ''}
+                      {pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
                     </time>
                   </div>
                 </li>
