@@ -161,8 +161,8 @@ export class Home extends Component {
     const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
     const { defaultShippingZoneMethod } = defaultShippingZone || {};
     const { rate } = defaultShippingZoneMethod || {};
-    const deliveryFee = rate || {};
-    const minOrder = minimumConsumption;
+    const deliveryFee = rate || 0;
+    const minOrder = minimumConsumption || 0;
 
     // const mockStore = {
     //   id: '5e5dd6c7407cf700063ba869',
@@ -210,6 +210,8 @@ export class Home extends Component {
     if (!isDeliveryType) {
       classList.push('border__bottom-divider gray');
     }
+
+    console.log(deliveryFee);
 
     return (
       <Header
