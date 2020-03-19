@@ -42,8 +42,8 @@ export class OrderDetails extends Component {
           const { title, displayPrice } = value;
 
           return (
-            <li key={`title-${index}`} className="item flex flex-space-between flex-top">
-              <label className="gray-font-opacity">{title}</label>
+            <li key={`title-${index}`} className="item flex flex-space-between flex-middle">
+              <span className="gray-font-opacity">{title}</span>
               <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
             </li>
           );
@@ -73,23 +73,23 @@ export class OrderDetails extends Component {
         </Header>
         <div className="order-detail__info-container">
           <div className="border__bottom-divider">
-            <h3 className="font-weight-bold text-uppercase">{t('YourOrder')}</h3>
+            <h3 className="order-detail__title font-weight-bold text-uppercase">{t('YourOrder')}</h3>
             {this.renderOrderBillings()}
           </div>
           <div>
             <ul className="list">
               <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('Subtotal')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={subtotal} />
+                <CurrencyNumber className="gray-font-opacity" money={subtotal || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={shippingFee} />
+                <CurrencyNumber className="gray-font-opacity" money={shippingFee || 0} />
               </li>
             </ul>
             <div className="flex flex-space-between flex-middle">
-              <span className="font-weight-bold">{t('Total')}</span>
-              <CurrencyNumber className="font-weight-bold" money={total} />
+              <label className="order-detail__title  font-weight-bold">{t('Total')}</label>
+              <CurrencyNumber className="font-weight-bold" money={total || 0} />
             </div>
           </div>
         </div>
