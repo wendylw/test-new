@@ -107,7 +107,7 @@ export class ThankYou extends Component {
     );
   }
 
-  renderVeiwDetail() {
+  renderViewDetail() {
     const { t } = this.props;
     return (
       <button
@@ -248,7 +248,7 @@ export class ThankYou extends Component {
               </p>
             </div>
 
-            {this.renderVeiwDetail()}
+            {this.renderViewDetail()}
           </div>
         </div>
       </React.Fragment>
