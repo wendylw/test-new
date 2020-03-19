@@ -2756,12 +2756,19 @@ body.loading {
 .react-phone-number-input {
   margin: 8px 0;
 
+  .react-phone-number-input__row {
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    padding: 0 5px;
+  }
+
   .react-phone-number-input__input,
   .react-phone-number-input__input:focus {
     @extend .input;
     @extend .border-radius-base;
     @extend .font-weight-bold;
 
+    border: 0;
     text-align: center;
     color: $main-color;
   }

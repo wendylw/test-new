@@ -7,15 +7,21 @@ class FormTextarea extends Component {
     textValue: null,
   };
 
+  textareaRef = React.createRef();
+
+  autoFocus = () => {
+    this.textareaRef.current.focus();
+  };
+
   componentDidUpdate(prevProps) {
     const { show } = prevProps;
 
     if (!show && show !== this.props.show) {
-      this.setState({ textValue: null });
+      this.setState({ textValue: null }, this.autoFocus);
     }
 
     if (this.props.show && show !== this.props.show) {
-      this.setState({ textValue: this.props.textareaValue });
+      this.setState({ textValue: this.props.textareaValue }, this.autoFocus);
     }
   }
 
@@ -50,11 +56,13 @@ class FormTextarea extends Component {
           <label className="gray-font-opacity">{title}</label>
           <div className="form__group">
             <textarea
+              ref={this.textareaRef}
               rows="4"
               maxLength="140"
               className="input input__textarea input__block gray-font-opacity"
               value={textValue || ''}
               onChange={this.handleUpdateText.bind(this)}
+              autoFocus
             ></textarea>
           </div>
           <button

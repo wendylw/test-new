@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
@@ -13,17 +14,18 @@ import {
   getDeliveryStatus,
   getAllStores,
   showStores,
+  getCurrentStoreId,
 } from '../../redux/modules/home';
 
 const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {};
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     const { homeActions } = this.props;
 
     await homeActions.loadCoreStores();
-  }
+  };
 
   async visitStore(storeId) {
     const { homeActions } = this.props;
@@ -38,9 +40,12 @@ class App extends Component {
   }
 
   setCurrentStoreId(storeId) {
-    const { homeActions } = this.props;
-
+    const { homeActions, history } = this.props;
     homeActions.setCurrentStore(storeId);
+
+    history.push('/?p=delivery-methods', {
+      storeId,
+    });
   }
 
   render() {
@@ -92,4 +97,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(App);
+)(withRouter(App));
