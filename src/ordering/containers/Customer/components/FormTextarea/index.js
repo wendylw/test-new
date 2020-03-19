@@ -8,9 +8,33 @@ class FormTextarea extends Component {
   };
 
   textareaRef = React.createRef();
+  addressAsideInnerRef = React.createRef();
 
   autoFocus = () => {
     this.textareaRef.current.focus();
+  };
+
+  componentDidMount = () => {
+    const textarea = document.getElementById('address-textarea');
+    const addressAside = document.getElementById('address-aside');
+    const addressAsideInner = document.getElementById('address-aside-inner');
+
+    // const oldInnerHeight = addressAsideInner.style.top;
+
+    textarea.addEventListener(
+      'focus',
+      () => {
+        this.addressAsideInnerRef.current.style.top = '20vh';
+      },
+      false
+    );
+    textarea.addEventListener(
+      'blur',
+      () => {
+        this.addressAsideInnerRef.current.style.top = '';
+      },
+      false
+    );
   };
 
   componentDidUpdate(prevProps) {
@@ -52,10 +76,11 @@ class FormTextarea extends Component {
 
     return (
       <aside className={className.join(' ')} onClick={e => this.handleHideAside(e)}>
-        <div className="form-text">
+        <div ref={this.addressAsideInnerRef} className="form-text">
           <label className="gray-font-opacity">{title}</label>
           <div className="form__group">
             <textarea
+              id="address-textarea"
               ref={this.textareaRef}
               rows="4"
               maxLength="140"
