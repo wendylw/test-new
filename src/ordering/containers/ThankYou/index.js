@@ -191,7 +191,8 @@ export class ThankYou extends Component {
     const cancelledStatusObjTime = new Date((cancelledStatusObj && cancelledStatusObj.time) || '');
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
-    const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
+    const deliveryAddress = address && address.address;
+    // const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
     //const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
     //const { orderId, logs, storeInfo, total, status } = order || {};
     let bannerImage = beepSuccessImage;
