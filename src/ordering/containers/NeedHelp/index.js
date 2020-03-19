@@ -14,7 +14,21 @@ export class NeedHelp extends Component {
 
     return (
       <section className="need-help">
-        <Header className="has-right" isPage={false} title={t('NeedHelp')} navFunc={() => history.goBack()} />
+        <Header
+          className="has-right"
+          isPage={false}
+          title={t('NeedHelp')}
+          navFunc={() => {
+            if (history.length) {
+              history.goBack();
+            } else {
+              history.push({
+                pathname: Constants.ROUTER_PATHS.THANK_YOU,
+                search: window.location.search,
+              });
+            }
+          }}
+        />
         <div className="need-help__info-container">
           <ul className="list">
             <li className="item border__bottom-divider">
