@@ -21,8 +21,11 @@ const LANGUAGES = {
   TH: 'EN',
   PH: 'EN',
 };
+const TIME_OPTIONS = {
+  hour: 'numeric',
+  minute: 'numeric',
+};
 const DATE_OPTIONS = {
-  weekday: 'short',
   year: 'numeric',
   month: 'short',
   day: 'numeric',
@@ -166,12 +169,13 @@ export class ThankYou extends Component {
   };
 
   getDeliveryUI() {
-    const { t, history, order } = this.props;
+    const { t, history, order, onlineStoreInfo } = this.props;
     const { orderId, logs, storeInfo, total, deliveryInformation, status } = order || {};
+    const { country } = onlineStoreInfo || {};
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
     const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticConfirmed');
-    const paidStatusObjTime = new Date(Number.parseInt((paidStatusObj && paidStatusObj.time) || '', 10));
-    const pickingStatusObjTime = new Date(Number.parseInt((pickingStatusObj && pickingStatusObj.time) || '', 10));
+    const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || '');
+    const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
     //const { city, country, name, state, street1, street2 } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
@@ -218,9 +222,11 @@ export class ThankYou extends Component {
                   <i className="access-time-icon text-middle">
                     <IconAccessTime />
                   </i>
-                  {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
                   <time className="text-middle gray-font-opacity">
-                    {paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                    {`${paidStatusObjTime.toLocaleTimeString(
+                      LANGUAGES[country || 'MY'],
+                      TIME_OPTIONS
+                    )}, ${paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
                   </time>
                 </div>
               </li>
@@ -236,9 +242,11 @@ export class ThankYou extends Component {
                     <i className="access-time-icon text-middle">
                       <IconAccessTime />
                     </i>
-                    {/* <time className="text-middle gray-font-opacity">09:30 AM, 18 March 2020</time> */}
                     <time className="text-middle gray-font-opacity">
-                      {pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                      {`${pickingStatusObjTime.toLocaleTimeString(
+                        LANGUAGES[country || 'MY'],
+                        TIME_OPTIONS
+                      )}, ${pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
                     </time>
                   </div>
                 </li>
