@@ -156,14 +156,13 @@ export class Home extends Component {
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
-    const { stores } = originalInfo;
-    const deliveryFee =
-      originalInfo.qrOrderingSettings &&
-      originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
-    const minOrder = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.minimumConsumption;
-    const validDays = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validDays;
-    const validTimeFrom = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeFrom;
-    const validTimeTo = originalInfo.qrOrderingSettings && originalInfo.qrOrderingSettings.validTimeTo;
+    const { stores } = originalInfo || {};
+    const { qrOrderingSettings } = originalInfo || {};
+    const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { rate } = defaultShippingZoneMethod || {};
+    const deliveryFee = rate || {};
+    const minOrder = minimumConsumption;
 
     // const mockStore = {
     //   id: '5e5dd6c7407cf700063ba869',
