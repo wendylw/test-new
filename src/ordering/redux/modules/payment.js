@@ -7,6 +7,7 @@ import { getBusiness, getRequestInfo } from './app';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { getDeliveryDetails } from './customer';
 
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
@@ -50,9 +51,10 @@ export const actions = {
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
+    const deliveryDetails = getDeliveryDetails(getState());
     const pickupAddressInfo = {
-      phone: Utils.getLocalStorageVariable('user.p'),
-      name: Utils.getLocalStorageVariable('user.name'),
+      phone: deliveryDetails.phone,
+      name: deliveryDetails.username,
     };
     let variables = {
       business,
@@ -65,11 +67,11 @@ export const actions = {
     if (shippingType === 'delivery') {
       // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
       // const { address: addressString, addressInfo } = currentAddress || {};
-      const addressDetails = Utils.getLocalStorageVariable('addressDetails');
+      const addressDetails = deliveryDetails.addressDetails;
       // const { street1, street2 } = addressInfo || {};
       // const address = addressString + street1 || '' + street2 || '';
-      const address = Utils.getLocalStorageVariable('address');
-      const deliveryComments = Utils.getSessionVariable('deliveryComments');
+      const address = deliveryDetails.deliverToAddress;
+      const deliveryComments = deliveryDetails.deliveryComments;
 
       variables = {
         ...variables,

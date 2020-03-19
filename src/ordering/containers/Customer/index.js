@@ -15,17 +15,13 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
-    username: Utils.getLocalStorageVariable('user.name'),
-    phone: Utils.getLocalStorageVariable('user.p'),
-    deliverToAddress: Utils.getLocalStorageVariable('address'),
-    addressDetails: Utils.getLocalStorageVariable('addressDetails'),
-    deliveryComments: Utils.getSessionVariable('deliveryComments'),
     formTextareaTitle: null,
     asideName: null,
     sentOtp: false,
@@ -51,8 +47,8 @@ class Customer extends Component {
   }
 
   async handleCreateOrder() {
-    const { appActions, user } = this.props;
-    const { phone } = this.state;
+    const { appActions, user, deliveryDetails } = this.props;
+    const { phone } = deliveryDetails;
     const { isLogin } = user || {};
 
     if (!isValidPhoneNumber(phone)) {
@@ -70,35 +66,19 @@ class Customer extends Component {
   }
 
   handleUpdateName(e) {
-    this.setState({
-      username: e.target.value,
-    });
-
-    Utils.setLocalStorageVariable('user.name', e.target.value);
+    this.props.customerActions.putDeliveryDetails({ username: e.target.value });
   }
 
   handleDeliverToAddress(deliverToAddress) {
-    this.setState({
-      deliverToAddress,
-    });
-
-    Utils.setLocalStorageVariable('address', deliverToAddress);
+    this.props.customerActions.putDeliveryDetails({ deliverToAddress });
   }
 
   handleAddressDetails(addressDetails) {
-    this.setState({
-      addressDetails,
-    });
-
-    Utils.setLocalStorageVariable('addressDetails', addressDetails);
+    this.props.customerActions.putDeliveryDetails({ addressDetails });
   }
 
   handleDriverComments(deliveryComments) {
-    this.setState({
-      deliveryComments,
-    });
-
-    Utils.setSessionVariable('deliveryComments', deliveryComments);
+    this.props.customerActions.putDeliveryDetails({ deliveryComments });
   }
 
   handleToggleFormTextarea(asideName) {
@@ -125,7 +105,7 @@ class Customer extends Component {
       return null;
     }
 
-    const { deliverToAddress, addressDetails /*, deliveryComments*/ } = this.state;
+    const { deliverToAddress, addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
     // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
     // const { address } = currentAddress || {};
 
@@ -174,26 +154,18 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, onlineStoreInfo } = this.props;
-    const {
-      username,
-      phone,
-      asideName,
-      formTextareaTitle,
-      deliverToAddress,
-      addressDetails,
-      deliveryComments,
-    } = this.state;
+    const { t, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { asideName, formTextareaTitle } = this.state;
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let textareaValue = deliverToAddress;
+    let textareaValue = deliveryDetails.deliverToAddress;
     let updateTextFunc = this.handleDeliverToAddress.bind(this);
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
-      textareaValue = deliveryComments;
+      textareaValue = deliveryDetails.deliveryComments;
       updateTextFunc = this.handleDriverComments.bind(this);
     } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
-      textareaValue = addressDetails;
+      textareaValue = deliveryDetails.addressDetails;
       updateTextFunc = this.handleAddressDetails.bind(this);
     }
 
@@ -234,8 +206,10 @@ class Customer extends Component {
               <input
                 className="input input__block"
                 type="text"
-                defaultValue={this.state.username}
-                onChange={this.handleUpdateName.bind(this)}
+                defaultValue={deliveryDetails.username}
+                onChange={e => {
+                  this.props.customerActions.putDeliveryDetails({ username: e.target.value.trim() });
+                }}
               />
             </div>
 
@@ -243,14 +217,14 @@ class Customer extends Component {
               <label className="form__label gray-font-opacity">{t('MobileNumber')}</label>
               <PhoneInput
                 placeholder=""
-                value={formatPhoneNumberIntl(phone)}
+                value={formatPhoneNumberIntl(deliveryDetails.phone)}
                 country={country}
                 metadata={metadataMobile}
                 onChange={phone => {
                   const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
 
                   if (metadataMobile.countries[selectedCountry]) {
-                    this.setState({
+                    this.props.customerActions.putDeliveryDetails({
                       phone: Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]),
                     });
                   }
@@ -290,8 +264,10 @@ class Customer extends Component {
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
                 (type === 'delivery' &&
-                  (!Boolean(username) || !Boolean(addressDetails) || !Boolean(deliverToAddress))) ||
-                !isValidPhoneNumber(phone)
+                  (!Boolean(deliveryDetails.username) ||
+                    !Boolean(deliveryDetails.addressDetails) ||
+                    !Boolean(deliveryDetails.deliverToAddress))) ||
+                !isValidPhoneNumber(deliveryDetails.phone)
               }
             >
               {t('Continue')}
@@ -311,9 +287,11 @@ export default compose(
         user: getUser(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })
