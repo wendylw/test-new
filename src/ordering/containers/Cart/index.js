@@ -136,10 +136,12 @@ class Cart extends Component {
   getDeliveryFee = () => {
     const { allBusinessInfo, business } = this.props;
     const originalInfo = allBusinessInfo[business] || {};
-    const deliveryFee =
-      originalInfo.qrOrderingSettings &&
-      originalInfo.qrOrderingSettings.defaultShippingZone.defaultShippingZoneMethod.rate;
-    return deliveryFee;
+    const { qrOrderingSettings } = originalInfo || {};
+    const { defaultShippingZone } = qrOrderingSettings || {};
+    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { rate } = defaultShippingZoneMethod || {};
+
+    return rate || 0;
   };
 
   render() {
