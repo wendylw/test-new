@@ -224,11 +224,11 @@ class Customer extends Component {
                 onChange={phone => {
                   const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
 
-                  if (metadataMobile.countries[selectedCountry]) {
-                    this.props.customerActions.putDeliveryDetails({
-                      phone: Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]),
-                    });
-                  }
+                  this.props.customerActions.putDeliveryDetails({
+                    phone:
+                      metadataMobile.countries[selectedCountry] &&
+                      Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]),
+                  });
                 }}
               />
             </div>
