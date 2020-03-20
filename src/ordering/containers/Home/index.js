@@ -130,11 +130,13 @@ export class Home extends Component {
     const minutesInfo = new Date().getMinutes();
     const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
     const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+
     const isClosed =
-      hourInfo < timeFrom[0] ||
-      hourInfo > timeTo[0] ||
-      (hourInfo === timeFrom[0] && minutesInfo < timeFrom[1]) ||
-      (hourInfo === timeTo[0] && minutesInfo > timeTo[1]);
+      hourInfo < Number(timeFrom[0]) ||
+      hourInfo > Number(timeTo[0]) ||
+      (hourInfo === Number(timeFrom[0]) &&
+        (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
+      (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
 
     if (validDays && validDays.includes(weekInfo) && !isClosed) {
       return true;
@@ -158,6 +160,7 @@ export class Home extends Component {
     const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
     const { address } = currentAddress || {};
+
     return {
       deliveryFee,
       minOrder,
@@ -279,6 +282,7 @@ export class Home extends Component {
           validTimeTo={validTimeTo}
           isValidTimeToOrder={this.isValidTimeToOrder()}
         />
+        {!this.isValidTimeToOrder() ? <div className="cover back-drop"></div> : null}
         <Footer
           {...otherProps}
           onToggle={this.handleToggleAside.bind(this)}
@@ -298,7 +302,6 @@ export default compose(
     state => {
       return {
         business: getBusiness(state),
-        //business: 'wenjingzhang',
         businessInfo: getBusinessInfo(state),
         isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
