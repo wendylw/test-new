@@ -39,10 +39,12 @@ export const getStoreInfo = () => {
     .then(response => response.json())
     .then(response => {
       console.log(response.data);
-
       if (response.data.business) {
+        const { qrOrderingSettings } = response.data.business;
         const { stores } = response.data.business;
-        return stores[0];
+        const ret = stores[0];
+        ret.qrOrderingSettings = qrOrderingSettings;
+        return ret;
       } else {
         return null;
       }
@@ -77,7 +79,7 @@ const getPlaceId = async address => {
   return placeId;
 };
 
-export const getPlaceDetails = async placeId => {
+export const getPlaceDetails = async (placeId, { targetCoords } = {}) => {
   const places = new window.google.maps.places.PlacesService(document.createElement('div'));
 
   const placeDetails = await new Promise(resolve => {
@@ -96,14 +98,48 @@ export const getPlaceDetails = async placeId => {
       }
     );
   });
-  console.log('placeDetails =', placeDetails);
+  const coords = {
+    lat: placeDetails.geometry.location.lat(),
+    lng: placeDetails.geometry.location.lng(),
+  };
+  const ret = {
+    address: placeDetails.formatted_address,
+    coords,
+    placeId,
+    addressComponents: standardizeGeoAddress(placeDetails.address_components),
+    distance: targetCoords ? computeDistance(targetCoords, coords) : undefined,
+  };
+  console.log('transformed placeDetails =', ret);
 
-  return placeDetails;
+  return ret;
 };
 
 window.getPlaceDetails = getPlaceDetails;
 
 export const getStorePosition = async store => {
+  const directStorePosition = getStorePositionFromStoreInfo(store);
+  if (directStorePosition) {
+    return directStorePosition;
+  }
+  return getStorePositionFromSearch(store);
+};
+
+export const getStorePositionFromStoreInfo = async store => {
+  if (store.location) {
+    const coords = {
+      lat: store.location.latitude,
+      lng: store.location.longitude,
+    };
+    const address = ['street2', 'city', 'country']
+      .map(field => store[field])
+      .filter(v => !!v)
+      .join(', ');
+    return { coords, address };
+  }
+  return null;
+};
+
+export const getStorePositionFromSearch = async store => {
   console.log('store', store);
 
   const address = ['street2', 'city', 'country']
@@ -113,6 +149,7 @@ export const getStorePosition = async store => {
 
   console.log('address =', address);
 
+  // What if store position is wrong and we cache it???
   let storePosition = JSON.parse(localStorage.getItem('store.position'));
 
   if (storePosition && storePosition.address === address) {
@@ -123,15 +160,10 @@ export const getStorePosition = async store => {
 
   console.warn('fetch store location from map');
   const placeId = await getPlaceId(address);
-  const placeDetails = await getPlaceDetails(placeId);
-  storePosition = {
-    address,
-    placeId,
-    coords: {
-      lat: placeDetails.geometry.location.lat(),
-      lng: placeDetails.geometry.location.lng(),
-    },
-  };
+  if (!placeId) {
+    throw new Error('Cannot find a place that matches the store address.');
+  }
+  storePosition = await getPlaceDetails(placeId);
 
   // cache result
   localStorage.setItem('store.position', JSON.stringify(storePosition));
@@ -163,8 +195,9 @@ const getSessionToken = () => {
   // ---End--- sessionToken to reduce request billing when user search addresses
 };
 
-export const getPlacesByText = async (input, position = null) => {
+export const getPlacesByText = async (input, { position = null, radius = 10000 }) => {
   let positionPair = position;
+  console.log('getPlacesByText params', input, position, radius);
 
   if (!positionPair) {
     positionPair = fetchDevicePosition();
@@ -184,7 +217,7 @@ export const getPlacesByText = async (input, position = null) => {
           ? {
               location: google_map_position,
               origin: google_map_position,
-              radius: 10000, // 10km around location
+              radius,
             }
           : null),
       },
@@ -283,7 +316,11 @@ export const getCurrentAddressInfo = () =>
               },
               address: results[0].formatted_address,
               addressInfo: standardizeGeoAddress(results[0].address_components),
+              placeId: results[0].place_id,
             });
+          } else {
+            // todo: get error from response
+            reject('Fail to get location info.');
           }
         });
       },
@@ -293,8 +330,15 @@ export const getCurrentAddressInfo = () =>
       },
       {
         enableHighAccuracy: true,
-        timeout: 5000,
+        timeout: 5000, // todo: test timeout
         maximumAge: 0,
       }
     );
   });
+
+// return value in meters
+export const computeDistance = (fromCoords, toCoords) => {
+  const from = new window.google.maps.LatLng(fromCoords.lat, fromCoords.lng);
+  const to = new window.google.maps.LatLng(toCoords.lat, toCoords.lng);
+  return window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+};
