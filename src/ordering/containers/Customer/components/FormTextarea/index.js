@@ -15,26 +15,28 @@ class FormTextarea extends Component {
   };
 
   componentDidMount = () => {
-    const textarea = document.getElementById('address-textarea');
-
     // const oldInnerHeight = addressAsideInner.style.top;
 
-    textarea.addEventListener(
+    this.textareaRef.current.addEventListener(
       'focus',
       () => {
-        this.addressAsideInnerRef.current.style.top = '20vh';
+        try {
+          this.addressAsideInnerRef.current.style.top = '20vh';
+        } catch (e) {
+          console.error(e);
+        }
       },
       false
     );
 
-    textarea.addEventListener(
+    this.textareaRef.current.addEventListener(
       'blur',
       () => {
         setTimeout(() => {
-          const { style } = this.addressAsideInnerRef.current || {};
-
-          if (style && style.top) {
-            style.top = '';
+          try {
+            this.addressAsideInnerRef.current.style.top = '';
+          } catch (e) {
+            console.error(e);
           }
         }, 100);
       },
@@ -85,14 +87,12 @@ class FormTextarea extends Component {
           <label className="gray-font-opacity">{title}</label>
           <div className="form__group">
             <textarea
-              id="address-textarea"
               ref={this.textareaRef}
               rows="4"
               maxLength="140"
               className="input input__textarea input__block gray-font-opacity"
               value={textValue || ''}
               onChange={this.handleUpdateText.bind(this)}
-              autoFocus
             ></textarea>
           </div>
           <button
