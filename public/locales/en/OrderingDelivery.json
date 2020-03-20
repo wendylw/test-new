@@ -8,5 +8,9 @@
   "Total": "Total",
   "Subtotal": "Subtotal",
   "Tax": "Tax",
-  "DeliveryCharge": "Delivery Charge"
+  "DeliveryCharge": "Delivery Charge",
+  "FailToLoadStoreInfo": "Failed to load store info. Please try again later.",
+  "FailToGetPlaceInfo": "Failed to get detailed place info. Please try again later.",
+  "OutOfDeliveryRange": "Sorry, the selected location is out of delivery range ({{distance}} KM).",
+  "SearchYourAddress": "Search your address"
 }
