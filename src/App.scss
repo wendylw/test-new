@@ -325,10 +325,10 @@
 
   .header__title {
     display: -webkit-box;
-    max-width: 55vw;
+    max-width: 53vw;
     max-height: 36px;
     text-transform: none;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 
     span {
@@ -1527,6 +1527,7 @@
 
   &__card-container {
     height: 3.8vw;
+    padding: 0 5vw;
   }
 
   &__card.variation:not(.active) {

@@ -57,12 +57,12 @@ class Header extends Component {
           >
             <h1 className="header__title">
               <span className="font-weight-bold text-middle">{title}</span>
-              {isValidTimeToOrder ? null : (
-                <div className="tag__card-container">
-                  <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
-                </div>
-              )}
             </h1>
+            {isValidTimeToOrder ? null : (
+              <div className="tag__card-container">
+                <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
+              </div>
+            )}
             <ul className="header__info-list">
               <li className="header__info-item">
                 <i className="header__motor-icon text-middle">

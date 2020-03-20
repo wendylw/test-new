@@ -17,7 +17,7 @@ export class NeedHelp extends Component {
         <Header
           className="has-right"
           isPage={false}
-          title={t('NeedHelp')}
+          title={t('ContactUs')}
           navFunc={() => {
             if (history.length) {
               history.goBack();

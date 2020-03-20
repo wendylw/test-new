@@ -31,7 +31,11 @@ class FormTextarea extends Component {
       'blur',
       () => {
         setTimeout(() => {
-          this.addressAsideInnerRef.current.style.top = '';
+          const { style } = this.addressAsideInnerRef.current || {};
+
+          if (style && style.top) {
+            style.top = '';
+          }
         }, 100);
       },
       false
