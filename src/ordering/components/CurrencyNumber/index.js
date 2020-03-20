@@ -11,39 +11,33 @@ class CurrencyNumber extends React.Component {
       return money;
     }
 
-    return Intl.NumberFormat(
-      locale,
-      { style: 'currency', currency }
-    ).format(parseFloat(money));
+    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
   }
 
   render() {
     const { className, addonBefore } = this.props;
 
-    return <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>;
+    return (
+      <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>
+    );
   }
 }
 
 CurrencyNumber.propTypes = {
   className: PropTypes.string,
   addonBefore: PropTypes.string,
-  money: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
+  money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 CurrencyNumber.defaultProps = {
   money: 0,
 };
 
-export default connect(
-  (state) => {
-    const { locale, currency } = getOnlineStoreInfo(state) || {};
+export default connect(state => {
+  const { locale, currency } = getOnlineStoreInfo(state) || {};
 
-    return {
-      locale,
-      currency,
-    };
-  }
-)(CurrencyNumber);
+  return {
+    locale,
+    currency,
+  };
+})(CurrencyNumber);

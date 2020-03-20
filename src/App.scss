@@ -619,6 +619,7 @@
 
   &__button {
     font-size: 1.15rem;
+    cursor: pointer;
   }
 }
 
@@ -1009,6 +1010,7 @@
 .modal {
   @extend .back-drop;
 
+  left: 0;
   z-index: 300;
 
   &.align-middle {

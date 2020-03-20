@@ -12,38 +12,43 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
+import {
+  actions as paymentActionCreators,
+  getCurrentPayment,
+  getCurrentOrderId,
+  getPaymentList,
+} from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-// import paymentBankingImage from '../../../images/payment-banking.png';
+import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
-// import paymentBoostImage from '../../../images/payment-boost.png';
+import paymentBoostImage from '../../../images/payment-boost.png';
 import paymenbGrabImage from '../../../images/payment-grab.png';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
-const dataSource = [
-  // {
-  //   name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-  //   logo: paymentBankingImage,
-  //   labelKey: 'OnlineBanking',
-  //   pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-  // },
-  {
+const dataSource = {
+  onlineBanking: {
+    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
+    logo: paymentBankingImage,
+    labelKey: 'OnlineBanking',
+    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
+  },
+  creditCard: {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: paymentCreditImage,
     labelKey: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
-  // {
-  //   name: PAYMENT_METHODS.BOOST_PAY,
-  //   logo: paymentBoostImage,
-  //   labelKey: 'Boost',
-  // },
-  {
+  boost: {
+    name: PAYMENT_METHODS.BOOST_PAY,
+    logo: paymentBoostImage,
+    labelKey: 'Boost',
+  },
+  grabPay: {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: paymenbGrabImage,
     labelKey: 'GrabPay',
   },
-];
+};
 const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
@@ -51,9 +56,10 @@ class Payment extends Component {
     payNowLoading: false,
   };
 
-  componentWillMount() {
-    const { homeActions } = this.props;
+  componentDidMount() {
+    const { homeActions, paymentActions } = this.props;
 
+    paymentActions.fetchPaymentList();
     homeActions.loadShoppingCart();
   }
 
@@ -107,7 +113,7 @@ class Payment extends Component {
     });
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-      const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
+      const { pathname } = Object.values(dataSource).find(payment => payment.name === currentPayment) || {};
 
       history.push({
         pathname,
@@ -133,7 +139,7 @@ class Payment extends Component {
   };
 
   render() {
-    const { t, currentPayment } = this.props;
+    const { t, currentPayment, paymentList } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -149,22 +155,30 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            {dataSource.map(payment => (
-              <li
-                key={payment.name}
-                className="payment__item border__bottom-divider flex flex-middle flex-space-between"
-                onClick={() => this.setCurrentPayment(payment.name)}
-              >
-                <figure className="payment__image-container">
-                  <img src={payment.logo} alt={t(payment.labelKey)}></img>
-                </figure>
-                <label className="payment__name font-weight-bold">{t(payment.labelKey)}</label>
-                <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
-                  <i className="radio__check-icon"></i>
-                  <input type="radio"></input>
-                </div>
-              </li>
-            ))}
+            {paymentList.map(paymentKey => {
+              const payment = dataSource[paymentKey];
+
+              if (!payment) {
+                return null;
+              }
+
+              return (
+                <li
+                  key={payment.name}
+                  className="payment__item border__bottom-divider flex flex-middle flex-space-between"
+                  onClick={() => this.setCurrentPayment(payment.name)}
+                >
+                  <figure className="payment__image-container">
+                    <img src={payment.logo} alt={payment.labelKey}></img>
+                  </figure>
+                  <label className="payment__name font-weight-bold">{t(payment.labelKey)}</label>
+                  <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
+                    <i className="radio__check-icon"></i>
+                    <input type="radio"></input>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -204,6 +218,7 @@ export default compose(
         currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        paymentList: getPaymentList(state),
       };
     },
     dispatch => ({

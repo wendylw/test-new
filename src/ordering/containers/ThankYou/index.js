@@ -42,9 +42,9 @@ export class ThankYou extends Component {
 
   getReceiptNumber = () => {
     const { history } = this.props;
-    const query = new URLSearchParams(history.location.search);
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    return query.get('receiptNumber');
+    return receiptNumber;
   };
 
   handleClickViewReceipt = () => {
