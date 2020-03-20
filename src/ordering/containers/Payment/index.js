@@ -14,7 +14,7 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import paymentBankingImage from '../../../images/payment-banking.png';
+// import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
 // import paymentBoostImage from '../../../images/payment-boost.png';
 import paymenbGrabImage from '../../../images/payment-grab.png';

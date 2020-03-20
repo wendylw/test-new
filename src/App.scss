@@ -15,7 +15,7 @@
     display: block;
     top: 64px;
     background-color: rgba($color: $white, $alpha: 0.5);
-    z-index: 300;
+    z-index: 290;
   }
 }
 
@@ -1456,6 +1456,10 @@
 
   &__aside.aside {
     top: 0;
+
+    &.active {
+      z-index: 300;
+    }
   }
 
   &__address,
