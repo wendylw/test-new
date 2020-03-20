@@ -711,6 +711,22 @@
     }
   }
 
+  &__one-line-title {
+    display: inline-block;
+    max-width: 64vw;
+    max-height: 19px;
+    text-transform: none;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.has-tag {
+      max-width: 44vw;
+    }
+  }
+
   &.has-right::after,
   &__title + span {
     content: "";
