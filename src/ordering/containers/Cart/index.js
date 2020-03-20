@@ -125,6 +125,7 @@ class Cart extends Component {
     this.props.cartActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
       });
     });
   };

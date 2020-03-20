@@ -311,6 +311,7 @@ export class ThankYou extends Component {
     const date = new Date();
     const { tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
+
     return (
       <section
         className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${
