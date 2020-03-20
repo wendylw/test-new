@@ -19,7 +19,7 @@ import {
   getPaymentList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import paymentBankingImage from '../../../images/payment-banking.png';
+// import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
 import paymentBoostImage from '../../../images/payment-boost.png';
 import paymenbGrabImage from '../../../images/payment-grab.png';
