@@ -3,6 +3,8 @@ import Constants from '../../Constants';
 import Message from './Message';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import beepLogo from '../../../images/beep-logo.png';
+import beepQrScanImage from '../../../images/beep-qrscan.png';
 
 class GetPermission extends Component {
   render() {
@@ -17,9 +19,9 @@ class GetPermission extends Component {
 
           <div className="content-body text-center">
             <div className="content-body__img-content">
-              <img className="content-body__logo-img" src="/img/beep-logo.png" alt="" />
+              <img className="content-body__logo-img" src={beepLogo} alt="" />
               <br />
-              <img className="content-body__qr-scanner-img" src="/img/beep-qrscan.png" alt="" />
+              <img className="content-body__qr-scanner-img" src={beepQrScanImage} alt="" />
             </div>
           </div>
 

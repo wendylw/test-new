@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import config from '../config';
+import productPlaceholderImage from '../images/product-placeholder.jpg';
 
 /* CONSTANTS variable */
 // --BEGIN-- different from marketplace
-const PLACEHOLDER = '/img/product-placeholder.jpg';
 const { imageS3Domain, imageCompressionDomain } = config;
 window.storehub = window.storehub || { imageS3Domain, imageCompressionDomain };
 // ---END--- different from marketplace
@@ -85,7 +85,7 @@ class Image extends React.Component {
 
     return (
       <figure className={className} style={style}>
-        <img src={this.getImageURL() || PLACEHOLDER} alt={alt} />;
+        <img src={this.getImageURL() || productPlaceholderImage} alt={alt} />;
       </figure>
     );
   }

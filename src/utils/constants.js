@@ -1,5 +1,4 @@
 const DOCUMENT_ROOT_ID = 'root';
-const DEFAULT_FAVICON = '/img/favicon.ico';
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
@@ -17,16 +16,20 @@ const ROUTER_PATHS = {
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOCATION: '/location',
+  ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
   ORDERING_PAYMENT: '/payment',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
   // Qrscan App basename
   QRSCAN: '/qrscan',
+  ORDER_DETAILS: '/orderdetails',
 };
 
 const CASHBACK_SOURCE = {
@@ -114,13 +117,15 @@ const ASIDE_NAMES = {
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
   CARTMODAL_HIDE: 'CARTMODAL_HIDE',
+  DELIVERY_DETAIL: 'DELIVERY_DETAIL',
+  ADD_ADDRESS_DETAIL: 'ADD_ADDRESS_DETAIL',
+  ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
 };
 
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
   DOCUMENT_ROOT_ID,
-  DEFAULT_FAVICON,
   MANIFEST,
   ROUTER_PATHS,
   CASHBACK_SOURCE,

@@ -63,7 +63,7 @@ class MiniCartListModal extends Component {
             </button>
           </div>
           <div className="cart-pane__list">
-            <CartList viewAside={viewAside} />
+            <CartList isList={false} viewAside={viewAside} />
           </div>
         </div>
       </aside>

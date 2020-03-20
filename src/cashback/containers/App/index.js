@@ -13,9 +13,9 @@ import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
+import DocumentFavicon from '../../../components/DocumentFavicon';
 
 class App extends Component {
-
   async componentDidMount() {
     const { appActions } = this.props;
 
@@ -36,11 +36,7 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     const { appActions, user } = this.props;
-    const {
-      isExpired,
-      isWebview,
-      isLogin,
-    } = user || {};
+    const { isExpired, isWebview, isLogin } = user || {};
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       this.postAppMessage(user);
@@ -54,27 +50,28 @@ class App extends Component {
   getTokens(isLogin) {
     const { appActions } = this.props;
 
-    document.addEventListener('acceptTokens', (response) => {
-      const { data } = response || {};
+    document.addEventListener(
+      'acceptTokens',
+      response => {
+        const { data } = response || {};
 
-      if (data) {
-        const tokenList = data.split(',');
+        if (data) {
+          const tokenList = data.split(',');
 
-        if (!isLogin) {
-          appActions.loginApp({
-            accessToken: tokenList[0],
-            refreshToken: tokenList[1],
-          });
+          if (!isLogin) {
+            appActions.loginApp({
+              accessToken: tokenList[0],
+              refreshToken: tokenList[1],
+            });
+          }
         }
-      }
-    }, false);
+      },
+      false
+    );
   }
 
   postAppMessage(user) {
-    const {
-      isWebview,
-      isExpired
-    } = user || {};
+    const { isWebview, isExpired } = user || {};
 
     if (isWebview && isExpired) {
       window.ReactNativeWebView.postMessage('tokenExpired');
@@ -85,38 +82,25 @@ class App extends Component {
 
   handleClearError = () => {
     this.props.appActions.clearError();
-  }
+  };
 
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
-  }
+  };
 
   render() {
-    const {
-      user,
-      error,
-    } = this.props;
-    const {
-      isFetching,
-      prompt,
-      isLogin,
-    } = user || {};
+    const { user, error, onlineStoreInfo } = this.props;
+    const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
+    const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="loyalty">
-        {
-          message
-            ? <ErrorToast message={message} clearError={this.handleClearError} />
-            : null
-        }
+        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         <Message />
-        {
-          !isFetching || !isLogin
-            ? <Login className="aside" title={prompt} />
-            : null
-        }
+        {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
         <Routes />
+        <DocumentFavicon icon={favicon || `${process.env.PUBLIC_URL}/favicon.ico`} />
       </main>
     );
   }
@@ -131,5 +115,5 @@ export default connect(
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
-  }),
+  })
 )(App);

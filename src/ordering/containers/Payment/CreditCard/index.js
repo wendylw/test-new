@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
@@ -17,6 +18,9 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
+
+import paymentVisaImage from '../../../../images/payment-visa.svg';
+import paymentMasterImage from '../../../../images/payment-mastercard.svg';
 
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -59,10 +63,11 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
@@ -71,7 +76,9 @@ class CreditCard extends Component {
 
     const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
+      type ? '&type=' + type : ''
+    }`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -296,16 +303,18 @@ class CreditCard extends Component {
       return;
     }
 
-    const { paymentActions, cartSummary } = this.props;
+    const { history, paymentActions, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await paymentActions.createOrder({ cashback: totalCashback });
+    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
+      Utils.removeSessionVariable('deliveryComments');
     }
 
     this.setState({
@@ -385,14 +394,14 @@ class CreditCard extends Component {
               />
               <div className="payment-bank__card-type-container flex flex-middle">
                 <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-                  <img src="/img/payment-visa.svg" />
+                  <img src={paymentVisaImage} />
                 </i>
                 <i
                   className={`payment-bank__card-type-icon mastercard text-middle ${
                     card.type === 'mastercard' ? 'active' : ''
                   }`}
                 >
-                  <img src="/img/payment-mastercard.svg" />
+                  <img src={paymentMasterImage} />
                 </i>
               </div>
             </div>
@@ -475,7 +484,10 @@ class CreditCard extends Component {
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
-            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
+              search: window.location.search,
+            });
           }}
         />
         <div className="payment-bank">

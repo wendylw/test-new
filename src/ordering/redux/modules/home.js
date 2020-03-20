@@ -15,6 +15,8 @@ import { getBusiness } from './app';
 const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
+    // 33.8% equal (item padding + item image + item cart controller button height) / window width
+    productItemMinHeight: (document.body.clientWidth || window.innerWidth) * 0.338,
   },
   currentProduct: {
     id: '',
@@ -41,14 +43,13 @@ export const actions = {
     if (getState().home.onlineCategory.categoryIds.length) {
       return;
     }
-
     dispatch(fetchOnlineCategory());
-    dispatch(fetchShoppingCart());
+    dispatch(fetchShoppingCart(Utils.isDeliveryType()));
   },
 
   // load shopping cart
   loadShoppingCart: () => dispatch => {
-    dispatch(fetchShoppingCart());
+    dispatch(fetchShoppingCart(Utils.isDeliveryType()));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -114,11 +115,12 @@ export const actions = {
   },
 };
 
-const fetchShoppingCart = () => {
+const fetchShoppingCart = isDeliveryType => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART,
+      //...Url.API_URLS.GET_CART,
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType),
     },
   };
 };
@@ -376,6 +378,8 @@ export const getCategoryProductList = createSelector(
     return mergeWithShoppingCart(newCategories, carts);
   }
 );
+
+export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
 
 export const isVerticalMenuBusiness = state => {
   const { verticalMenuBusinesses } = state.home.domProperties;
