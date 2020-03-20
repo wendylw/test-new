@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import Constants from '../../../utils/constants';
@@ -20,12 +21,12 @@ import paymenbGrabImage from '../../../images/payment-grab.png';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const dataSource = [
-  {
-    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-    logo: paymentBankingImage,
-    labelKey: 'OnlineBanking',
-    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-  },
+  // {
+  //   name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  //   logo: paymentBankingImage,
+  //   labelKey: 'OnlineBanking',
+  //   pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
+  // },
   {
     name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: paymentCreditImage,
@@ -57,15 +58,18 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const h = config.h();
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
+      type ? '&type=' + type : ''
+    }`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -80,7 +84,13 @@ class Payment extends Component {
   };
 
   handleClickBack = () => {
-    this.props.history.replace('/cart');
+    const { history } = this.props;
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    history.push({
+      pathname: type ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : ROUTER_PATHS.ORDERING_CART,
+      search: window.location.search,
+    });
   };
 
   setCurrentPayment = paymentName => {
@@ -90,6 +100,7 @@ class Payment extends Component {
   handleClickPayNow = async () => {
     const { history, currentPayment, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     this.setState({
       payNowLoading: true,
@@ -98,18 +109,22 @@ class Payment extends Component {
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
       const { pathname } = dataSource.find(payment => payment.name === currentPayment) || {};
 
-      history.push({ pathname });
+      history.push({
+        pathname,
+        search: window.location.search,
+      });
 
       return;
     }
 
-    await this.props.paymentActions.createOrder({ cashback: totalCashback });
+    await this.props.paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
+      Utils.removeSessionVariable('deliveryComments');
     }
 
     this.setState({

@@ -2232,9 +2232,9 @@ autoprefixer@^9.4.2:
     postcss-value-parser "^4.0.2"
 
 aws-sdk@2:
-  version "2.625.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.625.0.tgz#d6783f591c231f0100d60a6d79e54b23b1046662"
-  integrity sha512-8OoXw5SE/IliSo8q204amuLN46E2g1pGJQjVFTstoiETfaZvRxabL+DzIigJSV8QdybzzETGV3w50jvMfbsJ8A==
+  version "2.633.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.633.0.tgz#3bdb8ec2671884025e9f64fdfa2c0af3cc663118"
+  integrity sha512-C28/GefIQ+Dk1hjPQrpG1Yt9RdvqeFMP4nb6iActanoGq5JTSJU9103ukpBzrHz96fvjhIRogrvfOhDKubbcjw==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -4008,16 +4008,16 @@ depd@~1.1.2:
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
 
-deploy-aws-s3-cloudfront@^2.3.1:
+"deploy-aws-s3-cloudfront@https://github.com/storehubnet/deploy-aws-s3-cloudfront.git":
   version "2.3.1"
-  resolved "https://registry.yarnpkg.com/deploy-aws-s3-cloudfront/-/deploy-aws-s3-cloudfront-2.3.1.tgz#008f281f53d3ca6a42fb29db556dbfb6a2f6c012"
-  integrity sha512-8735gKWF5w0O8P2xkaHvD2nE++leQEiMYvvHTHn4m4hGySVLBJESs3crd4jElbYBSk/PEC/Uiz2n0ASHNMnH2Q==
+  resolved "https://github.com/storehubnet/deploy-aws-s3-cloudfront.git#c0125f4d69008dd6d42db0c1f0cbcc2aa741f493"
   dependencies:
     aws-sdk "2"
     colors "1"
     fast-glob "3"
     md5-file "4"
     mime-types "2"
+    minimatch "^3.0.4"
     pretty-bytes "5"
     prompt-confirm "2"
     yargs "14"
@@ -10169,6 +10169,11 @@ react-is@^16.12.0, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1, react-i
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
+
+react-lazyload@^2.6.5:
+  version "2.6.5"
+  resolved "https://registry.yarnpkg.com/react-lazyload/-/react-lazyload-2.6.5.tgz#7a5ac001f0f8aeddc10c30e4ce318c10f13aa723"
+  integrity sha512-C/juO9l7dGS7jEARBLjM3oG7F1lL5bqajz/55sk3GFc0Ippd9vnSkdRxdiaE6gf5si3YxIow8dSJ+YuB2D/3vg==
 
 react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"

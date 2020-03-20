@@ -5,12 +5,14 @@ import home from './home';
 import cart from './cart';
 import payment from './payment';
 import thankYou from './thankYou';
+import customer from './customer';
 
 const rootReducer = combineReducers({
   entities,
   app,
   home,
   cart,
+  customer,
   payment,
   thankYou,
 });
