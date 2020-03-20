@@ -217,7 +217,7 @@ export class ThankYou extends Component {
           }
         >
           <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
+            <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
           </button>
         </Header>
         <div className="thanks text-center">
