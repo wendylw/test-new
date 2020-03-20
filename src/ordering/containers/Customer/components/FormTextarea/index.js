@@ -22,7 +22,11 @@ class FormTextarea extends Component {
     textarea.addEventListener(
       'focus',
       () => {
-        this.addressAsideInnerRef.current.style.top = '20vh';
+        try {
+          this.addressAsideInnerRef.current.style.top = '20vh';
+        } catch (e) {
+          console.error(e);
+        }
       },
       false
     );
@@ -31,7 +35,11 @@ class FormTextarea extends Component {
       'blur',
       () => {
         setTimeout(() => {
-          this.addressAsideInnerRef.current.style.top = '';
+          try {
+            this.addressAsideInnerRef.current.style.top = '';
+          } catch (e) {
+            console.error(e);
+          }
         }, 100);
       },
       false
