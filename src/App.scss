@@ -10,6 +10,13 @@
   bottom: 0;
   z-index: -100;
   background-color: rgba($color: $black, $alpha: 0.5);
+
+  &.cover {
+    display: block;
+    top: 64px;
+    background-color: rgba($color: $white, $alpha: 0.5);
+    z-index: 290;
+  }
 }
 
 .top-message {
@@ -1449,6 +1456,10 @@
 
   &__aside.aside {
     top: 0;
+
+    &.active {
+      z-index: 300;
+    }
   }
 
   &__address,
