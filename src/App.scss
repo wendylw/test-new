@@ -693,7 +693,7 @@
     max-width: none;
   }
 
-  &__title {
+  &__title:not(.header__one-line-title) {
     @extend .text-uppercase;
 
     display: inline-block;
@@ -724,6 +724,11 @@
 
     &.has-tag {
       max-width: 44vw;
+    }
+
+    & + .tag__card-container {
+      padding: 0;
+      max-width: 54px;
     }
   }
 
