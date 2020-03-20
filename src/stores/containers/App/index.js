@@ -1,4 +1,4 @@
-import React, { Component, lazy } from 'react';
+import React, { Component } from 'react';
 import ErrorToast from '../../../components/ErrorToast';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
@@ -7,9 +7,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
+import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/modules/home';
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
-const Home = lazy(() => import('../Home'));
+import Home from '../Home';
+import DeliveryMethods from '../DeliveryMethods';
 
 class App extends Component {
   componentDidMount() {
@@ -46,12 +48,17 @@ class App extends Component {
   }
 
   render() {
-    const { error, pageError, onlineStoreInfo } = this.props;
+    const { error, pageError, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="store-list">
-        <Home />
+        {currentStoreId && enableDelivery ? (
+          <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} />
+        ) : (
+          <Home />
+        )}
+
         {error && !pageError.code ? <ErrorToast message={error} clearError={this.handleClearError} /> : null}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
@@ -62,6 +69,9 @@ class App extends Component {
 export default connect(
   state => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
+    enableDelivery: getDeliveryStatus(state),
+    currentStoreId: getCurrentStoreId(state),
+    stores: getAllStores(state),
     error: getError(state),
     pageError: getPageError(state),
   }),

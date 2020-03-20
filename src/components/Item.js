@@ -19,7 +19,7 @@ export class Item extends Component {
       productDetailImageRef,
       hasTag,
     } = this.props;
-    const classList = ['item border__bottom-divider flex flex-space-between'];
+    const classList = ['item border__bottom-divider'];
     const contentClassList = ['item__content flex'];
 
     if (className) {
@@ -34,15 +34,17 @@ export class Item extends Component {
       <li className={classList.join(' ')}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
           <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
-          <div className="item__detail">
-            {hasTag ? (
-              <div className="tag__card-container">
-                <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
-              </div>
-            ) : null}
-            <summary className="item__title font-weight-bold">{title}</summary>
-            {variation ? <p className="item__description">{variation}</p> : null}
-            <span className="gray-font-opacity">{detail}</span>
+          <div className="item__detail flex flex-column flex-space-between">
+            <div className="item__detail-content">
+              {hasTag ? (
+                <div className="tag__card-container">
+                  <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
+                </div>
+              ) : null}
+              <summary className="item__title font-weight-bold">{title}</summary>
+              {variation ? <p className="item__description">{variation}</p> : null}
+            </div>
+            {detail}
           </div>
         </div>
 

@@ -3,8 +3,12 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 import Home from './Home';
 import Cart from './Cart';
 import Payment from './Payment';
+import Customer from './Customer';
 import Constants from '../../utils/constants';
+import NeedHelp from './NeedHelp';
+import OrderDetails from './OrderDetails';
 
+const Location = lazy(() => import('./Location'));
 const Receipt = lazy(() => import('./Receipt'));
 const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
@@ -23,12 +27,16 @@ class Routes extends Component {
           <Switch>
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={Customer} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
             <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />
+            <Route exact path={ROUTER_PATHS.NEED_HELP} component={NeedHelp} />
+            <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
           </Switch>
         </Suspense>
