@@ -25,6 +25,7 @@ class Customer extends Component {
     formTextareaTitle: null,
     asideName: null,
     sentOtp: false,
+    isLoading: false,
   };
 
   componentDidUpdate(prevProps) {
@@ -55,13 +56,21 @@ class Customer extends Component {
       return;
     }
 
-    await Utils.setLocalStorageVariable('user.p', phone);
+    try {
+      this.setState({ isLoading: true });
 
-    if (!isLogin) {
-      await appActions.getOtp({ phone });
-      this.setState({ sentOtp: true });
-    } else {
-      this.visitPaymentPage();
+      await Utils.setLocalStorageVariable('user.p', phone);
+
+      if (!isLogin) {
+        await appActions.getOtp({ phone });
+        this.setState({ sentOtp: true });
+      } else {
+        this.visitPaymentPage();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.setState({ isLoading: false });
     }
   }
 
@@ -267,7 +276,8 @@ class Customer extends Component {
                 (type === 'delivery' &&
                   (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryDetails.deliverToAddress))) ||
                 !Boolean(deliveryDetails.username) ||
-                !isValidPhoneNumber(deliveryDetails.phone)
+                !isValidPhoneNumber(deliveryDetails.phone) ||
+                this.state.isLoading
               }
             >
               {t('Continue')}
