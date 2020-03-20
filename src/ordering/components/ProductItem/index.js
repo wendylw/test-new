@@ -52,7 +52,7 @@ export class ProductItem extends Component {
             decreaseDisabled={decreaseDisabled}
             onDecrease={onDecrease}
             onIncrease={onIncrease}
-            increaseDisabled={isValidTimeToOrder ? !isValidTimeToOrder : isValidTimeToOrder}
+            increaseDisabled={!isValidTimeToOrder}
           />
         )}
       </Item>
