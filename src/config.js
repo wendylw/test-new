@@ -2,11 +2,11 @@ let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname
 
 // To mock data
 if (process.env.NODE_ENV === 'development') {
-  business = 'nike';
-  document.cookie = 'business=nike; path=/';
-  document.cookie = '__h=U2FsdGVkX19EBhV2Qu2EKqNLYfpH%252BnkF%252F7OKbNg19ytv5o0JGVywrz13xoTpM0ZM; path=/';
-  document.cookie = '__s=5b432464eccd4c7eb52018c6; path=/';
-  document.cookie = '__t=10; path=/';
+  business = 'wenjingzhang';
+  document.cookie = 'business=wenjingzhang; path=/';
+  document.cookie = '__h=U2FsdGVkX1%2BwX4mZt2NI1dAENRgViAnD1%2FaxZghR0ocKuuSMy%2BpGgU4LQXAa9FZ1; path=/';
+  document.cookie = '__s=5e5dd6c7407cf700063ba869; path=/';
+  document.cookie = '__t=; path=/';
 }
 
 /* eslint-disable */
