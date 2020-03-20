@@ -66,7 +66,7 @@ class OtpModal extends React.Component {
           <figure className="full-aside__image-container">
             <img src={beepOtpImage} alt="otp" />
           </figure>
-          <h2 className="full-aside__title">{t('OTPSentTitle')}</h2>
+          <h2 className="full-aside__title">{t('OTPSentTitle', { phone })}</h2>
           <div className="otp-input">
             <OtpInput
               key="otp-input"
