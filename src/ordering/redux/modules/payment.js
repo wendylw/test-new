@@ -65,12 +65,10 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-      // const { address: addressString, addressInfo } = currentAddress || {};
+      const addressComponents = JSON.parse(Utils.getSessionVariable('addressComponents'));
       const addressDetails = deliveryDetails.addressDetails;
-      // const { street1, street2 } = addressInfo || {};
-      // const address = addressString + street1 || '' + street2 || '';
-      const address = deliveryDetails.deliverToAddress;
+      const { street1, street2 } = addressComponents || {};
+      const address = street1 || '' + street2 || '';
       const deliveryComments = deliveryDetails.deliveryComments;
 
       variables = {
@@ -78,9 +76,7 @@ export const actions = {
         shippingType,
         deliveryAddressInfo: {
           ...pickupAddressInfo,
-          // ...addressInfo,
-          country: 'MY',
-          state: '',
+          ...addressComponents,
           addressDetails,
           address,
         },

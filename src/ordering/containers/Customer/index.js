@@ -19,7 +19,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../red
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
+const { ROUTER_PATHS, ASIDE_NAMES, ADDRESS_RANGE } = Constants;
 class Customer extends Component {
   state = {
     formTextareaTitle: null,
@@ -69,10 +69,6 @@ class Customer extends Component {
     this.props.customerActions.putDeliveryDetails({ username: e.target.value });
   }
 
-  handleDeliverToAddress(deliverToAddress) {
-    this.props.customerActions.putDeliveryDetails({ deliverToAddress });
-  }
-
   handleAddressDetails(addressDetails) {
     this.props.customerActions.putDeliveryDetails({ addressDetails });
   }
@@ -83,7 +79,7 @@ class Customer extends Component {
 
   handleToggleFormTextarea(asideName) {
     const { t } = this.props;
-    let formTextareaTitle = 'Add in your address*';
+    let formTextareaTitle = '';
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
       formTextareaTitle = t('AddNoteToDriverPlaceholder');
@@ -105,20 +101,19 @@ class Customer extends Component {
       return null;
     }
 
-    const { deliverToAddress, addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
-    // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-    // const { address } = currentAddress || {};
+    const { addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
+    const addressComponents = JSON.parse(Utils.getSessionVariable('addressComponents'));
+    const deliverToAddress = Utils.getValidAddress(addressComponents, ADDRESS_RANGE.COUNTRY);
 
     return (
       <React.Fragment>
         <div
           className="form__group"
           onClick={() => {
-            // history.push({
-            //   pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-            //   search: window.location.search,
-            // });
-            this.handleToggleFormTextarea('DELIVER_TO_ADDRESS');
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              search: window.location.search,
+            });
           }}
         >
           <div className="flex flex-middle flex-space-between">
@@ -127,9 +122,7 @@ class Customer extends Component {
               <IconEdit />
             </i>
           </div>
-          <p className="form__textarea gray-font-opacity">
-            {/*address ||*/ deliverToAddress || t('AddAddressPlaceholder')}
-          </p>
+          <p className="form__textarea gray-font-opacity">{deliverToAddress || t('AddAddressPlaceholder')}</p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
@@ -158,8 +151,8 @@ class Customer extends Component {
     const { asideName, formTextareaTitle } = this.state;
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let textareaValue = deliveryDetails.deliverToAddress;
-    let updateTextFunc = this.handleDeliverToAddress.bind(this);
+    let textareaValue = '';
+    let updateTextFunc = () => {};
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
       textareaValue = deliveryDetails.deliveryComments;
