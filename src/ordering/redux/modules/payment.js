@@ -8,6 +8,7 @@ import { getBusiness, getRequestInfo } from './app';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { getDeliveryDetails } from './customer';
 
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
@@ -52,18 +53,54 @@ export const types = {
 
 // action creators
 export const actions = {
-  createOrder: ({ cashback }) => (dispatch, getState) => {
+  createOrder: ({ cashback, shippingType }) => (dispatch, getState) => {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
-    const variables = {
+    const deliveryDetails = getDeliveryDetails(getState());
+    const pickupAddressInfo = {
+      phone: deliveryDetails.phone,
+      name: deliveryDetails.username,
+    };
+    let variables = {
       business,
       storeId,
       shoppingCartIds,
       tableId,
       cashback,
     };
+
+    if (shippingType === 'delivery') {
+      // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
+      // const { address: addressString, addressInfo } = currentAddress || {};
+      const addressDetails = deliveryDetails.addressDetails;
+      // const { street1, street2 } = addressInfo || {};
+      // const address = addressString + street1 || '' + street2 || '';
+      const address = deliveryDetails.deliverToAddress;
+      const deliveryComments = deliveryDetails.deliveryComments;
+
+      variables = {
+        ...variables,
+        shippingType,
+        deliveryAddressInfo: {
+          ...pickupAddressInfo,
+          // ...addressInfo,
+          country: 'MY',
+          state: '',
+          addressDetails,
+          address,
+        },
+        deliveryComments,
+      };
+    }
+
+    // else if (shippingType === 'pickup') {
+    //   variables = {
+    //     ...variables,
+    //     pickupAddressInfo,
+    //   };
+    // }
 
     return dispatch(
       createOrder(

@@ -12,7 +12,7 @@ import { compose } from 'redux';
 import { getProductItemMinHeight } from '../../redux/modules/home';
 
 export class ProductItem extends Component {
-  render() {
+  renderItem() {
     const {
       t,
       className,
@@ -28,36 +28,41 @@ export class ProductItem extends Component {
       isFeaturedProduct,
       showProductDetail,
       productDetailImageRef,
-      productItemMinHeight,
+      isValidTimeToOrder,
     } = this.props;
 
     return (
-      <LazyLoad height={productItemMinHeight}>
-        <Item
-          className={className}
-          contentClassName="flex-top"
-          productDetailImageRef={productDetailImageRef}
-          image={image}
-          title={title}
-          variation={variation}
-          detail={<CurrencyNumber className="price item__text font-weight-bold gray-font-opacity" money={price || 0} />}
-          operateItemDetail={showProductDetail}
-          hasTag={isFeaturedProduct}
-        >
-          {soldOut ? (
-            <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
-          ) : (
-            <ItemOperator
-              className="flex-middle"
-              quantity={cartQuantity}
-              decreaseDisabled={decreaseDisabled}
-              onDecrease={onDecrease}
-              onIncrease={onIncrease}
-            />
-          )}
-        </Item>
-      </LazyLoad>
+      <Item
+        className={className}
+        contentClassName="flex-top"
+        productDetailImageRef={productDetailImageRef}
+        image={image}
+        title={title}
+        variation={variation}
+        detail={<CurrencyNumber className="price item__text font-weight-bold gray-font-opacity" money={price || 0} />}
+        operateItemDetail={showProductDetail}
+        hasTag={isFeaturedProduct}
+      >
+        {soldOut ? (
+          <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
+        ) : (
+          <ItemOperator
+            className="flex-middle"
+            quantity={cartQuantity}
+            decreaseDisabled={decreaseDisabled}
+            onDecrease={onDecrease}
+            onIncrease={onIncrease}
+            increaseDisabled={isValidTimeToOrder ? !isValidTimeToOrder : isValidTimeToOrder}
+          />
+        )}
+      </Item>
     );
+  }
+
+  render() {
+    const { isList, productItemMinHeight } = this.props;
+
+    return isList ? <LazyLoad height={productItemMinHeight}>{this.renderItem()}</LazyLoad> : this.renderItem();
   }
 }
 
@@ -74,6 +79,8 @@ ProductItem.propTypes = {
   onIncrease: PropTypes.func,
   showProductDetail: PropTypes.func,
   productDetailImageRef: PropTypes.any,
+  isValidTimeToOrder: PropTypes.bool,
+  isList: PropTypes.bool,
 };
 
 ProductItem.defaultProps = {
@@ -85,6 +92,8 @@ ProductItem.defaultProps = {
   price: 0,
   cartQuantity: 0,
   decreaseDisabled: false,
+  isValidTimeToOrder: true,
+  isList: true,
   productItemMinHeight: 100,
   onDecrease: () => {},
   onIncrease: () => {},
