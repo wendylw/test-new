@@ -65,12 +65,12 @@ class DeliveryDetailModal extends Component {
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
                 </span>
-                {isValidTimeToOrder ? null : (
-                  <div className="tag__card-container">
-                    <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
-                  </div>
-                )}
               </h2>
+              {isValidTimeToOrder ? null : (
+                <div className="tag__card-container">
+                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                </div>
+              )}
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
