@@ -102,8 +102,7 @@ class Customer extends Component {
     }
 
     const { addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
-    const addressComponents = JSON.parse(Utils.getSessionVariable('addressComponents'));
-    const deliverToAddress = Utils.getValidAddress(addressComponents, ADDRESS_RANGE.COUNTRY);
+    const deliveryToAddress = Utils.getSessionVariable('deliveryAddress');
 
     return (
       <React.Fragment>
@@ -122,7 +121,7 @@ class Customer extends Component {
               <IconEdit />
             </i>
           </div>
-          <p className="form__textarea gray-font-opacity">{deliverToAddress || t('AddAddressPlaceholder')}</p>
+          <p className="form__textarea gray-font-opacity">{deliveryToAddress || t('AddAddressPlaceholder')}</p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>

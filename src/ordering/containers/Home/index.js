@@ -158,8 +158,7 @@ export class Home extends Component {
 
     const { phone } = (stores && stores[0]) || {};
     const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const addressComponents = JSON.parse(Utils.getSessionVariable('addressComponents'));
-    const deliveryToAddress = Utils.getValidAddress(addressComponents, Constants.ADDRESS_RANGE.COUNTRY);
+    const deliveryToAddress = Utils.getSessionVariable('deliveryAddress');
 
     return {
       deliveryFee,
