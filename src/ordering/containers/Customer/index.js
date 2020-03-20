@@ -19,7 +19,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../red
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ASIDE_NAMES, ADDRESS_RANGE } = Constants;
+const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
 class Customer extends Component {
   state = {
     formTextareaTitle: null,
@@ -108,7 +108,9 @@ class Customer extends Component {
       <React.Fragment>
         <div
           className="form__group"
-          onClick={() => {
+          onClick={async () => {
+            await Utils.setSessionVariable('deliveryCallbackUrl', window.location.href);
+
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
               search: window.location.search,

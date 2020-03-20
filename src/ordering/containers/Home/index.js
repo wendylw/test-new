@@ -100,13 +100,17 @@ export class Home extends Component {
   renderDeliverToBar() {
     const { t } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
-    const fillInDelivertAddress = () => {
+    const fillInDeliverToAddress = () => {
       const search = window.location.search;
+
+      Utils.setSessionVariable('deliveryCallbackUrl', window.location.href);
       window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
     };
 
+    console.log(Utils.isDeliveryType());
+
     return (
-      <div className="location-page__entry item" onClick={fillInDelivertAddress}>
+      <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
         <div className="item__detail-content flex flex-middle flex-space-between">
           <div className="location-page__base-info">
             <summary className="item__title">{t('DeliverTo')}</summary>
@@ -243,8 +247,7 @@ export class Home extends Component {
 
     return (
       <section className="table-ordering__home">
-        {Utils.isDeliveryType() && false ? this.renderDeliverToBar() : null}
-        <div className="location-page__entry"></div>
+        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
