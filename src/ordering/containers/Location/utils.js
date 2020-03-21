@@ -276,65 +276,88 @@ export const standardizeGeoAddress = addressComponents => {
   return address;
 };
 
-export const getCurrentAddressInfo = () =>
-  new Promise((resolve, reject) => {
-    /* Chrome need SSL! */
-    const is_chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
-    const is_ssl = 'https:' === document.location.protocol;
-    if (is_chrome && !is_ssl) {
-      return false;
+const getDevicePosition = option => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject('Your browser does not support location detection.');
+      return;
     }
-
-    /* get geolocation position and transfer to address info */
     navigator.geolocation.getCurrentPosition(
-      function getCurrentPosition__successCallback(position) {
-        const crd = position.coords;
-
-        console.log('Your current position is:');
-        console.log(`Latitude : ${crd.latitude}`);
-        console.log(`Longitude: ${crd.longitude}`);
-        console.log(`More or less ${crd.accuracy} meters.`);
-
-        saveDevicePosition(`${crd.latitude},${crd.longitude}`);
-
-        // geolocation transforms to google position
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const google_map_position = new window.google.maps.LatLng(lat, lng);
-
-        // get google address info of google position
-        const google_maps_geocoder = new window.google.maps.Geocoder();
-        google_maps_geocoder.geocode({ latLng: google_map_position }, function geocode(results, status) {
-          console.log('final location', results);
-
-          if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
-            resolve({
-              coords: {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-              },
-              address: results[0].formatted_address,
-              addressInfo: standardizeGeoAddress(results[0].address_components),
-              placeId: results[0].place_id,
-            });
-          } else {
-            // todo: get error from response
-            reject('Fail to get location info.');
-          }
-        });
+      position => {
+        resolve(position);
       },
-      function getCurrentPosition__errorCallback(err) {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-        reject(err);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000, // todo: test timeout
-        maximumAge: 0,
+      error => {
+        reject(error);
       }
     );
   });
+};
+
+const tryGetDevicePosition = async () => {
+  try {
+    return await getDevicePosition({
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 300000,
+    });
+  } catch (e) {
+    console.log('failed to use high accuracy gps, try low accuracy...');
+    console.error(e);
+    return await getDevicePosition({
+      enableHighAccuracy: false,
+      timeout: 5000,
+      maximumAge: 30000,
+    });
+  }
+};
+
+export const getCurrentAddressInfo = async () => {
+  /* Chrome need SSL! */
+  const is_chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+  const is_ssl = 'https:' === document.location.protocol;
+  if (is_chrome && !is_ssl) {
+    throw new Error('You must use https.');
+  }
+  const position = await tryGetDevicePosition();
+  const crd = position.coords;
+
+  console.log('Your current position is:');
+  console.log(`Latitude : ${crd.latitude}`);
+  console.log(`Longitude: ${crd.longitude}`);
+  console.log(`More or less ${crd.accuracy} meters.`);
+
+  saveDevicePosition(`${crd.latitude},${crd.longitude}`);
+
+  // geolocation transforms to google position
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+  const google_map_position = new window.google.maps.LatLng(lat, lng);
+
+  // get google address info of google position
+  const result = await new Promise((resolve, reject) => {
+    const google_maps_geocoder = new window.google.maps.Geocoder();
+    google_maps_geocoder.geocode({ latLng: google_map_position }, function geocode(results, status) {
+      console.log('final location', results);
+
+      if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
+        resolve({
+          coords: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+          },
+          address: results[0].formatted_address,
+          addressInfo: standardizeGeoAddress(results[0].address_components),
+          placeId: results[0].place_id,
+        });
+      } else {
+        // todo: get error from response
+        reject('Fail to get location info.');
+      }
+    });
+  });
+  return result;
+};
 
 // return value in meters
 export const computeDistance = (fromCoords, toCoords) => {
