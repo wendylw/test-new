@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import { variationOnProductType } from '../../../../../utils/propTypes';
 
 export class VariationSelector extends Component {
@@ -79,6 +80,8 @@ export class VariationSelector extends Component {
     const { id } = option;
     const { variation } = this.props;
 
+    console.log(this.state.selected);
+
     this.setState({
       selected: {
         ...(this.isSingleChoice() ? null : this.state.selected),
@@ -145,4 +148,4 @@ VariationSelector.defaultProps = {
   onChange: () => {},
 };
 
-export default VariationSelector;
+export default withTranslation()(VariationSelector);
