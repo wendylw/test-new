@@ -103,11 +103,10 @@ export class Home extends Component {
     const fillInDeliverToAddress = () => {
       const search = window.location.search;
 
-      Utils.setSessionVariable('deliveryCallbackUrl', window.location.href);
+      Utils.setSessionVariable('deliveryCallbackUrl', search);
+
       window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
     };
-
-    console.log(Utils.isDeliveryType());
 
     return (
       <div className="location-page__entry item" onClick={fillInDeliverToAddress}>

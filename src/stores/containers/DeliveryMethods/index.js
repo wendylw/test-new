@@ -45,7 +45,7 @@ class DeliveryMethods extends Component {
     if (hashCode) {
       const currentMethod = METHODS_LIST.find(method => method.name === methodName);
 
-      await Utils.setSessionVariable('deliveryCallbackUrl', window.location.href);
+      await Utils.setSessionVariable('deliveryCallbackUrl', `/?h=${hashCode || ''}&type=${methodName}`);
 
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
         ''}&type=${methodName}`;
