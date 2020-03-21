@@ -108,6 +108,10 @@ const LOGIN_PROMPT = {
   400: 'Your One Time Passcode is invalid.',
 };
 
+const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
+const LANGUAGES = ['en', 'th'];
+const POLYFILL_FEATURES = ['Object.values', 'Intl'];
+
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
   PRODUCT_DESCRIPTION: 'PRODUCT_DESCRIPTION',
@@ -138,5 +142,8 @@ export default {
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
   LOGIN_PROMPT,
+  POLYFILL_FEATURES_URL,
+  POLYFILL_FEATURES,
+  LANGUAGES,
   ASIDE_NAMES,
 };

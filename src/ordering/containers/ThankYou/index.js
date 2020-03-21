@@ -42,9 +42,9 @@ export class ThankYou extends Component {
 
   getReceiptNumber = () => {
     const { history } = this.props;
-    const query = new URLSearchParams(history.location.search);
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    return query.get('receiptNumber');
+    return receiptNumber;
   };
 
   handleClickViewReceipt = () => {
@@ -217,7 +217,7 @@ export class ThankYou extends Component {
           }
         >
           <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{t('Need Help?')}</span>
+            <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
           </button>
         </Header>
         <div className="thanks text-center">
@@ -311,6 +311,7 @@ export class ThankYou extends Component {
     const date = new Date();
     const { tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
+
     return (
       <section
         className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${

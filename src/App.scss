@@ -325,10 +325,10 @@
 
   .header__title {
     display: -webkit-box;
-    max-width: 55vw;
+    max-width: 53vw;
     max-height: 36px;
     text-transform: none;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 
     span {
@@ -619,6 +619,7 @@
 
   &__button {
     font-size: 1.15rem;
+    cursor: pointer;
   }
 }
 
@@ -692,7 +693,7 @@
     max-width: none;
   }
 
-  &__title {
+  &__title:not(.header__one-line-title) {
     @extend .text-uppercase;
 
     display: inline-block;
@@ -707,6 +708,27 @@
       display: inline-block;
       margin: 0 10px;
       font-size: 0;
+    }
+  }
+
+  &__one-line-title {
+    display: inline-block;
+    max-width: 64vw;
+    max-height: 19px;
+    text-transform: none;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.has-tag {
+      max-width: 44vw;
+    }
+
+    & + .tag__card-container {
+      padding: 0;
+      max-width: 54px;
     }
   }
 
@@ -1009,6 +1031,7 @@
 .modal {
   @extend .back-drop;
 
+  left: 0;
   z-index: 300;
 
   &.align-middle {
@@ -1525,6 +1548,7 @@
 
   &__card-container {
     height: 3.8vw;
+    padding: 0 5vw;
   }
 
   &__card.variation:not(.active) {
