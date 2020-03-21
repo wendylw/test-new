@@ -19,6 +19,8 @@ import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } fro
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 
+const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
 class Cart extends Component {
   state = {
     expandBilling: true,
@@ -32,6 +34,26 @@ class Cart extends Component {
     await homeActions.loadShoppingCart();
 
     window.scrollTo(0, 0);
+    this.handleResizeEvent();
+  }
+
+  handleResizeEvent() {
+    window.addEventListener(
+      'resize',
+      () => {
+        const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        if (resizeHeight < originHeight) {
+          this.setState({
+            expandBilling: false,
+          });
+        } else {
+          this.setState({
+            expandBilling: true,
+          });
+        }
+      },
+      false
+    );
   }
 
   getDisplayPrice() {
@@ -103,6 +125,7 @@ class Cart extends Component {
     this.props.cartActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
       });
     });
   };
