@@ -75,7 +75,7 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const addressComponents = JSON.parse(Utils.getSessionVariable('addressComponents'));
+      const { addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
       const addressDetails = deliveryDetails.addressDetails;
       const { street1, street2 } = addressComponents || {};
       const address = street1 || '' + street2 || '';
