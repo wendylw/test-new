@@ -57,9 +57,6 @@ export const actions = {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
-    const { coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
-    const { lat, lng } = coords || {};
-    const location = lat && lng ? coords : null;
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = getDeliveryDetails(getState());
     const pickupAddressInfo = {
@@ -75,7 +72,9 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const { addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+      const { coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
+      const { lat, lng } = coords || {};
+      const location = lat && lng ? coords : null;
       const addressDetails = deliveryDetails.addressDetails;
       const { street1, street2 } = addressComponents || {};
       const address = street1 || '' + street2 || '';
