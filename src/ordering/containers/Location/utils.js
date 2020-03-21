@@ -117,7 +117,7 @@ export const getPlaceDetails = async (placeId, { targetCoords } = {}) => {
 window.getPlaceDetails = getPlaceDetails;
 
 export const getStorePosition = async store => {
-  const directStorePosition = getStorePositionFromStoreInfo(store);
+  const directStorePosition = await getStorePositionFromStoreInfo(store);
   if (directStorePosition) {
     return directStorePosition;
   }

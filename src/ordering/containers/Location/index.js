@@ -81,7 +81,8 @@ class Location extends Component {
       ret.distance = distance;
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ret));
       return ret;
-    } catch {
+    } catch (e) {
+      console.error(e);
       return null;
     }
   }
