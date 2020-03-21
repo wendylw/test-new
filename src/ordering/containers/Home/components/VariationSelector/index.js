@@ -80,8 +80,6 @@ export class VariationSelector extends Component {
     const { id } = option;
     const { variation } = this.props;
 
-    console.log(this.state.selected);
-
     this.setState({
       selected: {
         ...(this.isSingleChoice() ? null : this.state.selected),
@@ -96,6 +94,7 @@ export class VariationSelector extends Component {
 
   render() {
     const { t, variation } = this.props;
+    const { selected } = this.state;
     const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
     let AmountLimitDescription = minSelectionAmount ? t('MinimumChoicesDescription') : t('MaximumChoicesDescription');
 
@@ -117,15 +116,18 @@ export class VariationSelector extends Component {
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
             const className = ['tag__card variation'];
+            const isDisabled = markedSoldOut || (selected.length >= maxSelectionAmount && !selected[id]);
+            let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
-            if (markedSoldOut) {
+            if (isDisabled) {
               className.push('disabled');
-            } else if (this.state.selected[id]) {
+              selectedOptionFunc = () => {};
+            } else if (selected[id]) {
               className.push('active');
             }
 
             return (
-              <li key={id} className={className.join(' ')} onClick={this.handleSelectedOption.bind(this, option)}>
+              <li key={id} className={className.join(' ')} onClick={selectedOptionFunc}>
                 {value}
               </li>
             );
