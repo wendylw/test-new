@@ -109,14 +109,16 @@ class Customer extends Component {
         <div
           className="form__group"
           onClick={async () => {
+            const { search } = window.location;
+
             await Utils.setSessionVariable(
               'deliveryCallbackUrl',
-              `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${window.location.search}`
+              `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`
             );
 
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-              search: window.location.search,
+              search,
             });
           }}
         >

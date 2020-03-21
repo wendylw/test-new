@@ -101,11 +101,14 @@ export class Home extends Component {
     const { t } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
     const fillInDeliverToAddress = () => {
-      const search = window.location.search;
+      const { search } = window.location;
 
       Utils.setSessionVariable('deliveryCallbackUrl', search);
 
-      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+        search,
+      });
     };
 
     return (
