@@ -39,7 +39,7 @@ class App extends Component {
     const { isExpired, isWebview, isLogin } = user || {};
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+      // this.postAppMessage(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {

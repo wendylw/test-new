@@ -33,7 +33,7 @@ class App extends Component {
     }
 
     this.getTokens(isLogin);
-    this.postAppMessage(user);
+    // this.postAppMessage(user);
   }
 
   componentDidUpdate(prevProps) {
@@ -41,7 +41,7 @@ class App extends Component {
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+      // this.postAppMessage(user);
     }
 
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
