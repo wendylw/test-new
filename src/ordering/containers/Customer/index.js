@@ -102,7 +102,7 @@ class Customer extends Component {
     }
 
     const { addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
-    const deliveryToAddress = Utils.getSessionVariable('deliveryAddress');
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
 
     return (
       <React.Fragment>
@@ -128,12 +128,16 @@ class Customer extends Component {
               <IconEdit />
             </i>
           </div>
-          <p className="form__textarea gray-font-opacity">{deliveryToAddress || t('AddAddressPlaceholder')}</p>
+          <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
+            {deliveryToAddress || t('AddAddressPlaceholder')}
+          </p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
           <div className="flex flex-middle flex-space-between">
-            <p className="gray-font-opacity">{addressDetails || t('AddressDetailsPlaceholder')}</p>
+            <p className={addressDetails ? '' : 'gray-font-opacity'}>
+              {addressDetails || t('AddressDetailsPlaceholder')}
+            </p>
             <i className="customer__edit-icon">
               <IconEdit />
             </i>
@@ -158,7 +162,7 @@ class Customer extends Component {
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const deliveryToAddress = Utils.getSessionVariable('deliveryAddress');
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
     let textareaValue = '';
     let updateTextFunc = () => {};
 

@@ -57,6 +57,9 @@ export const actions = {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
+    const { coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
+    const { lat, lng } = coords || {};
+    const location = lat && lng ? coords : null;
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = getDeliveryDetails(getState());
     const pickupAddressInfo = {
@@ -86,6 +89,7 @@ export const actions = {
           ...addressComponents,
           addressDetails,
           address,
+          location,
         },
         deliveryComments,
       };
