@@ -106,13 +106,6 @@ export const actions = {
       };
     }
 
-    // else if (shippingType === 'pickup') {
-    //   variables = {
-    //     ...variables,
-    //     pickupAddressInfo,
-    //   };
-    // }
-
     return dispatch(
       createOrder(
         !additionalComments
