@@ -164,7 +164,7 @@ export class Home extends Component {
 
     const { phone } = (stores && stores[0]) || {};
     const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     return {
       deliveryFee,

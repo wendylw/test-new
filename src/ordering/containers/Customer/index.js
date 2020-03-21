@@ -102,7 +102,7 @@ class Customer extends Component {
     }
 
     const { addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     return (
       <React.Fragment>
@@ -133,15 +133,15 @@ class Customer extends Component {
           </p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
-          <label className="form__label font-weight-bold gray-font-opacity">{t('UnitBlockFloor')}</label>
           <div className="flex flex-middle flex-space-between">
-            <p className={addressDetails ? '' : 'gray-font-opacity'}>
-              {addressDetails || t('AddressDetailsPlaceholder')}
-            </p>
+            <label className="form__label font-weight-bold gray-font-opacity">{t('UnitBlockFloor')}</label>
             <i className="customer__edit-icon">
               <IconEdit />
             </i>
           </div>
+          <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
+            {addressDetails || t('AddressDetailsPlaceholder')}
+          </p>
         </div>
         {/* <div
           className="form__group flex flex-middle flex-space-between"
@@ -162,7 +162,7 @@ class Customer extends Component {
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -269,8 +269,10 @@ class Customer extends Component {
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
-                (type === 'delivery' && (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryToAddress))) ||
-                !Boolean(deliveryDetails.username) ||
+                (type === 'delivery' &&
+                  (!Boolean((deliveryDetails.addressDetails || '').trim()) ||
+                    !Boolean((deliveryToAddress || '').trim()))) ||
+                !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
                 isFetching
               }

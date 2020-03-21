@@ -429,6 +429,11 @@
     .aside {
       bottom: 21.6vw;
     }
+
+    .form__textarea {
+      margin: 5px 0;
+      padding-right: 34px;
+    }
   }
 
   &__payment {
@@ -652,6 +657,10 @@
     .header__title {
       margin-right: 36px;
     }
+  }
+
+  .warning__button {
+    width: 140px;
   }
 
   &__image-container {
