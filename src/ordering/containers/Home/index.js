@@ -103,7 +103,7 @@ export class Home extends Component {
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
 
-      Utils.setSessionVariable('deliveryCallbackUrl', search);
+      Utils.setSessionVariable('deliveryCallbackUrl', `/${search}`);
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
