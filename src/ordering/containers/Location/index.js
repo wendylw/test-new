@@ -259,6 +259,10 @@ class Location extends Component {
     );
   }
 
+  renderDetectedPositionStatus(message) {
+    return <div className="location-page__detected-position-status">{message}</div>;
+  }
+
   renderDetectedPosition() {
     const { devicePositionInfo, isDetectingPosition, storePositionInfo } = this.state;
     const { t } = this.props;
@@ -276,7 +280,7 @@ class Location extends Component {
         </div>
         <div className="location-page__detected-position-address">
           {isDetectingPosition ? (
-            this.renderAddressItem(t('DetectingLocation'))
+            this.renderDetectedPositionStatus(t('DetectingLocation'))
           ) : devicePositionInfo ? (
             <div onClick={this.onDetectedLocationPress}>
               {this.renderAddressItem(
@@ -286,7 +290,7 @@ class Location extends Component {
               )}
             </div>
           ) : (
-            this.renderAddressItem(t('FailToDetectYourLocation'))
+            this.renderDetectedPositionStatus(t('LocationSharingIsOff'))
           )}
         </div>
       </div>

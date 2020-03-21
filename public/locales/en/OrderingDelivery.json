@@ -14,5 +14,5 @@
   "OutOfDeliveryRange": "Sorry, the selected location is out of delivery range ({{distance}} KM).",
   "SearchYourAddress": "Search your address",
   "DetectingLocation": "Detecting location...",
-  "FailToDetectYourLocation": "Failed to detect your location."
+  "LocationSharingIsOff": "Location sharing is off."
 }
