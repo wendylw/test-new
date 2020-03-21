@@ -2,6 +2,7 @@
 // import { mockGeocodingResponse } from './mockResponse';
 
 import config from '../../../config';
+import { intersection } from 'lodash';
 
 export const saveDevicePosition = position => {
   return sessionStorage.setItem('device.position', position);
@@ -334,22 +335,37 @@ export const getCurrentAddressInfo = async () => {
   const lng = position.coords.longitude;
   const google_map_position = new window.google.maps.LatLng(lat, lng);
 
+  const pickPreferredGeoCodeResult = locationList => {
+    const preferredLocation = locationList.find(location => {
+      const typesIntersection = intersection(location.types, ['neighborhood', 'premise', 'subpremise']);
+      if (typesIntersection.length) {
+        return true;
+      }
+      return false;
+    });
+    if (preferredLocation) {
+      return preferredLocation;
+    }
+    return locationList[0];
+  };
+
   // get google address info of google position
   const result = await new Promise((resolve, reject) => {
     const google_maps_geocoder = new window.google.maps.Geocoder();
     google_maps_geocoder.geocode({ location: google_map_position }, function geocode(results, status) {
-      console.log('final location', results);
+      console.log('geocode location', results);
 
-      if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
+      if (status === window.google.maps.GeocoderStatus.OK && results.length) {
+        const location = pickPreferredGeoCodeResult(results);
         resolve({
           coords: {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             accuracy: position.coords.accuracy,
           },
-          address: results[0].formatted_address,
-          addressInfo: standardizeGeoAddress(results[0].address_components),
-          placeId: results[0].place_id,
+          address: location.formatted_address,
+          addressInfo: standardizeGeoAddress(location.address_components),
+          placeId: location.place_id,
         });
       } else {
         // todo: get error from response
