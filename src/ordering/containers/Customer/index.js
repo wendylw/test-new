@@ -148,8 +148,9 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
     const { asideName, formTextareaTitle } = this.state;
+    const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let textareaValue = '';
@@ -261,10 +262,11 @@ class Customer extends Component {
                 (type === 'delivery' &&
                   (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryDetails.deliverToAddress))) ||
                 !Boolean(deliveryDetails.username) ||
-                !isValidPhoneNumber(deliveryDetails.phone)
+                !isValidPhoneNumber(deliveryDetails.phone) ||
+                isFetching
               }
             >
-              {t('Continue')}
+              {isFetching ? <div className="loader"></div> : t('Continue')}
             </button>
           </div>
         </footer>

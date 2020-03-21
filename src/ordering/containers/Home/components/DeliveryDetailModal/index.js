@@ -6,32 +6,30 @@ import { IconMotorcycle } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
-  getDeliveryHourUI = () => {
+  renderDeliveryHour = () => {
     const weekInfo = {
-      1: 'Mon',
-      2: 'Tue',
-      3: 'Wed',
-      4: 'Thu',
-      5: 'Fri',
-      6: 'Sat',
-      7: 'Sun',
+      2: 'Mon',
+      3: 'Tue',
+      4: 'Wed',
+      5: 'Thu',
+      6: 'Fri',
+      7: 'Sat',
+      1: 'Sun',
     };
-    const { validDays, validTimeFrom, validTimeTo } = this.props;
+    const { t, validDays, validTimeFrom, validTimeTo } = this.props;
 
-    return (
-      validDays &&
-      validDays.map(x => {
-        return (
-          <li key={x} className="store-info__item flex flex-middle flex-space-between">
-            <span>{weekInfo[x]}</span>
-            <time>
-              {`${validTimeFrom}`} - {`${validTimeTo}`}
-            </time>
-          </li>
-        );
-      })
-    );
+    return (validDays || []).sort().map(day => {
+      return (
+        <li key={day} className="store-info__item flex flex-middle flex-space-between">
+          <span>{t(weekInfo[day])}</span>
+          <time>
+            {`${validTimeFrom}`} - {`${validTimeTo}`}
+          </time>
+        </li>
+      );
+    });
   };
+
   render() {
     const {
       businessInfo,
@@ -67,12 +65,12 @@ class DeliveryDetailModal extends Component {
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
                 </span>
-                {isValidTimeToOrder ? null : (
-                  <div className="tag__card-container">
-                    <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
-                  </div>
-                )}
               </h2>
+              {isValidTimeToOrder ? null : (
+                <div className="tag__card-container">
+                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                </div>
+              )}
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
@@ -99,7 +97,7 @@ class DeliveryDetailModal extends Component {
           <div className="store-info__delivery-hours flex flex-top flex-space-between">
             <label className="font-weight-bold gray-font-opacity">Delivery Hours</label>
             <ul className="store-info__list">
-              {this.getDeliveryHourUI()}
+              {this.renderDeliveryHour()}
               {/* <li className="store-info__item flex flex-middle flex-space-between">
                                 <span>Sun</span>
                                 <time>11:00 - 22:30</time>

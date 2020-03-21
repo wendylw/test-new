@@ -18,6 +18,7 @@ class Sorry extends Component {
 
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      search: window.location.search,
     });
   }
 

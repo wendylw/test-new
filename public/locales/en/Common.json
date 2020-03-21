@@ -71,5 +71,12 @@
   "AddressDetailsPlaceholder": "e.g Floor, unit number",
   "AddNoteToDriverPlaceholder": "Add a note to driver *",
   "AddAddressDetailsPlaceholder": "Add address details *",
-  "DeliveryFee": "Delivery Fee"
+  "DeliveryFee": "Delivery Fee",
+  "Mon": "Mon",
+  "Tue": "Tue",
+  "Wed": "Wed",
+  "Thu": "Thu",
+  "Fri": "Fri",
+  "Sat": "Sat",
+  "Sun": "Sun"
 }
