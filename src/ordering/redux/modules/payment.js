@@ -61,7 +61,7 @@ export const actions = {
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = getDeliveryDetails(getState());
     const { country } = getBusinessByName(getState(), business);
-    const pickupAddressInfo = {
+    const contactDetail = {
       phone: deliveryDetails.phone,
       name: deliveryDetails.username,
     };
@@ -90,7 +90,7 @@ export const actions = {
         ...variables,
         shippingType,
         deliveryAddressInfo: {
-          ...pickupAddressInfo,
+          ...contactDetail,
           addressDetails,
           address: `${addressDetails}, ${deliveryTo}`,
           country,
@@ -98,6 +98,11 @@ export const actions = {
           location,
         },
         deliveryComments,
+      };
+    } else if (shippingType === 'pickup') {
+      variables = {
+        ...variables,
+        contactDetail,
       };
     }
 
