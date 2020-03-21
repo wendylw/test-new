@@ -179,7 +179,7 @@ class Location extends Component {
     const { distance } = placeInfo;
     if (this.isTooFar(distance)) {
       this.setState({
-        errorToast: t(`OutOfDeliveryRange`, { number: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
+        errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
       });
       return;
     }
