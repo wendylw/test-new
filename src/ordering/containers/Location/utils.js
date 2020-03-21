@@ -80,13 +80,16 @@ const getPlaceId = async address => {
   return placeId;
 };
 
-export const getPlaceDetails = async (placeId, { targetCoords } = {}) => {
+export const getPlaceDetails = async (
+  placeId,
+  { targetCoords, fields = ['geometry', 'formatted_address', 'address_components'] } = {}
+) => {
   const places = new window.google.maps.places.PlacesService(document.createElement('div'));
 
   const placeDetails = await new Promise(resolve => {
     places.getDetails(
       {
-        fields: ['geometry', 'formatted_address', 'place_id', 'address_components'],
+        fields,
         placeId,
         sessionToken: getSessionToken(),
       },
@@ -99,7 +102,7 @@ export const getPlaceDetails = async (placeId, { targetCoords } = {}) => {
       }
     );
   });
-  const coords = {
+  const coords = placeDetails.geometry && {
     lat: placeDetails.geometry.location.lat(),
     lng: placeDetails.geometry.location.lng(),
   };
@@ -107,7 +110,7 @@ export const getPlaceDetails = async (placeId, { targetCoords } = {}) => {
     address: placeDetails.formatted_address,
     coords,
     placeId,
-    addressComponents: standardizeGeoAddress(placeDetails.address_components),
+    addressComponents: placeDetails.addressComponents && standardizeGeoAddress(placeDetails.address_components),
     distance: targetCoords ? computeDistance(targetCoords, coords) : undefined,
   };
   console.log('transformed placeDetails =', ret);

@@ -195,7 +195,9 @@ class Location extends Component {
     try {
       const placeDetail = await getPlaceDetails(searchResult.place_id, {
         targetCoords: this.state.storePositionInfo.coords,
+        fields: ['geometry'],
       });
+      placeDetail.address = searchResult.description;
       this.selectPlace(placeDetail);
     } catch (e) {
       console.error(e);
