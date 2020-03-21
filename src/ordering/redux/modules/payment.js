@@ -74,7 +74,13 @@ export const actions = {
     if (shippingType === 'delivery') {
       const { coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
       const { lat, lng } = coords || {};
-      const location = lat && lng ? coords : null;
+      const location =
+        lat && lng
+          ? {
+              longitude: lng,
+              latitude: lat,
+            }
+          : null;
       const addressDetails = deliveryDetails.addressDetails;
       const { street1, street2 } = addressComponents || {};
       const address = street1 || '' + street2 || '';
