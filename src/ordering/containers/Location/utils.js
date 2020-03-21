@@ -288,7 +288,8 @@ const getDevicePosition = option => {
       },
       error => {
         reject(error);
-      }
+      },
+      option
     );
   });
 };
@@ -306,7 +307,7 @@ const tryGetDevicePosition = async () => {
     return await getDevicePosition({
       enableHighAccuracy: false,
       timeout: 5000,
-      maximumAge: 30000,
+      maximumAge: 300000,
     });
   }
 };
@@ -336,7 +337,7 @@ export const getCurrentAddressInfo = async () => {
   // get google address info of google position
   const result = await new Promise((resolve, reject) => {
     const google_maps_geocoder = new window.google.maps.Geocoder();
-    google_maps_geocoder.geocode({ latLng: google_map_position }, function geocode(results, status) {
+    google_maps_geocoder.geocode({ location: google_map_position }, function geocode(results, status) {
       console.log('final location', results);
 
       if (status === window.google.maps.GeocoderStatus.OK && results[0]) {

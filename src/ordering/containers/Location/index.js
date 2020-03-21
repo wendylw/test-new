@@ -115,14 +115,10 @@ class Location extends Component {
     try {
       const storeInfo = await Location.getStoreInfo();
       const storePositionInfo = await Location.getStorePositionInfo(storeInfo);
-      const devicePositionInfo = await Location.getDevicePositionInfo({
-        storeCoords: storePositionInfo.coords,
-        withCache: true,
-      });
+      this.detectDevicePosition(true); // will not await
       this.setState({
         storeInfo,
         storePositionInfo,
-        devicePositionInfo,
         isInitializing: false,
         isDetectingPosition: false,
       });
@@ -136,11 +132,11 @@ class Location extends Component {
     }
   }
 
-  redetectDevicePosition = async () => {
+  detectDevicePosition = async (withCache = false) => {
     this.setState({ isDetectingPosition: true });
     const devicePositionInfo = await Location.getDevicePositionInfo({
       storeCoords: this.state.storePositionInfo.coords,
-      withCache: false,
+      withCache,
     });
     this.setState({
       devicePositionInfo,
@@ -266,7 +262,7 @@ class Location extends Component {
     const { t } = this.props;
     return (
       <div className="location-page__detected-position">
-        <div className="location-page__detected-position-icon" onClick={this.redetectDevicePosition}>
+        <div className="location-page__detected-position-icon" onClick={() => this.detectDevicePosition(false)}>
           <IconGpsFixed style={{ width: '10px' }} />
         </div>
         <div className="location-page__detected-position-address">
