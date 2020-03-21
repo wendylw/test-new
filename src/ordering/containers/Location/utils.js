@@ -122,7 +122,9 @@ export const getStorePosition = async store => {
   if (directStorePosition) {
     return directStorePosition;
   }
-  return getStorePositionFromSearch(store);
+  throw new Error("Cannot retrieve store's location");
+  // we won't search store address in case the position is not accurate
+  // return getStorePositionFromSearch(store);
 };
 
 export const getStorePositionFromStoreInfo = async store => {

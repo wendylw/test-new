@@ -143,6 +143,9 @@ class Location extends Component {
 
   debounceSearchPlaces = debounce(async () => {
     const { searchText, storePositionInfo, storeInfo } = this.state;
+    if (!searchText) {
+      return;
+    }
     this.setState({ isSearching: true });
     try {
       const places = await getPlacesByText(searchText, {
