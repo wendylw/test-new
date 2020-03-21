@@ -7,6 +7,7 @@ export class VariationSelector extends Component {
   static propTypes = {
     variation: variationOnProductType,
     onChange: PropTypes.func,
+    isInvalidMinimum: false,
   };
 
   static defaultProps = {
@@ -44,6 +45,7 @@ export class VariationSelector extends Component {
 
     const { optionValues } = this.props.variation;
     const selectedOptionValue = optionValues.filter(v => !v.markedSoldOut)[0];
+    // const isInvalidMinimum = enableSelectionAmountLimit && minSelectionAmount && (this.state.selected < minSelectionAmount);
 
     if (selectedOptionValue) {
       this.setState({
@@ -80,12 +82,11 @@ export class VariationSelector extends Component {
     const { id } = option;
     const { variation } = this.props;
     const { enableSelectionAmountLimit, minSelectionAmount } = variation || {};
-
-    if (enableSelectionAmountLimit && minSelectionAmount) {
-      minSelectionAmount;
-    }
+    const isInvalidMinimum =
+      enableSelectionAmountLimit && minSelectionAmount && this.state.selected.length + 1 < minSelectionAmount;
 
     this.setState({
+      isInvalidMinimum,
       selected: {
         ...(this.isSingleChoice() ? null : this.state.selected),
 
