@@ -92,7 +92,13 @@ export class VariationSelector extends Component {
   }
 
   render() {
-    const { variation } = this.props;
+    const { t, variation } = this.props;
+    const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
+    let AmountLimitDescription = minSelectionAmount ? t('MinimumChoicesDescription') : t('MaximumChoicesDescription');
+
+    if (enableSelectionAmountLimit && minSelectionAmount && maxSelectionAmount) {
+      AmountLimitDescription = t('MinMaximumChoicesDescription');
+    }
 
     if (!variation) {
       return null;
@@ -101,6 +107,9 @@ export class VariationSelector extends Component {
     return (
       <li className="product-detail__options" key={variation.id}>
         <h4 className="product-detail__options-title gray-font-opacity text-uppercase">{variation.name}</h4>
+        {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
+          <p>{AmountLimitDescription}</p>
+        ) : null}
         <ul className="tag__cards">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
