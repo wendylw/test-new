@@ -5,6 +5,7 @@ import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
 import { getBusiness, getRequestInfo } from './app';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -59,6 +60,7 @@ export const actions = {
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = getDeliveryDetails(getState());
+    const { country } = getBusinessByName(getState(), business);
     const pickupAddressInfo = {
       phone: deliveryDetails.phone,
       name: deliveryDetails.username,
@@ -72,7 +74,7 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const { coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress')) || {};
+      const { coords, address: deliveryTo } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { lat, lng } = coords || {};
       const location =
         lat && lng
@@ -82,8 +84,6 @@ export const actions = {
             }
           : null;
       const addressDetails = deliveryDetails.addressDetails;
-      const { street1, street2 } = addressComponents || {};
-      const address = street1 || '' + street2 || '';
       const deliveryComments = deliveryDetails.deliveryComments;
 
       variables = {
@@ -91,9 +91,10 @@ export const actions = {
         shippingType,
         deliveryAddressInfo: {
           ...pickupAddressInfo,
-          ...addressComponents,
           addressDetails,
-          address,
+          address: `${addressDetails}, ${deliveryTo}`,
+          country,
+          deliveryTo,
           location,
         },
         deliveryComments,
