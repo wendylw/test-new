@@ -98,7 +98,7 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t } = this.props;
+    const { t, history } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
     const fillInDeliverToAddress = () => {
       const { search } = window.location;

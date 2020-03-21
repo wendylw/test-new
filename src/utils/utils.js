@@ -12,9 +12,9 @@ Utils.getQueryString = key => {
   return queries;
 };
 
-Utils.isWebview = function isWebview() {
-  return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
-};
+// Utils.isWebview = function isWebview() {
+//   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
+// };
 
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;

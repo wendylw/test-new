@@ -187,16 +187,16 @@ class PhoneLogin extends React.Component {
     appActions.phoneNumberLogin({ phone });
   }
 
-  handlePostLoyaltyPageMessage() {
-    const { user } = this.props;
-    const { isWebview } = user;
+  // handlePostLoyaltyPageMessage() {
+  //   const { user } = this.props;
+  //   const { isWebview } = user;
 
-    if (isWebview) {
-      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-    }
+  //   if (isWebview) {
+  //     window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+  //   }
 
-    return;
-  }
+  //   return;
+  // }
 
   renderCurrencyNumber() {
     const { cashbackInfo } = this.props;
@@ -249,7 +249,7 @@ class PhoneLogin extends React.Component {
     return (
       <button
         className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
-        onClick={this.handlePostLoyaltyPageMessage.bind(this)}
+        onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
       >
         {t('CheckMyBalance')}
       </button>
