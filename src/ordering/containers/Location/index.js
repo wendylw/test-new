@@ -197,7 +197,8 @@ class Location extends Component {
         targetCoords: this.state.storePositionInfo.coords,
         fields: ['geometry'],
       });
-      placeDetail.address = searchResult.description;
+      const { main_text, secondary_text } = searchResult.structured_formatting;
+      placeDetail.address = `${main_text}, ${secondary_text}`;
       this.selectPlace(placeDetail);
     } catch (e) {
       console.error(e);
