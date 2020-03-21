@@ -158,6 +158,7 @@ class Customer extends Component {
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const deliveryToAddress = Utils.getSessionVariable('deliveryAddress');
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -264,8 +265,7 @@ class Customer extends Component {
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
-                (type === 'delivery' &&
-                  (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryDetails.deliverToAddress))) ||
+                (type === 'delivery' && (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryToAddress))) ||
                 !Boolean(deliveryDetails.username) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
                 isFetching
