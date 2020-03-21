@@ -133,7 +133,7 @@ class Customer extends Component {
           </p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
-          <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
+          <label className="form__label font-weight-bold gray-font-opacity">{t('UnitBlockFloor')}</label>
           <div className="flex flex-middle flex-space-between">
             <p className={addressDetails ? '' : 'gray-font-opacity'}>
               {addressDetails || t('AddressDetailsPlaceholder')}
