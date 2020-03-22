@@ -158,7 +158,7 @@ export class Home extends Component {
     const { stores } = originalInfo || {};
     const { qrOrderingSettings } = originalInfo || {};
     const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { defaultShippingZoneMethod, freeShippingMinAmount } = defaultShippingZone || {};
     const { rate } = defaultShippingZoneMethod || {};
     const deliveryFee = rate || 0;
     const minOrder = minimumConsumption || 0;
@@ -176,6 +176,7 @@ export class Home extends Component {
       validDays,
       validTimeFrom,
       validTimeTo,
+      freeShippingMinAmount,
     };
   };
 
@@ -240,6 +241,7 @@ export class Home extends Component {
       validDays,
       validTimeFrom,
       validTimeTo,
+      freeShippingMinAmount,
     } = this.getDeliveryInfo();
 
     const { viewAside } = this.state;
@@ -259,14 +261,15 @@ export class Home extends Component {
         {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
         {
-          /* freeDelivery ? () */
-          <div className="top-message__second-level text-center">
-            <Trans i18nKey="FreeDeliveryPrompt" freeDeliveryFee={freeDeliveryFee}>
-              <span>
-                Free Delivery with <CurrencyNumber money={freeDeliveryFee || 0} /> & above
-              </span>
-            </Trans>
-          </div>
+          freeShippingMinAmount ? (
+            <div className="top-message__second-level text-center">
+              <Trans i18nKey="FreeDeliveryPrompt" freeDeliveryFee={freeDeliveryFee}>
+                <span>
+                  Free Delivery with <CurrencyNumber money={freeDeliveryFee || 0} /> & above
+                </span>
+              </Trans>
+            </div>
+          ) : null
         }
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
