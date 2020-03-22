@@ -14,13 +14,20 @@ import {
   getPlacesByText,
   getPlaceDetails,
   computeDistance,
+  getHistoricalDeliveryAddresses,
 } from './utils';
+
+// TODO: remove distance from data structure. instead, use computeDistance with memorization
 
 /**
  * type PositionInfo {
  *   address: string;
  *   coords: { lat: number; lng: number; }
  *   placeId?: string;
+ *   displayComponents?: {
+ *     mainText: string;
+ *     secondaryText?: string;
+ *   }
  *   addressComponents?: {
  *     street1: string;
  *     street2: string;
@@ -61,7 +68,9 @@ class Location extends Component {
       if (withCache) {
         const cache = sessionStorage.getItem(STORAGE_KEY);
         if (cache) {
-          return JSON.parse(cache);
+          const cachedPositionInfo = JSON.parse(cache);
+          const distance = computeDistance(storeCoords, cachedPositionInfo.coords);
+          cachedPositionInfo.distance = distance;
         }
       }
       const positionInfo = await getCurrentAddressInfo();
@@ -75,11 +84,16 @@ class Location extends Component {
           ...positionInfo.addressInfo,
         },
         placeId: positionInfo.placeId,
+        displayComponents: {
+          mainText: positionInfo.address,
+          secondaryText: positionInfo.address,
+        },
       };
       // todo: consider the situation that storeCoords is missing
       const distance = computeDistance(storeCoords, ret.coords);
       ret.distance = distance;
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ret));
+      // won't cache distance, in case user has changed the store.
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...ret, distance: undefined }));
       return ret;
     } catch (e) {
       console.error(e);
@@ -97,6 +111,7 @@ class Location extends Component {
     // NOTE: storePositionInfo is possibly not loaded from google, but our own api. Hence it may
     // miss placeId and the address info may be different from google map. Be careful.
     storePositionInfo: null,
+    historicalAddresses: [],
     isInitializing: true,
     initializeError: '',
     isSubmitting: false,
@@ -122,6 +137,7 @@ class Location extends Component {
         isDetectingPosition: false,
       });
       this.detectDevicePosition(storePositionInfo.coords, true);
+      this.getHistoricalAddresses();
     } catch (e) {
       console.error(e);
       this.setState({
@@ -140,6 +156,15 @@ class Location extends Component {
       isDetectingPosition: false,
     });
   };
+
+  async getHistoricalAddresses() {
+    try {
+      const historicalAddresses = await getHistoricalDeliveryAddresses(5);
+      this.setState({ historicalAddresses });
+    } catch (e) {
+      console.error('Failed to get historical addresses');
+    }
+  }
 
   debounceSearchPlaces = debounce(async () => {
     const { searchText, storePositionInfo, storeInfo } = this.state;
@@ -199,6 +224,10 @@ class Location extends Component {
       });
       const { main_text, secondary_text } = searchResult.structured_formatting;
       placeDetail.address = `${main_text}, ${secondary_text}`;
+      placeDetail.displayComponents = {
+        mainText: main_text,
+        secondaryText: secondary_text,
+      };
       this.selectPlace(placeDetail);
     } catch (e) {
       console.error(e);
@@ -267,6 +296,16 @@ class Location extends Component {
   renderDetectedPosition() {
     const { devicePositionInfo, isDetectingPosition, storePositionInfo } = this.state;
     const { t } = this.props;
+    let mainText = devicePositionInfo
+      ? devicePositionInfo.displayComponents
+        ? devicePositionInfo.displayComponents.mainText
+        : devicePositionInfo.address
+      : '';
+    let secondaryText = devicePositionInfo
+      ? devicePositionInfo.displayComponents
+        ? devicePositionInfo.displayComponents.secondaryText
+        : devicePositionInfo.address
+      : '';
     return (
       <div className="location-page__detected-position">
         <div
@@ -284,11 +323,7 @@ class Location extends Component {
             this.renderDetectedPositionStatus(t('DetectingLocation'))
           ) : devicePositionInfo ? (
             <div onClick={this.onDetectedLocationPress}>
-              {this.renderAddressItem(
-                devicePositionInfo.address,
-                devicePositionInfo.address,
-                devicePositionInfo.distance
-              )}
+              {this.renderAddressItem(mainText, secondaryText, devicePositionInfo.distance)}
             </div>
           ) : (
             this.renderDetectedPositionStatus(t('LocationSharingIsOff'))
@@ -296,6 +331,32 @@ class Location extends Component {
         </div>
       </div>
     );
+  }
+
+  renderHistoricalAddressList() {
+    // IMPORTANT: be careful to render historicalAddressList, because the data is cached in localStorage,
+    // thing might be broken if you have change the data structure. So you must make sure the compat with old version.
+    try {
+      const { historicalAddresses, storePositionInfo } = this.state;
+      return (
+        <div>
+          {historicalAddresses.map(positionInfo => {
+            const { displayComponents, coords } = positionInfo;
+            const mainText = displayComponents ? displayComponents.mainText : positionInfo.address;
+            const secondaryText = displayComponents ? displayComponents.secondaryText : positionInfo.address;
+            const distance = computeDistance(storePositionInfo.coords, coords);
+            return (
+              <div onClick={() => this.selectPlace(positionInfo)} key={positionInfo.address}>
+                {this.renderAddressItem(mainText, secondaryText, distance)}
+              </div>
+            );
+          })}
+        </div>
+      );
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
   renderSearchResultList() {
@@ -327,12 +388,21 @@ class Location extends Component {
     );
   }
 
+  renderPredictedPositions() {
+    return (
+      <div>
+        {this.renderDetectedPosition()}
+        {this.renderHistoricalAddressList()}
+      </div>
+    );
+  }
+
   renderMainContent() {
+    const { searchText } = this.state;
     return (
       <div className="location-page__info">
         {this.renderSearchBox()}
-        {this.renderDetectedPosition()}
-        {this.renderSearchResultList()}
+        {!searchText ? this.renderPredictedPositions() : this.renderSearchResultList()}
       </div>
     );
   }
