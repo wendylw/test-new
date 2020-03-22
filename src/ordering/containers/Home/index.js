@@ -260,17 +260,15 @@ export class Home extends Component {
       <section className={classList.join(' ')}>
         {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
-        {
-          freeShippingMinAmount ? (
-            <div className="top-message__second-level text-center">
-              <Trans i18nKey="FreeDeliveryPrompt" freeDeliveryFee={freeDeliveryFee}>
-                <span>
-                  Free Delivery with <CurrencyNumber money={freeDeliveryFee || 0} /> & above
-                </span>
-              </Trans>
-            </div>
-          ) : null
-        }
+        {freeShippingMinAmount ? (
+          <div className="top-message__second-level text-center">
+            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+              <span>
+                Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
+              </span>
+            </Trans>
+          </div>
+        ) : null}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}
