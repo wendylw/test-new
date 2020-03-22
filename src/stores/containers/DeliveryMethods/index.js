@@ -11,17 +11,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 const METHODS_LIST = [
   {
-    name: 'delivery',
+    name: DELIVERY_METHOD.DELIVERY,
     logo: DeliveryImage,
     labelKey: 'FoodDelivery',
     // pathname: ROUTER_PATHS.ORDERING_LOCATION,
     pathname: '',
   },
   {
-    name: 'pickup',
+    name: DELIVERY_METHOD.PICKUP,
     logo: PickUpImage,
     labelKey: 'SelfPickup',
     pathname: '',

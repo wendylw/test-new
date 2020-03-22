@@ -159,13 +159,13 @@ export class Home extends Component {
     const { phone } = (stores && stores[0]) || {};
     const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-    const { address } = currentAddress || {};
+    const { address: deliveryToAddress } = currentAddress || {};
 
     return {
       deliveryFee,
       minOrder,
       storeAddress,
-      deliveryToAddress: address,
+      deliveryToAddress,
       telephone: phone,
       validDays,
       validTimeFrom,

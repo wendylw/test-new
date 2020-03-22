@@ -330,4 +330,9 @@ Utils.isDeliveryType = () => {
   return type === 'delivery';
 };
 
+Utils.isPickupType = () => {
+  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+  return type === 'pickup';
+};
+
 export default Utils;

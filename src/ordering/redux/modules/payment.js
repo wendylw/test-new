@@ -71,7 +71,7 @@ export const actions = {
       cashback,
     };
 
-    if (shippingType === 'delivery') {
+    if (shippingType === Constants.DELIVERY_METHOD.DELIVERY) {
       // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
       // const { address: addressString, addressInfo } = currentAddress || {};
       const addressDetails = deliveryDetails.addressDetails;

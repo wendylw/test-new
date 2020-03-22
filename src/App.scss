@@ -2347,6 +2347,10 @@
       line-height: $line-height-base;
     }
   }
+
+  &__self-pickup {
+    white-space: nowrap;
+  }
 }
 
 .receipt {
