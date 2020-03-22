@@ -44,7 +44,9 @@ export class OrderDetails extends Component {
           return (
             <li key={`title-${index}`} className="item flex flex-space-between">
               <div className="flex">
-                <span className="gray-font-opacity">{quantity} x</span>
+                <span style={{ width: '6vw' }} className="gray-font-opacity">
+                  {quantity} x
+                </span>
                 <div style={{ marginLeft: '2vw' }}>
                   <span className="gray-font-opacity">{title}</span>
                   <p>
