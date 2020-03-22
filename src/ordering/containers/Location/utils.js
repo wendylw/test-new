@@ -2,7 +2,7 @@
 // import { mockGeocodingResponse } from './mockResponse';
 
 import config from '../../../config';
-import { intersection } from 'lodash';
+import { intersection, findIndex } from 'lodash';
 
 export const saveDevicePosition = position => {
   return sessionStorage.setItem('device.position', position);
@@ -381,9 +381,55 @@ export const getCurrentAddressInfo = async () => {
   return result;
 };
 
+// todo: memorization
 // return value in meters
 export const computeDistance = (fromCoords, toCoords) => {
   const from = new window.google.maps.LatLng(fromCoords.lat, fromCoords.lng);
   const to = new window.google.maps.LatLng(toCoords.lat, toCoords.lng);
   return window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+};
+
+const MAX_HISTORICAL_ADDRESS_COUNT = 5;
+const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
+
+export const getHistoricalDeliveryAddresses = async () => {
+  try {
+    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    if (!storageStr) {
+      return [];
+    }
+    return JSON.parse(storageStr);
+  } catch (e) {
+    console.error('failed to get historical delivery addresses', e);
+    return [];
+  }
+};
+
+export const setHistoricalDeliveryAddresses = async positionInfo => {
+  try {
+    const clonedPositionInfo = { ...positionInfo };
+    // won't save distance, because use may choose another store.
+    delete clonedPositionInfo.distance;
+    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    let positionInfoList;
+    if (!storageStr) {
+      positionInfoList = [];
+    } else {
+      positionInfoList = JSON.parse(storageStr);
+    }
+    const foundIndex = findIndex(positionInfoList, existingPosition => {
+      return existingPosition.address === clonedPositionInfo.address;
+    });
+    // still use the new version if there is a same address
+    if (foundIndex >= 0) {
+      positionInfoList.splice(foundIndex, 1);
+    }
+    // make the newest address on the front.
+    positionInfoList.unshift(clonedPositionInfo);
+    // remove the oldest item, to prevent data size keeping growing.
+    positionInfoList.splice(MAX_HISTORICAL_ADDRESS_COUNT);
+    localStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
+  } catch (e) {
+    console.error('failed to set historical delivery addresses', e);
+  }
 };
