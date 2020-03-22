@@ -15,14 +15,12 @@ class OtpModal extends React.Component {
     otp: null,
     currentOtpTime: this.props.ResendOtpTime,
     isSendingOtp: this.props.isLoading,
-    isChrome: false,
+    isNewInput: true,
   };
 
   componentDidMount() {
     const { currentOtpTime } = this.state;
-    const userAgent = navigator.userAgent;
     this.countDown(currentOtpTime);
-    this.setState({ isChrome: userAgent.indexOf('Chrome') > -1 });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -57,7 +55,7 @@ class OtpModal extends React.Component {
 
   render() {
     const { t, buttonText, onClose, getOtp, sendOtp, phone } = this.props;
-    const { otp, currentOtpTime, isSendingOtp, isChrome } = this.state;
+    const { otp, currentOtpTime, isSendingOtp, isNewInput } = this.state;
     let buttonContent = buttonText;
 
     if (isSendingOtp) {
@@ -74,7 +72,7 @@ class OtpModal extends React.Component {
           </figure>
           <h2 className="full-aside__title">{t('OTPSentTitle', { phone })}</h2>
           <div className="otp-input">
-            {isChrome ? (
+            {isNewInput ? (
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <input
                   onChange={this.handleChromeInputOtp.bind(this)}
