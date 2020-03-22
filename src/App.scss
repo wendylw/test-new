@@ -58,6 +58,12 @@
       fill: $white;
     }
   }
+
+  &__second-level {
+    padding: 10px;
+    color: $white;
+    background-color: $blue;
+  }
 }
 
 .main-section {
@@ -2087,21 +2093,35 @@
       height: 1px;
       background-color: $gray-3;
     }
+  }
 
-    & + .header {
+  &__entry-container {
+    .header {
       top: 57px;
       height: 64px;
       background-color: $white;
     }
 
-    & ~ .list__container {
+    .list__container {
       top: 70px;
     }
 
-    & ~ .category-nav,
-    & ~ .list__container .category__header.fixed,
-    & ~ .aside:not(.store-info__aside) {
+    .category-nav,
+    .list__container .category__header.fixed,
+    .aside:not(.store-info__aside) {
       top: 121px;
+    }
+
+    .top-message__second-level ~ .list__container .category__header.fixed,
+    .top-message__second-level ~ .category-nav {
+      top: 151px;
+    }
+
+    .top-message__second-level {
+      position: fixed;
+      width: 100%;
+      top: 121px;
+      z-index: 300;
     }
   }
 
