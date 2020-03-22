@@ -1366,6 +1366,11 @@
 
   &__options-title {
     margin: 5px 0;
+
+    & + span {
+      display: block;
+      margin-bottom: 5px;
+    }
   }
 
   .button__fill {

@@ -10,10 +10,6 @@ export class VariationSelector extends Component {
     isInvalidMinimum: false,
   };
 
-  static defaultProps = {
-    onChange: () => {},
-  };
-
   state = {
     selected: {}, // Object<OptionId, Boolean<isSelected>}>
   };
@@ -45,7 +41,6 @@ export class VariationSelector extends Component {
 
     const { optionValues } = this.props.variation;
     const selectedOptionValue = optionValues.filter(v => !v.markedSoldOut)[0];
-    // const isInvalidMinimum = enableSelectionAmountLimit && minSelectionAmount && (this.state.selected < minSelectionAmount);
 
     if (selectedOptionValue) {
       this.setState({
@@ -99,9 +94,10 @@ export class VariationSelector extends Component {
   }
 
   render() {
-    const { t, variation } = this.props;
+    const { t, variation, isInvalidMinimum } = this.props;
     const { selected } = this.state;
     const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
+    const maxSelected = maxSelectionAmount && selected.length >= maxSelectionAmount;
     let AmountLimitDescription = minSelectionAmount ? t('MinimumChoicesDescription') : t('MaximumChoicesDescription');
 
     if (enableSelectionAmountLimit && minSelectionAmount && maxSelectionAmount) {
@@ -116,13 +112,16 @@ export class VariationSelector extends Component {
       <li className="product-detail__options" key={variation.id}>
         <h4 className="product-detail__options-title gray-font-opacity text-uppercase">{variation.name}</h4>
         {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-          <p>{AmountLimitDescription}</p>
+          <span className={`product-detail__max-minimum-text ${maxSelected || isInvalidMinimum ? 'text-error' : ''}`}>
+            {AmountLimitDescription}
+          </span>
         ) : null}
         <ul className="tag__cards">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
             const className = ['tag__card variation'];
-            const isDisabled = markedSoldOut || (selected.length >= maxSelectionAmount && !selected[id]);
+            const isDisabled =
+              markedSoldOut || (maxSelectionAmount && selected.length >= maxSelectionAmount && !selected[id]);
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
             if (isDisabled) {
@@ -147,13 +146,15 @@ export class VariationSelector extends Component {
 VariationSelector.propTypes = {
   variation: PropTypes.object,
   initVariation: PropTypes.bool,
+  isInvalidMinimum: PropTypes.bool,
   onChange: PropTypes.func,
 };
 
 VariationSelector.defaultProps = {
   variation: {},
   initVariation: false,
+  isInvalidMinimum: true,
   onChange: () => {},
 };
 
-export default withTranslation()(VariationSelector);
+export default withTranslation(['OrderingHome'])(VariationSelector);
