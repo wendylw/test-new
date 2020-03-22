@@ -429,6 +429,11 @@
     .aside {
       bottom: 21.6vw;
     }
+
+    .form__textarea {
+      margin: 5px 0;
+      padding-right: 34px;
+    }
   }
 
   &__payment {
@@ -652,6 +657,10 @@
     .header__title {
       margin-right: 36px;
     }
+  }
+
+  .warning__button {
+    width: 140px;
   }
 
   &__image-container {
@@ -2065,7 +2074,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    // height: 57px;
+    height: 57px;
     z-index: 100;
 
     &::after {
@@ -2080,22 +2089,19 @@
     }
 
     & + .header {
-      // top: 57px;
-      top: 0;
+      top: 57px;
       height: 64px;
       background-color: $white;
     }
 
     & ~ .list__container {
-      // top: 70px;
-      top: 13px;
+      top: 70px;
     }
 
     & ~ .category-nav,
     & ~ .list__container .category__header.fixed,
     & ~ .aside:not(.store-info__aside) {
-      // top: 121px;
-      top: 64px;
+      top: 121px;
     }
   }
 

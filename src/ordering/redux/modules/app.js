@@ -13,7 +13,7 @@ const { AUTH_INFO } = Constants;
 const initialState = {
   user: {
     showLoginPage: false,
-    isWebview: Utils.isWebview(),
+    // isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,

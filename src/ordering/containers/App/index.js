@@ -38,7 +38,7 @@ class App extends Component {
     }
 
     this.getTokens(isLogin);
-    this.postAppMessage(user);
+    // this.postAppMessage(user);
   }
 
   componentDidUpdate(prevProps) {
@@ -51,7 +51,7 @@ class App extends Component {
     }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+      // this.postAppMessage(user);
     }
 
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
@@ -91,15 +91,15 @@ class App extends Component {
     );
   }
 
-  postAppMessage(user) {
-    const { isWebview, isExpired } = user || {};
+  // postAppMessage(user) {
+  //   const { isWebview, isExpired } = user || {};
 
-    if (isWebview && isExpired) {
-      window.ReactNativeWebView.postMessage('tokenExpired');
-    } else if (isWebview && !isExpired) {
-      window.ReactNativeWebView.postMessage('getToken');
-    }
-  }
+  //   if (isWebview && isExpired) {
+  //     window.ReactNativeWebView.postMessage('tokenExpired');
+  //   } else if (isWebview && !isExpired) {
+  //     window.ReactNativeWebView.postMessage('getToken');
+  //   }
+  // }
 
   handleClearError = () => {
     this.props.appActions.clearError();

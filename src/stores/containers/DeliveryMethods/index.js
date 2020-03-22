@@ -10,6 +10,7 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
+import Utils from '../../../utils/utils';
 
 const { ROUTER_PATHS } = Constants;
 const METHODS_LIST = [
@@ -17,8 +18,7 @@ const METHODS_LIST = [
     name: 'delivery',
     logo: DeliveryImage,
     labelKey: 'FoodDelivery',
-    // pathname: ROUTER_PATHS.ORDERING_LOCATION,
-    pathname: '',
+    pathname: ROUTER_PATHS.ORDERING_LOCATION,
   },
   {
     name: 'pickup',
@@ -44,6 +44,8 @@ class DeliveryMethods extends Component {
 
     if (hashCode) {
       const currentMethod = METHODS_LIST.find(method => method.name === methodName);
+
+      await Utils.setSessionVariable('deliveryCallbackUrl', `/?h=${hashCode || ''}&type=${methodName}`);
 
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
         ''}&type=${methodName}`;
