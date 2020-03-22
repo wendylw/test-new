@@ -1,7 +1,7 @@
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
-  const { type, code, message } = action;
+  const { code } = action;
 
   if (code === 404) {
     return {
