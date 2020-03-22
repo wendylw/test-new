@@ -39,12 +39,16 @@ export class OrderDetails extends Component {
     return (
       <ul className="list">
         {(items || []).map((value, index) => {
-          const { title, displayPrice } = value;
+          const { title, displayPrice, quantity, variationTexts } = value;
 
           return (
-            <li key={`title-${index}`} className="item flex flex-space-between flex-middle">
-              <span className="gray-font-opacity">{title}</span>
-              <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
+            <li key={`title-${index}`} className="item flex flex-space-between">
+              <span className="gray-font-opacity">{quantity} x</span>
+              <div>
+                <span className="gray-font-opacity">{title}</span>
+                {variationTexts[0] ? <p className="item__description">{variationTexts[0]}</p> : null}
+              </div>
+              <CurrencyNumber className="gray-font-opacity" money={displayPrice * quantity} />
             </li>
           );
         })}
