@@ -5,6 +5,7 @@ import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
 import { getBusiness, getRequestInfo } from './app';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -59,7 +60,8 @@ export const actions = {
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = getDeliveryDetails(getState());
-    const pickupAddressInfo = {
+    const { country } = getBusinessByName(getState(), business);
+    const contactDetail = {
       phone: deliveryDetails.phone,
       name: deliveryDetails.username,
     };
@@ -71,36 +73,38 @@ export const actions = {
       cashback,
     };
 
-    if (shippingType === Constants.DELIVERY_METHOD.DELIVERY) {
-      // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-      // const { address: addressString, addressInfo } = currentAddress || {};
+    if (shippingType === 'delivery') {
+      const { coords, address: deliveryTo } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+      const { lat, lng } = coords || {};
+      const location =
+        lat && lng
+          ? {
+              longitude: lng,
+              latitude: lat,
+            }
+          : null;
       const addressDetails = deliveryDetails.addressDetails;
-      // const { street1, street2 } = addressInfo || {};
-      // const address = addressString + street1 || '' + street2 || '';
-      const address = deliveryDetails.deliverToAddress;
       const deliveryComments = deliveryDetails.deliveryComments;
 
       variables = {
         ...variables,
         shippingType,
         deliveryAddressInfo: {
-          ...pickupAddressInfo,
-          // ...addressInfo,
-          country: 'MY',
-          state: '',
+          ...contactDetail,
           addressDetails,
-          address,
+          address: `${addressDetails}, ${deliveryTo}`,
+          country,
+          deliveryTo,
+          location,
         },
         deliveryComments,
       };
+    } else if (shippingType === 'pickup') {
+      variables = {
+        ...variables,
+        contactDetail,
+      };
     }
-
-    // else if (shippingType === 'pickup') {
-    //   variables = {
-    //     ...variables,
-    //     pickupAddressInfo,
-    //   };
-    // }
 
     return dispatch(
       createOrder(
