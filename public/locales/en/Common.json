@@ -66,7 +66,7 @@
   "PickUpDetails": "Pickup Details",
   "Name": "Name",
   "MobileNumber": "Mobile Number",
-  "AddressDetails": "Address Details",
+  "UnitBlockFloor": "Unit/Block/Floor",
   "AddAddressPlaceholder": "Add in your address*",
   "AddressDetailsPlaceholder": "e.g Floor, unit number",
   "AddNoteToDriverPlaceholder": "Add a note to driver *",
