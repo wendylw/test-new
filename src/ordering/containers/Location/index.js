@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { debounce } from 'lodash';
-import { IconGpsFixed, IconSearch } from '../../../components/Icons';
+import { IconGpsFixed, IconSearch, IconClose } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
 import './index.scss';
@@ -244,6 +244,10 @@ class Location extends Component {
     history.go(-1);
   };
 
+  clearSearchBox = () => {
+    this.setState({ searchText: '' });
+  };
+
   clearErrorToast = () => {
     this.setState({ errorToast: null });
   };
@@ -256,9 +260,9 @@ class Location extends Component {
     const { searchText } = this.state;
     const { t } = this.props;
     return (
-      <div className="location-page__form">
+      <div className="location-page__search-box">
         <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-          <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
+          <i className="location-page__search-box-search-icon" onClick={this.tryGeolocation}>
             <IconSearch />
           </i>
           <input
@@ -268,6 +272,13 @@ class Location extends Component {
             onChange={this.onSearchBoxChange}
             value={searchText}
           />
+          <i
+            className="location-page__search-box-clear-icon"
+            onClick={this.clearSearchBox}
+            style={{ visibility: searchText ? 'visible' : 'hidden' }}
+          >
+            <IconClose />
+          </i>
         </div>
       </div>
     );
