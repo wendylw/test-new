@@ -3,6 +3,13 @@ const API_URLS = {
     url: '/api/cart',
     method: 'get',
   },
+  GET_CART_TYPE: isDeliveryType => {
+    let CartObj = API_URLS.GET_CART;
+    if (isDeliveryType) {
+      CartObj.url = '/api/cart?shippingType=delivery';
+    }
+    return CartObj;
+  },
   GET_BRAINTREE_TOKEN: {
     url: '/payment/initToken',
     method: 'get',
@@ -25,7 +32,7 @@ const API_URLS = {
   }),
   GET_CASHBACK_BUSINESS: {
     url: '/api/cashback/business',
-    method: 'get'
+    method: 'get',
   },
   GET_CASHBACK_HISTORIES: {
     url: '/api/cashback/history',
@@ -55,12 +62,12 @@ const API_URLS = {
     ur: '/api/privacy',
     method: 'get',
   },
-  POST_OTP: (url) => ({
+  POST_OTP: url => ({
     url,
     method: 'post',
     mode: 'cors',
   }),
-  GET_CUSTOMER_PROFILE: (consumerId) => ({
+  GET_CUSTOMER_PROFILE: consumerId => ({
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
@@ -70,13 +77,12 @@ const API_URLS = {
   },
   PUT_TRANSACTIONS_STATUS: {
     url: '/api/transactions/status',
-    method: 'put'
+    method: 'put',
   },
   DELETE_CARTITEMS_BY_PRODUCTS: {
     url: '/api/cart/items',
-    method: 'del'
-  }
-
+    method: 'del',
+  },
 };
 
 export default {

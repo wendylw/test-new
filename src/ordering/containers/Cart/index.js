@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import qs from 'qs';
+import { withTranslation, Trans } from 'react-i18next';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import { IconDelete, IconClose } from '../../../components/Icons';
@@ -8,18 +10,20 @@ import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as appActionCreators } from '../../redux/modules/app';
+import { bindActionCreators, compose } from 'redux';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+
+const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 
 class Cart extends Component {
   state = {
-    expandBilling: false,
+    expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
   };
@@ -30,6 +34,26 @@ class Cart extends Component {
     await homeActions.loadShoppingCart();
 
     window.scrollTo(0, 0);
+    this.handleResizeEvent();
+  }
+
+  handleResizeEvent() {
+    window.addEventListener(
+      'resize',
+      () => {
+        const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        if (resizeHeight < originHeight) {
+          this.setState({
+            expandBilling: false,
+          });
+        } else {
+          this.setState({
+            expandBilling: true,
+          });
+        }
+      },
+      false
+    );
   }
 
   getDisplayPrice() {
@@ -55,6 +79,7 @@ class Cart extends Component {
   handleClickBack = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
     });
   };
 
@@ -62,8 +87,10 @@ class Cart extends Component {
     const { history, cartSummary, user } = this.props;
     const { isLogin } = user;
     const { total, totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const pathname = type ? Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO : Constants.ROUTER_PATHS.ORDERING_PAYMENT;
 
-    if (isLogin && !total) {
+    if (isLogin && !total && !type) {
       const { paymentActions } = this.props;
 
       this.setState({
@@ -88,13 +115,17 @@ class Cart extends Component {
       return;
     }
 
-    history.push(Constants.ROUTER_PATHS.ORDERING_PAYMENT);
+    history.push({
+      pathname,
+      search: window.location.search,
+    });
   };
 
   handleClearAll = () => {
     this.props.cartActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
       });
     });
   };
@@ -105,13 +136,14 @@ class Cart extends Component {
   }
 
   renderAdditionalComments() {
+    const { t } = this.props;
     const { additionalComments } = this.state;
 
     return (
       <div className="cart__note flex flex-middle flex-space-between">
         <textarea
           rows="4"
-          placeholder="Add a note to your order? (Limit 140 characters)"
+          placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
           onChange={this.handleChangeAdditionalComments.bind(this)}
@@ -125,16 +157,34 @@ class Cart extends Component {
     );
   }
 
+  getDeliveryFee = () => {
+    const { allBusinessInfo, business } = this.props;
+    const originalInfo = allBusinessInfo[business] || {};
+    const { qrOrderingSettings } = originalInfo || {};
+    const { defaultShippingZone } = qrOrderingSettings || {};
+    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { rate } = defaultShippingZoneMethod || {};
+
+    return rate || 0;
+  };
+
   render() {
-    const { cartSummary, shoppingCart, businessInfo } = this.props;
+    const { t, cartSummary, shoppingCart, businessInfo } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback } = cartSummary || {};
     const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
-    const buttonText = isInvalidTotal ? '*Min ' : 'Pay';
     const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
+    const buttonText = !isInvalidTotal ? (
+      t('Pay')
+    ) : (
+      <Trans i18nKey="MinimumConsumption">
+        <span className="font-weight-bold">Min</span>
+        <CurrencyNumber className="font-weight-bold" money={minTotal} />
+      </Trans>
+    );
 
     if (!(cartSummary && items)) {
       return null;
@@ -145,16 +195,16 @@ class Cart extends Component {
         <Header
           className="border__bottom-divider gray"
           isPage={true}
-          title={`Order ${count || 0} Items`}
+          title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
         >
           <button className="warning__button" onClick={this.handleClearAll.bind(this)}>
             <IconDelete />
-            <span className="warning__label text-middle">Clear All</span>
+            <span className="warning__label text-middle">{t('ClearAll')}</span>
           </button>
         </Header>
         <div className="list__container">
-          <CartList shoppingCart={shoppingCart} />
+          <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
@@ -170,6 +220,8 @@ class Cart extends Component {
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
+            isDeliveryType={Utils.isDeliveryType()}
+            deliveryFee={this.getDeliveryFee()}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -178,7 +230,7 @@ class Cart extends Component {
               className="billing__button button button__fill button__block dark font-weight-bold"
               onClick={this.handleClickBack.bind(this)}
             >
-              Back
+              {t('Back')}
             </button>
           </div>
           <div className="footer-operation__item width-2-3">
@@ -187,8 +239,8 @@ class Cart extends Component {
               onClick={this.handleCheckPaymentStatus.bind(this)}
               disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
             >
-              {isCreatingOrder ? <div className="loader"></div> : buttonText}
-              {isInvalidTotal ? <CurrencyNumber className="font-weight-bold" money={minTotal} /> : null}
+              {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
+              {!isCreatingOrder ? buttonText : null}
             </button>
           </div>
         </footer>
@@ -196,26 +248,31 @@ class Cart extends Component {
     );
   }
 }
+/* TODO: backend data */
+export default compose(
+  withTranslation(['OrderingCart']),
+  connect(
+    state => {
+      const currentOrderId = getCurrentOrderId(state);
 
-export default connect(
-  state => {
-    const currentOrderId = getCurrentOrderId(state);
-
-    return {
-      user: getUser(state),
-      cartSummary: getCartSummary(state),
-      shoppingCart: getShoppingCart(state),
-      businessInfo: getBusinessInfo(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      currentProduct: getCurrentProduct(state),
-      thankYouPageUrl: getThankYouPageUrl(state),
-      currentOrder: getOrderByOrderId(state, currentOrderId),
-    };
-  },
-  dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-    cartActions: bindActionCreators(cartActionCreators, dispatch),
-    paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-  })
+      return {
+        business: getBusiness(state),
+        user: getUser(state),
+        cartSummary: getCartSummary(state),
+        shoppingCart: getShoppingCart(state),
+        businessInfo: getBusinessInfo(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        currentProduct: getCurrentProduct(state),
+        thankYouPageUrl: getThankYouPageUrl(state),
+        currentOrder: getOrderByOrderId(state, currentOrderId),
+        allBusinessInfo: getAllBusinesses(state),
+      };
+    },
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
+      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+    })
+  )
 )(Cart);

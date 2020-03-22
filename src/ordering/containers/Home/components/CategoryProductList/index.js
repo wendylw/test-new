@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import ProductItem from '../../../../components/ProductItem';
 import { ScrollObserver, ScrollObservable } from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionsCreator, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
 class CategoryProductList extends Component {
@@ -50,12 +51,7 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
-    const itemClassList = ['flex-middle'];
-
-    if (isVerticalMenu) {
-      itemClassList.push('flex-column');
-    }
+    const { t, categories, isVerticalMenu } = this.props;
 
     return (
       <div id="product-list" className="list__container">
@@ -75,16 +71,18 @@ class CategoryProductList extends Component {
                 .getAttribute('class')
                 .includes('fixed')
             ) {
-              target = this.prevCategory;
+              target = this.prevCategory || {};
             } else {
               this.prevCategory = currentTarget;
             }
 
             return (
               <h2 className="category__header fixed flex flex-middle flex-space-between">
-                <label>{target.name}</label>
+                <label>{target.name || ''}</label>
                 {target.cartQuantity ? (
-                  <span className="gray-font-opacity">{`${target.cartQuantity} Items`}</span>
+                  <span className="gray-font-opacity">
+                    {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
+                  </span>
                 ) : null}
               </h2>
             );
@@ -97,14 +95,15 @@ class CategoryProductList extends Component {
                 <h2 className="category__header flex flex-middle flex-space-between">
                   <label>{category.name}</label>
                   {category.cartQuantity ? (
-                    <span className="gray-font-opacity">{`${category.cartQuantity} Items`}</span>
+                    <span className="gray-font-opacity">
+                      {t('CartItemsInCategory', { cartQuantity: category.cartQuantity })}
+                    </span>
                   ) : null}
                 </h2>
                 <ul className="list">
                   {(category.products || []).map(product => (
                     <ProductItem
                       key={product.id}
-                      className={itemClassList.join(' ')}
                       image={product.images[0]}
                       title={product.title}
                       price={product.displayPrice}
@@ -115,6 +114,7 @@ class CategoryProductList extends Component {
                       onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
+                      isValidTimeToOrder={this.props.isValidTimeToOrder}
                     />
                   ))}
                 </ul>
@@ -130,21 +130,26 @@ class CategoryProductList extends Component {
 CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
   isVerticalMenu: PropTypes.bool,
+  isValidTimeToOrder: PropTypes.bool,
 };
 
 CategoryProductList.defaultProps = {
-  onToggle: () => { },
+  onToggle: () => {},
   isVerticalMenu: false,
+  isValidTimeToOrder: true,
 };
 
-export default connect(
-  state => {
-    return {
-      shoppingCart: getShoppingCart(state),
-      categories: getCategoryProductList(state),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionsCreator, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      return {
+        shoppingCart: getShoppingCart(state),
+        categories: getCategoryProductList(state),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionsCreator, dispatch),
+    })
+  )
 )(CategoryProductList);

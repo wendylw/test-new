@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
 
 export class Billing extends Component {
   renderServiceCharge() {
-    const {
-      serviceCharge,
-      businessInfo,
-    } = this.props;
-    const {
-      enableServiceCharge = false,
-      serviceChargeRate = 0,
-    } = businessInfo;
+    const { t, serviceCharge, businessInfo } = this.props;
+    const { enableServiceCharge = false, serviceChargeRate = 0 } = businessInfo;
 
     // TODO: revert service charge after released BEEP-163
     if (!enableServiceCharge || !serviceCharge) {
@@ -20,7 +15,12 @@ export class Billing extends Component {
 
     return (
       <li className="billing__item flex flex-middle flex-space-between">
-        <label>Service Charge {typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null}</label>
+        <label>
+          {t('ServiceChargeTitle', {
+            serviceChargeRate:
+              typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null,
+          })}
+        </label>
         <CurrencyNumber money={serviceCharge || 0} />
       </li>
     );
@@ -28,12 +28,15 @@ export class Billing extends Component {
 
   render() {
     const {
+      t,
       className,
       subtotal,
       total,
       tax,
       creditsBalance,
       businessInfo,
+      isDeliveryType,
+      deliveryFee,
     } = this.props;
     const { stores = [] } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
@@ -47,33 +50,37 @@ export class Billing extends Component {
       <section className={classList.join(' ')}>
         <ul className="billing__list">
           <li className="billing__item flex flex-middle flex-space-between">
-            <label>Subtotal</label>
+            <label>{t('Subtotal')}</label>
             <CurrencyNumber money={subtotal || 0} />
           </li>
-          {
-            creditsBalance
-              ? (
-                <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
-                  <label className="font-weight-bold">Beep Cashback</label>
-                  <span className="font-weight-bold">
-                    - <CurrencyNumber className="font-weight-bold" money={creditsBalance || 0} />
-                  </span>
-                </li>
-              )
-              : null
-          }
+          {creditsBalance ? (
+            <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
+              <label className="font-weight-bold">{t('BeepCashback')}</label>
+              <span className="font-weight-bold">
+                - <CurrencyNumber className="font-weight-bold" money={creditsBalance || 0} />
+              </span>
+            </li>
+          ) : null}
           <li className="billing__item flex flex-middle flex-space-between">
-            <label>{(receiptTemplateData || {}).taxName || `Tax`}</label>
+            <label>{(receiptTemplateData || {}).taxName || t('Tax')}</label>
             <CurrencyNumber money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
+
+          {isDeliveryType ? (
+            <li className="billing__item flex flex-middle flex-space-between">
+              <label>{t('DeliveryFee')}</label>
+              <CurrencyNumber money={deliveryFee || 0} />
+            </li>
+          ) : null}
+
           <li className="billing__item show flex flex-middle flex-space-between">
-            <label className="font-weight-bold">Total</label>
+            <label className="font-weight-bold">{t('Total')}</label>
             <CurrencyNumber className="font-weight-bold" money={total || 0} />
           </li>
         </ul>
       </section>
-    )
+    );
   }
 }
 
@@ -97,4 +104,4 @@ Billing.defaultProps = {
   creditsBalance: 0,
 };
 
-export default Billing;
+export default withTranslation()(Billing);

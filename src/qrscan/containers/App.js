@@ -1,10 +1,11 @@
-import React, { Component } from "react";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import { actions as appActionCreators, getError } from "../redux/modules/app";
-import Error from "./components/Error";
-import Routes from "../Routes.js"
-import "../styles.scss";
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { actions as appActionCreators, getError } from '../redux/modules/app';
+import Error from './components/Error';
+import Routes from '../Routes.js';
+import DocumentFavicon from '../../components/DocumentFavicon';
+import '../styles.scss';
 
 class App extends Component {
   render() {
@@ -12,6 +13,7 @@ class App extends Component {
       <div className="qr-scanner-app">
         {/* Routes */}
         <Routes />
+        <DocumentFavicon icon={`${process.env.PUBLIC_URL}/favicon.ico`} />
         {this.renderError()}
       </div>
     );
@@ -31,10 +33,10 @@ class App extends Component {
 export default connect(
   (state, props) => {
     return {
-      error: getError(state)
+      error: getError(state),
     };
   },
   dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch)
+    appActions: bindActionCreators(appActionCreators, dispatch),
   })
 )(App);

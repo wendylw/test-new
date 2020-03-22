@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation, Trans } from 'react-i18next';
 import { IconCart } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
 import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
@@ -24,7 +25,7 @@ export class Footer extends Component {
   }
 
   render() {
-    const { history, onClickCart, cartSummary, businessInfo, tableId, onToggle } = this.props;
+    const { history, onClickCart, cartSummary, businessInfo, tableId, onToggle, t, isValidTimeToOrder } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
@@ -42,11 +43,23 @@ export class Footer extends Component {
               <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
               {this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="cart-bar__money-minimum">
-                  <span className="gray-font-opacity">{count ? 'Remaining ' : 'Min '}</span>
-                  <CurrencyNumber
-                    className="gray-font-opacity"
-                    money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                  />
+                  {count ? (
+                    <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
+                      <span className="gray-font-opacity">Remaining</span>
+                      <CurrencyNumber
+                        className="gray-font-opacity"
+                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                      />
+                    </Trans>
+                  ) : (
+                    <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
+                      <span className="gray-font-opacity">Min</span>
+                      <CurrencyNumber
+                        className="gray-font-opacity"
+                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                      />
+                    </Trans>
+                  )}
                 </label>
               ) : null}
             </div>
@@ -54,13 +67,14 @@ export class Footer extends Component {
           {tableId !== 'DEMO' ? (
             <button
               className="cart-bar__order-button"
-              disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
+              disabled={this.getDisplayPrice() < Number(minimumConsumption || 0) || !isValidTimeToOrder}
               onClick={() => {
                 onToggle();
-                history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART });
+                history &&
+                  history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: window.location.search });
               }}
             >
-              Order now
+              {t('OrderNow')}
             </button>
           ) : null}
         </div>
@@ -73,24 +87,29 @@ Footer.propTypes = {
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
   onClickCart: PropTypes.func,
+  isValidTimeToOrder: PropTypes.bool,
 };
 
 Footer.defaultProps = {
   onToggle: () => {},
   onClickCart: () => {},
+  isValidTimeToOrder: true,
 };
 
-export default connect(
-  state => {
-    return {
-      cartSummary: getCartSummary(state),
-      businessInfo: getBusinessInfo(state),
-      shoppingCart: getShoppingCart(state),
-      categories: getCategoryProductList(state),
-    };
-  },
-  dispatch => ({
-    cartActions: bindActionCreators(cartActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      return {
+        cartSummary: getCartSummary(state),
+        businessInfo: getBusinessInfo(state),
+        shoppingCart: getShoppingCart(state),
+        categories: getCategoryProductList(state),
+      };
+    },
+    dispatch => ({
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(Footer);

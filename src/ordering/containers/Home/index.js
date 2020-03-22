@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
+
+import { IconEdit, IconInfoOutline } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
+import DeliveryDetailModal from './components/DeliveryDetailModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { actions as cartActionCreators } from '../../redux/modules/cart';
+import { bindActionCreators, compose } from 'redux';
+import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
   getCategoryProductList,
@@ -92,13 +97,102 @@ export class Home extends Component {
     });
   }
 
-  renderHeader() {
-    const { onlineStoreInfo, requestInfo } = this.props;
-    const { tableId } = requestInfo || {};
-    const classList = ['border__bottom-divider gray'];
+  renderDeliverToBar() {
+    const { t, history } = this.props;
+    const { deliveryToAddress } = this.getDeliveryInfo();
+    const fillInDeliverToAddress = () => {
+      const { search } = window.location;
 
-    if (!tableId) {
+      Utils.setSessionVariable('deliveryCallbackUrl', `/${search}`);
+
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+        search,
+      });
+    };
+
+    return (
+      <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
+        <div className="item__detail-content flex flex-middle flex-space-between">
+          <div className="location-page__base-info">
+            <summary className="item__title">{t('DeliverTo')}</summary>
+            <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+          </div>
+          <i className="location-page__edit">
+            <IconEdit />
+          </i>
+        </div>
+      </div>
+    );
+  }
+
+  isValidTimeToOrder = () => {
+    if (!Utils.isDeliveryType()) {
+      return true;
+    }
+    let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    const weekInfo = new Date().getDay() + 1;
+    const hourInfo = new Date().getHours();
+    const minutesInfo = new Date().getMinutes();
+    const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
+    const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+
+    const isClosed =
+      hourInfo < Number(timeFrom[0]) ||
+      hourInfo > Number(timeTo[0]) ||
+      (hourInfo === Number(timeFrom[0]) &&
+        (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
+      (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
+
+    if (validDays && validDays.includes(weekInfo) && !isClosed) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  getDeliveryInfo = () => {
+    const { allBusinessInfo, business } = this.props;
+    const originalInfo = allBusinessInfo[business] || {};
+    const { stores } = originalInfo || {};
+    const { qrOrderingSettings } = originalInfo || {};
+    const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { rate } = defaultShippingZoneMethod || {};
+    const deliveryFee = rate || 0;
+    const minOrder = minimumConsumption || 0;
+
+    const { phone } = (stores && stores[0]) || {};
+    const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+
+    return {
+      deliveryFee,
+      minOrder,
+      storeAddress,
+      deliveryToAddress,
+      telephone: phone,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+    };
+  };
+
+  renderHeader() {
+    const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
+    const { stores, multipleStores } = businessInfo || {};
+    const { tableId } = requestInfo || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+    const classList = [];
+    const isDeliveryType = Utils.isDeliveryType();
+    const { deliveryFee, minOrder } = this.getDeliveryInfo();
+
+    if (!tableId && !isDeliveryType) {
       classList.push('has-right');
+    }
+
+    if (!isDeliveryType) {
+      classList.push('border__bottom-divider gray');
     }
 
     return (
@@ -107,15 +201,45 @@ export class Home extends Component {
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
-        title={onlineStoreInfo.storeName}
+        title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
+        onClickHandler={this.handleToggleAside.bind(this)}
+        isDeliveryType={isDeliveryType}
+        deliveryFee={deliveryFee}
+        minOrder={minOrder}
+        isValidTimeToOrder={this.isValidTimeToOrder()}
       >
-        {tableId ? <span className="gray-font-opacity text-uppercase">Table {tableId}</span> : null}
+        {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
+        {isDeliveryType ? (
+          <i className="header__info-icon">
+            <IconInfoOutline />
+          </i>
+        ) : null}
       </Header>
     );
   }
 
   render() {
-    const { business, categories, onlineStoreInfo, requestInfo, isVerticalMenu, ...otherProps } = this.props;
+    const {
+      business,
+      categories,
+      onlineStoreInfo,
+      businessInfo,
+      requestInfo,
+      isVerticalMenu,
+      allBusinessInfo,
+      history,
+      ...otherProps
+    } = this.props;
+    const {
+      deliveryFee,
+      minOrder,
+      storeAddress,
+      telephone,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+    } = this.getDeliveryInfo();
+
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
 
@@ -125,12 +249,14 @@ export class Home extends Component {
 
     return (
       <section className="table-ordering__home">
+        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}
           onToggle={this.handleToggleAside.bind(this)}
           onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
+          isValidTimeToOrder={this.isValidTimeToOrder()}
         />
         <ProductDetail
           onlineStoreInfo={onlineStoreInfo}
@@ -146,29 +272,51 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
+        <DeliveryDetailModal
+          onlineStoreInfo={onlineStoreInfo}
+          businessInfo={businessInfo}
+          show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
+          onToggle={this.handleToggleAside.bind(this)}
+          deliveryFee={deliveryFee}
+          minOrder={minOrder}
+          storeAddress={storeAddress}
+          telephone={telephone}
+          validDays={validDays}
+          validTimeFrom={validTimeFrom}
+          validTimeTo={validTimeTo}
+          isValidTimeToOrder={this.isValidTimeToOrder()}
+        />
+        {!this.isValidTimeToOrder() ? <div className="cover back-drop"></div> : null}
         <Footer
           {...otherProps}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
           onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}
+          isValidTimeToOrder={this.isValidTimeToOrder()}
+          history={history}
         />
       </section>
     );
   }
 }
 
-export default connect(
-  state => {
-    return {
-      business: getBusiness(state),
-      isVerticalMenu: isVerticalMenuBusiness(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      requestInfo: getRequestInfo(state),
-      categories: getCategoryProductList(state),
-    };
-  },
-  dispatch => ({
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-    cartActions: bindActionCreators(cartActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['OrderingHome']),
+  connect(
+    state => {
+      return {
+        business: getBusiness(state),
+        businessInfo: getBusinessInfo(state),
+        isVerticalMenu: isVerticalMenuBusiness(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        requestInfo: getRequestInfo(state),
+        categories: getCategoryProductList(state),
+        allBusinessInfo: getAllBusinesses(state),
+      };
+    },
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
+    })
+  )
 )(Home);

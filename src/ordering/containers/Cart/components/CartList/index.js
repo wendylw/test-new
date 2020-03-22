@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProductItem from '../../../../components/ProductItem';
@@ -35,7 +36,9 @@ class CartList extends Component {
       this.props.homeActions.loadShoppingCart();
     });
   };
+
   generateProductItemView = cartItem => {
+    const { isList } = this.props;
     const {
       id,
       title,
@@ -56,6 +59,7 @@ class CartList extends Component {
         variation={(variationTexts || []).join(', ')}
         price={displayPrice}
         cartQuantity={quantity}
+        isList={isList}
         soldOut={isCartItemSoldOut(cartItem)}
         decreaseDisabled={!Boolean(quantity)}
         onDecrease={async () => {
@@ -114,6 +118,14 @@ class CartList extends Component {
     return <ul className="list">{generateCartItemUI()}</ul>;
   }
 }
+
+CartList.propTypes = {
+  isList: PropTypes.bool,
+};
+
+CartList.defaultProps = {
+  isList: false,
+};
 
 export default connect(
   state => {
