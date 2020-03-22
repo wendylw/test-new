@@ -58,7 +58,7 @@ class Location extends Component {
       placeId: storePosition.placeId,
     };
   }
-  static async getDevicePositionInfo({ storeCoords, withCache = false }) {
+  static async getDevicePositionInfo(withCache = false) {
     const STORAGE_KEY = 'DEVICE_POSITION_INFO';
     try {
       if (withCache) {
@@ -126,7 +126,7 @@ class Location extends Component {
         isInitializing: false,
         isDetectingPosition: false,
       });
-      this.detectDevicePosition(storePositionInfo.coords, true);
+      this.detectDevicePosition(true);
       this.getHistoricalAddresses();
     } catch (e) {
       console.error(e);
@@ -138,9 +138,9 @@ class Location extends Component {
     }
   }
 
-  detectDevicePosition = async (storeCoords, withCache = true) => {
+  detectDevicePosition = async (withCache = true) => {
     this.setState({ isDetectingPosition: true });
-    const devicePositionInfo = await Location.getDevicePositionInfo({ storeCoords, withCache });
+    const devicePositionInfo = await Location.getDevicePositionInfo(withCache);
     this.setState({
       devicePositionInfo,
       isDetectingPosition: false,
@@ -310,7 +310,7 @@ class Location extends Component {
           className="location-page__detected-position-icon"
           onClick={() => {
             if (storePositionInfo) {
-              this.detectDevicePosition(storePositionInfo.coords, false);
+              this.detectDevicePosition(false);
             }
           }}
         >
