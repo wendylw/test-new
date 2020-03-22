@@ -4,7 +4,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import { IconLeftArrow, IconClose, IconMotorcycle } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
-import Utils from '../utils/utils';
+// import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
 
@@ -12,9 +12,9 @@ class Header extends Component {
   renderLogoAndNavDom() {
     const { isStoreHome, isPage, logo, title, navFunc } = this.props;
 
-    if (Utils.isWebview()) {
-      return null;
-    }
+    // if (Utils.isWebview()) {
+    //   return null;
+    // }
 
     if (isStoreHome) {
       return <Image className="header__image-container text-middle" src={logo} alt={title} />;

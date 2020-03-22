@@ -104,7 +104,7 @@ class PageClaim extends React.Component {
       const { customerId } = cashbackInfo || {};
 
       if (isWebview) {
-        this.handlePostLoyaltyPageMessage();
+        // this.handlePostLoyaltyPageMessage();
       } else {
         history.push({
           pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
@@ -114,16 +114,16 @@ class PageClaim extends React.Component {
     }
   }
 
-  handlePostLoyaltyPageMessage() {
-    const { user } = this.props;
-    const { isWebview } = user || {};
+  // handlePostLoyaltyPageMessage() {
+  //   const { user } = this.props;
+  //   const { isWebview } = user || {};
 
-    if (isWebview) {
-      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-    }
+  //   if (isWebview) {
+  //     window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+  //   }
 
-    return;
-  }
+  //   return;
+  // }
 
   renderCashback() {
     const { cashbackInfo, t } = this.props;
