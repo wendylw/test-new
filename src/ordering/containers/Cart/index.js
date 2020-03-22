@@ -162,8 +162,8 @@ class Cart extends Component {
     const { expandBilling, isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
-    const { items, shippingFee } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback } = cartSummary || {};
+    const { items } = shoppingCart || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
     const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
     const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
     const buttonText = !isInvalidTotal ? (
