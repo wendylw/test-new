@@ -17,8 +17,6 @@ import {
   getHistoricalDeliveryAddresses,
 } from './utils';
 
-// TODO: remove distance from data structure. instead, use computeDistance with memorization
-
 /**
  * type PositionInfo {
  *   address: string;
@@ -35,7 +33,6 @@ import {
  *     state: string;
  *     country: string;
  *   }
- *   distance?: number;
  * }
  */
 
@@ -59,7 +56,6 @@ class Location extends Component {
         country: storeInfo.country,
       },
       placeId: storePosition.placeId,
-      distance: 0,
     };
   }
   static async getDevicePositionInfo({ storeCoords, withCache = false }) {
@@ -68,9 +64,7 @@ class Location extends Component {
       if (withCache) {
         const cache = sessionStorage.getItem(STORAGE_KEY);
         if (cache) {
-          const cachedPositionInfo = JSON.parse(cache);
-          const distance = computeDistance(storeCoords, cachedPositionInfo.coords);
-          cachedPositionInfo.distance = distance;
+          return JSON.parse(cache);
         }
       }
       const positionInfo = await getCurrentAddressInfo();
@@ -89,11 +83,7 @@ class Location extends Component {
           secondaryText: positionInfo.address,
         },
       };
-      // todo: consider the situation that storeCoords is missing
-      const distance = computeDistance(storeCoords, ret.coords);
-      ret.distance = distance;
-      // won't cache distance, in case user has changed the store.
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...ret, distance: undefined }));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...ret }));
       return ret;
     } catch (e) {
       console.error(e);
@@ -187,6 +177,14 @@ class Location extends Component {
     }
   }, 700);
 
+  computeDistanceFromStore(coords) {
+    const { storePositionInfo } = this.state;
+    if (storePositionInfo) {
+      return computeDistance(storePositionInfo.coords, coords);
+    }
+    return Infinity;
+  }
+
   onSearchBoxChange = event => {
     const searchText = event.currentTarget.value;
     console.log('typed:', searchText);
@@ -197,7 +195,7 @@ class Location extends Component {
 
   selectPlace(placeInfo) {
     const { history, t } = this.props;
-    const { distance } = placeInfo;
+    const distance = this.computeDistanceFromStore(placeInfo.coords);
     if (this.isTooFar(distance)) {
       this.setState({
         errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
@@ -280,7 +278,7 @@ class Location extends Component {
       <div className="location-page__address-item">
         <div className="location-page__address-title">{summary}</div>
         <div className="location-page__address-detail">
-          {typeof distance === 'number' && (
+          {typeof distance === 'number' && distance !== Infinity && (
             <span className="location-page__address-distance">{(distance / 1000).toFixed(1)} KM</span>
           )}
           {<span>{detail}</span>}
@@ -323,7 +321,11 @@ class Location extends Component {
             this.renderDetectedPositionStatus(t('DetectingLocation'))
           ) : devicePositionInfo ? (
             <div onClick={this.onDetectedLocationPress}>
-              {this.renderAddressItem(mainText, secondaryText, devicePositionInfo.distance)}
+              {this.renderAddressItem(
+                mainText,
+                secondaryText,
+                this.computeDistanceFromStore(devicePositionInfo.coords)
+              )}
             </div>
           ) : (
             this.renderDetectedPositionStatus(t('LocationSharingIsOff'))
@@ -337,14 +339,14 @@ class Location extends Component {
     // IMPORTANT: be careful to render historicalAddressList, because the data is cached in localStorage,
     // thing might be broken if you have change the data structure. So you must make sure the compat with old version.
     try {
-      const { historicalAddresses, storePositionInfo } = this.state;
+      const { historicalAddresses } = this.state;
       return (
         <div>
           {historicalAddresses.map(positionInfo => {
             const { displayComponents, coords } = positionInfo;
             const mainText = displayComponents ? displayComponents.mainText : positionInfo.address;
             const secondaryText = displayComponents ? displayComponents.secondaryText : positionInfo.address;
-            const distance = computeDistance(storePositionInfo.coords, coords);
+            const distance = this.computeDistanceFromStore(coords);
             return (
               <div onClick={() => this.selectPlace(positionInfo)} key={positionInfo.address}>
                 {this.renderAddressItem(mainText, secondaryText, distance)}

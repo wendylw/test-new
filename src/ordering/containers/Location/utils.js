@@ -383,10 +383,17 @@ export const getCurrentAddressInfo = async () => {
 
 // todo: memorization
 // return value in meters
+const distanceCache = {};
 export const computeDistance = (fromCoords, toCoords) => {
+  const key = `${fromCoords.lat},${fromCoords.lng}:${toCoords.lat},${toCoords.lng}`;
+  if (distanceCache[key]) {
+    return distanceCache[key];
+  }
   const from = new window.google.maps.LatLng(fromCoords.lat, fromCoords.lng);
   const to = new window.google.maps.LatLng(toCoords.lat, toCoords.lng);
-  return window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  distanceCache[key] = result;
+  return result;
 };
 
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
