@@ -433,6 +433,10 @@
     .form__textarea {
       margin: 5px 0;
       padding-right: 34px;
+      word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
     }
   }
 
@@ -2290,6 +2294,10 @@
     ~ span {
       padding-left: 20px;
       line-height: 1.5em;
+      word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
     }
   }
 
