@@ -1,3 +1,31 @@
+.location-page__search-box {
+  padding: 5vw 2.4vw;
+  background-color: #fff;
+  .input {
+    padding-left: 0;
+    padding-right: 5vw;
+    font-size: 1.4rem;
+    line-height: 9vw;
+    height: 12vw;
+  }
+}
+.location-page__search-box-search-icon {
+  padding: 3.2vw;
+  font-size: 0;
+
+  svg {
+    fill: #909090;
+  }
+}
+.location-page__search-box-clear-icon {
+  padding: 15px 8px;
+  svg {
+    fill: #909090;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+  }
+}
 .location-page__detected-position {
   overflow: hidden;
   align-items: stretch;
