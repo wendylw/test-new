@@ -43,10 +43,18 @@ export class OrderDetails extends Component {
 
           return (
             <li key={`title-${index}`} className="item flex flex-space-between">
-              <span className="gray-font-opacity">{quantity} x</span>
-              <div>
-                <span className="gray-font-opacity">{title}</span>
-                {variationTexts[0] ? <p className="item__description">{variationTexts[0]}</p> : null}
+              <div className="flex">
+                <span className="gray-font-opacity">{quantity} x</span>
+                <div style={{ marginLeft: '2vw' }}>
+                  <span className="gray-font-opacity">{title}</span>
+                  <p>
+                    {variationTexts[0]
+                      ? (variationTexts || []).map(value => {
+                          return <span className="tag__card variation order-detail__tag">{value}</span>;
+                        })
+                      : null}
+                  </p>
+                </div>
               </div>
               <CurrencyNumber className="gray-font-opacity" money={displayPrice * quantity} />
             </li>
@@ -62,6 +70,7 @@ export class OrderDetails extends Component {
     return (
       <section className="order-detail">
         <Header
+          className="order-detail__header"
           isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>

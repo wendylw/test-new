@@ -2746,6 +2746,20 @@
     display: block;
   }
 
+  &__header {
+    .header__title {
+      width: 55%;
+      padding: 0;
+    }
+  }
+
+  &__tag {
+    margin: 0;
+    margin-right: 2vw;
+    padding: 0;
+    color: $theme_color;
+  }
+
   &__info-container {
     @extend .border-radius-base;
 
