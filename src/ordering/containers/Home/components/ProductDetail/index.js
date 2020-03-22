@@ -243,6 +243,8 @@ class ProductDetail extends Component {
       }
     }
 
+    console.log(newMap);
+
     this.setState({ variationsByIdMap: newMap });
   }
 
