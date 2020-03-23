@@ -3038,7 +3038,7 @@ body.loading {
   .otp-input input {
     width: 67px !important;
     height: 67px !important;
-    font-size: 56px;
+    font-size: 56px !important;
   }
 
   .payment__image-container {
@@ -3091,7 +3091,8 @@ body.loading {
 
   .header__title,
   .customer__form,
-  .item__image-container ~ .item__detail {
+  .item__image-container ~ .item__detail,
+  .aside-bottom {
     padding: 0 10px;
   }
 
