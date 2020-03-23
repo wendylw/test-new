@@ -2754,6 +2754,17 @@
     display: block;
   }
 
+  &__header {
+    .header__title {
+      width: 55%;
+      padding: 0;
+    }
+  }
+
+  &__tag {
+    color: $theme_color;
+  }
+
   &__info-container {
     @extend .border-radius-base;
 
