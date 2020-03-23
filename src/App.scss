@@ -3002,6 +3002,18 @@ body.loading {
     height: 67px !important;
   }
 
+  .payment__image-container {
+    width: 62px;
+  }
+
+  .payment-bank__card-type-icon.visa {
+    max-width: 50px;
+  }
+
+  .payment-bank__card-type-icon.mastercard {
+    max-width: 42px;
+  }
+
   // reset padding
   .header,
   .store-list .item__content,
@@ -3108,6 +3120,10 @@ body.loading {
 
   .payment-bank__money {
     padding: 9px 0;
+  }
+
+  .thanks {
+    padding: 3vh 16px 9vh;
   }
 
   .full-aside__content {
