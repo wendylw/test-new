@@ -75,10 +75,11 @@ class OtpModal extends React.Component {
             {isNewInput ? (
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <input
+                  className="otp-input__single-input"
                   onChange={this.handleChromeInputOtp.bind(this)}
                   maxLength={Constants.OTP_CODE_SIZE}
                   type="tel"
-                  style={{ width: '70vw', height: '16vw', textAlign: 'center', fontSize: '8vw' }}
+                  placeholder="00000"
                 />
               </div>
             ) : (

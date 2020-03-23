@@ -2564,6 +2564,16 @@
     margin: 2px;
     font-size: 14vw;
   }
+
+  &__single-input {
+    width: 70vw;
+    height: 16vw;
+    padding-left: 20px;
+    text-align: center;
+    letter-spacing: 20px;
+    font-size: 10vw;
+    font-weight: $font-weight-bold;
+  }
 }
 
 .card-list {
