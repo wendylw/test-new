@@ -12,6 +12,9 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 
+import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+
 const { ROUTER_PATHS } = Constants;
 const METHODS_LIST = [
   {
@@ -39,16 +42,20 @@ class DeliveryMethods extends Component {
     const { store, homeActions } = this.props;
 
     await homeActions.getStoreHashData(store.id);
-
+    await homeActions.loadCoreBusiness();
     const { hashCode } = this.props;
 
-    if (hashCode) {
-      const currentMethod = METHODS_LIST.find(method => method.name === methodName);
-
+    const currentMethod = METHODS_LIST.find(method => method.name === methodName);
+    // isValid
+    const { allBusinessInfo, business } = this.props;
+    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    if (hashCode && isValidTimeToOrder) {
       await Utils.setSessionVariable('deliveryCallbackUrl', `/?h=${hashCode || ''}&type=${methodName}`);
-
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
         ''}&type=${methodName}`;
+    } else {
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
     }
   }
 
@@ -98,6 +105,8 @@ export default compose(
   connect(
     state => ({
       hashCode: getStoreHashCode(state),
+      business: getBusiness(state),
+      allBusinessInfo: getAllBusinesses(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
