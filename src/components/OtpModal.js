@@ -15,11 +15,11 @@ class OtpModal extends React.Component {
     otp: null,
     currentOtpTime: this.props.ResendOtpTime,
     isSendingOtp: this.props.isLoading,
+    isNewInput: true,
   };
 
   componentDidMount() {
     const { currentOtpTime } = this.state;
-
     this.countDown(currentOtpTime);
   }
 
@@ -49,9 +49,13 @@ class OtpModal extends React.Component {
     this.countDownSetTimeoutObj = setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
   }
 
+  handleChromeInputOtp(e) {
+    this.setState({ otp: e.target.value });
+  }
+
   render() {
     const { t, buttonText, onClose, getOtp, sendOtp, phone } = this.props;
-    const { otp, currentOtpTime, isSendingOtp } = this.state;
+    const { otp, currentOtpTime, isSendingOtp, isNewInput } = this.state;
     let buttonContent = buttonText;
 
     if (isSendingOtp) {
@@ -68,16 +72,28 @@ class OtpModal extends React.Component {
           </figure>
           <h2 className="full-aside__title">{t('OTPSentTitle', { phone })}</h2>
           <div className="otp-input">
-            <OtpInput
-              key="otp-input"
-              onChange={otp => this.setState({ otp })}
-              numInputs={Constants.OTP_CODE_SIZE}
-              inputStyle={{
-                width: '16vw',
-                height: '16vw',
-                fontSize: '8vw',
-              }}
-            />
+            {isNewInput ? (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <input
+                  className="otp-input__single-input"
+                  onChange={this.handleChromeInputOtp.bind(this)}
+                  maxLength={Constants.OTP_CODE_SIZE}
+                  type="tel"
+                  placeholder="00000"
+                />
+              </div>
+            ) : (
+              <OtpInput
+                key="otp-input"
+                onChange={otp => this.setState({ otp })}
+                numInputs={Constants.OTP_CODE_SIZE}
+                inputStyle={{
+                  width: '16vw',
+                  height: '16vw',
+                  fontSize: '8vw',
+                }}
+              />
+            )}
           </div>
           <button className="otp-resend text-uppercase" disabled={!!currentOtpTime} onClick={() => getOtp(phone)}>
             {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
