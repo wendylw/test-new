@@ -3062,13 +3062,15 @@ body.loading {
   .payment-bank,
   .thanks__phone-view,
   .thanks__receipt-info,
-  .thanks-pickup__id-container {
+  .thanks-pickup__id-container,
+  .thanks__delivery-info {
     padding: 16px;
   }
 
   .modal__detail,
   .payment-bank__form-item,
-  .location-page__icon-adjust + .item {
+  .location-page__icon-adjust + .item,
+  .thanks__info-container {
     padding: 16px 0;
   }
 
@@ -3111,6 +3113,11 @@ body.loading {
 
   .nav-pane__link {
     padding: 16px 20px;
+  }
+
+  .thanks__delivery-status-container {
+    padding: 20px 16px;
+    margin-top: 34px;
   }
 
   .tag__card,
