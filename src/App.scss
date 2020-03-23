@@ -2895,6 +2895,10 @@ body.loading {
     margin: 0 auto;
   }
 
+  .table-ordering .header__title + span {
+    min-width: 150px;
+  }
+
   .category-nav.category-nav__vertical,
   .location-page__entry ~ .category-nav {
     left: 50%;
