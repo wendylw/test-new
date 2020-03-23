@@ -35,13 +35,15 @@
     align-items: stretch;
     border-bottom: 1px solid #e8e8e8;
     padding: 8px 16px 16px 0;
-    .location-page__address-item {
-      padding: 0;
-      border: none;
-    }
-    .location-page__detected-position-address {
-      margin-top: 8px;
-    }
+  }
+
+  &__address-item {
+    padding: 0;
+    border: none;
+  }
+
+  &__detected-position-address {
+    margin-top: 8px;
   }
 
   &__detected-position-status {
