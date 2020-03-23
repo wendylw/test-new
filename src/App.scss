@@ -1496,10 +1496,14 @@
   }
 
   &__aside.aside {
-    top: 0;
+    top: 121px;
 
     &.active {
       z-index: 300;
+    }
+
+    & ~ .cover {
+      top: 121px;
     }
   }
 
