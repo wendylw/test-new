@@ -40,7 +40,7 @@ class DeliveryMethods extends Component {
     if (this.props.isStoreClosed) {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
-        search: `?h=${this.props.hashCode}`,
+        search: `?h=${this.props.hashCode}&type=delivery`, // only 'delivery' type has closed status
       });
     }
   };
