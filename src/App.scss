@@ -461,6 +461,10 @@
     @extend .main-section;
 
     background-color: $white;
+
+    .billing {
+      padding: 0 2.4vw;
+    }
   }
 
   &__cashback-receipt {
@@ -3038,7 +3042,7 @@ body.loading {
   .otp-input input {
     width: 67px !important;
     height: 67px !important;
-    font-size: 56px !important;
+    font-size: 46px !important;
   }
 
   .payment__image-container {
@@ -3092,7 +3096,8 @@ body.loading {
   .header__title,
   .customer__form,
   .item__image-container ~ .item__detail,
-  .aside-bottom {
+  .aside-bottom,
+  .table-ordering__receipt .billing {
     padding: 0 10px;
   }
 
