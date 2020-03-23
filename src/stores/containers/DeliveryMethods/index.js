@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 import { IconNext } from '../../../components/Icons';
 import DeliveryImage from '../../../images/icon-delivery.png';
 import PickUpImage from '../../../images/icon-pickup.png';
@@ -9,7 +10,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
+import { actions as homeActionCreators, getStoreHashCode, isStoreClosed } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 
 import { getBusiness } from '../../../ordering/redux/modules/app';
@@ -32,6 +33,18 @@ const METHODS_LIST = [
 ];
 
 class DeliveryMethods extends Component {
+  componentDidMount = async () => {
+    await this.props.homeActions.loadCoreBusiness();
+    await this.props.homeActions.getStoreHashData(this.props.store.id);
+
+    if (this.props.isStoreClosed) {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+        search: `?h=${this.props.hashCode}`,
+      });
+    }
+  };
+
   handleClickBack() {
     const { homeActions } = this.props;
 
@@ -39,10 +52,11 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
+    // TODO: duplicate logic with componentDidMount, need optimize
     const { store, homeActions } = this.props;
 
     await homeActions.getStoreHashData(store.id);
-    await homeActions.loadCoreBusiness();
+
     const { hashCode } = this.props;
 
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
@@ -107,9 +121,10 @@ export default compose(
       hashCode: getStoreHashCode(state),
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
+      isStoreClosed: isStoreClosed(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(DeliveryMethods);
+)(withRouter(DeliveryMethods));
