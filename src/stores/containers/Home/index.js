@@ -3,10 +3,14 @@ import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
+import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+
 import {
   actions as homeActionCreators,
   getStoreHashCode,
@@ -37,10 +41,21 @@ class App extends Component {
     }
   }
 
-  setCurrentStoreId(storeId) {
+  async setCurrentStoreId(storeId) {
     const { homeActions } = this.props;
-
-    homeActions.setCurrentStore(storeId);
+    // 请求 coreBusiness
+    await homeActions.loadCoreBusiness();
+    // if store is closed,go straight to ordering page and let it display store is closed
+    const { allBusinessInfo, business } = this.props;
+    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    if (isValidTimeToOrder) {
+      homeActions.setCurrentStore(storeId);
+    } else {
+      await homeActions.getStoreHashData(storeId);
+      const { hashCode } = this.props;
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=delivery`;
+    }
   }
 
   render() {
@@ -87,6 +102,8 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       stores: getAllStores(state),
       error: getError(state),
+      business: getBusiness(state),
+      allBusinessInfo: getAllBusinesses(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

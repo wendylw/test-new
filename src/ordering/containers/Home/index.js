@@ -127,55 +127,62 @@ export class Home extends Component {
   }
 
   isValidTimeToOrder = () => {
-    if (!Utils.isDeliveryType()) {
+    // if (!Utils.isDeliveryType()) {
+    //   return true;
+    // }
+    // let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    // const weekInfo = new Date().getDay() + 1;
+    // const hourInfo = new Date().getHours();
+    // const minutesInfo = new Date().getMinutes();
+    // const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
+    // const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+
+    // const isClosed =
+    //   hourInfo < Number(timeFrom[0]) ||
+    //   hourInfo > Number(timeTo[0]) ||
+    //   (hourInfo === Number(timeFrom[0]) &&
+    //     (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
+    //   (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
+
+    // if (validDays && validDays.includes(weekInfo) && !isClosed) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+
+    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
-    let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
-    const weekInfo = new Date().getDay() + 1;
-    const hourInfo = new Date().getHours();
-    const minutesInfo = new Date().getMinutes();
-    const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
-    const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
-
-    const isClosed =
-      hourInfo < Number(timeFrom[0]) ||
-      hourInfo > Number(timeTo[0]) ||
-      (hourInfo === Number(timeFrom[0]) &&
-        (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
-      (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
-
-    if (validDays && validDays.includes(weekInfo) && !isClosed) {
-      return true;
-    } else {
-      return false;
-    }
+    const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
-    const originalInfo = allBusinessInfo[business] || {};
-    const { stores } = originalInfo || {};
-    const { qrOrderingSettings } = originalInfo || {};
-    const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-    const { defaultShippingZoneMethod } = defaultShippingZone || {};
-    const { rate } = defaultShippingZoneMethod || {};
-    const deliveryFee = rate || 0;
-    const minOrder = minimumConsumption || 0;
+    return Utils.getDeliveryInfo({ business, allBusinessInfo });
+    // const originalInfo = allBusinessInfo[business] || {};
+    // const { stores } = originalInfo || {};
+    // const { qrOrderingSettings } = originalInfo || {};
+    // const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+    // const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    // const { rate } = defaultShippingZoneMethod || {};
+    // const deliveryFee = rate || 0;
+    // const minOrder = minimumConsumption || 0;
 
-    const { phone } = (stores && stores[0]) || {};
-    const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    // const { phone } = (stores && stores[0]) || {};
+    // const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
+    // const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
-    return {
-      deliveryFee,
-      minOrder,
-      storeAddress,
-      deliveryToAddress,
-      telephone: phone,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-    };
+    // return {
+    //   deliveryFee,
+    //   minOrder,
+    //   storeAddress,
+    //   deliveryToAddress,
+    //   telephone: phone,
+    //   validDays,
+    //   validTimeFrom,
+    //   validTimeTo,
+    // };
   };
 
   renderHeader() {

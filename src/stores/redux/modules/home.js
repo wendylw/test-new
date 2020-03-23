@@ -1,4 +1,5 @@
 import Url from '../../../utils/url';
+import config from '../../../config';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 
@@ -27,6 +28,11 @@ export const types = {
   // operate current store
   SET_CURRENT_STORE: 'STORES/HOME/SET_CURRENT_STORE',
   CLEAR_CURRENT_STORE: 'STORES/HOME/CLEAR_CURRENT_STORE',
+
+  // fetch coreBusiness
+  FETCH_COREBUSINESS_REQUEST: 'ORDERING/APP/FETCH_COREBUSINESS_REQUEST',
+  FETCH_COREBUSINESS_SUCCESS: 'ORDERING/APP/FETCH_COREBUSINESS_SUCCESS',
+  FETCH_COREBUSINESS_FAILURE: 'ORDERING/APP/FETCH_COREBUSINESS_FAILURE',
 };
 
 export const actions = {
@@ -54,7 +60,20 @@ export const actions = {
   clearCurrentStore: () => ({
     type: types.CLEAR_CURRENT_STORE,
   }),
+
+  loadCoreBusiness: () => dispatch => {
+    const { storeId, business } = config;
+    return dispatch(fetchCoreBusiness({ business, storeId }));
+  },
 };
+
+const fetchCoreBusiness = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
+    endpoint: Url.apiGql('CoreBusiness'),
+    variables,
+  },
+});
 
 const fetchCoreStores = variables => ({
   [FETCH_GRAPHQL]: {
