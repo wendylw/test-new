@@ -2888,7 +2888,8 @@ body.loading {
   .location-page__entry,
   .aside-section,
   .list__container,
-  .full-aside__content {
+  .full-aside__content,
+  .location-page {
     max-width: 414px;
     left: 0;
     right: 0;
@@ -3004,6 +3005,7 @@ body.loading {
   .otp-input input {
     width: 67px !important;
     height: 67px !important;
+    font-size: 56px;
   }
 
   .payment__image-container {
@@ -3016,6 +3018,10 @@ body.loading {
 
   .payment-bank__card-type-icon.mastercard {
     max-width: 42px;
+  }
+
+  .location-page__entry-address {
+    max-width: 360px;
   }
 
   // reset padding

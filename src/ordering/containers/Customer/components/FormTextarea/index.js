@@ -16,32 +16,35 @@ class FormTextarea extends Component {
 
   componentDidMount = () => {
     // const oldInnerHeight = addressAsideInner.style.top;
+    const windowWidth = document.body.clientWidth || window.innerWidth;
 
-    this.textareaRef.current.addEventListener(
-      'focus',
-      () => {
-        try {
-          this.addressAsideInnerRef.current.style.top = '20vh';
-        } catch (e) {
-          console.error(e);
-        }
-      },
-      false
-    );
-
-    this.textareaRef.current.addEventListener(
-      'blur',
-      () => {
-        setTimeout(() => {
+    if (windowWidth <= 768) {
+      this.textareaRef.current.addEventListener(
+        'focus',
+        () => {
           try {
-            this.addressAsideInnerRef.current.style.top = '';
+            this.addressAsideInnerRef.current.style.top = '20vh';
           } catch (e) {
             console.error(e);
           }
-        }, 100);
-      },
-      false
-    );
+        },
+        false
+      );
+
+      this.textareaRef.current.addEventListener(
+        'blur',
+        () => {
+          setTimeout(() => {
+            try {
+              this.addressAsideInnerRef.current.style.top = '';
+            } catch (e) {
+              console.error(e);
+            }
+          }, 100);
+        },
+        false
+      );
+    }
   };
 
   componentDidUpdate(prevProps) {
