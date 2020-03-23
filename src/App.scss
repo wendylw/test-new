@@ -1719,7 +1719,7 @@
   &__title {
     @extend .font-weight-bold;
 
-    margin: 15px 0;
+    margin: 20px 0;
     font-size: 1.4rem;
     line-height: $line-height-base;
   }
@@ -2571,6 +2571,14 @@
     border: 1px solid $gray-3;
     margin: 2px;
     font-size: 14vw;
+  }
+
+  .otp-input__single-input {
+    width: 70vw;
+    height: 16vw;
+    padding-left: 6.5vw;
+    letter-spacing: 7vw;
+    font-size: 10vw;
   }
 }
 
