@@ -980,6 +980,13 @@
     width: 47vw;
   }
 
+  &__title {
+    word-break: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+  }
+
   &__detail-content > * ~ * {
     margin-top: 5px;
   }
