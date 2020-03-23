@@ -73,6 +73,7 @@
   "AddNoteToDriverPlaceholder": "Add a note to driver *",
   "AddAddressDetailsPlaceholder": "Add address details *",
   "DeliveryFee": "Delivery Fee",
+  "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",

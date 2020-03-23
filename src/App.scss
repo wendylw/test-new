@@ -58,6 +58,12 @@
       fill: $white;
     }
   }
+
+  &__second-level {
+    padding: 10px;
+    color: $white;
+    background-color: $blue;
+  }
 }
 
 .main-section {
@@ -2109,6 +2115,24 @@
     }
   }
 
+  &__entry-container {
+    .top-message__second-level {
+      position: fixed;
+      width: 100%;
+      top: 121px;
+      z-index: 100;
+    }
+
+    .top-message__second-level ~ .list__container {
+      top: 104px;
+    }
+
+    .top-message__second-level ~ .list__container .category__header.fixed,
+    .top-message__second-level + .category-nav {
+      top: 158px;
+    }
+  }
+
   &__base-info {
     width: 85vw;
   }
@@ -2887,6 +2911,15 @@ body.loading {
     &__icon-container.empty {
       img {
         width: 30px;
+      }
+    }
+  }
+
+  .location-page {
+    &__entry-container {
+      .top-message__second-level ~ .list__container .category__header.fixed,
+      .top-message__second-level + .category-nav {
+        top: 154px;
       }
     }
   }
