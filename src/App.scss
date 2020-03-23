@@ -3087,6 +3087,13 @@ body.loading {
     font-size: 46px !important;
   }
 
+  .otp-input .otp-input__single-input {
+    width: 300px !important;
+    height: 67px !important;
+    padding-left: 26px;
+    letter-spacing: 28px;
+  }
+
   .payment__image-container {
     width: 62px;
   }
