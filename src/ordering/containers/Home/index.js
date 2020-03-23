@@ -100,6 +100,7 @@ export class Home extends Component {
   renderDeliverToBar() {
     const { t, history } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
+    const isValidTimeToOrder = this.isValidTimeToOrder();
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
 
@@ -112,15 +113,13 @@ export class Home extends Component {
     };
 
     return (
-      <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
+      <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
         <div className="item__detail-content flex flex-middle flex-space-between">
           <div className="location-page__base-info">
             <summary className="item__title">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
           </div>
-          <i className="location-page__edit">
-            <IconEdit />
-          </i>
+          <i className="location-page__edit">{isValidTimeToOrder ? <IconEdit /> : null}</i>
         </div>
       </div>
     );
