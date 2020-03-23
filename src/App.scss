@@ -3022,12 +3022,9 @@ body.loading {
   }
 
   .table-ordering__home .aside,
-  .table-ordering__order .aside-bottom {
+  .table-ordering__order .aside-bottom,
+  .table-ordering__customer .aside {
     bottom: 90px;
-  }
-
-  .store-info__aside.aside.active {
-    z-index: 150;
   }
 
   .container.fixed .category-nav__vertical ~ .list__container {

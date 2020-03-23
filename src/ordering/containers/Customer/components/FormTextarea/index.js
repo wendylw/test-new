@@ -18,7 +18,7 @@ class FormTextarea extends Component {
     // const oldInnerHeight = addressAsideInner.style.top;
     const windowWidth = document.body.clientWidth || window.innerWidth;
 
-    if (windowWidth > 770) {
+    if (windowWidth < 770) {
       this.textareaRef.current.addEventListener(
         'focus',
         () => {
