@@ -359,7 +359,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const { qrOrderingSettings } = originalInfo || {};
   const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
-  const { rate } = defaultShippingZoneMethod || {};
+  const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
   const deliveryFee = rate || 0;
   const minOrder = minimumConsumption || 0;
 
@@ -376,6 +376,8 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     validDays,
     validTimeFrom,
     validTimeTo,
+    freeShippingMinAmount,
+    enableConditionalFreeShipping,
   };
 };
 

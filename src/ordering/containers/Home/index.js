@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
@@ -23,6 +23,7 @@ import {
   getCategoryProductList,
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
+import CurrencyNumber from '../../components/CurrencyNumber';
 
 const localState = {
   blockScrollTop: 0,
@@ -234,6 +235,7 @@ export class Home extends Component {
       isVerticalMenu,
       allBusinessInfo,
       history,
+      freeDeliveryFee,
       ...otherProps
     } = this.props;
     const {
@@ -244,19 +246,35 @@ export class Home extends Component {
       validDays,
       validTimeFrom,
       validTimeTo,
+      freeShippingMinAmount,
+      enableConditionalFreeShipping,
     } = this.getDeliveryInfo();
 
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
+    const classList = ['table-ordering__home'];
 
     if (!onlineStoreInfo || !categories) {
       return null;
     }
 
+    if (Utils.isDeliveryType()) {
+      classList.push('location-page__entry-container');
+    }
+
     return (
-      <section className="table-ordering__home">
+      <section className={classList.join(' ')}>
         {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
+        {enableConditionalFreeShipping && freeShippingMinAmount ? (
+          <div className="top-message__second-level text-center">
+            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+              <span>
+                Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
+              </span>
+            </Trans>
+          </div>
+        ) : null}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}
