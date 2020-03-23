@@ -158,8 +158,8 @@ export class Home extends Component {
     const { stores } = originalInfo || {};
     const { qrOrderingSettings } = originalInfo || {};
     const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-    const { defaultShippingZoneMethod, freeShippingMinAmount } = defaultShippingZone || {};
-    const { rate } = defaultShippingZoneMethod || {};
+    const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
     const deliveryFee = rate || 0;
     const minOrder = minimumConsumption || 0;
 
@@ -177,6 +177,7 @@ export class Home extends Component {
       validTimeFrom,
       validTimeTo,
       freeShippingMinAmount,
+      enableConditionalFreeShipping,
     };
   };
 
@@ -242,6 +243,7 @@ export class Home extends Component {
       validTimeFrom,
       validTimeTo,
       freeShippingMinAmount,
+      enableConditionalFreeShipping,
     } = this.getDeliveryInfo();
 
     const { viewAside } = this.state;
@@ -260,7 +262,7 @@ export class Home extends Component {
       <section className={classList.join(' ')}>
         {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
-        {freeShippingMinAmount ? (
+        {enableConditionalFreeShipping && freeShippingMinAmount ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
