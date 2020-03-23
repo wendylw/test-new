@@ -435,6 +435,10 @@
     .form__textarea {
       margin: 5px 0;
       padding-right: 34px;
+      word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
     }
   }
 
@@ -2300,6 +2304,10 @@
     ~ span {
       padding-left: 20px;
       line-height: 1.5em;
+      word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
     }
   }
 
@@ -2754,6 +2762,17 @@
   .item__title,
   .item__text {
     display: block;
+  }
+
+  &__header {
+    .header__title {
+      width: 55%;
+      padding: 0;
+    }
+  }
+
+  &__tag {
+    color: $theme_color;
   }
 
   &__info-container {
