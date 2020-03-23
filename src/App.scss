@@ -2934,6 +2934,10 @@ body.loading {
     min-width: 150px;
   }
 
+  .header__one-line-title {
+    max-width: 300px;
+  }
+
   .header__one-line-title.has-tag {
     max-width: 200px;
   }
