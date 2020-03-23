@@ -292,6 +292,8 @@
 }
 
 .container {
+  position: relative;
+  margin: auto;
   height: 100%;
   min-height: 100%;
 
@@ -1621,10 +1623,6 @@
   }
 }
 
-.footer-link {
-  padding: 4vw;
-}
-
 .aside-section {
   position: fixed;
   bottom: 0;
@@ -2028,8 +2026,9 @@
       padding-left: 0;
       padding-right: 5vw;
       font-size: 1.4rem;
-      line-height: 9vw;
+      line-height: 1.5em;
       height: 12vw;
+      max-height: 50px;
     }
   }
 
@@ -2870,5 +2869,162 @@ body.loading {
         width: 30px;
       }
     }
+  }
+}
+
+@media (min-width: 770px) {
+  .container {
+    position: relative;
+    max-width: 414px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    margin: auto;
+  }
+
+  .header,
+  .footer-operation,
+  .location-page__entry {
+    max-width: 414px;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  .location-page__form,
+  .location-page__detected-position {
+    margin: auto;
+    max-width: 414px;
+  }
+
+  .category-nav.category-nav__vertical,
+  .location-page__entry ~ .category-nav {
+    position: absolute;
+    margin: 0;
+    max-width: 25%;
+    width: 25%;
+    left: 0;
+  }
+
+  .category__header,
+  .location-page__entry ~ .list__container .category__header.fixed,
+  .location-page__entry ~ .aside:not(.store-info__aside) {
+    position: absolute;
+    width: 75%;
+  }
+
+  // reset padding
+  .header,
+  .store-list .item__content,
+  .category__header,
+  .footer-operation__delivery-info,
+  .need-help__info-container,
+  .order-detail__info-container,
+  .item,
+  .item__content,
+  .aside__section-container,
+  .billing__item,
+  .cart-pane__operation,
+  .location-page__edit {
+    padding: 10px;
+  }
+
+  .category-nav {
+    padding: 0;
+  }
+
+  .order-detail .list,
+  .item__text {
+    padding: 10px 0;
+  }
+
+  .header__title,
+  .customer__form,
+  .item__image-container ~ .item__detail {
+    padding: 0 10px;
+  }
+
+  .cart__note,
+  .location-page__icon-pin,
+  .delivery__next-icon {
+    padding: 13px;
+  }
+
+  .category-nav__vertical .category-nav__item,
+  .category-nav__horizontal .category-nav__item,
+  .footer-operation,
+  .top-message__close-button,
+  .product-detail .form-text,
+  .footer-link,
+  .payment-bank,
+  .thanks__phone-view,
+  .thanks__receipt-info,
+  .thanks-pickup__id-container {
+    padding: 16px;
+  }
+
+  .modal__detail,
+  .payment-bank__form-item,
+  .location-page__icon-adjust + .item {
+    padding: 16px 0;
+  }
+
+  .store-info,
+  .card-list__item-summary {
+    padding: 0 16px;
+  }
+
+  .payment__item,
+  .delivery__item {
+    padding: 16px 0 16px 16px;
+  }
+
+  .top-message.fixed,
+  .store-list__content,
+  .need-help,
+  .order-detail,
+  .modal__header,
+  .customer-numbers {
+    padding: 20px;
+  }
+
+  .header__title:not(.header__one-line-title),
+  .header__info-list,
+  .store-info__address,
+  .store-info__phone,
+  .tag__card-container,
+  .modal__title,
+  .modal__text {
+    padding: 0 20px;
+  }
+
+  .top-message {
+    padding: 34px;
+  }
+
+  .aside__section-container.bottom {
+    padding: 15px 22px;
+  }
+
+  .nav-pane__link {
+    padding: 16px 20px;
+  }
+
+  .tag__card,
+  .cart-bar__order-button {
+    padding: 9px 16px;
+  }
+
+  .payment-bank__money {
+    padding: 9px 0;
+  }
+
+  .full-aside__content {
+    padding: 4vh 20px;
+  }
+
+  .location-page__form {
+    padding: 20px 9px;
+  }
+
+  .store-list .item {
+    margin: 20px 0;
   }
 }
