@@ -3036,7 +3036,13 @@ body.loading {
   }
 
   .order-detail .list,
-  .item__text {
+  .item__text,
+  .need-help .item,
+  .need-help .item__title,
+  .need-help .item__text,
+  .order-detail .item,
+  .order-detail .item__title,
+  .order-detail .item__text {
     padding: 10px 0;
   }
 
