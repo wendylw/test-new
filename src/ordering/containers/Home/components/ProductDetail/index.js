@@ -210,10 +210,17 @@ class ProductDetail extends Component {
       return false;
     }
 
+    if (!variationsByIdMap) {
+      return true;
+    }
+
     for (let i = 0; i < minimumVariations.length; i++) {
       const { id, minSelectionAmount } = minimumVariations[i];
 
-      if (variationsByIdMap[id].length - 1 < minSelectionAmount) {
+      if (
+        !variationsByIdMap[id] ||
+        (variationsByIdMap[id] && Object.keys(variationsByIdMap[id]).length - 1 < minSelectionAmount)
+      ) {
         return true;
       }
     }
@@ -390,9 +397,10 @@ class ProductDetail extends Component {
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity } = this.state;
+    const { cartQuantity, minimumVariations } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
+    const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     if (!product) {
       return null;
@@ -419,7 +427,9 @@ class ProductDetail extends Component {
             className="button__fill button__block font-weight-bold"
             type="button"
             disabled={
-              !this.isSubmitable() || Utils.isProductSoldOut(product || {}) || this.isInvalidMinimumVariations()
+              !this.isSubmitable() ||
+              Utils.isProductSoldOut(product || {}) ||
+              (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
             onClick={async () => {
               const { variationsByIdMap } = this.state;

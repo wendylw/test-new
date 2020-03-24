@@ -97,11 +97,13 @@ export class VariationSelector extends Component {
     const { t, variation, isInvalidMinimum } = this.props;
     const { selected } = this.state;
     const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
-    const maxSelected = maxSelectionAmount && selected.length >= maxSelectionAmount;
-    let AmountLimitDescription = minSelectionAmount ? t('MinimumChoicesDescription') : t('MaximumChoicesDescription');
+    const maxSelected = selected && maxSelectionAmount && selected.length >= maxSelectionAmount;
+    let AmountLimitDescription = minSelectionAmount
+      ? t('MinimumChoicesDescription', { minSelectionAmount })
+      : t('MaximumChoicesDescription', { maxSelectionAmount });
 
     if (enableSelectionAmountLimit && minSelectionAmount && maxSelectionAmount) {
-      AmountLimitDescription = t('MinMaximumChoicesDescription');
+      AmountLimitDescription = t('MinMaximumChoicesDescription', { minSelectionAmount, maxSelectionAmount });
     }
 
     if (!variation) {
