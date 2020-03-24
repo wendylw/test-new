@@ -375,7 +375,7 @@ class Location extends Component {
   renderSearchResultList() {
     const { searchResultList } = this.state;
     return (
-      <div>
+      <div className="location-page__list">
         {searchResultList.map(searchResult => {
           return (
             <div key={searchResult.place_id} onClick={() => this.onSearchResultPress(searchResult)}>

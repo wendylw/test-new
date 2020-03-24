@@ -115,7 +115,6 @@ export function getCurrentScrollId(isVerticalMenu) {
   const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
   const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
   const elObjList = Object.values(observableContainer);
-
   const [, elObj] =
     elObjList
       .map(elObj => [
