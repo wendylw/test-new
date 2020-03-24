@@ -63,13 +63,17 @@ class Header extends Component {
     }
 
     return (
-      <header className={classList.join(' ')}>
+      <header
+        className={classList.join(' ')}
+        onClick={() => {
+          if (Utils.isDeliveryType()) {
+            onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
+          }
+        }}
+      >
         {this.renderLogoAndNavDom()}
         {isStoreHome && isDeliveryType ? (
-          <div
-            className="header__title-container"
-            onClick={() => onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL)}
-          >
+          <div className="header__title-container">
             <h1 className="header__title">
               <span
                 className={`header__one-line-title font-weight-bold text-middle ${
