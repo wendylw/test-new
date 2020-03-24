@@ -41,10 +41,11 @@ export const getStoreInfo = () => {
     .then(response => {
       console.log(response.data);
       if (response.data.business) {
-        const { qrOrderingSettings } = response.data.business;
+        const { qrOrderingSettings, country } = response.data.business;
         const { stores } = response.data.business;
         const ret = stores[0];
         ret.qrOrderingSettings = qrOrderingSettings;
+        ret.countryCode = country;
         return ret;
       } else {
         return null;
@@ -200,9 +201,9 @@ const getSessionToken = () => {
   // ---End--- sessionToken to reduce request billing when user search addresses
 };
 
-export const getPlacesByText = async (input, { position = null, radius = 10000 }) => {
+export const getPlacesByText = async (input, { position, radius, country }) => {
   let positionPair = position;
-  console.log('getPlacesByText params', input, position, radius);
+  console.log('getPlacesByText params', input, position, radius, country);
 
   if (!positionPair) {
     positionPair = fetchDevicePosition();
@@ -224,7 +225,8 @@ export const getPlacesByText = async (input, { position = null, radius = 10000 }
               origin: google_map_position,
               radius,
             }
-          : null),
+          : undefined),
+        ...(country ? { componentRestrictions: { country } } : undefined),
       },
       (results, status) => {
         console.log('getPlaceDetails: results', results);

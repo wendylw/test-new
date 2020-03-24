@@ -179,6 +179,7 @@ class Location extends Component {
       const places = await getPlacesByText(searchText, {
         position: storePositionInfo.coords,
         radius: storeInfo.qrOrderingSettings.deliveryRadius * 1000,
+        country: storeInfo.countryCode,
       });
       this.setState({
         searchResultList: places,
