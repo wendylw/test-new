@@ -922,6 +922,9 @@
 .list {
   &__container {
     position: relative;
+
+    .item__detail-content {
+    }
   }
 }
 
@@ -1584,7 +1587,6 @@
 
   &__card-container {
     height: 3.8vw;
-    padding: 0 5vw;
   }
 
   &__card.variation:not(.active) {
@@ -3201,7 +3203,6 @@ body.loading {
   .header__info-list,
   .store-info__address,
   .store-info__phone,
-  .tag__card-container,
   .modal__title,
   .modal__text {
     padding: 0 20px;
