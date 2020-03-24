@@ -229,10 +229,19 @@ class Location extends Component {
       } else {
         placeInfo = placeInfoOrSearchResult;
       }
-      const distance = (await this.computeRouteDistanceFromStore([placeInfo.coords]))[0];
-      if (typeof distance !== 'number') {
-        throw new Error('Fail to get distance info.');
-        // todo: should we use straight line distance in this case?
+      let distance;
+      try {
+        distance = (await this.computeRouteDistanceFromStore([placeInfo.coords]))[0];
+        if (typeof distance !== 'number' || distance === Infinity) {
+          throw new Error('Fail to get distance info.');
+        }
+      } catch (e) {
+        this.setState({
+          errorToast: t(`OutOfDeliveryRangeWrongDistance`, {
+            distance: (this.deliveryDistanceMeter / 1000).toFixed(1),
+          }),
+        });
+        return;
       }
       if (this.isTooFar(distance)) {
         this.setState({
