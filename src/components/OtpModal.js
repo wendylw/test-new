@@ -26,32 +26,36 @@ class OtpModal extends React.Component {
     const { currentOtpTime } = this.state;
     this.countDown(currentOtpTime);
 
-    this.inputRef.current.addEventListener(
-      'focus',
-      () => {
-        try {
-          const bottomValue = this.getScrollBottom();
-          this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
-        } catch (e) {
-          console.error(e);
-        }
-      },
-      false
-    );
+    const windowWidth = document.body.clientWidth || window.innerWidth;
 
-    this.inputRef.current.addEventListener(
-      'blur',
-      () => {
-        setTimeout(() => {
+    if (windowWidth < 770) {
+      this.inputRef.current.addEventListener(
+        'focus',
+        () => {
           try {
-            this.addressAsideInnerRef.current.style.transform = 'none';
+            const bottomValue = this.getScrollBottom();
+            this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
           } catch (e) {
             console.error(e);
           }
-        }, 100);
-      },
-      false
-    );
+        },
+        false
+      );
+
+      this.inputRef.current.addEventListener(
+        'blur',
+        () => {
+          setTimeout(() => {
+            try {
+              this.addressAsideInnerRef.current.style.transform = 'none';
+            } catch (e) {
+              console.error(e);
+            }
+          }, 100);
+        },
+        false
+      );
+    }
   }
 
   getScrollBottom() {
