@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import 'whatwg-fetch';
+import smoothscroll from 'smoothscroll-polyfill';
 import config from './config';
 import './i18n';
 
@@ -12,6 +13,9 @@ import './index.css';
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
 try {
+  // kick off the polyfill!
+  smoothscroll.polyfill();
+
   if (heap && heap.addUserProperties) {
     heap.addUserProperties({
       account: config.business,

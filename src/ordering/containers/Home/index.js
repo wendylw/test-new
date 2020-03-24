@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
@@ -23,6 +23,7 @@ import {
   getCategoryProductList,
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
+import CurrencyNumber from '../../components/CurrencyNumber';
 
 const localState = {
   blockScrollTop: 0,
@@ -98,79 +99,90 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t } = this.props;
+    const { t, history } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
-    const fillInDelivertAddress = () => {
-      const search = window.location.search;
-      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_LOCATION}${search}`;
+    const isValidTimeToOrder = this.isValidTimeToOrder();
+    const fillInDeliverToAddress = () => {
+      const { search } = window.location;
+
+      Utils.setSessionVariable('deliveryCallbackUrl', `/${search}`);
+
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+        search,
+      });
     };
 
     return (
-      <div className="location-page__entry item" onClick={fillInDelivertAddress}>
+      <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
         <div className="item__detail-content flex flex-middle flex-space-between">
           <div className="location-page__base-info">
             <summary className="item__title">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
           </div>
-          <i className="location-page__edit">
-            <IconEdit />
-          </i>
+          <i className="location-page__edit">{isValidTimeToOrder ? <IconEdit /> : null}</i>
         </div>
       </div>
     );
   }
 
   isValidTimeToOrder = () => {
-    if (!Utils.isDeliveryType()) {
+    // if (!Utils.isDeliveryType()) {
+    //   return true;
+    // }
+    // let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    // const weekInfo = new Date().getDay() + 1;
+    // const hourInfo = new Date().getHours();
+    // const minutesInfo = new Date().getMinutes();
+    // const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
+    // const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+
+    // const isClosed =
+    //   hourInfo < Number(timeFrom[0]) ||
+    //   hourInfo > Number(timeTo[0]) ||
+    //   (hourInfo === Number(timeFrom[0]) &&
+    //     (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
+    //   (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
+
+    // if (validDays && validDays.includes(weekInfo) && !isClosed) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+
+    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
-    let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
-    const weekInfo = new Date().getDay() + 1;
-    const hourInfo = new Date().getHours();
-    const minutesInfo = new Date().getMinutes();
-    const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
-    const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
-
-    const isClosed =
-      hourInfo < Number(timeFrom[0]) ||
-      hourInfo > Number(timeTo[0]) ||
-      (hourInfo === Number(timeFrom[0]) &&
-        (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
-      (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
-
-    if (validDays && validDays.includes(weekInfo) && !isClosed) {
-      return true;
-    } else {
-      return false;
-    }
+    const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
-    const originalInfo = allBusinessInfo[business] || {};
-    const { stores } = originalInfo || {};
-    const { qrOrderingSettings } = originalInfo || {};
-    const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-    const { defaultShippingZoneMethod } = defaultShippingZone || {};
-    const { rate } = defaultShippingZoneMethod || {};
-    const deliveryFee = rate || 0;
-    const minOrder = minimumConsumption || 0;
+    return Utils.getDeliveryInfo({ business, allBusinessInfo });
+    // const originalInfo = allBusinessInfo[business] || {};
+    // const { stores } = originalInfo || {};
+    // const { qrOrderingSettings } = originalInfo || {};
+    // const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+    // const { defaultShippingZoneMethod } = defaultShippingZone || {};
+    // const { rate } = defaultShippingZoneMethod || {};
+    // const deliveryFee = rate || 0;
+    // const minOrder = minimumConsumption || 0;
 
-    const { phone } = (stores && stores[0]) || {};
-    const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-    const { address } = currentAddress || {};
+    // const { phone } = (stores && stores[0]) || {};
+    // const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
+    // const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
-    return {
-      deliveryFee,
-      minOrder,
-      storeAddress,
-      deliveryToAddress: address,
-      telephone: phone,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-    };
+    // return {
+    //   deliveryFee,
+    //   minOrder,
+    //   storeAddress,
+    //   deliveryToAddress,
+    //   telephone: phone,
+    //   validDays,
+    //   validTimeFrom,
+    //   validTimeTo,
+    // };
   };
 
   renderHeader() {
@@ -223,6 +235,7 @@ export class Home extends Component {
       isVerticalMenu,
       allBusinessInfo,
       history,
+      freeDeliveryFee,
       ...otherProps
     } = this.props;
     const {
@@ -233,20 +246,35 @@ export class Home extends Component {
       validDays,
       validTimeFrom,
       validTimeTo,
+      freeShippingMinAmount,
+      enableConditionalFreeShipping,
     } = this.getDeliveryInfo();
 
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
+    const classList = ['table-ordering__home'];
 
     if (!onlineStoreInfo || !categories) {
       return null;
     }
 
+    if (Utils.isDeliveryType()) {
+      classList.push('location-page__entry-container');
+    }
+
     return (
-      <section className="table-ordering__home">
-        {Utils.isDeliveryType() && false ? this.renderDeliverToBar() : null}
-        <div className="location-page__entry"></div>
+      <section className={classList.join(' ')}>
+        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
+        {enableConditionalFreeShipping && freeShippingMinAmount ? (
+          <div className="top-message__second-level text-center">
+            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+              <span>
+                Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
+              </span>
+            </Trans>
+          </div>
+        ) : null}
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}

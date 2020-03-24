@@ -39,12 +39,22 @@ export class OrderDetails extends Component {
     return (
       <ul className="list">
         {(items || []).map((value, index) => {
-          const { title, displayPrice } = value;
+          const { title, displayPrice, quantity, variationTexts } = value;
 
           return (
-            <li key={`title-${index}`} className="item flex flex-space-between flex-middle">
-              <span className="gray-font-opacity">{title}</span>
-              <CurrencyNumber className="gray-font-opacity" money={displayPrice} />
+            <li key={`title-${index}`} className="item flex flex-space-between">
+              <div className="flex">
+                <span style={{ width: '6vw' }} className="gray-font-opacity">
+                  {quantity} x
+                </span>
+                <div style={{ marginLeft: '2vw' }}>
+                  <span className="gray-font-opacity">{title}</span>
+                  <p>
+                    {variationTexts[0] ? <span className="order-detail__tag">{variationTexts.join(', ')}</span> : null}
+                  </p>
+                </div>
+              </div>
+              <CurrencyNumber className="gray-font-opacity" money={displayPrice * quantity} />
             </li>
           );
         })}
@@ -58,6 +68,7 @@ export class OrderDetails extends Component {
     return (
       <section className="order-detail">
         <Header
+          className="order-detail__header"
           isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>
@@ -68,7 +79,7 @@ export class OrderDetails extends Component {
           }
         >
           <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{`${t('NeedHelp')}?`}</span>
+            <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
           </button>
         </Header>
         <div className="order-detail__info-container">

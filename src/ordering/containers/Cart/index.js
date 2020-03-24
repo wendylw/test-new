@@ -19,6 +19,8 @@ import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } fro
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 
+const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
 class Cart extends Component {
   state = {
     expandBilling: true,
@@ -32,6 +34,26 @@ class Cart extends Component {
     await homeActions.loadShoppingCart();
 
     window.scrollTo(0, 0);
+    this.handleResizeEvent();
+  }
+
+  handleResizeEvent() {
+    window.addEventListener(
+      'resize',
+      () => {
+        const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        if (resizeHeight < originHeight) {
+          this.setState({
+            expandBilling: false,
+          });
+        } else {
+          this.setState({
+            expandBilling: true,
+          });
+        }
+      },
+      false
+    );
   }
 
   getDisplayPrice() {
@@ -103,6 +125,7 @@ class Cart extends Component {
     this.props.cartActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
       });
     });
   };
@@ -134,24 +157,13 @@ class Cart extends Component {
     );
   }
 
-  getDeliveryFee = () => {
-    const { allBusinessInfo, business } = this.props;
-    const originalInfo = allBusinessInfo[business] || {};
-    const { qrOrderingSettings } = originalInfo || {};
-    const { defaultShippingZone } = qrOrderingSettings || {};
-    const { defaultShippingZoneMethod } = defaultShippingZone || {};
-    const { rate } = defaultShippingZoneMethod || {};
-
-    return rate || 0;
-  };
-
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
     const { expandBilling, isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback } = cartSummary || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
     const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
     const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
     const buttonText = !isInvalidTotal ? (
@@ -198,7 +210,7 @@ class Cart extends Component {
             total={total}
             creditsBalance={cashback}
             isDeliveryType={Utils.isDeliveryType()}
-            deliveryFee={this.getDeliveryFee()}
+            shippingFee={shippingFee}
           />
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">

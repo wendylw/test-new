@@ -69,10 +69,6 @@ class Customer extends Component {
     this.props.customerActions.putDeliveryDetails({ username: e.target.value });
   }
 
-  handleDeliverToAddress(deliverToAddress) {
-    this.props.customerActions.putDeliveryDetails({ deliverToAddress });
-  }
-
   handleAddressDetails(addressDetails) {
     this.props.customerActions.putDeliveryDetails({ addressDetails });
   }
@@ -83,7 +79,7 @@ class Customer extends Component {
 
   handleToggleFormTextarea(asideName) {
     const { t } = this.props;
-    let formTextareaTitle = 'Add in your address*';
+    let formTextareaTitle = '';
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
       formTextareaTitle = t('AddNoteToDriverPlaceholder');
@@ -105,20 +101,25 @@ class Customer extends Component {
       return null;
     }
 
-    const { deliverToAddress, addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
-    // const currentAddress = JSON.parse(Utils.getSessionVariable('currentAddress'));
-    // const { address } = currentAddress || {};
+    const { addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     return (
       <React.Fragment>
         <div
           className="form__group"
-          onClick={() => {
-            // history.push({
-            //   pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-            //   search: window.location.search,
-            // });
-            this.handleToggleFormTextarea('DELIVER_TO_ADDRESS');
+          onClick={async () => {
+            const { search } = window.location;
+
+            await Utils.setSessionVariable(
+              'deliveryCallbackUrl',
+              `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}/${search}`
+            );
+
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              search,
+            });
           }}
         >
           <div className="flex flex-middle flex-space-between">
@@ -127,18 +128,20 @@ class Customer extends Component {
               <IconEdit />
             </i>
           </div>
-          <p className="form__textarea gray-font-opacity">
-            {/*address ||*/ deliverToAddress || t('AddAddressPlaceholder')}
+          <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
+            {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
-          <label className="form__label font-weight-bold gray-font-opacity">{t('AddressDetails')}</label>
           <div className="flex flex-middle flex-space-between">
-            <p className="gray-font-opacity">{addressDetails || t('AddressDetailsPlaceholder')}</p>
+            <label className="form__label font-weight-bold gray-font-opacity">{t('UnitBlockFloor')}</label>
             <i className="customer__edit-icon">
               <IconEdit />
             </i>
           </div>
+          <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
+            {addressDetails || t('AddressDetailsPlaceholder')}
+          </p>
         </div>
         {/* <div
           className="form__group flex flex-middle flex-space-between"
@@ -154,12 +157,14 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
     const { asideName, formTextareaTitle } = this.state;
+    const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let textareaValue = deliveryDetails.deliverToAddress;
-    let updateTextFunc = this.handleDeliverToAddress.bind(this);
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    let textareaValue = '';
+    let updateTextFunc = () => {};
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
       textareaValue = deliveryDetails.deliveryComments;
@@ -265,12 +270,14 @@ class Customer extends Component {
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
                 (type === 'delivery' &&
-                  (!Boolean(deliveryDetails.addressDetails) || !Boolean(deliveryDetails.deliverToAddress))) ||
-                !Boolean(deliveryDetails.username) ||
-                !isValidPhoneNumber(deliveryDetails.phone)
+                  (!Boolean((deliveryDetails.addressDetails || '').trim()) ||
+                    !Boolean((deliveryToAddress || '').trim()))) ||
+                !Boolean((deliveryDetails.username || '').trim()) ||
+                !isValidPhoneNumber(deliveryDetails.phone) ||
+                isFetching
               }
             >
-              {t('Continue')}
+              {isFetching ? <div className="loader"></div> : t('Continue')}
             </button>
           </div>
         </footer>

@@ -1,225 +1,355 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import _ from 'lodash';
-import { IconPin, IconAdjust } from '../../../components/Icons';
-import DeliveryErrorImage from '../../../images/delivery-error.png';
-import Constant from '../../../utils/constants';
+import { debounce } from 'lodash';
+import { IconGpsFixed, IconSearch } from '../../../components/Icons';
+import ErrorToast from '../../../components/ErrorToast';
+import ErrorImage from '../../../images/delivery-error.png';
+import './index.scss';
+
 import {
   getCurrentAddressInfo,
   getStoreInfo,
   getStorePosition,
   getPlacesByText,
   getPlaceDetails,
-  standardizeGeoAddress,
-  fetchDevicePosition,
+  computeDistance,
 } from './utils';
 
+/**
+ * type PositionInfo {
+ *   address: string;
+ *   coords: { lat: number; lng: number; }
+ *   placeId?: string;
+ *   addressComponents?: {
+ *     street1: string;
+ *     street2: string;
+ *     city: string;
+ *     state: string;
+ *     country: string;
+ *   }
+ *   distance?: number;
+ * }
+ */
+
 class Location extends Component {
+  static async getStoreInfo() {
+    return getStoreInfo();
+  }
+  static async getStorePositionInfo(storeInfo) {
+    const storePosition = await getStorePosition(storeInfo);
+    return {
+      address: storePosition.address,
+      coords: {
+        lat: storePosition.coords.lat,
+        lng: storePosition.coords.lng,
+      },
+      addressComponents: {
+        street1: storeInfo.street1,
+        street2: storeInfo.street2,
+        city: storeInfo.city,
+        state: storeInfo.state,
+        country: storeInfo.country,
+      },
+      placeId: storePosition.placeId,
+      distance: 0,
+    };
+  }
+  static async getDevicePositionInfo({ storeCoords, withCache = false }) {
+    const STORAGE_KEY = 'DEVICE_POSITION_INFO';
+    try {
+      if (withCache) {
+        const cache = sessionStorage.getItem(STORAGE_KEY);
+        if (cache) {
+          return JSON.parse(cache);
+        }
+      }
+      const positionInfo = await getCurrentAddressInfo();
+      const ret = {
+        address: positionInfo.address,
+        coords: {
+          lat: positionInfo.coords.latitude,
+          lng: positionInfo.coords.longitude,
+        },
+        addressComponents: {
+          ...positionInfo.addressInfo,
+        },
+        placeId: positionInfo.placeId,
+      };
+      // todo: consider the situation that storeCoords is missing
+      const distance = computeDistance(storeCoords, ret.coords);
+      ret.distance = distance;
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ret));
+      return ret;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
   state = {
-    address: '', // user address
-    placeId: '', // placeId of the address user selected,
-    place: null,
-    hasError: false,
-    places: [],
-    isFetching: false,
+    searchText: '',
+    searchResultList: [],
+    storeInfo: null,
+    isSearching: false,
+    devicePositionInfo: null,
+    isDetectingPosition: true,
+    // NOTE: storePositionInfo is possibly not loaded from google, but our own api. Hence it may
+    // miss placeId and the address info may be different from google map. Be careful.
+    storePositionInfo: null,
+    isInitializing: true,
+    initializeError: '',
+    isSubmitting: false,
+    errorToast: null,
   };
 
-  position = null; // user position
-  devicePosition = null;
-  store = null;
-  storePosition = null;
-
-  initializeAddress = async () => {
-    const currentAddress = JSON.parse(sessionStorage.getItem('currentAddress'));
-    const devicePosition = fetchDevicePosition();
-    if (currentAddress && devicePosition) {
-      console.log('use address info from sessionStorage');
-      this.position = currentAddress.coords;
-      this.devicePosition = devicePosition;
-      return this.setState({
-        address: currentAddress.address,
-      });
+  get deliveryDistanceMeter() {
+    if (this.state.storeInfo && this.state.storeInfo.qrOrderingSettings) {
+      return this.state.storeInfo.qrOrderingSettings.deliveryRadius * 1000;
     }
-    await this.tryGeolocation();
-  };
+    return 0;
+  }
 
-  fetchPlacesByText = async (needDefault = false) => {
-    this.setState({ isFetching: true });
-    // todo: later need to use store position after we have exact position
-    const places = await getPlacesByText(this.state.address);
-    console.log('fetchPlacesByText: places =', places);
-
-    if (needDefault && places[0]) {
-      this.selectPlace(places[0]);
-    }
-
-    this.setState({
-      places,
-      isFetching: false,
-    });
-  };
-
-  debounceFetchPlaces = _.debounce(this.fetchPlacesByText, 700);
-
-  componentDidMount = async () => {
+  async componentDidMount() {
+    const { t } = this.props;
     try {
-      // will show prompt of permission once entry the page
-      await this.initializeAddress();
-      this.store = await getStoreInfo();
-      this.storePosition = await getStorePosition(this.store);
-      console.log('this.storePosition', this.storePosition);
-      this.fetchPlacesByText(true);
+      const storeInfo = await Location.getStoreInfo();
+      const storePositionInfo = await Location.getStorePositionInfo(storeInfo);
+      this.setState({
+        storeInfo,
+        storePositionInfo,
+        isInitializing: false,
+        isDetectingPosition: false,
+      });
+      this.detectDevicePosition(storePositionInfo.coords, true);
     } catch (e) {
       console.error(e);
       this.setState({
-        isFetching: false,
+        isInitializing: false,
+        isDetectingPosition: false,
+        initializeError: t('FailToLoadStoreInfo'),
       });
+    }
+  }
+
+  detectDevicePosition = async (storeCoords, withCache = true) => {
+    this.setState({ isDetectingPosition: true });
+    const devicePositionInfo = await Location.getDevicePositionInfo({ storeCoords, withCache });
+    this.setState({
+      devicePositionInfo,
+      isDetectingPosition: false,
+    });
+  };
+
+  debounceSearchPlaces = debounce(async () => {
+    const { searchText, storePositionInfo, storeInfo } = this.state;
+    if (!searchText) {
+      return;
+    }
+    this.setState({ isSearching: true });
+    try {
+      const places = await getPlacesByText(searchText, {
+        position: storePositionInfo.coords,
+        radius: storeInfo.qrOrderingSettings.deliveryRadius * 1000,
+      });
+      this.setState({
+        searchResultList: places,
+        isSearching: false,
+      });
+    } catch (e) {
+      // do nothing for now, user can keep typing.
+      console.error(e);
+    }
+  }, 700);
+
+  onSearchBoxChange = event => {
+    const searchText = event.currentTarget.value;
+    console.log('typed:', searchText);
+    this.setState({ searchText }, () => {
+      this.debounceSearchPlaces();
+    });
+  };
+
+  selectPlace(placeInfo) {
+    const { history, t } = this.props;
+    const { distance } = placeInfo;
+    if (this.isTooFar(distance)) {
+      this.setState({
+        errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
+      });
+      return;
+    }
+    sessionStorage.setItem('deliveryAddress', JSON.stringify(placeInfo));
+    const callbackUrl = sessionStorage.getItem('deliveryCallbackUrl');
+    sessionStorage.removeItem('deliveryCallbackUrl');
+    if (typeof callbackUrl === 'string') {
+      history.push(callbackUrl);
+    } else {
+      history.go(-1);
+    }
+  }
+
+  onSearchResultPress = async searchResult => {
+    const { t } = this.props;
+    this.setState({ isSubmitting: true });
+    try {
+      const placeDetail = await getPlaceDetails(searchResult.place_id, {
+        targetCoords: this.state.storePositionInfo.coords,
+        fields: ['geometry'],
+      });
+      const { main_text, secondary_text } = searchResult.structured_formatting;
+      placeDetail.address = `${main_text}, ${secondary_text}`;
+      this.selectPlace(placeDetail);
+    } catch (e) {
+      console.error(e);
+      this.setState({ errorToast: t('FailToGetPlaceInfo') });
+    } finally {
+      this.setState({ isSubmitting: false });
     }
   };
 
-  handleBackLicked = async () => {
+  onDetectedLocationPress = () => {
+    this.selectPlace(this.state.devicePositionInfo);
+  };
+
+  handleBackClicked = async () => {
     const { history } = this.props;
-
-    try {
-      history.goBack();
-    } catch (e) {
-      console.error(e);
-    }
+    history.go(-1);
   };
 
-  tryGeolocation = async () => {
-    console.warn('tryGeolocation entry');
-
-    try {
-      // getCurrentAddress with fire a permission prompt
-      const currentAddress = await getCurrentAddressInfo();
-      const { address, coords } = currentAddress;
-      this.position = coords;
-      console.log('coords', coords);
-
-      // Save into localstorage
-      sessionStorage.setItem('currentAddress', JSON.stringify(currentAddress));
-
-      this.setState({
-        address,
-        hasError: false,
-      });
-    } catch (e) {
-      console.error(e);
-      this.setState({ hasError: true, isFetching: false });
-    }
+  clearErrorToast = () => {
+    this.setState({ errorToast: null });
   };
 
-  selectPlace = place => {
-    if (!place) return null;
-
-    this.setState({
-      address: place.description,
-      placeId: place.place_id,
-      place: place,
-    });
+  isTooFar = distance => {
+    return distance > this.deliveryDistanceMeter;
   };
 
-  render() {
-    const { t, history } = this.props;
-    const { hasError } = this.state;
-
+  renderSearchBox() {
+    const { searchText } = this.state;
+    const { t } = this.props;
     return (
-      <section className="table-ordering__location">
-        <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackLicked} />
-        <div className="location-page__info">
-          <div className="location-page__form">
-            <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-              <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
-                <IconPin />
-              </i>
-              <input
-                className="input input__block"
-                type="text"
-                placeholder={'Type in address'}
-                onChange={event => {
-                  console.log('typed:', event.currentTarget.value);
-                  this.setState(
-                    {
-                      address: event.currentTarget.value,
-                    },
-                    this.debounceFetchPlaces
-                  );
-                }}
-              />
-            </div>
-          </div>
-          {this.state.place ? (
-            <address
-              className="location-page__address item border__bottom-divider"
-              onClick={async () => {
-                const placeDetails = await getPlaceDetails(this.state.place.place_id);
-                console.log('user placeDetails =', placeDetails);
-                const addressInfo = standardizeGeoAddress(placeDetails.address_components);
-                const currentAddress = {
-                  addressInfo,
-                  address: this.state.place.description, // save place description as user address
-                  coords: {
-                    latitude: placeDetails.geometry.location.lat(),
-                    longitude: placeDetails.geometry.location.lng(),
-                  },
-                };
-                sessionStorage.setItem('currentAddress', JSON.stringify(currentAddress));
-                console.log('user currentAddress =', currentAddress);
+      <div className="location-page__form">
+        <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
+          <i className="location-page__icon-pin" onClick={this.tryGeolocation}>
+            <IconSearch />
+          </i>
+          <input
+            className="input input__block"
+            type="text"
+            placeholder={t('SearchYourAddress')}
+            onChange={this.onSearchBoxChange}
+            value={searchText}
+          />
+        </div>
+      </div>
+    );
+  }
 
-                // todo: should use modal to hide this address picker
-                history.push({
-                  pathname: Constant.ROUTER_PATHS.ORDERING_HOME,
-                  search: window.location.search,
-                });
-              }}
-            >
-              <div className="item__detail-content">
-                <summary className="item__title font-weight-bold">
-                  {this.state.place.structured_formatting.main_text}
-                </summary>
-                <p className="gray-font-opacity">{this.state.place.structured_formatting.secondary_text}</p>
-              </div>
-            </address>
+  renderAddressItem(summary, detail, distance) {
+    return (
+      <div className="location-page__address-item">
+        <div className="location-page__address-title">{summary}</div>
+        <div className="location-page__address-detail">
+          {typeof distance === 'number' && (
+            <span className="location-page__address-distance">{(distance / 1000).toFixed(1)} KM</span>
+          )}
+          {<span>{detail}</span>}
+        </div>
+      </div>
+    );
+  }
+
+  renderDetectedPositionStatus(message) {
+    return <div className="location-page__detected-position-status">{message}</div>;
+  }
+
+  renderDetectedPosition() {
+    const { devicePositionInfo, isDetectingPosition, storePositionInfo } = this.state;
+    const { t } = this.props;
+    return (
+      <div className="location-page__detected-position">
+        <div
+          className="location-page__detected-position-icon"
+          onClick={() => {
+            if (storePositionInfo) {
+              this.detectDevicePosition(storePositionInfo.coords, false);
+            }
+          }}
+        >
+          <IconGpsFixed style={{ width: '10px' }} />
+        </div>
+        <div className="location-page__detected-position-address">
+          {isDetectingPosition ? (
+            this.renderDetectedPositionStatus(t('DetectingLocation'))
+          ) : devicePositionInfo ? (
+            <div onClick={this.onDetectedLocationPress}>
+              {this.renderAddressItem(
+                devicePositionInfo.address,
+                devicePositionInfo.address,
+                devicePositionInfo.distance
+              )}
+            </div>
           ) : (
-            <address className="location-page__address item border__bottom-divider">No available address</address>
+            this.renderDetectedPositionStatus(t('LocationSharingIsOff'))
           )}
         </div>
-        <div className="location-page__list-wrapper">
-          {this.state.isFetching ? <div className="loader theme"></div> : null}
-          <ul className="location-page__list">
-            {this.state.places.length
-              ? this.state.places.map(place => (
-                  <li
-                    className="location-page__item flex flex-middle"
-                    key={place.id}
-                    onClick={e => {
-                      e.preventDefault();
-                      this.selectPlace(place);
-                    }}
-                  >
-                    <i className="location-page__icon-adjust">
-                      <IconAdjust />
-                    </i>
-                    <div className="item border__bottom-divider">
-                      <summary>{place.structured_formatting.main_text}</summary>
-                      <p className="gray-font-opacity">
-                        {place.distance_meters ? `${place.distance_meters / 1000}km . ` : null}
-                        {place.structured_formatting.secondary_text}
-                      </p>
-                    </div>
-                  </li>
-                ))
-              : null}
-          </ul>
-          {false && hasError ? (
-            <div className="text-center">
-              <img src={DeliveryErrorImage} alt="" />
-              <p className="gray-font-opacity">{t('DeliverToErrorMessage')}</p>
+      </div>
+    );
+  }
+
+  renderSearchResultList() {
+    const { searchResultList } = this.state;
+    return (
+      <div className="location-page__list">
+        {searchResultList.map(searchResult => {
+          return (
+            <div key={searchResult.place_id} onClick={() => this.onSearchResultPress(searchResult)}>
+              {this.renderAddressItem(
+                searchResult.structured_formatting.main_text,
+                searchResult.structured_formatting.secondary_text,
+                searchResult.distance_meters
+              )}
             </div>
-          ) : null}
-        </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  renderInitializeError() {
+    const { initializeError } = this.state;
+    return (
+      <div className="location-page__error-screen">
+        <img className="location-page__error-screen-image" alt="Something went wrong" src={ErrorImage} />
+        <div className="location-page__error-screen-message">{initializeError}</div>
+      </div>
+    );
+  }
+
+  renderMainContent() {
+    return (
+      <div className="location-page__info">
+        {this.renderSearchBox()}
+        {this.renderDetectedPosition()}
+        {this.renderSearchResultList()}
+      </div>
+    );
+  }
+
+  renderLoadingMask() {
+    return <div className="loader theme page-loader" />;
+  }
+
+  render() {
+    const { t } = this.props;
+    const { isInitializing, initializeError, isSubmitting, errorToast } = this.state;
+    return (
+      <section className="table-ordering__location">
+        <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackClicked} />
+        {initializeError ? this.renderInitializeError() : this.renderMainContent()}
+        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {(isInitializing || isSubmitting) && this.renderLoadingMask()}
       </section>
     );
   }
@@ -229,4 +359,4 @@ Location.propTypes = {};
 
 Location.defaultProps = {};
 
-export default withTranslation()(Location);
+export default withTranslation(['OrderingDelivery'])(Location);
