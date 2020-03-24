@@ -57,21 +57,21 @@ describe('utils/utils', () => {
     expect(window.location.search).not.toBe('?utm_source=infoq_web&utm_medium=menu');
   });
 
-  describe('utils.isWebview', () => {
-    it('isWebview:should return false', () => {
-      expect(isWebview()).toBeFalsy();
-    });
+  // describe('utils.isWebview', () => {
+  //   it('isWebview:should return false', () => {
+  //     expect(isWebview()).toBeFalsy();
+  //   });
 
-    it('isWebView:should return true', () => {
-      const oldReactNativeWebView = window.ReactNativeWebView;
-      delete window.ReactNativeWebView;
-      window.ReactNativeWebView = {
-        postMessage: jest.fn(),
-      };
-      expect(isWebview()).toBeTruthy();
-      window.ReactNativeWebView = oldReactNativeWebView;
-    });
-  });
+  //   it('isWebView:should return true', () => {
+  //     const oldReactNativeWebView = window.ReactNativeWebView;
+  //     delete window.ReactNativeWebView;
+  //     window.ReactNativeWebView = {
+  //       postMessage: jest.fn(),
+  //     };
+  //     expect(isWebview()).toBeTruthy();
+  //     window.ReactNativeWebView = oldReactNativeWebView;
+  //   });
+  // });
 
   it('debounce', () => {
     const mockFn = jest.fn();

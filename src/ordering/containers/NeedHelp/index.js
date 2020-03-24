@@ -10,14 +10,14 @@ export class NeedHelp extends Component {
   render() {
     const { history, businessInfo, t } = this.props;
     const { stores } = businessInfo || '';
-    const { name, phone, street1 } = stores ? stores[0] : [];
+    const { name, phone, street1 } = stores && stores[0] ? stores[0] : [];
 
     return (
       <section className="need-help">
         <Header
           className="has-right"
           isPage={false}
-          title={t('NeedHelp')}
+          title={t('ContactUs')}
           navFunc={() => {
             if (history.length) {
               history.goBack();

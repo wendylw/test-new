@@ -15,27 +15,36 @@ class FormTextarea extends Component {
   };
 
   componentDidMount = () => {
-    const textarea = document.getElementById('address-textarea');
-
     // const oldInnerHeight = addressAsideInner.style.top;
+    const windowWidth = document.body.clientWidth || window.innerWidth;
 
-    textarea.addEventListener(
-      'focus',
-      () => {
-        this.addressAsideInnerRef.current.style.top = '20vh';
-      },
-      false
-    );
+    if (windowWidth < 770) {
+      this.textareaRef.current.addEventListener(
+        'focus',
+        () => {
+          try {
+            this.addressAsideInnerRef.current.style.top = '20vh';
+          } catch (e) {
+            console.error(e);
+          }
+        },
+        false
+      );
 
-    textarea.addEventListener(
-      'blur',
-      () => {
-        setTimeout(() => {
-          this.addressAsideInnerRef.current.style.top = '';
-        }, 100);
-      },
-      false
-    );
+      this.textareaRef.current.addEventListener(
+        'blur',
+        () => {
+          setTimeout(() => {
+            try {
+              this.addressAsideInnerRef.current.style.top = '';
+            } catch (e) {
+              console.error(e);
+            }
+          }, 100);
+        },
+        false
+      );
+    }
   };
 
   componentDidUpdate(prevProps) {
@@ -81,14 +90,12 @@ class FormTextarea extends Component {
           <label className="gray-font-opacity">{title}</label>
           <div className="form__group">
             <textarea
-              id="address-textarea"
               ref={this.textareaRef}
               rows="4"
               maxLength="140"
               className="input input__textarea input__block gray-font-opacity"
               value={textValue || ''}
               onChange={this.handleUpdateText.bind(this)}
-              autoFocus
             ></textarea>
           </div>
           <button

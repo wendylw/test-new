@@ -4,6 +4,7 @@
   "Close": "Close",
   "Continue": "Continue",
   "Save": "Save",
+  "Free": "Free",
   "TermsAndPrivacyDescription": "By tapping to continue, you agree to our<1></1><2><3>Terms of Service</3>, and <3>Privacy Policy</3>.</2>",
   "DefaultMessage": "Oops, please scan QR to claim again.",
   "InvalidMessage": "After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!",
@@ -66,10 +67,18 @@
   "PickUpDetails": "Pickup Details",
   "Name": "Name",
   "MobileNumber": "Mobile Number",
-  "AddressDetails": "Address Details",
+  "UnitBlockFloor": "Unit/Block/Floor",
   "AddAddressPlaceholder": "Add in your address*",
   "AddressDetailsPlaceholder": "e.g Floor, unit number",
   "AddNoteToDriverPlaceholder": "Add a note to driver *",
   "AddAddressDetailsPlaceholder": "Add address details *",
-  "DeliveryFee": "Delivery Fee"
+  "DeliveryFee": "Delivery Fee",
+  "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
+  "Mon": "Mon",
+  "Tue": "Tue",
+  "Wed": "Wed",
+  "Thu": "Thu",
+  "Fri": "Fri",
+  "Sat": "Sat",
+  "Sun": "Sun"
 }
