@@ -3,5 +3,10 @@
   "YourOrderNumber": "Your Order Number",
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
-  "PrepareOrderDescription": "We're preparing your order now."
+  "PrepareOrderDescription": "We're preparing your order now.",
+  "OrderConfirmed": "Order Confirmed",
+  "RiderPendingTips": "Pending Rider Confirm",
+  "RiderOnTheWay": "Rider is on the way to pick up order",
+  "OrderCancelledNoRide": "Order Cancelled. No rider available",
+  "ContactUs": "Contact Us"
 }

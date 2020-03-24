@@ -1,5 +1,5 @@
 import qs from 'qs';
-
+import Constants from './constants';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -12,9 +12,9 @@ Utils.getQueryString = key => {
   return queries;
 };
 
-Utils.isWebview = function isWebview() {
-  return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
-};
+// Utils.isWebview = function isWebview() {
+//   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
+// };
 
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
@@ -327,6 +327,62 @@ Utils.removeHtmlTag = function removeHtmlTag(str) {
   }
 
   return str.replace(/<[^>]+>/g, '');
+};
+
+Utils.isDeliveryType = () => {
+  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+  return type === 'delivery';
+};
+Utils.isPickUpType = () => {
+  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+  return type === 'pickup';
+};
+
+Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
+  const weekInfo = new Date().getDay() + 1;
+  const hourInfo = new Date().getHours();
+  const minutesInfo = new Date().getMinutes();
+  const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
+  const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+
+  const isClosed =
+    hourInfo < Number(timeFrom[0]) ||
+    hourInfo > Number(timeTo[0]) ||
+    (hourInfo === Number(timeFrom[0]) && (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
+    (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
+
+  if (validDays && validDays.includes(weekInfo) && !isClosed) {
+    return true;
+  } else {
+    return false;
+  }
+};
+Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
+  const originalInfo = allBusinessInfo[business] || {};
+  const { stores } = originalInfo || {};
+  const { qrOrderingSettings } = originalInfo || {};
+  const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+  const { defaultShippingZoneMethod } = defaultShippingZone || {};
+  const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
+  const deliveryFee = rate || 0;
+  const minOrder = minimumConsumption || 0;
+
+  const { phone } = (stores && stores[0]) || {};
+  const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
+  const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+
+  return {
+    deliveryFee,
+    minOrder,
+    storeAddress,
+    deliveryToAddress,
+    telephone: phone,
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    freeShippingMinAmount,
+    enableConditionalFreeShipping,
+  };
 };
 
 export default Utils;

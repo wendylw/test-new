@@ -27,7 +27,17 @@ export class Billing extends Component {
   }
 
   render() {
-    const { t, className, subtotal, total, tax, creditsBalance, businessInfo } = this.props;
+    const {
+      t,
+      className,
+      subtotal,
+      total,
+      tax,
+      creditsBalance,
+      businessInfo,
+      isDeliveryType,
+      shippingFee,
+    } = this.props;
     const { stores = [] } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
     const classList = ['billing'];
@@ -56,6 +66,18 @@ export class Billing extends Component {
             <CurrencyNumber money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
+
+          {isDeliveryType ? (
+            <li className="billing__item flex flex-middle flex-space-between">
+              <label>{t('DeliveryFee')}</label>
+              {shippingFee ? (
+                <CurrencyNumber money={shippingFee || 0} />
+              ) : (
+                <span className="text-uppercase">{t('Free')}</span>
+              )}
+            </li>
+          ) : null}
+
           <li className="billing__item show flex flex-middle flex-space-between">
             <label className="font-weight-bold">{t('Total')}</label>
             <CurrencyNumber className="font-weight-bold" money={total || 0} />
@@ -74,6 +96,7 @@ Billing.propTypes = {
   subtotal: PropTypes.number,
   total: PropTypes.number,
   creditsBalance: PropTypes.number,
+  shippingFee: PropTypes.number,
 };
 
 Billing.defaultProps = {
@@ -84,6 +107,7 @@ Billing.defaultProps = {
   subtotal: 0,
   total: 0,
   creditsBalance: 0,
+  shippingFee: 0,
 };
 
 export default withTranslation()(Billing);

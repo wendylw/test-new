@@ -110,28 +110,11 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
   _run();
 }
 
-window.addEventListener('scroll', () => {
-  const scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
-
-  if (!scrollid) {
-    return;
-  }
-
-  document.dispatchEvent(
-    new CustomEvent('SCROLL_FOUND_TOP', {
-      detail: {
-        scrollid,
-      },
-    })
-  );
-});
-
 export function getCurrentScrollId(isVerticalMenu) {
   const htmlDocumentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
   const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
   const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
   const elObjList = Object.values(observableContainer);
-
   const [, elObj] =
     elObjList
       .map(elObj => [
@@ -202,19 +185,13 @@ export class ScrollObserver extends React.Component {
     }
   }
 
-  componentDidMount() {
-    document.addEventListener('SCROLL_FOUND_TOP', this.handleScrollEvent);
-  }
+  handleScroll = () => {
+    const scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
 
-  componentWillUnmount() {
-    document.removeEventListener('SCROLL_FOUND_TOP', this.handleScrollEvent);
-  }
+    if (!scrollid) {
+      return;
+    }
 
-  handleRevertScrollEvent = () => {
-    this.setState({ drivenToScroll: false });
-  };
-
-  handleScrollEvent = async e => {
     const { isVerticalMenu, containerId, targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
 
@@ -222,15 +199,25 @@ export class ScrollObserver extends React.Component {
       return;
     }
 
-    const { scrollid } = e.detail;
-
-    await scrollToSmoothly({
+    scrollToSmoothly({
       direction: isVerticalMenu ? 'y' : 'x',
       targetId: `${targetIdPrefix}-${scrollid}`,
       containerId,
     });
 
     this.setState({ scrollid });
+  };
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
+
+  handleRevertScrollEvent = () => {
+    this.setState({ drivenToScroll: false });
   };
 
   handleSelectedTarget = async options => {

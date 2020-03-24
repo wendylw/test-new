@@ -369,6 +369,7 @@ class ProductDetail extends Component {
     return (
       <div ref={ref => (this.productEl = ref)} className="aside__fix-bottom">
         <ProductItem
+          isList={false}
           productDetailImageRef={ref => (this.productDetailImage = ref)}
           className="aside__section-container border__top-divider"
           image={imageUrl}
@@ -381,7 +382,7 @@ class ProductDetail extends Component {
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />
 
-        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container">
+        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container bottom">
           <button
             className="button__fill button__block font-weight-bold"
             type="button"
@@ -507,13 +508,18 @@ class ProductDetail extends Component {
         </div>
         <div className="aside__fix-bottom">
           <div
-            className="item border__bottom-divider flex flex-space-between aside__section-container flex-middle"
+            className="item border__bottom-divider flex flex-space-between flex-top"
             style={{ height: imageContainerMarginBottom }}
           >
-            <div className="item__content flex flex-middle">
-              <div className="item__detail">
-                <summary className="item__title font-weight-bold">{title}</summary>
-                <CurrencyNumber className="gray-font-opacity" money={Number(this.displayPrice()) || 0} />
+            <div className="item__content flex flex-top">
+              <div className="item__detail flex flex-column flex-space-between">
+                <div className="item__detail-content">
+                  <summary className="item__title font-weight-bold">{title}</summary>
+                </div>
+                <CurrencyNumber
+                  className="gray-font-opacity font-weight-bold"
+                  money={Number(this.displayPrice()) || 0}
+                />
               </div>
             </div>
 
@@ -528,7 +534,7 @@ class ProductDetail extends Component {
             )}
           </div>
           <article
-            className="aside__section-container"
+            className="aside__section-container bottom"
             style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
           >
             {Boolean(descriptionStr) ? (

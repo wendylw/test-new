@@ -1,8 +1,6 @@
 import { APP_TYPES } from '../../../cashback/redux/types';
 
-const initialState = {
-  businesses: {},
-};
+const initialState = {};
 
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {

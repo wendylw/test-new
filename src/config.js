@@ -1,3 +1,40 @@
+let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
+
+// To mock data
+if (process.env.NODE_ENV === 'development') {
+  business = 'wenjingzhang';
+  document.cookie = 'business=wenjingzhang; path=/';
+  document.cookie = '__h=U2FsdGVkX1%2BwX4mZt2NI1dAENRgViAnD1%2FaxZghR0ocKuuSMy%2BpGgU4LQXAa9FZ1; path=/';
+  document.cookie = '__s=5e5dd6c7407cf700063ba869; path=/';
+  document.cookie = '__t=; path=/';
+}
+
+/* eslint-disable */
+function guid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+/* eslint-enable */
+
+const getClientSID = () => {
+  try {
+    return (
+      sessionStorage.getItem('client.sid') ||
+      (function generateSID() {
+        const clientSID = guid();
+        sessionStorage.setItem('client.sid', clientSID);
+        console.info('client.sid generated! [%s]', clientSID);
+        return clientSID;
+      })()
+    );
+  } catch (e) {
+    return null;
+  }
+};
+
 const getTableId = () => {
   try {
     return document.cookie
@@ -31,8 +68,6 @@ const getConsumerId = () => {
   }
 };
 
-const business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
-
 const config = {
   termsPrivacyURLS: {
     terms: process.env.REACT_APP_TERMS_URL,
@@ -45,6 +80,7 @@ const config = {
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
   imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
+  paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
   h() {
     try {
@@ -59,6 +95,7 @@ const config = {
   business,
   table: getTableId(),
   storeId: getStoreId(),
+  clientSID: getClientSID(),
   consumerId: getConsumerId(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
 };

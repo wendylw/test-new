@@ -16,16 +16,20 @@ const ROUTER_PATHS = {
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOCATION: '/location',
+  ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
   ORDERING_PAYMENT: '/payment',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
   // Qrscan App basename
   QRSCAN: '/qrscan',
+  ORDER_DETAILS: '/orderdetails',
 };
 
 const CASHBACK_SOURCE = {
@@ -102,6 +106,10 @@ const LOGIN_PROMPT = {
   400: 'Your One Time Passcode is invalid.',
 };
 
+const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
+const LANGUAGES = ['en', 'th'];
+const POLYFILL_FEATURES = ['Object.values', 'Intl'];
+
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
   PRODUCT_DESCRIPTION: 'PRODUCT_DESCRIPTION',
@@ -109,6 +117,9 @@ const ASIDE_NAMES = {
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
   CARTMODAL_HIDE: 'CARTMODAL_HIDE',
+  DELIVERY_DETAIL: 'DELIVERY_DETAIL',
+  ADD_ADDRESS_DETAIL: 'ADD_ADDRESS_DETAIL',
+  ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
 };
 
 export default {
@@ -129,5 +140,8 @@ export default {
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
   LOGIN_PROMPT,
+  POLYFILL_FEATURES_URL,
+  POLYFILL_FEATURES,
+  LANGUAGES,
   ASIDE_NAMES,
 };
