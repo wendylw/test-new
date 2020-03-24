@@ -153,7 +153,9 @@ export class Home extends Component {
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
+
     const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+
     return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
@@ -266,7 +268,7 @@ export class Home extends Component {
       <section className={classList.join(' ')}>
         {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount ? (
+        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
@@ -310,7 +312,9 @@ export class Home extends Component {
           validTimeTo={validTimeTo}
           isValidTimeToOrder={this.isValidTimeToOrder()}
         />
-        {!this.isValidTimeToOrder() ? <div className="cover back-drop"></div> : null}
+        {!this.isValidTimeToOrder() ? (
+          <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
+        ) : null}
         <Footer
           {...otherProps}
           onToggle={this.handleToggleAside.bind(this)}
