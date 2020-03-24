@@ -31,8 +31,7 @@ class OtpModal extends React.Component {
       () => {
         try {
           const bottomValue = this.getScrollBottom();
-          this.addressAsideInnerRef.current.style.bottom = `${bottomValue}px`;
-          this.addressAsideInnerRef.current.style.top = 'auto';
+          this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
         } catch (e) {
           console.error(e);
         }
@@ -45,8 +44,7 @@ class OtpModal extends React.Component {
       () => {
         setTimeout(() => {
           try {
-            this.addressAsideInnerRef.current.style.bottom = '';
-            this.addressAsideInnerRef.current.style.top = '0';
+            this.addressAsideInnerRef.current.style.transform = 'none';
           } catch (e) {
             console.error(e);
           }
@@ -105,10 +103,10 @@ class OtpModal extends React.Component {
     }
 
     return (
-      <div ref={this.addressAsideInnerRef} className="full-aside">
+      <div className="full-aside">
         <Header navFunc={onClose} />
 
-        <section className="full-aside__content text-center">
+        <section ref={this.addressAsideInnerRef} className="full-aside__content text-center">
           <figure className="full-aside__image-container">
             <img src={beepOtpImage} alt="otp" />
           </figure>
