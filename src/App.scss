@@ -3113,7 +3113,7 @@ body.loading {
     max-width: 360px;
   }
 
-  .container {
+  .container.fixed {
     .location-page__entry ~ .list__container .category__header.fixed {
       top: 0;
       transform: translateX(-155px);
