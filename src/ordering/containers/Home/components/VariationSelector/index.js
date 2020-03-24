@@ -7,7 +7,6 @@ export class VariationSelector extends Component {
   static propTypes = {
     variation: variationOnProductType,
     onChange: PropTypes.func,
-    isInvalidMinimum: false,
   };
 
   state = {
@@ -61,6 +60,15 @@ export class VariationSelector extends Component {
     return variation && variation.variationType === 'MultipleChoice';
   }
 
+  isInvalidMaximumVariations() {
+    const { variation } = this.props;
+    const { selected } = this.state;
+    const { maxSelectionAmount } = variation || {};
+    const selectedOptions = Object.keys(selected).filter(id => selected[id]);
+
+    return selected && maxSelectionAmount && (selectedOptions || []).length >= maxSelectionAmount;
+  }
+
   getAllVariationAndOptionById() {
     const { variation } = this.props;
     const { selected } = this.state;
@@ -77,11 +85,7 @@ export class VariationSelector extends Component {
     const { id } = option;
     const { variation } = this.props;
     const { enableSelectionAmountLimit, minSelectionAmount } = variation || {};
-    const isInvalidMinimum =
-      enableSelectionAmountLimit && minSelectionAmount && this.state.selected.length + 1 < minSelectionAmount;
-
     this.setState({
-      isInvalidMinimum,
       selected: {
         ...(this.isSingleChoice() ? null : this.state.selected),
 
@@ -94,10 +98,9 @@ export class VariationSelector extends Component {
   }
 
   render() {
-    const { t, variation, isInvalidMinimum } = this.props;
+    const { t, variation } = this.props;
     const { selected } = this.state;
     const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
-    const maxSelected = selected && maxSelectionAmount && Object.keys(selected).length >= maxSelectionAmount;
     let AmountLimitDescription = minSelectionAmount
       ? t('MinimumChoicesDescription', { minSelectionAmount })
       : t('MaximumChoicesDescription', { maxSelectionAmount });
@@ -114,15 +117,13 @@ export class VariationSelector extends Component {
       <li className="product-detail__options" key={variation.id}>
         <h4 className="product-detail__options-title gray-font-opacity text-uppercase">{variation.name}</h4>
         {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-          <span className={`product-detail__max-minimum-text ${maxSelected || isInvalidMinimum ? 'text-error' : ''}`}>
-            {AmountLimitDescription}
-          </span>
+          <span className={`product-detail__max-minimum-text text-error`}>{AmountLimitDescription}</span>
         ) : null}
         <ul className="tag__cards">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
             const className = ['tag__card variation'];
-            const isDisabled = markedSoldOut || (maxSelected && !selected[id]);
+            const isDisabled = markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id]);
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
             if (isDisabled) {
