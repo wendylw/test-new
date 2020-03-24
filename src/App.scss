@@ -2035,14 +2035,6 @@
 }
 
 .location-page {
-  &__info {
-    position: fixed;
-    top: 50px;
-    left: 0;
-    width: 100%;
-    z-index: 1;
-  }
-
   &__form {
     padding: 5vw 2.4vw;
     background-color: $white;
