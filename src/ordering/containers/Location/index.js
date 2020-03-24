@@ -5,7 +5,6 @@ import { debounce } from 'lodash';
 import { IconGpsFixed, IconSearch, IconClose } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
-import './index.scss';
 
 import {
   getCurrentAddressInfo,
@@ -374,8 +373,9 @@ class Location extends Component {
 
   renderSearchResultList() {
     const { searchResultList } = this.state;
+
     return (
-      <div>
+      <div className="location-page__list">
         {searchResultList.map(searchResult => {
           return (
             <div key={searchResult.place_id} onClick={() => this.onSearchResultPress(searchResult)}>

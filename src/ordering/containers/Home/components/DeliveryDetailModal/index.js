@@ -44,12 +44,14 @@ class DeliveryDetailModal extends Component {
     } = this.props;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const getClassName = show => {
-      return show ? 'store-info__aside aside active' : 'store-info__aside aside';
-    };
+    const classList = ['store-info__aside aside'];
+
+    if (show) {
+      classList.push('active');
+    }
 
     return (
-      <aside className={getClassName(show)} onClick={() => onToggle(null)}>
+      <aside className={classList.join(' ')} onClick={() => onToggle(null)}>
         <div className="store-info">
           <i className="aside-bottom__slide-button"></i>
 
