@@ -13,7 +13,8 @@ import {
   getStorePosition,
   getPlacesByText,
   getPlaceDetails,
-  computeDistance,
+  computeStraightDistance,
+  getRouteDistanceMatrix,
   getHistoricalDeliveryAddresses,
 } from './utils';
 
@@ -89,6 +90,18 @@ class Location extends Component {
       console.error(e);
       return null;
     }
+  }
+  static async getPlaceDetailsFromSearchResult(searchResult) {
+    const placeDetail = await getPlaceDetails(searchResult.place_id, {
+      fields: ['geometry'],
+    });
+    const { main_text, secondary_text } = searchResult.structured_formatting;
+    placeDetail.address = `${main_text}, ${secondary_text}`;
+    placeDetail.displayComponents = {
+      mainText: main_text,
+      secondaryText: secondary_text,
+    };
+    return placeDetail;
   }
 
   state = {
@@ -177,10 +190,22 @@ class Location extends Component {
     }
   }, 700);
 
-  computeDistanceFromStore(coords) {
+  computeStraightDistanceFromStore(coords) {
     const { storePositionInfo } = this.state;
     if (storePositionInfo) {
-      return computeDistance(storePositionInfo.coords, coords);
+      return computeStraightDistance(storePositionInfo.coords, coords);
+    }
+    return Infinity;
+  }
+
+  async computeRouteDistanceFromStore(coordsList) {
+    const { storePositionInfo } = this.state;
+    if (storePositionInfo) {
+      const results = await getRouteDistanceMatrix([storePositionInfo.coords], coordsList);
+      if (results[0]) {
+        return results[0];
+      }
+      throw new Error('Fail to get distance info.');
     }
     return Infinity;
   }
@@ -193,46 +218,46 @@ class Location extends Component {
     });
   };
 
-  selectPlace(placeInfo) {
+  async selectPlace(placeInfoOrSearchResult) {
     const { history, t } = this.props;
-    const distance = this.computeDistanceFromStore(placeInfo.coords);
-    if (this.isTooFar(distance)) {
-      this.setState({
-        errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
-      });
-      return;
-    }
-    sessionStorage.setItem('deliveryAddress', JSON.stringify(placeInfo));
-    const callbackUrl = sessionStorage.getItem('deliveryCallbackUrl');
-    sessionStorage.removeItem('deliveryCallbackUrl');
-    if (typeof callbackUrl === 'string') {
-      history.push(callbackUrl);
-    } else {
-      history.go(-1);
-    }
-  }
-
-  onSearchResultPress = async searchResult => {
-    const { t } = this.props;
-    this.setState({ isSubmitting: true });
     try {
-      const placeDetail = await getPlaceDetails(searchResult.place_id, {
-        targetCoords: this.state.storePositionInfo.coords,
-        fields: ['geometry'],
-      });
-      const { main_text, secondary_text } = searchResult.structured_formatting;
-      placeDetail.address = `${main_text}, ${secondary_text}`;
-      placeDetail.displayComponents = {
-        mainText: main_text,
-        secondaryText: secondary_text,
-      };
-      this.selectPlace(placeDetail);
+      let placeInfo;
+      this.setState({ isSubmitting: true });
+      if (!placeInfoOrSearchResult.coords) {
+        // is searchResult
+        placeInfo = await Location.getPlaceDetailsFromSearchResult(placeInfoOrSearchResult);
+      } else {
+        placeInfo = placeInfoOrSearchResult;
+      }
+      const distance = (await this.computeRouteDistanceFromStore([placeInfo.coords]))[0];
+      if (typeof distance !== 'number') {
+        throw new Error('Fail to get distance info.');
+        // todo: should we use straight line distance in this case?
+      }
+      if (this.isTooFar(distance)) {
+        this.setState({
+          errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
+        });
+        return;
+      }
+      sessionStorage.setItem('deliveryAddress', JSON.stringify(placeInfo));
+      const callbackUrl = sessionStorage.getItem('deliveryCallbackUrl');
+      sessionStorage.removeItem('deliveryCallbackUrl');
+      if (typeof callbackUrl === 'string') {
+        history.push(callbackUrl);
+      } else {
+        history.go(-1);
+      }
     } catch (e) {
       console.error(e);
       this.setState({ errorToast: t('FailToGetPlaceInfo') });
     } finally {
       this.setState({ isSubmitting: false });
     }
+  }
+
+  onSearchResultPress = async searchResult => {
+    this.selectPlace(searchResult);
   };
 
   onDetectedLocationPress = () => {
@@ -289,10 +314,11 @@ class Location extends Component {
       <div className="location-page__address-item">
         <div className="location-page__address-title">{summary}</div>
         <div className="location-page__address-detail">
-          {typeof distance === 'number' && distance !== Infinity && (
+          {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
+          {/* {typeof distance === 'number' && distance !== Infinity && (
             <span className="location-page__address-distance">{(distance / 1000).toFixed(1)} KM</span>
-          )}
-          {<span>{detail}</span>}
+          )} */}
+          <span>{detail}</span>
         </div>
       </div>
     );
@@ -334,8 +360,8 @@ class Location extends Component {
             <div onClick={this.onDetectedLocationPress}>
               {this.renderAddressItem(
                 mainText,
-                secondaryText,
-                this.computeDistanceFromStore(devicePositionInfo.coords)
+                secondaryText
+                // this.computeDistanceFromStore(devicePositionInfo.coords)
               )}
             </div>
           ) : (
@@ -354,13 +380,13 @@ class Location extends Component {
       return (
         <div>
           {historicalAddresses.map(positionInfo => {
-            const { displayComponents, coords } = positionInfo;
+            const { displayComponents } = positionInfo;
             const mainText = displayComponents ? displayComponents.mainText : positionInfo.address;
             const secondaryText = displayComponents ? displayComponents.secondaryText : positionInfo.address;
-            const distance = this.computeDistanceFromStore(coords);
+            // const distance = this.computeDistanceFromStore(coords);
             return (
               <div onClick={() => this.selectPlace(positionInfo)} key={positionInfo.address}>
-                {this.renderAddressItem(mainText, secondaryText, distance)}
+                {this.renderAddressItem(mainText, secondaryText)}
               </div>
             );
           })}
@@ -381,8 +407,8 @@ class Location extends Component {
             <div key={searchResult.place_id} onClick={() => this.onSearchResultPress(searchResult)}>
               {this.renderAddressItem(
                 searchResult.structured_formatting.main_text,
-                searchResult.structured_formatting.secondary_text,
-                searchResult.distance_meters
+                searchResult.structured_formatting.secondary_text
+                // searchResult.distance_meters
               )}
             </div>
           );

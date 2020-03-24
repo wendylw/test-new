@@ -82,7 +82,7 @@ const getPlaceId = async address => {
 
 export const getPlaceDetails = async (
   placeId,
-  { targetCoords, fields = ['geometry', 'formatted_address', 'address_components'] } = {}
+  { fields = ['geometry', 'formatted_address', 'address_components'] } = {}
 ) => {
   const places = new window.google.maps.places.PlacesService(document.createElement('div'));
 
@@ -111,7 +111,6 @@ export const getPlaceDetails = async (
     coords,
     placeId,
     addressComponents: placeDetails.addressComponents && standardizeGeoAddress(placeDetails.address_components),
-    distance: targetCoords ? computeDistance(targetCoords, coords) : undefined,
   };
   console.log('transformed placeDetails =', ret);
 
@@ -383,17 +382,43 @@ export const getCurrentAddressInfo = async () => {
 
 // todo: memorization
 // return value in meters
-const distanceCache = {};
-export const computeDistance = (fromCoords, toCoords) => {
+const straightDistanceCache = {};
+export const computeStraightDistance = (fromCoords, toCoords) => {
   const key = `${fromCoords.lat},${fromCoords.lng}:${toCoords.lat},${toCoords.lng}`;
-  if (distanceCache[key]) {
-    return distanceCache[key];
+  if (straightDistanceCache[key]) {
+    return straightDistanceCache[key];
   }
   const from = new window.google.maps.LatLng(fromCoords.lat, fromCoords.lng);
   const to = new window.google.maps.LatLng(toCoords.lat, toCoords.lng);
   const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
-  distanceCache[key] = result;
+  straightDistanceCache[key] = result;
   return result;
+};
+
+export const getRouteDistanceMatrix = async (fromCoordsList, toCoordsList) => {
+  const origins = fromCoordsList.map(coords => new window.google.maps.LatLng(coords.lat, coords.lng));
+  const destinations = toCoordsList.map(coords => new window.google.maps.LatLng(coords.lat, coords.lng));
+  const distanceMatrixService = new window.google.maps.DistanceMatrixService();
+  return new Promise((resolve, reject) => {
+    distanceMatrixService.getDistanceMatrix({ origins, destinations, travelMode: 'DRIVING' }, (resp, status) => {
+      if (status !== window.google.maps.DistanceMatrixStatus.OK) {
+        reject(`Failed to get distance info: ${status}`);
+        return;
+      }
+      const result = resp.rows.map((row, rowIndex) => {
+        return row.elements.map((element, elementIndex) => {
+          if (!element.distance) {
+            console.error(
+              `Fail to get distance between ${origins[rowIndex]} and ${destinations[elementIndex]}}: ${element.status}`
+            );
+            return null;
+          }
+          return element.distance.value || null;
+        });
+      });
+      resolve(result);
+    });
+  });
 };
 
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
