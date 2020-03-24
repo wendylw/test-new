@@ -2152,6 +2152,30 @@
     overflow: hidden;
   }
 
+  &__historical-address {
+    border-bottom: 1px solid $gray-3;
+    overflow: hidden;
+  }
+
+  &__historical-address-icon {
+    svg {
+      fill: $theme-color-translucent;
+      width: 14px;
+      height: 14px;
+    }
+    margin-top: 8px;
+    padding: 16px;
+    float: left;
+  }
+
+  &__historical-address-content {
+    overflow: hidden;
+    .location-page__address-item {
+      padding: 16px 16px 16px 0;
+      border: none;
+    }
+  }
+
   &__address-item {
     padding: 16px 24px;
     border-bottom: 1px solid $gray-3;
