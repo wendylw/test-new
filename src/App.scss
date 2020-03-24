@@ -13,7 +13,7 @@
 
   &.cover {
     display: block;
-    top: 64px;
+    top: 50px;
     background-color: rgba($color: $white, $alpha: 0.5);
     z-index: 290;
   }
@@ -1518,10 +1518,6 @@
     &.active {
       z-index: 300;
     }
-
-    & ~ .cover {
-      top: 121px;
-    }
   }
 
   &__address,
@@ -2146,6 +2142,10 @@
     .top-message__second-level ~ .list__container .category__header.fixed,
     .top-message__second-level + .category-nav {
       top: 158px;
+    }
+
+    .cover {
+      top: 121px;
     }
   }
 
