@@ -2093,6 +2093,113 @@
     }
   }
 
+  &__search-box {
+    padding: 5vw 2.4vw;
+    background-color: $white;
+
+    .input {
+      padding-left: 0;
+      padding-right: 5vw;
+      font-size: 1.4rem;
+      line-height: 9vw;
+      height: 12vw;
+    }
+  }
+
+  &__search-box-search-icon {
+    padding: 3.2vw;
+    font-size: 0;
+
+    svg {
+      fill: $gray-2;
+    }
+  }
+
+  &__search-box-clear-icon {
+    padding: 15px 8px;
+
+    svg {
+      fill: $gray-2;
+      width: 14px;
+      height: 14px;
+      vertical-align: middle;
+    }
+  }
+
+  &__detected-position {
+    overflow: hidden;
+    align-items: stretch;
+    border-bottom: 1px solid $gray-2;
+    padding: 8px 16px 16px 0;
+  }
+
+  &__address-item {
+    padding: 0;
+    border: none;
+  }
+
+  &__detected-position-address {
+    margin-top: 8px;
+  }
+
+  &__detected-position-status {
+    margin: 10px 0;
+    font-weight: bold;
+  }
+
+  &__detected-position-icon {
+    svg {
+      fill: $theme-color;
+      width: 14px;
+      height: 14px;
+    }
+    padding: 16px;
+    float: left;
+  }
+
+  &__detected-position-address {
+    overflow: hidden;
+  }
+
+  &__address-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  &__address-title {
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__address-detail {
+    margin-top: 4px;
+    color: $gray-1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__address-distance {
+    margin-right: 8px;
+    font-weight: bold;
+  }
+
+  &__error-screen {
+    margin: 32px 0;
+    text-align: center;
+  }
+
+  &__error-screen-image {
+    max-width: 90%;
+  }
+
+  &__error-screen-message {
+    margin-top: 16px;
+    color: $gray-2;
+  }
+
   &__entry {
     position: fixed;
     top: 0;
@@ -2965,7 +3072,8 @@ body.loading {
   .list__container,
   .full-aside__content,
   .location-page__list,
-  .top-message__second-level {
+  .top-message__second-level,
+  .location-page__search-box {
     max-width: 414px;
     left: 0;
     right: 0;
@@ -3111,6 +3219,15 @@ body.loading {
     max-width: 360px;
   }
 
+  .location-page__search-box .input,
+  .location-page__search-box .react-phone-number-input .react-phone-number-input__input,
+  .react-phone-number-input .location-page__search-box .react-phone-number-input__input {
+    padding-right: 20px;
+    line-height: 1.4rem;
+    height: 50px;
+    max-height: 50px;
+  }
+
   // reset padding
   .header,
   .store-list .item__content,
@@ -3152,7 +3269,7 @@ body.loading {
   }
 
   .cart__note,
-  .location-page__icon-pin,
+  .location-page__search-box-search-icon,
   .delivery__next-icon {
     padding: 13px;
   }

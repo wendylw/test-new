@@ -5,7 +5,6 @@ import { debounce } from 'lodash';
 import { IconGpsFixed, IconSearch, IconClose } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
-import './index.scss';
 
 import {
   getCurrentAddressInfo,
@@ -412,6 +411,7 @@ class Location extends Component {
 
   renderMainContent() {
     const { searchText } = this.state;
+
     return (
       <div className="location-page__info">
         {this.renderSearchBox()}
@@ -430,6 +430,7 @@ class Location extends Component {
     return (
       <section className="table-ordering__location">
         <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackClicked} />
+        {this.renderMainContent()}
         {initializeError ? this.renderInitializeError() : this.renderMainContent()}
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
         {(isInitializing || isSubmitting) && this.renderLoadingMask()}
