@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 import { IconNext } from '../../../components/Icons';
 import DeliveryImage from '../../../images/icon-delivery.png';
 import PickUpImage from '../../../images/icon-pickup.png';
@@ -9,8 +10,11 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
+import { actions as homeActionCreators, getStoreHashCode, isStoreClosed } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
+
+import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
 const { ROUTER_PATHS } = Constants;
 const METHODS_LIST = [
@@ -29,6 +33,18 @@ const METHODS_LIST = [
 ];
 
 class DeliveryMethods extends Component {
+  componentDidMount = async () => {
+    await this.props.homeActions.loadCoreBusiness();
+    await this.props.homeActions.getStoreHashData(this.props.store.id);
+
+    if (this.props.isStoreClosed) {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+        search: `?h=${this.props.hashCode}&type=delivery`, // only 'delivery' type has closed status
+      });
+    }
+  };
+
   handleClickBack() {
     const { homeActions } = this.props;
 
@@ -36,19 +52,24 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
+    // TODO: duplicate logic with componentDidMount, need optimize
     const { store, homeActions } = this.props;
 
     await homeActions.getStoreHashData(store.id);
 
     const { hashCode } = this.props;
 
-    if (hashCode) {
-      const currentMethod = METHODS_LIST.find(method => method.name === methodName);
-
+    const currentMethod = METHODS_LIST.find(method => method.name === methodName);
+    // isValid
+    const { allBusinessInfo, business } = this.props;
+    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    if (hashCode && isValidTimeToOrder) {
       await Utils.setSessionVariable('deliveryCallbackUrl', `/?h=${hashCode || ''}&type=${methodName}`);
-
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
         ''}&type=${methodName}`;
+    } else {
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
     }
   }
 
@@ -98,9 +119,12 @@ export default compose(
   connect(
     state => ({
       hashCode: getStoreHashCode(state),
+      business: getBusiness(state),
+      allBusinessInfo: getAllBusinesses(state),
+      isStoreClosed: isStoreClosed(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(DeliveryMethods);
+)(withRouter(DeliveryMethods));
