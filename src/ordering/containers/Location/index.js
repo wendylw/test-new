@@ -373,6 +373,7 @@ class Location extends Component {
 
   renderSearchResultList() {
     const { searchResultList } = this.state;
+
     return (
       <div className="location-page__list">
         {searchResultList.map(searchResult => {
@@ -415,6 +416,7 @@ class Location extends Component {
     return (
       <div className="location-page__info">
         {this.renderSearchBox()}
+        {this.renderSearchResultList()}
         {!searchText ? this.renderPredictedPositions() : this.renderSearchResultList()}
       </div>
     );
@@ -430,7 +432,6 @@ class Location extends Component {
     return (
       <section className="table-ordering__location">
         <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackClicked} />
-        {this.renderMainContent()}
         {initializeError ? this.renderInitializeError() : this.renderMainContent()}
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
         {(isInitializing || isSubmitting) && this.renderLoadingMask()}
