@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { debounce } from 'lodash';
-import { IconGpsFixed, IconSearch, IconClose } from '../../../components/Icons';
+import { IconGpsFixed, IconSearch, IconClose, IconBookmark } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
 
@@ -394,8 +394,17 @@ class Location extends Component {
             const secondaryText = displayComponents ? displayComponents.secondaryText : positionInfo.address;
             // const distance = this.computeDistanceFromStore(coords);
             return (
-              <div onClick={() => this.selectPlace(positionInfo)} key={positionInfo.address}>
-                {this.renderAddressItem(mainText, secondaryText)}
+              <div
+                className="location-page__historical-address"
+                onClick={() => this.selectPlace(positionInfo)}
+                key={positionInfo.address}
+              >
+                <div className="location-page__historical-address-icon">
+                  <IconBookmark />
+                </div>
+                <div className="location-page__historical-address-content">
+                  {this.renderAddressItem(mainText, secondaryText)}
+                </div>
               </div>
             );
           })}
