@@ -97,7 +97,7 @@ export class VariationSelector extends Component {
     const { t, variation, isInvalidMinimum } = this.props;
     const { selected } = this.state;
     const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
-    const maxSelected = selected && maxSelectionAmount && selected.length >= maxSelectionAmount;
+    const maxSelected = selected && maxSelectionAmount && Object.keys(selected).length >= maxSelectionAmount;
     let AmountLimitDescription = minSelectionAmount
       ? t('MinimumChoicesDescription', { minSelectionAmount })
       : t('MaximumChoicesDescription', { maxSelectionAmount });
@@ -122,8 +122,7 @@ export class VariationSelector extends Component {
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
             const className = ['tag__card variation'];
-            const isDisabled =
-              markedSoldOut || (maxSelectionAmount && selected.length >= maxSelectionAmount && !selected[id]);
+            const isDisabled = markedSoldOut || (maxSelected && !selected[id]);
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
             if (isDisabled) {
