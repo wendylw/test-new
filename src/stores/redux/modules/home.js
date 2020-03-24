@@ -6,7 +6,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getStoreById } from '../../../redux/modules/entities/stores';
 import { getBusiness } from './app';
-import { getAllBusinesses, getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import Utils from '../../../utils/utils';
 
 const initialState = {
@@ -143,5 +143,4 @@ export const isStoreClosed = state => {
     console.error(e);
     return false;
   }
-  return false;
 };
