@@ -1,10 +1,13 @@
 import Url from '../../../utils/url';
+import config from '../../../config';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getStoreById } from '../../../redux/modules/entities/stores';
 import { getBusiness } from './app';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import Utils from '../../../utils/utils';
 
 const initialState = {
   storeHashCode: null,
@@ -27,6 +30,11 @@ export const types = {
   // operate current store
   SET_CURRENT_STORE: 'STORES/HOME/SET_CURRENT_STORE',
   CLEAR_CURRENT_STORE: 'STORES/HOME/CLEAR_CURRENT_STORE',
+
+  // fetch coreBusiness
+  FETCH_COREBUSINESS_REQUEST: 'ORDERING/APP/FETCH_COREBUSINESS_REQUEST',
+  FETCH_COREBUSINESS_SUCCESS: 'ORDERING/APP/FETCH_COREBUSINESS_SUCCESS',
+  FETCH_COREBUSINESS_FAILURE: 'ORDERING/APP/FETCH_COREBUSINESS_FAILURE',
 };
 
 export const actions = {
@@ -54,7 +62,20 @@ export const actions = {
   clearCurrentStore: () => ({
     type: types.CLEAR_CURRENT_STORE,
   }),
+
+  loadCoreBusiness: () => dispatch => {
+    const { storeId, business } = config;
+    return dispatch(fetchCoreBusiness({ business, storeId }));
+  },
 };
+
+const fetchCoreBusiness = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
+    endpoint: Url.apiGql('CoreBusiness'),
+    variables,
+  },
+});
 
 const fetchCoreStores = variables => ({
   [FETCH_GRAPHQL]: {
@@ -110,3 +131,16 @@ export const getDeliveryStatus = state => state.home.enableDelivery;
 export const getCurrentStoreId = state => state.home.currentStoreId;
 export const getStoreHashCode = state => state.home.storeHashCode;
 export const showStores = state => !state.home.isFetching;
+
+export const isStoreClosed = state => {
+  try {
+    const businessInfo = getBusinessByName(state, getBusiness(state));
+    console.log('businessInfo', businessInfo);
+
+    const { validDays, validTimeFrom, validTimeTo } = businessInfo.qrOrderingSettings;
+    return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }); // get negative status
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+};
