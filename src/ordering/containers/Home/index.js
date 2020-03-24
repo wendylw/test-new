@@ -162,29 +162,6 @@ export class Home extends Component {
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
     return Utils.getDeliveryInfo({ business, allBusinessInfo });
-    // const originalInfo = allBusinessInfo[business] || {};
-    // const { stores } = originalInfo || {};
-    // const { qrOrderingSettings } = originalInfo || {};
-    // const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-    // const { defaultShippingZoneMethod } = defaultShippingZone || {};
-    // const { rate } = defaultShippingZoneMethod || {};
-    // const deliveryFee = rate || 0;
-    // const minOrder = minimumConsumption || 0;
-
-    // const { phone } = (stores && stores[0]) || {};
-    // const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    // const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-
-    // return {
-    //   deliveryFee,
-    //   minOrder,
-    //   storeAddress,
-    //   deliveryToAddress,
-    //   telephone: phone,
-    //   validDays,
-    //   validTimeFrom,
-    //   validTimeTo,
-    // };
   };
 
   renderHeader() {
@@ -250,6 +227,7 @@ export class Home extends Component {
       validTimeTo,
       freeShippingMinAmount,
       enableConditionalFreeShipping,
+      enableLiveOnline,
     } = this.getDeliveryInfo();
 
     const { viewAside } = this.state;
@@ -322,6 +300,7 @@ export class Home extends Component {
           onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}
           isValidTimeToOrder={this.isValidTimeToOrder()}
           history={history}
+          isLiveOnline={enableLiveOnline}
         />
       </section>
     );
