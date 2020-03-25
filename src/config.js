@@ -1,3 +1,5 @@
+import Utils from './utils/utils';
+
 let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
 
 // To mock data
@@ -22,10 +24,10 @@ function guid() {
 const getClientSID = () => {
   try {
     return (
-      sessionStorage.getItem('client.sid') ||
+      Utils.getSessionVariable('client.sid') ||
       (function generateSID() {
         const clientSID = guid();
-        sessionStorage.setItem('client.sid', clientSID);
+        Utils.setSessionVariable('client.sid', clientSID);
         console.info('client.sid generated! [%s]', clientSID);
         return clientSID;
       })()

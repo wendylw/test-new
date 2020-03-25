@@ -2977,7 +2977,10 @@ body.loading {
   .list__container,
   .full-aside__content,
   .location-page__list,
-  .top-message__second-level {
+  .top-message__second-level,
+  .loyalty__claim,
+  .loyalty__home,
+  .loyalty__activities {
     max-width: 414px;
     left: 0;
     right: 0;

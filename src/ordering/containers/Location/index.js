@@ -6,6 +6,7 @@ import { IconGpsFixed, IconSearch } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
 import './index.scss';
+import Utils from '../../../utils/utils';
 
 import {
   getCurrentAddressInfo,
@@ -59,7 +60,7 @@ class Location extends Component {
     const STORAGE_KEY = 'DEVICE_POSITION_INFO';
     try {
       if (withCache) {
-        const cache = sessionStorage.getItem(STORAGE_KEY);
+        const cache = Utils.getSessionVariable(STORAGE_KEY);
         if (cache) {
           return JSON.parse(cache);
         }
@@ -79,7 +80,7 @@ class Location extends Component {
       // todo: consider the situation that storeCoords is missing
       const distance = computeDistance(storeCoords, ret.coords);
       ret.distance = distance;
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ret));
+      Utils.setSessionVariable(STORAGE_KEY, JSON.stringify(ret));
       return ret;
     } catch (e) {
       console.error(e);
@@ -179,8 +180,8 @@ class Location extends Component {
       });
       return;
     }
-    sessionStorage.setItem('deliveryAddress', JSON.stringify(placeInfo));
-    const callbackUrl = sessionStorage.getItem('deliveryCallbackUrl');
+    Utils.setSessionVariable('deliveryAddress', JSON.stringify(placeInfo));
+    const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
     sessionStorage.removeItem('deliveryCallbackUrl');
     if (typeof callbackUrl === 'string') {
       history.push(callbackUrl);
