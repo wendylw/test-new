@@ -28,7 +28,6 @@ export class Footer extends Component {
   handleGtmEventTracking = async callback => {
     const { shoppingCart } = this.props;
     const itemsInCart = shoppingCart.items.map(item => item.id);
-    console.log(shoppingCart);
     const gtmEventData = {
       product_id: itemsInCart,
       cart_size: shoppingCart.count,

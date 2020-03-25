@@ -20,35 +20,54 @@ class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const { appActions, onlineStoreInfo } = this.props;
+    const { appActions } = this.props;
 
     await appActions.getLoginStatus();
-    await appActions.fetchOnlineStoreInfo();
+    const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
 
     const { user } = this.props;
     const { isLogin } = user || {};
+    const { onlineStoreInfo } = responseGql.data || {};
 
     if (isLogin) {
-      appActions.loadCustomerProfile();
+      appActions.loadCustomerProfile().then(({ responseGql= {} }) => {
+        const { data = {} } = responseGql;
+        this.setGtmUserProperties(null, data.user);
+      });
     }
 
     this.getTokens(isLogin);
 
-    // window.dataLayer = window.dataLayer || [];
-    // window.dataLayer.push({
-    // userID: user?.consumerId
-    // isGuest: !!(user && user.consumerId)
-    // phoneNumber: Utils.getLocalStorageVariable('user.p'),
-    // merchantID: onlineStoreInfo.id,
-    // merchantIndustry: onlineStoreInfo.businessType,
-    // country: onlineStoreInfo.country,
-    // currency: onlineStoreInfo.currency,
-    // gaEnabled: onlineStoreInfo.gaEnabled,
-    // fbPixelEnabled: onlineStoreInfo.fbPixelEnabled,
-    //"gaID": onlineStoreInfo.analytics.GA,
-    // "fbPixelID": onlineStoreInfo.analytics.FB,
-    // });
+    this.setGtmUserProperties(onlineStoreInfo, user);
+  }
+
+  setGtmUserProperties = (onlineStoreInfo, user) => {
+    let storeInfoForGtm = {};
+    let userInfoForGtm = {};
+
+    if (onlineStoreInfo && Object.keys(onlineStoreInfo).length) {
+      storeInfoForGtm = {
+        merchantID: onlineStoreInfo.id,
+        merchantIndustry: onlineStoreInfo.businessType,
+        country: onlineStoreInfo.country,
+        currency: onlineStoreInfo.currency,
+        gaEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA),
+        fbPixelEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB),
+        gaID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA,
+        fbPixelID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB,
+      }
+    }
+
+    if (user && Object.keys(user).length) {
+      userInfoForGtm = {
+        userID: user.consumerId,
+        isGuest: !!(user && user.consumerId),
+        phoneNumber: Utils.getLocalStorageVariable('user.p'),
+      }
+    }
+
+    return window.dataLayer.push(Object.assign({}, storeInfoForGtm, userInfoForGtm));
   }
 
   componentDidUpdate(prevProps) {
@@ -60,7 +79,10 @@ class App extends Component {
     }
 
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
-      appActions.loadCustomerProfile();
+      appActions.loadCustomerProfile().then(({ responseGql= {} }) => {
+        const { data = {} } = responseGql;
+        this.setGtmUserProperties(null, data.user);
+      });
     }
   }
 
