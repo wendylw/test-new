@@ -4,5 +4,6 @@
   "NoProductDescription": "No product description",
   "MinimumChoicesDescription": "Select minimum of {{minSelectionAmount}} choices",
   "MaximumChoicesDescription": "Select maximum of {{maxSelectionAmount}} choices",
-  "MinMaximumChoicesDescription": "Select minimum of {{minSelectionAmount}} and maximum of {{maxSelectionAmount}} choices"
+  "MinMaximumChoicesDescription": "Select minimum of {{minSelectionAmount}} and maximum of {{maxSelectionAmount}} choices",
+  "StoreOffline": "STORE OFFLINE"
 }

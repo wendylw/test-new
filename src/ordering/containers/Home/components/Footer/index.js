@@ -25,7 +25,17 @@ export class Footer extends Component {
   }
 
   render() {
-    const { history, onClickCart, cartSummary, businessInfo, tableId, onToggle, t, isValidTimeToOrder } = this.props;
+    const {
+      history,
+      onClickCart,
+      cartSummary,
+      businessInfo,
+      tableId,
+      onToggle,
+      t,
+      isValidTimeToOrder,
+      isLiveOnline,
+    } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
@@ -67,14 +77,16 @@ export class Footer extends Component {
           {tableId !== 'DEMO' ? (
             <button
               className="cart-bar__order-button"
-              disabled={this.getDisplayPrice() < Number(minimumConsumption || 0) || !isValidTimeToOrder}
+              disabled={
+                this.getDisplayPrice() < Number(minimumConsumption || 0) || !isValidTimeToOrder || !isLiveOnline
+              }
               onClick={() => {
                 onToggle();
                 history &&
                   history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: window.location.search });
               }}
             >
-              {t('OrderNow')}
+              {isLiveOnline ? t('OrderNow') : t('StoreOffline')}
             </button>
           ) : null}
         </div>
