@@ -347,7 +347,12 @@ class Location extends Component {
     const { isInitializing, initializeError, isSubmitting, errorToast } = this.state;
     return (
       <section className="table-ordering__location">
-        <Header className="has-right" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackClicked} />
+        <Header
+          className="has-right flex-middle"
+          isPage={true}
+          title={t('DeliverTo')}
+          navFunc={this.handleBackClicked}
+        />
         {initializeError ? this.renderInitializeError() : this.renderMainContent()}
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
         {(isInitializing || isSubmitting) && this.renderLoadingMask()}
