@@ -179,7 +179,7 @@ class Customer extends Component {
     return (
       <section className={`table-ordering__customer` /* hide */}>
         <Header
-          className="text-center gray has-right"
+          className="text-center gray has-right flex-middle"
           isPage={true}
           title={type === DELIVERY_METHOD.DELIVERY ? t('DeliveryDetails') : t('PickUpDetails')}
           navFunc={() => {

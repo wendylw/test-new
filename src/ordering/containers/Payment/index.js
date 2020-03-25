@@ -147,7 +147,7 @@ class Payment extends Component {
     return (
       <section className={className.join(' ')}>
         <Header
-          className="border__bottom-divider gray has-right"
+          className="border__bottom-divider gray has-right flex-middle"
           isPage={true}
           title={t('SelectPayment')}
           navFunc={this.handleClickBack}

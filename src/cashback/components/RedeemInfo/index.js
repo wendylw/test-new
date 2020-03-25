@@ -27,7 +27,7 @@ class RedeemInfo extends React.Component {
         </button>
         {showModal ? (
           <div className="full-aside">
-            <Header isPage={true} navFunc={this.toggleModal.bind(this)} />
+            <Header className="flex-middle" isPage={true} navFunc={this.toggleModal.bind(this)} />
 
             <section className="full-aside__content text-center">
               <figure className="full-aside__image-container">

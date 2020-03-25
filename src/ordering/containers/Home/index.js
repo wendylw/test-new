@@ -178,7 +178,9 @@ export class Home extends Component {
     }
 
     if (!isDeliveryType) {
-      classList.push('border__bottom-divider gray');
+      classList.push('border__bottom-divider gray flex-top');
+    } else {
+      classList.push('flex-middle');
     }
 
     return (

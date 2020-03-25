@@ -675,8 +675,9 @@
     }
   }
 
-  .warning__button {
-    width: 140px;
+  &__title + button {
+    min-width: 90px;
+    width: 170px;
   }
 
   &__image-container {

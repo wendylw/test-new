@@ -79,7 +79,7 @@ class DeliveryMethods extends Component {
     return (
       <section className="delivery">
         <Header
-          className="border__bottom-divider gray has-right"
+          className="border__bottom-divider gray has-right flex-middle"
           isPage={true}
           title={t('SelectYourPreference')}
           navFunc={this.handleClickBack.bind(this)}

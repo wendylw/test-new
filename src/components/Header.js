@@ -39,7 +39,7 @@ class Header extends Component {
       minOrder,
       isValidTimeToOrder,
     } = this.props;
-    const fixedClassList = ['header flex flex-space-between'];
+    const classList = ['header flex flex-space-between'];
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const normalTitle = isPickUpType ? (
@@ -56,7 +56,6 @@ class Header extends Component {
     ) : (
       <h2 className="header__title font-weight-bold text-middle">{title}</h2>
     );
-    const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
 
     if (className) {
       classList.push(className);

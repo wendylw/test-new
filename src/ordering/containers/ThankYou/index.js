@@ -206,7 +206,7 @@ export class ThankYou extends Component {
     return (
       <React.Fragment>
         <Header
-          className="border__bottom-divider gray"
+          className="border__bottom-divider gray flex-middle"
           isPage={true}
           title={`#${orderId}`}
           navFunc={() =>
@@ -324,7 +324,7 @@ export class ThankYou extends Component {
         ) : (
           <React.Fragment>
             <Header
-              className="border__bottom-divider gray"
+              className="border__bottom-divider gray flex-middle"
               isPage={true}
               title={t('OrderPaid')}
               navFunc={() =>
