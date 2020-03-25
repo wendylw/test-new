@@ -5,6 +5,7 @@ import { debounce } from 'lodash';
 import { IconGpsFixed, IconSearch, IconClose, IconBookmark } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
+import Utils from '../../../utils/utils';
 
 import {
   getCurrentAddressInfo,
@@ -62,7 +63,7 @@ class Location extends Component {
     const STORAGE_KEY = 'DEVICE_POSITION_INFO';
     try {
       if (withCache) {
-        const cache = sessionStorage.getItem(STORAGE_KEY);
+        const cache = Utils.getSessionVariable(STORAGE_KEY);
         if (cache) {
           return JSON.parse(cache);
         }
@@ -83,7 +84,7 @@ class Location extends Component {
           secondaryText: positionInfo.address,
         },
       };
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...ret }));
+      Utils.setSessionVariable(STORAGE_KEY, JSON.stringify(ret));
       return ret;
     } catch (e) {
       console.error(e);
@@ -249,9 +250,9 @@ class Location extends Component {
         });
         return;
       }
-      sessionStorage.setItem('deliveryAddress', JSON.stringify(placeInfo));
-      const callbackUrl = sessionStorage.getItem('deliveryCallbackUrl');
-      sessionStorage.removeItem('deliveryCallbackUrl');
+      Utils.setSessionVariable('deliveryAddress', JSON.stringify(placeInfo));
+      const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
+      Utils.removeSessionVariable('deliveryCallbackUrl');
       if (typeof callbackUrl === 'string') {
         history.push(callbackUrl);
       } else {

@@ -2,15 +2,16 @@
 // import { mockGeocodingResponse } from './mockResponse';
 
 import config from '../../../config';
+import Utils from '../../../utils/utils';
 import { intersection, findIndex } from 'lodash';
 
 export const saveDevicePosition = position => {
-  return sessionStorage.setItem('device.position', position);
+  return Utils.setSessionVariable('device.position', position);
 };
 
 export const fetchDevicePosition = () => {
   try {
-    let position = sessionStorage.getItem('device.position');
+    let position = Utils.getSessionVariable('device.position');
     const [lat, lng] = position.split(',');
     if (lat && lng) {
       return {
