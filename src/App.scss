@@ -13,7 +13,7 @@
 
   &.cover {
     display: block;
-    top: 64px;
+    top: 50px;
     background-color: rgba($color: $white, $alpha: 0.5);
     z-index: 290;
   }
@@ -922,6 +922,9 @@
 .list {
   &__container {
     position: relative;
+
+    .item__detail-content {
+    }
   }
 }
 
@@ -1515,10 +1518,6 @@
     &.active {
       z-index: 300;
     }
-
-    & ~ .cover {
-      top: 121px;
-    }
   }
 
   &__address,
@@ -1584,7 +1583,6 @@
 
   &__card-container {
     height: 3.8vw;
-    padding: 0 5vw;
   }
 
   &__card.variation:not(.active) {
@@ -2144,6 +2142,10 @@
     .top-message__second-level ~ .list__container .category__header.fixed,
     .top-message__second-level + .category-nav {
       top: 158px;
+    }
+
+    .cover {
+      top: 121px;
     }
   }
 
@@ -3118,6 +3120,15 @@ body.loading {
     max-width: 360px;
   }
 
+  .container.fixed {
+    .location-page__entry ~ .list__container .category__header.fixed {
+      top: 0;
+      transform: translateX(-155px);
+      -webkit-transform: translateX(-155px);
+      -moz-transform: translateX(-155px);
+    }
+  }
+
   // reset padding
   .header,
   .store-list .item__content,
@@ -3127,7 +3138,6 @@ body.loading {
   .need-help__info-container,
   .order-detail__info-container,
   .item,
-  .item__content,
   .aside__section-container,
   .billing__item,
   .cart-pane__operation,
@@ -3209,7 +3219,6 @@ body.loading {
   .header__info-list,
   .store-info__address,
   .store-info__phone,
-  .tag__card-container,
   .modal__title,
   .modal__text {
     padding: 0 20px;
