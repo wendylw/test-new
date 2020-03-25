@@ -3,7 +3,7 @@
 
 import config from '../../../config';
 import Utils from '../../../utils/utils';
-import { intersection } from 'lodash';
+import { intersection, findIndex } from 'lodash';
 
 export const saveDevicePosition = position => {
   return Utils.setSessionVariable('device.position', position);
@@ -42,10 +42,11 @@ export const getStoreInfo = () => {
     .then(response => {
       console.log(response.data);
       if (response.data.business) {
-        const { qrOrderingSettings } = response.data.business;
+        const { qrOrderingSettings, country } = response.data.business;
         const { stores } = response.data.business;
         const ret = stores[0];
         ret.qrOrderingSettings = qrOrderingSettings;
+        ret.countryCode = country;
         return ret;
       } else {
         return null;
@@ -83,7 +84,7 @@ const getPlaceId = async address => {
 
 export const getPlaceDetails = async (
   placeId,
-  { targetCoords, fields = ['geometry', 'formatted_address', 'address_components'] } = {}
+  { fields = ['geometry', 'formatted_address', 'address_components'] } = {}
 ) => {
   const places = new window.google.maps.places.PlacesService(document.createElement('div'));
 
@@ -112,7 +113,6 @@ export const getPlaceDetails = async (
     coords,
     placeId,
     addressComponents: placeDetails.addressComponents && standardizeGeoAddress(placeDetails.address_components),
-    distance: targetCoords ? computeDistance(targetCoords, coords) : undefined,
   };
   console.log('transformed placeDetails =', ret);
 
@@ -202,9 +202,9 @@ const getSessionToken = () => {
   // ---End--- sessionToken to reduce request billing when user search addresses
 };
 
-export const getPlacesByText = async (input, { position = null, radius = 10000 }) => {
+export const getPlacesByText = async (input, { position, radius, country }) => {
   let positionPair = position;
-  console.log('getPlacesByText params', input, position, radius);
+  console.log('getPlacesByText params', input, position, radius, country);
 
   if (!positionPair) {
     positionPair = fetchDevicePosition();
@@ -226,7 +226,8 @@ export const getPlacesByText = async (input, { position = null, radius = 10000 }
               origin: google_map_position,
               radius,
             }
-          : null),
+          : undefined),
+        ...(country ? { componentRestrictions: { country } } : undefined),
       },
       (results, status) => {
         console.log('getPlaceDetails: results', results);
@@ -382,9 +383,88 @@ export const getCurrentAddressInfo = async () => {
   return result;
 };
 
+// todo: memorization
 // return value in meters
-export const computeDistance = (fromCoords, toCoords) => {
+const straightDistanceCache = {};
+export const computeStraightDistance = (fromCoords, toCoords) => {
+  const key = `${fromCoords.lat},${fromCoords.lng}:${toCoords.lat},${toCoords.lng}`;
+  if (straightDistanceCache[key]) {
+    return straightDistanceCache[key];
+  }
   const from = new window.google.maps.LatLng(fromCoords.lat, fromCoords.lng);
   const to = new window.google.maps.LatLng(toCoords.lat, toCoords.lng);
-  return window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  straightDistanceCache[key] = result;
+  return result;
+};
+
+export const getRouteDistanceMatrix = async (fromCoordsList, toCoordsList) => {
+  const origins = fromCoordsList.map(coords => new window.google.maps.LatLng(coords.lat, coords.lng));
+  const destinations = toCoordsList.map(coords => new window.google.maps.LatLng(coords.lat, coords.lng));
+  const distanceMatrixService = new window.google.maps.DistanceMatrixService();
+  return new Promise((resolve, reject) => {
+    distanceMatrixService.getDistanceMatrix({ origins, destinations, travelMode: 'DRIVING' }, (resp, status) => {
+      if (status !== window.google.maps.DistanceMatrixStatus.OK) {
+        reject(`Failed to get distance info: ${status}`);
+        return;
+      }
+      const result = resp.rows.map((row, rowIndex) => {
+        return row.elements.map((element, elementIndex) => {
+          if (!element.distance) {
+            console.error(
+              `Fail to get distance between ${origins[rowIndex]} and ${destinations[elementIndex]}}: ${element.status}`
+            );
+            return null;
+          }
+          return element.distance.value || null;
+        });
+      });
+      resolve(result);
+    });
+  });
+};
+
+const MAX_HISTORICAL_ADDRESS_COUNT = 5;
+const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
+
+export const getHistoricalDeliveryAddresses = async () => {
+  try {
+    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    if (!storageStr) {
+      return [];
+    }
+    return JSON.parse(storageStr);
+  } catch (e) {
+    console.error('failed to get historical delivery addresses', e);
+    return [];
+  }
+};
+
+export const setHistoricalDeliveryAddresses = async positionInfo => {
+  try {
+    const clonedPositionInfo = { ...positionInfo };
+    // won't save distance, because use may choose another store.
+    delete clonedPositionInfo.distance;
+    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    let positionInfoList;
+    if (!storageStr) {
+      positionInfoList = [];
+    } else {
+      positionInfoList = JSON.parse(storageStr);
+    }
+    const foundIndex = findIndex(positionInfoList, existingPosition => {
+      return existingPosition.address === clonedPositionInfo.address;
+    });
+    // still use the new version if there is a same address
+    if (foundIndex >= 0) {
+      positionInfoList.splice(foundIndex, 1);
+    }
+    // make the newest address on the front.
+    positionInfoList.unshift(clonedPositionInfo);
+    // remove the oldest item, to prevent data size keeping growing.
+    positionInfoList.splice(MAX_HISTORICAL_ADDRESS_COUNT);
+    localStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
+  } catch (e) {
+    console.error('failed to set historical delivery addresses', e);
+  }
 };

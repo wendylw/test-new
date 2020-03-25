@@ -62,13 +62,17 @@ class Header extends Component {
     }
 
     return (
-      <header className={classList.join(' ')}>
+      <header
+        className={classList.join(' ')}
+        onClick={() => {
+          if (Utils.isDeliveryType()) {
+            onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
+          }
+        }}
+      >
         {this.renderLogoAndNavDom()}
         {isStoreHome && isDeliveryType ? (
-          <div
-            className="header__title-container"
-            onClick={() => onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL)}
-          >
+          <div className="header__title-container">
             <h1 className="header__title">
               <span
                 className={`header__one-line-title font-weight-bold text-middle ${
@@ -115,6 +119,7 @@ Header.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   navFunc: PropTypes.func,
+  onClickHandler: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
 };
 
@@ -125,6 +130,7 @@ Header.defaultProps = {
   title: '',
   deliveryFee: 0,
   navFunc: () => {},
+  onClickHandler: () => {},
 };
 
 export default withTranslation()(Header);

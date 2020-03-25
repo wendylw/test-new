@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getAllBusinesses, getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
   getCategoryProductList,
@@ -99,6 +99,10 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
+    if (!this.isValidTimeToOrder()) {
+      return null;
+    }
+
     const { t, history } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
     const isValidTimeToOrder = this.isValidTimeToOrder();
@@ -212,6 +216,7 @@ export class Home extends Component {
       categories,
       onlineStoreInfo,
       businessInfo,
+      businessLoaded,
       requestInfo,
       isVerticalMenu,
       allBusinessInfo,
@@ -278,20 +283,23 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        <DeliveryDetailModal
-          onlineStoreInfo={onlineStoreInfo}
-          businessInfo={businessInfo}
-          show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
-          onToggle={this.handleToggleAside.bind(this)}
-          deliveryFee={deliveryFee}
-          minOrder={minOrder}
-          storeAddress={storeAddress}
-          telephone={telephone}
-          validDays={validDays}
-          validTimeFrom={validTimeFrom}
-          validTimeTo={validTimeTo}
-          isValidTimeToOrder={this.isValidTimeToOrder()}
-        />
+        {!Utils.isDeliveryType() ? null : (
+          <DeliveryDetailModal
+            onlineStoreInfo={onlineStoreInfo}
+            businessInfo={businessInfo}
+            businessLoaded={businessLoaded}
+            show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
+            onToggle={this.handleToggleAside.bind(this)}
+            deliveryFee={deliveryFee}
+            minOrder={minOrder}
+            storeAddress={storeAddress}
+            telephone={telephone}
+            validDays={validDays}
+            validTimeFrom={validTimeFrom}
+            validTimeTo={validTimeTo}
+            isValidTimeToOrder={this.isValidTimeToOrder()}
+          />
+        )}
         {!this.isValidTimeToOrder() ? (
           <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
         ) : null}
@@ -321,6 +329,7 @@ export default compose(
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
         allBusinessInfo: getAllBusinesses(state),
+        businessLoaded: getBusinessIsLoaded(state),
       };
     },
     dispatch => ({
