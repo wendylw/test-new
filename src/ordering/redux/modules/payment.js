@@ -18,6 +18,7 @@ const initialState = {
   braintreeToken: '',
   bankingList: [],
   paymentList: [],
+  unavailablePaymentList: [],
 };
 
 export const types = {
@@ -157,6 +158,7 @@ export const actions = {
       type: types.FETCH_PAYMENTLIST_SUCCESS,
       response: {
         paymentList: config.paymentList,
+        unavailablePaymentList: config.unavailablePaymentList,
       },
     });
   },
@@ -225,9 +227,9 @@ const reducer = (state = initialState, action) => {
       return { ...state, bankingList };
     }
     case types.FETCH_PAYMENTLIST_SUCCESS: {
-      const { paymentList } = response || {};
+      const { paymentList, unavailablePaymentList } = response || {};
 
-      return { ...state, paymentList };
+      return { ...state, paymentList, unavailablePaymentList };
     }
     default:
       return state;
@@ -248,3 +250,5 @@ export const getBraintreeToken = state => state.payment.braintreeToken;
 export const getBankList = state => state.payment.bankingList;
 
 export const getPaymentList = state => state.payment.paymentList;
+
+export const getUnavailablePaymentList = state => state.payment.unavailablePaymentList;

@@ -17,6 +17,7 @@ import {
   getCurrentPayment,
   getCurrentOrderId,
   getPaymentList,
+  getUnavailablePaymentList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import paymentBankingImage from '../../../images/payment-banking.png';
@@ -37,7 +38,6 @@ const dataSource = {
     logo: paymentCreditImage,
     labelKey: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
-    disabled: true,
   },
   boost: {
     name: PAYMENT_METHODS.BOOST_PAY,
@@ -140,7 +140,7 @@ class Payment extends Component {
   };
 
   render() {
-    const { t, currentPayment, paymentList } = this.props;
+    const { t, currentPayment, paymentList, unavailablePaymentList } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -164,7 +164,7 @@ class Payment extends Component {
                 return null;
               }
 
-              if (payment.disabled) {
+              if (unavailablePaymentList.find(payment => payment === paymentKey)) {
                 classList.push('disabled');
               }
 
@@ -228,6 +228,7 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         paymentList: getPaymentList(state),
+        unavailablePaymentList: getUnavailablePaymentList(state),
       };
     },
     dispatch => ({

@@ -81,6 +81,7 @@ const config = {
   imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
   paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
+  unavailablePaymentList: (process.env.REACT_APP_PAYMENT_UNAVAILABLE_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
   h() {
     try {
