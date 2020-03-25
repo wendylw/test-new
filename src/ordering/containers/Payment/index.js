@@ -37,6 +37,7 @@ const dataSource = {
     logo: paymentCreditImage,
     labelKey: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
+    disabled: true,
   },
   boost: {
     name: PAYMENT_METHODS.BOOST_PAY,
@@ -157,21 +158,29 @@ class Payment extends Component {
           <ul className="payment__list">
             {paymentList.map(paymentKey => {
               const payment = dataSource[paymentKey];
+              const classList = ['payment__item border__bottom-divider flex flex-middle flex-space-between'];
 
               if (!payment) {
                 return null;
               }
 
+              if (payment.disabled) {
+                classList.push('disabled');
+              }
+
               return (
                 <li
                   key={payment.name}
-                  className="payment__item border__bottom-divider flex flex-middle flex-space-between"
+                  className={classList.join(' ')}
                   onClick={() => this.setCurrentPayment(payment.name)}
                 >
                   <figure className="payment__image-container">
                     <img src={payment.logo} alt={payment.labelKey}></img>
                   </figure>
-                  <label className="payment__name font-weight-bold">{t(payment.labelKey)}</label>
+                  <div className="payment__name">
+                    <label className="font-weight-bold">{t(payment.labelKey)}</label>
+                    {payment.disabled ? <span className="payment__prompt">Temporarily Unavailable</span> : null}
+                  </div>
                   <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
