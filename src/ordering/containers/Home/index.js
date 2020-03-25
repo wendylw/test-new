@@ -281,21 +281,23 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        <DeliveryDetailModal
-          onlineStoreInfo={onlineStoreInfo}
-          businessInfo={businessInfo}
-          businessLoaded={businessLoaded}
-          show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
-          onToggle={this.handleToggleAside.bind(this)}
-          deliveryFee={deliveryFee}
-          minOrder={minOrder}
-          storeAddress={storeAddress}
-          telephone={telephone}
-          validDays={validDays}
-          validTimeFrom={validTimeFrom}
-          validTimeTo={validTimeTo}
-          isValidTimeToOrder={this.isValidTimeToOrder()}
-        />
+        {!Utils.isDeliveryType() ? null : (
+          <DeliveryDetailModal
+            onlineStoreInfo={onlineStoreInfo}
+            businessInfo={businessInfo}
+            businessLoaded={businessLoaded}
+            show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
+            onToggle={this.handleToggleAside.bind(this)}
+            deliveryFee={deliveryFee}
+            minOrder={minOrder}
+            storeAddress={storeAddress}
+            telephone={telephone}
+            validDays={validDays}
+            validTimeFrom={validTimeFrom}
+            validTimeTo={validTimeTo}
+            isValidTimeToOrder={this.isValidTimeToOrder()}
+          />
+        )}
         {!this.isValidTimeToOrder() ? (
           <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
         ) : null}
