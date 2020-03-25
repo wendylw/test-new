@@ -101,7 +101,7 @@ class Customer extends Component {
       return null;
     }
 
-    const { addressDetails /*, deliveryComments*/ } = this.props.deliveryDetails;
+    const { addressDetails, deliveryComments } = this.props.deliveryDetails;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     return (
@@ -143,7 +143,7 @@ class Customer extends Component {
             {addressDetails || t('AddressDetailsPlaceholder')}
           </p>
         </div>
-        {/* <div
+        <div
           className="form__group flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
@@ -151,7 +151,7 @@ class Customer extends Component {
           <i className="customer__edit-icon">
             <IconEdit />
           </i>
-        </div> */}
+        </div>
       </React.Fragment>
     );
   }
