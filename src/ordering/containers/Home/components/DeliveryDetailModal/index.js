@@ -63,16 +63,20 @@ class DeliveryDetailModal extends Component {
             />
             <div className="header__title-container">
               <h2 className="header__title">
-                <span className="font-weight-bold text-middle">
+                <span
+                  className={`header__one-line-title font-weight-bold text-middle ${
+                    !isValidTimeToOrder ? 'has-tag' : ''
+                  }`}
+                >
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
                 </span>
+                {isValidTimeToOrder ? null : (
+                  <div className="tag__card-container">
+                    <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                  </div>
+                )}
               </h2>
-              {isValidTimeToOrder ? null : (
-                <div className="tag__card-container">
-                  <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
-                </div>
-              )}
               <p className="store-info__address gray-font-opacity">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
