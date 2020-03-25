@@ -4,7 +4,7 @@ let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname
 if (process.env.NODE_ENV === 'development') {
   business = 'wenjingzhang';
   document.cookie = 'business=wenjingzhang; path=/';
-  document.cookie = '__h=U2FsdGVkX19b%2BFoyVYL4Pt4rw%2Bu5%2FkvdLWdLJU6XeeLBEWYvhtCYBTz4sNzvbh%2Fu; path=/';
+  document.cookie = '__h=U2FsdGVkX1%2BwX4mZt2NI1dAENRgViAnD1%2FaxZghR0ocKuuSMy%2BpGgU4LQXAa9FZ1; path=/';
   document.cookie = '__s=5e5dd6c7407cf700063ba869; path=/';
   document.cookie = '__t=; path=/';
 }
