@@ -16,7 +16,10 @@ const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
     // 33.8% equal (item padding + item image + item cart controller button height) / window width
-    productItemMinHeight: (document.body.clientWidth || window.innerWidth) * 0.338,
+    productItemMinHeight:
+      ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
+        ? document.body.clientWidth || window.innerWidth
+        : 414) * 0.26,
   },
   currentProduct: {
     id: '',

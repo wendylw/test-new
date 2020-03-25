@@ -4,7 +4,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import { IconLeftArrow, IconClose, IconMotorcycle } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
-// import Utils from '../utils/utils';
+import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
 
@@ -35,12 +35,27 @@ class Header extends Component {
       title,
       children,
       onClickHandler,
-      isDeliveryType,
       deliveryFee,
       minOrder,
       isValidTimeToOrder,
     } = this.props;
     const fixedClassList = ['header flex flex-space-between'];
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
+    const normalTitle = isPickUpType ? (
+      <h2 className="header__title font-weight-bold text-middle">
+        <span className={`header__one-line-title font-weight-bold text-middle ${!isValidTimeToOrder ? 'has-tag' : ''}`}>
+          {title}
+        </span>
+        {isValidTimeToOrder ? null : (
+          <div className="tag__card-container">
+            <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
+          </div>
+        )}
+      </h2>
+    ) : (
+      <h2 className="header__title font-weight-bold text-middle">{title}</h2>
+    );
     const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
 
     if (className) {
@@ -85,7 +100,7 @@ class Header extends Component {
             </ul>
           </div>
         ) : (
-          <h2 className="header__title font-weight-bold text-middle">{title}</h2>
+          normalTitle
         )}
         {children}
       </header>
@@ -98,7 +113,6 @@ Header.propTypes = {
   deliveryFee: PropTypes.number,
   isPage: PropTypes.bool,
   isStoreHome: PropTypes.bool,
-  isDeliveryType: PropTypes.bool,
   logo: PropTypes.string,
   title: PropTypes.string,
   navFunc: PropTypes.func,
@@ -108,7 +122,6 @@ Header.propTypes = {
 Header.defaultProps = {
   isPage: false,
   isStoreHome: false,
-  isDeliveryType: false,
   isValidTimeToOrder: true,
   title: '',
   deliveryFee: 0,

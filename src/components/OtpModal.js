@@ -26,34 +26,36 @@ class OtpModal extends React.Component {
     const { currentOtpTime } = this.state;
     this.countDown(currentOtpTime);
 
-    this.inputRef.current.addEventListener(
-      'focus',
-      () => {
-        try {
-          const bottomValue = this.getScrollBottom();
-          this.addressAsideInnerRef.current.style.bottom = `${bottomValue}px`;
-          this.addressAsideInnerRef.current.style.top = 'auto';
-        } catch (e) {
-          console.error(e);
-        }
-      },
-      false
-    );
+    const windowWidth = document.body.clientWidth || window.innerWidth;
 
-    this.inputRef.current.addEventListener(
-      'blur',
-      () => {
-        setTimeout(() => {
+    if (windowWidth < 770) {
+      this.inputRef.current.addEventListener(
+        'focus',
+        () => {
           try {
-            this.addressAsideInnerRef.current.style.bottom = '';
-            this.addressAsideInnerRef.current.style.top = '0';
+            const bottomValue = this.getScrollBottom();
+            this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
           } catch (e) {
             console.error(e);
           }
-        }, 100);
-      },
-      false
-    );
+        },
+        false
+      );
+
+      this.inputRef.current.addEventListener(
+        'blur',
+        () => {
+          setTimeout(() => {
+            try {
+              this.addressAsideInnerRef.current.style.transform = 'none';
+            } catch (e) {
+              console.error(e);
+            }
+          }, 100);
+        },
+        false
+      );
+    }
   }
 
   getScrollBottom() {
@@ -105,10 +107,10 @@ class OtpModal extends React.Component {
     }
 
     return (
-      <div ref={this.addressAsideInnerRef} className="full-aside">
+      <div className="full-aside">
         <Header navFunc={onClose} />
 
-        <section className="full-aside__content text-center">
+        <section ref={this.addressAsideInnerRef} className="full-aside__content text-center">
           <figure className="full-aside__image-container">
             <img src={beepOtpImage} alt="otp" />
           </figure>
