@@ -14,12 +14,13 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
+import Utils from '../../../utils/utils';
 
 class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { appActions, onlineStoreInfo } = this.props;
 
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
@@ -33,7 +34,21 @@ class App extends Component {
     }
 
     this.getTokens(isLogin);
-    // this.postAppMessage(user);
+
+    // window.dataLayer = window.dataLayer || [];
+    // window.dataLayer.push({
+    // userID: user?.consumerId
+    // isGuest: !!(user && user.consumerId)
+    // phoneNumber: Utils.getLocalStorageVariable('user.p'),
+    // merchantID: onlineStoreInfo.id,
+    // merchantIndustry: onlineStoreInfo.businessType,
+    // country: onlineStoreInfo.country,
+    // currency: onlineStoreInfo.currency,
+    // gaEnabled: onlineStoreInfo.gaEnabled,
+    // fbPixelEnabled: onlineStoreInfo.fbPixelEnabled,
+    //"gaID": onlineStoreInfo.analytics.GA,
+    // "fbPixelID": onlineStoreInfo.analytics.FB,
+    // });
   }
 
   componentDidUpdate(prevProps) {

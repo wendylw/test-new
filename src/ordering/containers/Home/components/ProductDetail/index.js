@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -272,8 +273,27 @@ class ProductDetail extends Component {
     this.closeModal();
   }
 
+  handleGtmEventTracking = variables => {
+    const { product } = this.props;
+    const selectedChildProductDetail = product.childrenMap.find(child => child.childId === variables.productId);
+    const gtmEventData = {
+      product_name: product.title,
+      product_id: variables.productId,
+      price_local: selectedChildProductDetail.displayPrice,
+      variant: variables.variations,
+      quantity: selectedChildProductDetail.quantityOnHand,
+      product_type: product.inventoryType,
+      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: (product.images && product.images.length) || 0,
+    };
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
+  };
+
   handleAddOrUpdateShoppingCartItem = async variables => {
     const { homeActions } = this.props;
+
+    this.handleGtmEventTracking(variables);
 
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();

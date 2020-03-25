@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionsCreator, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+
 class CategoryProductList extends Component {
   prevCategory = null;
 
@@ -30,6 +32,8 @@ class CategoryProductList extends Component {
   handleIncreaseProductInCart = async product => {
     const { onToggle } = this.props;
 
+    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
+
     try {
       await this.props.homeActions.increaseProductInCart(product);
       await this.props.homeActions.loadShoppingCart();
@@ -42,8 +46,41 @@ class CategoryProductList extends Component {
     }
   };
 
+  handleGtmEventTracking = (eventName, data) => {
+    let gtmTrackingData = {};
+    if (eventName === GTM_TRACKING_EVENTS.VIEW_PRODUCT) {
+      gtmTrackingData = {
+        product_name: data.title,
+        product_id: data.id,
+        price_local: data.displayPrice,
+        product_type: data.inventoryType,
+        Inventory: !!data.markedSoldOut ? 'In stock' : 'Out of stock',
+        image_count: (data.images && data.images.length) || 0,
+        product_description: data.description,
+      };
+    }
+
+    if (eventName === GTM_TRACKING_EVENTS.ADD_TO_CART) {
+      const { product } = this.props;
+      gtmTrackingData = {
+        product_name: product.title,
+        product_id: data.productId,
+        price_local: product.displayPrice,
+        variant: data.variations,
+        quantity: product.quantityOnHand,
+        product_type: product.inventoryType,
+        Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+        image_count: (product.images && product.images.length) || 0,
+      };
+    }
+
+    return gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, gtmTrackingData);
+  };
+
   handleShowProductDetail = async product => {
     const { onToggle } = this.props;
+
+    this.handleGtmEventTracking(product);
 
     await this.props.homeActions.loadProductDetail(product);
     await this.props.homeActions.loadShoppingCart();

@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
 import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
 export class Footer extends Component {
   getDisplayPrice() {
@@ -24,9 +25,31 @@ export class Footer extends Component {
     return totalPrice;
   }
 
+  handleGtmEventTracking = async callback => {
+    const { shoppingCart } = this.props;
+    const itemsInCart = shoppingCart.items.map(item => item.id);
+    console.log(shoppingCart);
+    const gtmEventData = {
+      product_id: itemsInCart,
+      cart_size: shoppingCart.count,
+      cart_value_local: shoppingCart.total,
+    };
+    gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
+  };
+
+  handleRedirectToCart = () => {
+    const redirectToCart = () => {
+      const { history } = this.props;
+      return (
+        history && history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: window.location.search })
+      );
+    };
+
+    this.handleGtmEventTracking(redirectToCart);
+  };
+
   render() {
     const {
-      history,
       onClickCart,
       cartSummary,
       businessInfo,
@@ -82,8 +105,8 @@ export class Footer extends Component {
               }
               onClick={() => {
                 onToggle();
-                history &&
-                  history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: window.location.search });
+
+                this.handleRedirectToCart();
               }}
             >
               {isLiveOnline ? t('OrderNow') : t('StoreOffline')}
