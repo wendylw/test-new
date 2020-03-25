@@ -955,6 +955,12 @@
   background-color: $white;
   list-style: none;
 
+  .sold-out {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+
   &.flex-column {
     .sold-out {
       margin-left: 35vw;
