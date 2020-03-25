@@ -120,6 +120,7 @@ Header.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   navFunc: PropTypes.func,
+  onClickHandler: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
 };
 
@@ -130,6 +131,7 @@ Header.defaultProps = {
   title: '',
   deliveryFee: 0,
   navFunc: () => {},
+  onClickHandler: () => {},
 };
 
 export default withTranslation()(Header);
