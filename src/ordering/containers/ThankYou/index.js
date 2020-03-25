@@ -311,7 +311,7 @@ export class ThankYou extends Component {
     const date = new Date();
     const { tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
-    const isPickupType = Utils.isPickupType();
+    const isPickUpType = Utils.isPickUpType();
 
     return (
       <section
@@ -331,7 +331,7 @@ export class ThankYou extends Component {
                 history.replace({
                   pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
                   search: `?table=${order.tableId}&storeId=${order.storeId}${
-                    isPickupType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
+                    isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
                   }`,
                 })
               }

@@ -383,9 +383,4 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   };
 };
 
-Utils.isPickupType = () => {
-  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-  return type === 'pickup';
-};
-
 export default Utils;
