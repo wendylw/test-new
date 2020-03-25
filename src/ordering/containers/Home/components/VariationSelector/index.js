@@ -84,7 +84,7 @@ export class VariationSelector extends Component {
   handleSelectedOption(option) {
     const { id } = option;
     const { variation } = this.props;
-    const { enableSelectionAmountLimit, minSelectionAmount } = variation || {};
+
     this.setState({
       selected: {
         ...(this.isSingleChoice() ? null : this.state.selected),

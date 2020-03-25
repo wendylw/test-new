@@ -134,7 +134,9 @@ class Customer extends Component {
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">{t('UnitBlockFloor')}</label>
+            <label className="form__label font-weight-bold gray-font-opacity">
+              {t('AddAddressDetailsPlaceholder')}
+            </label>
             <i className="customer__edit-icon">
               <IconEdit />
             </i>
