@@ -2140,27 +2140,40 @@
       height: auto;
     }
 
-    .location-page__entry ~ .category-nav {
-      top: 121px;
-    }
-
     .category__header.fixed {
       top: 64px;
+    }
+
+    .location-page__entry ~ .category-nav {
+      top: 121px;
     }
 
     .top-message__second-level {
       position: fixed;
       width: 100%;
-      top: 121px;
+      top: 64px;
       z-index: 100;
     }
 
+    .location-page__entry ~ .top-message__second-level {
+      top: 121px;
+    }
+
     .top-message__second-level ~ .list__container {
-      top: 104px;
+      top: 50px;
     }
 
     .top-message__second-level ~ .list__container .category__header.fixed,
     .top-message__second-level + .category-nav {
+      top: 100px;
+    }
+
+    .location-page__entry ~ .top-message__second-level ~ .list__container {
+      top: 104px;
+    }
+
+    .location-page__entry ~ .top-message__second-level ~ .list__container .category__header.fixed,
+    .location-page__entry ~ .top-message__second-level + .category-nav {
       top: 158px;
     }
 
