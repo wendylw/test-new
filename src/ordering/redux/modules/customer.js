@@ -13,7 +13,6 @@ export const actions = {
       type: types.PUT_DELIVERY_DETAILS,
       fields,
     });
-    Utils.setSessionVariable('user.deliveryDetails', JSON.stringify(getDeliveryDetails(getState())));
   },
 };
 
@@ -26,15 +25,6 @@ const initialState = {
     deliveryComments: '',
   },
 };
-
-try {
-  const deliveryDetailsCache = JSON.parse(Utils.getSessionVariable('user.deliveryDetails'));
-  if (deliveryDetailsCache) {
-    initialState.deliveryDetails = deliveryDetailsCache;
-  }
-} catch (e) {
-  console.error(e);
-}
 
 // reducers
 
