@@ -1,25 +1,17 @@
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
-  const { code } = action;
+  const { code, message } = action;
 
-  if (code === 404) {
-    return {
-      ...state,
-      code,
-      message: 'StoreNotFound',
-    };
-  } else if (code === 403) {
-    return {
-      ...state,
-      code,
-      message: 'DisabledBeepOrdering',
-    };
+  switch (code) {
+    case '40004':
+    case '40005':
+      return { ...state, code, message };
+    default:
+      return state;
   }
-
-  return state;
 };
 
 export default reducer;
 
-export const getError = state => state.entities.error;
+export const getPageError = state => state.entities.error;
