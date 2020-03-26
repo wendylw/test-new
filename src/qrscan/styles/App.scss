@@ -33,8 +33,7 @@
 @media (min-width: 600px) {
   .content-contenter,
   .content-header,
-  .top-message.fixed,
-  .content-footer {
+  .top-message.fixed {
     max-width: 414px;
     margin: 0 auto;
   }
@@ -45,14 +44,5 @@
 
   .top-message.fixed {
     padding: 12px 0 12px 0;
-  }
-
-  .content-footer {
-    padding: 12px;
-  }
-
-  .content-footer__button-main {
-    height: 56px;
-    line-height: 56px;
   }
 }
