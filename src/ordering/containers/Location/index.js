@@ -232,7 +232,8 @@ class Location extends Component {
       }
       let distance;
       try {
-        distance = (await this.computeRouteDistanceFromStore([placeInfo.coords]))[0];
+        // distance = (await this.computeRouteDistanceFromStore([placeInfo.coords]))[0];
+        distance = this.computeStraightDistanceFromStore(placeInfo.coords);
         if (typeof distance !== 'number' || distance === Infinity) {
           throw new Error('Fail to get distance info.');
         }
