@@ -2,10 +2,9 @@ import React, { Component, lazy, Suspense } from 'react';
 import { Route, Redirect, Switch, BrowserRouter as Router } from 'react-router-dom';
 import Constants from './utils/constants';
 import Utils from './utils/utils';
+import NotFound from './NotFound';
 
 const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
-
-const AsyncNotFound = lazy(() => import('./containers/NotFound'));
 
 const AsyncStoresApp = lazy(() => import('./stores'));
 
@@ -51,7 +50,7 @@ class Bootstrap extends Component {
             <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
             <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
             <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
-            <Route component={AsyncNotFound} />
+            <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
       </Router>
