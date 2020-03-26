@@ -14,7 +14,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
-import Utils from '../../../utils/utils';
+import { gtmSetUserProperties } from '../../../utils/gtm';
 
 class App extends Component {
   state = {};
@@ -33,42 +33,13 @@ class App extends Component {
     if (isLogin) {
       appActions.loadCustomerProfile().then(({ responseGql= {} }) => {
         const { data = {} } = responseGql;
-        this.setGtmUserProperties(null, data.user);
+        gtmSetUserProperties(null, data.user);
       });
     }
 
     this.getTokens(isLogin);
 
-    this.setGtmUserProperties(onlineStoreInfo, user);
-  }
-
-  setGtmUserProperties = (onlineStoreInfo, user) => {
-    let storeInfoForGtm = {};
-    let userInfoForGtm = {};
-
-    if (onlineStoreInfo && Object.keys(onlineStoreInfo).length) {
-      storeInfoForGtm = {
-        merchantID: onlineStoreInfo.id,
-        merchantIndustry: onlineStoreInfo.businessType,
-        country: onlineStoreInfo.country,
-        currency: onlineStoreInfo.currency,
-        gaEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA),
-        fbPixelEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB),
-        gaID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA,
-        fbPixelID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB,
-      }
-    }
-
-    if (user && Object.keys(user).length) {
-      userInfoForGtm = {
-        userID: user.consumerId,
-        isGuest: !!(user && user.consumerId),
-        phoneNumber: Utils.getLocalStorageVariable('user.p'),
-      }
-    }
-
-    window.dataLayer = window.dataLayer || [];
-    return window.dataLayer.push(Object.assign({}, storeInfoForGtm, userInfoForGtm));
+    gtmSetUserProperties(onlineStoreInfo, user);
   }
 
   componentDidUpdate(prevProps) {
@@ -82,7 +53,7 @@ class App extends Component {
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
       appActions.loadCustomerProfile().then(({ responseGql= {} }) => {
         const { data = {} } = responseGql;
-        this.setGtmUserProperties(null, data.user);
+        gtmSetUserProperties(null, data.user);
       });
     }
   }
