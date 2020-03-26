@@ -71,13 +71,22 @@ function del(url, data, options) {
   });
 }
 
-function handleResponse(url, response) {
+async function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
   } else {
-    const code = response.code || response.status;
+    return response
+      .json()
+      .catch(e => {
+        console.error(e);
 
-    return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+        return Promise.reject(new RequestError('Error Page', '50000'));
+      })
+      .then(function(body) {
+        const code = body.code || response.status;
+
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+      });
   }
 }
 

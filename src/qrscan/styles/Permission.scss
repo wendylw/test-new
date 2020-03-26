@@ -1,4 +1,4 @@
-*{
+* {
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 
@@ -34,7 +34,7 @@
     display: inline-block;
     margin: 20px 0;
   }
-  
+
   &__qr-scanner-img {
     display: inline-block;
   }
@@ -72,7 +72,7 @@
   }
 
   &__button-main {
-    background-color: #FF9419;
+    background-color: #ff9419;
     color: white;
     width: 100%;
   }
@@ -81,4 +81,20 @@
 
 .text-center {
   text-align: center;
+}
+
+@media (min-width: 600px) {
+  .content-footer {
+    max-width: 414px;
+    margin: 0 auto;
+  }
+
+  .content-footer {
+    padding: 12px;
+  }
+
+  .content-footer__button-main {
+    height: 56px;
+    line-height: 56px;
+  }
 }
