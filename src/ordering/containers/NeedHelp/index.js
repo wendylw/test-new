@@ -15,7 +15,7 @@ export class NeedHelp extends Component {
     return (
       <section className="need-help">
         <Header
-          className="has-right"
+          className="has-right flex-middle"
           isPage={false}
           title={t('ContactUs')}
           navFunc={() => {

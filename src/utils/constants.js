@@ -122,6 +122,11 @@ const ASIDE_NAMES = {
   ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
 };
 
+const DELIVERY_METHOD = {
+  DELIVERY: 'delivery',
+  PICKUP: 'pickup',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -144,4 +149,5 @@ export default {
   POLYFILL_FEATURES,
   LANGUAGES,
   ASIDE_NAMES,
+  DELIVERY_METHOD,
 };

@@ -10,6 +10,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getDeliveryDetails } from './customer';
+import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
 
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
@@ -54,7 +55,7 @@ export const types = {
 
 // action creators
 export const actions = {
-  createOrder: ({ cashback, shippingType }) => (dispatch, getState) => {
+  createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
     const business = getBusiness(getState());
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
@@ -106,7 +107,7 @@ export const actions = {
       };
     }
 
-    return dispatch(
+    const result = await dispatch(
       createOrder(
         !additionalComments
           ? variables
@@ -116,6 +117,16 @@ export const actions = {
             }
       )
     );
+
+    if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
+      try {
+        await setHistoricalDeliveryAddresses(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    return result;
   },
 
   fetchOrder: orderId => dispatch => {

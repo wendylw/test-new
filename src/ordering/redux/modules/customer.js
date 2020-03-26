@@ -1,3 +1,4 @@
+import Utils from '../../../utils/utils';
 import { combineReducers } from 'redux';
 
 // actions
@@ -12,7 +13,7 @@ export const actions = {
       type: types.PUT_DELIVERY_DETAILS,
       fields,
     });
-    sessionStorage.setItem('user.deliveryDetails', JSON.stringify(getDeliveryDetails(getState())));
+    Utils.setSessionVariable('user.deliveryDetails', JSON.stringify(getDeliveryDetails(getState())));
   },
 };
 
@@ -27,7 +28,7 @@ const initialState = {
 };
 
 try {
-  const deliveryDetailsCache = JSON.parse(sessionStorage.getItem('user.deliveryDetails'));
+  const deliveryDetailsCache = JSON.parse(Utils.getSessionVariable('user.deliveryDetails'));
   if (deliveryDetailsCache) {
     initialState.deliveryDetails = deliveryDetailsCache;
   }
