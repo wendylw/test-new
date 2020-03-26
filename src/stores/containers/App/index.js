@@ -10,11 +10,35 @@ import '../../../App.scss';
 import Home from '../Home';
 import DeliveryMethods from '../DeliveryMethods';
 
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
+
 class App extends Component {
   componentDidMount() {
     const { fetchOnlineStoreInfo } = this.props.appActions;
 
-    fetchOnlineStoreInfo();
+    fetchOnlineStoreInfo().then(({ responseGql }) => {
+      const { data } = responseGql;
+      const { onlineStoreInfo } = data;
+
+      this.setGtmUserProperties(onlineStoreInfo);
+    });
+  }
+
+  setGtmUserProperties = (onlineStoreInfo) => {
+    if (JSON.stringify(onlineStoreInfo) === '{}') {
+      return;
+    }
+
+    return window.dataLayer.push({
+      merchantID: onlineStoreInfo.id,
+      merchantIndustry: onlineStoreInfo.businessType,
+      country: onlineStoreInfo.country,
+      currency: onlineStoreInfo.currency,
+      gaEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA),
+      fbPixelEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB),
+      gaID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA,
+      fbPixelID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB,
+    });
   }
 
   handleClearError = () => {
