@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import config from '../../../config';
 import Url from '../../../utils/url';
+import Constants from '../../../utils/constants';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
@@ -19,26 +20,26 @@ const initialState = {
   requestInfo: {
     tableId: config.table,
     storeId: config.storeId,
-  }
+  },
 };
 
 export const types = {
-  CLEAR_ERROR: "STORES/APP/CLEAR_ERROR",
+  CLEAR_ERROR: 'STORES/APP/CLEAR_ERROR',
 
   // fetch onlineStoreInfo
-  FETCH_ONLINESTOREINFO_REQUEST: "STORES/APP/FETCH_ONLINESTOREINFO_REQUEST",
-  FETCH_ONLINESTOREINFO_SUCCESS: "STORES/APP/FETCH_ONLINESTOREINFO_SUCCESS",
-  FETCH_ONLINESTOREINFO_FAILURE: "STORES/APP/FETCH_ONLINESTOREINFO_FAILURE",
+  FETCH_ONLINESTOREINFO_REQUEST: 'STORES/APP/FETCH_ONLINESTOREINFO_REQUEST',
+  FETCH_ONLINESTOREINFO_SUCCESS: 'STORES/APP/FETCH_ONLINESTOREINFO_SUCCESS',
+  FETCH_ONLINESTOREINFO_FAILURE: 'STORES/APP/FETCH_ONLINESTOREINFO_FAILURE',
 
   // message modal
-  SET_MESSAGE_INFO: "STORES/APP/SET_MESSAGE_INFO",
-  HIDE_MESSAGE_MODAL: "STORES/APP/HIDE_MESSAGE_MODAL",
+  SET_MESSAGE_INFO: 'STORES/APP/SET_MESSAGE_INFO',
+  HIDE_MESSAGE_MODAL: 'STORES/APP/HIDE_MESSAGE_MODAL',
 };
 
 //action creators
 export const actions = {
   clearError: () => ({
-    type: types.CLEAR_ERROR
+    type: types.CLEAR_ERROR,
   }),
 
   showMessageModal: ({ message, description }) => ({
@@ -59,21 +60,31 @@ export const actions = {
         types.FETCH_ONLINESTOREINFO_FAILURE,
       ],
       endpoint: Url.apiGql('OnlineStoreInfo'),
-    }
+    },
   }),
 };
 
 const error = (state = initialState.error, action) => {
-  const { type, error } = action;
+  const { type, code, message } = action;
 
-  if (type === types.CLEAR_ERROR) {
+  if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (error) {
-    return error;
+  } else if (code && code !== 401 && code < 40000) {
+    let errorMessage = message;
+
+    if (type === types.CREATE_OTP_FAILURE) {
+      errorMessage = Constants.LOGIN_PROMPT[code];
+    }
+
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
   }
 
   return state;
-}
+};
 
 const business = (state = initialState.business, action) => state;
 
@@ -94,7 +105,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
     default:
       return state;
   }
-}
+};
 
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
@@ -108,7 +119,7 @@ const messageModal = (state = initialState.messageModal, action) => {
     default:
       return state;
   }
-}
+};
 
 const requestInfo = (state = initialState.requestInfo, action) => state;
 

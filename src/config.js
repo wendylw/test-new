@@ -84,6 +84,7 @@ const config = {
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
   paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
+  qrScanPageUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}/qrscan`,
   h() {
     try {
       return document.cookie

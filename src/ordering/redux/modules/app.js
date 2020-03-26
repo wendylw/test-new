@@ -107,6 +107,11 @@ export const actions = {
     },
   }),
 
+  setLoginPrompt: prompt => ({
+    type: types.SET_LOGIN_PROMPT,
+    prompt,
+  }),
+
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),
@@ -243,7 +248,7 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401) {
+  } else if (code && code !== 401 && code < 40000) {
     let errorMessage = message;
 
     if (type === types.CREATE_OTP_FAILURE) {
