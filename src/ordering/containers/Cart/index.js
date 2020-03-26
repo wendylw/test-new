@@ -182,7 +182,7 @@ class Cart extends Component {
     return (
       <section className={`table-ordering__order` /* hide */}>
         <Header
-          className="border__bottom-divider gray"
+          className="border__bottom-divider gray flex-middle"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}

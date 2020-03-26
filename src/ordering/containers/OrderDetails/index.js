@@ -68,7 +68,7 @@ export class OrderDetails extends Component {
     return (
       <section className="order-detail">
         <Header
-          className="order-detail__header"
+          className="order-detail__header flex-middle"
           isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>

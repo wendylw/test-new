@@ -16,16 +16,16 @@ import Utils from '../../../utils/utils';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 const METHODS_LIST = [
   {
-    name: 'delivery',
+    name: DELIVERY_METHOD.DELIVERY,
     logo: DeliveryImage,
     labelKey: 'FoodDelivery',
     pathname: ROUTER_PATHS.ORDERING_LOCATION,
   },
   {
-    name: 'pickup',
+    name: DELIVERY_METHOD.PICKUP,
     logo: PickUpImage,
     labelKey: 'SelfPickup',
     pathname: '',
@@ -79,7 +79,7 @@ class DeliveryMethods extends Component {
     return (
       <section className="delivery">
         <Header
-          className="border__bottom-divider gray has-right"
+          className="border__bottom-divider gray has-right flex-middle"
           isPage={true}
           title={t('SelectYourPreference')}
           navFunc={this.handleClickBack.bind(this)}
