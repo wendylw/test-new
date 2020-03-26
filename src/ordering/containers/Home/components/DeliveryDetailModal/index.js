@@ -6,6 +6,10 @@ import { IconMotorcycle } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
+  state = {
+    initDom: true,
+  };
+
   renderDeliveryHour = () => {
     const weekInfo = {
       2: 'Mon',
@@ -33,6 +37,7 @@ class DeliveryDetailModal extends Component {
   render() {
     const {
       businessInfo,
+      businessLoaded,
       onlineStoreInfo,
       show,
       onToggle,
@@ -42,16 +47,30 @@ class DeliveryDetailModal extends Component {
       minOrder,
       isValidTimeToOrder,
     } = this.props;
+    const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = ['store-info__aside aside'];
 
-    if (show) {
+    if (!businessLoaded) {
+      return null;
+    }
+
+    if (show || (initDom && !isValidTimeToOrder)) {
       classList.push('active');
     }
 
     return (
-      <aside className={classList.join(' ')} onClick={() => onToggle(null)}>
+      <aside
+        className={classList.join(' ')}
+        onClick={() => {
+          if (initDom) {
+            this.setState({ initDom: false });
+          }
+
+          onToggle(null);
+        }}
+      >
         <div className="store-info">
           <i className="aside-bottom__slide-button"></i>
 

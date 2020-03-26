@@ -41,6 +41,7 @@ class ProductDetail extends Component {
     resizedImage: false,
     currentProductDescriptionImageIndex: 0,
     productElHeight: 0,
+    minimumVariations: [],
   };
 
   setProductElHeight() {
@@ -61,6 +62,7 @@ class ProductDetail extends Component {
     }
 
     this.setProductElHeight();
+    this.initMinimumVariationList();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -73,6 +75,7 @@ class ProductDetail extends Component {
 
     if ((!prevProps.product && id) || id !== prevProps.product.id || (show && prevProps.show !== show)) {
       this.initVariationsByIdMap(product);
+      this.initMinimumVariationList();
     }
 
     if (!show && prevProps.show !== show) {
@@ -134,6 +137,16 @@ class ProductDetail extends Component {
     });
   }
 
+  initMinimumVariationList() {
+    const { product } = this.props;
+    const { variations } = product || {};
+    var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
+
+    if (minimumVariations && minimumVariations.length) {
+      this.setState({ minimumVariations });
+    }
+  }
+
   displayPrice() {
     const { product } = this.props;
     const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
@@ -188,6 +201,31 @@ class ProductDetail extends Component {
     });
 
     return variationTexts.join(', ');
+  }
+
+  isInvalidMinimumVariations() {
+    const { variationsByIdMap, minimumVariations } = this.state;
+
+    if (!minimumVariations || !minimumVariations.length) {
+      return false;
+    }
+
+    if (!variationsByIdMap) {
+      return true;
+    }
+
+    for (let i = 0; i < minimumVariations.length; i++) {
+      const { id, minSelectionAmount } = minimumVariations[i];
+
+      if (
+        !variationsByIdMap[id] ||
+        (variationsByIdMap[id] && Object.keys(variationsByIdMap[id]).length - 1 < minSelectionAmount)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   isSubmitable() {
@@ -348,6 +386,7 @@ class ProductDetail extends Component {
               key={variation.id}
               variation={variation}
               initVariation={show}
+              isInvalidMinimum={this.isInvalidMinimumVariations()}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
           ))}
@@ -358,9 +397,10 @@ class ProductDetail extends Component {
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity } = this.state;
+    const { cartQuantity, minimumVariations } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
+    const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     if (!product) {
       return null;
@@ -386,7 +426,11 @@ class ProductDetail extends Component {
           <button
             className="button__fill button__block font-weight-bold"
             type="button"
-            disabled={!this.isSubmitable() || Utils.isProductSoldOut(product || {})}
+            disabled={
+              !this.isSubmitable() ||
+              Utils.isProductSoldOut(product || {}) ||
+              (hasMinimumVariations && this.isInvalidMinimumVariations())
+            }
             onClick={async () => {
               const { variationsByIdMap } = this.state;
               let variations = [];

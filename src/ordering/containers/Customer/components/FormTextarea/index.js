@@ -116,18 +116,18 @@ class FormTextarea extends Component {
 
 FormTextarea.propTypes = {
   show: PropTypes.bool,
-  onToggle: PropTypes.func,
   title: PropTypes.string,
+  onToggle: PropTypes.func,
   onUpdateText: PropTypes.func,
   textareaValue: PropTypes.string,
 };
 
 FormTextarea.defaultProps = {
   show: false,
-  textareaValue: '',
-  onToggle: () => {},
   title: false,
+  onToggle: () => {},
   onUpdateText: () => {},
+  textareaValue: '',
 };
 
 export default withTranslation()(FormTextarea);

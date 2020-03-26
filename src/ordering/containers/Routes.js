@@ -7,6 +7,7 @@ import Customer from './Customer';
 import Constants from '../../utils/constants';
 import NeedHelp from './NeedHelp';
 import OrderDetails from './OrderDetails';
+import NotFound from '../../NotFound';
 
 const Location = lazy(() => import('./Location'));
 const Receipt = lazy(() => import('./Receipt'));
@@ -36,6 +37,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.NEED_HELP} component={NeedHelp} />
             <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
+            <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
       </Router>
