@@ -1,5 +1,10 @@
 import { combineReducers } from 'redux';
-import { fetchDeliveryAddress, fetchDeliveryDetails, saveDeliveryDetails } from '../../containers/Customer/utils';
+import {
+  fetchDeliveryAddress,
+  fetchDeliveryDetails,
+  patchDeliveryDetails,
+  updateDeliveryDetails,
+} from '../../containers/Customer/utils';
 
 // actions
 
@@ -8,32 +13,52 @@ export const types = {
 };
 
 export const actions = {
-  initDeliveryDetails: () => async (dispatch, getState) => {
+  initDeliveryDetails: shippingType => async (dispatch, getState) => {
     const deliveryDetails = await fetchDeliveryDetails();
-    const deliveryToAddress = await fetchDeliveryAddress();
     const phone = localStorage.getItem('user.p') || '';
-
     const newDeliveryDetails = {
       ...deliveryDetails,
       phone,
-      deliveryToAddress,
     };
 
-    // if address chosen is different from address in session
-    // then clean up the address details info
-    if (deliveryDetails.deliveryToAddress !== deliveryToAddress) {
-      newDeliveryDetails.addressDetails = '';
+    if (shippingType === 'delivery') {
+      const deliveryAddress = await fetchDeliveryAddress();
+      console.log('deliveryAddress', deliveryAddress);
+      newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
+      newDeliveryDetails.deliveryToLocation = {
+        longitude: deliveryAddress.coords.lng,
+        latitude: deliveryAddress.coords.lat,
+      };
+
+      // if address chosen is different from address in session
+      // then clean up the address details info
+      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
+        newDeliveryDetails.addressDetails = '';
+      }
+    } else if (shippingType === 'pickup') {
+      delete newDeliveryDetails.deliveryToAddress;
+      delete newDeliveryDetails.addressDetails;
     }
 
-    dispatch(actions.putDeliveryDetails(newDeliveryDetails));
+    dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
   },
-  putDeliveryDetails: fields => async (dispatch, getState) => {
+  updateDeliveryDetails: fields => async (dispatch, getState) => {
     const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
       fields,
     });
 
-    await saveDeliveryDetails(fields);
+    await updateDeliveryDetails(fields);
+
+    return result;
+  },
+  patchDeliveryDetails: fields => async (dispatch, getState) => {
+    const result = await dispatch({
+      type: types.PUT_DELIVERY_DETAILS,
+      fields,
+    });
+
+    await patchDeliveryDetails(fields);
 
     return result;
   },
@@ -43,9 +68,13 @@ const initialState = {
   deliveryDetails: {
     username: '',
     phone: '',
-    deliveryToAddress: '',
     addressDetails: '',
     deliveryComments: '',
+    deliveryToAddress: '',
+    deliveryToLocation: {
+      longitude: 0,
+      latitude: 0,
+    },
   },
 };
 

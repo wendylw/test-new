@@ -1,6 +1,10 @@
 export const DeliveryDetailsStorageKey = 'deliveryDetails';
 
-export const saveDeliveryDetails = async fields => {
+export const updateDeliveryDetails = async fields => {
+  return sessionStorage.setItem(DeliveryDetailsStorageKey, JSON.stringify(fields));
+};
+
+export const patchDeliveryDetails = async fields => {
   const deliveryDetails = await fetchDeliveryDetails();
   return sessionStorage.setItem(
     DeliveryDetailsStorageKey,
@@ -22,10 +26,9 @@ export const fetchDeliveryDetails = async () => {
 
 export const fetchDeliveryAddress = async () => {
   try {
-    const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
-    return deliveryAddress ? deliveryAddress.address : '';
+    return JSON.parse(sessionStorage.getItem('deliveryAddress'));
   } catch (e) {
     console.error(e);
-    return '';
+    return null;
   }
 };
