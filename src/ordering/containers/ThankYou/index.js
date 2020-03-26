@@ -228,7 +228,7 @@ export class ThankYou extends Component {
     return (
       <React.Fragment>
         <Header
-          className="border__bottom-divider gray"
+          className="border__bottom-divider gray flex-middle"
           isPage={true}
           title={`#${orderId}`}
           navFunc={() =>
@@ -333,6 +333,7 @@ export class ThankYou extends Component {
     const date = new Date();
     const { tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
 
     return (
       <section
@@ -345,13 +346,15 @@ export class ThankYou extends Component {
         ) : (
           <React.Fragment>
             <Header
-              className="border__bottom-divider gray"
+              className="border__bottom-divider gray flex-middle"
               isPage={true}
               title={t('OrderPaid')}
               navFunc={() =>
                 history.replace({
                   pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                  search: `?table=${order.tableId}&storeId=${order.storeId}`,
+                  search: `?table=${order.tableId}&storeId=${order.storeId}${
+                    isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
+                  }`,
                 })
               }
             >

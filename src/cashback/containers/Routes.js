@@ -1,5 +1,6 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
+import NotFound from '../../NotFound';
 
 const RecentActivities = lazy(() => import('./Home/components/RecentActivities'));
 const Claim = lazy(() => import('./Claim'));
@@ -12,12 +13,19 @@ class Routes extends Component {
 
     return (
       <Router basename={match.path}>
-        <Suspense fallback={<div className="loading-cover"><i className="loader theme page-loader"></i></div>}>
+        <Suspense
+          fallback={
+            <div className="loading-cover">
+              <i className="loader theme page-loader"></i>
+            </div>
+          }
+        >
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/claim" component={Claim} />
             <Route exact path="/activities" component={RecentActivities} />
             <Route exact path="/error" component={Error} />
+            <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
       </Router>
