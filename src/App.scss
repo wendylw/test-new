@@ -3143,7 +3143,8 @@ body.loading {
   .location-page__search-box,
   .loyalty__claim,
   .loyalty__home,
-  .loyalty__activities {
+  .loyalty__activities,
+  .prompt-page__button-container {
     max-width: 414px;
     left: 0;
     right: 0;
@@ -3339,7 +3340,8 @@ body.loading {
 
   .cart__note,
   .location-page__search-box-search-icon,
-  .delivery__next-icon {
+  .delivery__next-icon,
+  .prompt-page__button-container {
     padding: 13px;
   }
 
