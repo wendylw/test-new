@@ -275,13 +275,18 @@ class ProductDetail extends Component {
 
   handleGtmEventTracking = variables => {
     const { product } = this.props;
-    const selectedChildProductDetail = product.childrenMap.find(child => child.childId === variables.productId);
+    let selectedProduct = product.childrenMap.find(child => child.childId === variables.productId);
+
+    if (!selectedProduct) {
+      selectedProduct = product;
+    }
+
     const gtmEventData = {
       product_name: product.title,
       product_id: variables.productId,
-      price_local: selectedChildProductDetail.displayPrice,
+      price_local: selectedProduct.displayPrice,
       variant: variables.variations,
-      quantity: selectedChildProductDetail.quantityOnHand,
+      quantity: selectedProduct.quantityOnHand,
       product_type: product.inventoryType,
       Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
       image_count: (product.images && product.images.length) || 0,

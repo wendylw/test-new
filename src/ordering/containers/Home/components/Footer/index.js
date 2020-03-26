@@ -30,8 +30,8 @@ export class Footer extends Component {
     const itemsInCart = shoppingCart.items.map(item => item.id);
     const gtmEventData = {
       product_id: itemsInCart,
-      cart_size: shoppingCart.count,
-      cart_value_local: shoppingCart.total,
+      cart_size: shoppingCart.summary.count,
+      cart_value_local: shoppingCart.summary.total,
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
   };

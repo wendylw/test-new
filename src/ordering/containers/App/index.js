@@ -67,6 +67,7 @@ class App extends Component {
       }
     }
 
+    window.dataLayer = window.dataLayer || [];
     return window.dataLayer.push(Object.assign({}, storeInfoForGtm, userInfoForGtm));
   }
 
