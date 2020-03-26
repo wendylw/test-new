@@ -27,6 +27,11 @@ class Customer extends Component {
     sentOtp: false,
   };
 
+  componentDidMount = async () => {
+    // init username, phone, deliveryToAddress, deliveryDetails
+    await this.props.customerActions.initDeliveryDetails();
+  };
+
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isLogin } = user || {};

@@ -9,8 +9,8 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { getDeliveryDetails } from './customer';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
+import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 
 const initialState = {
   currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
@@ -60,7 +60,7 @@ export const actions = {
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
-    const deliveryDetails = getDeliveryDetails(getState());
+    const deliveryDetails = await fetchDeliveryDetails();
     const { country } = getBusinessByName(getState(), business);
     const contactDetail = {
       phone: deliveryDetails.phone,
