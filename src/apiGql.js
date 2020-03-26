@@ -10,6 +10,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     parentProductId
     title
     variationTexts
+    inventoryType
     variations {
       variationId
       optionId
@@ -191,6 +192,7 @@ apiGql.GET_ONLINE_CATEGORY = gql`
         trackInventory
         images
         markedSoldOut
+        quantityOnHand
         variations {
           id
           name

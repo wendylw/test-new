@@ -27,6 +27,15 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
   let userInfoForGtm = {};
 
   if (onlineStoreInfo && Object.keys(onlineStoreInfo).length) {
+    if (onlineStoreInfo.analyticTools) {
+      onlineStoreInfo.analytics = onlineStoreInfo.analyticTools.reduce(
+        (codeMap, { name, trackingId }) => ({
+          ...codeMap,
+          [name]: trackingId,
+        }),
+        {},
+      );
+    }
     storeInfoForGtm = {
       merchantID: onlineStoreInfo.id,
       merchantIndustry: onlineStoreInfo.businessType,

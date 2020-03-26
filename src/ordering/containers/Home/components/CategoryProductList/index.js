@@ -68,7 +68,7 @@ class CategoryProductList extends Component {
         variant: data.variations,
         quantity: data.quantityOnHand,
         product_type: data.inventoryType,
-        Inventory: !!data.markedSoldOut ? 'In stock' : 'Out of stock',
+        Inventory: !!data.soldOut ? 'In stock' : 'Out of stock',
         image_count: (data.images && data.images.length) || 0,
       };
     }
@@ -79,10 +79,11 @@ class CategoryProductList extends Component {
   handleShowProductDetail = async product => {
     const { onToggle } = this.props;
 
-    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
-
-    await this.props.homeActions.loadProductDetail(product);
+    const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
+    const { data: productDetail = {} } = responseGql;
+    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
+
     onToggle('PRODUCT_DESCRIPTION');
   };
 
