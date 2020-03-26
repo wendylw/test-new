@@ -75,7 +75,7 @@ class Login extends React.Component {
     const { isLogin, showLoginPage, hasOtp, isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['login'];
+    const classList = ['login active'];
 
     if (isLogin) {
       return null;

@@ -98,7 +98,7 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const { t, buttonText, onClose, getOtp, sendOtp, phone } = this.props;
+    const { t, buttonText, onClose, getOtp, sendOtp, phone, ResendOtpTime } = this.props;
     const { otp, currentOtpTime, isSendingOtp, isNewInput } = this.state;
     let buttonContent = buttonText;
 
@@ -141,7 +141,15 @@ class OtpModal extends React.Component {
               />
             )}
           </div>
-          <button className="otp-resend text-uppercase" disabled={!!currentOtpTime} onClick={() => getOtp(phone)}>
+          <button
+            className="otp-resend text-uppercase"
+            disabled={!!currentOtpTime}
+            onClick={() => {
+              this.setState({ currentOtpTime: ResendOtpTime });
+              this.countDown(ResendOtpTime);
+              getOtp(phone);
+            }}
+          >
             {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
           </button>
         </section>
