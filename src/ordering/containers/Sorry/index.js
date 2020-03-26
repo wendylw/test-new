@@ -8,7 +8,7 @@ import { actions as appActionCreators } from '../../redux/modules/app';
 import { actions as cartActionCreators, getPendingTransactionIds } from '../../redux/modules/cart';
 
 class Sorry extends Component {
-  async componentWillMount() {
+  async componentDidMount() {
     const { t } = this.props;
 
     this.props.appActions.showMessageModal({
