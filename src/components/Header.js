@@ -39,7 +39,7 @@ class Header extends Component {
       minOrder,
       isValidTimeToOrder,
     } = this.props;
-    const fixedClassList = ['header flex flex-space-between'];
+    const classList = ['header flex flex-space-between'];
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const normalTitle = isPickUpType ? (
@@ -56,20 +56,23 @@ class Header extends Component {
     ) : (
       <h2 className="header__title font-weight-bold text-middle">{title}</h2>
     );
-    const classList = isDeliveryType ? fixedClassList.concat('flex-top') : fixedClassList.concat('flex-middle');
 
     if (className) {
       classList.push(className);
     }
 
     return (
-      <header className={classList.join(' ')}>
+      <header
+        className={classList.join(' ')}
+        onClick={() => {
+          if (Utils.isDeliveryType()) {
+            onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
+          }
+        }}
+      >
         {this.renderLogoAndNavDom()}
         {isStoreHome && isDeliveryType ? (
-          <div
-            className="header__title-container"
-            onClick={() => onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL)}
-          >
+          <div className="header__title-container">
             <h1 className="header__title">
               <span
                 className={`header__one-line-title font-weight-bold text-middle ${
@@ -116,6 +119,7 @@ Header.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   navFunc: PropTypes.func,
+  onClickHandler: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
 };
 
@@ -126,6 +130,7 @@ Header.defaultProps = {
   title: '',
   deliveryFee: 0,
   navFunc: () => {},
+  onClickHandler: () => {},
 };
 
 export default withTranslation()(Header);
