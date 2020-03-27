@@ -29,3 +29,20 @@
     text-align: center;
   }
 }
+
+@media (min-width: 600px) {
+  .content-contenter,
+  .content-header,
+  .top-message.fixed {
+    max-width: 414px;
+    margin: 0 auto;
+  }
+
+  .content-contenter {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .top-message.fixed {
+    padding: 12px 0 12px 0;
+  }
+}
