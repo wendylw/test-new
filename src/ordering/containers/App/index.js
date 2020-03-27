@@ -8,6 +8,8 @@ import {
   getError,
   getUser,
 } from '../../redux/modules/app';
+import { getPageError } from '../../../redux/modules/entities/error';
+import Constants from '../../../utils/constants';
 import Routes from '../Routes';
 import '../../../App.scss';
 import DocumentFavicon from '../../../components/DocumentFavicon';
@@ -15,12 +17,15 @@ import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
+import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
   state = {};
 
   async componentDidMount() {
     const { appActions } = this.props;
+
+    this.visitErrorPage();
 
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
@@ -43,8 +48,13 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { appActions, user } = this.props;
+    const { appActions, user, pageError } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       // this.postAppMessage(user);
@@ -55,6 +65,15 @@ class App extends Component {
         const { data = {} } = responseGql;
         gtmSetUserProperties(null, data.user);
       });
+    }
+  }
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+    const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
+
+    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
+      return (window.location.href = errorPageUrl);
     }
   }
 
@@ -100,16 +119,18 @@ class App extends Component {
   };
 
   render() {
-    const { error, messageModal, onlineStoreInfo } = this.props;
+    const { user, error, messageModal, onlineStoreInfo } = this.props;
     const { message } = error || {};
+    const { prompt } = user || {};
+    const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="table-ordering">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         <Routes />
-        <Login className="aside" />
-        {onlineStoreInfo ? <DocumentFavicon icon={onlineStoreInfo.favicon} /> : null}
+        <Login className="aside" title={prompt} />
+        <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
   }
@@ -120,6 +141,7 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
     user: getUser(state),
     error: getError(state),
+    pageError: getPageError(state),
     messageModal: getMessageModal(state),
   }),
   dispatch => ({
