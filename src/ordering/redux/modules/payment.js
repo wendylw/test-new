@@ -75,7 +75,9 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const { coords, address: deliveryTo } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+      const { coords, routerDistance, address: deliveryTo } = JSON.parse(
+        Utils.getSessionVariable('deliveryAddress') || '{}'
+      );
       const { lat, lng } = coords || {};
       const location =
         lat && lng
@@ -97,6 +99,7 @@ export const actions = {
           country,
           deliveryTo,
           location,
+          routerDistance,
         },
         deliveryComments,
       };
