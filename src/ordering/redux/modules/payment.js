@@ -73,12 +73,14 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const { routerDistance } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
-      const addressDetails = deliveryDetails.addressDetails;
-      const deliveryComments = deliveryDetails.deliveryComments;
-      const deliveryTo = deliveryDetails.deliveryToAddress;
-      const location = deliveryDetails.deliveryToLocation;
+      const {
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress: deliveryTo,
+        deliveryToLocation: location,
+        routerDistance,
+      } = deliveryDetails || {};
 
       variables = {
         ...variables,
