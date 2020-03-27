@@ -51,7 +51,7 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
   if (userInfo && Object.keys(userInfo).length) {
     userInfoForGtm = {
       userID: userInfo.consumerId,
-      isGuest: !!(userInfo && userInfo.consumerId),
+      isGuest: !(userInfo && userInfo.consumerId),
       phoneNumber: Utils.getLocalStorageVariable('user.p'),
     }
   }
