@@ -1,5 +1,5 @@
 import React from 'react';
 
-const QRScan = () => <div>QrScan page</div>;
+const QRScan = () => <h2>QrScan/index.jsx page</h2>;
 
 export default QRScan;
