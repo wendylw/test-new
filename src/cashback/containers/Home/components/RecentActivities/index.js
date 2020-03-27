@@ -125,7 +125,7 @@ class RecentActivities extends React.Component {
         }
       >
         <Header
-          className="transparent text-center"
+          className="flex-middle transparent text-center"
           title={t('CashbackHistory')}
           isPage={true}
           navFunc={() => {

@@ -100,6 +100,8 @@ const REQUEST_ERROR_KEYS = {
   404: 'Not Found',
   401: 'Token Expired',
   500: 'Server Error',
+  40004: 'QROrdering Disabled',
+  40005: 'No Business',
 };
 
 const LOGIN_PROMPT = {
@@ -120,6 +122,11 @@ const ASIDE_NAMES = {
   DELIVERY_DETAIL: 'DELIVERY_DETAIL',
   ADD_ADDRESS_DETAIL: 'ADD_ADDRESS_DETAIL',
   ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
+};
+
+const DELIVERY_METHOD = {
+  DELIVERY: 'delivery',
+  PICKUP: 'pickup',
 };
 
 export default {
@@ -144,4 +151,5 @@ export default {
   POLYFILL_FEATURES,
   LANGUAGES,
   ASIDE_NAMES,
+  DELIVERY_METHOD,
 };

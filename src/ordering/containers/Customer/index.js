@@ -19,7 +19,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../red
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
+const { ROUTER_PATHS, ASIDE_NAMES, DELIVERY_METHOD } = Constants;
 class Customer extends Component {
   state = {
     formTextareaTitle: null,
@@ -97,7 +97,7 @@ class Customer extends Component {
     const { t, history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (type !== 'delivery') {
+    if (type !== DELIVERY_METHOD.DELIVERY) {
       return null;
     }
 
@@ -179,9 +179,9 @@ class Customer extends Component {
     return (
       <section className={`table-ordering__customer` /* hide */}>
         <Header
-          className="text-center gray has-right"
+          className="text-center gray has-right flex-middle"
           isPage={true}
-          title={type === 'delivery' ? t('DeliveryDetails') : t('PickUpDetails')}
+          title={type === DELIVERY_METHOD.DELIVERY ? t('DeliveryDetails') : t('PickUpDetails')}
           navFunc={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
@@ -271,7 +271,7 @@ class Customer extends Component {
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
-                (type === 'delivery' &&
+                (type === DELIVERY_METHOD.DELIVERY &&
                   (!Boolean((deliveryDetails.addressDetails || '').trim()) ||
                     !Boolean((deliveryToAddress || '').trim()))) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
