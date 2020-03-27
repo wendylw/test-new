@@ -10,12 +10,12 @@ import faviconImage from '../../images/favicon.ico';
 class App extends Component {
   render() {
     return (
-      <div className="qr-scanner-app">
+      <React.Fragment>
         {/* Routes */}
         <Routes />
         <DocumentFavicon icon={faviconImage} />
         {this.renderError()}
-      </div>
+      </React.Fragment>
     );
   }
 

@@ -80,6 +80,18 @@ body {
   font-size: 0.7142rem;
 }
 
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-error {
+  color: $red;
+}
+
+.border-radius-base {
+  border-radius: 4px;
+}
+
 ul,
 ol {
   list-style: none;
