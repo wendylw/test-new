@@ -12,7 +12,8 @@ import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils'
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 
 const initialState = {
-  currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  //currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
   braintreeToken: '',
