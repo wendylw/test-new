@@ -406,13 +406,13 @@ img {
   @extend .fixed-wrapper__container;
 
   position: relative;
-  top: 65px;
+  top: 66px;
   padding-top: 110px;
-  padding-bottom: 56px + 65px;
+  padding-bottom: 56px + 66px;
 
   &__banner {
-    padding-top: 64px;
-    padding-bottom: 64px;
+    padding-top: 66px;
+    padding-bottom: 66px;
     color: $white;
     background: linear-gradient(134.77deg, #ff9419 0%, #ec461e 100%);
   }
@@ -426,8 +426,7 @@ img {
 
 /* Deliver To */
 .deliver-to-entry {
-  @extend .padding-small;
-
+  padding: 8px;
   background-color: $white;
 
   &__content {
