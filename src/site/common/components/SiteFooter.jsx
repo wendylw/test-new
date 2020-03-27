@@ -4,7 +4,7 @@ import React from 'react';
 const siteRoutes = [
   { to: '/', text: 'Landing' },
   { to: '/qrscan', text: 'QRScan' },
-  { to: '/account', text: 'Account' },
+  { to: '/account', text: 'Account <-- sub pages needs login.' },
   { to: '/account/orders', text: 'Account Order List' },
   { to: '/account/cashback', text: 'Account Cashback' },
   { to: '/account/address', text: 'Account Address' },
