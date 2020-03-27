@@ -251,7 +251,8 @@ class Location extends Component {
         });
         return;
       }
-      Utils.setSessionVariable('deliveryAddress', JSON.stringify(placeInfo));
+
+      Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo, routerDistance: distance }));
       const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
       Utils.removeSessionVariable('deliveryCallbackUrl');
       if (typeof callbackUrl === 'string') {

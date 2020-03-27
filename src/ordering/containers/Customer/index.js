@@ -27,6 +27,11 @@ class Customer extends Component {
     sentOtp: false,
   };
 
+  componentDidMount = async () => {
+    // init username, phone, deliveryToAddress, deliveryDetails
+    await this.props.customerActions.initDeliveryDetails(this.getShippingType());
+  };
+
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isLogin } = user || {};
@@ -66,15 +71,15 @@ class Customer extends Component {
   }
 
   handleUpdateName(e) {
-    this.props.customerActions.putDeliveryDetails({ username: e.target.value });
+    this.props.customerActions.patchDeliveryDetails({ username: e.target.value });
   }
 
   handleAddressDetails(addressDetails) {
-    this.props.customerActions.putDeliveryDetails({ addressDetails });
+    this.props.customerActions.patchDeliveryDetails({ addressDetails });
   }
 
   handleDriverComments(deliveryComments) {
-    this.props.customerActions.putDeliveryDetails({ deliveryComments });
+    this.props.customerActions.patchDeliveryDetails({ deliveryComments });
   }
 
   handleToggleFormTextarea(asideName) {
@@ -93,11 +98,17 @@ class Customer extends Component {
     });
   }
 
-  renderDeliveryAddress() {
-    const { t, history } = this.props;
+  getShippingType() {
+    const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (type !== DELIVERY_METHOD.DELIVERY) {
+    return type;
+  }
+
+  renderDeliveryAddress() {
+    const { t, history } = this.props;
+
+    if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
     }
 
@@ -215,7 +226,7 @@ class Customer extends Component {
                 type="text"
                 defaultValue={deliveryDetails.username}
                 onChange={e => {
-                  this.props.customerActions.putDeliveryDetails({ username: e.target.value.trim() });
+                  this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
                 }}
               />
             </div>
@@ -231,7 +242,7 @@ class Customer extends Component {
                 onChange={phone => {
                   const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
 
-                  this.props.customerActions.putDeliveryDetails({
+                  this.props.customerActions.patchDeliveryDetails({
                     phone:
                       metadataMobile.countries[selectedCountry] &&
                       Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]),
