@@ -59,7 +59,10 @@ class MvpEntry extends Component {
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
             <ul className="store-card-list">
               <li className="store-card-list__item card">
-                <Tag text={t('Open')} className="store-card-list__item-open tag__card text-weight-bold" />
+                <Tag
+                  text={t('Open')}
+                  className="store-card-list__item-open tag__card text-weight-bold margin-smaller"
+                />
                 <Image className="store-card-list__image card__image" src="" alt="" />
                 <summary className="padding-small">
                   <div className="flex flex-middle flex-space-between">
