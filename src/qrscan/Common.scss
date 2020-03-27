@@ -233,6 +233,10 @@ img {
   padding-right: 3.8vw;
 }
 
+.margin-smaller {
+  margin: 8px;
+}
+
 .icon {
   @extend .reset-font-size;
 
@@ -315,9 +319,9 @@ img {
     @extend .border-radius-base;
 
     display: inline-block;
-    padding: 2vw 4vw;
-    border: 1px solid $white;
+    padding: 2px 12px;
     margin: 2vw;
+    border: 1px solid $white;
     background-color: transparent;
     font-style: normal;
   }
@@ -450,6 +454,13 @@ img {
 .store-card-list {
   margin-top: -12px 0;
 
+  .tag__card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: $white;
+  }
+
   &__container {
     padding-top: 24px;
     padding-bottom: 24px;
@@ -457,12 +468,16 @@ img {
   }
 
   &__item {
+    position: relative;
     margin: 24px 0;
   }
 
   &__item-open {
     color: $green;
-    background-color: $white;
+  }
+
+  &__item-close {
+    color: $red;
   }
 
   &__image {
@@ -527,6 +542,10 @@ img {
   .padding-left-right-normal {
     padding-left: 8px * 2;
     padding-right: 8px * 2;
+  }
+
+  .margin-smaller {
+    margin: 8px;
   }
 
   /* Entry */
