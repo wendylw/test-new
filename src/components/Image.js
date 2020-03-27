@@ -85,7 +85,7 @@ class Image extends React.Component {
 
     return (
       <figure className={className} style={style}>
-        <img src={this.getImageURL() || productPlaceholderImage} alt={alt} />;
+        <img src={this.getImageURL() || productPlaceholderImage} alt={alt} />
       </figure>
     );
   }

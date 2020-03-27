@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 class Tag extends Component {
   render() {
     const { text, className, style } = this.props;
-    const classList = ['text-uppercase info font-weight-bold'];
+    const classList = ['text-uppercase font-weight-bold'];
 
     if (className) {
       classList.push(className);

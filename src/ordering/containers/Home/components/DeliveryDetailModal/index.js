@@ -36,6 +36,7 @@ class DeliveryDetailModal extends Component {
 
   render() {
     const {
+      t,
       businessInfo,
       businessLoaded,
       onlineStoreInfo,
@@ -92,7 +93,7 @@ class DeliveryDetailModal extends Component {
                 </span>
                 {isValidTimeToOrder ? null : (
                   <div className="tag__card-container">
-                    <Tag text="Closed" className="tag__card warning downsize text-middle"></Tag>
+                    <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
                   </div>
                 )}
               </h2>
