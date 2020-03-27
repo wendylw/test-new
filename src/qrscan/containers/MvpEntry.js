@@ -61,7 +61,7 @@ class MvpEntry extends Component {
               <li className="store-card-list__item card">
                 <Tag
                   text={t('Open')}
-                  className="store-card-list__item-open tag__card text-weight-bold margin-smaller"
+                  className="tag__card text-size-small text-weight-bold margin-smaller text-error"
                 />
                 <Image className="store-card-list__image card__image" src="" alt="" />
                 <summary className="padding-small">
@@ -84,6 +84,10 @@ class MvpEntry extends Component {
                 </summary>
               </li>
               <li className="store-card-list__item card">
+                <Tag
+                  text={t('Close')}
+                  className="tag__card text-size-small text-weight-bold margin-smaller text-success"
+                />
                 <Image className="store-card-list__image card__image" src="" alt="" />
                 <summary className="padding-small">
                   <div className="flex flex-middle flex-space-between">
