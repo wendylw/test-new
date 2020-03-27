@@ -14,11 +14,9 @@ const AsyncCashbackApp = lazy(() => import('./cashback'));
 
 const AsyncQRScanner = lazy(() => import('./qrscan'));
 
-const { ROUTER_PATHS } = Constants;
+const AsyncSite = lazy(() => import('./site'));
 
-const isQRScannerApp = () => {
-  return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
-};
+const { ROUTER_PATHS } = Constants;
 
 class Bootstrap extends Component {
   render() {
@@ -31,12 +29,13 @@ class Bootstrap extends Component {
               render={props => <AsyncTermsPrivacy {...props} pageName="terms" />}
             />
             <Route path={ROUTER_PATHS.PRIVACY} render={props => <AsyncTermsPrivacy {...props} pageName="privacy" />} />
+            <Route path={'/site'} component={AsyncSite} />
             <Route
               exact
               path={ROUTER_PATHS.STORES_HOME}
               render={(...args) => {
-                if (isQRScannerApp()) {
-                  return <Redirect to={ROUTER_PATHS.QRSCAN} />;
+                if (Utils.isSiteApp()) {
+                  return <Redirect to={'/site'} />;
                 }
 
                 // goto stores when visit home page without scaning QR Code.
