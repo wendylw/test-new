@@ -4,7 +4,7 @@ import AccountRoute from './Routes';
 const Account = () => {
   return (
     <div>
-      <h2>Account pages</h2>
+      <h2>Account/index.jsx pages</h2>
       <AccountRoute />
     </div>
   );

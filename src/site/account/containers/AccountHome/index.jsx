@@ -1,5 +1,5 @@
 import React from 'react';
 
-const AccountHome = () => <h3>Account home page</h3>;
+const AccountHome = () => <h3>AccountHome/index.jsx page</h3>;
 
 export default AccountHome;

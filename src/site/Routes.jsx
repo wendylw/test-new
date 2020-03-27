@@ -1,25 +1,20 @@
 import React from 'react';
-import { Route, Switch, Redirect, useRouteMatch, withRouter } from 'react-router-dom';
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import Landing from './landing';
 import Account from './account';
 import QRScan from './qrscan';
-
-const NotFound = () => {
-  return <Redirect to={'/'} />;
-};
+import NotFound from './common/components/NotFound';
+import Auth from './auth';
 
 const SiteRoute = () => {
-  const match = useRouteMatch();
-
-  console.log('SiteRoute match.path', match.path);
-
   return (
     <Switch>
-      <Route path={`${match.path}/home`} component={Landing} />
-      <Route path={`${match.path}/qrscan`} component={QRScan} />
-      <Route path={`${match.path}/account`} component={Account} />
-      <Redirect from={`${match.path}/`} to={`${match.path}/home`} />
-      <Route path={`${match.path}/*`} component={NotFound} />
+      <Route path={`/landing`} component={Landing} />
+      <Route path={`/qrscan`} component={QRScan} />
+      <Route path={`/account`} component={Account} />
+      <Route path={`/auth`} component={Auth} />
+      <Redirect from={`/`} to={`/landing`} />
+      <Route component={NotFound} />
     </Switch>
   );
 };
