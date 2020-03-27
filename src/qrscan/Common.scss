@@ -90,6 +90,10 @@ body {
   color: $red;
 }
 
+.text-success {
+  color: $green;
+}
+
 .reset-font-size {
   font-size: 0;
 }
@@ -469,14 +473,6 @@ img {
   &__item {
     position: relative;
     margin: 24px 0;
-  }
-
-  &__item-open {
-    color: $green;
-  }
-
-  &__item-close {
-    color: $red;
   }
 
   &__image {
