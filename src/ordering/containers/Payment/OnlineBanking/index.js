@@ -157,7 +157,7 @@ class OnlineBanking extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right"
+          className="border__bottom-divider gray has-right flex-middle"
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
