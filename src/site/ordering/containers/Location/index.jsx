@@ -1,7 +1,8 @@
 import React from 'react';
+import Location from '../../../../ordering/containers/Location';
 
-const Location = () => {
-  return <h2>Location page</h2>;
+const LocationWrapper = ({ ...props }) => {
+  return <Location {...props} />;
 };
 
-export default Location;
+export default LocationWrapper;
