@@ -3,13 +3,13 @@ import { Provider } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import store from './redux/store';
 import Routes from './Routes';
-import SiteFooter from './common/components/SiteFooter';
+import SiteFakeHeader from './common/components/SiteFakeHeader';
 
 class Site extends Component {
   render() {
     return (
       <Provider store={store}>
-        <SiteFooter />
+        <SiteFakeHeader />
         <Routes />
       </Provider>
     );

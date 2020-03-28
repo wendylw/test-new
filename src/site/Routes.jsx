@@ -6,6 +6,7 @@ import QRScan from './qrscan';
 import NotFound from './common/components/NotFound';
 import Auth from './auth';
 import ProtectedRoute from './common/components/ProtectedRoute';
+import Location from './ordering/containers/Location';
 
 const SiteRoute = () => {
   return (
@@ -13,6 +14,7 @@ const SiteRoute = () => {
       <Route path={`/home`} component={Home} />
       <Route path={`/qrscan`} component={QRScan} />
       <Route path={`/auth`} component={Auth} />
+      <Route path={`/ordering/location`} component={Location} />
       <ProtectedRoute path={`/account`}>
         <Account />
       </ProtectedRoute>
