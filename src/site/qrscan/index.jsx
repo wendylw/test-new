@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import QrcodeDecoder from 'qrcode-decoder';
 import Constants from '../../utils/constants';
-import ShapeImage from '../../images/shape.png';
+import ShapeImage from '../../images/Shape.png';
 
 const processQR = qrData =>
   new Promise((resolve, reject) => {
