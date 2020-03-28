@@ -11,7 +11,7 @@ class Site extends Component {
   render() {
     return (
       <Provider store={store}>
-        <SiteFakeHeader />
+        {/* <SiteFakeHeader /> */}
         <Routes />
         <SiteFooter />
       </Provider>

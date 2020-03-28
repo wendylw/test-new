@@ -3,6 +3,7 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import Home from './home';
 import Account from './account';
 import QRScan from './qrscan';
+import Error from './error';
 import NotFound from './common/components/NotFound';
 import Auth from './auth';
 import ProtectedRoute from './common/components/ProtectedRoute';
@@ -15,6 +16,7 @@ const SiteRoute = () => {
       <Route path={`/qrscan`} component={QRScan} />
       <Route path={`/auth`} component={Auth} />
       <Route path={`/ordering/location`} component={Location} />
+      <Route path={`/error/:type`} component={Error} />
       <ProtectedRoute path={`/account`}>
         <Account />
       </ProtectedRoute>

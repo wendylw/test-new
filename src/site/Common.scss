@@ -22,6 +22,7 @@ $theme-color-active: #de8115;
 $font-weight-light: 300;
 $font-weight-bold: 600;
 $border-radius-base: 4px;
+$line-height-base: 1.4em;
 
 * {
   margin: 0;
@@ -372,6 +373,28 @@ img {
   }
 }
 
+.top-message {
+  position: relative;
+  top: 0;
+  display: block;
+  width: 100%;
+  color: $white;
+  z-index: 1;
+
+  &.fixed {
+    position: fixed;
+    z-index: 300;
+  }
+
+  &.primary {
+    background-color: $theme-color;
+  }
+
+  &__text {
+    line-height: $line-height-base;
+  }
+}
+
 .form {
   &__group {
     @extend .border-radius-base;
@@ -506,6 +529,104 @@ img {
   }
 }
 /* end of Store Info */
+
+/* QRScan */
+.qrscan {
+  &__video-player,
+  &__cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__canvas {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+  }
+
+  &__logo {
+    position: absolute;
+    top: 10vh;
+    max-width: 40%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 100;
+  }
+
+  &__tips {
+    position: absolute;
+    top: 50vh;
+    z-index: 20;
+    display: block;
+    width: 100%;
+    margin-top: 140px;
+    color: $white;
+  }
+
+  &__qrcode {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    background-color: transparent;
+    //use border to make a transparency scanner area square and marsk aroung the square
+    border-bottom: solid calc(50vh - 100px) rgba(77, 77, 77, 0.5);
+    border-top: solid calc(50vh - 100px) rgba(77, 77, 77, 0.5);
+    border-right: solid calc(50vw - 100px) rgba(77, 77, 77, 0.5);
+    border-left: solid calc(50vw - 100px) rgba(77, 77, 77, 0.5);
+
+    div:nth-child(1) {
+      border-left: 5px solid #f5a623;
+      border-top: 5px solid #f5a623;
+      border-top-left-radius: 10px;
+      width: 50px;
+      height: 50px;
+      left: -5px;
+      top: -5px;
+      position: absolute;
+    }
+
+    div:nth-child(2) {
+      border-right: 5px solid #f5a623;
+      border-top: 5px solid #f5a623;
+      border-top-right-radius: 10px;
+      width: 50px;
+      height: 50px;
+      left: 150px;
+      top: -5px;
+      position: absolute;
+    }
+
+    div:nth-child(3) {
+      border-right: 5px solid #f5a623;
+      border-bottom: 5px solid #f5a623;
+      border-bottom-right-radius: 10px;
+      width: 50px;
+      height: 50px;
+      left: 150px;
+      top: 150px;
+      position: absolute;
+    }
+
+    div:nth-child(4) {
+      border-left: 5px solid #f5a623;
+      border-bottom: 5px solid #f5a623;
+      border-bottom-left-radius: 10px;
+      width: 50px;
+      height: 50px;
+      top: 150px;
+      left: -5px;
+      position: absolute;
+    }
+  }
+}
+/* end of QRScan */
 
 @media (max-width: 374px) {
   *,
