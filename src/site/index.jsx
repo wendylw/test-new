@@ -4,6 +4,8 @@ import { withRouter } from 'react-router-dom';
 import store from './redux/store';
 import Routes from './Routes';
 import SiteFakeHeader from './common/components/SiteFakeHeader';
+import SiteFooter from './common/components/SiteFooter';
+import './Common.scss';
 
 class Site extends Component {
   render() {
@@ -11,6 +13,7 @@ class Site extends Component {
       <Provider store={store}>
         <SiteFakeHeader />
         <Routes />
+        <SiteFooter />
       </Provider>
     );
   }
