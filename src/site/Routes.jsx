@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
-import Landing from './landing';
+import Home from './home';
 import Account from './account';
 import QRScan from './qrscan';
 import NotFound from './common/components/NotFound';
@@ -10,13 +10,13 @@ import ProtectedRoute from './common/components/ProtectedRoute';
 const SiteRoute = () => {
   return (
     <Switch>
-      <Route path={`/landing`} component={Landing} />
+      <Route path={`/home`} component={Home} />
       <Route path={`/qrscan`} component={QRScan} />
       <Route path={`/auth`} component={Auth} />
       <ProtectedRoute path={`/account`}>
         <Account />
       </ProtectedRoute>
-      <Redirect from={`/`} to={`/landing`} />
+      <Redirect from={`/`} to={`/home`} />
       <Route component={NotFound} />
     </Switch>
   );
