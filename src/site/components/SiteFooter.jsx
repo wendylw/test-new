@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { IconHome, IconCropFree, IconAccountCircle } from '../../../components/Icons';
+import { IconHome, IconCropFree, IconAccountCircle } from '../../components/Icons';
 
 class SiteFooter extends Component {
   render() {
