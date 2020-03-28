@@ -4,9 +4,9 @@ import Home from './home';
 import Account from './account';
 import QRScan from './qrscan';
 import Error from './error';
-import NotFound from './common/components/NotFound';
+import NotFound from './components/NotFound';
 import Auth from './auth';
-import ProtectedRoute from './common/components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import Location from './ordering/containers/Location';
 
 const SiteRoute = () => {
