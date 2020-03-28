@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import React from 'react';
 
 const siteRoutes = [
-  { to: '/', text: 'Landing' },
+  { to: '/', text: 'Site' },
+  { to: '/home', text: 'Home' },
   { to: '/qrscan', text: 'QRScan' },
   { to: '/account', text: 'Account <-- sub pages needs login.' },
   { to: '/account/orders', text: 'Account Order List' },
