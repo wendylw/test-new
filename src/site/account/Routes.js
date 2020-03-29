@@ -4,7 +4,7 @@ import AccountHome from './containers/AccountHome';
 import AccountOrders from './containers/AccountOrders';
 import AccountCashback from './containers/AccountCashback';
 import AccountAddress from './containers/AccountAddress';
-import NotFound from '../common/components/NotFound';
+import NotFound from '../components/NotFound';
 
 const AccountRoute = () => {
   const match = useRouteMatch();

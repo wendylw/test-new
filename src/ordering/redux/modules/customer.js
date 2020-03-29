@@ -1,5 +1,10 @@
-import Utils from '../../../utils/utils';
 import { combineReducers } from 'redux';
+import {
+  fetchDeliveryAddress,
+  fetchDeliveryDetails,
+  patchDeliveryDetails,
+  updateDeliveryDetails,
+} from '../../containers/Customer/utils';
 
 // actions
 
@@ -8,33 +13,70 @@ export const types = {
 };
 
 export const actions = {
-  putDeliveryDetails: fields => (dispatch, getState) => {
-    dispatch({
+  initDeliveryDetails: shippingType => async (dispatch, getState) => {
+    const deliveryDetails = await fetchDeliveryDetails();
+    const phone = localStorage.getItem('user.p') || '';
+    const newDeliveryDetails = {
+      ...deliveryDetails,
+      phone,
+    };
+
+    if (shippingType === 'delivery') {
+      const deliveryAddress = await fetchDeliveryAddress();
+      console.log('deliveryAddress', deliveryAddress);
+      newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
+      newDeliveryDetails.deliveryToLocation = {
+        longitude: deliveryAddress.coords.lng,
+        latitude: deliveryAddress.coords.lat,
+      };
+
+      // if address chosen is different from address in session
+      // then clean up the address details info
+      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
+        newDeliveryDetails.addressDetails = '';
+      }
+    } else if (shippingType === 'pickup') {
+      delete newDeliveryDetails.deliveryToAddress;
+      delete newDeliveryDetails.addressDetails;
+    }
+
+    dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
+  },
+  updateDeliveryDetails: fields => async (dispatch, getState) => {
+    const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
       fields,
     });
-    Utils.setSessionVariable('user.deliveryDetails', JSON.stringify(getDeliveryDetails(getState())));
+
+    await updateDeliveryDetails(fields);
+
+    return result;
+  },
+  patchDeliveryDetails: fields => async (dispatch, getState) => {
+    const result = await dispatch({
+      type: types.PUT_DELIVERY_DETAILS,
+      fields,
+    });
+
+    await patchDeliveryDetails(fields);
+
+    return result;
   },
 };
 
 const initialState = {
   deliveryDetails: {
     username: '',
-    phone: localStorage.getItem('user.p') || '',
-    deliverToAddress: '',
+    phone: '',
     addressDetails: '',
     deliveryComments: '',
+    deliveryToAddress: '',
+    deliveryToLocation: {
+      longitude: 0,
+      latitude: 0,
+    },
   },
 };
-
-try {
-  const deliveryDetailsCache = JSON.parse(Utils.getSessionVariable('user.deliveryDetails'));
-  if (deliveryDetailsCache) {
-    initialState.deliveryDetails = deliveryDetailsCache;
-  }
-} catch (e) {
-  console.error(e);
-}
 
 // reducers
 
