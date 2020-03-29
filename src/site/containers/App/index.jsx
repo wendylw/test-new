@@ -11,7 +11,7 @@ const SiteApp = ({ error, appActions }) => {
   return (
     <React.Fragment>
       {error ? <ErrorToast message={error} clearError={appActions.clearError} /> : null}
-      <SiteFakeHeader />
+      {/* <SiteFakeHeader /> */}
       <Routes />
       <SiteFooter />
     </React.Fragment>

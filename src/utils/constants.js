@@ -30,7 +30,7 @@ const ROUTER_PATHS = {
   // Qrscan App basename
   QRSCAN: '/qrscan',
   SCAN: '/scan',
-  SCAN_NOT_SUPPORT: '/scan-not-support',
+  SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
 };
 
