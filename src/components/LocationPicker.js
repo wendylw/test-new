@@ -98,6 +98,7 @@ class LocationPicker extends Component {
       } else {
         placeInfo = placeInfoOrSearchResult;
       }
+      this.setState({ isSubmitting: false });
       let straightDistance;
       let directionDistance;
       if (mode === 'ORIGIN_STORE') {
@@ -120,9 +121,7 @@ class LocationPicker extends Component {
       onSelect(placeInfo);
     } catch (e) {
       console.error(e);
-      this.setState({ errorToast: t('FailToGetPlaceInfo') });
-    } finally {
-      this.setState({ isSubmitting: false });
+      this.setState({ errorToast: t('FailToGetPlaceInfo'), isSubmitting: false });
     }
   }
 
@@ -138,8 +137,10 @@ class LocationPicker extends Component {
       country = devicePositionInfo.addressComponents.countryCode;
     }
     // location is used for biasing the result. it must be used along with radius
-    if (devicePositionInfo) {
+    if (mode === 'ORIGIN_DEVICE' && devicePositionInfo) {
       location = devicePositionInfo.coords;
+    } else {
+      location = origin;
     }
     if (!radius && mode === 'ORIGIN_DEVICE') {
       radius = 10000;
