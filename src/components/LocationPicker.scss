@@ -1,0 +1,167 @@
+@import "../Common.scss";
+
+.location-picker {
+  &__form {
+    padding: 5vw 2.4vw;
+    background-color: $white;
+
+    .input {
+      padding-left: 0;
+      padding-right: 5vw;
+      font-size: 1.4rem;
+      line-height: 1.5em;
+      height: 12vw;
+      max-height: 50px;
+    }
+  }
+
+  &__icon-pin {
+    padding: 3.2vw;
+    font-size: 0;
+
+    svg {
+      fill: $gray-2;
+    }
+  }
+
+  &__address {
+    font-style: unset;
+    border-top: 8px solid $gray-4;
+  }
+
+  &__list-wrapper {
+    position: relative;
+    top: 25px;
+    margin-top: 26.8vw;
+    padding-top: 2.2rem;
+  }
+
+  &__icon-adjust {
+    padding: 3.8vw;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      fill: $theme-color;
+    }
+
+    & + .item {
+      padding: 4vw 0;
+      width: 100%;
+    }
+  }
+
+  &__search-box {
+    padding: 5vw 2.4vw;
+    background-color: $white;
+
+    .input {
+      padding-left: 0;
+      padding-right: 5vw;
+      font-size: 1.4rem;
+      line-height: 9vw;
+    }
+  }
+
+  &__search-box-search-icon {
+    padding: 3.2vw;
+    font-size: 0;
+
+    svg {
+      fill: $gray-2;
+    }
+  }
+
+  &__search-box-clear-icon {
+    padding: 15px 8px;
+
+    svg {
+      fill: $gray-2;
+      width: 14px;
+      height: 14px;
+      vertical-align: middle;
+    }
+  }
+
+  &__detected-position {
+    overflow: hidden;
+    border-bottom: 1px solid $gray-3;
+    padding: 8px 16px 16px 0;
+    .location-picker__address-item {
+      padding: 0;
+      border: none;
+    }
+
+    .location-picker__detected-position-address {
+      margin-top: 8px;
+    }
+  }
+
+  &__detected-position-status {
+    margin: 8px 0;
+    font-weight: bold;
+  }
+
+  &__detected-position-icon {
+    svg {
+      fill: $theme-color;
+      width: 14px;
+      height: 14px;
+    }
+    padding: 16px;
+    float: left;
+  }
+
+  &__detected-position-address {
+    overflow: hidden;
+  }
+
+  &__historical-address {
+    border-bottom: 1px solid $gray-3;
+    overflow: hidden;
+  }
+
+  &__historical-address-icon {
+    svg {
+      fill: $theme-color-translucent;
+      width: 14px;
+      height: 14px;
+    }
+    margin-top: 8px;
+    padding: 16px;
+    float: left;
+  }
+
+  &__historical-address-content {
+    overflow: hidden;
+    .location-picker__address-item {
+      padding: 16px 16px 16px 0;
+      border: none;
+    }
+  }
+
+  &__address-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid $gray-3;
+  }
+
+  &__address-title {
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__address-detail {
+    margin-top: 4px;
+    color: $gray-1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__address-distance {
+    margin-right: 8px;
+    font-weight: bold;
+  }
+}
