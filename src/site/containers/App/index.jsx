@@ -8,12 +8,15 @@ import SiteFooter from '../../components/SiteFooter';
 import { actions as appActionCreators, getError } from '../../redux/modules/app';
 
 const SiteApp = ({ error, appActions }) => {
+  const { pathname } = window.location || {};
+  const isErrorPage = /^\/error/.test(pathname || '');
+
   return (
     <React.Fragment>
       {error ? <ErrorToast message={error} clearError={appActions.clearError} /> : null}
       {/* <SiteFakeHeader /> */}
       <Routes />
-      <SiteFooter />
+      {isErrorPage ? null : <SiteFooter />}
     </React.Fragment>
   );
 };
