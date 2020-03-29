@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import SiteFakeHeader from '../../components/SiteFakeHeader';
 import ErrorToast from '../../../components/ErrorToast';
 import Routes from '../../Routes';
 import SiteFooter from '../../components/SiteFooter';
-import { actions as appActionCreators, getError } from '../../redux/modules/app';
+import { appActionCreators, getError } from '../../redux/modules/app';
 
 const SiteApp = ({ error, appActions }) => {
   const { pathname } = window.location || {};
   const isErrorPage = /^\/error/.test(pathname || '');
+  let initialized = false;
+
+  useEffect(() => {
+    if (!initialized) {
+      initialized = true;
+      appActions.initCurrentLocation();
+    }
+  });
 
   return (
     <React.Fragment>

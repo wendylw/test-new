@@ -3,7 +3,7 @@ import app from './app';
 import entities from './entities';
 
 const rootReducer = combineReducers({
-  // entities,
+  entities,
   app,
 });
 

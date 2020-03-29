@@ -13,4 +13,9 @@ if (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__
   store = createStore(rootReducer, applyMiddleware(thunk, apiGql, api));
 }
 
+if (process.env.NODE_ENV !== 'production') {
+  console.warn('window.store is available in console now for debug');
+  window.store = store;
+}
+
 export default store;
