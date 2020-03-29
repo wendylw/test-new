@@ -52,9 +52,7 @@ class QRScan extends Component {
 
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = function(error) {
-          if (error.name === 'NotAllowedError') {
-            // that.props.history.push(Constants.ALL_ROUTER.permission);
-          } else {
+          if (error.name !== 'NotAllowedError') {
             this.gotoNotSupport();
           }
         };
