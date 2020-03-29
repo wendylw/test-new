@@ -381,11 +381,6 @@ img {
   color: $white;
   z-index: 1;
 
-  &.fixed {
-    position: fixed;
-    z-index: 300;
-  }
-
   &.primary {
     background-color: $theme-color;
   }
@@ -688,4 +683,16 @@ img {
     }
   }
   /* end of Entry */
+
+  /* QRScan */
+  .qrscan {
+    &__qrcode {
+      //use border to make a transparency scanner area square and marsk aroung the square
+      border-bottom: solid calc(50vh - 100px) rgba(77, 77, 77, 0.5);
+      border-top: solid calc(50vh - 100px) rgba(77, 77, 77, 0.5);
+      border-right: solid calc(107px) rgba(77, 77, 77, 0.5);
+      border-left: solid calc(107px) rgba(77, 77, 77, 0.5);
+    }
+  }
+  /* end of QRScan */
 }
