@@ -4,6 +4,8 @@ import QrcodeDecoder from 'qrcode-decoder';
 import Constants from '../../utils/constants';
 import ShapeImage from '../../images/shape.png';
 
+const { ERROR, SCAN_NOT_SUPPORT } = Constants;
+
 const processQR = qrData =>
   new Promise((resolve, reject) => {
     let data = qrData.trim();
@@ -23,33 +25,37 @@ const processQR = qrData =>
   });
 
 class QRScan extends Component {
+  gotoNotSupport() {
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+      this.props.history.push({
+        pathname: `${ERROR}${SCAN_NOT_SUPPORT}`,
+        state: { isIOS: true },
+      });
+    } else if (/android/i.test(navigator.userAgent)) {
+      this.props.history.push({
+        pathname: `${ERROR}${SCAN_NOT_SUPPORT}`,
+        state: { isIOS: false },
+      });
+    } else {
+      this.props.history.push({
+        pathname: `${ERROR}${SCAN_NOT_SUPPORT}`,
+        state: { isIOS: false },
+      });
+    }
+  }
+
   getCamera() {
     const { t } = this.props;
     //turn on the camera
     try {
-      let that = this;
+      const that = this;
 
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = function(error) {
           if (error.name === 'NotAllowedError') {
-            that.props.history.push(Constants.ALL_ROUTER.permission);
+            // that.props.history.push(Constants.ALL_ROUTER.permission);
           } else {
-            if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-              this.props.history.push({
-                pathname: Constants.ALL_ROUTER.notSupport,
-                state: { isIOS: true },
-              });
-            } else if (/android/i.test(navigator.userAgent)) {
-              this.props.history.push({
-                pathname: Constants.ALL_ROUTER.notSupport,
-                state: { isIOS: false },
-              });
-            } else {
-              this.props.history.push({
-                pathname: Constants.ALL_ROUTER.notSupport,
-                state: { isIOS: false },
-              });
-            }
+            this.gotoNotSupport();
           }
         };
 
@@ -64,7 +70,7 @@ class QRScan extends Component {
         navigator.mediaDevices
           .getUserMedia(videoObj)
           .then(function(stream) {
-            const play = that.getViedoStream.bind(that, stream);
+            const play = that.getVideoStream.bind(that, stream);
             play();
           })
           .catch(function(err) {
@@ -74,7 +80,7 @@ class QRScan extends Component {
         navigator
           .webkitGetUserMedia(videoObj)
           .then(function(stream) {
-            const play = that.getViedoStream.bind(that, stream);
+            const play = that.getVideoStream.bind(that, stream);
             play();
           })
           .catch(function(err) {
@@ -84,7 +90,7 @@ class QRScan extends Component {
         navigator
           .mozGetUserMedia(videoObj)
           .then(function(stream) {
-            const play = that.getViedoStream.bind(that, stream);
+            const play = that.getVideoStream.bind(that, stream);
             play();
           })
           .catch(function(err) {
@@ -94,7 +100,7 @@ class QRScan extends Component {
         navigator
           .msGetUserMedia(videoObj)
           .then(function(stream) {
-            const play = that.getViedoStream.bind(that, stream);
+            const play = that.getVideoStream.bind(that, stream);
             play();
           })
           .catch(function(err) {
@@ -105,22 +111,7 @@ class QRScan extends Component {
         return false;
       }
     } catch (e) {
-      if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-        this.props.history.push({
-          pathname: Constants.ALL_ROUTER.notSupport,
-          state: { isIOS: true },
-        });
-      } else if (/android/i.test(navigator.userAgent)) {
-        this.props.history.push({
-          pathname: Constants.ALL_ROUTER.notSupport,
-          state: { isIOS: false },
-        });
-      } else {
-        this.props.history.push({
-          pathname: Constants.ALL_ROUTER.notSupport,
-          state: { isIOS: false },
-        });
-      }
+      this.gotoNotSupport();
     }
   }
 
@@ -145,20 +136,20 @@ class QRScan extends Component {
     }, 300);
   }
 
-  getViedoStream(stream) {
+  getVideoStream(stream) {
     this.setState({
       getPermission: true,
     });
-    let canvas = null,
-      context = null,
-      video = null;
-    canvas = this.refs.canvas;
-    context = canvas.getContext('2d');
-    video = this.refs.video;
+
+    const canvas = this.refs.canvas;
+    const context = canvas.getContext('2d');
+    let video = this.refs.video;
+
     video.srcObject = stream;
     video.onloadedmetadata = function(e) {
       video.play();
     };
+
     this.getQRCode(video, canvas, context);
   }
 
