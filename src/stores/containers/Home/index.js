@@ -23,11 +23,15 @@ const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {};
 
-  async componentDidMount() {
-    const { homeActions } = this.props;
+  componentDidMount = async () => {
+    const storeId = Utils.getQueryString('storeId');
 
-    await homeActions.loadCoreStores();
-  }
+    await this.props.homeActions.loadCoreStores();
+
+    if (storeId) {
+      this.setCurrentStoreId(storeId);
+    }
+  };
 
   async visitStore(storeId) {
     const { homeActions } = this.props;
@@ -44,12 +48,17 @@ class App extends Component {
   async setCurrentStoreId(storeId) {
     const { homeActions } = this.props;
     // 请求 coreBusiness
-    await homeActions.loadCoreBusiness();
+    const {
+      responseGql: {
+        data: { business: businessInfo },
+      },
+    } = await homeActions.loadCoreBusiness();
+
     // if store is closed,go straight to ordering page and let it display store is closed
-    const { allBusinessInfo, business } = this.props;
+    const { business } = this.props;
+    const allBusinessInfo = { [business]: businessInfo };
     const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-    if (isValidTimeToOrder) {
+    if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
       homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);

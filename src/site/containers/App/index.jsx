@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import SiteFakeHeader from '../../components/SiteFakeHeader';
@@ -9,12 +9,12 @@ import { actions as appActionCreators, getError } from '../../redux/modules/app'
 
 const SiteApp = ({ error, appActions }) => {
   return (
-    <>
+    <React.Fragment>
       {error ? <ErrorToast message={error} clearError={appActions.clearError} /> : null}
       <SiteFakeHeader />
       <Routes />
       <SiteFooter />
-    </>
+    </React.Fragment>
   );
 };
 
