@@ -1,9 +1,3 @@
-import { getDevicePositionInfo } from '../../../utils/geoUtils';
-import { appActionCreators, getCurrentPlaceInfo } from './app';
-import Url from '../../../utils/url';
-
-import { API_REQUEST } from '../../../redux/middlewares/api';
-
 const initialState = {
   pageInfo: {
     page: 0,
@@ -28,27 +22,7 @@ const ajaxRequestBusiness = ({ lat, lng, page, pageSize }) => ({
 
 // @actions
 const actions = {
-  setupCurrentLocation: placeInfo => async (dispatch, getState) => {
-    // home page provides a placeInfo, which mostly comes from browser history
-    if (placeInfo) {
-      // save the location directly
-      dispatch(appActionCreators.setCurrentPlaceInfo(placeInfo));
-    } else {
-      // not found? get one from browser
-      let placeInfoOfDevice = await getDevicePositionInfo();
-      console.log('[redux/home] [setupHomePage] placeInfoOfDevice =>', placeInfoOfDevice);
-
-      if (!placeInfoOfDevice) {
-        throw new Error('cannot_get_device_location');
-      }
-
-      dispatch(appActionCreators.setCurrentPlaceInfo(placeInfoOfDevice));
-    }
-  },
-
-  getStoreList: ({ coords, page, pageSize }) => (dispatch, getState) => {
-    dispatch(ajaxRequestBusiness({ ...coords, page, pageSize }));
-  },
+  getStoreList: pageInfo => (dispatch, getState) => {},
 };
 
 // @reducers
