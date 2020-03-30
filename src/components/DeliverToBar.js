@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { IconLocation, IconEdit } from './Icons';
+import './DeliverToBar.scss';
 
 class DeliverToBar extends PureComponent {
   render() {
@@ -17,7 +18,7 @@ class DeliverToBar extends PureComponent {
           <label className="deliver-to-entry__label text-uppercase text-weight-bold">{title}</label>
           <div>
             <IconLocation className="icon icon__small icon__gray text-middle" />
-            <span className="deliver-to-entry__address text-opacity text-middle">{address}</span>
+            <span className="deliver-to-entry__address text-middle text-opacity text-omit">{address}</span>
           </div>
         </div>
         <IconEdit className="icon icon__small icon__privacy text-middle" />

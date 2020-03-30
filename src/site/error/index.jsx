@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import beepWarningImage from '../../images/beep-warning.png';
-import 'index.scss';
+import './index.scss';
 
 class Error extends Component {
   getErrorContent() {

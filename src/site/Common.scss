@@ -385,31 +385,6 @@ img {
   }
 }
 
-/* Deliver To */
-.deliver-to-entry {
-  padding: 8px;
-  background-color: $white;
-
-  &__content {
-    max-width: 90%;
-  }
-
-  &__label {
-    display: inline-block;
-    margin: 4px 10px;
-  }
-
-  &__address {
-    @extend .text-omit;
-
-    display: inline-block;
-    max-width: 90%;
-    max-height: 16px;
-    -webkit-line-clamp: 1;
-  }
-}
-/* end of Deliver To */
-
 /* Store Info */
 .store-info {
   &__item {
