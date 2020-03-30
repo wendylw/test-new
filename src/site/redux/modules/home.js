@@ -1,11 +1,12 @@
 import { getDevicePositionInfo } from '../../../utils/geoUtils';
-import { appActionCreators, getCurrentPlaceInfo } from './app';
+import { storesActionCreators } from './entities/stores';
+import { appActionCreators } from './app';
 import Url from '../../../utils/url';
 
-import { API_REQUEST } from '../../../redux/middlewares/api';
+import { get } from '../../../utils/request';
 
 const initialState = {
-  pageInfo: {
+  paginationInfo: {
     page: 0,
     pageSize: 5,
   },
@@ -17,14 +18,6 @@ const types = {
   GET_STORE_LIST_SUCCESS: 'SITE/HOME/GET_STORE_LIST_SUCCESS',
   GET_STORE_LIST_FAILURE: 'SITE/HOME/GET_STORE_LIST_FAILURE',
 };
-
-const ajaxRequestBusiness = ({ lat, lng, page, pageSize }) => ({
-  [API_REQUEST]: {
-    types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
-    ...Url.API_URLS.GET_STORE_LIST,
-    params: { lat, lng, page, pageSize },
-  },
-});
 
 // @actions
 const actions = {
@@ -46,17 +39,44 @@ const actions = {
     }
   },
 
-  getStoreList: ({ coords, page, pageSize }) => (dispatch, getState) => {
-    dispatch(ajaxRequestBusiness({ ...coords, page, pageSize }));
-  },
+  getStoreList: ({ coords, page, pageSize }) => ({
+    types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+    requestPromise: get(
+      `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
+    ).then(response => {
+      const { stores } = response;
+
+      if (stores && stores.length) {
+        dispatch(storesActionCreators.saveStores(stores));
+      }
+
+      return response;
+    }),
+  }),
 };
 
 // @reducers
 
-const reducer = (state = initialState, action) => {};
+const reducer = (state = initialState, action) => {
+  const { response } = action;
+
+  switch (action.type) {
+    case types.GET_STORE_LIST_SUCCESS:
+      const { stores } = response;
+      const { page, pageSize } = state.paginationInfo;
+
+      return {
+        ...state,
+        storeIds: (stores || []).map(store => store.id),
+        paginationInfo: { page: page + 1, pageSize },
+      };
+    default:
+      return state;
+  }
+};
 
 export const homeActionCreators = actions;
 export default reducer;
 
 // @selectors
-export const getPageInfo = state => getPlaceById(state, state.home.pageInfo);
+export const getPaginationInfo = state => state.home.paginationInfo;

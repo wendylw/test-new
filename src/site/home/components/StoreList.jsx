@@ -26,26 +26,26 @@ class StoreList extends Component {
         className="store-card-list"
         element="ul"
         loader={<div className="loader theme"></div>}
-        hasMore={false}
+        hasMore={true}
         loadMore={() => {}}
       >
         {storeList.map(store => {
-          const { name, shippingFee, minimumConsumption, isOnline, isValidTime, distance } = store || {};
-          const currentStoreStatus = storeStatus[isValidTime ? 'open' : 'close'];
+          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance } = store || {};
+          const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
-          return !isOnline ? null : (
+          return (
             <li className="store-card-list__item card">
               <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
-              <Image className="store-card-list__image card__image" src="" alt="" />
+              <Image className="store-card-list__image card__image" src={avatar} alt="" />
               <summary className="padding-small">
                 <div className="flex flex-middle flex-space-between">
                   <h3 className="store-card-list__title text-size-bigger text-weight-bold">{name}</h3>
-                  <span className="text-opacity">{distance}</span>
+                  <span className="text-opacity">{geoDistance}</span>
                 </div>
                 <ul className="store-info padding-top-small">
                   <li className="store-info__item text-middle">
                     <IconMotorcycle className="icon icon__smaller text-middle" />
-                    <span className="store-info__text text-size-small text-middle">{shippingFee}</span>
+                    <span className="store-info__text text-size-small text-middle">{deliveryFee}</span>
                   </li>
                   <li className="store-info__item text-middle">
                     <Trans i18nKey="MinimumOrder" minimumConsumption={minimumConsumption}>

@@ -9,26 +9,26 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
-import { homeActionCreators, getPageInfo } from '../redux/modules/home';
+import { homeActionCreators, getPaginationInfo } from '../redux/modules/home';
 
 const { ROUTER_PATHS } = Constants;
 
 class Home extends React.Component {
   componentDidMount = async () => {
-    const { pageInfo } = this.props;
+    const { paginationInfo } = this.props;
     const placeInfo = this.getPlaceInfoFromHistory();
 
     try {
       await this.props.homeActions.setupCurrentLocation(placeInfo);
     } catch (e) {
       console.warn('[home] failed to locate user by device');
-      // return this.gotoLocationPage();
+      return this.gotoLocationPage();
     }
 
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 
     // fetch storeList here.
-    await this.props.homeActions.getStoreList({ ...placeInfo, ...pageInfo });
+    await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
   };
 
   getPlaceInfoFromHistory() {
@@ -98,7 +98,7 @@ export default compose(
   connect(
     state => ({
       currentPlaceInfo: getCurrentPlaceInfo(state),
-      pageInfo: getPageInfo(state),
+      paginationInfo: getPaginationInfo(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
