@@ -24,7 +24,7 @@ class StoreList extends Component {
       <ul className="store-card-list">
         {storeList.map(store => {
           const { name, shippingFee, minimumConsumption, isOnline, isValidTime, distance } = store || {};
-          const currentStoreStatus = storeStatus(isValidTime ? 'open' : 'close');
+          const currentStoreStatus = storeStatus[isValidTime ? 'open' : 'close'];
 
           return !isOnline ? null : (
             <li className="store-card-list__item card">

@@ -83,6 +83,10 @@ const API_URLS = {
     url: '/api/cart/items',
     method: 'del',
   },
+  GET_STORE_LIST: {
+    url: '/api/stores',
+    method: 'get',
+  },
 };
 
 export default {

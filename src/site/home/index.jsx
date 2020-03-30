@@ -1,30 +1,40 @@
 import React, { useEffect } from 'react';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import { IconSearch } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
-import Banner from './components/Banner';
+import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
+import Constants from '../../utils/constants';
+
+const { ROUTER_PATHS } = Constants;
 
 class Home extends React.Component {
   componentDidMount = () => {
+    this.setCurrentPlaceInfoRequest();
+    this.getStoreListRequest();
+  };
+
+  setCurrentPlaceInfoRequest() {
     const { history, location, appActions } = this.props;
 
     console.log('[Home] history.location.state =', history.location.state);
     const { state = {} } = location || {};
-    if (state.from && state.from.pathname === '/ordering/location') {
+    if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
       appActions.setCurrentPlaceInfo(state.data.placeInfo);
     }
-  };
+  }
+
+  getStoreListRequest() {}
 
   gotoLocationPage = () => {
     const { history, location } = this.props;
 
     history.push({
-      pathname: '/ordering/location',
+      pathname: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`,
       state: {
         from: location,
       },
@@ -35,7 +45,15 @@ class Home extends React.Component {
     const { t, currentPlaceInfo } = this.props;
     return (
       <main className="entry fixed-wrapper">
-        <Banner />
+        <Banner
+          title={
+            <Trans i18nKey="DiscoverDescription">
+              Discover new
+              <br />
+              restaurants around you
+            </Trans>
+          }
+        />
         <DeliverToBar
           title={t('DeliverTo')}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}

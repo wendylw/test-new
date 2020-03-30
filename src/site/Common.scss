@@ -401,6 +401,20 @@ img {
 }
 /* end of Store Info */
 
+/* Site Banner */
+.site-banner {
+  padding-top: 66px;
+  padding-bottom: 66px;
+  color: $white;
+  background: linear-gradient(134.77deg, #ff9419 0%, #ec461e 100%);
+
+  &__title {
+    padding-top: 50px;
+    margin-bottom: 3.8vw * 2;
+  }
+}
+/* end of Site Banner */
+
 @media (max-width: 374px) {
   *,
   html {
@@ -442,4 +456,12 @@ img {
   .margin-smaller {
     margin: 8px;
   }
+
+  /* Site Banner */
+  .site-banner {
+    &__title {
+      margin-bottom: 8px * 4;
+    }
+  }
+  /* end of Site Banner */
 }
