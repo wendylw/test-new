@@ -39,21 +39,19 @@ const actions = {
     }
   },
 
-  getStoreList: ({ coords, page, pageSize }) => ({
-    types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
-    requestPromise: get(
-      `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
-    ).then(response => {
-      const { stores } = response;
-
-      if (stores && stores.length) {
-        dispatch(storesActionCreators.saveStores(stores));
-      }
-
-      return response;
-    }),
-  }),
+  getStoreList: ({ coords, page, pageSize }) => async (dispatch, getState) => {
+    const result = await dispatch(fetchStoreList({ coords, page, pageSize }));
+    console.log(result.response);
+    return await dispatch(storesActionCreators.saveStores(result.response.stores));
+  },
 };
+
+const fetchStoreList = ({ coords, page, pageSize }) => ({
+  types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+  requestPromise: get(
+    `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
+  ),
+});
 
 // @reducers
 
