@@ -180,12 +180,10 @@ class LocationPicker extends Component {
     const { t } = this.props;
     return (
       <div className="location-picker__search-box">
-        <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-          <i className="location-picker__search-box-search-icon" onClick={this.tryGeolocation}>
-            <IconSearch />
-          </i>
+        <div className="form__group flex flex-middle">
+          <IconSearch className="icon icon__normal icon__gray" onClick={this.tryGeolocation} />
           <input
-            className="input input__block"
+            className="form__input"
             type="text"
             placeholder={t('SearchYourAddress')}
             onChange={this.onSearchBoxChange}

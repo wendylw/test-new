@@ -8,7 +8,7 @@ import Tag from '../../../components/Tag';
 
 class StoreList extends Component {
   render() {
-    const { t, storeList } = this.props;
+    const { t, stores, hasMore } = this.props;
     const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
     const storeStatus = {
       open: {
@@ -26,10 +26,10 @@ class StoreList extends Component {
         className="store-card-list"
         element="ul"
         loader={<div className="loader theme"></div>}
-        hasMore={true}
+        hasMore={hasMore}
         loadMore={() => {}}
       >
-        {storeList.map(store => {
+        {stores.map(store => {
           const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance } = store || {};
           const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
@@ -64,11 +64,13 @@ class StoreList extends Component {
 }
 
 StoreList.propTypes = {
-  storeList: PropTypes.array,
+  stores: PropTypes.array,
+  hasMore: PropTypes.bool,
 };
 
 StoreList.defaultProps = {
-  storeList: [],
+  stores: [],
+  hasMore: true,
 };
 
 export default withTranslation()(StoreList);

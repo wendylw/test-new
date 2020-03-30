@@ -9,7 +9,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
-import { homeActionCreators, getPaginationInfo } from '../redux/modules/home';
+import { homeActionCreators, getPaginationInfo, getAllCurrentStores } from '../redux/modules/home';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -57,7 +57,8 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo } = this.props;
+    const { t, currentPlaceInfo, paginationInfo, stores } = this.props;
+    const { hasMore } = paginationInfo;
 
     return (
       <main className="entry fixed-wrapper">
@@ -85,7 +86,7 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            <StoreList />
+            <StoreList stores={stores} hasMore={hasMore} />
           </div>
         </section>
       </main>
@@ -99,6 +100,7 @@ export default compose(
     state => ({
       currentPlaceInfo: getCurrentPlaceInfo(state),
       paginationInfo: getPaginationInfo(state),
+      stores: getAllCurrentStores(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

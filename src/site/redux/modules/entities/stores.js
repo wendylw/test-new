@@ -47,4 +47,4 @@ const reducer = (state = initialState, action) => {
 export const storesActionCreators = actions;
 export default reducer;
 
-export const getAllStoreById = state => state.entities.stores;
+export const getAllStores = state => state.entities.stores;

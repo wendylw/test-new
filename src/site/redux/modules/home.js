@@ -1,5 +1,5 @@
 import { getDevicePositionInfo } from '../../../utils/geoUtils';
-import { storesActionCreators } from './entities/stores';
+import { getAllStores, storesActionCreators } from './entities/stores';
 import { appActionCreators } from './app';
 import Url from '../../../utils/url';
 
@@ -9,6 +9,7 @@ const initialState = {
   paginationInfo: {
     page: 0,
     pageSize: 5,
+    hasMore: true,
   },
   storeIds: [],
 };
@@ -18,6 +19,13 @@ const types = {
   GET_STORE_LIST_SUCCESS: 'SITE/HOME/GET_STORE_LIST_SUCCESS',
   GET_STORE_LIST_FAILURE: 'SITE/HOME/GET_STORE_LIST_FAILURE',
 };
+
+const fetchStoreList = ({ coords, page, pageSize }) => ({
+  types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+  requestPromise: get(
+    `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
+  ),
+});
 
 // @actions
 const actions = {
@@ -46,15 +54,7 @@ const actions = {
   },
 };
 
-const fetchStoreList = ({ coords, page, pageSize }) => ({
-  types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
-  requestPromise: get(
-    `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
-  ),
-});
-
 // @reducers
-
 const reducer = (state = initialState, action) => {
   const { response } = action;
 
@@ -63,9 +63,13 @@ const reducer = (state = initialState, action) => {
       const { stores } = response;
       const { page, pageSize } = state.paginationInfo;
 
+      if (!stores || !stores.length) {
+        return { ...state, paginationInfo: { hasMore: false, page, pageSize } };
+      }
+
       return {
         ...state,
-        storeIds: (stores || []).map(store => store.id),
+        storeIds: state.storeIds.concat((stores || []).map(store => store.id)),
         paginationInfo: { page: page + 1, pageSize },
       };
     default:
@@ -78,3 +82,4 @@ export default reducer;
 
 // @selectors
 export const getPaginationInfo = state => state.home.paginationInfo;
+export const getAllCurrentStores = state => getAllStores(state);
