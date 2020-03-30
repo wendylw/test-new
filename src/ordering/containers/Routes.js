@@ -9,7 +9,7 @@ import NeedHelp from './NeedHelp';
 import OrderDetails from './OrderDetails';
 import NotFound from '../../NotFound';
 
-const Location = lazy(() => import('./Location/LocationPage'));
+const Location = lazy(() => import('./Location'));
 const Receipt = lazy(() => import('./Receipt'));
 const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));

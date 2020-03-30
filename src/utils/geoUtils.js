@@ -29,7 +29,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
         sessionToken: getAutocompleteSessionToken(),
         location: locationCoords,
         origin: originCoords,
-        radius,
+        radius: radiusNumber,
         ...(country ? { componentRestrictions: { country } } : undefined),
       },
       (results, status) => {
