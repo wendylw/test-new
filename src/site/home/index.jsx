@@ -56,6 +56,13 @@ class Home extends React.Component {
     });
   };
 
+  handleLoadMoreStores = () => {
+    const { currentPlaceInfo, paginationInfo } = this.props;
+
+    // fetch storeList here.
+    this.props.homeActions.getStoreList({ ...currentPlaceInfo, ...paginationInfo });
+  };
+
   render() {
     const { t, currentPlaceInfo, paginationInfo, stores } = this.props;
     const { hasMore } = paginationInfo;
@@ -86,7 +93,7 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            <StoreList stores={stores} hasMore={hasMore} />
+            <StoreList stores={stores} hasMore={hasMore} loadMoreStores={this.handleLoadMoreStores} />
           </div>
         </section>
       </main>
