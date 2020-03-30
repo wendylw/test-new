@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
 import { homeActionCreators, getPaginationInfo, getSearchingStores, getAllCurrentStores } from '../redux/modules/home';
+import { getPlaceInfo, savePlaceInfo } from './utils';
 import Utils from '../../utils/utils';
 
 const { ROUTER_PATHS, ADDRESS_RANGE } = Constants;
@@ -28,12 +29,14 @@ class Home extends React.Component {
     const { paginationInfo } = this.props;
     const placeInfo = this.getPlaceInfoFromHistory();
 
-    try {
-      await this.props.homeActions.setupCurrentLocation(placeInfo);
-    } catch (e) {
-      console.warn('[home] failed to locate user by device');
+    // if no placeInfo at all
+    if (!placeInfo) {
       return this.gotoLocationPage();
     }
+
+    // placeInfo ok
+    await savePlaceInfo(placeInfo); // now save into localStorage
+    this.props.appActions.setCurrentPlaceInfo(placeInfo);
 
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 

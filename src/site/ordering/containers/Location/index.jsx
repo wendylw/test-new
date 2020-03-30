@@ -44,10 +44,7 @@ class Location extends React.Component {
     }
   };
 
-  handleMapSelected = async placeInfo => {
-    console.log('[LocationWrapper] placeInfo of onSelect(__) =>', placeInfo);
-    await setHistoricalDeliveryAddresses(placeInfo);
-
+  backToPreviousPage = data => {
     const { history, location } = this.props;
     const pathname = (location.state && location.state.from && location.state.from.pathname) || '/home';
 
@@ -55,9 +52,20 @@ class Location extends React.Component {
       pathname,
       state: {
         from: location,
-        data: { placeInfo },
+        data,
       },
     });
+  };
+
+  handleMapSelected = async placeInfo => {
+    console.log('[LocationWrapper] placeInfo of onSelect(__) =>', placeInfo);
+    await setHistoricalDeliveryAddresses(placeInfo);
+
+    this.backToPreviousPage({ placeInfo });
+  };
+
+  handleBackClicked = () => {
+    this.backToPreviousPage();
   };
 
   render() {
@@ -73,9 +81,7 @@ class Location extends React.Component {
           className="has-right flex-middle"
           isPage={true}
           title={t('DeliverTo')}
-          navFunc={() => {
-            alert('nav back');
-          }}
+          navFunc={this.handleBackClicked}
         />
         <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
       </main>
