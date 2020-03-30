@@ -1,6 +1,3 @@
-import { getDevicePositionInfo } from '../../../utils/geoUtils';
-import { appActionCreators, getCurrentPlaceInfo } from './app';
-
 const initialState = {
   storeIds: [],
 };
@@ -14,26 +11,6 @@ const types = {
 // @actions
 
 const actions = {
-  setupCurrentLocation: placeInfo => async (dispatch, getState) => {
-    // home page provides a placeInfo, which mostly comes from browser history
-    if (placeInfo) {
-      // save the location directly
-      dispatch(appActionCreators.setCurrentPlaceInfo(placeInfo));
-    } else {
-      // not found? get one from browser
-      let placeInfoOfDevice = await getDevicePositionInfo();
-      console.log('[redux/home] [setupHomePage] placeInfoOfDevice =>', placeInfoOfDevice);
-
-      if (!placeInfoOfDevice) {
-        throw new Error('cannot_get_device_location');
-      }
-
-      dispatch(appActionCreators.setCurrentPlaceInfo(placeInfoOfDevice));
-    }
-
-    // fetch store list
-    console.log('[redux/home] [setupHomePage] fetch store list');
-  },
   getStoreList: pageInfo => (dispatch, getState) => {},
 };
 
