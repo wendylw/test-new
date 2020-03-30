@@ -189,13 +189,11 @@ class LocationPicker extends Component {
             onChange={this.onSearchBoxChange}
             value={searchText}
           />
-          <i
+          <IconClose
             className="location-picker__search-box-clear-icon"
             onClick={this.clearSearchBox}
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
-          >
-            <IconClose />
-          </i>
+          />
         </div>
       </div>
     );

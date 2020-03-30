@@ -14,6 +14,14 @@ import { homeActionCreators, getPaginationInfo, getAllCurrentStores } from '../r
 const { ROUTER_PATHS } = Constants;
 
 class Home extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      searchText: '',
+    };
+  }
+
   componentDidMount = async () => {
     const { paginationInfo } = this.props;
     const placeInfo = this.getPlaceInfoFromHistory();
