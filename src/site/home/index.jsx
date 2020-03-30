@@ -27,7 +27,7 @@ class Home extends React.Component {
 
   componentDidMount = async () => {
     const { paginationInfo } = this.props;
-    const placeInfo = this.getPlaceInfoFromHistory();
+    const placeInfo = await getPlaceInfo(this.props);
 
     // if no placeInfo at all
     if (!placeInfo) {
@@ -43,18 +43,6 @@ class Home extends React.Component {
     // fetch storeList here.
     await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
   };
-
-  getPlaceInfoFromHistory() {
-    const { history, location } = this.props;
-    const { state = {} } = location || {};
-    console.log('[Home] history.location.state =', history.location.state);
-
-    if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
-      return state.data.placeInfo;
-    }
-
-    return null;
-  }
 
   debounceSearchStores = debounce(() => {
     const { keyword } = this.state;
@@ -140,7 +128,7 @@ class Home extends React.Component {
                   <li>
                     <h4>{name}</h4>
                     <p>
-                      <span>{(geoDistance || 0).toFixed(2)}km</span>
+                      <span>{(geoDistance || 0).toFixed(2)} km</span>
                       <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
                     </p>
                   </li>
