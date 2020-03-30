@@ -66,7 +66,7 @@ export class OrderDetails extends Component {
     const { order, history, t } = this.props;
     const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
     const { displayDiscount } = loyaltyDiscounts ? loyaltyDiscounts[0] : '';
-    const cashback = -displayDiscount;
+
     return (
       <section className="order-detail">
         <Header
@@ -97,7 +97,7 @@ export class OrderDetails extends Component {
               </li>
               <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={cashback || 0} />
+                <CurrencyNumber className="gray-font-opacity" money={-displayDiscount || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('Tax')}</span>
