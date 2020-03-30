@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
+import InfiniteScroll from 'react-infinite-scroller';
 import { IconSearch } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
@@ -43,6 +44,7 @@ class Home extends React.Component {
 
   render() {
     const { t, currentPlaceInfo } = this.props;
+
     return (
       <main className="entry fixed-wrapper">
         <Banner
@@ -69,6 +71,7 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
+            <InfiniteScroll></InfiniteScroll>
             <StoreList />
           </div>
         </section>

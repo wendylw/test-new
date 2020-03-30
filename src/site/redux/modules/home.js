@@ -10,7 +10,9 @@ const types = {
 
 // @actions
 
-const actions = {};
+const actions = {
+  getStoreList: pageInfo => (dispatch, getState) => {},
+};
 
 // @reducers
 
