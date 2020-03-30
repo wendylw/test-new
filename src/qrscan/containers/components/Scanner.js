@@ -10,7 +10,7 @@ const processQR = qrData =>
   new Promise((resolve, reject) => {
     let data = qrData.trim();
     if (/^https?:/.test(data)) {
-      if (data.includes('beepit.co')) {
+      if (data.includes('beepit.co') || data.includes('beepit.com')) {
         const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
         data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
       }
