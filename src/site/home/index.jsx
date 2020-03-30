@@ -7,6 +7,7 @@ import StoreList from './components/StoreList';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import './index.scss';
 
 class Home extends React.Component {
   componentDidMount = () => {
@@ -40,7 +41,7 @@ class Home extends React.Component {
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
-        <section className="entry-home wrapper">
+        <section className="entry-home fixed-wrapper__container wrapper">
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />

@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import QrcodeDecoder from 'qrcode-decoder';
 import Constants from '../../utils/constants';
 import ShapeImage from '../../images/shape.png';
+import './index.scss';
 
 const { ERROR, SCAN_NOT_SUPPORT } = Constants;
 

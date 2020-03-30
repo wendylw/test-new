@@ -1,0 +1,65 @@
+@import "../Variables.scss";
+
+/* Entry */
+.entry {
+  &__bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 1px solid $gray-3;
+    width: 100%;
+    background-color: $white;
+  }
+
+  &__item {
+    padding: 14px;
+  }
+}
+
+.entry-home {
+  position: relative;
+  top: 66px;
+  padding-top: 116px;
+  padding-bottom: 56px + 66px;
+
+  &__banner {
+    padding-top: 66px;
+    padding-bottom: 66px;
+    color: $white;
+    background: linear-gradient(134.77deg, #ff9419 0%, #ec461e 100%);
+  }
+
+  &__banner-title {
+    padding-top: 50px;
+    margin-bottom: 3.8vw * 2;
+  }
+
+  &__search {
+    padding: 22px 3.8vw;
+  }
+}
+/* end of Entry */
+
+@media (max-width: 374px) {
+  /* Entry */
+  .entry-home {
+    padding-top: 100px;
+  }
+  /* end of Entry */
+}
+
+@media (min-width: 770px) {
+  /* Entry */
+  .entry-home {
+    &__banner-title {
+      margin-bottom: 8px * 4;
+    }
+
+    &__search {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+  /* end of Entry */
+}
