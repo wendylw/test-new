@@ -1,4 +1,4 @@
-import { getAllStores, getStoreList, storesActionCreators } from './entities/stores';
+import { getStoreList, storesActionCreators } from './entities/stores';
 import Url from '../../../utils/url';
 
 import { get } from '../../../utils/request';

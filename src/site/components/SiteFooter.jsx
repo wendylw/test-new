@@ -16,8 +16,6 @@ class SiteFooter extends Component {
   };
 
   render() {
-    console.log('location.pathname =');
-
     return (
       <footer className="entry__bar wrapper">
         <ul className="flex flex-middle flex-space-around">

@@ -19,17 +19,21 @@ const types = {
 
 // @actions
 
+const queryPing = () => ({
+  types: [types.PING_REQUEST, types.PING_SUCCESS, types.PING_FAILURE],
+  requestPromise: get('/api/ping'),
+});
+
 const actions = {
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),
-  ping: () => ({
-    types: [types.PING_REQUEST, types.PING_SUCCESS, types.PING_FAILURE],
-    requestPromise: get('/api/ping').then(response => {
-      console.log('[redux/app] [ping] response =>', response);
-      return response; // <== return value is required to pass into action of types.
-    }),
-  }),
+
+  // Important: this is an example to get response from dispatched requestPromise
+  ping: () => async (dispatch, getState) => {
+    const { response } = await dispatch(queryPing());
+    console.log('[redux/app] [ping] response =>', response);
+  },
   setCurrentPlaceInfo: placeInfo => (dispatch, getState) => {
     if (placeInfo) {
       dispatch({
