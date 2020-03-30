@@ -320,3 +320,9 @@ export const getOnlineStoreInfo = state => {
 };
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageModal = state => state.app.messageModal;
+export const getMerchantCountry = state => {
+  if(state.entities.businesses[state.app.business]) {
+    return state.entities.businesses[state.app.business].country;
+  } 
+  return null;
+};

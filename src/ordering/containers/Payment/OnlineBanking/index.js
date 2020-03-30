@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import {
   actions as paymentActionCreators,
@@ -23,7 +23,7 @@ import {
   getCurrentOrderId,
   getBankList,
 } from '../../../redux/modules/payment';
-
+import { getPaymentName } from '../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -35,7 +35,7 @@ class OnlineBanking extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
     const { agentCode } = this.state;
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -57,29 +57,22 @@ class OnlineBanking extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
     };
   };
 
-  async componentWillMount() {
-    const { homeActions, paymentActions } = this.props;
-
-    paymentActions.fetchBankList();
-    await homeActions.loadShoppingCart();
-  }
-
   componentDidMount() {
-    const { bankingList } = this.props;
-
-    this.initAgentCode(bankingList);
+    this.props.homeActions.loadShoppingCart();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { bankingList } = nextProps;
-
-    if (bankingList && bankingList.length !== (this.props.bankingList || []).length) {
-      this.initAgentCode(bankingList);
+  componentDidUpdate = async (preProps) => {
+    if(preProps.merchantCountry !== this.props.merchantCountry) {
+      const { paymentActions, merchantCountry } = this.props;
+      await paymentActions.fetchBankList(merchantCountry);
+      if(!this.state.agentCode) {
+        this.initAgentCode(this.props.bankingList);
+      }
     }
   }
 
@@ -237,6 +230,7 @@ export default compose(
         currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({

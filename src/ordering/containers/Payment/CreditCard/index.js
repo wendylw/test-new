@@ -15,13 +15,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
 
 import paymentVisaImage from '../../../../images/payment-visa.svg';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
-
+import { getPaymentName } from '../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -63,7 +63,7 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
@@ -89,7 +89,7 @@ class CreditCard extends Component {
       redirectURL,
       webhookURL,
       payActionWay: 1,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
       cardholderName,
       encryptedCardInfo,
       expYearCardInfo,
@@ -540,6 +540,7 @@ export default compose(
         currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({

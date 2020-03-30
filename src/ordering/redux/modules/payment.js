@@ -130,9 +130,9 @@ export const actions = {
     return dispatch(fetchOrder({ orderId }));
   },
 
-  setCurrentPayment: paymentName => ({
+  setCurrentPayment: paymentLabel => ({
     type: types.SET_CURRENT_PAYMENT,
-    paymentName,
+    paymentLabel,
   }),
 
   fetchBraintreeToken: paymentName => ({
@@ -153,10 +153,11 @@ export const actions = {
     type: types.CLEAR_BRAINTREE_TOKEN,
   }),
 
-  fetchBankList: () => ({
+  fetchBankList: (country) => ({
     [API_REQUEST]: {
       types: [types.FETCH_BANKLIST_REQUEST, types.FETCH_BANKLIST_SUCCESS, types.FETCH_BANKLIST_FAILURE],
       ...Url.API_URLS.GET_BANKING_LIST,
+      params: { country }
     },
   }),
 
@@ -201,7 +202,7 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case types.SET_CURRENT_PAYMENT:
-      return { ...state, currentPayment: action.paymentName };
+      return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
       const { orders, redirectUrl } = data || {};
       const [order] = orders;
