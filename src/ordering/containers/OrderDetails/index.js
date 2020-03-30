@@ -65,7 +65,8 @@ export class OrderDetails extends Component {
   render() {
     const { order, history, t } = this.props;
     const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
-    const { displayDiscount } = loyaltyDiscounts ? loyaltyDiscounts[0] : '';
+
+    const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
       <section className="order-detail">
