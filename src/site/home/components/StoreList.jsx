@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
 import { IconMotorcycle } from '../../../components/Icons';
 import Image from '../../../components/Image';
@@ -21,7 +22,13 @@ class StoreList extends Component {
     };
 
     return (
-      <ul className="store-card-list">
+      <InfiniteScroll
+        className="store-card-list"
+        element="ul"
+        loader={<div className="loader theme"></div>}
+        hasMore={false}
+        loadMore={() => {}}
+      >
         {storeList.map(store => {
           const { name, shippingFee, minimumConsumption, isOnline, isValidTime, distance } = store || {};
           const currentStoreStatus = storeStatus[isValidTime ? 'open' : 'close'];
@@ -51,7 +58,7 @@ class StoreList extends Component {
             </li>
           );
         })}
-      </ul>
+      </InfiniteScroll>
     );
   }
 }

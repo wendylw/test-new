@@ -1,6 +1,5 @@
 import React from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import InfiniteScroll from 'react-infinite-scroller';
 import { IconSearch } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
@@ -22,7 +21,7 @@ class Home extends React.Component {
       await this.props.homeActions.setupCurrentLocation(placeInfo);
     } catch (e) {
       console.warn('[home] failed to locate user by device');
-      return this.gotoLocationPage();
+      // return this.gotoLocationPage();
     }
 
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
@@ -84,7 +83,6 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            <InfiniteScroll></InfiniteScroll>
             <StoreList />
           </div>
         </section>
