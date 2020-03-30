@@ -41,6 +41,38 @@
 }
 /* end of Entry */
 
+/* Store Card List */
+.store-card-list {
+  margin-top: -12px 0;
+
+  .tag__card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: $white;
+  }
+
+  &__container {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    background-color: $white;
+  }
+
+  &__item {
+    position: relative;
+    margin: 24px 0;
+  }
+
+  &__image {
+    height: 19vh;
+  }
+
+  &__title {
+    margin: 0 4px;
+  }
+}
+/* end of Store Card List */
+
 @media (max-width: 374px) {
   /* Entry */
   .entry-home {
