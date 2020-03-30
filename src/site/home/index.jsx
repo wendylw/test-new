@@ -9,12 +9,13 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
-import { homeActionCreators } from '../redux/modules/home';
+import { homeActionCreators, getPageInfo } from '../redux/modules/home';
 
 const { ROUTER_PATHS } = Constants;
 
 class Home extends React.Component {
   componentDidMount = async () => {
+    const { pageInfo } = this.props;
     const placeInfo = this.getPlaceInfoFromHistory();
 
     try {
@@ -27,6 +28,7 @@ class Home extends React.Component {
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 
     // fetch storeList here.
+    await this.props.homeActions.getStoreList({ ...placeInfo, ...pageInfo });
   };
 
   getPlaceInfoFromHistory() {
@@ -96,6 +98,7 @@ export default compose(
   connect(
     state => ({
       currentPlaceInfo: getCurrentPlaceInfo(state),
+      pageInfo: getPageInfo(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

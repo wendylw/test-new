@@ -1,7 +1,14 @@
 import { getDevicePositionInfo } from '../../../utils/geoUtils';
 import { appActionCreators, getCurrentPlaceInfo } from './app';
+import Url from '../../../utils/url';
+
+import { API_REQUEST } from '../../../redux/middlewares/api';
 
 const initialState = {
+  pageInfo: {
+    page: 0,
+    pageSize: 5,
+  },
   storeIds: [],
 };
 
@@ -11,8 +18,15 @@ const types = {
   GET_STORE_LIST_FAILURE: 'SITE/HOME/GET_STORE_LIST_FAILURE',
 };
 
-// @actions
+const ajaxRequestBusiness = ({ lat, lng, page, pageSize }) => ({
+  [API_REQUEST]: {
+    types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+    ...Url.API_URLS.GET_STORE_LIST,
+    params: { lat, lng, page, pageSize },
+  },
+});
 
+// @actions
 const actions = {
   setupCurrentLocation: placeInfo => async (dispatch, getState) => {
     // home page provides a placeInfo, which mostly comes from browser history
@@ -30,11 +44,11 @@ const actions = {
 
       dispatch(appActionCreators.setCurrentPlaceInfo(placeInfoOfDevice));
     }
-
-    // fetch store list
-    console.log('[redux/home] [setupHomePage] fetch store list');
   },
-  getStoreList: pageInfo => (dispatch, getState) => {},
+
+  getStoreList: ({ coords, page, pageSize }) => (dispatch, getState) => {
+    dispatch(ajaxRequestBusiness({ ...coords, page, pageSize }));
+  },
 };
 
 // @reducers
@@ -45,3 +59,4 @@ export const homeActionCreators = actions;
 export default reducer;
 
 // @selectors
+export const getPageInfo = state => getPlaceById(state, state.home.pageInfo);
