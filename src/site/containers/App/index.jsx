@@ -1,33 +1,31 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import SiteFakeHeader from '../../components/SiteFakeHeader';
 import ErrorToast from '../../../components/ErrorToast';
 import Routes from '../../Routes';
 import SiteFooter from '../../components/SiteFooter';
 import { appActionCreators, getError } from '../../redux/modules/app';
 
-const SiteApp = ({ error, appActions }) => {
-  const { pathname } = window.location || {};
-  const isErrorPage = /^\/error/.test(pathname || '');
-  let initialized = false;
+class SiteApp extends React.Component {
+  componentDidMount = async () => {
+    await this.props.appActions.ping();
+  };
 
-  useEffect(() => {
-    if (!initialized) {
-      initialized = true;
-      appActions.initCurrentLocation();
-    }
-  });
+  render() {
+    const { error, appActions } = this.props;
+    const { pathname } = window.location || {};
+    const isErrorPage = /^\/error/.test(pathname || '');
 
-  return (
-    <React.Fragment>
-      {error ? <ErrorToast message={error} clearError={appActions.clearError} /> : null}
-      {/* <SiteFakeHeader /> */}
-      <Routes />
-      {isErrorPage ? null : <SiteFooter />}
-    </React.Fragment>
-  );
-};
+    return (
+      <React.Fragment>
+        {error ? <ErrorToast message={error} clearError={appActions.clearError} /> : null}
+        {/* <SiteFakeHeader /> */}
+        <Routes />
+        {isErrorPage ? null : <SiteFooter />}
+      </React.Fragment>
+    );
+  }
+}
 
 export default compose(
   connect(

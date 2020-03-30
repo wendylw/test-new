@@ -1,13 +1,20 @@
 import { getPlaceById, placesActionCreators } from './entities/places';
+import { get } from '../../../utils/request';
 
 const initialState = {
   error: '',
   currentPlaceId: '',
+  user: {
+    isLogin: false,
+  },
 };
 
 const types = {
   CLEAR_ERROR: 'SITE/APP/CLEAR_ERROR',
   SET_CURRENT_PLACE_INFO: 'SITE/APP/SET_CURRENT_PLACE_INFO',
+  PING_REQUEST: 'SITE/APP/PING_REQUEST',
+  PING_SUCCESS: 'SITE/APP/PING_SUCCESS',
+  PING_FAILURE: 'SITE/APP/PING_FAILURE',
 };
 
 // @actions
@@ -16,13 +23,15 @@ const actions = {
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),
-  initCurrentLocation: () => (dispatch, getState) => {
-    // todo: can fetch address from sessionStorage here.
-    dispatch(actions.setCurrentPlaceInfo(null));
-  },
+  ping: () => ({
+    types: [types.PING_REQUEST, types.PING_SUCCESS, types.PING_FAILURE],
+    requestPromise: get('/api/ping').then(response => {
+      console.log('[redux/app] [ping] response =>', response);
+      return response; // <== return value is required to pass into action of types.
+    }),
+  }),
   setCurrentPlaceInfo: placeInfo => (dispatch, getState) => {
     if (placeInfo) {
-      // todo: can save address into sessionStorage here.
       dispatch({
         type: types.SET_CURRENT_PLACE_INFO,
         placeId: placeInfo.placeId,
@@ -35,12 +44,23 @@ const actions = {
 
 // @reducers
 
+const userReducer = (state = initialState.user, action) => {
+  switch (action.type) {
+    case types.PING_SUCCESS:
+      return { ...state, isLogin: action.response.login };
+    default:
+      return state;
+  }
+};
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.CLEAR_ERROR:
       return { ...state, error: null };
     case types.SET_CURRENT_PLACE_INFO:
       return { ...state, currentPlaceId: action.placeId };
+    case types.PING_SUCCESS:
+      return { ...state, user: userReducer(state.user, action) };
     default:
       if (action.error) {
         return { ...state, error: action.error };
