@@ -100,7 +100,7 @@ body {
 }
 
 .text-omit {
-  display: -webkit-box;
+  display: inline-block;
   text-transform: none;
   overflow: hidden;
   text-overflow: ellipsis;
