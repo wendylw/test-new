@@ -10,26 +10,37 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
+import { homeActionCreators } from '../redux/modules/home';
 
 const { ROUTER_PATHS } = Constants;
 
 class Home extends React.Component {
-  componentDidMount = () => {
-    this.setCurrentPlaceInfoRequest();
-    this.getStoreListRequest();
+  componentDidMount = async () => {
+    const placeInfo = this.getPlaceInfoFromHistory();
+
+    try {
+      await this.props.homeActions.setupCurrentLocation(placeInfo);
+    } catch (e) {
+      console.warn('[home] failed to locate user by device');
+      return this.gotoLocationPage();
+    }
+
+    console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
+
+    // fetch storeList here.
   };
 
-  setCurrentPlaceInfoRequest() {
-    const { history, location, appActions } = this.props;
-
-    console.log('[Home] history.location.state =', history.location.state);
+  getPlaceInfoFromHistory() {
+    const { history, location } = this.props;
     const { state = {} } = location || {};
-    if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
-      appActions.setCurrentPlaceInfo(state.data.placeInfo);
-    }
-  }
+    console.log('[Home] history.location.state =', history.location.state);
 
-  getStoreListRequest() {}
+    if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
+      return state.data.placeInfo;
+    }
+
+    return null;
+  }
 
   gotoLocationPage = () => {
     const { history, location } = this.props;
@@ -88,6 +99,7 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(Home);
