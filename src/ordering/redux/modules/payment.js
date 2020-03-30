@@ -61,10 +61,8 @@ export const actions = {
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = await fetchDeliveryDetails();
-    const contactDetail = {
-      phone: deliveryDetails.phone,
-      name: deliveryDetails.username,
-    };
+    const { phone, username: name } = deliveryDetails || {};
+    const contactDetail = { phone, name };
     let variables = {
       business,
       storeId,
