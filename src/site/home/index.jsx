@@ -13,7 +13,6 @@ class Home extends React.Component {
     const { history, location, appActions } = this.props;
 
     console.log('[Home] history.location.state =', history.location.state);
-    console.log('Home page');
     const { state = {} } = location || {};
     if (state.from && state.from.pathname === '/ordering/location') {
       appActions.setCurrentPlaceInfo(state.data.placeInfo);
