@@ -114,7 +114,13 @@
         }
       })();
     </script>
+
+    <!-- to use sync way to load for development, because react components loads faster than it in memory -->
+    <% if (process.env.NODE_ENV === 'production') { %>
     <script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places&key=AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c&ver=3.exp" promise async></script>
+    <% } else { %>
+    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places&key=AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c&ver=3.exp"></script>
+    <% } %>
   </body>
 
 </html>
