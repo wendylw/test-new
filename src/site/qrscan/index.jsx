@@ -26,6 +26,10 @@ const processQR = qrData =>
   });
 
 class QRScan extends Component {
+  componentDidMount() {
+    this.getCamera();
+  }
+
   gotoNotSupport() {
     if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
       this.props.history.push({
