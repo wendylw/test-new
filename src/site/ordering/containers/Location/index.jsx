@@ -3,29 +3,44 @@ import LocationPicker, {
   setHistoricalDeliveryAddresses,
   tryGetDeviceCoordinates,
 } from '../../../../components/LocationPicker';
+import Header from '../../../../components/Header';
+import { withTranslation } from 'react-i18next';
 
-export default class Location extends React.Component {
+class Location extends React.Component {
   state = {
     origin: null,
     status: 'fetch_location',
   };
 
   componentDidMount = async () => {
-    try {
-      const position = await tryGetDeviceCoordinates();
+    const { state = {} } = this.props.location;
+    const { coords } = state;
+
+    console.log('[Location] location.state =', this.props.location.state);
+
+    if (coords && coords.lng && coords.lat) {
       this.setState({
-        origin: {
-          lng: position.coords.longitude,
-          lat: position.coords.latitude,
-        },
+        origin: coords,
       });
-      console.log('[Location] position =', position);
-    } catch (e) {
-      console.warn('[Location] fetch_location_failed');
-      this.setState({
-        status: 'fetch_location_failed',
-      });
-      throw e;
+    } else {
+      // this case is only happens when page is airdrop
+      try {
+        console.warn('[Location] this page is airdrop');
+        const position = await tryGetDeviceCoordinates();
+        this.setState({
+          origin: {
+            lng: position.coords.longitude,
+            lat: position.coords.latitude,
+          },
+        });
+        console.log('[Location] position =', position);
+      } catch (e) {
+        console.warn('[Location] fetch_location_failed');
+        this.setState({
+          status: 'fetch_location_failed',
+        });
+        throw e;
+      }
     }
   };
 
@@ -46,10 +61,26 @@ export default class Location extends React.Component {
   };
 
   render() {
+    const { t } = this.props;
+
     if (this.state.status !== 'fetch_location_failed' && !this.state.origin) {
-      return 'loading..';
+      return <div>loading..</div>;
     }
 
-    return <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />;
+    return (
+      <div>
+        <Header
+          className="has-right flex-middle"
+          isPage={true}
+          title={t('DeliverTo')}
+          navFunc={() => {
+            alert('nav back');
+          }}
+        />
+        <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
+      </div>
+    );
   }
 }
+
+export default withTranslation(['OrderingDelivery'])(Location);

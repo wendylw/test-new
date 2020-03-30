@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroller';
 import { IconSearch } from '../../components/Icons';
@@ -43,12 +43,14 @@ class Home extends React.Component {
   }
 
   gotoLocationPage = () => {
-    const { history, location } = this.props;
+    const { history, location, currentPlaceInfo } = this.props;
+    const coords = currentPlaceInfo && currentPlaceInfo.coords;
 
     history.push({
       pathname: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`,
       state: {
         from: location,
+        coords,
       },
     });
   };
