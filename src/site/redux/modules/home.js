@@ -1,4 +1,4 @@
-import { getAllStores, storesActionCreators } from './entities/stores';
+import { getAllStores, getStoreList, storesActionCreators } from './entities/stores';
 import Url from '../../../utils/url';
 
 import { get } from '../../../utils/request';
@@ -25,12 +25,19 @@ const types = {
   GET_SEARCHING_STORE_LIST_FAILURE: 'SITE/HOME/GET_SEARCHING_STORE_LIST_FAILURE',
 };
 
-const fetchStoreList = ({ coords, page, pageSize }) => ({
-  types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
-  requestPromise: get(
-    `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
-  ),
-});
+const fetchStoreList = ({ coords, page, pageSize }) => (dispatch, getState) => {
+  return dispatch({
+    types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+    requestPromise: get(
+      `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
+    ).then(async response => {
+      if (response && response.stores) {
+        await dispatch(storesActionCreators.saveStores(response.stores));
+      }
+      return response;
+    }),
+  });
+};
 
 const fetchSearchingStoreList = ({ coords, keyword, top }) => ({
   types: [
@@ -46,9 +53,7 @@ const fetchSearchingStoreList = ({ coords, keyword, top }) => ({
 // @actions
 const actions = {
   getStoreList: ({ coords, page, pageSize }) => async (dispatch, getState) => {
-    const result = await dispatch(fetchStoreList({ coords, page, pageSize }));
-    console.log(result.response);
-    return await dispatch(storesActionCreators.saveStores(result.response.stores));
+    return await dispatch(fetchStoreList({ coords, page, pageSize }));
   },
 
   getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
@@ -57,22 +62,47 @@ const actions = {
 };
 
 // @reducers
+const storeIdsReducer = (state, action) => {
+  if (action.type === types.GET_STORE_LIST_SUCCESS) {
+    const { response } = action;
+    return { ...state, storeIds: state.storeIds.concat((response.stores || []).map(store => store.id)) };
+  }
+
+  return state;
+};
+
+const paginationInfoReducer = (state, action) => {
+  switch (action.type) {
+    case types.GET_STORE_LIST_SUCCESS:
+      const { stores } = action.response;
+      const { page, pageSize } = state.paginationInfo;
+
+      if (!stores || !stores.length) {
+        return { ...state, hasMore: false, page, pageSize };
+      }
+
+      return {
+        ...state,
+        page: page + 1,
+        pageSize,
+      };
+    case types.GET_STORE_LIST_FAILURE:
+      return { ...state, hasMore: false };
+    default:
+      return state;
+  }
+};
+
 const reducer = (state = initialState, action) => {
   const { response } = action;
 
   switch (action.type) {
     case types.GET_STORE_LIST_SUCCESS:
-      const { stores } = response;
-      const { page, pageSize } = state.paginationInfo;
-
-      if (!stores || !stores.length) {
-        return { ...state, paginationInfo: { hasMore: false, page, pageSize } };
-      }
-
+    case types.GET_STORE_LIST_FAILURE:
       return {
         ...state,
-        storeIds: state.storeIds.concat((stores || []).map(store => store.id)),
-        paginationInfo: { page: page + 1, pageSize },
+        storeIds: storeIdsReducer(state.storeIds, action),
+        paginationInfo: paginationInfoReducer(state.paginationInfo, action),
       };
     case types.GET_SEARCHING_STORE_LIST_SUCCESS:
       const { stores: searchingStoreList } = response;
@@ -92,4 +122,4 @@ export default reducer;
 // @selectors
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getSearchingStores = state => state.home.searchingStoreList;
-export const getAllCurrentStores = state => getAllStores(state);
+export const getAllCurrentStores = state => getStoreList(state);

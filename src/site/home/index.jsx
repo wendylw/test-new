@@ -79,6 +79,11 @@ class Home extends React.Component {
   handleLoadMoreStores = () => {
     const { currentPlaceInfo, paginationInfo } = this.props;
 
+    if (!currentPlaceInfo || !paginationInfo) {
+      console.warn(new Error('currentPlaceInfo is not ready'));
+      return;
+    }
+
     // fetch storeList here.
     this.props.homeActions.getStoreList({ ...currentPlaceInfo, ...paginationInfo });
   };

@@ -21,24 +21,24 @@ class StoreList extends Component {
       },
     };
 
+    console.log('[StoreList] hasMore =', hasMore, 'stores =', stores);
+
     return (
       <InfiniteScroll
         className="store-card-list"
         element="ul"
-        loader={<div className="loader theme"></div>}
+        loader={<div key={'loading-0'} className="loader theme"></div>}
         hasMore={hasMore}
         loadMore={() => {
-          if (hasMore) {
-            loadMoreStores();
-          }
+          if (hasMore) loadMoreStores();
         }}
       >
         {stores.map(store => {
-          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance } = store || {};
+          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id } = store || {};
           const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
-            <li className="store-card-list__item card">
+            <li key={id} className="store-card-list__item card">
               <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
               <Image className="store-card-list__image card__image" src={avatar} alt="" />
               <summary className="padding-small">
@@ -75,7 +75,6 @@ StoreList.propTypes = {
 
 StoreList.defaultProps = {
   stores: [],
-  hasMore: true,
   loadMoreStores: () => {},
 };
 

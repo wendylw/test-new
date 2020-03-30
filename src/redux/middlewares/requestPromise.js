@@ -34,6 +34,6 @@ export default store => next => action => {
     })
     .catch(error => {
       console.error(error);
-      return next({ ...other, type: failureType, error });
+      return next({ ...other, type: failureType, error: error.message || error });
     });
 };

@@ -1,7 +1,7 @@
 const initialState = {};
 
 /* StoreList Define =>
-type store = { 
+type store = {
     id: string
     name: string
     avatar: string
@@ -48,3 +48,4 @@ export const storesActionCreators = actions;
 export default reducer;
 
 export const getAllStores = state => state.entities.stores;
+export const getStoreList = state => Object.values(getAllStores(state));
