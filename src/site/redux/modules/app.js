@@ -6,8 +6,8 @@ const initialState = {
 };
 
 const types = {
-  CLEAR_ERROR: 'site/app/CLEAR_ERROR',
-  SET_CURRENT_PLACE_INFO: 'site/app/SET_CURRENT_PLACE_INFO',
+  CLEAR_ERROR: 'SITE/APP/CLEAR_ERROR',
+  SET_CURRENT_PLACE_INFO: 'SITE/APP/SET_CURRENT_PLACE_INFO',
 };
 
 // @actions
