@@ -1,7 +1,7 @@
 const initialState = {};
 
 /* StoreList Define =>
-type stores = { 
+type store = { 
     id: string
     name: string
     avatar: string

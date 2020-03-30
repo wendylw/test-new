@@ -1,6 +1,7 @@
 import React from 'react';
+import { debounce } from 'lodash';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconSearch } from '../../components/Icons';
+import { IconSearch, IconClose } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
@@ -9,16 +10,17 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
-import { homeActionCreators, getPaginationInfo, getAllCurrentStores } from '../redux/modules/home';
+import { homeActionCreators, getPaginationInfo, getSearchingStores, getAllCurrentStores } from '../redux/modules/home';
+import Utils from '../../utils/utils';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, ADDRESS_RANGE } = Constants;
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      searchText: '',
+      keyword: '',
     };
   }
 
@@ -51,6 +53,13 @@ class Home extends React.Component {
     return null;
   }
 
+  debounceSearchStores = debounce(() => {
+    const { keyword } = this.state;
+    const { currentPlaceInfo } = this.props;
+
+    this.props.homeActions.getSearchingStoreList({ keyword, ...currentPlaceInfo });
+  }, 700);
+
   gotoLocationPage = () => {
     const { history, location, currentPlaceInfo } = this.props;
     const coords = currentPlaceInfo && currentPlaceInfo.coords;
@@ -64,6 +73,18 @@ class Home extends React.Component {
     });
   };
 
+  handleSearchTextChange = event => {
+    const keyword = event.currentTarget.value;
+
+    this.setState({ keyword }, () => {
+      this.debounceSearchStores();
+    });
+  };
+
+  handleClearSearchText = () => {
+    this.setState({ keyword: '' });
+  };
+
   handleLoadMoreStores = () => {
     const { currentPlaceInfo, paginationInfo } = this.props;
 
@@ -72,7 +93,8 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, paginationInfo, stores } = this.props;
+    const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
+    const { keyword } = this.state;
     const { hasMore } = paginationInfo;
 
     return (
@@ -95,8 +117,33 @@ class Home extends React.Component {
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />
-              <input className="form__input" type="text" placeholder={t('SearchRestaurantPlaceholder')} />
+              <input
+                className="form__input"
+                type="search"
+                placeholder={t('SearchRestaurantPlaceholder')}
+                onChange={this.handleSearchTextChange}
+              />
+              <IconClose
+                className="icon icon__smaller icon__gray"
+                onClick={this.handleClearSearchText}
+                style={{ visibility: keyword ? 'visible' : 'hidden' }}
+              />
             </div>
+            <ul>
+              {searchingStores.map(store => {
+                const { name, geoDistance } = store;
+
+                return (
+                  <li>
+                    <h4>{name}</h4>
+                    <p>
+                      <span>{(geoDistance || 0).toFixed(2)}km</span>
+                      <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
           <div className="store-card-list__container padding-normal">
@@ -116,6 +163,7 @@ export default compose(
       currentPlaceInfo: getCurrentPlaceInfo(state),
       paginationInfo: getPaginationInfo(state),
       stores: getAllCurrentStores(state),
+      searchingStores: getSearchingStores(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
