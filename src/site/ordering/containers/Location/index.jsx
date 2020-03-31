@@ -76,7 +76,7 @@ class Location extends React.Component {
     }
 
     return (
-      <div>
+      <main className="fixed-wrapper">
         <Header
           className="has-right flex-middle"
           isPage={true}
@@ -84,7 +84,7 @@ class Location extends React.Component {
           navFunc={this.handleBackClicked}
         />
         <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
-      </div>
+      </main>
     );
   }
 }

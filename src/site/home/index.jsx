@@ -1,6 +1,7 @@
 import React from 'react';
+import { debounce } from 'lodash';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconSearch } from '../../components/Icons';
+import { IconSearch, IconClose } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
@@ -9,13 +10,23 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
-import { homeActionCreators } from '../redux/modules/home';
+import { homeActionCreators, getPaginationInfo, getSearchingStores, getAllCurrentStores } from '../redux/modules/home';
 import { getPlaceInfo, savePlaceInfo } from './utils';
+import Utils from '../../utils/utils';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, ADDRESS_RANGE } = Constants;
 
 class Home extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      keyword: '',
+    };
+  }
+
   componentDidMount = async () => {
+    const { paginationInfo } = this.props;
     const placeInfo = await getPlaceInfo(this.props);
 
     // if no placeInfo at all
@@ -30,8 +41,15 @@ class Home extends React.Component {
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 
     // fetch storeList here.
-    await this.props.homeActions.getStoreList({ ...placeInfo, ...pageInfo });
+    await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
   };
+
+  debounceSearchStores = debounce(() => {
+    const { keyword } = this.state;
+    const { currentPlaceInfo } = this.props;
+
+    this.props.homeActions.getSearchingStoreList({ keyword, ...currentPlaceInfo });
+  }, 700);
 
   gotoLocationPage = () => {
     const { history, location, currentPlaceInfo } = this.props;
@@ -46,8 +64,34 @@ class Home extends React.Component {
     });
   };
 
+  handleSearchTextChange = event => {
+    const keyword = event.currentTarget.value;
+
+    this.setState({ keyword }, () => {
+      this.debounceSearchStores();
+    });
+  };
+
+  handleClearSearchText = () => {
+    this.setState({ keyword: '' });
+  };
+
+  handleLoadMoreStores = () => {
+    const { currentPlaceInfo, paginationInfo } = this.props;
+
+    if (!currentPlaceInfo || !paginationInfo) {
+      console.warn(new Error('currentPlaceInfo is not ready'));
+      return;
+    }
+
+    // fetch storeList here.
+    this.props.homeActions.getStoreList({ ...currentPlaceInfo, ...paginationInfo });
+  };
+
   render() {
-    const { t, currentPlaceInfo } = this.props;
+    const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
+    const { keyword } = this.state;
+    const { hasMore } = paginationInfo;
 
     return (
       <main className="entry fixed-wrapper">
@@ -69,13 +113,38 @@ class Home extends React.Component {
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />
-              <input className="form__input" type="text" placeholder={t('SearchRestaurantPlaceholder')} />
+              <input
+                className="form__input"
+                type="search"
+                placeholder={t('SearchRestaurantPlaceholder')}
+                onChange={this.handleSearchTextChange}
+              />
+              <IconClose
+                className="icon icon__smaller icon__gray"
+                onClick={this.handleClearSearchText}
+                style={{ visibility: keyword ? 'visible' : 'hidden' }}
+              />
             </div>
+            <ul>
+              {searchingStores.map(store => {
+                const { name, geoDistance } = store;
+
+                return (
+                  <li>
+                    <h4>{name}</h4>
+                    <p>
+                      <span>{(geoDistance || 0).toFixed(2)} km</span>
+                      <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            <StoreList />
+            <StoreList stores={stores} hasMore={hasMore} loadMoreStores={this.handleLoadMoreStores} />
           </div>
         </section>
       </main>
@@ -88,7 +157,9 @@ export default compose(
   connect(
     state => ({
       currentPlaceInfo: getCurrentPlaceInfo(state),
-      pageInfo: getPageInfo(state),
+      paginationInfo: getPaginationInfo(state),
+      stores: getAllCurrentStores(state),
+      searchingStores: getSearchingStores(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
