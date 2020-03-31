@@ -36,7 +36,7 @@ class Home extends React.Component {
 
     // placeInfo ok
     await savePlaceInfo(placeInfo); // now save into localStorage
-    this.props.appActions.setCurrentPlaceInfo(placeInfo);
+    await this.props.appActions.setCurrentPlaceInfo(placeInfo);
 
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 

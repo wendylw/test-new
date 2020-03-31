@@ -29,7 +29,7 @@ const fetchStoreList = ({ coords, page, pageSize }) => (dispatch, getState) => {
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
     requestPromise: get(
-      `${Url.API_URLS.GET_STORE_LIST}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
+      `${Url.API_URLS.GET_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
     ).then(async response => {
       if (response && response.stores) {
         await dispatch(storesActionCreators.saveStores(response.stores));
@@ -46,7 +46,7 @@ const fetchSearchingStoreList = ({ coords, keyword, top }) => ({
     types.GET_SEARCHING_STORE_LIST_FAILURE,
   ],
   requestPromise: get(
-    `${Url.API_URLS.GET_SEARCHING_STORE_LIST}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&top=${top}`
+    `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&top=${top}`
   ),
 });
 
