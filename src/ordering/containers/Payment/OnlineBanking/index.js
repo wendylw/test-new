@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import qs from 'qs';
+import _find from 'lodash/find';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
@@ -63,23 +64,37 @@ class OnlineBanking extends Component {
   };
 
   componentDidMount() {
+    this.updateBankList();
     this.props.homeActions.loadShoppingCart();
   }
 
-  componentDidUpdate = async (preProps) => {
-    if(preProps.merchantCountry !== this.props.merchantCountry) {
-      const { paymentActions, merchantCountry } = this.props;
+  updateBankList = async () => {
+    const { paymentActions, merchantCountry } = this.props;
+
+    if (merchantCountry) {
       await paymentActions.fetchBankList(merchantCountry);
-      if(!this.state.agentCode) {
+
+      const findBank = _find(this.props.bankingList, { agentCode: this.state.agentCode });
+      if (!findBank) {
         this.initAgentCode(this.props.bankingList);
       }
     }
-  }
+  };
+
+  componentDidUpdate = async preProps => {
+    if (preProps.merchantCountry !== this.props.merchantCountry) {
+      this.updateBankList();
+    }
+  };
 
   initAgentCode(bankingList) {
     if (bankingList && bankingList.length) {
       this.setState({
         agentCode: bankingList[0].agentCode,
+      });
+    } else {
+      this.setState({
+        agentCode: null,
       });
     }
   }
