@@ -31,7 +31,7 @@ class Home extends React.Component {
 
     // if no placeInfo at all
     if (!placeInfo) {
-      // return this.gotoLocationPage();
+      return this.gotoLocationPage();
     }
 
     // placeInfo ok
@@ -41,7 +41,7 @@ class Home extends React.Component {
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 
     // fetch storeList here.
-    // await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
+    await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
   };
 
   debounceSearchStores = debounce(() => {
