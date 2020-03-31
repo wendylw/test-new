@@ -13,6 +13,7 @@ import Constants from '../../utils/constants';
 import { homeActionCreators, getPaginationInfo, getSearchingStores, getAllCurrentStores } from '../redux/modules/home';
 import { getPlaceInfo, savePlaceInfo } from './utils';
 import Utils from '../../utils/utils';
+import config from '../../config';
 
 const { ROUTER_PATHS, ADDRESS_RANGE } = Constants;
 
@@ -88,6 +89,13 @@ class Home extends React.Component {
     this.props.homeActions.getStoreList({ ...currentPlaceInfo, ...paginationInfo });
   };
 
+  handleStoreSelected = store => {
+    const storeUrl = `${config.beepOnlineStoreUrl(store.business)}?storeId=${store.id}`;
+    console.log('[Home] handleStoreSelected store =', store);
+    console.warn('[Home] handleStoreSelected redirect to storeUrl =', storeUrl);
+    window.location.href = storeUrl;
+  };
+
   render() {
     const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
     const { keyword } = this.state;
@@ -146,7 +154,12 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            <StoreList stores={stores} hasMore={hasMore} loadMoreStores={this.handleLoadMoreStores} />
+            <StoreList
+              stores={stores}
+              hasMore={hasMore}
+              loadMoreStores={this.handleLoadMoreStores}
+              onSelect={this.handleStoreSelected}
+            />
           </div>
         </section>
       </main>
