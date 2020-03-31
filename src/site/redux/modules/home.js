@@ -65,6 +65,7 @@ const actions = {
 const storeIdsReducer = (state, action) => {
   if (action.type === types.GET_STORE_LIST_SUCCESS) {
     const { response } = action;
+    if (!response.stores || !response.stores.length) return state;
     return [...state.concat((response.stores || []).map(store => store.id))];
   }
 
