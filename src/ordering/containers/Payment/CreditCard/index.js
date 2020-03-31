@@ -17,7 +17,7 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 
 import paymentVisaImage from '../../../../images/payment-visa.svg';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
@@ -63,7 +63,8 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
+    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
@@ -537,7 +538,6 @@ export default compose(
       return {
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
