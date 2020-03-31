@@ -27,16 +27,15 @@ class StoreList extends Component {
 
     console.log('[StoreList] hasMore =', hasMore, 'stores =', stores);
 
+    // todo: scroll parent may need to specify
     return (
       <InfiniteScroll
         className="store-card-list"
         element="ul"
+        pageStart={-1} // to count from page0, page1, ...
         loader={<div key={'loading-0'} className="loader theme"></div>}
         hasMore={hasMore}
-        loadMore={() => {
-          if (hasMore) loadMoreStores();
-        }}
-        initialLoad={false /* to make client component to load the data for first time, this has bug to load now */}
+        loadMore={page => loadMoreStores(page)}
       >
         {stores.map(store => {
           const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id } = store || {};

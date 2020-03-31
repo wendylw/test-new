@@ -2,10 +2,11 @@ import { getStoreList, storesActionCreators } from './entities/stores';
 import Url from '../../../utils/url';
 
 import { get } from '../../../utils/request';
+import { getCurrentPlaceInfo } from './app';
 
 const initialState = {
   paginationInfo: {
-    page: 0,
+    page: 0, // <InfiniteScroll /> handles the page number
     pageSize: 5,
     hasMore: true,
   },
@@ -25,7 +26,10 @@ const types = {
   GET_SEARCHING_STORE_LIST_FAILURE: 'SITE/HOME/GET_SEARCHING_STORE_LIST_FAILURE',
 };
 
-const fetchStoreList = ({ coords, page, pageSize }) => (dispatch, getState) => {
+const fetchStoreList = page => (dispatch, getState) => {
+  const { coords } = getCurrentPlaceInfo(getState()) || {};
+  const { pageSize } = getPaginationInfo(getState());
+
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
     requestPromise: get(
@@ -55,8 +59,8 @@ const fetchSearchingStoreList = ({ coords, keyword, top }) => ({
 
 // @actions
 const actions = {
-  getStoreList: ({ coords, page, pageSize }) => async (dispatch, getState) => {
-    return await dispatch(fetchStoreList({ coords, page, pageSize }));
+  getStoreList: page => (dispatch, getState) => {
+    return dispatch(fetchStoreList(page));
   },
 
   getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
@@ -78,18 +82,17 @@ const storeIdsReducer = (state, action) => {
 const paginationInfoReducer = (state, action) => {
   switch (action.type) {
     case types.GET_STORE_LIST_SUCCESS:
-      const { stores } = action.response;
-      const { page, pageSize } = state;
+      const { stores } = action.response || {};
 
       if (!stores || !stores.length) {
-        return { ...state, hasMore: false, page, pageSize };
+        return { ...state, hasMore: false };
       }
 
-      return {
-        ...state,
-        page: page + 1,
-        pageSize,
-      };
+      if (state.pageSize > stores.length) {
+        return { ...state, hasMore: false };
+      }
+
+      return state;
     case types.GET_STORE_LIST_FAILURE:
       return { ...state, hasMore: false };
     default:
