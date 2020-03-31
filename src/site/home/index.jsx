@@ -92,22 +92,6 @@ class Home extends React.Component {
     const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
     const { keyword } = this.state;
     const { hasMore } = paginationInfo;
-    const searchingStoresTEMP = [
-      {
-        id: '11111',
-        name: '11111',
-        avatar: '11111',
-        street1: '11111',
-        street2: '11111',
-        city: 'KYM',
-        state: '',
-        country: 'MY',
-        deliveryFee: 0,
-        minimumConsumption: 0,
-        geoDistance: 5,
-        isOpen: true,
-      },
-    ];
 
     return (
       <main className="entry fixed-wrapper">
@@ -141,21 +125,23 @@ class Home extends React.Component {
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />
             </div>
-            <ul className="">
-              {searchingStoresTEMP.map(store => {
-                const { name, geoDistance } = store;
+            {!searchingStores || !searchingStores.length ? null : (
+              <ul className="searching-list border__bottom-divider border-radius-base base-box-shadow">
+                {searchingStores.map(store => {
+                  const { name, geoDistance } = store;
 
-                return (
-                  <li>
-                    <h3 className="text-size-big text-weight-bold">{name}</h3>
-                    <p className="flex flex-middle text-opacity">
-                      <span>{(geoDistance || 0).toFixed(2)} km . </span>
-                      <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
+                  return (
+                    <li className="searching-list__item border__bottom-divider">
+                      <h3 className="searching-list__name text-size-big text-weight-bold">{name}</h3>
+                      <p className="searching-list__location flex flex-middle text-opacity">
+                        <span>{(geoDistance || 0).toFixed(2)} km . </span>
+                        <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
 
           <div className="store-card-list__container padding-normal">

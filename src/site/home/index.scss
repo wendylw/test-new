@@ -24,6 +24,7 @@
   padding-bottom: 56px + 66px;
 
   &__search {
+    position: relative;
     padding: 22px 3.8vw;
   }
 }
@@ -62,6 +63,26 @@
 /* end of Store Card List */
 
 /* Searching Store List */
+.searching-list {
+  position: absolute;
+  left: 3.8vw;
+  right: 3.8vw;
+  margin: 8px auto;
+  border: 1px solid $gray-3;
+  max-height: 230px;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  &__item {
+    padding: 2.4vw 3.8vw;
+    background-color: $white;
+  }
+
+  &__name,
+  &__location {
+    margin: 4px 0;
+  }
+}
 /* end of Searching Store List */
 
 @media (max-width: 374px) {
@@ -70,6 +91,12 @@
     padding-top: 100px;
   }
   /* end of Entry */
+
+  /* Searching Store List */
+  .searching-list {
+    max-height: 200px;
+  }
+  /* end of Searching Store List */
 }
 
 @media (min-width: 770px) {
@@ -81,4 +108,15 @@
     }
   }
   /* end of Entry */
+
+  /* Searching Store List */
+  .searching-list {
+    left: 16px;
+    right: 16px;
+
+    &__item {
+      padding: 8px 16px;
+    }
+  }
+  /* end of Searching Store List */
 }
