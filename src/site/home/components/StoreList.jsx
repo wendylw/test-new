@@ -36,6 +36,7 @@ class StoreList extends Component {
         loadMore={() => {
           if (hasMore) loadMoreStores();
         }}
+        initialLoad={false /* to make client component to load the data for first time, this has bug to load now */}
       >
         {stores.map(store => {
           const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id } = store || {};

@@ -31,10 +31,13 @@ const fetchStoreList = ({ coords, page, pageSize }) => (dispatch, getState) => {
     requestPromise: get(
       `${Url.API_URLS.GET_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
     ).then(async response => {
-      if (response && response.stores) {
+      if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
+        return response;
       }
-      return response;
+
+      console.error(new Error(JSON.stringify(response)));
+      return [];
     }),
   });
 };
