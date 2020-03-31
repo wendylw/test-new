@@ -4,7 +4,7 @@ import Message from './Message';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
-import shapeImage from '../../../images/Shape.png';
+import shapeImage from '../../../images/shape.png';
 
 const processQR = qrData =>
   new Promise((resolve, reject) => {

@@ -1,0 +1,122 @@
+@import "../Variables.scss";
+
+/* Entry */
+.entry {
+  &__bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 1px solid $gray-3;
+    width: 100%;
+    background-color: $white;
+  }
+
+  &__item {
+    padding: 14px;
+  }
+}
+
+.entry-home {
+  position: relative;
+  top: 66px;
+  padding-top: 116px;
+  padding-bottom: 56px + 66px;
+
+  &__search {
+    position: relative;
+    padding: 22px 3.8vw;
+  }
+}
+/* end of Entry */
+
+/* Store Card List */
+.store-card-list {
+  margin-top: -12px 0;
+
+  .tag__card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: $white;
+  }
+
+  &__container {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    background-color: $white;
+  }
+
+  &__item {
+    position: relative;
+    margin: 24px 0;
+  }
+
+  &__image {
+    height: 19vh;
+  }
+
+  &__title {
+    margin: 0 4px;
+  }
+}
+/* end of Store Card List */
+
+/* Searching Store List */
+.searching-list {
+  position: absolute;
+  left: 3.8vw;
+  right: 3.8vw;
+  margin: 8px auto;
+  border: 1px solid $gray-3;
+  max-height: 230px;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  &__item {
+    padding: 2.4vw 3.8vw;
+    background-color: $white;
+  }
+
+  &__name,
+  &__location {
+    margin: 4px 0;
+  }
+}
+/* end of Searching Store List */
+
+@media (max-width: 374px) {
+  /* Entry */
+  .entry-home {
+    padding-top: 100px;
+  }
+  /* end of Entry */
+
+  /* Searching Store List */
+  .searching-list {
+    max-height: 200px;
+  }
+  /* end of Searching Store List */
+}
+
+@media (min-width: 770px) {
+  /* Entry */
+  .entry-home {
+    &__search {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+  /* end of Entry */
+
+  /* Searching Store List */
+  .searching-list {
+    left: 16px;
+    right: 16px;
+
+    &__item {
+      padding: 8px 16px;
+    }
+  }
+  /* end of Searching Store List */
+}

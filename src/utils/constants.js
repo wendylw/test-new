@@ -27,8 +27,11 @@ const ROUTER_PATHS = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
-  // Qrscan App basename
+  // site
+  SITE_HOME: '/home',
   QRSCAN: '/qrscan',
+  SCAN: '/scan',
+  SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
 };
 

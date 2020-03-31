@@ -1,6 +1,7 @@
 {
   "StoreHub": "StoreHub",
   "OK": "OK",
+  "Open": "Open",
   "Close": "Close",
   "Continue": "Continue",
   "Sorry": "Sorry",
@@ -80,6 +81,9 @@
   "AddAddressDetailsPlaceholder": "Unit/Block/Floor",
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
+  "DiscoverDescription": "Discover new<1></1>restaurants around you",
+  "SearchRestaurantPlaceholder": "Search for a restaurant",
+  "NearbyRestaurants": "Nearby Restaurants",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",

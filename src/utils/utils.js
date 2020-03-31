@@ -353,6 +353,7 @@ Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
     return false;
   }
 };
+
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
   const { stores } = originalInfo || {};
@@ -381,6 +382,10 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enableConditionalFreeShipping,
     enableLiveOnline,
   };
+};
+
+Utils.isSiteApp = () => {
+  return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
 };
 
 export default Utils;
