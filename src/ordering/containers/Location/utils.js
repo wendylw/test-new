@@ -3,6 +3,7 @@
 
 import config from '../../../config';
 import Utils from '../../../utils/utils';
+import { post } from '../../../utils/request';
 import { intersection, findIndex } from 'lodash';
 
 export const saveDevicePosition = position => {
@@ -33,12 +34,7 @@ export const getStoreInfo = () => {
     throw new Error(`business=${business} and storeId=${storeId} param are required.`);
   }
 
-  return fetch('/api/gql/CoreBusiness', {
-    method: 'POST',
-    body: JSON.stringify({ business, storeId }),
-    credentials: 'include',
-  })
-    .then(response => response.json())
+  return post('/api/gql/CoreBusiness', { business, storeId })
     .then(response => {
       console.log(response.data);
       if (response.data.business) {

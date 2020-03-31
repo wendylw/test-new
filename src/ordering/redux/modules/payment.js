@@ -4,16 +4,16 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getRequestInfo } from './app';
-import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo } from './app';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { getDeliveryDetails } from './customer';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
+import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 
 const initialState = {
-  currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  //currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
   braintreeToken: '',
@@ -61,12 +61,9 @@ export const actions = {
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
-    const deliveryDetails = getDeliveryDetails(getState());
-    const { country } = getBusinessByName(getState(), business);
-    const contactDetail = {
-      phone: deliveryDetails.phone,
-      name: deliveryDetails.username,
-    };
+    const deliveryDetails = await fetchDeliveryDetails();
+    const { phone, username: name } = deliveryDetails || {};
+    const contactDetail = { phone, name };
     let variables = {
       business,
       storeId,
@@ -76,17 +73,14 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const { coords, address: deliveryTo } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-      const { lat, lng } = coords || {};
-      const location =
-        lat && lng
-          ? {
-              longitude: lng,
-              latitude: lat,
-            }
-          : null;
-      const addressDetails = deliveryDetails.addressDetails;
-      const deliveryComments = deliveryDetails.deliveryComments;
+      const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
+      const {
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress: deliveryTo,
+        deliveryToLocation: location,
+        routerDistance,
+      } = deliveryDetails || {};
 
       variables = {
         ...variables,
@@ -98,6 +92,7 @@ export const actions = {
           country,
           deliveryTo,
           location,
+          routerDistance,
         },
         deliveryComments,
       };

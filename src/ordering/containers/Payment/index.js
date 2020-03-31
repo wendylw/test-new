@@ -57,12 +57,22 @@ class Payment extends Component {
     payNowLoading: false,
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { homeActions, paymentActions } = this.props;
+    await paymentActions.fetchPaymentList();
+    /* set default payment by dynamic setting*/
+    const { paymentList } = this.props;
+    this.setDefaultPayment(paymentList);
 
-    paymentActions.fetchPaymentList();
-    homeActions.loadShoppingCart();
-  }
+    await homeActions.loadShoppingCart();
+  };
+
+  setDefaultPayment = paymentList => {
+    if (paymentList && paymentList.length > 0) {
+      const payment = dataSource[paymentList[0]];
+      this.setCurrentPayment(payment.name);
+    }
+  };
 
   getPaymentEntryRequestData = () => {
     const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
