@@ -31,7 +31,7 @@ class Home extends React.Component {
 
     // if no placeInfo at all
     if (!placeInfo) {
-      return this.gotoLocationPage();
+      // return this.gotoLocationPage();
     }
 
     // placeInfo ok
@@ -41,7 +41,7 @@ class Home extends React.Component {
     console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
 
     // fetch storeList here.
-    await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
+    // await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
   };
 
   debounceSearchStores = debounce(() => {
@@ -92,6 +92,22 @@ class Home extends React.Component {
     const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
     const { keyword } = this.state;
     const { hasMore } = paginationInfo;
+    const searchingStoresTEMP = [
+      {
+        id: '11111',
+        name: '11111',
+        avatar: '11111',
+        street1: '11111',
+        street2: '11111',
+        city: 'KYM',
+        state: '',
+        country: 'MY',
+        deliveryFee: 0,
+        minimumConsumption: 0,
+        geoDistance: 5,
+        isOpen: true,
+      },
+    ];
 
     return (
       <main className="entry fixed-wrapper">
@@ -125,15 +141,15 @@ class Home extends React.Component {
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />
             </div>
-            <ul>
-              {searchingStores.map(store => {
+            <ul className="">
+              {searchingStoresTEMP.map(store => {
                 const { name, geoDistance } = store;
 
                 return (
                   <li>
-                    <h4>{name}</h4>
-                    <p>
-                      <span>{(geoDistance || 0).toFixed(2)} km</span>
+                    <h3 className="text-size-big text-weight-bold">{name}</h3>
+                    <p className="flex flex-middle text-opacity">
+                      <span>{(geoDistance || 0).toFixed(2)} km . </span>
                       <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
                     </p>
                   </li>
