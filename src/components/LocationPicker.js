@@ -190,7 +190,7 @@ class LocationPicker extends Component {
             value={searchText}
           />
           <IconClose
-            className="location-picker__search-box-clear-icon"
+            className="form__search-icon icon icon__small icon__gray"
             onClick={this.clearSearchBox}
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
           />

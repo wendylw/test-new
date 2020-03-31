@@ -123,12 +123,12 @@ class Home extends React.Component {
               <IconSearch className="icon icon__normal icon__gray" />
               <input
                 className="form__input"
-                type="search"
+                type="type"
                 placeholder={t('SearchRestaurantPlaceholder')}
                 onChange={this.handleSearchTextChange}
               />
               <IconClose
-                className="icon icon__smaller icon__gray"
+                className="form__search-icon icon icon__small icon__gray"
                 onClick={this.handleClearSearchText}
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />

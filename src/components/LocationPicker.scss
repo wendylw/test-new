@@ -6,26 +6,6 @@
     background-color: $white;
   }
 
-  &__search-box-search-icon {
-    padding: 3.2vw;
-    font-size: 0;
-
-    svg {
-      fill: $gray-2;
-    }
-  }
-
-  &__search-box-clear-icon {
-    padding: 15px 8px;
-
-    svg {
-      fill: $gray-2;
-      width: 14px;
-      height: 14px;
-      vertical-align: middle;
-    }
-  }
-
   &__detected-position {
     overflow: hidden;
     border-bottom: 1px solid $gray-3;
@@ -51,6 +31,7 @@
       width: 14px;
       height: 14px;
     }
+
     padding: 16px;
     float: left;
   }
@@ -111,7 +92,7 @@
 
 @media (min-width: 770px) {
   .location-picker {
-    &__form {
+    &__search-box {
       padding-left: 16px;
       padding-right: 16px;
     }
