@@ -65,7 +65,7 @@ const actions = {
 const storeIdsReducer = (state, action) => {
   if (action.type === types.GET_STORE_LIST_SUCCESS) {
     const { response } = action;
-    return { ...state, storeIds: state.storeIds.concat((response.stores || []).map(store => store.id)) };
+    return [...state.concat((response.stores || []).map(store => store.id))];
   }
 
   return state;
@@ -75,7 +75,7 @@ const paginationInfoReducer = (state, action) => {
   switch (action.type) {
     case types.GET_STORE_LIST_SUCCESS:
       const { stores } = action.response;
-      const { page, pageSize } = state.paginationInfo;
+      const { page, pageSize } = state;
 
       if (!stores || !stores.length) {
         return { ...state, hasMore: false, page, pageSize };
