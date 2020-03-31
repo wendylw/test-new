@@ -24,6 +24,8 @@ class Home extends React.Component {
     this.state = {
       keyword: '',
     };
+
+    this.sectionRef = React.createRef();
   }
 
   componentDidMount = async () => {
@@ -109,7 +111,7 @@ class Home extends React.Component {
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
-        <section className="entry-home fixed-wrapper__container wrapper">
+        <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />
@@ -152,6 +154,7 @@ class Home extends React.Component {
                 hasMore={hasMore}
                 loadMoreStores={this.handleLoadMoreStores}
                 onStoreClicked={this.handleStoreSelected}
+                getScrollParent={() => this.sectionRef.current}
               />
             ) : null}
           </div>
