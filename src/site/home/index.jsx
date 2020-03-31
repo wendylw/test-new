@@ -90,8 +90,8 @@ class Home extends React.Component {
   };
 
   handleStoreSelected = store => {
-    const storeUrl = `${config.beepOnlineStoreUrl(store.business)}?storeId=${store.id}`;
     console.log('[Home] handleStoreSelected store =', store);
+    const storeUrl = `${config.beepOnlineStoreUrl(store.business)}?storeId=${store.id}`;
     console.warn('[Home] handleStoreSelected redirect to storeUrl =', storeUrl);
     window.location.href = storeUrl;
   };

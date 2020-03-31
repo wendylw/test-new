@@ -69,7 +69,13 @@ class StoreList extends Component {
           const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
-            <li key={id} className="store-card-list__item card" onClick={this.handleStoreClicked.bind(this, store)}>
+            <li
+              key={id}
+              className="store-card-list__item card"
+              onClick={() => {
+                this.handleStoreClicked(store);
+              }}
+            >
               <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
               <Image className="store-card-list__image card__image" src={avatar} alt="" />
               <summary className="padding-small">
