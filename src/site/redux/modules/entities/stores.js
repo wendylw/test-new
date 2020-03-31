@@ -35,6 +35,10 @@ const reducer = (state = initialState, action) => {
   if (Array.isArray(action.stores) && action.type === types.SAVE_STORES) {
     const { stores } = action;
 
+    if (!stores || !stores.length) {
+      return state;
+    }
+
     stores.forEach(store => {
       state[store.id] = store;
     });

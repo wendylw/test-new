@@ -7,6 +7,37 @@ import Image from '../../../components/Image';
 import Tag from '../../../components/Tag';
 
 class StoreList extends Component {
+  handleStoreClicked = store => {
+    /* store example =>
+    {
+      "id": "5d0b090c64f436001715de95",
+      "name": "Store",
+      "avatar": "[object Object]",
+      "street1": "KL",
+      "street2": "",
+      "city": "KL",
+      "state": "KL",
+      "country": "MY",
+      "deliveryFee": 10,
+      "minimumConsumption": 10,
+      "geoDistance": 0,
+      "validDays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "validTimeTo": "19:00",
+      "validTimeFrom": "00:00",
+      "isOpen": true
+    }
+    */
+    this.props.onSelect(store);
+  };
+
   render() {
     const { t, stores, hasMore, loadMoreStores } = this.props;
     const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
@@ -38,7 +69,7 @@ class StoreList extends Component {
           const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
-            <li key={id} className="store-card-list__item card">
+            <li key={id} className="store-card-list__item card" onClick={this.handleStoreClicked.bind(this, store)}>
               <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
               <Image className="store-card-list__image card__image" src={avatar} alt="" />
               <summary className="padding-small">
@@ -71,11 +102,13 @@ StoreList.propTypes = {
   stores: PropTypes.array,
   hasMore: PropTypes.bool,
   loadMoreStores: PropTypes.func,
+  onSelect: PropTypes.func,
 };
 
 StoreList.defaultProps = {
   stores: [],
   loadMoreStores: () => {},
+  onSelect: () => {},
 };
 
 export default withTranslation()(StoreList);

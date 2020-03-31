@@ -7,7 +7,9 @@ const { ROUTER_PATHS } = Constants;
 const tabs = [
   { pathname: ROUTER_PATHS.SITE_HOME, component: IconHome },
   { pathname: ROUTER_PATHS.QRSCAN, component: IconCropFree },
-  { pathname: '/account', component: IconAccountCircle },
+
+  // todo: account page developer can open it to develop
+  // { pathname: '/account', component: IconAccountCircle },
 ];
 
 class SiteFooter extends Component {
