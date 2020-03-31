@@ -267,7 +267,7 @@
   }
 }
 
-@keyframes vertical-movemen {
+@keyframes vertical-movement {
   0%,
   100% {
     -webkit-transform: translateY(0%);
@@ -1053,12 +1053,12 @@
     }
   }
 
-  &__cart-ctrl.is-minuts {
+  &__cart-ctrl.is-minus {
     &::before {
       content: none;
     }
 
-    .cart__minuts {
+    .cart__minus {
       display: block;
     }
   }
@@ -1162,7 +1162,7 @@
     }
   }
 
-  &__minuts {
+  &__minus {
     display: none;
     border-color: $gray-1;
     background-color: $white;
@@ -1218,7 +1218,7 @@
     }
   }
 
-  &__minuts &__icon {
+  &__minus &__icon {
     &::before {
       background-color: $gray-1;
     }
