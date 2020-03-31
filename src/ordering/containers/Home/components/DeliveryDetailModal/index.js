@@ -103,9 +103,7 @@ class DeliveryDetailModal extends Component {
               </a>
               <ul className="header__info-list">
                 <li className="header__info-item text-middle">
-                  <i className="header__motor-icon text-middle">
-                    <IconMotorcycle />
-                  </i>
+                  <IconMotorcycle className="header__motor-icon text-middle" />
                   <span className="header__info-text text-middle font-weight-bold">
                     <CurrencyNumber money={deliveryFee || 0} />
                   </span>

@@ -124,7 +124,7 @@ export class Home extends Component {
             <summary className="item__title">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
           </div>
-          <i className="location-page__edit">{isValidTimeToOrder ? <IconEdit /> : null}</i>
+          {isValidTimeToOrder ? <IconEdit className="location-page__edit" /> : null}
         </div>
       </div>
     );
