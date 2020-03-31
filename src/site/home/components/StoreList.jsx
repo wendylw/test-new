@@ -8,34 +8,7 @@ import Tag from '../../../components/Tag';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
-    /* store example =>
-    {
-      "id": "5d0b090c64f436001715de95",
-      "name": "Store",
-      "avatar": "[object Object]",
-      "street1": "KL",
-      "street2": "",
-      "city": "KL",
-      "state": "KL",
-      "country": "MY",
-      "deliveryFee": 10,
-      "minimumConsumption": 10,
-      "geoDistance": 0,
-      "validDays": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "validTimeTo": "19:00",
-      "validTimeFrom": "00:00",
-      "isOpen": true
-    }
-    */
-    this.props.onSelect(store);
+    this.props.onStoreClicked(store);
   };
 
   render() {
@@ -73,6 +46,7 @@ class StoreList extends Component {
               key={id}
               className="store-card-list__item card"
               onClick={() => {
+                console.log(`[StoreList] store[${id}] is clicked`);
                 this.handleStoreClicked(store);
               }}
             >
@@ -108,13 +82,13 @@ StoreList.propTypes = {
   stores: PropTypes.array,
   hasMore: PropTypes.bool,
   loadMoreStores: PropTypes.func,
-  onSelect: PropTypes.func,
+  onStoreClicked: PropTypes.func,
 };
 
 StoreList.defaultProps = {
   stores: [],
   loadMoreStores: () => {},
-  onSelect: () => {},
+  onStoreClicked: () => {},
 };
 
 export default withTranslation()(StoreList);

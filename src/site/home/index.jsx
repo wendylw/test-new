@@ -158,7 +158,7 @@ class Home extends React.Component {
               stores={stores}
               hasMore={hasMore}
               loadMoreStores={this.handleLoadMoreStores}
-              onSelect={this.handleStoreSelected}
+              onStoreClicked={this.handleStoreSelected}
             />
           </div>
         </section>
