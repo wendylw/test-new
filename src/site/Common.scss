@@ -105,7 +105,6 @@ address {
 
 .text-omit {
   display: inline-block;
-  text-transform: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -276,6 +275,10 @@ img {
     fill: $gray-2;
   }
 
+  &__big {
+    padding: 12px;
+  }
+
   &__normal {
     padding: 8px;
   }
@@ -433,6 +436,27 @@ img {
     padding: 18px 8px;
   }
 }
+
+/* Header */
+.header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background-color: $white;
+
+  &__content {
+    max-width: 90%;
+  }
+
+  &__title {
+    max-width: 85%;
+    max-height: 16px;
+    -webkit-line-clamp: 1;
+  }
+}
+/* end of Header */
 
 /* Store Info */
 .store-info {

@@ -14,7 +14,7 @@ class SiteApp extends React.Component {
   render() {
     const { error, appActions } = this.props;
     const { pathname } = window.location || {};
-    const isErrorPage = /^\/error/.test(pathname || '');
+    const isErrorPage = /^\/error/.test(pathname || '') || /^\/ordering\/location/.test(pathname || '');
 
     return (
       <React.Fragment>

@@ -3,8 +3,8 @@ import LocationPicker, {
   setHistoricalDeliveryAddresses,
   tryGetDeviceCoordinates,
 } from '../../../../components/LocationPicker';
-import Header from '../../../../components/Header';
 import { withTranslation } from 'react-i18next';
+import { IconLeftArrow } from '../../../../components/Icons';
 
 class Location extends React.Component {
   state = {
@@ -77,12 +77,16 @@ class Location extends React.Component {
 
     return (
       <main className="fixed-wrapper">
-        <Header
-          className="has-right flex-middle"
-          isPage={true}
-          title={t('DeliverTo')}
-          navFunc={this.handleBackClicked}
-        />
+        <header className="header flex flex-space-between flex-middle">
+          <div>
+            <i className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked}>
+              <IconLeftArrow />
+            </i>
+            <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit">
+              {t('DeliverTo')}
+            </h2>
+          </div>
+        </header>
         <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
       </main>
     );
