@@ -398,15 +398,19 @@ img {
 }
 
 .top-message {
-  position: relative;
   top: 0;
   display: block;
   width: 100%;
+  height: auto;
   color: $white;
   z-index: $z-index-base;
 
   &.primary {
     background-color: $theme-color;
+  }
+
+  &.error {
+    background-color: $red;
   }
 
   &__text {

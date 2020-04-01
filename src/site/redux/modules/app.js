@@ -18,7 +18,6 @@ const types = {
 };
 
 // @actions
-
 const queryPing = () => ({
   types: [types.PING_REQUEST, types.PING_SUCCESS, types.PING_FAILURE],
   requestPromise: get('/api/ping'),

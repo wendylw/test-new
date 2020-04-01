@@ -13,15 +13,17 @@ class SiteApp extends React.Component {
 
   render() {
     const { error, appActions } = this.props;
-    const { pathname } = window.location || {};
-    const isErrorPage = /^\/error/.test(pathname || '') || /^\/ordering\/location/.test(pathname || '');
+    // const { pathname } = window.location || {};
+    // const isErrorPage = /^\/error/.test(pathname || '') || /^\/ordering\/location/.test(pathname || '');
 
     return (
       <React.Fragment>
-        {error ? <ErrorToast message={error} clearError={appActions.clearError} /> : null}
+        {error ? (
+          <ErrorToast className="fixed-wrapper padding-normal" message={error} clearError={appActions.clearError} />
+        ) : null}
         {/* <SiteFakeHeader /> */}
         <Routes />
-        {isErrorPage ? null : <SiteFooter />}
+        <SiteFooter />
       </React.Fragment>
     );
   }
