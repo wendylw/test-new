@@ -58,6 +58,12 @@ const PAYMENT_METHOD_LABELS = {
   BOOST_PAY: 'Boost',
 };
 
+const CREDIT_CARD_BRANDS = {
+  VISA: 'Visa',
+  MASTER_CARD: 'MasterCard',
+  JCB: 'JCB',
+};
+
 const HOME_ASIDE_NAMES = {
   MENU: 'menu',
   EDIT: 'edit',
@@ -137,6 +143,7 @@ export default {
   ROUTER_PATHS,
   CASHBACK_SOURCE,
   PAYMENT_METHOD_LABELS,
+  CREDIT_CARD_BRANDS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
   CHANNEL_TYPE,

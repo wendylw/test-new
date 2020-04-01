@@ -1958,6 +1958,7 @@
     padding: 0 20px;
     font-size: 1.3rem;
     width: 60vw;
+    white-space: nowrap;
   }
 }
 
@@ -2037,6 +2038,10 @@
     }
 
     &.mastercard {
+      width: 10vw;
+    }
+
+    &.JCB {
       width: 10vw;
     }
   }
@@ -3284,6 +3289,10 @@ body.loading {
 
   .payment-bank__card-type-icon.mastercard {
     max-width: 42px;
+  }
+
+  .payment-bank__card-type-icon.JCB {
+    max-width: 30px;
   }
 
   .location-page__entry-address {

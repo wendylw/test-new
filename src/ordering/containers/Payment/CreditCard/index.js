@@ -21,9 +21,11 @@ import { actions as paymentActionCreators, getCurrentOrderId } from '../../../re
 
 import paymentVisaImage from '../../../../images/payment-visa.svg';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
-import { getPaymentName } from '../utils';
+import paymentJCBImage from '../../../../images/payment-JCB.svg';
+import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
+const { CREDIT_CARD_BRANDS } = Constants;
 class CreditCard extends Component {
   static propTypes = {};
 
@@ -100,7 +102,9 @@ class CreditCard extends Component {
   };
 
   getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
-    const { t } = this.props;
+    const { t, merchantCountry } = this.props;
+    const { card } = this.state;
+
     const nameList = {
       cardNumber: 'number',
       validDate: 'expiration',
@@ -129,7 +133,7 @@ class CreditCard extends Component {
       },
       fixedLength: {
         message: t('CardNumberIncompleteMessage', { nameString, verb }),
-        length: 19,
+        length: card.ruler ? card.ruler.length + card.ruler.blocks.length - 1 : 19,
       },
       validCardNumber: {
         message: t('CardNumberInvalidMessage'),
@@ -152,9 +156,9 @@ class CreditCard extends Component {
     return {
       rules,
       validCardNumber: () => {
-        const { card } = this.state;
+        const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
 
-        return Boolean(card.type);
+        return supportCreditCardBrands.includes(card.brand);
       },
     };
   }
@@ -332,7 +336,7 @@ class CreditCard extends Component {
 
     this.setState(
       {
-        card: Utils.creditCardDetector(e.target.value),
+        card: creditCardDetector(e.target.value),
       },
       () => {
         if (this.cardNumberEl !== null) {
@@ -362,6 +366,45 @@ class CreditCard extends Component {
     });
   }
 
+  renderCreditBrands() {
+    const supportCreditCardBrands = getSupportCreditCardBrands(this.props.merchantCountry);
+    const { card } = this.state;
+
+    return (
+      <div className="payment-bank__card-type-container flex flex-middle">
+        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.VISA) ? (
+          <i
+            className={`payment-bank__card-type-icon visa text-middle ${
+              card.brand === CREDIT_CARD_BRANDS.VISA ? 'active' : ''
+            }`}
+          >
+            <img src={paymentVisaImage} />
+          </i>
+        ) : null}
+
+        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.MASTER_CARD) ? (
+          <i
+            className={`payment-bank__card-type-icon mastercard text-middle ${
+              card.brand === CREDIT_CARD_BRANDS.MASTER_CARD ? 'active' : ''
+            }`}
+          >
+            <img src={paymentMasterImage} />
+          </i>
+        ) : null}
+
+        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.JCB) ? (
+          <i
+            className={`payment-bank__card-type-icon JCB text-middle ${
+              card.brand === CREDIT_CARD_BRANDS.JCB ? 'active' : ''
+            }`}
+          >
+            <img src={paymentJCBImage} />
+          </i>
+        ) : null}
+      </div>
+    );
+  }
+
   renderForm() {
     const { t } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
@@ -389,22 +432,11 @@ class CreditCard extends Component {
                 className="input input__block"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
-                value={card.formattedCardNumber || ''}
+                value={cardNumber || ''}
                 onChange={this.handleChangeCardNumber.bind(this)}
                 onBlur={this.validCardInfo.bind(this)}
               />
-              <div className="payment-bank__card-type-container flex flex-middle">
-                <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-                  <img src={paymentVisaImage} />
-                </i>
-                <i
-                  className={`payment-bank__card-type-icon mastercard text-middle ${
-                    card.type === 'mastercard' ? 'active' : ''
-                  }`}
-                >
-                  <img src={paymentMasterImage} />
-                </i>
-              </div>
+              {this.renderCreditBrands()}
             </div>
             <div className="input__list-bottom flex flex-middle flex-space-between">
               <input

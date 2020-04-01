@@ -11,25 +11,20 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { 
+import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getUser,
   getBusiness,
-  getMerchantCountry
+  getMerchantCountry,
 } from '../../redux/modules/app';
-import {
-  actions as paymentActionCreators,
-  getCurrentPayment,
-  getCurrentOrderId,
-} from '../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import { getPaymentName, getPaymentList } from './utils';
+import { getPaymentName, getPaymentList, getSupportCreditCardBrands } from './utils';
 import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
 import paymentBoostImage from '../../../images/payment-boost.png';
 import paymenbGrabImage from '../../../images/payment-grab.png';
-
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
 const dataSource = {
@@ -57,9 +52,8 @@ const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_MET
 class Payment extends Component {
   state = {
     payNowLoading: false,
-    paymentList: []
+    paymentList: [],
   };
-
 
   componentDidMount = async () => {
     const { homeActions } = this.props;
@@ -72,23 +66,26 @@ class Payment extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.merchantCountry !== this.props.merchantCountry) {
+    if (prevProps.merchantCountry !== this.props.merchantCountry) {
       this.updatePaymentList(() => {
-        if(!this.currentPayment) {
+        if (!this.currentPayment) {
           this.setDefaultPayment(this.state.paymentList);
         }
       });
     }
   }
 
-  updatePaymentList = (cb) => {
+  updatePaymentList = cb => {
     const { merchantCountry } = this.props;
-    if(merchantCountry) {
-      this.setState({
-        paymentList: getPaymentList(merchantCountry)
-      }, cb);
+    if (merchantCountry) {
+      this.setState(
+        {
+          paymentList: getPaymentList(merchantCountry),
+        },
+        cb
+      );
     }
-  }
+  };
 
   setDefaultPayment = paymentList => {
     if (paymentList && paymentList.length > 0) {
@@ -136,6 +133,20 @@ class Payment extends Component {
   setCurrentPayment = paymentLabel => {
     this.props.paymentActions.setCurrentPayment(paymentLabel);
   };
+
+  getPaymentShowLabel(payment) {
+    const { t, merchantCountry } = this.props;
+    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
+      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
+      return supportCreditCardBrands
+        .map(brand => {
+          return t(brand);
+        })
+        .join(' / ');
+    } else {
+      return t(payment.label);
+    }
+  }
 
   handleClickPayNow = async () => {
     const { history, currentPayment, cartSummary } = this.props;
@@ -205,7 +216,7 @@ class Payment extends Component {
                   <figure className="payment__image-container">
                     <img src={payment.logo} alt={payment.label}></img>
                   </figure>
-                  <label className="payment__name font-weight-bold">{t(payment.label)}</label>
+                  <label className="payment__name font-weight-bold">{this.getPaymentShowLabel(payment)}</label>
                   <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>

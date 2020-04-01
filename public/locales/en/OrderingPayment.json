@@ -1,7 +1,9 @@
 {
   "SelectPayment": "Select Payment",
   "OnlineBanking": "Online Banking",
-  "CreditCard": "Visa / MasterCard",
+  "Visa": "Visa",
+  "MasterCard": "MasterCard",
+  "JCB": "JCB",
   "Boost": "Boost",
   "GrabPay": "GrabPay",
   "RequiredMessage": "Required",
