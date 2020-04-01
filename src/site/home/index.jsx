@@ -128,13 +128,16 @@ class Home extends React.Component {
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />
             </div>
-            {!searchingStores || !searchingStores.length ? null : (
+            {!searchingStores || !searchingStores.length || !keyword ? null : (
               <ul className="searching-list border__bottom-divider border-radius-base base-box-shadow">
                 {searchingStores.map(store => {
                   const { name, geoDistance } = store;
 
                   return (
-                    <li className="searching-list__item border__bottom-divider">
+                    <li
+                      className="searching-list__item border__bottom-divider"
+                      onClick={this.handleStoreSelected(store)}
+                    >
                       <h3 className="searching-list__name text-size-big text-weight-bold">{name}</h3>
                       <p className="searching-list__location flex flex-middle text-opacity">
                         <span>{`${t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })} . `}</span>
