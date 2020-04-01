@@ -32,14 +32,16 @@ class CategoryProductList extends Component {
   handleIncreaseProductInCart = async product => {
     const { onToggle } = this.props;
 
-    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
-
     try {
       await this.props.homeActions.increaseProductInCart(product);
       await this.props.homeActions.loadShoppingCart();
 
       if (product.variations && product.variations.length) {
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
+
         onToggle('PRODUCT_DETAIL');
+      } else {
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
       }
     } catch (e) {
       console.error(e);
