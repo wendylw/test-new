@@ -480,37 +480,6 @@ img {
 }
 /* end of Store Info */
 
-/* Site Banner */
-.site-banner {
-  width: 100%;
-  padding-top: 66px;
-  padding-bottom: 66px;
-  color: $white;
-  background: linear-gradient(134.77deg, #ff9419 0%, #ec461e 100%);
-  overflow: hidden;
-
-  &__circle {
-    position: absolute;
-    bottom: 20%;
-    display: block;
-    width: 190%;
-    background: linear-gradient(190.02deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.08) 100%);
-    border-radius: 50%;
-
-    &::before {
-      content: "";
-      display: block;
-      padding: 50% 0;
-    }
-  }
-
-  &__title {
-    padding-top: 50px;
-    margin-bottom: 3.8vw * 2;
-  }
-}
-/* end of Site Banner */
-
 @media (max-width: 374px) {
   *,
   html {

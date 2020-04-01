@@ -97,21 +97,21 @@ class Home extends React.Component {
 
     return (
       <main className="entry fixed-wrapper">
-        <Banner
-          title={
-            <Trans i18nKey="DiscoverDescription">
-              Discover new
-              <br />
-              restaurants around you
-            </Trans>
-          }
-        />
         <DeliverToBar
           title={t('DeliverTo')}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
+          <Banner
+            title={
+              <Trans i18nKey="DiscoverDescription">
+                Discover new
+                <br />
+                restaurants around you
+              </Trans>
+            }
+          />
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />

@@ -19,11 +19,11 @@
 
 .entry-home {
   position: relative;
-  top: 66px;
-  padding-top: 116px;
-  padding-bottom: 56px + 66px;
+  padding-bottom: 56px;
 
   &__search {
+    position: relative;
+    margin-top: -100px;
     padding: 22px 3.8vw;
   }
 }
@@ -87,16 +87,6 @@
 /* end of Searching Store List */
 
 @media (max-width: 374px) {
-  /* Entry */
-  .entry-home {
-    padding-top: 100px;
-
-    &__search {
-      top: -102px;
-    }
-  }
-  /* end of Entry */
-
   /* Searching Store List */
   .searching-list {
     max-height: 200px;

@@ -4,6 +4,7 @@
 .deliver-to-entry {
   padding: 8px;
   background-color: $white;
+  z-index: $z-index-base;
 
   &__content {
     max-width: 90%;
