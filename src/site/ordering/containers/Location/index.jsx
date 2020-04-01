@@ -44,7 +44,7 @@ class Location extends React.Component {
         );
         this.setState({
           status: 'fetch_location_failed',
-          coords: defaultCoords,
+          origin: defaultCoords,
         });
         throw e;
       }
