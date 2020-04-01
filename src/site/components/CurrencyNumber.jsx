@@ -9,7 +9,7 @@ class CurrencyNumber extends React.Component {
       return price;
     }
 
-    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(price));
+    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(price || 0));
   }
 
   render() {
