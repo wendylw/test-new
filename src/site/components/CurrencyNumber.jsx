@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { getOnlineStoreInfo } from '../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsPrice() {
