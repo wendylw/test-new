@@ -30,13 +30,13 @@ const processQR = qrData =>
     let data = qrData.trim();
 
     if (/^https?:/.test(data)) {
-      if (data.includes('beepit.co')) {
+      if (data.includes('tableId=DEMO') || extraParams.includes('tableId=DEMO')) {
+        data = data.match(domainRegex)[0];
+      } else if (data.includes('beepit.co') || data.includes('beepit.com')) {
         const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
         data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
       }
-
       window.location.href = data;
-
       resolve(data);
     } else {
       reject('Not Identified');
