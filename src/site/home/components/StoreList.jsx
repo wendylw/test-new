@@ -5,6 +5,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import { IconMotorcycle } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import Tag from '../../../components/Tag';
+import CurrencyNumber from '../../components/CurrencyNumber';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -40,7 +41,8 @@ class StoreList extends Component {
         useWindow={false}
       >
         {stores.map(store => {
-          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id } = store || {};
+          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id, locale, currency } =
+            store || {};
           const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
@@ -62,12 +64,22 @@ class StoreList extends Component {
                 <ul className="store-info padding-top-small">
                   <li className="store-info__item text-middle">
                     <IconMotorcycle className="icon icon__smaller text-middle" />
-                    <span className="store-info__text text-size-small text-middle">{deliveryFee}</span>
+                    <CurrencyNumber
+                      className="store-info__text text-size-small text-middle"
+                      locale={locale}
+                      currency={currency}
+                      price={deliveryFee}
+                    />
                   </li>
                   <li className="store-info__item text-middle">
                     <Trans i18nKey="MinimumOrder" minimumConsumption={minimumConsumption}>
                       <label className="text-size-small text-middle">Min Order.</label>
-                      <span className="store-info__text text-size-small text-middle">{minimumConsumption}</span>
+                      <CurrencyNumber
+                        className="store-info__text text-size-small text-middle"
+                        locale={locale}
+                        currency={currency}
+                        price={minimumConsumption}
+                      />
                     </Trans>
                   </li>
                 </ul>

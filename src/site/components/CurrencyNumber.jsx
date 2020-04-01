@@ -4,21 +4,21 @@ import { connect } from 'react-redux';
 import { getOnlineStoreInfo } from '../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
-  formatChildrenAsMoney() {
-    const { locale, currency, money } = this.props;
+  formatChildrenAsPrice() {
+    const { locale, currency, price } = this.props;
 
     if (!(locale && currency)) {
-      return money;
+      return price;
     }
 
-    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
+    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(price));
   }
 
   render() {
     const { className, addonBefore } = this.props;
 
     return (
-      <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsMoney()}`}</span>
+      <span className={className}>{`${addonBefore ? `${addonBefore} ` : ''}${this.formatChildrenAsPrice()}`}</span>
     );
   }
 }
@@ -28,11 +28,11 @@ CurrencyNumber.propTypes = {
   addonBefore: PropTypes.string,
   locale: PropTypes.string,
   currency: PropTypes.string,
-  money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 CurrencyNumber.defaultProps = {
-  money: 0,
+  price: 0,
 };
 
 export default CurrencyNumber;
