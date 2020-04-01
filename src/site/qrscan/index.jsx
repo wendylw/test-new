@@ -54,7 +54,6 @@ class QRScan extends Component {
 
   componentWillUnmount() {
     this.mediaStreamTrackList.map(mediaStreamTrack => mediaStreamTrack && mediaStreamTrack.stop());
-    debugger;
   }
 
   gotoNotSupport() {
@@ -84,7 +83,7 @@ class QRScan extends Component {
 
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = error => {
-          debugger;
+          console.error('[QRScan] getCamera failed:', error);
           if (error.name !== 'NotAllowedError') {
             this.gotoNotSupport();
           }
