@@ -5,7 +5,25 @@ import Constants from '../../utils/constants';
 import ShapeImage from '../../images/shape.png';
 import './index.scss';
 
-const { ERROR, SCAN_NOT_SUPPORT } = Constants;
+const { ERROR, SCAN_NOT_SUPPORT } = Constants.ROUTER_PATHS;
+
+// --Begin-- Hack MediaStream
+// hacking codes, without this codes we are not able to close the camera
+let MediaStream = window.MediaStream;
+
+if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefined') {
+  MediaStream = window.webkitMediaStream;
+}
+
+/*global MediaStream:true */
+if (typeof MediaStream !== 'undefined' && !('stop' in MediaStream.prototype)) {
+  MediaStream.prototype.stop = function() {
+    this.getTracks().forEach(function(track) {
+      track.stop();
+    });
+  };
+}
+// ---End--- Hack MediaStream
 
 const processQR = qrData =>
   new Promise((resolve, reject) => {
@@ -26,8 +44,16 @@ const processQR = qrData =>
   });
 
 class QRScan extends Component {
+  videoRef = React.createRef();
+  canvasRef = React.createRef();
+  mediaStreamTrackList = [];
+
   componentDidMount() {
     this.getCamera();
+  }
+
+  componentWillUnmount() {
+    this.mediaStreamTrackList.map(mediaStreamTrack => mediaStreamTrack && mediaStreamTrack.stop());
   }
 
   gotoNotSupport() {
@@ -56,7 +82,8 @@ class QRScan extends Component {
       const that = this;
 
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
-        MediaErr = function(error) {
+        MediaErr = error => {
+          console.error('[QRScan] getCamera failed:', error);
           if (error.name !== 'NotAllowedError') {
             this.gotoNotSupport();
           }
@@ -72,9 +99,9 @@ class QRScan extends Component {
 
         navigator.mediaDevices
           .getUserMedia(videoObj)
-          .then(function(stream) {
-            const play = that.getVideoStream.bind(that, stream);
-            play();
+          .then(stream => {
+            that.mediaStreamTrackList.push(typeof stream.stop === 'function' ? stream : stream.getTracks()[1]);
+            this.getVideoStream(stream);
           })
           .catch(function(err) {
             MediaErr(err);
@@ -82,9 +109,9 @@ class QRScan extends Component {
       } else if (navigator.mediaDevices.webkitGetUserMedia) {
         navigator
           .webkitGetUserMedia(videoObj)
-          .then(function(stream) {
-            const play = that.getVideoStream.bind(that, stream);
-            play();
+          .then(stream => {
+            that.mediaStreamTrackList.push(typeof stream.stop === 'function' ? stream : stream.getTracks()[1]);
+            this.getVideoStream(stream);
           })
           .catch(function(err) {
             MediaErr(err);
@@ -92,9 +119,9 @@ class QRScan extends Component {
       } else if (navigator.mediaDevices.mozGetUserMedia) {
         navigator
           .mozGetUserMedia(videoObj)
-          .then(function(stream) {
-            const play = that.getVideoStream.bind(that, stream);
-            play();
+          .then(stream => {
+            that.mediaStreamTrackList.push(typeof stream.stop === 'function' ? stream : stream.getTracks()[1]);
+            this.getVideoStream(stream);
           })
           .catch(function(err) {
             MediaErr(err);
@@ -102,9 +129,9 @@ class QRScan extends Component {
       } else if (navigator.mediaDevices.msGetUserMedia) {
         navigator
           .msGetUserMedia(videoObj)
-          .then(function(stream) {
-            const play = that.getVideoStream.bind(that, stream);
-            play();
+          .then(stream => {
+            that.mediaStreamTrackList.push(typeof stream.stop === 'function' ? stream : stream.getTracks()[1]);
+            this.getVideoStream(stream);
           })
           .catch(function(err) {
             MediaErr(err);
@@ -144,9 +171,9 @@ class QRScan extends Component {
       getPermission: true,
     });
 
-    const canvas = this.refs.canvas;
+    const canvas = this.canvasRef.current;
     const context = canvas.getContext('2d');
-    let video = this.refs.video;
+    let video = this.videoRef.current;
 
     video.srcObject = stream;
     video.onloadedmetadata = function(e) {
@@ -167,16 +194,16 @@ class QRScan extends Component {
             <p className="top-message__text text-weight-bold">{t('UseChromeMessage')}</p>
           </div>
         )}
-        <video className="qrscan__video-player" ref="video" autoPlay playsInline></video>
-        <canvas className="qrscan__canvas" ref="canvas"></canvas>
+        <video ref={this.videoRef} className="qrscan__video-player" autoPlay playsInline />
+        <canvas ref={this.canvasRef} className="qrscan__canvas" />
         <section className="qrscan__cover">
           <img className="qrscan__logo" src={ShapeImage} alt="" />
           <span className="qrscan__tips text-center">{t('ScanDescribeText')}</span>
           <div className="qrscan__qrcode">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+            <div />
+            <div />
+            <div />
+            <div />
           </div>
         </section>
       </main>
