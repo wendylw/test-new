@@ -427,15 +427,15 @@ img {
   }
 
   &__input {
-    padding: 14px 0;
+    padding: 16px 0;
     border: 0;
-    line-height: 28px;
+    line-height: 26px;
     height: 56px;
     width: 100%;
     background-color: $white;
     outline: none;
     box-shadow: none;
-    caret-color: $gray-3;
+    caret-color: $gray-2;
   }
 
   &__search-icon {
