@@ -24,7 +24,9 @@
   padding-bottom: 56px + 66px;
 
   &__search {
-    position: relative;
+    position: sticky;
+    top: -116px;
+    z-index: $z-index-base;
     padding: 22px 3.8vw;
   }
 }
@@ -91,6 +93,10 @@
   /* Entry */
   .entry-home {
     padding-top: 100px;
+
+    &__search {
+      top: -102px;
+    }
   }
   /* end of Entry */
 
