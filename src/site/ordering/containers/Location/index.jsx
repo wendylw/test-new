@@ -94,7 +94,9 @@ class Location extends React.Component {
             </h2>
           </div>
         </header>
-        <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
+        {this.state.origin ? (
+          <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
+        ) : null}
       </main>
     );
   }
