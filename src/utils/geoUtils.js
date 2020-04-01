@@ -23,6 +23,10 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
   const autocompleteService = new googleMaps.places.AutocompleteService();
 
   const places = await new Promise(resolve => {
+    if (!text) {
+      resolve([]);
+      return;
+    }
     autocompleteService.getPlacePredictions(
       {
         input: text,

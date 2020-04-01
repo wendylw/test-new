@@ -24,10 +24,11 @@ class Home extends React.Component {
     this.state = {
       keyword: '',
     };
+
+    this.sectionRef = React.createRef();
   }
 
   componentDidMount = async () => {
-    const { paginationInfo } = this.props;
     const placeInfo = await getPlaceInfo(this.props);
 
     // if no placeInfo at all
@@ -38,11 +39,6 @@ class Home extends React.Component {
     // placeInfo ok
     await savePlaceInfo(placeInfo); // now save into localStorage
     await this.props.appActions.setCurrentPlaceInfo(placeInfo);
-
-    console.log('[home] currentPlaceInfo =>', this.props.currentPlaceInfo);
-
-    // fetch storeList here.
-    await this.props.homeActions.getStoreList({ ...this.props.currentPlaceInfo, ...paginationInfo });
   };
 
   debounceSearchStores = debounce(() => {
@@ -77,16 +73,9 @@ class Home extends React.Component {
     this.setState({ keyword: '' });
   };
 
-  handleLoadMoreStores = () => {
-    const { currentPlaceInfo, paginationInfo } = this.props;
-
-    if (!currentPlaceInfo || !paginationInfo) {
-      console.warn(new Error('currentPlaceInfo is not ready'));
-      return;
-    }
-
-    // fetch storeList here.
-    this.props.homeActions.getStoreList({ ...currentPlaceInfo, ...paginationInfo });
+  handleLoadMoreStores = page => {
+    console.info('[Home] handleLoadMoreStores props =>', page);
+    return this.props.homeActions.getStoreList(page);
   };
 
   handleStoreSelected = store => {
@@ -100,6 +89,11 @@ class Home extends React.Component {
     const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
     const { keyword } = this.state;
     const { hasMore } = paginationInfo;
+
+    // current placeInfo is required.
+    if (!currentPlaceInfo) {
+      return null;
+    }
 
     return (
       <main className="entry fixed-wrapper">
@@ -117,7 +111,7 @@ class Home extends React.Component {
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
-        <section className="entry-home fixed-wrapper__container wrapper">
+        <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />
@@ -155,12 +149,15 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            <StoreList
-              stores={stores}
-              hasMore={hasMore}
-              loadMoreStores={this.handleLoadMoreStores}
-              onStoreClicked={this.handleStoreSelected}
-            />
+            {currentPlaceInfo.coords ? (
+              <StoreList
+                stores={stores}
+                hasMore={hasMore}
+                loadMoreStores={this.handleLoadMoreStores}
+                onStoreClicked={this.handleStoreSelected}
+                getScrollParent={() => this.sectionRef.current}
+              />
+            ) : null}
           </div>
         </section>
       </main>

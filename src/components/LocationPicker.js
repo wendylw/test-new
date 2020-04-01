@@ -168,7 +168,9 @@ class LocationPicker extends Component {
   };
 
   clearSearchBox = () => {
-    this.setState({ searchText: '' });
+    this.setState({ searchText: '' }, () => {
+      this.debounceSearchPlaces();
+    });
   };
 
   clearErrorToast = () => {
