@@ -137,7 +137,7 @@ class Home extends React.Component {
                     <li
                       key={`searching-store-${store.id}`}
                       className="searching-list__item border__bottom-divider"
-                      onClick={this.handleStoreSelected(store)}
+                      onClick={() => this.handleStoreSelected(store)}
                     >
                       <h3 className="searching-list__name text-size-big text-weight-bold">{name}</h3>
                       <div className="searching-list__location flex flex-middle text-opacity">

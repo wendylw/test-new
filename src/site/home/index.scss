@@ -24,9 +24,6 @@
   padding-bottom: 56px + 66px;
 
   &__search {
-    position: sticky;
-    top: -116px;
-    z-index: $z-index-base;
     padding: 22px 3.8vw;
   }
 }
