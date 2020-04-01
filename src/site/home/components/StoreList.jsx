@@ -22,7 +22,7 @@ class StoreList extends Component {
       },
       close: {
         text: t('Close'),
-        className: `${tagClassName} text-success`,
+        className: `${tagClassName} text-error`,
       },
     };
 
