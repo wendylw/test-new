@@ -84,6 +84,7 @@
   "DiscoverDescription": "Discover new<1></1>restaurants around you",
   "SearchRestaurantPlaceholder": "Search for a restaurant",
   "NearbyRestaurants": "Nearby Restaurants",
+  "DistanceText": "{{distance}} km",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",

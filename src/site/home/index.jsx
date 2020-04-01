@@ -137,7 +137,7 @@ class Home extends React.Component {
                     <li className="searching-list__item border__bottom-divider">
                       <h3 className="searching-list__name text-size-big text-weight-bold">{name}</h3>
                       <p className="searching-list__location flex flex-middle text-opacity">
-                        <span>{(geoDistance || 0).toFixed(2)} km . </span>
+                        <span>{`${t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })} . `}</span>
                         <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
                       </p>
                     </li>

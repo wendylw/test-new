@@ -53,11 +53,11 @@ class StoreList extends Component {
               }}
             >
               <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
-              <Image className="store-card-list__image card__image" src={avatar} alt="" />
+              <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={5} alt={name} />
               <summary className="padding-small">
                 <div className="flex flex-middle flex-space-between">
                   <h3 className="store-card-list__title text-size-bigger text-weight-bold">{name}</h3>
-                  <span className="text-opacity">{(geoDistance || 0).toFixed(2)} km</span>
+                  <span className="text-opacity">{t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}</span>
                 </div>
                 <ul className="store-info padding-top-small">
                   <li className="store-info__item text-middle">
