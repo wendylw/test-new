@@ -322,6 +322,7 @@ export class ThankYou extends Component {
             </div>
 
             {this.renderViewDetail()}
+            <PhoneLogin history={history} />
           </div>
         </div>
       </React.Fragment>
