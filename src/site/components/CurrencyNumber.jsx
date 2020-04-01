@@ -5,8 +5,7 @@ import { getOnlineStoreInfo } from '../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsMoney() {
-    const { onlineStoreInfo, money } = this.props;
-    const { locale, currency } = onlineStoreInfo || {};
+    const { locale, currency, money } = this.props;
 
     if (!(locale && currency)) {
       return money;
@@ -27,6 +26,8 @@ class CurrencyNumber extends React.Component {
 CurrencyNumber.propTypes = {
   className: PropTypes.string,
   addonBefore: PropTypes.string,
+  locale: PropTypes.string,
+  currency: PropTypes.string,
   money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
@@ -34,6 +35,4 @@ CurrencyNumber.defaultProps = {
   money: 0,
 };
 
-export default connect(state => ({
-  onlineStoreInfo: getOnlineStoreInfo(state),
-}))(CurrencyNumber);
+export default CurrencyNumber;
