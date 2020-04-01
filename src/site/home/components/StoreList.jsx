@@ -55,7 +55,7 @@ class StoreList extends Component {
               }}
             >
               <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
-              <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={5} alt={name} />
+              <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={1} alt={name} />
               <summary className="padding-small">
                 <div className="flex flex-middle flex-space-between">
                   <h3 className="store-card-list__title text-size-bigger text-weight-bold">{name}</h3>
@@ -72,7 +72,7 @@ class StoreList extends Component {
                     />
                   </li>
                   <li className="store-info__item text-middle">
-                    <Trans i18nKey="MinimumOrder" minimumConsumption={minimumConsumption}>
+                    <Trans i18nKey="MinimumOrder">
                       <label className="text-size-small text-middle">Min Order.</label>
                       <CurrencyNumber
                         className="store-info__text text-size-small text-middle"
