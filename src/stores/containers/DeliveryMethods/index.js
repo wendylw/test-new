@@ -58,8 +58,19 @@ class DeliveryMethods extends Component {
     await homeActions.getStoreHashData(store.id);
 
     const { hashCode } = this.props;
-
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
+
+    // deliveryAddress was set from ordering/Home
+    // to cover the case of page comes from beepit.com
+    if (currentMethod.name === DELIVERY_METHOD.DELIVERY) {
+      const deliveryTo = sessionStorage.getItem('deliveryAddress');
+      if (store.id && deliveryTo) {
+        console.warn('storeId and deliveryTo info is enough for delivery, redirect to ordering home');
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
+        return;
+      }
+    }
+
     // isValid
     const { allBusinessInfo, business } = this.props;
     const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });

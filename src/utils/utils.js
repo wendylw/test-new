@@ -60,7 +60,7 @@ Utils.getCookieVariable = function getCookieVariable(name, scope) {
   return null;
 };
 
-Utils.setCookieVariable = function setCookieVariable(name, value, scope) {
+Utils.setCookieVariable = function setCookieVariable(name, value, scope = '') {
   document.cookie = scope + name + '=' + value + '; path=/';
 };
 
@@ -387,5 +387,42 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
 Utils.isSiteApp = () => {
   return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
 };
+
+// unicode string to base64
+Utils.utoa = str => {
+  return window.btoa(unescape(encodeURIComponent(str)));
+};
+
+// base64 to unicode string
+Utils.atou = str => {
+  return decodeURIComponent(escape(window.atob(str)));
+};
+
+// deliveryTo uses the placeInfo from <Location />
+// use setDeliveryToCookie and getDeliveryToCookie to share user location between domains
+//
+// setDeliveryToCookie(deliveryAddress: PlaceInfo) => void
+Utils.setDeliveryToCookie = deliveryAddress => {
+  const placeInfoBase64 = Utils.utoa(JSON.stringify(deliveryAddress));
+  const domain = (process.env.REACT_APP_MERCHANT_STORE_URL || '').split('%business%')[1];
+  document.cookie = `deliveryAddress=${placeInfoBase64}; path=/; domain=${domain}`;
+};
+
+// getDeliveryToCookie(void) => PlaceInfo || undefined
+Utils.getDeliveryAddressCookie = () => {
+  const placeInfoBase64 = (document.cookie.split(';').find(kv => kv.trim().split('=')[0] === 'deliveryAddress') || '')
+    .trim()
+    .slice('deliveryAddress='.length);
+  try {
+    return JSON.parse(Utils.atou(placeInfoBase64));
+  } catch (e) {
+    return null;
+  }
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  console.warn('development mode. window.Utils is ready.');
+  window.Utils = Utils;
+}
 
 export default Utils;

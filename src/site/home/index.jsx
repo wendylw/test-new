@@ -79,9 +79,14 @@ class Home extends React.Component {
   };
 
   handleStoreSelected = store => {
-    console.log('[Home] handleStoreSelected store =', store);
+    const { currentPlaceInfo } = this.props;
     const storeUrl = `${config.beepOnlineStoreUrl(store.business)}?storeId=${store.id}`;
-    console.warn('[Home] handleStoreSelected redirect to storeUrl =', storeUrl);
+
+    // todo: move cookie of placeInfo into session when got time
+    // save placeInfo into cookie, to get it once visit merchant store
+    // thus can sync up deliveryInfo between beepit.com and {business}.beepit.com
+    Utils.setDeliveryToCookie(currentPlaceInfo);
+
     window.location.href = storeUrl;
   };
 

@@ -25,11 +25,21 @@ class App extends Component {
 
   componentDidMount = async () => {
     const storeId = Utils.getQueryString('storeId');
-
     await this.props.homeActions.loadCoreStores();
 
     if (storeId) {
+      // setup deliveryAddress info for auto redirect to ordering page
+      //  when user click "delivery" on shipping type page
+      this.setupDeliveryAddressByCookie();
       this.setCurrentStoreId(storeId);
+    }
+  };
+
+  // get deliveryTo info from cookie and set into localStorage
+  setupDeliveryAddressByCookie = () => {
+    const deliveryTo = Utils.getDeliveryAddressCookie();
+    if (deliveryTo) {
+      sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryTo));
     }
   };
 
