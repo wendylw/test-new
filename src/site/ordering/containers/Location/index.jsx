@@ -5,6 +5,7 @@ import LocationPicker, {
 } from '../../../../components/LocationPicker';
 import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../../../components/Icons';
+import { defaultLocations, getDefaultCoords } from './utils';
 
 class Location extends React.Component {
   state = {
@@ -35,9 +36,15 @@ class Location extends React.Component {
         });
         console.log('[Location] position =', position);
       } catch (e) {
-        console.warn('[Location] fetch_location_failed');
+        const defaultCoords = getDefaultCoords(defaultLocations.KualaLumpur);
+        console.warn(
+          '[Location] fetch_location_failed, to use default defaultCoords=%s city=%s',
+          JSON.stringify(defaultCoords),
+          defaultLocations.KualaLumpur
+        );
         this.setState({
           status: 'fetch_location_failed',
+          coords: defaultCoords,
         });
         throw e;
       }

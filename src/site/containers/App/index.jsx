@@ -19,7 +19,11 @@ class SiteApp extends React.Component {
     return (
       <React.Fragment>
         {error ? (
-          <ErrorToast className="fixed-wrapper padding-normal" message={error} clearError={appActions.clearError} />
+          <ErrorToast
+            className="fixed-wrapper padding-normal"
+            message={JSON.stringify(error)}
+            clearError={appActions.clearError}
+          />
         ) : null}
         {/* <SiteFakeHeader /> */}
         <Routes />
