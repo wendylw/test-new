@@ -72,6 +72,7 @@
   max-height: 230px;
   overflow-x: hidden;
   overflow-y: auto;
+  z-index: $z-index-base;
 
   &__item {
     padding: 2.4vw 3.8vw;

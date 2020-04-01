@@ -1,7 +1,6 @@
 import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from './app';

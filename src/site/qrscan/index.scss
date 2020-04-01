@@ -32,13 +32,13 @@
     left: 0;
     right: 0;
     margin: 0 auto;
-    z-index: 100;
+    z-index: $z-index-high;
   }
 
   &__tips {
     position: absolute;
     top: 50vh;
-    z-index: 20;
+    z-index: $z-index-base;
     display: block;
     width: 100%;
     margin-top: 140px;

@@ -258,7 +258,7 @@ img {
     top: 0;
     bottom: 0;
     font-size: 40px;
-    z-index: 300;
+    z-index: $z-index-higher;
   }
 }
 
@@ -403,7 +403,7 @@ img {
   display: block;
   width: 100%;
   color: $white;
-  z-index: 1;
+  z-index: $z-index-base;
 
   &.primary {
     background-color: $theme-color;
@@ -443,7 +443,7 @@ img {
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 100;
+  z-index: $z-index-base;
   background-color: $white;
 
   &__content {

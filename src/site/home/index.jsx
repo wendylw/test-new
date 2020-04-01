@@ -125,6 +125,7 @@ class Home extends React.Component {
                 className="form__input"
                 type="type"
                 placeholder={t('SearchRestaurantPlaceholder')}
+                value={keyword}
                 onChange={this.handleSearchTextChange}
               />
               <IconClose

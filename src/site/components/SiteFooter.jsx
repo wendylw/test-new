@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { IconHome, IconCropFree, IconAccountCircle } from '../../components/Icons';
+import { IconHome, IconCropFree /*IconAccountCircle*/ } from '../../components/Icons';
 import Constants from '../../utils/constants';
 
 const { ROUTER_PATHS } = Constants;
