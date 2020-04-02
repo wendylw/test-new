@@ -36,10 +36,10 @@ export class Home extends Component {
 
   componentDidMount() {
     const { history, homeActions, requestInfo } = this.props;
-    const { storeId } = requestInfo;
+    const { tableId, storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (!storeId && !h) {
+    if ((!storeId && !h) || tableId === 'DEMO') {
       window.location.href = '/';
     }
 
