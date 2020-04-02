@@ -4,7 +4,6 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
 import { IconMotorcycle, IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
-import Tag from '../../../components/Tag';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 
