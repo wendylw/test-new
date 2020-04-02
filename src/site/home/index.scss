@@ -21,9 +21,18 @@
   position: relative;
   padding-bottom: 56px;
 
+  &__banner {
+    padding-top: 66px;
+    padding-bottom: 94px;
+  }
+
+  &__banner-image {
+    margin: 14px 0 0;
+  }
+
   &__search {
     position: relative;
-    margin-top: -100px;
+    margin-top: -102px;
     padding: 22px 3.8vw;
   }
 

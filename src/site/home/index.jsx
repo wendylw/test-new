@@ -21,6 +21,7 @@ import { getPlaceInfo, savePlaceInfo } from './utils';
 import Utils from '../../utils/utils';
 import config from '../../config';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
+import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -151,15 +152,11 @@ class Home extends React.Component {
           gotoLocationPage={this.gotoLocationPage}
         />
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
-          <Banner
-            title={
-              <Trans i18nKey="DiscoverDescription">
-                Discover new
-                <br />
-                restaurants around you
-              </Trans>
-            }
-          />
+          <Banner className="entry-home__banner">
+            <figure className="entry-home__banner-image">
+              <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
+            </figure>
+          </Banner>
           <div className="entry-home__search">
             <div className="form__group flex flex-middle">
               <IconSearch className="icon icon__normal icon__gray" />
