@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconMotorcycle } from '../../../components/Icons';
+import { IconMotorcycle, IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import Tag from '../../../components/Tag';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -28,7 +28,7 @@ class StoreList extends Component {
     };
 
     return (
-      <>
+      <React.Fragment>
         {stores.map(store => {
           const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id, locale, currency } =
             store || {};
@@ -43,14 +43,19 @@ class StoreList extends Component {
                 this.handleStoreClicked(store);
               }}
             >
-              <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
-              <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={1} alt={name} />
+              <figure>
+                <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
+                <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={1} alt={name} />
+              </figure>
               <summary className="padding-small">
-                <div className="flex flex-middle flex-space-between">
-                  <h3 className="store-card-list__title text-size-bigger text-weight-bold">{name}</h3>
-                  <span className="text-opacity">{t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}</span>
-                </div>
-                <ul className="store-info padding-top-small">
+                <h3 className="store-card-list__title text-size-bigger text-weight-bold">{name}</h3>
+                <ul className="store-info padding-top-bottom-small">
+                  <li className="store-info__item text-middle">
+                    <IconLocation className="icon icon__smaller text-middle" />
+                    <span className="store-info__text text-size-small text-middle">
+                      {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
+                    </span>
+                  </li>
                   <li className="store-info__item text-middle">
                     <IconMotorcycle className="icon icon__smaller text-middle" />
                     <CurrencyNumber
@@ -76,7 +81,7 @@ class StoreList extends Component {
             </li>
           );
         })}
-      </>
+      </React.Fragment>
     );
   };
 
@@ -96,6 +101,31 @@ class StoreList extends Component {
         useWindow={false}
       >
         {this.renderStoreItems()}
+        <li className="store-card-list__item flex flex-top">
+          <div className="store-card-list__image-container border-radius-base">
+            <Tag text={'Close'} className="tag__card text-size-small text-weight-bold margin-smaller text-error" />
+            <Image className="store-card-list__image card__image" src="" scalingRatioIndex={1} alt={'name'} />
+          </div>
+          <summary className="store-card-list__summary padding-left-right-small">
+            <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit">
+              {'namen amenamenamenamenamenamenamenamenamenamenamenamename'}
+            </h3>
+            <ul className="store-info padding-top-bottom-small">
+              <li className="store-info__item text-middle">
+                <IconLocation className="icon icon__smaller text-middle" />
+                <span className="store-info__text text-size-small text-middle">2.00 km</span>
+              </li>
+              <li className="store-info__item text-middle">
+                <IconMotorcycle className="icon icon__smaller text-middle" />
+                <span className="store-info__text text-size-small text-middle">RM 5.00</span>
+              </li>
+            </ul>
+            <div className="store-card-list__description text-opacity">
+              <label className="text-size-small text-middle">Min Order.</label>
+              <span className="store-info__text text-size-small text-middle">RM 5.00</span>
+            </div>
+          </summary>
+        </li>
       </InfiniteScroll>
     );
   };
