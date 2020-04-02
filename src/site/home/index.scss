@@ -102,7 +102,7 @@
   }
 
   &__title {
-    max-height: 18px;
+    max-height: 24px;
     max-width: 100%;
     -webkit-line-clamp: 1;
   }
@@ -134,10 +134,18 @@
 /* end of Searching Store List */
 
 @media (max-width: 374px) {
-  /* Searching Store List */
-  .searching-list {
-    max-height: 200px;
+  /* Store Card List */
+  .store-card-list {
+    &__title {
+      max-height: 18px;
+    }
   }
+  /* end of Store Card List */
+
+  /* Searching Store List */
+  // .searching-list {
+  //   max-height: 200px;
+  // }
   /* end of Searching Store List */
 }
 
