@@ -94,6 +94,8 @@ class Home extends React.Component {
     const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
     const { keyword } = this.state;
     const { hasMore } = paginationInfo;
+    const isEmptySearchingStores = keyword && (!searchingStores || !searchingStores.length);
+    const currentStores = !Boolean(keyword) ? stores : isEmptySearchingStores ? [] : searchingStores;
 
     // current placeInfo is required.
     if (!currentPlaceInfo) {
@@ -133,7 +135,7 @@ class Home extends React.Component {
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />
             </div>
-            {!searchingStores || !searchingStores.length || !keyword ? null : (
+            {/* {!searchingStores || !searchingStores.length || !keyword ? null : (
               <ul className="searching-list border__bottom-divider border-radius-base base-box-shadow">
                 {searchingStores.map(store => {
                   const { name, geoDistance } = store;
@@ -153,14 +155,19 @@ class Home extends React.Component {
                   );
                 })}
               </ul>
-            )}
+            )} */}
           </div>
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
+            {!isEmptySearchingStores ? null : (
+              <div className="text-center">
+                <p>No Results Found!</p>
+              </div>
+            )}
             {currentPlaceInfo.coords ? (
               <StoreList
-                stores={stores}
+                stores={currentStores}
                 hasMore={hasMore}
                 loadMoreStores={this.handleLoadMoreStores}
                 onStoreClicked={this.handleStoreSelected}
