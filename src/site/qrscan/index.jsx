@@ -32,7 +32,7 @@ const processQR = qrData =>
     const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
 
     if (/^https?:/.test(data)) {
-      if (data.includes('tableId=DEMO') || extraParams.includes('tableId=DEMO')) {
+      if (data.includes('tableId=DEMO')) {
         data = data.match(domainRegex)[0];
       } else if (data.includes('beepit.co') || data.includes('beepit.com')) {
         data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
