@@ -112,6 +112,13 @@
       border-right: solid calc(107px) rgba(77, 77, 77, 0.5);
       border-left: solid calc(107px) rgba(77, 77, 77, 0.5);
     }
+
+    &__video-player {
+      position: fixed;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
   }
   /* end of QRScan */
 }
