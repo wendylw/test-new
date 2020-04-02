@@ -51,7 +51,7 @@ class App extends Component {
     const { error, pageError, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
-    alert('reducerStoreId===>', currentStoreId);
+    alert('currentStoreId===>', currentStoreId);
     console.log('stores===>', stores);
 
     return (

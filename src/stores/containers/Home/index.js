@@ -27,6 +27,8 @@ class App extends Component {
     const storeId = Utils.getQueryString('storeId');
     await this.props.homeActions.loadCoreStores();
 
+    alert('getStoreId===>', Utils.getQueryString('storeId'));
+
     if (storeId) {
       // setup deliveryAddress info for auto redirect to ordering page
       //  when user click "delivery" on shipping type page
