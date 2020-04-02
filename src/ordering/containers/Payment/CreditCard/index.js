@@ -18,7 +18,6 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-
 import paymentVisaImage from '../../../../images/payment-visa.svg';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
 import paymentJCBImage from '../../../../images/payment-JCB.svg';
@@ -323,7 +322,7 @@ class CreditCard extends Component {
     }
 
     this.setState({
-      payNowLoading: true,
+      payNowLoading: !!orderId,
     });
   }
 

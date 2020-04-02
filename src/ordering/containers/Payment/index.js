@@ -11,13 +11,7 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getUser,
-  getBusiness,
-  getMerchantCountry,
-} from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import { getPaymentName, getPaymentList, getSupportCreditCardBrands } from './utils';
@@ -149,7 +143,7 @@ class Payment extends Component {
   }
 
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary } = this.props;
+    const { history, currentPayment, cartSummary, t } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -179,7 +173,7 @@ class Payment extends Component {
     }
 
     this.setState({
-      payNowLoading: orderId,
+      payNowLoading: !!orderId,
     });
   };
 
@@ -267,7 +261,6 @@ export default compose(
       };
     },
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })

@@ -101,13 +101,11 @@ class OnlineBanking extends Component {
         payNowLoading: true,
       },
       async () => {
-        const { history, paymentActions, cartSummary } = this.props;
+        const { history, paymentActions, cartSummary, t } = this.props;
         const { totalCashback } = cartSummary || {};
-        const { agentCode } = this.state;
         const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
         await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
         const { currentOrder } = this.props;
         const { orderId } = currentOrder || {};
 
@@ -116,7 +114,9 @@ class OnlineBanking extends Component {
           Utils.removeSessionVariable('deliveryComments');
         }
 
-        this.setState({ payNowLoading: !!agentCode });
+        this.setState({
+          payNowLoading: !!orderId,
+        });
       }
     );
   }

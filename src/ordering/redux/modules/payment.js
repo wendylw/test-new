@@ -2,12 +2,13 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getOnlineStoreInfo, getRequestInfo } from './app';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions } from './app';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
+import i18next from 'i18next';
 
 const initialState = {
   currentPayment: '',
@@ -103,6 +104,16 @@ export const actions = {
             }
       )
     );
+
+    if (result.type === types.CREATEORDER_FAILURE) {
+      dispatch(
+        appActions.showError({
+          message: i18next.t('PlaceOrderFailedDescription', {
+            ns: 'OrderingPayment',
+          }),
+        })
+      );
+    }
 
     if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
       try {
