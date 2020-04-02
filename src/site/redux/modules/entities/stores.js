@@ -1,7 +1,7 @@
 const initialState = {};
 
 /* StoreList Define =>
-type store = {
+type stores = [{
     id: string
     name: string
     avatar: string
@@ -14,7 +14,7 @@ type store = {
     minimumConsumption: number
     geoDistance: number // Unit is `meter`
     isOpen: boolean
-}
+}]
 */
 
 // @types

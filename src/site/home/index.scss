@@ -62,9 +62,14 @@
 
   &__image-container {
     position: relative;
+    border: 1px solid transparent;
     width: 26vw;
     height: 26vw;
     overflow: hidden;
+
+    &.placeholder {
+      border-color: $gray-3;
+    }
   }
 
   &__image {

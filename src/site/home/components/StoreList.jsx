@@ -6,6 +6,7 @@ import { IconMotorcycle, IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import Tag from '../../../components/Tag';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -43,12 +44,20 @@ class StoreList extends Component {
                 this.handleStoreClicked(store);
               }}
             >
-              <div className="store-card-list__image-container border-radius-base">
+              <div className={`store-card-list__image-container border-radius-base${avatar ? '' : ' placeholder'}`}>
                 <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
-                <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={1} alt={name} />
+                <Image
+                  className="store-card-list__image card__image"
+                  src={avatar}
+                  placeholderImage={MvpStorePlaceholderImage}
+                  scalingRatioIndex={1}
+                  alt={name}
+                />
               </div>
               <summary className="store-card-list__summary padding-left-right-small">
-                <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit">{name}</h3>
+                <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit__single-line">
+                  {name}
+                </h3>
                 <ul className="store-info padding-top-bottom-small">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />

@@ -81,11 +81,11 @@ class Image extends React.Component {
   }
 
   render() {
-    const { className, style, alt } = this.props;
+    const { className, style, alt, placeholderImage } = this.props;
 
     return (
       <figure className={className} style={style}>
-        <img src={this.getImageURL() || productPlaceholderImage} alt={alt} />
+        <img src={this.getImageURL() || placeholderImage || productPlaceholderImage} alt={alt} />
       </figure>
     );
   }
@@ -97,6 +97,7 @@ Image.propTypes = {
   alt: PropTypes.string,
   src: PropTypes.string,
   scalingRatioIndex: PropTypes.number,
+  placeholderImage: PropTypes.string,
 };
 
 Image.defaultProps = {

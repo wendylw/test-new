@@ -103,12 +103,25 @@ address {
   vertical-align: middle;
 }
 
-.text-omit {
-  display: inline-block;
-  white-space: nowrap;
+.text-omit-base {
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
+}
+
+.text-omit {
+  &__single-line {
+    @extend .text-omit-base;
+
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  &__multiple-line {
+    @extend .text-omit-base;
+
+    display: -webkit-box;
+  }
 }
 
 .border-radius-base {
