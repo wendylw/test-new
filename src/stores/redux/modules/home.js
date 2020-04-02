@@ -98,6 +98,8 @@ const reducer = (state = initialState, action) => {
     case types.CLEAR_CURRENT_STORE: {
       const { storeId } = action;
 
+      console.log('reducerStoreId===>', storeId);
+
       return { ...state, currentStoreId: storeId };
     }
     case types.FETCH_CORESTORES_SUCCESS: {
