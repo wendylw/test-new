@@ -51,9 +51,6 @@ class App extends Component {
     const { error, pageError, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
-    alert('currentStoreId===>', currentStoreId);
-    console.log('stores===>', stores);
-
     return (
       <main className="store-list">
         {currentStoreId && enableDelivery ? (

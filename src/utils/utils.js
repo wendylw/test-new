@@ -5,11 +5,7 @@ const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
-  alert('key===>', key);
-
   if (key) {
-    console.log('queries===>', queries);
-
     return queries[key] || null;
   }
 

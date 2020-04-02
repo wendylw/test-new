@@ -27,12 +27,9 @@ class App extends Component {
     const storeId = Utils.getQueryString('storeId');
     await this.props.homeActions.loadCoreStores();
 
-    alert('getStoreId===>', Utils.getQueryString('storeId'));
-
     if (storeId) {
       // setup deliveryAddress info for auto redirect to ordering page
       //  when user click "delivery" on shipping type page
-      alert('storeId===>', storeId);
       this.setupDeliveryAddressByCookie();
       this.setCurrentStoreId(storeId);
     }
@@ -73,10 +70,8 @@ class App extends Component {
     const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
       homeActions.setCurrentStore(storeId);
-      alert('setCurrentStore===>');
     } else {
       await homeActions.getStoreHashData(storeId);
-      alert('getHashData===>', this.props.hashCode);
       const { hashCode } = this.props;
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=delivery`;
     }
