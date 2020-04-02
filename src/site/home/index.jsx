@@ -90,12 +90,20 @@ class Home extends React.Component {
     window.location.href = storeUrl;
   };
 
-  render() {
-    const { t, currentPlaceInfo, paginationInfo, stores, searchingStores } = this.props;
+  getStores = () => {
+    const { stores, searchingStores } = this.props;
     const { keyword } = this.state;
-    const { hasMore } = paginationInfo;
     const isEmptySearchingStores = keyword && (!searchingStores || !searchingStores.length);
-    const currentStores = !Boolean(keyword) ? stores : isEmptySearchingStores ? [] : searchingStores;
+    return !Boolean(keyword) ? stores : isEmptySearchingStores ? [] : searchingStores;
+  };
+
+  render() {
+    const {
+      t,
+      currentPlaceInfo,
+      paginationInfo: { hasMore },
+    } = this.props;
+    const { keyword } = this.state;
 
     // current placeInfo is required.
     if (!currentPlaceInfo) {
@@ -160,18 +168,19 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            {!isEmptySearchingStores ? null : (
-              <div className="text-center">
-                <p>No Results Found!</p>
-              </div>
-            )}
+            {/*{!isEmptySearchingStores ? null : (*/}
+            {/*  <div className="text-center">*/}
+            {/*    <p>No Results Found!</p>*/}
+            {/*  </div>*/}
+            {/*)}*/}
             {currentPlaceInfo.coords ? (
               <StoreList
-                stores={currentStores}
+                stores={this.getStores()}
                 hasMore={hasMore}
                 loadMoreStores={this.handleLoadMoreStores}
                 onStoreClicked={this.handleStoreSelected}
                 getScrollParent={() => this.sectionRef.current}
+                withInfiniteScroll
               />
             ) : null}
           </div>

@@ -12,9 +12,10 @@ class StoreList extends Component {
     this.props.onStoreClicked(store);
   };
 
-  render() {
-    const { t, stores, hasMore, loadMoreStores, getScrollParent } = this.props;
+  renderStoreItems = () => {
     const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
+    const { t, stores } = this.props;
+
     const storeStatus = {
       open: {
         text: t('Open'),
@@ -26,20 +27,8 @@ class StoreList extends Component {
       },
     };
 
-    console.log('[StoreList] hasMore =', hasMore, 'stores =', stores);
-
-    // todo: scroll parent may need to specify
     return (
-      <InfiniteScroll
-        className="store-card-list"
-        element="ul"
-        loader={<div key={'loading-0'} className="loader theme"></div>}
-        pageStart={-1} // to count from page0, page1, ...
-        hasMore={hasMore}
-        loadMore={page => loadMoreStores(page)}
-        getScrollParent={getScrollParent}
-        useWindow={false}
-      >
+      <>
         {stores.map(store => {
           const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id, locale, currency } =
             store || {};
@@ -87,17 +76,52 @@ class StoreList extends Component {
             </li>
           );
         })}
+      </>
+    );
+  };
+
+  renderWithInfiniteScroll = () => {
+    const { hasMore, loadMoreStores, getScrollParent } = this.props;
+
+    // todo: scroll parent may need to specify
+    return (
+      <InfiniteScroll
+        className="store-card-list"
+        element="ul"
+        loader={<div key={'loading-0'} className="loader theme"></div>}
+        pageStart={-1} // to count from page0, page1, ...
+        hasMore={hasMore}
+        loadMore={page => loadMoreStores(page)}
+        getScrollParent={getScrollParent}
+        useWindow={false}
+      >
+        {this.renderStoreItems()}
       </InfiniteScroll>
     );
+  };
+
+  renderStoreList = () => {
+    return <ul className="store-card-list">{this.renderStoreItems()}</ul>;
+  };
+
+  render() {
+    const { withInfiniteScroll } = this.props;
+
+    if (withInfiniteScroll) {
+      return this.renderWithInfiniteScroll();
+    }
+
+    return this.renderStoreList();
   }
 }
 
 StoreList.propTypes = {
-  stores: PropTypes.array,
+  stores: PropTypes.array.isRequired,
   hasMore: PropTypes.bool,
   loadMoreStores: PropTypes.func,
   getScrollParent: PropTypes.func,
   onStoreClicked: PropTypes.func,
+  withInfiniteScroll: PropTypes.bool,
 };
 
 StoreList.defaultProps = {
@@ -105,6 +129,7 @@ StoreList.defaultProps = {
   loadMoreStores: () => {},
   getScrollParent: () => {},
   onStoreClicked: () => {},
+  withInfiniteScroll: false,
 };
 
 export default withTranslation()(StoreList);

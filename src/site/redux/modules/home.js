@@ -41,21 +41,31 @@ const fetchStoreList = page => (dispatch, getState) => {
       }
 
       console.error(new Error(JSON.stringify(response)));
-      return [];
+      return response;
     }),
   });
 };
 
-const fetchSearchingStoreList = ({ coords, keyword, top }) => ({
-  types: [
-    types.GET_SEARCHING_STORE_LIST_REQUEST,
-    types.GET_SEARCHING_STORE_LIST_SUCCESS,
-    types.GET_SEARCHING_STORE_LIST_FAILURE,
-  ],
-  requestPromise: get(
-    `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&top=${top}`
-  ),
-});
+const fetchSearchingStoreList = ({ coords, keyword, top }) => (dispatch, getState) => {
+  return dispatch({
+    types: [
+      types.GET_SEARCHING_STORE_LIST_REQUEST,
+      types.GET_SEARCHING_STORE_LIST_SUCCESS,
+      types.GET_SEARCHING_STORE_LIST_FAILURE,
+    ],
+    requestPromise: get(
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&top=${top}`
+    ).then(async response => {
+      console.log('--> response =', response);
+      if (response && Array.isArray(response.stores)) {
+        await dispatch(storesActionCreators.saveStores(response.stores));
+        return response;
+      }
+
+      return response;
+    }),
+  });
+};
 
 // @actions
 const actions = {

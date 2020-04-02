@@ -40,7 +40,10 @@ const reducer = (state = initialState, action) => {
     }
 
     stores.forEach(store => {
-      state[store.id] = store;
+      if (!state[store.id]) {
+        // if not found, then save
+        state[store.id] = store;
+      }
     });
 
     return { ...state };
