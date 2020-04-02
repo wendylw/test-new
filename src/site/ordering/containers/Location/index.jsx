@@ -89,7 +89,7 @@ class Location extends React.Component {
             <i className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked}>
               <IconLeftArrow />
             </i>
-            <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit">
+            <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit__single-line">
               {t('DeliverTo')}
             </h2>
           </div>
