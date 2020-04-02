@@ -44,7 +44,7 @@ class StoreList extends Component {
                 this.handleStoreClicked(store);
               }}
             >
-              <div className={`store-card-list__image-container border-radius-base${avatar ? '' : ' placeholder'}`}>
+              <div className={`store-card-list__image-container border-radius-large${avatar ? '' : ' placeholder'}`}>
                 <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
                 <Image
                   className="store-card-list__image card__image"
