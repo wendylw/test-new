@@ -14,6 +14,7 @@ import {
   homeActionCreators,
   getPaginationInfo,
   getSearchingStores,
+  loadedSearchingStores,
   getAllCurrentStores,
   getSearchResult,
 } from '../redux/modules/home';
@@ -77,6 +78,8 @@ class Home extends React.Component {
   handleSearchTextChange = event => {
     const keyword = event.currentTarget.value;
 
+    this.props.homeActions.setSearchingStoresStatus(false);
+
     this.setState({ keyword }, () => {
       this.debounceSearchStores();
     });
@@ -127,12 +130,17 @@ class Home extends React.Component {
       t,
       searchResult,
       currentPlaceInfo: { coords },
+      loadedSearchingStores,
     } = this.props;
     const { keyword } = this.state;
 
+    if (Boolean(keyword) && !loadedSearchingStores) {
+      return <div className="loader theme text-size-huge" />;
+    }
+
     return (
       <React.Fragment>
-        {searchResult.length ? null : (
+        {searchResult.length && loadedSearchingStores ? null : (
           <div className="text-center">
             <img className="entry-home__hero-image" src={MvpNotFoundImage} alt="store not found" />
             <p className="entry-home__prompt-text text-size-big text-opacity">
@@ -155,7 +163,7 @@ class Home extends React.Component {
 
     if (!currentPlaceInfo) {
       console.warn('[Home] current placeInfo is required');
-      return <div className="loader theme full-page"></div>;
+      return <i className="loader theme full-page text-size-huge"></i>;
     }
 
     return (
@@ -231,6 +239,7 @@ export default compose(
       stores: getAllCurrentStores(state),
       searchingStores: getSearchingStores(state),
       searchResult: getSearchResult(state),
+      loadedSearchingStores: loadedSearchingStores(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

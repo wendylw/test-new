@@ -2,6 +2,10 @@
 
 /* Entry */
 .entry {
+  .loader {
+    margin: 9vh auto;
+  }
+
   &__bar {
     position: fixed;
     left: 0;

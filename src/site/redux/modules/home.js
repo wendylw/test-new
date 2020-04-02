@@ -26,6 +26,9 @@ const types = {
   GET_SEARCHING_STORE_LIST_REQUEST: 'SITE/HOME/GET_SEARCHING_STORE_LIST_REQUEST',
   GET_SEARCHING_STORE_LIST_SUCCESS: 'SITE/HOME/GET_SEARCHING_STORE_LIST_SUCCESS',
   GET_SEARCHING_STORE_LIST_FAILURE: 'SITE/HOME/GET_SEARCHING_STORE_LIST_FAILURE',
+
+  // set searching store list status
+  SET_SEARCHING_STORES_STATUS: 'SITE/HOME/SET_SEARCHING_STORES_STATUS',
 };
 
 const fetchStoreList = page => (dispatch, getState) => {
@@ -71,6 +74,12 @@ const fetchSearchingStoreList = ({ coords, keyword, top }) => (dispatch, getStat
 
 // @actions
 const actions = {
+  setSearchingStoresStatus: status => (dispatch, getState) => {
+    return dispatch({
+      type: types.SET_SEARCHING_STORES_STATUS,
+      loadedSearchingStoreList: status,
+    });
+  },
   getStoreList: page => (dispatch, getState) => {
     return dispatch(fetchStoreList(page));
   },
@@ -129,6 +138,7 @@ const reducer = (state = initialState, action) => {
         paginationInfo: paginationInfoReducer(state.paginationInfo, action),
       };
     case types.GET_SEARCHING_STORE_LIST_REQUEST:
+    case types.SET_SEARCHING_STORES_STATUS:
       return { ...state, loadedSearchingStoreList: false };
     case types.GET_SEARCHING_STORE_LIST_FAILURE:
       return { ...state, loadedSearchingStoreList: true };
@@ -152,5 +162,6 @@ export default reducer;
 // @selectors
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getSearchingStores = state => state.home.searchingStoreList;
+export const loadedSearchingStores = state => state.home.loadedSearchingStoreList;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
 export const getSearchResult = state => state.home.storeIdsSearchResult.map(storeId => getStoreById(state, storeId));
