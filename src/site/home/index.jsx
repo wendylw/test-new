@@ -113,15 +113,18 @@ class Home extends React.Component {
     } = this.props;
 
     return (
-      <StoreList
-        key={'store-list'}
-        stores={stores}
-        hasMore={hasMore}
-        loadMoreStores={this.handleLoadMoreStores}
-        onStoreClicked={this.handleStoreSelected}
-        getScrollParent={() => this.sectionRef.current}
-        withInfiniteScroll
-      />
+      <React.Fragment>
+        <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
+        <StoreList
+          key={'store-list'}
+          stores={stores}
+          hasMore={hasMore}
+          loadMoreStores={this.handleLoadMoreStores}
+          onStoreClicked={this.handleStoreSelected}
+          getScrollParent={() => this.sectionRef.current}
+          withInfiniteScroll
+        />
+      </React.Fragment>
     );
   };
 
@@ -219,9 +222,6 @@ class Home extends React.Component {
           </div>
 
           <div className="store-card-list__container padding-normal">
-            {Boolean(keyword) && !searchResult.length ? null : (
-              <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            )}
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
