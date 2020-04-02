@@ -1,6 +1,6 @@
 import React from 'react';
 import { debounce } from 'lodash';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { IconSearch, IconClose } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
