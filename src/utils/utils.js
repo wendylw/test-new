@@ -8,7 +8,7 @@ Utils.getQueryString = key => {
   alert('key===>', key);
 
   if (key) {
-    alert('queries[key]===>', queries[key]);
+    console.log('queries===>', queries);
 
     return queries[key] || null;
   }
