@@ -12,8 +12,13 @@
 
   &__video-player {
     position: absolute;
-    left: -100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translateX(-50%) translateY(-50%);
   }
 
   &__canvas {
@@ -111,13 +116,6 @@
       border-top: solid calc(50vh - 100px) rgba(77, 77, 77, 0.5);
       border-right: solid calc(107px) rgba(77, 77, 77, 0.5);
       border-left: solid calc(107px) rgba(77, 77, 77, 0.5);
-    }
-
-    &__video-player {
-      position: fixed;
-      left: 0;
-      right: 0;
-      margin: auto;
     }
   }
   /* end of QRScan */
