@@ -37,18 +37,18 @@ class StoreList extends Component {
           return (
             <li
               key={id}
-              className="store-card-list__item card"
+              className="store-card-list__item flex flex-top"
               onClick={() => {
                 console.log(`[StoreList] store[${id}] is clicked`);
                 this.handleStoreClicked(store);
               }}
             >
-              <figure>
+              <div className="store-card-list__image-container border-radius-base">
                 <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
                 <Image className="store-card-list__image card__image" src={avatar} scalingRatioIndex={1} alt={name} />
-              </figure>
-              <summary className="padding-small">
-                <h3 className="store-card-list__title text-size-bigger text-weight-bold">{name}</h3>
+              </div>
+              <summary className="store-card-list__summary padding-left-right-small">
+                <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit">{name}</h3>
                 <ul className="store-info padding-top-bottom-small">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
@@ -65,18 +65,18 @@ class StoreList extends Component {
                       price={deliveryFee}
                     />
                   </li>
-                  <li className="store-info__item text-middle">
-                    <Trans i18nKey="MinimumOrder">
-                      <label className="text-size-small text-middle">Min Order.</label>
-                      <CurrencyNumber
-                        className="store-info__text text-size-small text-middle"
-                        locale={locale}
-                        currency={currency}
-                        price={minimumConsumption}
-                      />
-                    </Trans>
-                  </li>
                 </ul>
+                <div className="store-card-list__description text-opacity">
+                  <Trans i18nKey="MinimumOrder">
+                    <label className="text-size-small text-middle">Min Order.</label>
+                    <CurrencyNumber
+                      className="store-info__text text-size-small text-middle"
+                      locale={locale}
+                      currency={currency}
+                      price={minimumConsumption}
+                    />
+                  </Trans>
+                </div>
               </summary>
             </li>
           );
@@ -101,31 +101,6 @@ class StoreList extends Component {
         useWindow={false}
       >
         {this.renderStoreItems()}
-        <li className="store-card-list__item flex flex-top">
-          <div className="store-card-list__image-container border-radius-base">
-            <Tag text={'Close'} className="tag__card text-size-small text-weight-bold margin-smaller text-error" />
-            <Image className="store-card-list__image card__image" src="" scalingRatioIndex={1} alt={'name'} />
-          </div>
-          <summary className="store-card-list__summary padding-left-right-small">
-            <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit">
-              {'namen amenamenamenamenamenamenamenamenamenamenamenamename'}
-            </h3>
-            <ul className="store-info padding-top-bottom-small">
-              <li className="store-info__item text-middle">
-                <IconLocation className="icon icon__smaller text-middle" />
-                <span className="store-info__text text-size-small text-middle">2.00 km</span>
-              </li>
-              <li className="store-info__item text-middle">
-                <IconMotorcycle className="icon icon__smaller text-middle" />
-                <span className="store-info__text text-size-small text-middle">RM 5.00</span>
-              </li>
-            </ul>
-            <div className="store-card-list__description text-opacity">
-              <label className="text-size-small text-middle">Min Order.</label>
-              <span className="store-info__text text-size-small text-middle">RM 5.00</span>
-            </div>
-          </summary>
-        </li>
       </InfiniteScroll>
     );
   };
