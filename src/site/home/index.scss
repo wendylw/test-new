@@ -59,6 +59,10 @@
     background-color: $white;
   }
 
+  &__item {
+    cursor: pointer;
+  }
+
   &__image-container {
     position: relative;
     border: 1px solid $gray-3;
@@ -145,13 +149,13 @@
 
   /* Store Card List */
   .store-card-list {
-    &__summary {
-      width: 290px;
-    }
-
     &__image-container {
       width: 88px;
       height: 88px;
+    }
+
+    &__summary {
+      width: 290px;
     }
   }
   /* end of Store Card List */

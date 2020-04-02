@@ -37,7 +37,7 @@ class StoreList extends Component {
           return (
             <li
               key={id}
-              className="flex flex-top padding-top-bottom-normal border__bottom-divider"
+              className="store-card-list__item flex flex-top padding-top-bottom-normal border__bottom-divider"
               onClick={() => {
                 console.log(`[StoreList] store[${id}] is clicked`);
                 this.handleStoreClicked(store);
