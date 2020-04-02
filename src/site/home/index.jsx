@@ -20,8 +20,9 @@ import {
 import { getPlaceInfo, savePlaceInfo } from './utils';
 import Utils from '../../utils/utils';
 import config from '../../config';
+import MvpNotFoundImage from '../../images/mvp-not-found.png';
 
-const { ROUTER_PATHS, ADDRESS_RANGE } = Constants;
+const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
 class Home extends React.Component {
   constructor(props) {
@@ -115,27 +116,31 @@ class Home extends React.Component {
   };
 
   renderSearchResult = () => {
-    const { searchResult } = this.props;
+    const { t, searchResult } = this.props;
+    const { keyword } = this.state;
 
     return (
-      <>
-        {!searchResult.length ? (
+      <React.Fragment>
+        {searchResult.length ? null : (
           <div className="text-center">
-            <p>No Results Found!</p>
+            <img className="entry-home__hero-image" src={MvpNotFoundImage} alt="store not found" />
+            <p className="entry-home__prompt-text text-size-big text-opacity">
+              {t('SearchNotFoundStoreDescription', { keyword })}
+            </p>
           </div>
-        ) : null}
+        )}
         <StoreList stores={searchResult} onStoreClicked={this.handleStoreSelected} />
-      </>
+      </React.Fragment>
     );
   };
 
   render() {
-    const { t, currentPlaceInfo } = this.props;
+    const { t, currentPlaceInfo, searchResult } = this.props;
     const { keyword } = this.state;
 
     if (!currentPlaceInfo) {
       console.warn('[Home] current placeInfo is required');
-      return <div>loading..</div>;
+      return <div className="loader theme full-page"></div>;
     }
 
     return (
@@ -195,8 +200,10 @@ class Home extends React.Component {
           </div>
 
           <div className="store-card-list__container padding-normal">
-            <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            {currentPlaceInfo.coords ? (keyword ? this.renderSearchResult() : this.renderStoreList()) : null}
+            {Boolean(keyword) && !searchResult.length ? null : (
+              <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
+            )}
+            {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
       </main>

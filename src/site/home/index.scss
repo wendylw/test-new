@@ -26,6 +26,16 @@
     margin-top: -100px;
     padding: 22px 3.8vw;
   }
+
+  &__hero-image {
+    max-width: 60%;
+  }
+
+  &__prompt-text {
+    margin: 0 auto;
+    width: 90%;
+    max-width: 382px;
+  }
 }
 /* end of Entry */
 
