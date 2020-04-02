@@ -85,6 +85,7 @@
   "NearbyRestaurants": "Nearby Restaurants",
   "DistanceText": "{{distance}} km",
   "SearchNotFoundStoreDescription": "Couldn't Find Results for “{{keyword}}” Let's try a different restaurant.",
+  "ClosedForNow": "Closed\nFor Now",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",

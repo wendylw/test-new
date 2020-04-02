@@ -14,38 +14,42 @@ class StoreList extends Component {
   };
 
   renderStoreItems = () => {
-    const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
+    // const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
     const { t, stores } = this.props;
 
-    const storeStatus = {
-      open: {
-        text: t('Open'),
-        className: `${tagClassName} text-success`,
-      },
-      close: {
-        text: t('Closed'),
-        className: `${tagClassName} text-error`,
-      },
-    };
+    // const storeStatus = {
+    //   open: {
+    //     text: t('Open'),
+    //     className: `${tagClassName} text-success`,
+    //   },
+    //   close: {
+    //     text: t('Closed'),
+    //     className: `${tagClassName} text-error`,
+    //   },
+    // };
 
     return (
       <React.Fragment>
         {stores.map(store => {
           const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id, locale, currency } =
             store || {};
-          const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
+          // const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
             <li
               key={id}
-              className="store-card-list__item flex flex-top"
+              className="flex flex-top padding-top-bottom-normal border__bottom-divider"
               onClick={() => {
                 console.log(`[StoreList] store[${id}] is clicked`);
                 this.handleStoreClicked(store);
               }}
             >
-              <div className={`store-card-list__image-container border-radius-large${avatar ? '' : ' placeholder'}`}>
-                <Tag text={currentStoreStatus.text} className={currentStoreStatus.className} />
+              <div className="store-card-list__image-container border-radius-large">
+                {isOpen ? null : (
+                  <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bold">
+                    {t('ClosedForNow')}
+                  </div>
+                )}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
