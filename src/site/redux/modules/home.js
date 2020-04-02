@@ -10,6 +10,7 @@ const initialState = {
     pageSize: 5,
     hasMore: true,
   },
+  loadedSearchingStoreList: false,
   storeIds: [],
   storeIdsSearchResult: [],
   searchingStoreList: [], // Notice: not used, since dropdown search result is removed from design
@@ -127,11 +128,16 @@ const reducer = (state = initialState, action) => {
         storeIds: storeIdsReducer(state.storeIds, action),
         paginationInfo: paginationInfoReducer(state.paginationInfo, action),
       };
+    case types.GET_SEARCHING_STORE_LIST_REQUEST:
+      return { ...state, loadedSearchingStoreList: false };
+    case types.GET_SEARCHING_STORE_LIST_FAILURE:
+      return { ...state, loadedSearchingStoreList: true };
     case types.GET_SEARCHING_STORE_LIST_SUCCESS:
       const { stores: searchingStoreList } = response;
 
       return {
         ...state,
+        loadedSearchingStoreList: true,
         searchingStoreList,
         storeIdsSearchResult: storeIdsSearchResultReducer(state.storeIdsSearchResult, action),
       };

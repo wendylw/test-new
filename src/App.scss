@@ -1585,7 +1585,7 @@
     @extend .border-radius-base;
 
     display: inline-block;
-    padding: 2vw 4vw;
+    padding: 1.4vw 2.4vw;
     border: 1px solid $white;
     margin: 2vw;
     background-color: transparent;
@@ -3374,7 +3374,10 @@ body.loading {
     margin-top: 34px;
   }
 
-  .tag__card,
+  .tag__card {
+    padding: 5px 10px;
+  }
+
   .cart-bar__order-button {
     padding: 9px 16px;
   }
