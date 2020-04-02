@@ -22,6 +22,14 @@ export const getPlaceInfo = async ({ history, location }) => {
   // first to use place from location picker
   let placeInfo = getPlaceInfoFromHistory({ history, location });
 
+  // todo: need to reset store list instead of refresh the whole page
+  // --Begin-- to replace
+  let fromLocationPage = !!placeInfo;
+  if (placeInfo) {
+    history.replace(location.pathname, {});
+  }
+  // ---End--- to replace
+
   // second to use last time
   if (!placeInfo) {
     try {
@@ -40,5 +48,5 @@ export const getPlaceInfo = async ({ history, location }) => {
     }
   }
 
-  return placeInfo || null;
+  return { fromLocationPage, placeInfo };
 };

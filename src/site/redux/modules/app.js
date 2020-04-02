@@ -35,13 +35,12 @@ const actions = {
   },
   setCurrentPlaceInfo: placeInfo => (dispatch, getState) => {
     if (placeInfo) {
+      dispatch(placesActionCreators.savePlace(placeInfo));
       dispatch({
         type: types.SET_CURRENT_PLACE_INFO,
         placeId: placeInfo.placeId,
       });
-      return dispatch(placesActionCreators.savePlace(placeInfo));
     }
-    return null;
   },
 };
 

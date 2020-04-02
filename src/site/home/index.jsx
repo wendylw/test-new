@@ -37,7 +37,7 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    const placeInfo = await getPlaceInfo(this.props);
+    const { placeInfo, fromLocationPage } = await getPlaceInfo(this.props);
 
     // if no placeInfo at all
     if (!placeInfo) {
@@ -46,7 +46,12 @@ class Home extends React.Component {
 
     // placeInfo ok
     await savePlaceInfo(placeInfo); // now save into localStorage
-    await this.props.appActions.setCurrentPlaceInfo(placeInfo);
+    this.props.appActions.setCurrentPlaceInfo(placeInfo);
+
+    // todo: need to reset store list instead of refresh the whole page
+    if (fromLocationPage) {
+      window.location.reload();
+    }
   };
 
   debounceSearchStores = debounce(() => {
@@ -106,6 +111,7 @@ class Home extends React.Component {
 
     return (
       <StoreList
+        key={'store-list'}
         stores={stores}
         hasMore={hasMore}
         loadMoreStores={this.handleLoadMoreStores}
@@ -117,7 +123,11 @@ class Home extends React.Component {
   };
 
   renderSearchResult = () => {
-    const { t, searchResult } = this.props;
+    const {
+      t,
+      searchResult,
+      currentPlaceInfo: { coords },
+    } = this.props;
     const { keyword } = this.state;
 
     return (
@@ -130,7 +140,11 @@ class Home extends React.Component {
             </p>
           </div>
         )}
-        <StoreList stores={searchResult} onStoreClicked={this.handleStoreSelected} />
+        <StoreList
+          key={`research-result-${coords.lng}-${coords.lat}`}
+          stores={searchResult}
+          onStoreClicked={this.handleStoreSelected}
+        />
       </React.Fragment>
     );
   };
