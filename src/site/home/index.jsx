@@ -10,7 +10,13 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import './index.scss';
 import Constants from '../../utils/constants';
-import { homeActionCreators, getPaginationInfo, getSearchingStores, getAllCurrentStores } from '../redux/modules/home';
+import {
+  homeActionCreators,
+  getPaginationInfo,
+  getSearchingStores,
+  getAllCurrentStores,
+  getSearchResult,
+} from '../redux/modules/home';
 import { getPlaceInfo, savePlaceInfo } from './utils';
 import Utils from '../../utils/utils';
 import config from '../../config';
@@ -90,24 +96,46 @@ class Home extends React.Component {
     window.location.href = storeUrl;
   };
 
-  getStores = () => {
-    const { stores, searchingStores } = this.props;
-    const { keyword } = this.state;
-    const isEmptySearchingStores = keyword && (!searchingStores || !searchingStores.length);
-    return !Boolean(keyword) ? stores : isEmptySearchingStores ? [] : searchingStores;
+  renderStoreList = () => {
+    const {
+      stores,
+      paginationInfo: { hasMore },
+    } = this.props;
+
+    return (
+      <StoreList
+        stores={stores}
+        hasMore={hasMore}
+        loadMoreStores={this.handleLoadMoreStores}
+        onStoreClicked={this.handleStoreSelected}
+        getScrollParent={() => this.sectionRef.current}
+        withInfiniteScroll
+      />
+    );
+  };
+
+  renderSearchResult = () => {
+    const { searchResult } = this.props;
+
+    return (
+      <>
+        {!searchResult.length ? (
+          <div className="text-center">
+            <p>No Results Found!</p>
+          </div>
+        ) : null}
+        <StoreList stores={searchResult} onStoreClicked={this.handleStoreSelected} />
+      </>
+    );
   };
 
   render() {
-    const {
-      t,
-      currentPlaceInfo,
-      paginationInfo: { hasMore },
-    } = this.props;
+    const { t, currentPlaceInfo } = this.props;
     const { keyword } = this.state;
 
-    // current placeInfo is required.
     if (!currentPlaceInfo) {
-      return null;
+      console.warn('[Home] current placeInfo is required');
+      return <div>loading..</div>;
     }
 
     return (
@@ -168,21 +196,7 @@ class Home extends React.Component {
 
           <div className="store-card-list__container padding-normal">
             <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-            {/*{!isEmptySearchingStores ? null : (*/}
-            {/*  <div className="text-center">*/}
-            {/*    <p>No Results Found!</p>*/}
-            {/*  </div>*/}
-            {/*)}*/}
-            {currentPlaceInfo.coords ? (
-              <StoreList
-                stores={this.getStores()}
-                hasMore={hasMore}
-                loadMoreStores={this.handleLoadMoreStores}
-                onStoreClicked={this.handleStoreSelected}
-                getScrollParent={() => this.sectionRef.current}
-                withInfiniteScroll
-              />
-            ) : null}
+            {currentPlaceInfo.coords ? (keyword ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
       </main>
@@ -198,6 +212,7 @@ export default compose(
       paginationInfo: getPaginationInfo(state),
       stores: getAllCurrentStores(state),
       searchingStores: getSearchingStores(state),
+      searchResult: getSearchResult(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

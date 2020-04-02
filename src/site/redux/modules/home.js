@@ -1,4 +1,4 @@
-import { getStoreList, storesActionCreators } from './entities/stores';
+import { getStoreById, storesActionCreators } from './entities/stores';
 import Url from '../../../utils/url';
 
 import { get } from '../../../utils/request';
@@ -11,7 +11,8 @@ const initialState = {
     hasMore: true,
   },
   storeIds: [],
-  searchingStoreList: [],
+  storeIdsSearchResult: [],
+  searchingStoreList: [], // Notice: not used, since dropdown search result is removed from design
 };
 
 const types = {
@@ -89,6 +90,11 @@ const storeIdsReducer = (state, action) => {
   return state;
 };
 
+const storeIdsSearchResultReducer = (state, action) => {
+  const { response } = action;
+  return (response.stores || []).map(store => store.id);
+};
+
 const paginationInfoReducer = (state, action) => {
   switch (action.type) {
     case types.GET_STORE_LIST_SUCCESS:
@@ -127,6 +133,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         searchingStoreList,
+        storeIdsSearchResult: storeIdsSearchResultReducer(state.storeIdsSearchResult, action),
       };
     default:
       return state;
@@ -139,4 +146,5 @@ export default reducer;
 // @selectors
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getSearchingStores = state => state.home.searchingStoreList;
-export const getAllCurrentStores = state => getStoreList(state);
+export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
+export const getSearchResult = state => state.home.storeIdsSearchResult.map(storeId => getStoreById(state, storeId));
