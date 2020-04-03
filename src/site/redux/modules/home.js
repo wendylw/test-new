@@ -51,7 +51,7 @@ const fetchStoreList = page => (dispatch, getState) => {
   });
 };
 
-const fetchSearchingStoreList = ({ coords, keyword, top }) => (dispatch, getState) => {
+const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispatch, getState) => {
   return dispatch({
     types: [
       types.GET_SEARCHING_STORE_LIST_REQUEST,
@@ -59,7 +59,7 @@ const fetchSearchingStoreList = ({ coords, keyword, top }) => (dispatch, getStat
       types.GET_SEARCHING_STORE_LIST_FAILURE,
     ],
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&top=${top}`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
     ).then(async response => {
       console.log('--> response =', response);
       if (response && Array.isArray(response.stores)) {
@@ -85,7 +85,7 @@ const actions = {
   },
 
   getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
-    return dispatch(fetchSearchingStoreList({ coords, keyword, top: 5 }));
+    return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
   },
 };
 
