@@ -18,7 +18,7 @@ import {
   getAllCurrentStores,
   getSearchResult,
 } from '../redux/modules/home';
-import { getPlaceInfo, savePlaceInfo } from './utils';
+import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, savePlaceInfo } from './utils';
 import Utils from '../../utils/utils';
 import config from '../../config';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
@@ -37,8 +37,21 @@ class Home extends React.Component {
     this.sectionRef = React.createRef();
   }
 
+  askForDevicePlaceInfo = async () => {
+    try {
+      console.warn('[Home] [askForDevicePlaceInfo] asking for device position');
+      const placeInfo = await getPlaceInfoByDeviceByAskPermission();
+      if (placeInfo) {
+        this.props.appActions.setCurrentPlaceInfo(placeInfo);
+      }
+    } catch (e) {
+      console.error('[Home] [askForDevicePlaceInfo] error=%s', e);
+    }
+  };
+
   componentDidMount = async () => {
-    const { placeInfo, fromLocationPage } = await getPlaceInfo(this.props);
+    const { history, location } = this.props;
+    const { placeInfo, source } = await getPlaceInfo(this.props);
 
     // if no placeInfo at all
     if (!placeInfo) {
@@ -46,12 +59,18 @@ class Home extends React.Component {
     }
 
     // placeInfo ok
-    await savePlaceInfo(placeInfo); // now save into localStorage
     this.props.appActions.setCurrentPlaceInfo(placeInfo);
 
     // todo: need to reset store list instead of refresh the whole page
-    if (fromLocationPage) {
+    if (source === 'location-page') {
+      history.replace(location.pathname, {});
       window.location.reload();
+      return;
+    }
+
+    // when source is from ip, we have to ask for high accuracy location
+    if (source === 'ip') {
+      this.askForDevicePlaceInfo();
     }
   };
 

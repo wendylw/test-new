@@ -140,48 +140,13 @@ export const getPlacesFromCoordinates = coords => {
   });
 };
 
-export const getDevicePositionInfo = async (withCache = true) => {
-  const CACHE_KEY = 'DEVICE_POSITION_INFO';
-  const cachedDevicePositionInfo = Utils.getSessionVariable(CACHE_KEY);
-  if (cachedDevicePositionInfo && withCache) {
-    try {
-      return JSON.parse(cachedDevicePositionInfo);
-    } catch (e) {
-      console.error('failed to parse cached device position info', e);
-      // continue to execute;
-    }
-  }
-  const position = await tryGetDeviceCoordinates();
-
-  const pickPreferredGeoCodeResult = locationList => {
-    const preferredLocation = locationList.find(location => {
-      const typesIntersection = intersection(location.types, ['neighborhood', 'premise', 'subpremise']);
-      if (typesIntersection.length) {
-        return true;
-      }
-      return false;
-    });
-    if (preferredLocation) {
-      return preferredLocation;
-    }
-    return locationList[0];
-  };
-
-  // get google address info of google position
-  const candidates = await getPlacesFromCoordinates({ lat: position.coords.latitude, lng: position.coords.longitude });
-
-  const place = pickPreferredGeoCodeResult(candidates);
-
-  const result = {
-    coords: { lat: position.coords.latitude, lng: position.coords.longitude },
-    address: place.formatted_address,
-    addressComponents: standardizeGeoAddress(place.address_components),
-    placeId: place.place_id,
-  };
-
-  Utils.setSessionVariable(CACHE_KEY, JSON.stringify(result));
-
-  return result;
+// to @luke: a multiple source 一条龙 has been created named [getPositionInfoBySource]
+// the definition:
+// ```
+//  getPositionInfoBySource(source: "device" | "ip", withCache: Boolean = true) => Promise<PlaceInfo | null>
+// ```
+export const getDevicePositionInfo = (withCache = true) => {
+  return getPositionInfoBySource('device', withCache);
 };
 
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
@@ -312,4 +277,95 @@ export const getPlaceDetailsFromPlaceId = async (
   };
 
   return ret;
+};
+
+// Caution: this function is not well supported by most mobile.
+// Reference: https://caniuse.com/#search=permissions
+export const queryGeolocationPermission = async () => {
+  try {
+    // navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+    //   console.log('[queryGeolocationPermission] permissionStatus =', permissionStatus);
+    //   return permissionStatus;
+    // });
+    const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+    console.log('[queryGeolocationPermission] permissionStatus =', permissionStatus);
+    return permissionStatus;
+  } catch (e) {
+    return {};
+  }
+};
+
+export const isDeviceGeolocationDenied = async () => {
+  try {
+    const permissionStatus = await queryGeolocationPermission();
+    return permissionStatus.state === 'denied';
+  } catch (e) {
+    return true;
+  }
+};
+
+// dev to change the dev mode url, other wise you will see API 500 error
+export const fetchGeolocationByIp = () => {
+  const url = path => `${process.env.NODE_ENV === 'production' ? '' : 'https://b9fca884.ngrok.io'}${path}`;
+  return fetch(url('/api/geolocation')).then(data => data.json());
+};
+
+export const getPositionInfoBySource = async (source, withCache = true) => {
+  const sources = ['device', 'ip'];
+  if (!sources.includes(source)) throw new Error(`source must be one of ${source.json(',')}`);
+
+  const CACHE_KEY = `{${source.toUpperCase()}_POSITION_INFO}`;
+  const cachedDevicePositionInfo = Utils.getSessionVariable(CACHE_KEY);
+  if (cachedDevicePositionInfo && withCache) {
+    try {
+      return JSON.parse(cachedDevicePositionInfo);
+    } catch (e) {
+      console.error('failed to parse cached device position info', e);
+      // continue to execute;
+    }
+  }
+
+  let coords = null;
+
+  if (source === 'device') {
+    const position = await tryGetDeviceCoordinates();
+    coords = { lat: position.coords.latitude, lng: position.coords.longitude };
+  } else if (source === 'ip') {
+    const result = await fetchGeolocationByIp();
+    if (result.geolocation.status === 'success') {
+      coords = { lat: result.geolocation.lat, lng: result.geolocation.lon };
+    }
+  }
+
+  console.log('[geoUtils] [getPositionInfoBySource] coords=%s', JSON.stringify(coords));
+
+  if (!coords) {
+    return;
+  }
+
+  const pickPreferredGeoCodeResult = locationList => {
+    const preferredLocation = locationList.find(location => {
+      return !!intersection(location.types, ['neighborhood', 'premise', 'subpremise']);
+    });
+    if (preferredLocation) {
+      return preferredLocation;
+    }
+    return locationList[0];
+  };
+
+  // get google address info of google position
+  const candidates = await getPlacesFromCoordinates(coords);
+
+  const place = pickPreferredGeoCodeResult(candidates);
+
+  const result = {
+    coords,
+    address: place.formatted_address,
+    addressComponents: standardizeGeoAddress(place.address_components),
+    placeId: place.place_id,
+  };
+
+  Utils.setSessionVariable(CACHE_KEY, JSON.stringify(result));
+
+  return result;
 };
