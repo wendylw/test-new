@@ -108,6 +108,7 @@ class Home extends React.Component {
 
   renderStoreList = () => {
     const {
+      t,
       stores,
       paginationInfo: { hasMore },
     } = this.props;
@@ -161,7 +162,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, searchResult } = this.props;
+    const { t, currentPlaceInfo } = this.props;
     const { keyword } = this.state;
 
     if (!currentPlaceInfo) {
