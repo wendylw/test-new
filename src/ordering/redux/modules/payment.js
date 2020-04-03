@@ -86,7 +86,7 @@ export const actions = {
         deliveryAddressInfo: {
           ...contactDetail,
           addressDetails,
-          address: `${addressDetails}, ${deliveryTo}`,
+          address: addressDetails ? `${addressDetails}, ${deliveryTo}` : deliveryTo,
           country,
           deliveryTo,
           location,
