@@ -68,7 +68,10 @@ class Home extends React.Component {
       return;
     }
 
-    this.askForDevicePlaceInfo();
+    // when source is from ip, we have to ask for high accuracy location
+    if (source === 'ip') {
+      this.askForDevicePlaceInfo();
+    }
   };
 
   debounceSearchStores = debounce(() => {
