@@ -314,7 +314,7 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
   const sources = ['device', 'ip'];
   if (!sources.includes(source)) throw new Error(`source must be one of ${source.json(',')}`);
 
-  const CACHE_KEY = 'DEVICE_POSITION_INFO';
+  const CACHE_KEY = `{${source.toUpperCase()}_POSITION_INFO}`;
   const cachedDevicePositionInfo = Utils.getSessionVariable(CACHE_KEY);
   if (cachedDevicePositionInfo && withCache) {
     try {
