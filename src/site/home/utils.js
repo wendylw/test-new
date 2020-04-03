@@ -20,7 +20,7 @@ export const savePlaceInfo = async placeInfo => {
 
 export const getPlaceInfoByDeviceByAskPermission = async () => {
   try {
-    const placeInfo = await getPositionInfoBySource('device', false);
+    const placeInfo = await getPositionInfoBySource('device', true);
     return placeInfo;
   } catch (e) {
     console.warn(e);
