@@ -93,7 +93,18 @@
       (function loadPolyfill() {
         var polyfillUrl = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
         var LANGUAGES = ['en', 'th'];
-        var POLYFILL_FEATURES = ['Object.values', 'Object.assign', 'Object.keys', 'Object.defineProperty', 'Map', 'Intl', 'Promise', 'Array.prototype.includes', 'localStorage'];
+        var POLYFILL_FEATURES = [
+          'Object.values',
+          'Object.assign',
+          'Object.keys',
+          'Object.defineProperty',
+          'Map',
+          'Intl',
+          'Promise',
+          'Array.prototype.includes',
+          'localStorage',
+          'navigator.geolocation'
+        ];
         var featureArr = [];
 
         try {

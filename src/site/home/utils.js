@@ -1,5 +1,5 @@
 import Constants from '../../utils/constants';
-import { getDevicePositionInfo } from '../../utils/geoUtils';
+import { getPositionInfoBySource } from '../../utils/geoUtils';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -16,6 +16,15 @@ const getPlaceInfoFromHistory = ({ history, location }) => {
 
 export const savePlaceInfo = async placeInfo => {
   return localStorage.setItem('user.placeInfo', JSON.stringify(placeInfo));
+};
+
+export const getPlaceInfoByDeviceByAskPermission = async () => {
+  try {
+    const placeInfo = await getPositionInfoBySource('device', false);
+    return placeInfo;
+  } catch (e) {
+    console.warn(e);
+  }
 };
 
 export const getPlaceInfo = async ({ history, location }) => {
@@ -39,12 +48,23 @@ export const getPlaceInfo = async ({ history, location }) => {
     }
   }
 
-  // finally to use device location
+  // third to use device location when there is already have permission
+  // todo next phase: need a modal to ask for permission and rest currentPlaceInfo on home page
+  // if (!placeInfo && !(await isDeviceGeolocationDenied())) {
+  //   try {
+  //     placeInfo = await getPositionInfoBySource('device');
+  //   } catch (e) {
+  //     console.warn(e);
+  //   }
+  // }
+
+  // if not have exact location, try from IP
   if (!placeInfo) {
     try {
-      placeInfo = await getDevicePositionInfo();
+      // tried device with cache already, so try ip without cache now
+      placeInfo = await getPositionInfoBySource('ip', false);
     } catch (e) {
-      console.warn(e);
+      console.error(e);
     }
   }
 
