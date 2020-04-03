@@ -6,16 +6,22 @@ import store from './redux/store';
 import SiteApp from './containers/App';
 import './Common.scss';
 import DocumentFavicon from '../components/DocumentFavicon';
-import DocumentTitle from '../components/DocumentTitle';
+import DocumentHeadInfo from '../components/DocumentHeadInfo';
 import favicon from '../images/favicon.ico';
 
 class Site extends Component {
   render() {
+    const { t } = this.props;
+
     return (
       <Provider store={store}>
         <SiteApp />
         <DocumentFavicon icon={favicon} />
-        <DocumentTitle icon={favicon} title={'Beep | Food Delivery & Takeaway | Order Food Online Now'} />
+        <DocumentHeadInfo
+          title={t('MvpDocumentTitle')}
+          description={t('MvpDocumentDescription')}
+          keywords={t('MvpDocumentKeywords')}
+        />
       </Provider>
     );
   }
