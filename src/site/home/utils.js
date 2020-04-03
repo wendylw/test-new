@@ -21,6 +21,7 @@ export const savePlaceInfo = async placeInfo => {
 export const getPlaceInfoByDeviceByAskPermission = async () => {
   try {
     const placeInfo = await getPositionInfoBySource('device', true);
+    await savePlaceInfo(placeInfo); // now save into localStorage
     return placeInfo;
   } catch (e) {
     console.warn(e);

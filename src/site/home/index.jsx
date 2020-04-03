@@ -37,18 +37,6 @@ class Home extends React.Component {
     this.sectionRef = React.createRef();
   }
 
-  askForDevicePlaceInfo = async () => {
-    try {
-      console.warn('[Home] [askForDevicePlaceInfo] asking for device position');
-      const placeInfo = await getPlaceInfoByDeviceByAskPermission();
-      if (placeInfo) {
-        this.props.appActions.setCurrentPlaceInfo(placeInfo);
-      }
-    } catch (e) {
-      console.error('[Home] [askForDevicePlaceInfo] error=%s', e);
-    }
-  };
-
   componentDidMount = async () => {
     const { history, location } = this.props;
     const { placeInfo, source } = await getPlaceInfo(this.props);
@@ -70,7 +58,18 @@ class Home extends React.Component {
 
     // when source is from ip, we have to ask for high accuracy location
     if (source === 'ip') {
-      this.askForDevicePlaceInfo();
+      try {
+        console.warn('[Home] [didMount] asking for device position');
+        const placeInfo = await getPlaceInfoByDeviceByAskPermission();
+        if (placeInfo) {
+          // this.props.appActions.setCurrentPlaceInfo(placeInfo);
+          // info: refresh because appActions.setCurrentPlaceInfo won't trigger store list rerender because of InfiniteScroll bug
+          window.location.reload();
+          return;
+        }
+      } catch (e) {
+        console.error('[Home] [didMount] error=%s', e);
+      }
     }
   };
 
