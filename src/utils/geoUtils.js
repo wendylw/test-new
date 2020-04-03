@@ -306,8 +306,7 @@ export const isDeviceGeolocationDenied = async () => {
 
 // dev to change the dev mode url, other wise you will see API 500 error
 export const fetchGeolocationByIp = () => {
-  const url = path => `${process.env.NODE_ENV === 'production' ? '' : 'https://b9fca884.ngrok.io'}${path}`;
-  return fetch(url('/api/geolocation')).then(data => data.json());
+  return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ').then(data => data.json());
 };
 
 export const getPositionInfoBySource = async (source, withCache = true) => {
@@ -332,8 +331,8 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
     coords = { lat: position.coords.latitude, lng: position.coords.longitude };
   } else if (source === 'ip') {
     const result = await fetchGeolocationByIp();
-    if (result.geolocation.status === 'success') {
-      coords = { lat: result.geolocation.lat, lng: result.geolocation.lon };
+    if (result.status === 'success') {
+      coords = { lat: result.lat, lng: result.lon };
     }
   }
 
