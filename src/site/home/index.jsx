@@ -18,7 +18,7 @@ import {
   getAllCurrentStores,
   getSearchResult,
 } from '../redux/modules/home';
-import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, savePlaceInfo } from './utils';
+import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import Utils from '../../utils/utils';
 import config from '../../config';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
