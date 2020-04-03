@@ -27,22 +27,16 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
   }
 };
 
-export const getPlaceInfo = async ({ history, location }) => {
+export const getPlaceInfo = async ({ history, location }, withCache = true) => {
   // first to use place from location picker
   let placeInfo = getPlaceInfoFromHistory({ history, location });
-
-  // todo: need to reset store list instead of refresh the whole page
-  // --Begin-- to replace
-  let fromLocationPage = !!placeInfo;
-  if (placeInfo) {
-    history.replace(location.pathname, {});
-  }
-  // ---End--- to replace
+  let source = 'location-page';
 
   // second to use last time
-  if (!placeInfo) {
+  if (withCache && !placeInfo) {
     try {
       placeInfo = JSON.parse(localStorage.getItem('user.placeInfo'));
+      if (placeInfo) source = 'cache';
     } catch (e) {
       console.warn(e);
     }
@@ -63,10 +57,13 @@ export const getPlaceInfo = async ({ history, location }) => {
     try {
       // tried device with cache already, so try ip without cache now
       placeInfo = await getPositionInfoBySource('ip', false);
+      if (placeInfo) source = 'ip';
     } catch (e) {
       console.error(e);
     }
   }
 
-  return { fromLocationPage, placeInfo };
+  await savePlaceInfo(placeInfo); // now save into localStorage
+
+  return { placeInfo, source };
 };

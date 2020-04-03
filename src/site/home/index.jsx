@@ -50,7 +50,8 @@ class Home extends React.Component {
   };
 
   componentDidMount = async () => {
-    const { placeInfo, fromLocationPage } = await getPlaceInfo(this.props);
+    const { history, location } = this.props;
+    const { placeInfo, source } = await getPlaceInfo(this.props);
 
     // if no placeInfo at all
     if (!placeInfo) {
@@ -58,11 +59,11 @@ class Home extends React.Component {
     }
 
     // placeInfo ok
-    await savePlaceInfo(placeInfo); // now save into localStorage
     this.props.appActions.setCurrentPlaceInfo(placeInfo);
 
     // todo: need to reset store list instead of refresh the whole page
-    if (fromLocationPage) {
+    if (source === 'location-page') {
+      history.replace(location.pathname, {});
       window.location.reload();
       return;
     }
