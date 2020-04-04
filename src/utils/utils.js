@@ -402,7 +402,7 @@ Utils.atou = str => {
 // use setDeliveryToCookie and getDeliveryToCookie to share user location between domains
 //
 // setDeliveryToCookie(deliveryAddress: PlaceInfo) => void
-Utils.setDeliveryToCookie = deliveryAddress => {
+Utils.setDeliveryAddressCookie = deliveryAddress => {
   const placeInfoBase64 = Utils.utoa(JSON.stringify(deliveryAddress));
   const domain = (process.env.REACT_APP_MERCHANT_STORE_URL || '').split('%business%')[1];
   document.cookie = `deliveryAddress=${placeInfoBase64}; path=/; domain=${domain}`;

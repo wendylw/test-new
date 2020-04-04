@@ -3,6 +3,7 @@ import Url from '../../../utils/url';
 
 import { get } from '../../../utils/request';
 import { getCurrentPlaceInfo } from './app';
+import config from '../../../config';
 
 const initialState = {
   paginationInfo: {
@@ -17,6 +18,9 @@ const initialState = {
 };
 
 const types = {
+  // query store url
+  QUERY_STORE_URL: 'SITE/HOME/QUERY_STORE_URL',
+
   // fetch store list
   GET_STORE_LIST_REQUEST: 'SITE/HOME/GET_STORE_LIST_REQUEST',
   GET_STORE_LIST_SUCCESS: 'SITE/HOME/GET_STORE_LIST_SUCCESS',
@@ -29,6 +33,29 @@ const types = {
 
   // set searching store list status
   SET_SEARCHING_STORES_STATUS: 'SITE/HOME/SET_SEARCHING_STORES_STATUS',
+};
+
+// @actions
+const actions = {
+  queryStoreUrl: ({ business, storeId, source = 'beepit.com' }) => async (dispatch, getState) => {
+    const { redirectTo } = (await get(Url.API_URLS.GET_STORE_HASH_DATA(storeId).url)) || {};
+    return `${config.beepOnlineStoreUrl(business)}/ordering/?h=${redirectTo}&source=${source}`;
+  },
+
+  setSearchingStoresStatus: status => (dispatch, getState) => {
+    return dispatch({
+      type: types.SET_SEARCHING_STORES_STATUS,
+      loadedSearchingStoreList: status,
+    });
+  },
+
+  getStoreList: page => (dispatch, getState) => {
+    return dispatch(fetchStoreList(page));
+  },
+
+  getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
+    return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
+  },
 };
 
 const fetchStoreList = page => (dispatch, getState) => {
@@ -61,7 +88,6 @@ const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispat
     requestPromise: get(
       `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
     ).then(async response => {
-      console.log('--> response =', response);
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
@@ -70,23 +96,6 @@ const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispat
       return response;
     }),
   });
-};
-
-// @actions
-const actions = {
-  setSearchingStoresStatus: status => (dispatch, getState) => {
-    return dispatch({
-      type: types.SET_SEARCHING_STORES_STATUS,
-      loadedSearchingStoreList: status,
-    });
-  },
-  getStoreList: page => (dispatch, getState) => {
-    return dispatch(fetchStoreList(page));
-  },
-
-  getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
-    return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
-  },
 };
 
 // @reducers

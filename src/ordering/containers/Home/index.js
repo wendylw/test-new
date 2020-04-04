@@ -24,6 +24,7 @@ import {
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { isSourceBeepitCom } from './utils';
 
 const localState = {
   blockScrollTop: 0,
@@ -43,8 +44,21 @@ export class Home extends Component {
       window.location.href = '/';
     }
 
+    if (isSourceBeepitCom()) {
+      // sync deliveryAddress from beepit.com
+      this.setupDeliveryAddressByCookie();
+    }
+
     homeActions.loadProductList();
   }
+
+  // get deliveryTo info from cookie and set into localStorage
+  setupDeliveryAddressByCookie = () => {
+    const deliveryTo = Utils.getDeliveryAddressCookie();
+    if (deliveryTo) {
+      sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryTo));
+    }
+  };
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
