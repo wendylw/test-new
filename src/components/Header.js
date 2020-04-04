@@ -19,10 +19,12 @@ class Header extends Component {
 
     const renderPageAction = () => {
       if (!isStoreHome || (isStoreHome && isSourceBeepitCom())) {
-        return (
-          <figure className="header__image-container text-middle" onClick={navFunc}>
-            {isPage ? <IconLeftArrow /> : <IconClose />}
-          </figure>
+        const iconClassName = `header__image-container text-middle${isSourceBeepitCom() ? ' white' : ''}`;
+
+        return isPage ? (
+          <IconLeftArrow className={iconClassName} onClick={navFunc} />
+        ) : (
+          <IconClose className={iconClassName} onClick={navFunc} />
         );
       }
     };

@@ -3,6 +3,16 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 
 class TypeGuider extends Component {
+  handleHideTypeGuider(e) {
+    const { onToggle } = this.props;
+
+    if (e && e.target !== e.currentTarget) {
+      return;
+    }
+
+    onToggle();
+  }
+
   handleGotoOrderingPage(url) {
     window.location.href = url;
   }
@@ -27,7 +37,7 @@ class TypeGuider extends Component {
     }
 
     return (
-      <aside className={classList.join(' ')}>
+      <aside className={classList.join(' ')} onClick={e => this.handleHideTypeGuider(e)}>
         <div className="type-guider-aside__content aside__content absolute-wrapper text-center">
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
           <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
@@ -57,11 +67,13 @@ TypeGuider.propTypes = {
   pickupUrl: PropTypes.string,
   isOutOfDeliveryRange: PropTypes.bool.isRequired,
   show: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
 };
 
 TypeGuider.defaultProps = {
   isOutOfDeliveryRange: false,
   show: false,
+  onToggle: () => {},
 };
 
 export default withTranslation()(TypeGuider);
