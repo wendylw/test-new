@@ -24,7 +24,7 @@ import {
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { isSourceBeepitCom } from './utils';
+import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 
 const localState = {
   blockScrollTop: 0,
@@ -35,7 +35,7 @@ export class Home extends Component {
     viewAside: null,
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { history, homeActions, requestInfo } = this.props;
     const { tableId, storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -46,17 +46,23 @@ export class Home extends Component {
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
-      this.setupDeliveryAddressByCookie();
+      await this.setupDeliveryAddressByRedirectState();
     }
 
     homeActions.loadProductList();
-  }
+  };
 
   // get deliveryTo info from cookie and set into localStorage
-  setupDeliveryAddressByCookie = () => {
-    const deliveryTo = Utils.getDeliveryAddressCookie();
-    if (deliveryTo) {
-      sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryTo));
+  setupDeliveryAddressByRedirectState = async () => {
+    const state = await fetchRedirectPageState();
+    console.log('[ordering/Home] redirect state =', JSON.stringify(state));
+
+    try {
+      if (state.deliveryAddress) {
+        sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 

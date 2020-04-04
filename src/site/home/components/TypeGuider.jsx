@@ -1,8 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import config from '../../../config';
+import RedirectForm from '../../../ordering/containers/Payment/components/RedirectForm';
 
 class TypeGuider extends Component {
+  state = {
+    url: '',
+  };
+
   handleHideTypeGuider(e) {
     const { onToggle } = this.props;
 
@@ -14,7 +20,7 @@ class TypeGuider extends Component {
   }
 
   handleGotoOrderingPage(url, action) {
-    if (action) window.location.href = url;
+    if (action) this.setState({ url });
   }
 
   renderLoading = () => {
@@ -22,6 +28,23 @@ class TypeGuider extends Component {
       <div className="loading-cover">
         <i className="loader theme page-loader"></i>
       </div>
+    );
+  };
+
+  renderRedirect = () => {
+    const { business, deliveryAddress } = this.props;
+    const { url } = this.state;
+
+    // todo: extract as <StoreSiteRedirectForm />
+    return (
+      <RedirectForm
+        method={'post'}
+        action={config.beepOnlineStoreUrl(business) + '/go2page'}
+        data={{
+          target: url,
+          deliveryAddress: JSON.stringify(deliveryAddress),
+        }}
+      />
     );
   };
 
@@ -42,6 +65,10 @@ class TypeGuider extends Component {
 
     if (show) {
       classList.push('active');
+    }
+
+    if (this.state.url) {
+      return this.renderRedirect();
     }
 
     return (
@@ -72,6 +99,8 @@ class TypeGuider extends Component {
 }
 
 TypeGuider.propTypes = {
+  business: PropTypes.string.isRequired,
+  deliveryAddress: PropTypes.object.isRequired,
   deliveryUrl: PropTypes.string,
   pickupUrl: PropTypes.string,
   isOutOfDeliveryRange: PropTypes.bool.isRequired,
