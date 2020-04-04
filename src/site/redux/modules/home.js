@@ -28,6 +28,7 @@ const initialState = {
 const types = {
   // query store url
   SHOW_TYPE_PICKER: 'SITE/HOME/SHOW_TYPE_PICKER',
+  HIDE_TYPE_PICKER: 'SITE/HOME/HIDE_TYPE_PICKER',
   FETCH_STORE_HASHCODE_REQUEST: 'SITE/HOME/FETCH_STORE_HASHCODE_REQUEST',
   FETCH_STORE_HASHCODE_SUCCESS: 'SITE/HOME/FETCH_STORE_HASHCODE_SUCCESS',
   FETCH_STORE_HASHCODE_FAILURE: 'SITE/HOME/FETCH_STORE_HASHCODE_FAILURE',
@@ -48,6 +49,10 @@ const types = {
 
 // @actions
 const actions = {
+  hideTypePicker: () => ({
+    type: types.HIDE_TYPE_PICKER,
+  }),
+
   showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange }) => (dispatch, getState) => {
     const context = { storeId, business, source, isOutOfDeliveryRange };
     return dispatch(fetchStoreUrlHash(storeId, context));
@@ -164,8 +169,8 @@ const typePickerReducer = (state, action) => {
       pickupUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'pickup'),
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
     };
-  } else if (type === types.FETCH_STORE_HASHCODE_FAILURE) {
-    return { ...initialState.typePicker };
+  } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
+    return { show: false };
   }
   return state;
 };
@@ -195,6 +200,7 @@ const reducer = (state = initialState, action) => {
         searchingStoreList,
         storeIdsSearchResult: storeIdsSearchResultReducer(state.storeIdsSearchResult, action),
       };
+    case types.HIDE_TYPE_PICKER:
     case types.FETCH_STORE_HASHCODE_REQUEST:
     case types.FETCH_STORE_HASHCODE_SUCCESS:
     case types.FETCH_STORE_HASHCODE_FAILURE:

@@ -129,6 +129,12 @@ class Home extends React.Component {
     Utils.setDeliveryAddressCookie(currentPlaceInfo);
   };
 
+  handleTypeGuiderBlankArea = () => {
+    const { homeActions } = this.props;
+    console.log('fuck !!!!');
+    homeActions.hideTypePicker();
+  };
+
   renderStoreList = () => {
     const {
       t,
@@ -249,7 +255,7 @@ class Home extends React.Component {
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
-        <TypeGuider {...typePicker} />
+        <TypeGuider {...typePicker} onToggle={this.handleTypeGuiderBlankArea} />
       </main>
     );
   }

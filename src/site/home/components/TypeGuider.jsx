@@ -68,11 +68,13 @@ TypeGuider.propTypes = {
   pickupUrl: PropTypes.string,
   isOutOfDeliveryRange: PropTypes.bool.isRequired,
   show: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func,
 };
 
 TypeGuider.defaultProps = {
   isOutOfDeliveryRange: false,
   show: false,
+  onToggle: () => {},
 };
 
 export default withTranslation()(TypeGuider);
