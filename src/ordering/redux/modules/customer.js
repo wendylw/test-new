@@ -28,7 +28,6 @@ export const actions = {
         longitude: deliveryAddress.coords.lng,
         latitude: deliveryAddress.coords.lat,
       };
-      newDeliveryDetails.routerDistance = deliveryAddress.routerDistance;
 
       // if address chosen is different from address in session
       // then clean up the address details info
@@ -75,7 +74,6 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
-    routerDistance: null,
   },
 };
 

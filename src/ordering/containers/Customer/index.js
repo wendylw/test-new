@@ -6,12 +6,15 @@ import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
+import ErrorToast from '../../../components/ErrorToast';
 import Utils from '../../../utils/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators } from '../../redux/modules/payment';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getBusinessInfo } from '../../redux/modules/cart';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -25,6 +28,7 @@ class Customer extends Component {
     formTextareaTitle: null,
     asideName: null,
     sentOtp: false,
+    errorToast: '',
   };
 
   componentDidMount = async () => {
@@ -51,10 +55,37 @@ class Customer extends Component {
     });
   }
 
+  checkDistanceError = () => {
+    const { business, deliveryDetails, t } = this.props;
+    if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
+      return null;
+    }
+    const from = {
+      lat: business.stores[0].location.latitude,
+      lng: business.stores[0].location.longitude,
+    };
+    const to = {
+      lat: deliveryDetails.deliveryToLocation.latitude,
+      lng: deliveryDetails.deliveryToLocation.longitude,
+    };
+    const maxDistance = business.qrOrderingSettings.deliveryRadius;
+    const distance = computeStraightDistance(from, to);
+    if (distance / 1000 > maxDistance) {
+      return t(`OutOfDeliveryRange`, { distance: maxDistance.toFixed(1) });
+    }
+    return null;
+  };
+
   async handleCreateOrder() {
     const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
+
+    const checkDistanceResult = this.checkDistanceError();
+    if (checkDistanceResult) {
+      this.setState({ errorToast: checkDistanceResult });
+      return;
+    }
 
     if (!isValidPhoneNumber(phone)) {
       return;
@@ -104,6 +135,10 @@ class Customer extends Component {
 
     return type;
   }
+
+  clearErrorToast = () => {
+    this.setState({ errorToast: null });
+  };
 
   renderDeliveryAddress() {
     const { t, history } = this.props;
@@ -165,7 +200,7 @@ class Customer extends Component {
 
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
-    const { asideName, formTextareaTitle } = this.state;
+    const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -286,13 +321,14 @@ class Customer extends Component {
             </button>
           </div>
         </footer>
+        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
       </section>
     );
   }
 }
 
 export default compose(
-  withTranslation(),
+  withTranslation('OrderingDelivery'),
   connect(
     state => {
       return {
@@ -300,6 +336,7 @@ export default compose(
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
+        business: getBusinessInfo(state),
       };
     },
     dispatch => ({

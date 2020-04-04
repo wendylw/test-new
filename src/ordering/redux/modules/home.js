@@ -4,6 +4,7 @@ import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
 
 import { combineReducers } from 'redux';
+import { computeDeliveryDistance } from '../../containers/Location/utils';
 import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../redux/modules/entities/products';
@@ -11,6 +12,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness } from './app';
+import { getBusinessInfo } from './cart';
 
 const initialState = {
   domProperties: {
@@ -43,16 +45,25 @@ export const types = HOME_TYPES;
 export const actions = {
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
-    if (getState().home.onlineCategory.categoryIds.length) {
-      return;
+    const isDelivery = Utils.isDeliveryType();
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
     }
-    dispatch(fetchOnlineCategory());
-    dispatch(fetchShoppingCart(Utils.isDeliveryType()));
+    dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    if (!getState().home.onlineCategory.categoryIds.length) {
+      dispatch(fetchOnlineCategory());
+    }
   },
 
   // load shopping cart
-  loadShoppingCart: () => dispatch => {
-    dispatch(fetchShoppingCart(Utils.isDeliveryType()));
+  loadShoppingCart: () => (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -118,12 +129,12 @@ export const actions = {
   },
 };
 
-const fetchShoppingCart = isDeliveryType => {
+const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
       //...Url.API_URLS.GET_CART,
-      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType),
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords),
     },
   };
 };
