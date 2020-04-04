@@ -3,8 +3,7 @@ import Url from '../../../utils/url';
 
 import { get } from '../../../utils/request';
 import { getCurrentPlaceInfo } from './app';
-import config from '../../../config';
-import { getMerchantStoreUrl } from '../../../ordering/containers/Home/utils';
+import Utils from '../../../utils/utils';
 
 const initialState = {
   typePicker: {
@@ -163,10 +162,15 @@ const typePickerReducer = (state, action) => {
     return { ...state, loading: true, show: true };
   } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
     const { redirectTo } = action.response || {};
+    const storeUrlParams = {
+      business: context.business,
+      hash: redirectTo,
+      source: context.source,
+    };
     return {
       ...state,
-      deliveryUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'delivery'),
-      pickupUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'pickup'),
+      deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
+      pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
       loading: false,
     };

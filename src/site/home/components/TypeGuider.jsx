@@ -13,9 +13,8 @@ class TypeGuider extends Component {
     return onToggle();
   }
 
-  handleGotoOrderingPage(url, doNotAction) {
-    if (doNotAction) return;
-    window.location.href = url;
+  handleGotoOrderingPage(url, action) {
+    if (action) window.location.href = url;
   }
 
   renderLoading = () => {
@@ -54,14 +53,14 @@ class TypeGuider extends Component {
             {loading ? this.renderLoading() : null}
             <button
               className="button button__block button__outline margin-smaller text-uppercase text-weight-bold"
-              onClick={this.handleGotoOrderingPage.bind(this, pickupUrl)}
+              onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
             >
               {t('SelfPickup')}
             </button>
             <button
               className="button button__block button__fill margin-smaller text-uppercase text-weight-bold"
               disabled={isOutOfDeliveryRange}
-              onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, isOutOfDeliveryRange)}
+              onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, !isOutOfDeliveryRange)}
             >
               {t('FoodDelivery')}
             </button>

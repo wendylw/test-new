@@ -1,5 +1,6 @@
 import qs from 'qs';
 import Constants from './constants';
+import config from '../config';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -418,6 +419,13 @@ Utils.getDeliveryAddressCookie = () => {
   } catch (e) {
     return null;
   }
+};
+
+Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
+  let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
+  if (type) storeUrl += `&type=${type}`;
+  if (source) storeUrl += `&source=${source}`;
+  return storeUrl;
 };
 
 if (process.env.NODE_ENV !== 'production') {
