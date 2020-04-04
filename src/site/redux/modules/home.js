@@ -4,8 +4,16 @@ import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import { getCurrentPlaceInfo } from './app';
 import config from '../../../config';
+import { getMerchantStoreUrl } from '../../../ordering/containers/Home/utils';
 
 const initialState = {
+  typePicker: {
+    show: false,
+    deliveryUrl: '',
+    pickupUrl: '',
+    isOutOfDeliveryRange: true,
+    fetching: false,
+  },
   paginationInfo: {
     page: 0, // <InfiniteScroll /> handles the page number
     pageSize: 5,
@@ -19,7 +27,10 @@ const initialState = {
 
 const types = {
   // query store url
-  QUERY_STORE_URL: 'SITE/HOME/QUERY_STORE_URL',
+  SHOW_TYPE_PICKER: 'SITE/HOME/SHOW_TYPE_PICKER',
+  FETCH_STORE_HASHCODE_REQUEST: 'SITE/HOME/FETCH_STORE_HASHCODE_REQUEST',
+  FETCH_STORE_HASHCODE_SUCCESS: 'SITE/HOME/FETCH_STORE_HASHCODE_SUCCESS',
+  FETCH_STORE_HASHCODE_FAILURE: 'SITE/HOME/FETCH_STORE_HASHCODE_FAILURE',
 
   // fetch store list
   GET_STORE_LIST_REQUEST: 'SITE/HOME/GET_STORE_LIST_REQUEST',
@@ -37,9 +48,9 @@ const types = {
 
 // @actions
 const actions = {
-  queryStoreUrl: ({ business, storeId, source = 'beepit.com' }) => async (dispatch, getState) => {
-    const { redirectTo } = (await get(Url.API_URLS.GET_STORE_HASH_DATA(storeId).url)) || {};
-    return `${config.beepOnlineStoreUrl(business)}/ordering/?h=${redirectTo}&source=${source}`;
+  showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange }) => (dispatch, getState) => {
+    const context = { storeId, business, source, isOutOfDeliveryRange };
+    return dispatch(fetchStoreUrlHash(storeId, context));
   },
 
   setSearchingStoresStatus: status => (dispatch, getState) => {
@@ -57,6 +68,12 @@ const actions = {
     return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
   },
 };
+
+const fetchStoreUrlHash = (storeId, context) => ({
+  types: [types.FETCH_STORE_HASHCODE_REQUEST, types.FETCH_STORE_HASHCODE_SUCCESS, types.FETCH_STORE_HASHCODE_FAILURE],
+  context,
+  requestPromise: get(Url.API_URLS.GET_STORE_HASH_DATA(storeId).url),
+});
 
 const fetchStoreList = page => (dispatch, getState) => {
   const { coords } = getCurrentPlaceInfo(getState()) || {};
@@ -135,6 +152,24 @@ const paginationInfoReducer = (state, action) => {
   }
 };
 
+const typePickerReducer = (state, action) => {
+  const { type, context } = action;
+  if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
+    return { ...state, loading: true, show: true };
+  } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
+    const { redirectTo } = action.response || {};
+    return {
+      ...state,
+      deliveryUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'delivery'),
+      pickupUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'pickup'),
+      isOutOfDeliveryRange: context.isOutOfDeliveryRange,
+    };
+  } else if (type === types.FETCH_STORE_HASHCODE_FAILURE) {
+    return { ...initialState.typePicker };
+  }
+  return state;
+};
+
 const reducer = (state = initialState, action) => {
   const { response } = action;
 
@@ -160,6 +195,13 @@ const reducer = (state = initialState, action) => {
         searchingStoreList,
         storeIdsSearchResult: storeIdsSearchResultReducer(state.storeIdsSearchResult, action),
       };
+    case types.FETCH_STORE_HASHCODE_REQUEST:
+    case types.FETCH_STORE_HASHCODE_SUCCESS:
+    case types.FETCH_STORE_HASHCODE_FAILURE:
+      return {
+        ...state,
+        typePicker: typePickerReducer(state.typePicker, action),
+      };
     default:
       return state;
   }
@@ -174,3 +216,4 @@ export const getSearchingStores = state => state.home.searchingStoreList;
 export const loadedSearchingStores = state => state.home.loadedSearchingStoreList;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
 export const getSearchResult = state => state.home.storeIdsSearchResult.map(storeId => getStoreById(state, storeId));
+export const getTypePicker = state => state.home.typePicker;

@@ -18,6 +18,7 @@ import {
   loadedSearchingStores,
   getAllCurrentStores,
   getSearchResult,
+  getTypePicker,
 } from '../redux/modules/home';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import Utils from '../../utils/utils';
@@ -115,10 +116,10 @@ class Home extends React.Component {
   handleStoreSelected = async store => {
     const { currentPlaceInfo, homeActions } = this.props;
 
-    // todo: CRM-390: need type=delivery or type=pickup info for ordering home page
-    const storeUrl = await homeActions.queryStoreUrl({
+    await homeActions.showTypePicker({
       business: store.business,
       storeId: store.id,
+      isOutOfDeliveryRange: store.isOutOfDeliveryRange,
     });
 
     // todo: move cookie of placeInfo into session when got time
@@ -126,8 +127,6 @@ class Home extends React.Component {
     // save placeInfo into cookie, to get it once visit merchant store
     // thus can sync up deliveryInfo between beepit.com and {business}.beepit.com
     Utils.setDeliveryAddressCookie(currentPlaceInfo);
-
-    window.location.href = storeUrl;
   };
 
   renderStoreList = () => {
@@ -186,7 +185,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo } = this.props;
+    const { t, currentPlaceInfo, typePicker } = this.props;
     const { keyword } = this.state;
 
     if (!currentPlaceInfo) {
@@ -250,7 +249,7 @@ class Home extends React.Component {
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
-        <TypeGuider />
+        <TypeGuider {...typePicker} />
       </main>
     );
   }
@@ -266,6 +265,7 @@ export default compose(
       searchingStores: getSearchingStores(state),
       searchResult: getSearchResult(state),
       loadedSearchingStores: loadedSearchingStores(state),
+      typePicker: getTypePicker(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
