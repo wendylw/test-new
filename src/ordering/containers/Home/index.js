@@ -98,6 +98,11 @@ export class Home extends Component {
     }
   }
 
+  handleNavBack = () => {
+    const { history } = this.props;
+    history.go(-1);
+  };
+
   handleToggleAside(asideName) {
     const stopBodyScroll =
       this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
@@ -212,6 +217,7 @@ export class Home extends Component {
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         minOrder={minOrder}
+        navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}

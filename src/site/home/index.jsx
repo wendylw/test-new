@@ -114,6 +114,8 @@ class Home extends React.Component {
 
   handleStoreSelected = async store => {
     const { currentPlaceInfo, homeActions } = this.props;
+
+    // todo: CRM-390: need type=delivery or type=pickup info for ordering home page
     const storeUrl = await homeActions.queryStoreUrl({
       business: store.business,
       storeId: store.id,
