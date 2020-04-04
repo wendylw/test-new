@@ -12,7 +12,7 @@ const initialState = {
     deliveryUrl: '',
     pickupUrl: '',
     isOutOfDeliveryRange: true,
-    fetching: false,
+    loading: false,
   },
   paginationInfo: {
     page: 0, // <InfiniteScroll /> handles the page number
@@ -168,9 +168,10 @@ const typePickerReducer = (state, action) => {
       deliveryUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'delivery'),
       pickupUrl: getMerchantStoreUrl(context.business, redirectTo, context.source, 'pickup'),
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
+      loading: false,
     };
   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
-    return { show: false };
+    return { show: false, loading: false };
   }
   return state;
 };

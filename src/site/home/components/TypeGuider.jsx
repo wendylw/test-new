@@ -18,8 +18,16 @@ class TypeGuider extends Component {
     window.location.href = url;
   }
 
+  renderLoading = () => {
+    return (
+      <div className="loading-cover">
+        <i className="loader theme page-loader"></i>
+      </div>
+    );
+  };
+
   render() {
-    const { t, show, pickupUrl, deliveryUrl, isOutOfDeliveryRange } = this.props;
+    const { t, show, pickupUrl, deliveryUrl, isOutOfDeliveryRange, loading = true } = this.props;
     const contentText = {
       withinDeliveryRange: {
         title: t('SelectYourPreference'),
@@ -43,6 +51,7 @@ class TypeGuider extends Component {
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
           <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
           <div className="padding-normal type-guider-aside__button-group flex flex-middle flex-space-between">
+            {loading ? this.renderLoading() : null}
             <button
               className="button button__block button__outline margin-smaller text-uppercase text-weight-bold"
               onClick={this.handleGotoOrderingPage.bind(this, pickupUrl)}
