@@ -1,14 +1,15 @@
 import React from 'react';
 import { debounce } from 'lodash';
 import { withTranslation } from 'react-i18next';
+import './index.scss';
 import { IconSearch, IconClose } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
+import TypeGuider from './components/TypeGuider';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import './index.scss';
 import Constants from '../../utils/constants';
 import {
   homeActionCreators,
@@ -20,7 +21,6 @@ import {
 } from '../redux/modules/home';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import Utils from '../../utils/utils';
-import config from '../../config';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 
@@ -250,6 +250,7 @@ class Home extends React.Component {
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
+        <TypeGuider />
       </main>
     );
   }

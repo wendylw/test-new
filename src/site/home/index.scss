@@ -132,6 +132,23 @@
 // }
 /* end of Searching Store List */
 
+/* Type Guider Aside */
+.type-guider-aside {
+  &__content {
+    padding-top: 20px;
+    bottom: 56px;
+  }
+
+  &__description {
+    white-space: pre-line;
+  }
+
+  &__button-group {
+    margin: -3.8vw;
+  }
+}
+/* end of Type Guider Aside */
+
 @media (max-width: 374px) {
   /* Store Card List */
   .store-card-list {
@@ -181,4 +198,12 @@
   //   }
   // }
   /* end of Searching Store List */
+
+  /* Type Guider Aside */
+  .type-guider-aside {
+    &__button-group {
+      margin: -8px;
+    }
+  }
+  /* end of Type Guider Aside */
 }
