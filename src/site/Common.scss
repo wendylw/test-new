@@ -218,6 +218,10 @@ img {
   }
 }
 
+.padding-top-bottom-smaller {
+  padding: 1.4vw 0;
+}
+
 .padding-small {
   padding: 2.4vw;
 }
@@ -679,6 +683,10 @@ img {
     border-width: 1px;
     border-style: solid;
     border-color: $gray-3;
+  }
+
+  .padding-top-bottom-smaller {
+    padding: 4px 0;
   }
 
   .padding-small {

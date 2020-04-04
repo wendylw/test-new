@@ -93,6 +93,7 @@
   "WithinDeliveryRangeDescription": "Pick your preferred dining option, and\nwe got you cover",
   "OutOfDeliveryRange": "Out of Delivery Range",
   "OutOfDeliveryRangeDescription": "Sorry, your located location is out of our supporter delivery services range. This restaurant only available for self pick up only",
+  "SelfPickupOnly": "Self pickup only",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",
