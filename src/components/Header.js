@@ -89,9 +89,7 @@ class Header extends Component {
             </h1>
             <ul className="header__info-list">
               <li className="header__info-item">
-                <i className="header__motor-icon text-middle">
-                  <IconMotorcycle />
-                </i>
+                <IconMotorcycle className="header__motor-icon text-middle" />
                 <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={deliveryFee || 0} />
               </li>
               <li className="header__info-item">

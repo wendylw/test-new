@@ -7,6 +7,8 @@
     <meta name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0" />
     <meta name="theme-color" content="#000000" />
+    <meta name="description" content="">
+    <meta name="keywords" content="">
     <meta property="og:title" content="__OG_TITLE__" />
     <meta property="og:description" content="__OG_DESCRIPTION__" />
     <meta property="og:type" content="website" />
@@ -93,7 +95,18 @@
       (function loadPolyfill() {
         var polyfillUrl = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
         var LANGUAGES = ['en', 'th'];
-        var POLYFILL_FEATURES = ['Object.values', 'Object.assign', 'Object.keys', 'Object.defineProperty', 'Map', 'Intl', 'Promise', 'Array.prototype.includes', 'localStorage'];
+        var POLYFILL_FEATURES = [
+          'Object.values',
+          'Object.assign',
+          'Object.keys',
+          'Object.defineProperty',
+          'Map',
+          'Intl',
+          'Promise',
+          'Array.prototype.includes',
+          'localStorage',
+          'navigator.geolocation'
+        ];
         var featureArr = [];
 
         try {
@@ -114,7 +127,9 @@
         }
       })();
     </script>
-    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places&key=AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c&ver=3.exp" promise async></script>
+
+    <!-- keep this code, since always get error "maps of undefined" -->
+    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places&key=AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c&ver=3.exp"></script>
   </body>
 
 </html>

@@ -135,9 +135,7 @@ class Customer extends Component {
         >
           <div className="flex flex-middle flex-space-between">
             <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverTo')}</label>
-            <i className="customer__edit-icon">
-              <IconEdit />
-            </i>
+            <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
@@ -148,9 +146,7 @@ class Customer extends Component {
             <label className="form__label font-weight-bold gray-font-opacity">
               {t('AddAddressDetailsPlaceholder')}
             </label>
-            <i className="customer__edit-icon">
-              <IconEdit />
-            </i>
+            <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
             {addressDetails || t('AddressDetailsPlaceholder')}
@@ -161,9 +157,7 @@ class Customer extends Component {
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
           <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
-          <i className="customer__edit-icon">
-            <IconEdit />
-          </i>
+          <IconEdit className="customer__edit-icon" />
         </div>
       </React.Fragment>
     );
@@ -282,9 +276,7 @@ class Customer extends Component {
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
-                (type === DELIVERY_METHOD.DELIVERY &&
-                  (!Boolean((deliveryDetails.addressDetails || '').trim()) ||
-                    !Boolean((deliveryToAddress || '').trim()))) ||
+                (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
                 isFetching

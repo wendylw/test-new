@@ -299,9 +299,7 @@ class Location extends Component {
     return (
       <div className="location-page__search-box">
         <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-          <i className="location-page__search-box-search-icon" onClick={this.tryGeolocation}>
-            <IconSearch />
-          </i>
+          <IconSearch className="location-page__search-box-search-icon" onClick={this.tryGeolocation} />
           <input
             className="input input__block"
             type="text"
@@ -309,13 +307,11 @@ class Location extends Component {
             onChange={this.onSearchBoxChange}
             value={searchText}
           />
-          <i
+          <IconClose
             className="location-page__search-box-clear-icon"
             onClick={this.clearSearchBox}
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
-          >
-            <IconClose />
-          </i>
+          />
         </div>
       </div>
     );

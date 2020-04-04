@@ -44,7 +44,7 @@ export class ProductItem extends Component {
         hasTag={isFeaturedProduct}
       >
         {soldOut ? (
-          <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
+          <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
         ) : (
           <ItemOperator
             className="flex-middle"

@@ -267,7 +267,7 @@
   }
 }
 
-@keyframes vertical-movemen {
+@keyframes vertical-movement {
   0%,
   100% {
     -webkit-transform: translateY(0%);
@@ -1053,12 +1053,12 @@
     }
   }
 
-  &__cart-ctrl.is-minuts {
+  &__cart-ctrl.is-minus {
     &::before {
       content: none;
     }
 
-    .cart__minuts {
+    .cart__minus {
       display: block;
     }
   }
@@ -1162,7 +1162,7 @@
     }
   }
 
-  &__minuts {
+  &__minus {
     display: none;
     border-color: $gray-1;
     background-color: $white;
@@ -1218,7 +1218,7 @@
     }
   }
 
-  &__minuts &__icon {
+  &__minus &__icon {
     &::before {
       background-color: $gray-1;
     }
@@ -1585,10 +1585,11 @@
     @extend .border-radius-base;
 
     display: inline-block;
-    padding: 2vw 4vw;
+    padding: 1.4vw 2.4vw;
     border: 1px solid $white;
     margin: 2vw;
     background-color: transparent;
+    font-style: normal;
   }
 
   &__card-container {
@@ -2048,56 +2049,6 @@
 }
 
 .location-page {
-  &__form {
-    padding: 5vw 2.4vw;
-    background-color: $white;
-
-    .input {
-      padding-left: 0;
-      padding-right: 5vw;
-      font-size: 1.4rem;
-      line-height: 1.5em;
-      height: 12vw;
-      max-height: 50px;
-    }
-  }
-
-  &__icon-pin {
-    padding: 3.2vw;
-    font-size: 0;
-
-    svg {
-      fill: $gray-2;
-    }
-  }
-
-  &__address {
-    font-style: unset;
-    border-top: 8px solid $gray-4;
-  }
-
-  &__list-wrapper {
-    position: relative;
-    top: 25px;
-    margin-top: 26.8vw;
-    padding-top: 2.2rem;
-  }
-
-  &__icon-adjust {
-    padding: 3.8vw;
-
-    svg {
-      width: 12px;
-      height: 12px;
-      fill: $theme-color;
-    }
-
-    & + .item {
-      padding: 4vw 0;
-      width: 100%;
-    }
-  }
-
   &__search-box {
     padding: 5vw 2.4vw;
     background-color: $white;
@@ -2312,6 +2263,17 @@
     .store-info__aside,
     .cover {
       top: 64px;
+    }
+  }
+
+  .location-page {
+    &__loading-mask {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
     }
   }
 
@@ -3421,7 +3383,10 @@ body.loading {
     margin-top: 34px;
   }
 
-  .tag__card,
+  .tag__card {
+    padding: 5px 10px;
+  }
+
   .cart-bar__order-button {
     padding: 9px 16px;
   }

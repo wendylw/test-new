@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { IconClose } from '../../../components/Icons'
+import { IconClose } from '../../../components/Icons';
 
 class TopMessage extends React.Component {
-  state = {}
+  state = {};
 
   render() {
-    const {
-      className,
-      message,
-      hideMessage,
-    } = this.props;
+    const { className, message, hideMessage } = this.props;
     const classList = ['top-message'];
 
     if (className) {
@@ -19,9 +15,7 @@ class TopMessage extends React.Component {
 
     return (
       <div className={classList.join(' ')}>
-        <i className="top-message__close-button" onClick={() => hideMessage()}>
-          <IconClose />
-        </i>
+        <IconClose className="top-message__close-button" onClick={() => hideMessage()} />
         <span className="top-message__text">{message}</span>
       </div>
     );
@@ -36,7 +30,7 @@ TopMessage.propTypes = {
 
 TopMessage.defaultTypes = {
   message: '',
-  hideMessage: () => { },
+  hideMessage: () => {},
 };
 
 export default TopMessage;

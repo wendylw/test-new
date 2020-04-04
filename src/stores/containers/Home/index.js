@@ -23,11 +23,25 @@ const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {};
 
-  async componentDidMount() {
-    const { homeActions } = this.props;
+  componentDidMount = async () => {
+    const storeId = Utils.getQueryString('storeId');
+    await this.props.homeActions.loadCoreStores();
 
-    await homeActions.loadCoreStores();
-  }
+    if (storeId) {
+      // setup deliveryAddress info for auto redirect to ordering page
+      //  when user click "delivery" on shipping type page
+      this.setupDeliveryAddressByCookie();
+      this.setCurrentStoreId(storeId);
+    }
+  };
+
+  // get deliveryTo info from cookie and set into localStorage
+  setupDeliveryAddressByCookie = () => {
+    const deliveryTo = Utils.getDeliveryAddressCookie();
+    if (deliveryTo) {
+      sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryTo));
+    }
+  };
 
   async visitStore(storeId) {
     const { homeActions } = this.props;
@@ -44,12 +58,17 @@ class App extends Component {
   async setCurrentStoreId(storeId) {
     const { homeActions } = this.props;
     // 请求 coreBusiness
-    await homeActions.loadCoreBusiness();
+    const {
+      responseGql: {
+        data: { business: businessInfo },
+      },
+    } = await homeActions.loadCoreBusiness();
+
     // if store is closed,go straight to ordering page and let it display store is closed
-    const { allBusinessInfo, business } = this.props;
+    const { business } = this.props;
+    const allBusinessInfo = { [business]: businessInfo };
     const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-    if (isValidTimeToOrder) {
+    if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
       homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);
