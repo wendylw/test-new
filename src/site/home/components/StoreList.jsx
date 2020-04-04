@@ -116,7 +116,6 @@ class StoreList extends Component {
   renderWithInfiniteScroll = () => {
     const { hasMore, loadMoreStores, getScrollParent } = this.props;
 
-    // todo: scroll parent may need to specify
     return (
       <InfiniteScroll
         className="store-card-list"

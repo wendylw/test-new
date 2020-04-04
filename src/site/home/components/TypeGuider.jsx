@@ -10,10 +10,11 @@ class TypeGuider extends Component {
       return;
     }
 
-    onToggle();
+    return onToggle();
   }
 
-  handleGotoOrderingPage(url) {
+  handleGotoOrderingPage(url, doNotAction) {
+    if (doNotAction) return;
     window.location.href = url;
   }
 
@@ -51,7 +52,7 @@ class TypeGuider extends Component {
             <button
               className="button button__block button__fill margin-smaller text-uppercase text-weight-bold"
               disabled={isOutOfDeliveryRange}
-              onClick={isOutOfDeliveryRange ? this.handleGotoOrderingPage.bind(this, deliveryUrl) : () => {}}
+              onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, isOutOfDeliveryRange)}
             >
               {t('FoodDelivery')}
             </button>
@@ -67,13 +68,11 @@ TypeGuider.propTypes = {
   pickupUrl: PropTypes.string,
   isOutOfDeliveryRange: PropTypes.bool.isRequired,
   show: PropTypes.bool.isRequired,
-  onToggle: PropTypes.func.isRequired,
 };
 
 TypeGuider.defaultProps = {
   isOutOfDeliveryRange: false,
   show: false,
-  onToggle: () => {},
 };
 
 export default withTranslation()(TypeGuider);
