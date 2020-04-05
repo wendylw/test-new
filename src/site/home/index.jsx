@@ -71,6 +71,8 @@ class Home extends React.Component {
         console.error('[Home] [didMount] error=%s', e);
       }
     }
+
+    this.props.homeActions.getStoreList(0);
   };
 
   debounceSearchStores = debounce(() => {
@@ -193,6 +195,7 @@ class Home extends React.Component {
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
+
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           <Banner className="entry-home__banner">
             <figure className="entry-home__banner-image">
@@ -215,27 +218,6 @@ class Home extends React.Component {
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />
             </div>
-            {/* {!searchingStores || !searchingStores.length || !keyword ? null : (
-              <ul className="searching-list border__bottom-divider border-radius-base base-box-shadow">
-                {searchingStores.map(store => {
-                  const { name, geoDistance } = store;
-
-                  return (
-                    <li
-                      key={`searching-store-${store.id}`}
-                      className="searching-list__item border__bottom-divider"
-                      onClick={() => this.handleStoreSelected(store)}
-                    >
-                      <h3 className="searching-list__name text-size-big text-weight-bold">{name}</h3>
-                      <div className="searching-list__location flex flex-middle text-opacity">
-                        <span>{`${t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })} . `}</span>
-                        <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )} */}
           </div>
 
           <div className="store-card-list__container padding-normal">
