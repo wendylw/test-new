@@ -25,8 +25,8 @@ class TypeGuider extends Component {
 
   renderLoading = () => {
     return (
-      <div className="loading-cover">
-        <i className="loader theme page-loader"></i>
+      <div className="type-guider-aside__loader-container flex flex-middle margin-normal">
+        <i className="type-guider-aside__loader loader theme text-size-biggest"></i>
       </div>
     );
   };
@@ -76,16 +76,16 @@ class TypeGuider extends Component {
         <div className="type-guider-aside__content aside__content absolute-wrapper text-center">
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
           <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
-          <div className="padding-normal type-guider-aside__button-group flex flex-middle flex-space-between">
-            {loading ? this.renderLoading() : null}
+          {loading ? this.renderLoading() : null}
+          <div className="type-guider-aside__button-group padding-normal flex flex-middle flex-space-between">
             <button
-              className="button button__block button__outline margin-smaller text-uppercase text-weight-bold"
+              className="button button__block button__outline margin-normal text-uppercase text-weight-bold"
               onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
             >
               {t('SelfPickup')}
             </button>
             <button
-              className="button button__block button__fill margin-smaller text-uppercase text-weight-bold"
+              className="button button__block button__fill margin-normal text-uppercase text-weight-bold"
               disabled={isOutOfDeliveryRange}
               onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, !isOutOfDeliveryRange)}
             >

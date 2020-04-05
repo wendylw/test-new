@@ -248,7 +248,7 @@ img {
   padding-bottom: 3.8vw;
 }
 
-.margin-smaller {
+.margin-normal {
   margin: 3.8vw;
 }
 
@@ -280,7 +280,6 @@ img {
   height: 1em;
   border-radius: 50%;
   margin: auto;
-  position: relative;
   -webkit-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
@@ -715,8 +714,8 @@ img {
     padding-bottom: 8px * 2;
   }
 
-  .margin-smaller {
-    margin: 8px;
+  .margin-normal {
+    margin: 16px;
   }
 
   /* Site Banner */

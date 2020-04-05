@@ -13,7 +13,7 @@ class StoreList extends Component {
   };
 
   renderStoreItems = () => {
-    // const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
+    // const tagClassName = 'tag__card text-size-small text-weight-bold margin-normal';
     const { t, stores } = this.props;
 
     // const storeStatus = {

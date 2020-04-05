@@ -2,10 +2,6 @@
 
 /* Entry */
 .entry {
-  .loader {
-    margin: 9vh auto;
-  }
-
   &__bar {
     position: fixed;
     left: 0;
@@ -24,6 +20,10 @@
 .entry-home {
   position: relative;
   padding-bottom: 56px;
+
+  .loader {
+    margin: 9vh auto;
+  }
 
   &__banner {
     padding-top: 66px;
@@ -141,6 +141,14 @@
 
   &__description {
     white-space: pre-line;
+  }
+
+  &__loader-container {
+    height: 8vh;
+  }
+
+  &__loader {
+    display: block;
   }
 
   &__button-group {
