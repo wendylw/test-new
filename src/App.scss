@@ -3070,6 +3070,17 @@ body.loading {
     font-size: $mobile-font-size-base;
   }
 
+  .header {
+    &__title:not(.header__one-line-title),
+    &__info-list {
+      padding: 0 2vw;
+    }
+
+    &__icon ~ &__title-container &__one-line-title.has-tag {
+      max-width: 34vw;
+    }
+  }
+
   .cart-bar {
     &__icon-container img {
       max-width: 35px;
