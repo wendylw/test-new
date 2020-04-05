@@ -146,7 +146,16 @@ export class Home extends Component {
     return (
       <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
         <div className="item__detail-content flex flex-top flex-space-between">
-          {!isSourceBeepitCom() ? null : <IconLeftArrow className="header__icon" />}
+          {!isSourceBeepitCom() ? null : (
+            <IconLeftArrow
+              className="header__icon"
+              onClick={event => {
+                event.preventDefault();
+                history.go(-1);
+                event.stopPropagation();
+              }}
+            />
+          )}
           <div className="location-page__base-info">
             <summary className="item__title text-uppercase font-weight-bold">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>

@@ -99,12 +99,12 @@ class StoreList extends Component {
                     />
                   </Trans>
                 </div>
-                {!isOutOfDeliveryRange ? null : (
+                {isOpen && isOutOfDeliveryRange ? (
                   <div className="padding-top-bottom-small">
                     <IconLabelOutline className="icon icon__privacy icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
                   </div>
-                )}
+                ) : null}
               </summary>
             </li>
           );
@@ -121,7 +121,8 @@ class StoreList extends Component {
         className="store-card-list"
         element="ul"
         loader={<div key={'loading-0'} className="loader theme text-size-huge"></div>}
-        pageStart={-1} // to count from page0, page1, ...
+        pageStart={0} // to count from page0, page1, ...
+        initialLoad={false}
         hasMore={hasMore}
         loadMore={page => loadMoreStores(page)}
         getScrollParent={getScrollParent}
