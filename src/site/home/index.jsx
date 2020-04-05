@@ -115,13 +115,11 @@ class Home extends React.Component {
   handleStoreSelected = async store => {
     const { homeActions } = this.props;
 
-    if (store.isOpen) {
-      await homeActions.showTypePicker({
-        business: store.business,
-        storeId: store.id,
-        isOutOfDeliveryRange: store.isOutOfDeliveryRange,
-      });
-    }
+    await homeActions.showTypePicker({
+      business: store.business,
+      storeId: store.id,
+      isOutOfDeliveryRange: store.isOutOfDeliveryRange,
+    });
   };
 
   renderStoreList = () => {
