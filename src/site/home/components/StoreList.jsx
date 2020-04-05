@@ -99,12 +99,12 @@ class StoreList extends Component {
                     />
                   </Trans>
                 </div>
-                {!isOutOfDeliveryRange ? null : (
+                {isOpen && isOutOfDeliveryRange ? (
                   <div className="padding-top-bottom-small">
                     <IconLabelOutline className="icon icon__privacy icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
                   </div>
-                )}
+                ) : null}
               </summary>
             </li>
           );

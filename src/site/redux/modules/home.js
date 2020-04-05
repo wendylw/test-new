@@ -8,6 +8,7 @@ import Utils from '../../../utils/utils';
 const initialState = {
   typePicker: {
     show: false,
+    isOpen: false,
     business: '',
     deliveryUrl: '',
     pickupUrl: '',
@@ -53,8 +54,11 @@ const actions = {
     type: types.HIDE_TYPE_PICKER,
   }),
 
-  showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange }) => (dispatch, getState) => {
-    const context = { storeId, business, source, isOutOfDeliveryRange };
+  showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange, isOpen }) => (
+    dispatch,
+    getState
+  ) => {
+    const context = { storeId, business, source, isOutOfDeliveryRange, isOpen };
     return dispatch(fetchStoreUrlHash(storeId, context));
   },
 
@@ -160,7 +164,7 @@ const paginationInfoReducer = (state, action) => {
 const typePickerReducer = (state, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
-    return { ...state, loading: true, show: true };
+    return { ...state, loading: true, show: context.isOpen };
   } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
     const { redirectTo } = action.response || {};
     const storeUrlParams = {
@@ -173,6 +177,7 @@ const typePickerReducer = (state, action) => {
       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
       pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
+      isOpen: context.isOpen,
       business: context.business,
       loading: false,
     };

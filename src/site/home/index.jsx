@@ -120,6 +120,7 @@ class Home extends React.Component {
     await homeActions.showTypePicker({
       business: store.business,
       storeId: store.id,
+      isOpen: store.isOpen,
       isOutOfDeliveryRange: store.isOutOfDeliveryRange,
     });
   };

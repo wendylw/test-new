@@ -9,6 +9,15 @@ class TypeGuider extends Component {
     url: '',
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // make auto redirect once store is closed
+    if (this.props.deliveryUrl && !this.state.url && !this.props.isOpen) {
+      this.setState({
+        url: this.props.deliveryUrl,
+      });
+    }
+  }
+
   handleHideTypeGuider(e) {
     const { onToggle } = this.props;
 
