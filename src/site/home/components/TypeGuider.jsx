@@ -38,7 +38,7 @@ class TypeGuider extends Component {
       },
     };
     const currentText = contentText[isOutOfDeliveryRange ? 'OutOfDeliveryRange' : 'withinDeliveryRange'];
-    const classList = ['type-guider-aside aside fixed-wrapper active'];
+    const classList = ['type-guider-aside aside fixed-wrapper'];
 
     if (show) {
       classList.push('active');
