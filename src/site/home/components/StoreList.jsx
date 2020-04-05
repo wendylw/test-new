@@ -78,7 +78,7 @@ class StoreList extends Component {
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  <li className="store-info__item text-middle">
+                  {/* <li className="store-info__item text-middle">
                     <IconMotorcycle className="icon icon__smaller text-middle" />
                     <CurrencyNumber
                       className="store-info__text text-size-small text-middle"
@@ -86,7 +86,7 @@ class StoreList extends Component {
                       currency={currency}
                       price={deliveryFee}
                     />
-                  </li>
+                  </li> */}
                 </ul>
                 <div className="store-card-list__description flex flex-middle text-opacity">
                   <Trans i18nKey="MinimumOrder">
