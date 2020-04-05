@@ -150,6 +150,12 @@ img {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
+
+  &__shrink-fixed {
+    -ms-flex-shrink: 0;
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+  }
 }
 
 .flex-middle {

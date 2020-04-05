@@ -53,7 +53,7 @@ class StoreList extends Component {
                 this.handleStoreClicked(store);
               }}
             >
-              <div className="store-card-list__image-container border-radius-large">
+              <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : (
                   <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bold">
                     {t('ClosedForNow')}
