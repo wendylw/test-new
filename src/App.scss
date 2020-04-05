@@ -2201,6 +2201,14 @@
       background-color: $gray-3;
     }
 
+    .header__icon {
+      margin-right: 8px;
+    }
+
+    .header__icon ~ .location-page__base-info .location-page__entry-address {
+      max-width: 316px;
+    }
+
     & + .header {
       top: 57px;
     }
@@ -2283,6 +2291,10 @@
 
   &__base-info {
     width: 85vw;
+  }
+
+  .header__icon ~ &__base-info {
+    width: 74vw;
   }
 
   &__entry-address {
