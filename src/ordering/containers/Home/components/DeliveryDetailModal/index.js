@@ -92,7 +92,7 @@ class DeliveryDetailModal extends Component {
                   {name ? ` (${name})` : ''}
                 </span>
                 {isValidTimeToOrder ? null : (
-                  <div className="tag__card-container">
+                  <div className="tag__card-container text-middle">
                     <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
                   </div>
                 )}

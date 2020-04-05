@@ -19,7 +19,7 @@ class Header extends Component {
 
     const renderPageAction = () => {
       if (!isStoreHome || (isStoreHome && isSourceBeepitCom())) {
-        const iconClassName = `header__image-container text-middle${isSourceBeepitCom() ? ' white' : ''}`;
+        const iconClassName = 'header__image-container header__icon text-middle';
 
         return isPage ? (
           <IconLeftArrow className={iconClassName} onClick={navFunc} />
@@ -92,7 +92,7 @@ class Header extends Component {
                 {title}
               </span>
               {isValidTimeToOrder ? null : (
-                <div className="tag__card-container">
+                <div className="tag__card-container text-middle">
                   <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
                 </div>
               )}

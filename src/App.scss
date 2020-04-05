@@ -690,11 +690,6 @@
     border-radius: 50%;
     overflow: hidden;
 
-    &.white {
-      background-color: $white;
-      margin-right: 8px;
-    }
-
     &::before {
       @extend .w-h-same;
     }
@@ -2216,6 +2211,11 @@
     .header {
       height: 64px;
       background-color: $white;
+    }
+
+    .header__icon {
+      background-color: $white;
+      margin-right: 8px;
     }
 
     .category-nav {
