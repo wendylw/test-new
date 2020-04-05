@@ -166,7 +166,7 @@ const paginationInfoReducer = (state, action) => {
 
       return { ...state, loading: false };
     case types.GET_STORE_LIST_FAILURE:
-      return { ...state, hasMore: false };
+      return { ...state, hasMore: false, loading: false };
     default:
       return state;
   }
