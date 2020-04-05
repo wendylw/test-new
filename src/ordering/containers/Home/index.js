@@ -26,6 +26,7 @@ import {
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import config from '../../../config';
 
 const localState = {
   blockScrollTop: 0,
@@ -106,8 +107,7 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    const { history } = this.props;
-    history.go(-1);
+    window.location.href = config.beepitComUrl;
   };
 
   handleToggleAside(asideName) {
@@ -146,16 +146,16 @@ export class Home extends Component {
     return (
       <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
         <div className="item__detail-content flex flex-top flex-space-between">
-          {!isSourceBeepitCom() ? null : (
+          {isSourceBeepitCom() ? (
             <IconLeftArrow
               className="header__icon"
               onClick={event => {
                 event.preventDefault();
-                history.go(-1);
+                window.location.href = config.beepitComUrl;
                 event.stopPropagation();
               }}
             />
-          )}
+          ) : null}
           <div className="location-page__base-info">
             <summary className="item__title text-uppercase font-weight-bold">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
