@@ -25,6 +25,7 @@ import {
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { isSourceBeepitCom } from './utils';
 
 const localState = {
   blockScrollTop: 0,
@@ -44,8 +45,21 @@ export class Home extends Component {
       window.location.href = '/';
     }
 
+    if (isSourceBeepitCom()) {
+      // sync deliveryAddress from beepit.com
+      this.setupDeliveryAddressByCookie();
+    }
+
     homeActions.loadProductList();
   }
+
+  // get deliveryTo info from cookie and set into localStorage
+  setupDeliveryAddressByCookie = () => {
+    const deliveryTo = Utils.getDeliveryAddressCookie();
+    if (deliveryTo) {
+      sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryTo));
+    }
+  };
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
@@ -84,6 +98,11 @@ export class Home extends Component {
       }
     }
   }
+
+  handleNavBack = () => {
+    const { history } = this.props;
+    history.go(-1);
+  };
 
   handleToggleAside(asideName) {
     const stopBodyScroll =
@@ -201,6 +220,7 @@ export class Home extends Component {
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         minOrder={minOrder}
+        navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}

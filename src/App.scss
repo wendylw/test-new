@@ -690,6 +690,11 @@
     border-radius: 50%;
     overflow: hidden;
 
+    &.white {
+      background-color: $white;
+      margin-right: 8px;
+    }
+
     &::before {
       @extend .w-h-same;
     }

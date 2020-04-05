@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconMotorcycle, IconLocation } from '../../../components/Icons';
+import { IconMotorcycle, IconLocation, IconLabelOutline } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -30,8 +30,18 @@ class StoreList extends Component {
     return (
       <React.Fragment>
         {stores.map(store => {
-          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id, locale, currency } =
-            store || {};
+          const {
+            name,
+            avatar,
+            deliveryFee,
+            minimumConsumption,
+            isOpen,
+            geoDistance,
+            id,
+            locale,
+            currency,
+            isOutOfDeliveryRange,
+          } = store || {};
           // const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
@@ -61,7 +71,7 @@ class StoreList extends Component {
                 <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit__single-line">
                   {name}
                 </h3>
-                <ul className="store-info padding-top-bottom-small">
+                <ul className="store-info padding-top-bottom-smaller">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">
@@ -89,6 +99,12 @@ class StoreList extends Component {
                     />
                   </Trans>
                 </div>
+                {!isOutOfDeliveryRange ? null : (
+                  <div className="padding-top-bottom-small">
+                    <IconLabelOutline className="icon icon__privacy icon__smaller text-middle" />
+                    <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
+                  </div>
+                )}
               </summary>
             </li>
           );
@@ -100,7 +116,6 @@ class StoreList extends Component {
   renderWithInfiniteScroll = () => {
     const { hasMore, loadMoreStores, getScrollParent } = this.props;
 
-    // todo: scroll parent may need to specify
     return (
       <InfiniteScroll
         className="store-card-list"

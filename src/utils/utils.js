@@ -1,5 +1,6 @@
 import qs from 'qs';
 import Constants from './constants';
+import config from '../config';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -412,7 +413,7 @@ Utils.atou = str => {
 // use setDeliveryToCookie and getDeliveryToCookie to share user location between domains
 //
 // setDeliveryToCookie(deliveryAddress: PlaceInfo) => void
-Utils.setDeliveryToCookie = deliveryAddress => {
+Utils.setDeliveryAddressCookie = deliveryAddress => {
   const placeInfoBase64 = Utils.utoa(JSON.stringify(deliveryAddress));
   const domain = (process.env.REACT_APP_MERCHANT_STORE_URL || '').split('%business%')[1];
   document.cookie = `deliveryAddress=${placeInfoBase64}; path=/; domain=${domain}`;
@@ -428,6 +429,13 @@ Utils.getDeliveryAddressCookie = () => {
   } catch (e) {
     return null;
   }
+};
+
+Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
+  let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
+  if (type) storeUrl += `&type=${type}`;
+  if (source) storeUrl += `&source=${source}`;
+  return storeUrl;
 };
 
 if (process.env.NODE_ENV !== 'production') {

@@ -32,7 +32,6 @@
 
   &__banner-image {
     margin: 14px 0 0;
-    max-width: 200px;
   }
 
   &__search {
@@ -70,8 +69,8 @@
   &__image-container {
     position: relative;
     border: 1px solid $gray-3;
-    width: 22vw;
-    height: 22vw;
+    width: 26vw;
+    height: 26vw;
     overflow: hidden;
   }
 
@@ -133,6 +132,23 @@
 // }
 /* end of Searching Store List */
 
+/* Type Guider Aside */
+.type-guider-aside {
+  &__content {
+    padding-top: 20px;
+    bottom: 56px;
+  }
+
+  &__description {
+    white-space: pre-line;
+  }
+
+  &__button-group {
+    margin: -3.8vw;
+  }
+}
+/* end of Type Guider Aside */
+
 @media (max-width: 374px) {
   /* Store Card List */
   .store-card-list {
@@ -162,8 +178,8 @@
   /* Store Card List */
   .store-card-list {
     &__image-container {
-      width: 88px;
-      height: 88px;
+      width: 104px;
+      height: 104px;
     }
 
     &__summary {
@@ -182,4 +198,12 @@
   //   }
   // }
   /* end of Searching Store List */
+
+  /* Type Guider Aside */
+  .type-guider-aside {
+    &__button-group {
+      margin: -8px;
+    }
+  }
+  /* end of Type Guider Aside */
 }

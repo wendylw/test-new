@@ -7,6 +7,7 @@ import Image from './Image';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
+import { isSourceBeepitCom } from '../ordering/containers/Home/utils';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -16,14 +17,23 @@ class Header extends Component {
     //   return null;
     // }
 
-    if (isStoreHome) {
-      return <Image className="header__image-container text-middle" src={logo} alt={title} />;
-    }
+    const renderPageAction = () => {
+      if (!isStoreHome || (isStoreHome && isSourceBeepitCom())) {
+        const iconClassName = `header__image-container text-middle${isSourceBeepitCom() ? ' white' : ''}`;
+
+        return isPage ? (
+          <IconLeftArrow className={iconClassName} onClick={navFunc} />
+        ) : (
+          <IconClose className={iconClassName} onClick={navFunc} />
+        );
+      }
+    };
 
     return (
-      <figure className="header__image-container text-middle" onClick={navFunc}>
-        {isPage ? <IconLeftArrow /> : <IconClose />}
-      </figure>
+      <React.Fragment>
+        {renderPageAction()}
+        {isStoreHome ? <Image className="header__image-container text-middle" src={logo} alt={title} /> : null}
+      </React.Fragment>
     );
   }
 

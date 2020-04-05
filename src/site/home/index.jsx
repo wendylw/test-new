@@ -1,14 +1,15 @@
 import React from 'react';
 import { debounce } from 'lodash';
 import { withTranslation } from 'react-i18next';
+import './index.scss';
 import { IconSearch, IconClose } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
+import TypeGuider from './components/TypeGuider';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import './index.scss';
 import Constants from '../../utils/constants';
 import {
   homeActionCreators,
@@ -17,10 +18,10 @@ import {
   loadedSearchingStores,
   getAllCurrentStores,
   getSearchResult,
+  getTypePicker,
 } from '../redux/modules/home';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import Utils from '../../utils/utils';
-import config from '../../config';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 
@@ -112,16 +113,26 @@ class Home extends React.Component {
     return this.props.homeActions.getStoreList(page);
   };
 
-  handleStoreSelected = store => {
-    const { currentPlaceInfo } = this.props;
-    const storeUrl = `${config.beepOnlineStoreUrl(store.business)}?storeId=${store.id}`;
+  handleStoreSelected = async store => {
+    const { currentPlaceInfo, homeActions } = this.props;
+
+    await homeActions.showTypePicker({
+      business: store.business,
+      storeId: store.id,
+      isOutOfDeliveryRange: store.isOutOfDeliveryRange,
+    });
 
     // todo: move cookie of placeInfo into session when got time
+    // todo: use redirect page from bff to transfer data between domains based on session
     // save placeInfo into cookie, to get it once visit merchant store
     // thus can sync up deliveryInfo between beepit.com and {business}.beepit.com
-    Utils.setDeliveryToCookie(currentPlaceInfo);
+    Utils.setDeliveryAddressCookie(currentPlaceInfo);
+  };
 
-    window.location.href = storeUrl;
+  handleTypeGuiderBlankArea = () => {
+    const { homeActions } = this.props;
+    console.log('fuck !!!!');
+    homeActions.hideTypePicker();
   };
 
   renderStoreList = () => {
@@ -180,7 +191,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo } = this.props;
+    const { t, currentPlaceInfo, typePicker } = this.props;
     const { keyword } = this.state;
 
     if (!currentPlaceInfo) {
@@ -244,6 +255,7 @@ class Home extends React.Component {
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
+        <TypeGuider {...typePicker} onToggle={this.handleTypeGuiderBlankArea} />
       </main>
     );
   }
@@ -259,6 +271,7 @@ export default compose(
       searchingStores: getSearchingStores(state),
       searchResult: getSearchResult(state),
       loadedSearchingStores: loadedSearchingStores(state),
+      typePicker: getTypePicker(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
