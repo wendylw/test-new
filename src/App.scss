@@ -759,6 +759,10 @@
     }
   }
 
+  &__icon ~ &__title-container &__one-line-title.has-tag {
+    max-width: 36vw;
+  }
+
   &.has-right::after,
   &__title + span {
     content: "";
@@ -1593,7 +1597,7 @@
   }
 
   &__card-container {
-    height: 3.8vw;
+    height: 4vw;
   }
 
   &__card.variation:not(.active) {
@@ -3128,6 +3132,10 @@ body.loading {
 
   .header__one-line-title.has-tag {
     max-width: 200px;
+  }
+
+  .header__icon ~ .header__title-container .header__one-line-title.has-tag {
+    max-width: 180px;
   }
 
   .category-nav.category-nav__vertical,
