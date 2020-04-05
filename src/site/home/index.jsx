@@ -34,6 +34,7 @@ class Home extends React.Component {
       keyword: '',
     };
 
+    this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
   }
 
@@ -132,11 +133,16 @@ class Home extends React.Component {
       paginationInfo: { hasMore },
     } = this.props;
 
+    console.log('stores.length ==>', stores.length);
+    if (!stores.length) {
+      return null;
+    }
+
     return (
       <React.Fragment>
         <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
         <StoreList
-          key={'store-list'}
+          key={`store-list-${this.renderId}`}
           stores={stores}
           hasMore={hasMore}
           loadMoreStores={this.handleLoadMoreStores}
