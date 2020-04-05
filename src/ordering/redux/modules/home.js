@@ -4,7 +4,7 @@ import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
 
 import { combineReducers } from 'redux';
-import { computeDeliveryDistance } from '../../containers/Location/utils';
+// import { computeDeliveryDistance } from '../../containers/Location/utils';
 import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../redux/modules/entities/products';
@@ -12,7 +12,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness } from './app';
-import { getBusinessInfo } from './cart';
+// import { getBusinessInfo } from './cart';
 
 const initialState = {
   domProperties: {
