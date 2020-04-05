@@ -76,22 +76,25 @@ class TypeGuider extends Component {
         <div className="type-guider-aside__content aside__content absolute-wrapper text-center">
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
           <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
-          {loading ? this.renderLoading() : null}
-          <div className="type-guider-aside__button-group padding-normal flex flex-middle flex-space-between">
-            <button
-              className="button button__block button__outline margin-normal text-uppercase text-weight-bold"
-              onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
-            >
-              {t('SelfPickup')}
-            </button>
-            <button
-              className="button button__block button__fill margin-normal text-uppercase text-weight-bold"
-              disabled={isOutOfDeliveryRange}
-              onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, !isOutOfDeliveryRange)}
-            >
-              {t('FoodDelivery')}
-            </button>
-          </div>
+          {loading ? (
+            this.renderLoading()
+          ) : (
+            <div className="type-guider-aside__button-group padding-normal flex flex-middle flex-space-between">
+              <button
+                className="button button__block button__outline margin-normal text-uppercase text-weight-bold"
+                onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
+              >
+                {t('SelfPickup')}
+              </button>
+              <button
+                className="button button__block button__fill margin-normal text-uppercase text-weight-bold"
+                disabled={isOutOfDeliveryRange}
+                onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, !isOutOfDeliveryRange)}
+              >
+                {t('FoodDelivery')}
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     );
