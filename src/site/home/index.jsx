@@ -21,7 +21,6 @@ import {
   getTypePicker,
 } from '../redux/modules/home';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
-import Utils from '../../utils/utils';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 
@@ -114,25 +113,22 @@ class Home extends React.Component {
   };
 
   handleStoreSelected = async store => {
-    const { currentPlaceInfo, homeActions } = this.props;
+    const { homeActions } = this.props;
 
     await homeActions.showTypePicker({
       business: store.business,
       storeId: store.id,
       isOutOfDeliveryRange: store.isOutOfDeliveryRange,
     });
+    //
+    // const { typePicker } = this.props;
+    // const storeUrl = typePicker.deliveryUrl;
 
     // todo: move cookie of placeInfo into session when got time
     // todo: use redirect page from bff to transfer data between domains based on session
     // save placeInfo into cookie, to get it once visit merchant store
     // thus can sync up deliveryInfo between beepit.com and {business}.beepit.com
-    Utils.setDeliveryAddressCookie(currentPlaceInfo);
-  };
-
-  handleTypeGuiderBlankArea = () => {
-    const { homeActions } = this.props;
-    console.log('fuck !!!!');
-    homeActions.hideTypePicker();
+    // Utils.setDeliveryAddressCookie(currentPlaceInfo);
   };
 
   renderStoreList = () => {
@@ -255,7 +251,11 @@ class Home extends React.Component {
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
-        <TypeGuider {...typePicker} onToggle={this.handleTypeGuiderBlankArea} />
+        <TypeGuider
+          {...typePicker}
+          deliveryAddress={currentPlaceInfo}
+          onToggle={() => this.props.homeActions.hideTypePicker()}
+        />
       </main>
     );
   }

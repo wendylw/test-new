@@ -8,6 +8,7 @@ import Utils from '../../../utils/utils';
 const initialState = {
   typePicker: {
     show: false,
+    business: '',
     deliveryUrl: '',
     pickupUrl: '',
     isOutOfDeliveryRange: true,
@@ -172,6 +173,7 @@ const typePickerReducer = (state, action) => {
       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
       pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
+      business: context.business,
       loading: false,
     };
   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
