@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconMotorcycle, IconLocation, IconLabelOutline } from '../../../components/Icons';
+import { /*IconMotorcycle,*/ IconLocation, IconLabelOutline } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -33,7 +33,7 @@ class StoreList extends Component {
           const {
             name,
             avatar,
-            deliveryFee,
+            /*deliveryFee,*/
             minimumConsumption,
             isOpen,
             geoDistance,
