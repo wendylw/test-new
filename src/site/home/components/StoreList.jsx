@@ -88,7 +88,7 @@ class StoreList extends Component {
                     />
                   </li>
                 </ul>
-                <div className="store-card-list__description text-opacity">
+                <div className="store-card-list__description flex flex-middle text-opacity">
                   <Trans i18nKey="MinimumOrder">
                     <label className="text-size-small text-middle">Min Order.</label>
                     <CurrencyNumber
