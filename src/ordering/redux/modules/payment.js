@@ -72,13 +72,8 @@ export const actions = {
 
     if (shippingType === 'delivery') {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
-      const {
-        addressDetails,
-        deliveryComments,
-        deliveryToAddress: deliveryTo,
-        deliveryToLocation: location,
-        routerDistance,
-      } = deliveryDetails || {};
+      const { addressDetails, deliveryComments, deliveryToAddress: deliveryTo, deliveryToLocation: location } =
+        deliveryDetails || {};
 
       variables = {
         ...variables,
@@ -90,7 +85,6 @@ export const actions = {
           country,
           deliveryTo,
           location,
-          routerDistance,
         },
         deliveryComments,
       };

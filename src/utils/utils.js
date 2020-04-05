@@ -385,6 +385,16 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   };
 };
 
+Utils.getDeliveryCoords = () => {
+  try {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    return deliveryAddress.coords;
+  } catch (e) {
+    console.error('Cannot get delivery coordinate', e);
+    return undefined;
+  }
+};
+
 Utils.isSiteApp = () => {
   return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
 };

@@ -25,6 +25,7 @@ import {
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 
 const localState = {
   blockScrollTop: 0,
@@ -194,13 +195,15 @@ export class Home extends Component {
   };
 
   renderHeader() {
-    const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
+    const { t, onlineStoreInfo, businessInfo, requestInfo, cartSummary } = this.props;
     const { stores, multipleStores } = businessInfo || {};
     const { tableId } = requestInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryFee, minOrder } = this.getDeliveryInfo();
+    // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
+    const { deliveryFee: legacyDeliveryFee, minOrder } = this.getDeliveryInfo();
+    const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
     if (!tableId && !isDeliveryType) {
       classList.push('has-right');
@@ -248,10 +251,11 @@ export class Home extends Component {
       allBusinessInfo,
       history,
       freeDeliveryFee,
+      cartSummary,
       ...otherProps
     } = this.props;
     const {
-      deliveryFee,
+      deliveryFee: legacyDeliveryFee,
       minOrder,
       storeAddress,
       telephone,
@@ -316,7 +320,7 @@ export class Home extends Component {
             businessLoaded={businessLoaded}
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
-            deliveryFee={deliveryFee}
+            deliveryFee={cartSummary ? cartSummary.shippingFee : legacyDeliveryFee}
             minOrder={minOrder}
             storeAddress={storeAddress}
             telephone={telephone}
@@ -356,6 +360,7 @@ export default compose(
         categories: getCategoryProductList(state),
         allBusinessInfo: getAllBusinesses(state),
         businessLoaded: getBusinessIsLoaded(state),
+        cartSummary: getCartSummary(state),
       };
     },
     dispatch => ({
