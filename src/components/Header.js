@@ -11,15 +11,16 @@ import { isSourceBeepitCom } from '../ordering/containers/Home/utils';
 
 class Header extends Component {
   renderLogoAndNavDom() {
-    const { isStoreHome, isPage, logo, title, navFunc } = this.props;
+    const { isStoreHome, isPage, logo, title, isValidTimeToOrder, navFunc } = this.props;
+    const isDeliveryType = Utils.isDeliveryType();
 
     // if (Utils.isWebview()) {
     //   return null;
     // }
 
     const renderPageAction = () => {
-      if (!isStoreHome || (isStoreHome && isSourceBeepitCom())) {
-        const iconClassName = 'header__image-container header__icon text-middle';
+      if (!isStoreHome || (isStoreHome && isSourceBeepitCom() && isValidTimeToOrder && !isDeliveryType)) {
+        const iconClassName = 'header__icon text-middle';
 
         return isPage ? (
           <IconLeftArrow className={iconClassName} onClick={navFunc} />
@@ -58,7 +59,7 @@ class Header extends Component {
           {title}
         </span>
         {isValidTimeToOrder ? null : (
-          <div className="tag__card-container">
+          <div className="tag__card-container text-middle">
             <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
           </div>
         )}

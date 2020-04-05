@@ -191,7 +191,9 @@ export class Home extends Component {
 
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
-    return Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    // return Utils.getDeliveryInfo({ business, allBusinessInfo });
+    return Utils.getDeliveryInfo({ business: 'wenjingzhang', allBusinessInfo });
   };
 
   renderHeader() {
@@ -209,10 +211,10 @@ export class Home extends Component {
       classList.push('has-right');
     }
 
-    if (!isDeliveryType) {
-      classList.push('border__bottom-divider gray flex-top');
+    if (isDeliveryType) {
+      classList.push('flex-top');
     } else {
-      classList.push('flex-middle');
+      classList.push('border__bottom-divider gray flex-middle');
     }
 
     return (

@@ -680,7 +680,8 @@
     width: 170px;
   }
 
-  &__image-container {
+  &__image-container,
+  &__icon {
     @extend .reset-font-size;
 
     position: relative;
@@ -711,6 +712,10 @@
       object-fit: contain;
       object-position: center;
     }
+  }
+
+  &__icon ~ &__image-container {
+    margin-left: 8px;
   }
 
   &__title-container,
@@ -2217,11 +2222,6 @@
       background-color: $white;
     }
 
-    .header__icon {
-      background-color: $white;
-      margin-right: 8px;
-    }
-
     .category-nav {
       top: 64px;
       height: auto;
@@ -3139,6 +3139,10 @@ body.loading {
 
   .header__one-line-title {
     max-width: 300px;
+  }
+
+  .header__icon ~ .header__title .header__one-line-title {
+    max-width: 250px;
   }
 
   .header__one-line-title.has-tag {
