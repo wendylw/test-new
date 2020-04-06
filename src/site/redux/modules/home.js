@@ -19,6 +19,7 @@ const initialState = {
     page: 0, // <InfiniteScroll /> handles the page number
     pageSize: 5,
     hasMore: true,
+    loading: false,
   },
   loadedSearchingStoreList: false,
   storeIds: [],
@@ -70,6 +71,8 @@ const actions = {
   },
 
   getStoreList: page => (dispatch, getState) => {
+    const { loading } = getPaginationInfo(getState());
+    if (loading) return;
     return dispatch(fetchStoreList(page));
   },
 
@@ -90,6 +93,7 @@ const fetchStoreList = page => (dispatch, getState) => {
 
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+    context: { page },
     requestPromise: get(
       `${Url.API_URLS.GET_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
     ).then(async response => {
@@ -126,7 +130,9 @@ const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispat
 
 // @reducers
 const storeIdsReducer = (state, action) => {
-  if (action.type === types.GET_STORE_LIST_SUCCESS) {
+  if (action.type === types.GET_STORE_LIST_REQUEST) {
+    if (action.context.page === 0) return [];
+  } else if (action.type === types.GET_STORE_LIST_SUCCESS) {
     const { response } = action;
     if (!response.stores || !response.stores.length) return state;
     return [...state.concat((response.stores || []).map(store => store.id))];
@@ -142,20 +148,25 @@ const storeIdsSearchResultReducer = (state, action) => {
 
 const paginationInfoReducer = (state, action) => {
   switch (action.type) {
+    case types.GET_STORE_LIST_REQUEST:
+      if (action.context.page === 0) {
+        return { ...state, hasMore: true, loading: false };
+      }
+      return { ...state, loading: true };
     case types.GET_STORE_LIST_SUCCESS:
       const { stores } = action.response || {};
 
       if (!stores || !stores.length) {
-        return { ...state, hasMore: false };
+        return { ...state, hasMore: false, loading: false };
       }
 
       if (state.pageSize > stores.length) {
-        return { ...state, hasMore: false };
+        return { ...state, hasMore: false, loading: false };
       }
 
-      return state;
+      return { ...state, loading: false };
     case types.GET_STORE_LIST_FAILURE:
-      return { ...state, hasMore: false };
+      return { ...state, hasMore: false, loading: false };
     default:
       return state;
   }
@@ -191,6 +202,7 @@ const reducer = (state = initialState, action) => {
   const { response } = action;
 
   switch (action.type) {
+    case types.GET_STORE_LIST_REQUEST:
     case types.GET_STORE_LIST_SUCCESS:
     case types.GET_STORE_LIST_FAILURE:
       return {
