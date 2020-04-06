@@ -9,13 +9,6 @@ import DocumentFavicon from '../components/DocumentFavicon';
 import DocumentHeadInfo from '../components/DocumentHeadInfo';
 import favicon from '../images/favicon.ico';
 
-// this fix Safari will cache
-window.onpageshow = function(event) {
-  if (event.persisted) {
-    window.location.reload();
-  }
-};
-
 class Site extends Component {
   render() {
     const { t } = this.props;
