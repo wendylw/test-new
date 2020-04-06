@@ -70,7 +70,6 @@ class TypeGuider extends Component {
     const contentText = {
       withinDeliveryRange: {
         title: t('SelectYourPreference'),
-        description: t('WithinDeliveryRangeDescription'),
       },
       OutOfDeliveryRange: {
         title: t('OutOfDeliveryRange'),
@@ -92,7 +91,9 @@ class TypeGuider extends Component {
       <aside className={classList.join(' ')} onClick={e => this.handleHideTypeGuider(e)}>
         <div className="type-guider-aside__content aside__content absolute-wrapper text-center">
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
-          <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
+          {currentText.description ? (
+            <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
+          ) : null}
           {loading ? (
             this.renderLoading()
           ) : (
