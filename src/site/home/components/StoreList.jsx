@@ -49,7 +49,6 @@ class StoreList extends Component {
               key={id}
               className="store-card-list__item flex flex-top padding-top-bottom-normal border__bottom-divider"
               onClick={() => {
-                console.log(`[StoreList] store[${id}] is clicked`);
                 this.handleStoreClicked(store);
               }}
             >

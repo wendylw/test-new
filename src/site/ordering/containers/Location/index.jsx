@@ -17,8 +17,6 @@ class Location extends React.Component {
     const { state = {} } = this.props.location;
     const { coords } = state;
 
-    console.log('[Location] location.state =', this.props.location.state);
-
     if (coords && coords.lng && coords.lat) {
       this.setState({
         origin: coords,
@@ -26,7 +24,6 @@ class Location extends React.Component {
     } else {
       // this case is only happens when page is airdrop
       try {
-        console.warn('[Location] this page is airdrop');
         const position = await tryGetDeviceCoordinates();
         this.setState({
           origin: {
@@ -34,7 +31,6 @@ class Location extends React.Component {
             lat: position.coords.latitude,
           },
         });
-        console.log('[Location] position =', position);
       } catch (e) {
         const defaultCoords = getDefaultCoords(defaultLocations.KualaLumpur);
         console.warn(
@@ -65,9 +61,7 @@ class Location extends React.Component {
   };
 
   handleMapSelected = async placeInfo => {
-    console.log('[LocationWrapper] placeInfo of onSelect(__) =>', placeInfo);
     await setHistoricalDeliveryAddresses(placeInfo);
-
     this.backToPreviousPage({ placeInfo });
   };
 

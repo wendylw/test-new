@@ -60,7 +60,6 @@ class Home extends React.Component {
     // when source is from ip, we have to ask for high accuracy location
     if (source === 'ip') {
       try {
-        console.warn('[Home] [didMount] asking for device position');
         const placeInfo = await getPlaceInfoByDeviceByAskPermission();
         if (placeInfo) {
           // this.props.appActions.setCurrentPlaceInfo(placeInfo);
@@ -133,7 +132,6 @@ class Home extends React.Component {
       paginationInfo: { hasMore },
     } = this.props;
 
-    console.log('stores.length ==>', stores.length);
     if (!stores.length) {
       return null;
     }
@@ -191,7 +189,6 @@ class Home extends React.Component {
     const { keyword } = this.state;
 
     if (!currentPlaceInfo) {
-      console.warn('[Home] current placeInfo is required');
       return <i className="loader theme full-page text-size-huge"></i>;
     }
 
