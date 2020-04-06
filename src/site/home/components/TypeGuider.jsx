@@ -14,9 +14,16 @@ class TypeGuider extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     // make auto redirect once store is closed
     if (this.props.deliveryUrl && !this.state.url && !this.props.isOpen) {
-      this.setState({
-        url: this.props.deliveryUrl,
-      });
+      this.setState(
+        {
+          url: this.props.deliveryUrl,
+        },
+        () => {
+          this.state.url = '';
+          this.props.onRedirect();
+          this.redirectForm.current.submit(); // the form uses real url, not the one empty
+        }
+      );
     }
   }
 
@@ -35,7 +42,7 @@ class TypeGuider extends Component {
       this.setState({ url }, () => {
         this.state.url = '';
         this.props.onRedirect();
-        this.redirectForm.current.submit();
+        this.redirectForm.current.submit(); // the form uses real url, not the one empty
       });
   }
 
