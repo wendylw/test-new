@@ -9,6 +9,8 @@ class TypeGuider extends Component {
     url: '',
   };
 
+  redirectForm = React.createRef();
+
   componentDidUpdate(prevProps, prevState, snapshot) {
     // make auto redirect once store is closed
     if (this.props.deliveryUrl && !this.state.url && !this.props.isOpen) {
@@ -29,7 +31,12 @@ class TypeGuider extends Component {
   }
 
   handleGotoOrderingPage(url, action) {
-    if (action) this.setState({ url });
+    if (action)
+      this.setState({ url }, () => {
+        this.state.url = '';
+        this.props.onRedirect();
+        this.redirectForm.current.submit();
+      });
   }
 
   renderLoading = () => {
@@ -47,6 +54,7 @@ class TypeGuider extends Component {
     // todo: extract as <StoreSiteRedirectForm />
     return (
       <RedirectForm
+        ref={this.redirectForm}
         method={'post'}
         action={config.beepOnlineStoreUrl(business) + '/go2page'}
         data={{
@@ -111,19 +119,21 @@ class TypeGuider extends Component {
 }
 
 TypeGuider.propTypes = {
-  business: PropTypes.string.isRequired,
-  deliveryAddress: PropTypes.object.isRequired,
+  business: PropTypes.string,
+  deliveryAddress: PropTypes.object,
   deliveryUrl: PropTypes.string,
   pickupUrl: PropTypes.string,
-  isOutOfDeliveryRange: PropTypes.bool.isRequired,
+  isOutOfDeliveryRange: PropTypes.bool,
   show: PropTypes.bool.isRequired,
   onToggle: PropTypes.func,
+  onRedirect: PropTypes.func,
 };
 
 TypeGuider.defaultProps = {
   isOutOfDeliveryRange: false,
   show: false,
   onToggle: () => {},
+  onRedirect: () => {},
 };
 
 export default withTranslation()(TypeGuider);

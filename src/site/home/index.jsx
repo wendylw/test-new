@@ -229,6 +229,7 @@ class Home extends React.Component {
           {...typePicker}
           deliveryAddress={currentPlaceInfo}
           onToggle={() => this.props.homeActions.hideTypePicker()}
+          onRedirect={() => this.props.homeActions.hideTypePicker()}
         />
       </main>
     );
