@@ -97,9 +97,6 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_STORE:
     case types.CLEAR_CURRENT_STORE: {
       const { storeId } = action;
-
-      console.log('reducerStoreId===>', storeId);
-
       return { ...state, currentStoreId: storeId };
     }
     case types.FETCH_CORESTORES_SUCCESS: {
@@ -137,8 +134,6 @@ export const showStores = state => !state.home.isFetching;
 export const isStoreClosed = state => {
   try {
     const businessInfo = getBusinessByName(state, getBusiness(state));
-    console.log('businessInfo', businessInfo);
-
     const { validDays, validTimeFrom, validTimeTo } = businessInfo.qrOrderingSettings;
     return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }); // get negative status
   } catch (e) {

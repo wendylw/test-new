@@ -15,7 +15,8 @@ export default store => next => action => {
   if (typeof requestPromise.then !== 'function') {
     throw new Error('requestPromise must be a request promise');
   }
-  console.log('[redux/middleware/request] types =', types);
+
+  console.debug('[redux/middleware/request] types =', types);
 
   const [requestType, successType, failureType] = types;
   next({ ...other, type: requestType });

@@ -101,8 +101,6 @@ const fetchStoreList = page => (dispatch, getState) => {
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
       }
-
-      console.error(new Error(JSON.stringify(response)));
       return response;
     }),
   });

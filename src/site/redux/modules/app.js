@@ -30,8 +30,7 @@ const actions = {
 
   // Important: this is an example to get response from dispatched requestPromise
   ping: () => async (dispatch, getState) => {
-    const { response } = await dispatch(queryPing());
-    console.log('[redux/app] [ping] response =>', response);
+    await dispatch(queryPing());
   },
   setCurrentPlaceInfo: placeInfo => (dispatch, getState) => {
     if (placeInfo) {

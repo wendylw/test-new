@@ -57,7 +57,6 @@ export class Home extends Component {
   // get deliveryTo info from cookie and set into localStorage
   setupDeliveryAddressByRedirectState = async () => {
     const state = await fetchRedirectPageState();
-    console.log('[ordering/Home] redirect state =', JSON.stringify(state));
 
     try {
       if (state.deliveryAddress) {

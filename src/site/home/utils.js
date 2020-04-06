@@ -5,7 +5,6 @@ const { ROUTER_PATHS } = Constants;
 
 const getPlaceInfoFromHistory = ({ history, location }) => {
   const { state = {} } = location || {};
-  console.log('[Home/utils] history.location.state =', history.location.state);
 
   if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
     return state.data && state.data.placeInfo;

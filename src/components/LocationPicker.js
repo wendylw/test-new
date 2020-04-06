@@ -161,7 +161,6 @@ class LocationPicker extends Component {
 
   onSearchBoxChange = event => {
     const searchText = event.currentTarget.value;
-    console.log('typed:', searchText);
     this.setState({ searchText }, () => {
       this.debounceSearchPlaces();
     });
