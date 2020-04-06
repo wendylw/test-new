@@ -252,7 +252,7 @@ class Location extends Component {
         return;
       }
 
-      Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo, routerDistance: distance }));
+      Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
       const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
       Utils.removeSessionVariable('deliveryCallbackUrl');
       if (typeof callbackUrl === 'string') {

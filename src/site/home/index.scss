@@ -2,10 +2,6 @@
 
 /* Entry */
 .entry {
-  .loader {
-    margin: 9vh auto;
-  }
-
   &__bar {
     position: fixed;
     left: 0;
@@ -25,6 +21,10 @@
   position: relative;
   padding-bottom: 56px;
 
+  .loader {
+    margin: 9vh auto;
+  }
+
   &__banner {
     padding-top: 66px;
     padding-bottom: 94px;
@@ -32,7 +32,6 @@
 
   &__banner-image {
     margin: 14px 0 0;
-    max-width: 200px;
   }
 
   &__search {
@@ -133,6 +132,31 @@
 // }
 /* end of Searching Store List */
 
+/* Type Guider Aside */
+.type-guider-aside {
+  &__content {
+    padding-top: 20px;
+    bottom: 56px;
+  }
+
+  &__description {
+    white-space: pre-line;
+  }
+
+  &__loader-container {
+    height: 8vh;
+  }
+
+  &__loader {
+    display: block;
+  }
+
+  &__button-group {
+    margin: -3.8vw;
+  }
+}
+/* end of Type Guider Aside */
+
 @media (max-width: 374px) {
   /* Store Card List */
   .store-card-list {
@@ -182,4 +206,12 @@
   //   }
   // }
   /* end of Searching Store List */
+
+  /* Type Guider Aside */
+  .type-guider-aside {
+    &__button-group {
+      margin: -8px;
+    }
+  }
+  /* end of Type Guider Aside */
 }

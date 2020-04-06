@@ -510,9 +510,7 @@ class ProductDetail extends Component {
             ...resizeImageStyles,
           }}
         >
-          <i className="product-description__back-icon" onClick={() => onToggle()}>
-            <IconLeftArrow />
-          </i>
+          <IconLeftArrow className="product-description__back-icon" onClick={() => onToggle()} />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}

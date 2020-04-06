@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconMotorcycle, IconLocation } from '../../../components/Icons';
+import { /*IconMotorcycle,*/ IconLocation, IconLabelOutline } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -13,7 +13,7 @@ class StoreList extends Component {
   };
 
   renderStoreItems = () => {
-    // const tagClassName = 'tag__card text-size-small text-weight-bold margin-smaller';
+    // const tagClassName = 'tag__card text-size-small text-weight-bold margin-normal';
     const { t, stores } = this.props;
 
     // const storeStatus = {
@@ -30,8 +30,18 @@ class StoreList extends Component {
     return (
       <React.Fragment>
         {stores.map(store => {
-          const { name, avatar, deliveryFee, minimumConsumption, isOpen, geoDistance, id, locale, currency } =
-            store || {};
+          const {
+            name,
+            avatar,
+            /*deliveryFee,*/
+            minimumConsumption,
+            isOpen,
+            geoDistance,
+            id,
+            locale,
+            currency,
+            isOutOfDeliveryRange,
+          } = store || {};
           // const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
@@ -43,7 +53,7 @@ class StoreList extends Component {
                 this.handleStoreClicked(store);
               }}
             >
-              <div className="store-card-list__image-container border-radius-large">
+              <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : (
                   <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bold">
                     {t('ClosedForNow')}
@@ -61,14 +71,14 @@ class StoreList extends Component {
                 <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit__single-line">
                   {name}
                 </h3>
-                <ul className="store-info padding-top-bottom-small">
+                <ul className="store-info padding-top-bottom-smaller">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  <li className="store-info__item text-middle">
+                  {/* <li className="store-info__item text-middle">
                     <IconMotorcycle className="icon icon__smaller text-middle" />
                     <CurrencyNumber
                       className="store-info__text text-size-small text-middle"
@@ -76,9 +86,9 @@ class StoreList extends Component {
                       currency={currency}
                       price={deliveryFee}
                     />
-                  </li>
+                  </li> */}
                 </ul>
-                <div className="store-card-list__description text-opacity">
+                <div className="store-card-list__description flex flex-middle text-opacity">
                   <Trans i18nKey="MinimumOrder">
                     <label className="text-size-small text-middle">Min Order.</label>
                     <CurrencyNumber
@@ -89,6 +99,12 @@ class StoreList extends Component {
                     />
                   </Trans>
                 </div>
+                {isOpen && isOutOfDeliveryRange ? (
+                  <div className="padding-top-bottom-small">
+                    <IconLabelOutline className="icon icon__privacy icon__smaller text-middle" />
+                    <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
+                  </div>
+                ) : null}
               </summary>
             </li>
           );
@@ -100,13 +116,13 @@ class StoreList extends Component {
   renderWithInfiniteScroll = () => {
     const { hasMore, loadMoreStores, getScrollParent } = this.props;
 
-    // todo: scroll parent may need to specify
     return (
       <InfiniteScroll
         className="store-card-list"
         element="ul"
         loader={<div key={'loading-0'} className="loader theme text-size-huge"></div>}
-        pageStart={-1} // to count from page0, page1, ...
+        pageStart={0} // to count from page0, page1, ...
+        initialLoad={false}
         hasMore={hasMore}
         loadMore={page => loadMoreStores(page)}
         getScrollParent={getScrollParent}

@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLeftArrow } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -24,6 +24,9 @@ import {
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+import config from '../../../config';
 
 const localState = {
   blockScrollTop: 0,
@@ -34,7 +37,7 @@ export class Home extends Component {
     viewAside: null,
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { history, homeActions, requestInfo } = this.props;
     const { tableId, storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -43,8 +46,27 @@ export class Home extends Component {
       window.location.href = '/';
     }
 
+    if (isSourceBeepitCom()) {
+      // sync deliveryAddress from beepit.com
+      await this.setupDeliveryAddressByRedirectState();
+    }
+
     homeActions.loadProductList();
-  }
+  };
+
+  // get deliveryTo info from cookie and set into localStorage
+  setupDeliveryAddressByRedirectState = async () => {
+    const state = await fetchRedirectPageState();
+    console.log('[ordering/Home] redirect state =', JSON.stringify(state));
+
+    try {
+      if (state.deliveryAddress) {
+        sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
@@ -84,6 +106,10 @@ export class Home extends Component {
     }
   }
 
+  handleNavBack = () => {
+    window.location.href = config.beepitComUrl;
+  };
+
   handleToggleAside(asideName) {
     const stopBodyScroll =
       this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
@@ -119,9 +145,19 @@ export class Home extends Component {
 
     return (
       <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
-        <div className="item__detail-content flex flex-middle flex-space-between">
+        <div className="item__detail-content flex flex-top flex-space-between">
+          {isSourceBeepitCom() ? (
+            <IconLeftArrow
+              className="header__icon"
+              onClick={event => {
+                event.preventDefault();
+                window.location.href = config.beepitComUrl;
+                event.stopPropagation();
+              }}
+            />
+          ) : null}
           <div className="location-page__base-info">
-            <summary className="item__title">{t('DeliverTo')}</summary>
+            <summary className="item__title text-uppercase font-weight-bold">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
           </div>
           {isValidTimeToOrder ? <IconEdit className="location-page__edit" /> : null}
@@ -165,26 +201,29 @@ export class Home extends Component {
 
   getDeliveryInfo = () => {
     const { allBusinessInfo, business } = this.props;
+
     return Utils.getDeliveryInfo({ business, allBusinessInfo });
   };
 
   renderHeader() {
-    const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
+    const { t, onlineStoreInfo, businessInfo, requestInfo, cartSummary } = this.props;
     const { stores, multipleStores } = businessInfo || {};
     const { tableId } = requestInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryFee, minOrder } = this.getDeliveryInfo();
+    // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
+    const { deliveryFee: legacyDeliveryFee, minOrder } = this.getDeliveryInfo();
+    const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
     if (!tableId && !isDeliveryType) {
       classList.push('has-right');
     }
 
-    if (!isDeliveryType) {
-      classList.push('border__bottom-divider gray flex-top');
+    if (isDeliveryType) {
+      classList.push('flex-top');
     } else {
-      classList.push('flex-middle');
+      classList.push('border__bottom-divider gray flex-middle');
     }
 
     return (
@@ -198,6 +237,7 @@ export class Home extends Component {
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         minOrder={minOrder}
+        navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
@@ -222,10 +262,11 @@ export class Home extends Component {
       allBusinessInfo,
       history,
       freeDeliveryFee,
+      cartSummary,
       ...otherProps
     } = this.props;
     const {
-      deliveryFee,
+      deliveryFee: legacyDeliveryFee,
       minOrder,
       storeAddress,
       telephone,
@@ -290,7 +331,7 @@ export class Home extends Component {
             businessLoaded={businessLoaded}
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
-            deliveryFee={deliveryFee}
+            deliveryFee={cartSummary ? cartSummary.shippingFee : legacyDeliveryFee}
             minOrder={minOrder}
             storeAddress={storeAddress}
             telephone={telephone}
@@ -330,6 +371,7 @@ export default compose(
         categories: getCategoryProductList(state),
         allBusinessInfo: getAllBusinesses(state),
         businessLoaded: getBusinessIsLoaded(state),
+        cartSummary: getCartSummary(state),
       };
     },
     dispatch => ({

@@ -680,7 +680,8 @@
     width: 170px;
   }
 
-  &__image-container {
+  &__image-container,
+  &__icon {
     @extend .reset-font-size;
 
     position: relative;
@@ -711,6 +712,10 @@
       object-fit: contain;
       object-position: center;
     }
+  }
+
+  &__icon ~ &__image-container {
+    margin-left: 8px;
   }
 
   &__title-container,
@@ -757,6 +762,10 @@
       padding: 0;
       max-width: 54px;
     }
+  }
+
+  &__icon ~ &__title-container &__one-line-title.has-tag {
+    max-width: 36vw;
   }
 
   &.has-right::after,
@@ -1593,7 +1602,7 @@
   }
 
   &__card-container {
-    height: 3.8vw;
+    height: 4vw;
   }
 
   &__card.variation:not(.active) {
@@ -2197,6 +2206,14 @@
       background-color: $gray-3;
     }
 
+    .header__icon {
+      margin-right: 8px;
+    }
+
+    .header__icon ~ .location-page__base-info .location-page__entry-address {
+      max-width: 316px;
+    }
+
     & + .header {
       top: 57px;
     }
@@ -2279,6 +2296,10 @@
 
   &__base-info {
     width: 85vw;
+  }
+
+  .header__icon ~ &__base-info {
+    width: 74vw;
   }
 
   &__entry-address {
@@ -3066,6 +3087,17 @@ body.loading {
     font-size: $mobile-font-size-base;
   }
 
+  .header {
+    &__title:not(.header__one-line-title),
+    &__info-list {
+      padding: 0 2vw;
+    }
+
+    &__icon ~ &__title-container &__one-line-title.has-tag {
+      max-width: 34vw;
+    }
+  }
+
   .cart-bar {
     &__icon-container img {
       max-width: 35px;
@@ -3126,8 +3158,16 @@ body.loading {
     max-width: 300px;
   }
 
+  .header__icon ~ .header__title .header__one-line-title {
+    max-width: 250px;
+  }
+
   .header__one-line-title.has-tag {
     max-width: 200px;
+  }
+
+  .header__icon ~ .header__title-container .header__one-line-title.has-tag {
+    max-width: 180px;
   }
 
   .category-nav.category-nav__vertical,

@@ -7,23 +7,35 @@ import Image from './Image';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
+import { isSourceBeepitCom } from '../ordering/containers/Home/utils';
 
 class Header extends Component {
   renderLogoAndNavDom() {
-    const { isStoreHome, isPage, logo, title, navFunc } = this.props;
+    const { isStoreHome, isPage, logo, title, isValidTimeToOrder, navFunc } = this.props;
+    const isDeliveryType = Utils.isDeliveryType();
 
     // if (Utils.isWebview()) {
     //   return null;
     // }
 
-    if (isStoreHome) {
-      return <Image className="header__image-container text-middle" src={logo} alt={title} />;
-    }
+    const renderPageAction = () => {
+      const homepageBackButton = (isDeliveryType && !isValidTimeToOrder) || !isDeliveryType;
+      if (!isStoreHome || (isStoreHome && isSourceBeepitCom() && homepageBackButton)) {
+        const iconClassName = 'header__icon text-middle';
+
+        return isPage ? (
+          <IconLeftArrow className={iconClassName} onClick={navFunc} />
+        ) : (
+          <IconClose className={iconClassName} onClick={navFunc} />
+        );
+      }
+    };
 
     return (
-      <figure className="header__image-container text-middle" onClick={navFunc}>
-        {isPage ? <IconLeftArrow /> : <IconClose />}
-      </figure>
+      <React.Fragment>
+        {renderPageAction()}
+        {isStoreHome ? <Image className="header__image-container text-middle" src={logo} alt={title} /> : null}
+      </React.Fragment>
     );
   }
 
@@ -48,7 +60,7 @@ class Header extends Component {
           {title}
         </span>
         {isValidTimeToOrder ? null : (
-          <div className="tag__card-container">
+          <div className="tag__card-container text-middle">
             <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
           </div>
         )}
@@ -82,7 +94,7 @@ class Header extends Component {
                 {title}
               </span>
               {isValidTimeToOrder ? null : (
-                <div className="tag__card-container">
+                <div className="tag__card-container text-middle">
                   <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
                 </div>
               )}

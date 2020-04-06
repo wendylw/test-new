@@ -1,14 +1,15 @@
 import React from 'react';
 import { debounce } from 'lodash';
 import { withTranslation } from 'react-i18next';
+import './index.scss';
 import { IconSearch, IconClose } from '../../components/Icons';
 import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
+import TypeGuider from './components/TypeGuider';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import './index.scss';
 import Constants from '../../utils/constants';
 import {
   homeActionCreators,
@@ -17,10 +18,9 @@ import {
   loadedSearchingStores,
   getAllCurrentStores,
   getSearchResult,
+  getTypePicker,
 } from '../redux/modules/home';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
-import Utils from '../../utils/utils';
-import config from '../../config';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 
@@ -34,6 +34,7 @@ class Home extends React.Component {
       keyword: '',
     };
 
+    this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
   }
 
@@ -71,6 +72,8 @@ class Home extends React.Component {
         console.error('[Home] [didMount] error=%s', e);
       }
     }
+
+    this.props.homeActions.getStoreList(0);
   };
 
   debounceSearchStores = debounce(() => {
@@ -112,16 +115,15 @@ class Home extends React.Component {
     return this.props.homeActions.getStoreList(page);
   };
 
-  handleStoreSelected = store => {
-    const { currentPlaceInfo } = this.props;
-    const storeUrl = `${config.beepOnlineStoreUrl(store.business)}?storeId=${store.id}`;
+  handleStoreSelected = async store => {
+    const { homeActions } = this.props;
 
-    // todo: move cookie of placeInfo into session when got time
-    // save placeInfo into cookie, to get it once visit merchant store
-    // thus can sync up deliveryInfo between beepit.com and {business}.beepit.com
-    Utils.setDeliveryToCookie(currentPlaceInfo);
-
-    window.location.href = storeUrl;
+    await homeActions.showTypePicker({
+      business: store.business,
+      storeId: store.id,
+      isOpen: store.isOpen,
+      isOutOfDeliveryRange: store.isOutOfDeliveryRange,
+    });
   };
 
   renderStoreList = () => {
@@ -131,11 +133,16 @@ class Home extends React.Component {
       paginationInfo: { hasMore },
     } = this.props;
 
+    console.log('stores.length ==>', stores.length);
+    if (!stores.length) {
+      return null;
+    }
+
     return (
       <React.Fragment>
         <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
         <StoreList
-          key={'store-list'}
+          key={`store-list-${this.renderId}`}
           stores={stores}
           hasMore={hasMore}
           loadMoreStores={this.handleLoadMoreStores}
@@ -180,7 +187,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo } = this.props;
+    const { t, currentPlaceInfo, typePicker } = this.props;
     const { keyword } = this.state;
 
     if (!currentPlaceInfo) {
@@ -195,6 +202,7 @@ class Home extends React.Component {
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
+
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           <Banner className="entry-home__banner">
             <figure className="entry-home__banner-image">
@@ -217,33 +225,18 @@ class Home extends React.Component {
                 style={{ visibility: keyword ? 'visible' : 'hidden' }}
               />
             </div>
-            {/* {!searchingStores || !searchingStores.length || !keyword ? null : (
-              <ul className="searching-list border__bottom-divider border-radius-base base-box-shadow">
-                {searchingStores.map(store => {
-                  const { name, geoDistance } = store;
-
-                  return (
-                    <li
-                      key={`searching-store-${store.id}`}
-                      className="searching-list__item border__bottom-divider"
-                      onClick={() => this.handleStoreSelected(store)}
-                    >
-                      <h3 className="searching-list__name text-size-big text-weight-bold">{name}</h3>
-                      <div className="searching-list__location flex flex-middle text-opacity">
-                        <span>{`${t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })} . `}</span>
-                        <address>{Utils.getValidAddress(store, ADDRESS_RANGE.STATE)}</address>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )} */}
           </div>
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
+        <TypeGuider
+          {...typePicker}
+          deliveryAddress={currentPlaceInfo}
+          onToggle={() => this.props.homeActions.hideTypePicker()}
+          onRedirect={() => this.props.homeActions.hideTypePicker()}
+        />
       </main>
     );
   }
@@ -259,6 +252,7 @@ export default compose(
       searchingStores: getSearchingStores(state),
       searchResult: getSearchResult(state),
       loadedSearchingStores: loadedSearchingStores(state),
+      typePicker: getTypePicker(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
