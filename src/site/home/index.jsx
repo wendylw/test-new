@@ -72,7 +72,7 @@ class Home extends React.Component {
       }
     }
 
-    this.props.homeActions.getStoreList(0);
+    this.props.homeActions.getStoreList();
   };
 
   debounceSearchStores = debounce(() => {
@@ -109,9 +109,8 @@ class Home extends React.Component {
     this.setState({ keyword: '' });
   };
 
-  handleLoadMoreStores = page => {
-    console.info('[Home] handleLoadMoreStores props =>', page);
-    return this.props.homeActions.getStoreList(page);
+  handleLoadMoreStores = () => {
+    return this.props.homeActions.getStoreList();
   };
 
   handleStoreSelected = async store => {
