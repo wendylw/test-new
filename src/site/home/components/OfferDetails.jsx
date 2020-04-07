@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { IconNotificationActive, IconInfoOutline, IconClose } from '../../../components/Icons';
 import MediaBoostWhiteImage from '../../../images/media-boost-white.png';
 import MvpPromoBannerImage from '../../../images/mvp-promo-banner.jpg';
@@ -38,12 +38,10 @@ class OfferDetails extends Component {
         <section className="offer-details__bar" onClick={this.handleToggleOfferDetails}>
           <p className="flex flex-middle flex-center">
             <IconNotificationActive className="icon icon__small icon__white" />
-            <Trans i18nKey="">
-              <span className="flex flex-middle text-weight-bold">
-                Pay with <img className="offer-details__image-media" src={MediaBoostWhiteImage} alt="Boost logo" /> and
-                get 10% cashback
-              </span>
-            </Trans>
+            <span className="flex flex-middle text-weight-bold">
+              Pay with <img className="offer-details__image-media" src={MediaBoostWhiteImage} alt="Boost logo" /> and
+              get 10% cashback
+            </span>
           </p>
           <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" />
         </section>
