@@ -1,0 +1,72 @@
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { withTranslation, Trans } from 'react-i18next';
+import { IconNotificationActive, IconInfoOutline, IconClose } from '../../../components/Icons';
+import MediaBoostWhiteImage from '../../../images/media-boost-white.png';
+import MvpPromoBannerImage from '../../../images/mvp-promo-banner.jpg';
+import './OfferDetails.scss';
+
+class OfferDetails extends Component {
+  render() {
+    const { t, showAside } = this.props;
+
+    return (
+      <React.Fragment>
+        <section className="offer-details__bar">
+          <p className="flex flex-middle flex-center">
+            <IconNotificationActive className="icon icon__small icon__white" />
+            <Trans i18nKey="">
+              <span className="flex flex-middle text-weight-bold">
+                Pay with <img className="offer-details__image-media" src={MediaBoostWhiteImage} alt="Boost logo" /> and
+                get 10% cashback
+              </span>
+            </Trans>
+          </p>
+          <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" />
+        </section>
+        {showAside ? (
+          <aside className="offer-details-aside aside-page fixed-wrapper">
+            <header className="header flex flex-space-between flex-middle sticky-wrapper">
+              <div>
+                <IconClose className="icon icon__big icon__gray text-middle" onClick={this.handleCloseOfferDetails} />
+                <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit__single-line">
+                  {t('OfferDetails')}
+                </h2>
+              </div>
+            </header>
+            <img className="offer-details-aside__image" src={MvpPromoBannerImage} alt="StoreHub Beep Promo Banner" />
+            <article className="offer-details-aside__article padding-normal">
+              <h2>StoreHub x Boost Cashback Offer</h2>
+              <p>Order food from any store on Beepit.com and earn 10% cashback up to RM5 when you pay via Boost!</p>
+              <div className="offer-details-aside__content">
+                <h4>Campaign Period</h4>
+                <p>8 April 2020 - 31 May 2020</p>
+              </div>
+              <div className="offer-details-aside__content">
+                <h4>Terms & conditions</h4>
+                <ol>
+                  <li>Applicable to all Boost users</li>
+                  <li>10% cashback to be capped at RM5</li>
+                  <li>
+                    Each eligible customer may only receive maximum of two (2) cashback transactions under this campaign
+                  </li>
+                  <li>This offer is limited to the first 1,000 transactions</li>
+                </ol>
+              </div>
+            </article>
+          </aside>
+        ) : null}
+      </React.Fragment>
+    );
+  }
+}
+
+OfferDetails.propTypes = {
+  showAside: PropTypes.bool.isRequired,
+};
+
+OfferDetails.defaultProps = {
+  showAside: false,
+};
+
+export default withTranslation()(OfferDetails);

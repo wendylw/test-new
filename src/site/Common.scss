@@ -210,6 +210,11 @@ img {
   right: 0;
 }
 
+.sticky-wrapper {
+  position: -webkit-sticky;
+  position: sticky;
+}
+
 .fixed-wrapper {
   position: fixed;
   left: 0;
@@ -392,6 +397,10 @@ img {
 
   &__gray {
     fill: $gray-2;
+  }
+
+  &__white {
+    fill: $white;
   }
 
   &__big {
@@ -631,10 +640,16 @@ img {
   }
 }
 
+.aside-page {
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: $white;
+  z-index: $z-index-base;
+}
+
 /* Header */
 .header {
-  position: -webkit-sticky;
-  position: sticky;
   top: 0;
   width: 100%;
   z-index: $z-index-base;
@@ -723,12 +738,4 @@ img {
   .margin-normal {
     margin: 16px;
   }
-
-  /* Site Banner */
-  .site-banner {
-    &__title {
-      margin-bottom: 8px * 4;
-    }
-  }
-  /* end of Site Banner */
 }

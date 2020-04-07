@@ -7,6 +7,7 @@ import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
 import TypeGuider from './components/TypeGuider';
+import OfferDetails from './components/OfferDetails';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -223,6 +224,8 @@ class Home extends React.Component {
               />
             </div>
           </div>
+
+          <OfferDetails />
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
