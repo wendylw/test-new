@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { IconInfoOutline, IconClose } from '../../../components/Icons';
 import './OfferDetails.scss';
@@ -14,6 +15,7 @@ class OfferDetails extends Component {
   }
 
   handleToggleOfferDetails = () => {
+    this.props.onToggle();
     this.setState({
       show: !this.state.show,
     });
@@ -90,11 +92,19 @@ class OfferDetails extends Component {
           </div>
         </aside>
         {/* {show ? (
-          
+
         ) : null} */}
       </React.Fragment>
     );
   }
 }
+
+OfferDetails.propTypes = {
+  onToggle: PropTypes.func,
+};
+
+OfferDetails.defaultProps = {
+  onToggle: () => {},
+};
 
 export default withTranslation()(OfferDetails);
