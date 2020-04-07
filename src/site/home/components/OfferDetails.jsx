@@ -65,7 +65,11 @@ class OfferDetails extends Component {
                 </h2>
               </div>
             </header>
-            <img className="offer-details-aside__image" src={MvpPromoBannerImage} alt="StoreHub Beep Promo Banner" />
+            <img
+              className="offer-details-aside__image"
+              src="https://d24lyus32iwlxh.cloudfront.net/beep/mvp-promo-banner.jpg"
+              alt="StoreHub Beep Promo Banner"
+            />
             <article className="offer-details-aside__article padding-normal">
               <h2>StoreHub x Boost Cashback Offer</h2>
               <p>Order food from any store on Beepit.com and earn 10% cashback up to RM5 when you pay via Boost!</p>
