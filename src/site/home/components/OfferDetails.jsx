@@ -5,6 +5,7 @@ import { IconNotificationActive, IconInfoOutline, IconClose } from '../../../com
 import MediaBoostWhiteImage from '../../../images/media-boost-white.png';
 import MvpPromoBannerImage from '../../../images/mvp-promo-banner.jpg';
 import './OfferDetails.scss';
+import Utils from '../../../utils/utils';
 
 class OfferDetails extends Component {
   constructor(props) {
@@ -25,7 +26,9 @@ class OfferDetails extends Component {
     // example dates for test:
     // const current = new Date('2020-04-07 23:59');
     // const current = new Date('2020-06-01 00:00');
-    const current = new Date();
+    // /home?fake.date=2020-04-08 00:00
+    const fakeDate = Utils.getQueryString('fake.date');
+    const current = fakeDate ? new Date(fakeDate) : new Date();
     const validYear = current.getFullYear() === 2020;
     const validMonthDate =
       current.getMonth() >= 3 && current.getDate() >= 8 && current.getMonth() <= 4 && current.getDate() <= 31;
