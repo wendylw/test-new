@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import { IconNotificationActive, IconInfoOutline, IconClose } from '../../../components/Icons';
-import MvpPromoBannerImage from '../../../images/mvp-promo-banner.jpg';
+import { IconInfoOutline, IconClose } from '../../../components/Icons';
 import './OfferDetails.scss';
 import Utils from '../../../utils/utils';
 
@@ -21,7 +20,6 @@ class OfferDetails extends Component {
   };
 
   isCampaignValidTime = () => {
-    return true;
     // example dates for test:
     // const current = new Date('2020-04-07 23:59');
     // const current = new Date('2020-06-01 00:00');
