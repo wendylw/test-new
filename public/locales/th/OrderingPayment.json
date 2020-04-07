@@ -1,0 +1,18 @@
+{
+  "SelectPayment": "เลือกวิธีการชำระเงิน",
+  "OnlineBanking": "Online Banking\n",
+  "CreditCard": "Visa / MasterCard\n",
+  "Boost": "Boost\n",
+  "GrabPay": "GrabPay",
+  "RequiredMessage": "จำเป็น",
+  "CardNumberIncompleteMessage": "ข้อมูลบัตรของคุณ {{nameString}} {{verb}} ไม่สมบูรณ์",
+  "CardNumberInvalidMessage": "หมายเลขบัตรไม่ถูกต้อง",
+  "CardExpirationInvalidMessage": "วัยหมดอายุของบัตรไม่ถูกต้อง",
+  "CardCVVInvalidMessage": "หมายเลข CVV ไม่ถูกต้อง",
+  "CardInformation": "รายละเอียดบัตร",
+  "NameOnCard": "ชื่อบนบัตร",
+  "PayViaCard": "จ่ายเงินด้วยบัตร",
+  "PayViaOnlineBanking": "จ่ายเงินผ่าน Online Banking",
+  "SelectABank": "เลือกธนาคาร",
+  "PleaseSelectABankToContinue": "กรุณาเลือกธนาคารเพื่อดำเนินการต่อ"
+}
