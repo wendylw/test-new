@@ -22,7 +22,6 @@ class OfferDetails extends Component {
   };
 
   isCampaignValidTime = () => {
-    return true;
     // example dates for test:
     // const current = new Date('2020-04-07 23:59');
     // const current = new Date('2020-06-01 00:00');
