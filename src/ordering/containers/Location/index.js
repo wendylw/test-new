@@ -165,7 +165,7 @@ class Location extends Component {
       const historicalAddresses = await getHistoricalDeliveryAddresses(5);
       this.setState({ historicalAddresses });
     } catch (e) {
-      console.error('Failed to get historical addresses');
+      console.error('Failed to get historical addresses', e);
     }
   }
 
@@ -213,7 +213,6 @@ class Location extends Component {
 
   onSearchBoxChange = event => {
     const searchText = event.currentTarget.value;
-    console.log('typed:', searchText);
     this.setState({ searchText }, () => {
       this.debounceSearchPlaces();
     });

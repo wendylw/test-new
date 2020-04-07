@@ -85,8 +85,6 @@ export const standardizeGeoAddress = geoAddressComponent => {
 
   standardized.street2 = street2.join(', ');
 
-  console.log('address =', standardized);
-
   return standardized;
 };
 
@@ -117,7 +115,7 @@ export const tryGetDeviceCoordinates = async () => {
       maximumAge: 300000,
     });
   } catch (e) {
-    console.log('failed to use high accuracy gps, try low accuracy...', e);
+    console.debug('failed to use high accuracy gps, try low accuracy...', e);
     return await getDeviceCoordinates({
       enableHighAccuracy: false,
       timeout: 5000,
@@ -283,12 +281,7 @@ export const getPlaceDetailsFromPlaceId = async (
 // Reference: https://caniuse.com/#search=permissions
 export const queryGeolocationPermission = async () => {
   try {
-    // navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
-    //   console.log('[queryGeolocationPermission] permissionStatus =', permissionStatus);
-    //   return permissionStatus;
-    // });
     const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
-    console.log('[queryGeolocationPermission] permissionStatus =', permissionStatus);
     return permissionStatus;
   } catch (e) {
     return {};
@@ -335,8 +328,6 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
       coords = { lat: result.lat, lng: result.lon };
     }
   }
-
-  console.log('[geoUtils] [getPositionInfoBySource] coords=%s', JSON.stringify(coords));
 
   if (!coords) {
     return;
