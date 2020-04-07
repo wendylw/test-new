@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { IconNotificationActive, IconInfoOutline, IconClose } from '../../../components/Icons';
-import MediaBoostWhiteImage from '../../../images/media-boost-white.png';
 import MvpPromoBannerImage from '../../../images/mvp-promo-banner.jpg';
 import './OfferDetails.scss';
 import Utils from '../../../utils/utils';
@@ -22,6 +21,7 @@ class OfferDetails extends Component {
   };
 
   isCampaignValidTime = () => {
+    return true;
     // example dates for test:
     // const current = new Date('2020-04-07 23:59');
     // const current = new Date('2020-06-01 00:00');
@@ -47,11 +47,11 @@ class OfferDetails extends Component {
       <React.Fragment>
         <section className="offer-details__bar" onClick={this.handleToggleOfferDetails}>
           <p className="flex flex-middle flex-center">
-            <IconNotificationActive className="icon icon__small icon__white" />
-            <span className="flex flex-middle text-weight-bold">
-              Pay with <img className="offer-details__image-media" src={MediaBoostWhiteImage} alt="Boost logo" /> and
-              get 10% cashback
-            </span>
+            <img
+              className="offer-details__bar-image"
+              src="https://d24lyus32iwlxh.cloudfront.net/beep/boost-campaign-bar.jpg"
+              alt=""
+            />
           </p>
           <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" />
         </section>

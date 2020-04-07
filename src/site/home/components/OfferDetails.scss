@@ -5,10 +5,14 @@ $bar-background-color: #242644;
 .offer-details {
   &__bar {
     position: relative;
-    padding: 10px 5px;
     color: $white;
     background-color: $bar-background-color;
     cursor: pointer;
+  }
+
+  &__bar-image {
+    width: 100%;
+    max-width: 414px;
   }
 
   &__image-media {
