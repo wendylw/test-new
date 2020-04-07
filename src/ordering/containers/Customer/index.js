@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import { IconEdit } from '../../../components/Icons';
@@ -14,11 +14,14 @@ import Constants from '../../../utils/constants';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators } from '../../redux/modules/payment';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getBusinessInfo } from '../../redux/modules/cart';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
+import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -56,7 +59,7 @@ class Customer extends Component {
   }
 
   checkDistanceError = () => {
-    const { business, deliveryDetails, t } = this.props;
+    const { businessInfo: business, deliveryDetails, t } = this.props;
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
     }
@@ -140,8 +143,39 @@ class Customer extends Component {
     this.setState({ errorToast: null });
   };
 
+  renderDeliveryTime = () => {
+    const { business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { t } = this.props;
+
+    if (!enablePreOrder) {
+      return null;
+    }
+
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    // Should get enablePreOrder from api
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const deliveryTime = date.isToday ? t('DeliverNow') : formatToDeliveryTime({ date, hour });
+
+    console.log('[Customer] deliveryTime =', deliveryTime);
+
+    return (
+      <Fragment>
+        <div className="flex flex-middle flex-space-between">
+          <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverOn')}</label>
+          <i className="customer__edit-icon">
+            <IconEdit />
+          </i>
+        </div>
+        <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
+          {deliveryTime || t('AddAddressPlaceholder')}
+        </p>
+      </Fragment>
+    );
+  };
+
   renderDeliveryAddress() {
-    const { t, history } = this.props;
+    const { t, history, business, allBusinessInfo } = this.props;
 
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
@@ -149,6 +183,7 @@ class Customer extends Component {
 
     const { addressDetails, deliveryComments } = this.props.deliveryDetails;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     return (
       <React.Fragment>
@@ -156,14 +191,20 @@ class Customer extends Component {
           className="form__group"
           onClick={async () => {
             const { search } = window.location;
+            const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
 
             await Utils.setSessionVariable(
-              'deliveryCallbackUrl',
-              `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}/${search}`
+              locationPageCallbackUrl,
+              JSON.stringify({
+                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                search,
+              })
             );
 
             history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              pathname: enablePreOrder
+                ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
+                : Constants.ROUTER_PATHS.ORDERING_LOCATION,
               search,
             });
           }}
@@ -175,6 +216,7 @@ class Customer extends Component {
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
+          {this.renderDeliveryTime()}
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <div className="flex flex-middle flex-space-between">
@@ -336,7 +378,9 @@ export default compose(
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
-        business: getBusinessInfo(state),
+        business: getBusiness(state),
+        allBusinessInfo: getAllBusinesses(state),
+        businessInfo: getBusinessInfo(state),
       };
     },
     dispatch => ({

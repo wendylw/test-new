@@ -16,6 +16,7 @@ const ROUTER_PATHS = {
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOCATION_AND_DATE: '/location-date',
   ORDERING_LOCATION: '/location',
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
@@ -132,6 +133,16 @@ const DELIVERY_METHOD = {
   PICKUP: 'pickup',
 };
 
+const CONSUMERFLOW_STATUS = {
+  PAID: 'paid',
+  ACCEPTED: 'accepted',
+  LOGISTIC_CONFIRMED: 'logisticsConfirmed',
+  CONFIMRMED: 'confirmed',
+  PICKUP: 'pickedUp',
+  CANCELLED: 'cancelled',
+};
+const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -155,4 +166,6 @@ export default {
   LANGUAGES,
   ASIDE_NAMES,
   DELIVERY_METHOD,
+  CONSUMERFLOW_STATUS,
+  WEEK_DAYS,
 };

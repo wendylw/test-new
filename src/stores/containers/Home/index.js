@@ -42,17 +42,15 @@ class App extends Component {
   async setCurrentStoreId(storeId) {
     const { homeActions } = this.props;
     // 请求 coreBusiness
-    const {
-      responseGql: {
-        data: { business: businessInfo },
-      },
-    } = await homeActions.loadCoreBusiness();
-
+    await homeActions.loadCoreBusiness();
     // if store is closed,go straight to ordering page and let it display store is closed
-    const { business } = this.props;
-    const allBusinessInfo = { [business]: businessInfo };
-    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
+    const { allBusinessInfo, business } = this.props;
+    const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = Utils.getDeliveryInfo({
+      business,
+      allBusinessInfo,
+    });
+    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    if (isValidTimeToOrder || enablePreOrder) {
       homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);

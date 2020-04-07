@@ -4,6 +4,7 @@ import Utils from '../../../utils/utils';
 
 import { getCartItemIds } from './home';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo } from './app';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -55,7 +56,23 @@ export const types = {
 // action creators
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
+    const getExpectDeliveryDateInfo = (dateLocalString, hour1, hour2) => {
+      const d1 = new Date(dateLocalString);
+      d1.setHours(Number(hour1));
+      const d2 = new Date(dateLocalString);
+      d2.setHours(Number(hour2));
+      return {
+        expectDeliveryDateFrom: d1.toISOString(),
+        expectDeliveryDateTo: d2.toISOString(),
+      };
+    };
+
+    // expectedDeliveryHour & expectedDeliveryDate will always be there if
+    // there is preOrder in url
     const business = getBusiness(getState());
+    const businessInfo = getBusinessByName(getState(), business);
+    const { qrOrderingSettings = {} } = businessInfo;
+    const { enablePreOrder } = qrOrderingSettings;
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
@@ -72,12 +89,45 @@ export const actions = {
 
     if (shippingType === 'delivery') {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
-      const { addressDetails, deliveryComments, deliveryToAddress: deliveryTo, deliveryToLocation: location } =
-        deliveryDetails || {};
+
+      // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+      let expectDeliveryDateInfo = null;
+      try {
+        if (enablePreOrder) {
+          const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
+          // => {"from":2,"to":3}
+          const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
+          // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
+
+          if (expectedDeliveryDate.isToday === false) {
+            console.log('This is a pre order');
+
+            expectDeliveryDateInfo = getExpectDeliveryDateInfo(
+              expectedDeliveryDate.date,
+              expectedDeliveryHour.from,
+              expectedDeliveryHour.to
+            );
+          }
+
+          console.log('[createOrder] expectDeliveryDateInfo =', expectDeliveryDateInfo);
+        }
+      } catch (e) {
+        console.error('failed to create expectDeliveryDateInfo');
+      }
+      // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+
+      const {
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress: deliveryTo,
+        deliveryToLocation: location,
+        routerDistance,
+      } = deliveryDetails || {};
 
       variables = {
         ...variables,
         shippingType,
+        ...expectDeliveryDateInfo,
         deliveryAddressInfo: {
           ...contactDetail,
           addressDetails,
@@ -112,6 +162,10 @@ export const actions = {
       } catch (e) {
         console.error(e);
       }
+    }
+
+    if (enablePreOrder) {
+      Utils.removeExpectedDeliveryTime();
     }
 
     return result;
