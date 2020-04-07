@@ -197,7 +197,9 @@ class Home extends React.Component {
       <main className="entry fixed-wrapper fixed-wrapper__main">
         <DeliverToBar
           title={t('DeliverTo')}
-          className="entry__deliver-to base-box-shadow sticky-wrapper"
+          className={`entry__deliver-to base-box-shadow ${
+            this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
+          }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
