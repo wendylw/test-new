@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { IconNotificationActive, IconInfoOutline, IconClose } from '../../../components/Icons';
@@ -60,11 +59,7 @@ class OfferDetails extends Component {
           <aside className="offer-details-aside aside-page fixed-wrapper">
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
-                <IconClose
-                  className="icon icon__big icon__gray text-middle"
-                  onClick={this.handleCloseOfferDetails}
-                  onClick={this.handleToggleOfferDetails}
-                />
+                <IconClose className="icon icon__big icon__gray text-middle" onClick={this.handleCloseOfferDetails} />
                 <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit__single-line">
                   {t('OfferDetails')}
                 </h2>
