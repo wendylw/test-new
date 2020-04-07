@@ -53,7 +53,7 @@ class OfferDetails extends Component {
           </p>
           <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" />
         </section>
-        <aside className={`aside fixed-wrapper${show ? ' active' : ''}`}>
+        <aside className={`offer-details-aside aside fixed-wrapper${show ? ' active' : ''}`}>
           <div className="offer-details-aside__content aside__content">
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
