@@ -21,15 +21,23 @@ class OfferDetails extends Component {
     });
   };
 
-  render() {
-    const { t } = this.props;
-    const { show } = this.state;
+  isCampaignValidTime = () => {
+    // example dates for test:
+    // const current = new Date('2020-04-07 23:59');
+    // const current = new Date('2020-06-01 00:00');
     const current = new Date();
     const validYear = current.getFullYear() === 2020;
     const validMonthDate =
-      (current.getMonth() >= 3 && current.getDate() >= 8) || (current.getMonth() <= 4 && current.getDate() >= 31);
+      current.getMonth() >= 3 && current.getDate() >= 8 && current.getMonth() <= 4 && current.getDate() <= 31;
 
-    if (!validYear || !validMonthDate) {
+    return validYear && validMonthDate;
+  };
+
+  render() {
+    const { t } = this.props;
+    const { show } = this.state;
+
+    if (!this.isCampaignValidTime()) {
       return null;
     }
 
