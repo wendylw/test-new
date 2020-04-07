@@ -6,7 +6,7 @@ import './DeliverToBar.scss';
 class DeliverToBar extends PureComponent {
   render() {
     const { title, address, className, gotoLocationPage } = this.props;
-    const classList = ['deliver-to-entry flex flex-middle flex-space-between base-box-shadow absolute-wrapper'];
+    const classList = ['deliver-to-entry flex flex-middle flex-space-between'];
 
     if (className) {
       classList.push(className);
