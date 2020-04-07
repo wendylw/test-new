@@ -28,9 +28,13 @@ $bar-background-color: #242644;
 }
 
 .offer-details-aside {
-  padding-bottom: 56px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  &__content {
+    padding-bottom: 56px;
+    max-height: 100%;
+    border-radius: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 
   &__image {
     width: 100%;
@@ -58,7 +62,7 @@ $bar-background-color: #242644;
     }
   }
 
-  &__content {
+  &__article-content {
     margin-top: 3vh;
 
     h4 {

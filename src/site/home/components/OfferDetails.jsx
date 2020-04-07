@@ -22,6 +22,7 @@ class OfferDetails extends Component {
   };
 
   isCampaignValidTime = () => {
+    return true;
     // example dates for test:
     // const current = new Date('2020-04-07 23:59');
     // const current = new Date('2020-06-01 00:00');
@@ -55,8 +56,8 @@ class OfferDetails extends Component {
           </p>
           <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" />
         </section>
-        {show ? (
-          <aside className="offer-details-aside aside-page fixed-wrapper">
+        <aside className={`aside fixed-wrapper${show ? ' active' : ''}`}>
+          <div className="offer-details-aside__content aside__content">
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
                 <IconClose className="icon icon__big icon__gray text-middle" onClick={this.handleToggleOfferDetails} />
@@ -69,11 +70,11 @@ class OfferDetails extends Component {
             <article className="offer-details-aside__article padding-normal">
               <h2>StoreHub x Boost Cashback Offer</h2>
               <p>Order food from any store on Beepit.com and earn 10% cashback up to RM5 when you pay via Boost!</p>
-              <div className="offer-details-aside__content">
+              <div className="offer-details-aside__article-content">
                 <h4>Campaign Period</h4>
                 <p>8 April 2020 - 31 May 2020</p>
               </div>
-              <div className="offer-details-aside__content">
+              <div className="offer-details-aside__article-content">
                 <h4>Terms & conditions</h4>
                 <ol>
                   <li>Applicable to all Boost users</li>
@@ -85,8 +86,11 @@ class OfferDetails extends Component {
                 </ol>
               </div>
             </article>
-          </aside>
-        ) : null}
+          </div>
+        </aside>
+        {/* {show ? (
+          
+        ) : null} */}
       </React.Fragment>
     );
   }
