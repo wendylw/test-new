@@ -240,11 +240,7 @@ export class Home extends Component {
         isValidTimeToOrder={this.isValidTimeToOrder()}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
-        {isDeliveryType ? (
-          <i className="header__info-icon">
-            <IconInfoOutline />
-          </i>
-        ) : null}
+        {isDeliveryType ? <IconInfoOutline className="header__info-icon" /> : null}
       </Header>
     );
   }
