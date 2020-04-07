@@ -194,9 +194,10 @@ class Home extends React.Component {
     }
 
     return (
-      <main className="entry fixed-wrapper">
+      <main className="entry fixed-wrapper fixed-wrapper__main">
         <DeliverToBar
           title={t('DeliverTo')}
+          className="entry__deliver-to base-box-shadow sticky-wrapper"
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
