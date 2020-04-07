@@ -7,12 +7,35 @@ import MvpPromoBannerImage from '../../../images/mvp-promo-banner.jpg';
 import './OfferDetails.scss';
 
 class OfferDetails extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      show: false,
+    };
+  }
+
+  handleToggleOfferDetails = () => {
+    this.setState({
+      show: !this.state.show,
+    });
+  };
+
   render() {
-    const { t, showAside } = this.props;
+    const { t } = this.props;
+    const { show } = this.state;
+    const current = new Date();
+    const validYear = current.getFullYear() === 2020;
+    const validMonthDate =
+      (current.getMonth() >= 3 && current.getDate() >= 8) || (current.getMonth() <= 4 && current.getDate() >= 31);
+
+    if (!validYear || !validMonthDate) {
+      return null;
+    }
 
     return (
       <React.Fragment>
-        <section className="offer-details__bar">
+        <section className="offer-details__bar" onClick={this.handleToggleOfferDetails}>
           <p className="flex flex-middle flex-center">
             <IconNotificationActive className="icon icon__small icon__white" />
             <Trans i18nKey="">
@@ -24,11 +47,15 @@ class OfferDetails extends Component {
           </p>
           <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" />
         </section>
-        {showAside ? (
+        {show ? (
           <aside className="offer-details-aside aside-page fixed-wrapper">
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
-                <IconClose className="icon icon__big icon__gray text-middle" onClick={this.handleCloseOfferDetails} />
+                <IconClose
+                  className="icon icon__big icon__gray text-middle"
+                  onClick={this.handleCloseOfferDetails}
+                  onClick={this.handleToggleOfferDetails}
+                />
                 <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit__single-line">
                   {t('OfferDetails')}
                 </h2>
@@ -60,13 +87,5 @@ class OfferDetails extends Component {
     );
   }
 }
-
-OfferDetails.propTypes = {
-  showAside: PropTypes.bool.isRequired,
-};
-
-OfferDetails.defaultProps = {
-  showAside: false,
-};
 
 export default withTranslation()(OfferDetails);
