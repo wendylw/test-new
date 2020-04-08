@@ -80,6 +80,7 @@
   "Name": "Name",
   "MobileNumber": "Mobile Number",
   "AddAddressPlaceholder": "Add in your address*",
+  "AddDeliveryTimePlaceholder": "Add in your delivery time",
   "AddressDetailsPlaceholder": "e.g Floor, unit number",
   "AddNoteToDriverPlaceholder": "Add a note to driver",
   "AddAddressDetailsPlaceholder": "Unit/Block/Floor",
