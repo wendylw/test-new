@@ -271,7 +271,7 @@ export const getPlaceDetailsFromPlaceId = async (
     address: placeDetails.formatted_address,
     coords,
     placeId,
-    addressComponents: placeDetails.addressComponents && standardizeGeoAddress(placeDetails.address_components),
+    addressComponents: placeDetails.address_components && standardizeGeoAddress(placeDetails.address_components),
   };
 
   return ret;
