@@ -153,9 +153,13 @@ class Customer extends Component {
     }
 
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    // Should get enablePreOrder from api
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
-    const deliveryTime = date.isToday ? t('DeliverNow') : formatToDeliveryTime({ date, hour });
+    let deliveryTime;
+    if (date.date && hour.from) {
+      deliveryTime = date.isToday ? t('DeliverNow') : formatToDeliveryTime({ date, hour });
+    } else {
+      deliveryTime = '';
+    }
 
     console.log('[Customer] deliveryTime =', deliveryTime);
 
@@ -168,7 +172,7 @@ class Customer extends Component {
           </i>
         </div>
         <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
-          {deliveryTime || t('AddAddressPlaceholder')}
+          {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
       </Fragment>
     );
