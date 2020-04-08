@@ -7,6 +7,7 @@ import DeliverToBar from '../../components/DeliverToBar';
 import Banner from '../components/Banner';
 import StoreList from './components/StoreList';
 import TypeGuider from './components/TypeGuider';
+import OfferDetails from './components/OfferDetails';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -32,6 +33,7 @@ class Home extends React.Component {
 
     this.state = {
       keyword: '',
+      campaignShown: false,
     };
 
     this.renderId = `${Date.now()}`;
@@ -72,7 +74,7 @@ class Home extends React.Component {
       }
     }
 
-    this.props.homeActions.getStoreList(0);
+    this.props.homeActions.getStoreList();
   };
 
   debounceSearchStores = debounce(() => {
@@ -109,9 +111,8 @@ class Home extends React.Component {
     this.setState({ keyword: '' });
   };
 
-  handleLoadMoreStores = page => {
-    console.info('[Home] handleLoadMoreStores props =>', page);
-    return this.props.homeActions.getStoreList(page);
+  handleLoadMoreStores = () => {
+    return this.props.homeActions.getStoreList();
   };
 
   handleStoreSelected = async store => {
@@ -193,14 +194,25 @@ class Home extends React.Component {
     }
 
     return (
-      <main className="entry fixed-wrapper">
+      <main className="entry fixed-wrapper fixed-wrapper__main">
         <DeliverToBar
           title={t('DeliverTo')}
+          className={`entry__deliver-to base-box-shadow ${
+            this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
+          }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
         />
 
-        <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
+        <section
+          ref={this.sectionRef}
+          className="entry-home fixed-wrapper__container wrapper"
+          style={{
+            // quick fix to style: modal close bar is covered by "DELIVER TO" bar
+            // Remove this and browse with Safari, open the campaign bar, you will see.
+            zIndex: this.state.campaignShown ? 101 : 'auto',
+          }}
+        >
           <Banner className="entry-home__banner">
             <figure className="entry-home__banner-image">
               <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
@@ -223,6 +235,12 @@ class Home extends React.Component {
               />
             </div>
           </div>
+
+          <OfferDetails
+            onToggle={() => {
+              this.setState({ campaignShown: !this.state.campaignShown });
+            }}
+          />
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}

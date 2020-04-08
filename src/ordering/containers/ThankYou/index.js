@@ -14,7 +14,12 @@ import { actions as thankYouActionCreators, getOrder } from '../../redux/modules
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
-import beepOnTheWayImage from '../../../images/beep-on-the-way.png';
+import beepOnTheWay from '../../../images/beep-on-the-way.svg';
+import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
+import beepOrderPending from '../../../images/beep-order-pending.svg';
+import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+import Loader from '../Payment/components/Loader';
+import { getDayDateMonth, getTimeRange } from '../../../utils/datetime-lib';
 
 const LANGUAGES = {
   MY: 'EN',
@@ -134,8 +139,8 @@ export class ThankYou extends Component {
     );
   }
 
-  getLogsInfoByStatus = (logs, statusType) => {
-    const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
+  getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
+    //const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
     const targetInfo =
       statusUpdateLogs &&
       statusUpdateLogs.find(x => {
@@ -146,62 +151,308 @@ export class ThankYou extends Component {
     return targetInfo;
   };
 
-  getStatusStyle = (targetType, logs) => {
-    if (targetType === 'confirm') {
-      return 'active';
-    }
-    const logisticObject = this.getLogsInfoByStatus(logs, 'logisticsConfirmed');
-    const cancelledObject = this.getLogsInfoByStatus(logs, 'cancelled');
+  getConsumerStatusFlowUI({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
+    if (!logs) return null;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
+    const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
+    const paidStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PAID);
+    const acceptedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, ACCEPTED);
+    const logisticConfirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, LOGISTIC_CONFIRMED);
+    const confirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CONFIMRMED);
+    const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
+    const cancelleStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
 
-    if (targetType === 'picking') {
-      if (logisticObject !== undefined) {
-        return 'active';
-      } else {
-        return 'hide';
-      }
+    const getTimeFromStatusObj = statusObj => {
+      return new Date((statusObj && statusObj.time) || createdTime || '');
+    };
+    let currentStatusObj = {};
+    /** paid status */
+    if (paidStatusObj && acceptedStatusObj === undefined) {
+      currentStatusObj = {
+        statusObj: paidStatusObj,
+        firstNote: t('OrderReceived'),
+        firstLiClassName: 'active',
+        secondNote: t('PendingMerchant'),
+        secondLiClassName: 'normal',
+        timeToShow: getTimeFromStatusObj(paidStatusObj),
+        bannerImage: beepDeliverySuccessImage,
+      };
+    }
+    /** accepted status */
+    //if (acceptedStatusObj && logisticConfirmedStatusObj === undefined && useStorehubLogistics) {
+    if (acceptedStatusObj && logisticConfirmedStatusObj === undefined) {
+      currentStatusObj = {
+        statusObj: acceptedStatusObj,
+        firstNote: t('MerchantAccepted'),
+        firstLiClassName: 'active',
+        secondNote: t('FindingRider'),
+        secondLiClassName: 'normal',
+        timeToShow: getTimeFromStatusObj(acceptedStatusObj),
+        bannerImage: beepOrderPending,
+      };
+    }
+    /** logistic confirmed and confirmed */
+    // if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined && useStorehubLogistics) {
+    if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined) {
+      currentStatusObj = {
+        statusObj: logisticConfirmedStatusObj && confirmedStatusObj,
+        firstNote: t('RiderAssigned'),
+        firstLiClassName: 'active',
+        secondNote: t('RiderOnTheWay'),
+        secondLiClassName: 'normal',
+        timeToShow: getTimeFromStatusObj(logisticConfirmedStatusObj && confirmedStatusObj),
+        bannerImage: beepOrderPickedUp,
+      };
     }
 
-    if (targetType === 'cancelled') {
-      if (cancelledObject !== undefined) {
-        return 'error';
-      } else {
-        return 'hide';
-      }
+    /** pickup status */
+    //if (pickupStatusObj && useStorehubLogistics) {
+    if (pickupStatusObj) {
+      currentStatusObj = {
+        statusObj: pickupStatusObj,
+        firstNote: t('RiderPickUp'),
+        firstLiClassName: 'active finished',
+        secondNote: t('OrderOnTheWay'),
+        secondLiClassName: 'active',
+        timeToShow: getTimeFromStatusObj(pickupStatusObj),
+        bannerImage: beepOnTheWay,
+      };
     }
+    if (paidStatusObj && cancelleStatusObj) {
+      currentStatusObj = {
+        statusObj: cancelleStatusObj,
+        firstNote: t('OrderPaid'),
+        firstLiClassName: 'active',
+        secondNote: t('OrderCancelled'),
+        secondLiClassName: 'error',
+        timeToShow: getTimeFromStatusObj(paidStatusObj),
+        bannerImage: beepOrderCancelled,
+        secondTimeToShow: getTimeFromStatusObj(cancelleStatusObj),
+      };
+    }
+    return (
+      <React.Fragment>
+        <img className="thanks__image" src={currentStatusObj.bannerImage} alt="Beep Success" />
+        <div className="thanks__delivery-status-container">
+          <ul className="thanks__delivery-status-list text-left">
+            <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
+              <label className="thanks__delivery-status-label font-weight-bold">{currentStatusObj.firstNote}</label>
+              <div className="thanks__delivery-status-time">
+                <i className="access-time-icon text-middle">
+                  <IconAccessTime />
+                </i>
+                <time className="text-middle gray-font-opacity">
+                  {`${
+                    currentStatusObj.timeToShow
+                      ? currentStatusObj.timeToShow.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                      : ''
+                  }, ${
+                    currentStatusObj.timeToShow
+                      ? currentStatusObj.timeToShow.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                      : ''
+                  }`}
+                </time>
+              </div>
+            </li>
+            <li className={`thanks__delivery-status-item ${currentStatusObj.secondLiClassName}`}>
+              <label className="thanks__delivery-status-label font-weight-bold">{currentStatusObj.secondNote}</label>
+              {currentStatusObj.secondTimeToShow ? (
+                <div className="thanks__delivery-status-time">
+                  <i className="access-time-icon text-middle">
+                    <IconAccessTime />
+                  </i>
+                  <time className="text-middle gray-font-opacity">
+                    {`${
+                      currentStatusObj.secondTimeToShow
+                        ? currentStatusObj.secondTimeToShow.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                        : ''
+                    }, ${
+                      currentStatusObj.secondTimeToShow
+                        ? currentStatusObj.secondTimeToShow.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                        : ''
+                    }`}
+                  </time>
+                </div>
+              ) : null}
+            </li>
+          </ul>
+        </div>
+      </React.Fragment>
+    );
+  }
 
-    if (targetType === 'riderPending') {
-      if (logisticObject !== undefined || cancelledObject !== undefined) {
-        return 'hide';
-      } else {
-        return 'normal';
-      }
-    }
+  renderStoreInfo = () => {
+    const { storeInfo, total, deliveryInformation } = this.props.order || {};
+    const { address } = (deliveryInformation && deliveryInformation[0]) || {};
+    const deliveryAddress = address && address.address;
+
+    const { name } = storeInfo || {};
+    const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
+
+    return (
+      <div className="thanks__delivery-info text-left">
+        <div className="flex flex-middle flex-space-between">
+          <label className="thanks__text font-weight-bold">{name}</label>
+          <div>
+            <span className="thanks__text">Total</span>
+            <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
+          </div>
+        </div>
+        <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
+        <p className="thanks__address-pin flex flex-middle">
+          <i className="thanks__pin-icon">
+            <IconPin />
+          </i>
+          <span className="gray-font-opacity">{deliveryAddress}</span>
+        </p>
+      </div>
+    );
   };
 
-  getDeliveryUI() {
-    const { t, history, order, onlineStoreInfo } = this.props;
-    const { orderId, createdTime, logs, storeInfo, total, deliveryInformation, status } = order || {};
+  renderPreOrderMessage = () => {
+    const { t, order } = this.props;
+
+    const { expectDeliveryDateFrom, expectDeliveryDateTo } = order;
+    const deliveryInformation = this.getDeliveryInformation();
+
+    if (!deliveryInformation) {
+      return null;
+    }
+
+    const { address } = deliveryInformation.address;
+
+    return (
+      <div className="thanks__delivery-info text-left">
+        <div className="flex flex-middle flex-space-between">
+          <label className="thanks__text font-weight-bold">{t('ThanksForOrderingWithUs')}</label>
+        </div>
+        <p className="thanks__address-details gray-font-opacity">
+          {t('PreOrderDeliveryTimeDetails', {
+            day: getDayDateMonth(new Date(expectDeliveryDateFrom)),
+            dayAndTime: getTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
+            deliveryTo: address,
+          })}
+        </p>
+        <p className="thanks__address-details gray-font-opacity">{t('PreOrderDeliverySMS')}</p>
+      </div>
+    );
+  };
+
+  getDeliveryInformation = () => {
+    const { order = {} } = this.props;
+    const { deliveryInformation = [] } = order;
+    return deliveryInformation[0];
+  };
+
+  renderDeliveryOrderStatus = () => {
+    const { t, order, onlineStoreInfo } = this.props;
+
+    if (!order || !onlineStoreInfo) {
+      return null;
+    }
+
+    const { createdTime, logs, deliveryInformation } = order || {};
     const { country } = onlineStoreInfo || {};
+
     const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
     const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticsConfirmed');
     const cancelledStatusObj = this.getLogsInfoByStatus(logs, 'cancelled');
     const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || createdTime || '');
     const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
     const cancelledStatusObjTime = new Date((cancelledStatusObj && cancelledStatusObj.time) || '');
-    //const { city, country, name, state, street1, street2 } = storeInfo || {};
-    const { address, useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
-    const deliveryAddress = address && address.address;
-    // const deliveryAddress = (address && `${address.address} ${address.city} ${address.state} ${address.country}`) || '';
-    //const storeAddress = `${street1} ${street2} ${city} ${state} ${country}`;
-    //const { orderId, logs, storeInfo, total, status } = order || {};
-    let bannerImage = beepSuccessImage;
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (Utils.isDeliveryType()) {
-      bannerImage = status === 'shipped' ? beepOnTheWayImage : beepDeliverySuccessImage;
+    const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
+
+    return (
+      <div className="thanks__delivery-status-container">
+        <ul className="thanks__delivery-status-list text-left">
+          <li
+            className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)} ${
+              this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
+            }`}
+          >
+            <label className="thanks__delivery-status-label font-weight-bold">{t('OrderConfirmed')}</label>
+            <div className="thanks__delivery-status-time">
+              <i className="access-time-icon text-middle">
+                <IconAccessTime />
+              </i>
+              <time className="text-middle gray-font-opacity">
+                {`${
+                  paidStatusObjTime
+                    ? paidStatusObjTime.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                    : ''
+                }, ${
+                  paidStatusObjTime
+                    ? paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                    : ''
+                }`}
+              </time>
+            </div>
+          </li>
+          {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
+            <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
+              <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
+            </li>
+          ) : null}
+          {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
+            <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
+              <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
+              <div className="thanks__delivery-status-time">
+                <i className="access-time-icon text-middle">
+                  <IconAccessTime />
+                </i>
+                <time className="text-middle gray-font-opacity">
+                  {`${
+                    pickingStatusObjTime
+                      ? pickingStatusObjTime.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                      : ''
+                  }, ${
+                    pickingStatusObjTime
+                      ? pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                      : ''
+                  }`}
+                </time>
+              </div>
+            </li>
+          ) : null}
+          {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
+            <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
+              <label className="thanks__delivery-status-label font-weight-bold">{t('OrderCancelledNoRide')}</label>
+              <div className="thanks__delivery-status-time">
+                <i className="access-time-icon text-middle">
+                  <IconAccessTime />
+                </i>
+                <time className="text-middle gray-font-opacity">
+                  {`${
+                    cancelledStatusObjTime
+                      ? cancelledStatusObjTime.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                      : ''
+                  }, ${
+                    cancelledStatusObjTime
+                      ? cancelledStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                      : ''
+                  }`}
+                </time>
+              </div>
+            </li>
+          ) : null}
+        </ul>
+      </div>
+    );
+  };
+
+  getDeliveryUI() {
+    const { t, history, order, onlineStoreInfo } = this.props;
+
+    if (!order) {
+      return <Loader />;
     }
-    const { name } = storeInfo || {};
-    const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
+
+    const { orderId, createdTime, logs, deliveryInformation, status } = order || {};
+    const { country } = onlineStoreInfo || {};
+    const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
       <React.Fragment>
@@ -221,90 +472,35 @@ export class ThankYou extends Component {
           </button>
         </Header>
         <div className="thanks text-center">
-          <img className="thanks__image" src={bannerImage} alt="Beep Success" />
-          <div className="thanks__delivery-status-container">
-            <ul className="thanks__delivery-status-list text-left">
-              <li
-                className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)} ${
-                  this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
-                }`}
-              >
-                <label className="thanks__delivery-status-label font-weight-bold">{t('OrderConfirmed')}</label>
-                <div className="thanks__delivery-status-time">
-                  <i className="access-time-icon text-middle">
-                    <IconAccessTime />
-                  </i>
-                  <time className="text-middle gray-font-opacity">
-                    {`${paidStatusObjTime.toLocaleTimeString(
-                      LANGUAGES[country || 'MY'],
-                      TIME_OPTIONS
-                    )}, ${paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
-                  </time>
-                </div>
-              </li>
-              {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
-                <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-                  <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
-                </li>
-              ) : null}
-              {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
-                <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-                  <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
-                  <div className="thanks__delivery-status-time">
-                    <i className="access-time-icon text-middle">
-                      <IconAccessTime />
-                    </i>
-                    <time className="text-middle gray-font-opacity">
-                      {`${pickingStatusObjTime.toLocaleTimeString(
-                        LANGUAGES[country || 'MY'],
-                        TIME_OPTIONS
-                      )}, ${pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
-                    </time>
-                  </div>
-                </li>
-              ) : null}
-              {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
-                <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
-                  <label className="thanks__delivery-status-label font-weight-bold">{t('OrderCancelledNoRide')}</label>
-                  <div className="thanks__delivery-status-time">
-                    <i className="access-time-icon text-middle">
-                      <IconAccessTime />
-                    </i>
-                    <time className="text-middle gray-font-opacity">
-                      {`${cancelledStatusObjTime.toLocaleTimeString(
-                        LANGUAGES[country || 'MY'],
-                        TIME_OPTIONS
-                      )}, ${cancelledStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}`}
-                    </time>
-                  </div>
-                </li>
-              ) : null}
-            </ul>
-          </div>
+          {this.isNowPaidPreOrder() ? (
+            <img
+              className="thanks__image"
+              src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
+              alt="Beep Success"
+            />
+          ) : (
+            this.getConsumerStatusFlowUI({
+              country,
+              logs,
+              createdTime,
+              t,
+              CONSUMERFLOW_STATUS,
+              useStorehubLogistics,
+            })
+          )}
           <div className="thanks__info-container">
-            <div className="thanks__delivery-info text-left">
-              <div className="flex flex-middle flex-space-between">
-                <label className="thanks__text font-weight-bold">{name}</label>
-                <div>
-                  <span className="thanks__text">Total</span>
-                  <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
-                </div>
-              </div>
-              <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
-              <p className="thanks__address-pin flex flex-middle">
-                <i className="thanks__pin-icon">
-                  <IconPin />
-                </i>
-                <span className="gray-font-opacity">{deliveryAddress}</span>
-              </p>
-            </div>
-
+            {this.isNowPaidPreOrder() ? this.renderPreOrderMessage() : this.renderStoreInfo()}
             {this.renderViewDetail()}
             <PhoneLogin history={history} />
           </div>
         </div>
       </React.Fragment>
     );
+  }
+
+  isNowPaidPreOrder() {
+    const { order } = this.props;
+    return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
   render() {

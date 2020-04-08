@@ -70,9 +70,9 @@ const actions = {
     });
   },
 
-  getStoreList: page => (dispatch, getState) => {
-    const { loading } = getPaginationInfo(getState());
-    if (loading) return;
+  getStoreList: () => (dispatch, getState) => {
+    const { loading, page, hasMore } = getPaginationInfo(getState());
+    if (loading || !hasMore) return;
     return dispatch(fetchStoreList(page));
   },
 
@@ -87,9 +87,9 @@ const fetchStoreUrlHash = (storeId, context) => ({
   requestPromise: get(Url.API_URLS.GET_STORE_HASH_DATA(storeId).url),
 });
 
-const fetchStoreList = page => (dispatch, getState) => {
+const fetchStoreList = () => (dispatch, getState) => {
   const { coords } = getCurrentPlaceInfo(getState()) || {};
-  const { pageSize } = getPaginationInfo(getState());
+  const { page, pageSize } = getPaginationInfo(getState());
 
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
@@ -147,10 +147,11 @@ const storeIdsSearchResultReducer = (state, action) => {
 const paginationInfoReducer = (state, action) => {
   switch (action.type) {
     case types.GET_STORE_LIST_REQUEST:
+      const newState = { ...state, page: state.page + 1 };
       if (action.context.page === 0) {
-        return { ...state, hasMore: true, loading: false };
+        Object.assign(newState, { hasMore: true, loading: false });
       }
-      return { ...state, loading: true };
+      return { ...newState, loading: true };
     case types.GET_STORE_LIST_SUCCESS:
       const { stores } = action.response || {};
 

@@ -249,13 +249,17 @@ class Location extends Component {
           errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
         });
         return;
+      } else {
+        Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo, routerDistance: distance }));
       }
-
-      Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
-      const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
+      const callbackUrl = JSON.parse(Utils.getSessionVariable('deliveryCallbackUrl'));
       Utils.removeSessionVariable('deliveryCallbackUrl');
-      if (typeof callbackUrl === 'string') {
-        history.push(callbackUrl);
+      if (typeof callbackUrl === 'object') {
+        const { pathname, search } = callbackUrl;
+        history.push({
+          pathname: pathname,
+          search,
+        });
       } else {
         history.go(-1);
       }

@@ -291,7 +291,13 @@ Utils.isPickUpType = () => {
 };
 
 Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
-  const weekInfo = new Date().getDay() + 1;
+  // ValidDays received from api side, sunday is 1, monday is two
+  // convert it to browser weekday format first, for which sunday is 0, monday is 1
+  if (!(Array.isArray(validDays) && validDays.length)) {
+    return false;
+  }
+  const localValidDays = Array.from(validDays, v => v - 1);
+  const weekInfo = new Date().getDay() % 7;
   const hourInfo = new Date().getHours();
   const minutesInfo = new Date().getMinutes();
   const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
@@ -303,7 +309,7 @@ Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
     (hourInfo === Number(timeFrom[0]) && (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
     (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
 
-  if (validDays && validDays.includes(weekInfo) && !isClosed) {
+  if (localValidDays && localValidDays.includes(weekInfo) && !isClosed) {
     return true;
   } else {
     return false;
@@ -314,8 +320,15 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
   const { stores } = originalInfo || {};
   const { qrOrderingSettings } = originalInfo || {};
-  const { defaultShippingZone, minimumConsumption, validDays, validTimeFrom, validTimeTo, enableLiveOnline } =
-    qrOrderingSettings || {};
+  const {
+    defaultShippingZone,
+    minimumConsumption,
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    enableLiveOnline,
+    enablePreOrder,
+  } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
   const deliveryFee = rate || 0;
@@ -337,7 +350,57 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     freeShippingMinAmount,
     enableConditionalFreeShipping,
     enableLiveOnline,
+    enablePreOrder,
   };
+};
+
+Utils.formatTimeWithColon = time => {
+  const minute = (time && time.split(':')[1]) || '00';
+  const hour = time && time.split(':')[0];
+
+  return `${hour}:${minute}`;
+};
+
+Utils.formatHour = (hour = 0) => {
+  if (hour >= 12) {
+    return `${hour}:00 PM`;
+  }
+
+  return `${hour}:00 AM`;
+};
+
+Utils.isPreOrderPage = () => {
+  const enablePreOrder = Utils.getQueryString('isPreOrder');
+  return enablePreOrder === 'true' || false;
+};
+
+Utils.isPreOrder = () => {
+  const isPreOrderPage = Utils.isPreOrderPage();
+  if (isPreOrderPage) {
+    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
+
+    return !(date.date && date.date.isToday);
+  }
+};
+
+Utils.getExpectedDeliveryDateFromSession = () => {
+  const selectedDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate') || '{}');
+  const selectedHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour') || '{}');
+
+  return {
+    date: selectedDate,
+    hour: selectedHour,
+  };
+};
+
+Utils.setExpectedDeliveryTime = ({ date, hour }) => {
+  Utils.setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
+  Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
+};
+
+Utils.removeExpectedDeliveryTime = () => {
+  Utils.removeSessionVariable('expectedDeliveryDate');
+  Utils.removeSessionVariable('expectedDeliveryHour');
 };
 
 Utils.getDeliveryCoords = () => {

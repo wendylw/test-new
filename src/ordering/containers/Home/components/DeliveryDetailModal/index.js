@@ -47,6 +47,7 @@ class DeliveryDetailModal extends Component {
       deliveryFee,
       minOrder,
       isValidTimeToOrder,
+      // enablePreOrder,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};

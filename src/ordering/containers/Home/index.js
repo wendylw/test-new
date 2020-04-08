@@ -12,6 +12,7 @@ import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
+import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -21,9 +22,11 @@ import { getAllBusinesses, getBusinessIsLoaded } from '../../../redux/modules/en
 import {
   actions as homeActionCreators,
   getCategoryProductList,
+  getPopUpModal,
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import PopUpMessage from './components/PopUpMessage';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
@@ -128,16 +131,26 @@ export class Home extends Component {
       return null;
     }
 
-    const { t, history } = this.props;
+    const { t, history, business, allBusinessInfo } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
     const isValidTimeToOrder = this.isValidTimeToOrder();
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
+      const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
 
-      Utils.setSessionVariable('deliveryCallbackUrl', `/${search}`);
+      Utils.setSessionVariable(
+        locationPageCallbackUrl,
+        JSON.stringify({
+          pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+          search,
+        })
+      );
 
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+        pathname: enablePreOrder
+          ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
+          : Constants.ROUTER_PATHS.ORDERING_LOCATION,
         search,
       });
     };
@@ -158,6 +171,7 @@ export class Home extends Component {
           <div className="location-page__base-info">
             <summary className="item__title text-uppercase font-weight-bold">{t('DeliverTo')}</summary>
             <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+            {this.renderDeliveryDate()}
           </div>
           {isValidTimeToOrder ? <IconEdit className="location-page__edit" /> : null}
         </div>
@@ -165,30 +179,41 @@ export class Home extends Component {
     );
   }
 
+  getExpectedDeliveryTime = () => {
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+
+    return formatToDeliveryTime({
+      date: date,
+      hour: hour,
+    });
+  };
+
+  renderDeliveryDate = () => {
+    const { t, business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    let deliveryTimeText = t('DeliverNow');
+
+    if (enablePreOrder) {
+      const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
+
+      if (!date.isToday) {
+        deliveryTimeText = this.getExpectedDeliveryTime();
+      }
+      if (!date.date) {
+        deliveryTimeText = '';
+      }
+    }
+
+    return <p className="location-page__entry-address gray-font-opacity">{deliveryTimeText}</p>;
+  };
+
+  isPreOrderEnabled = () => {
+    const { enablePreOrder } = this.getDeliveryInfo();
+
+    return enablePreOrder;
+  };
+
   isValidTimeToOrder = () => {
-    // if (!Utils.isDeliveryType()) {
-    //   return true;
-    // }
-    // let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
-    // const weekInfo = new Date().getDay() + 1;
-    // const hourInfo = new Date().getHours();
-    // const minutesInfo = new Date().getMinutes();
-    // const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
-    // const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
-
-    // const isClosed =
-    //   hourInfo < Number(timeFrom[0]) ||
-    //   hourInfo > Number(timeTo[0]) ||
-    //   (hourInfo === Number(timeFrom[0]) &&
-    //     (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
-    //   (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
-
-    // if (validDays && validDays.includes(weekInfo) && !isClosed) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
@@ -238,16 +263,40 @@ export class Home extends Component {
         minOrder={minOrder}
         navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
+        enablePreOrder={this.isPreOrderEnabled()}
       >
         {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
-        {isDeliveryType ? (
-          <i className="header__info-icon">
-            <IconInfoOutline />
-          </i>
-        ) : null}
+        {isDeliveryType ? <IconInfoOutline className="header__info-icon" /> : null}
       </Header>
     );
   }
+
+  renderProOrderConfirmModal = () => {
+    const { popUpModal, t } = this.props;
+    const { validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+
+    if (this.isPreOrderEnabled() && !this.isValidTimeToOrder() && !popUpModal.userConfirmed) {
+      return (
+        <PopUpMessage
+          title={t('PreOrderConfirmModalTitle')}
+          description={t('PreOrderConfirmModalDescription', {
+            validTimeFrom: Utils.formatTimeWithColon(validTimeFrom),
+            validTimeTo: Utils.formatTimeWithColon(validTimeTo),
+          })}
+          containerClass="pre-order__modal"
+          button={
+            <button
+              className="button button__fill button__block font-weight-bold border-radius-base text-uppercase"
+              onClick={this.props.homeActions.userConfirmPreOrder}
+            >
+              {t('Okay')}
+            </button>
+          }
+        />
+      );
+    }
+    return null;
+  };
 
   render() {
     const {
@@ -307,7 +356,7 @@ export class Home extends Component {
           isVerticalMenu={isVerticalMenu}
           onToggle={this.handleToggleAside.bind(this)}
           onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-          isValidTimeToOrder={this.isValidTimeToOrder()}
+          isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
         />
         <ProductDetail
           onlineStoreInfo={onlineStoreInfo}
@@ -337,10 +386,10 @@ export class Home extends Component {
             validDays={validDays}
             validTimeFrom={validTimeFrom}
             validTimeTo={validTimeTo}
-            isValidTimeToOrder={this.isValidTimeToOrder()}
+            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
         )}
-        {!this.isValidTimeToOrder() ? (
+        {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
         ) : null}
         <Footer
@@ -351,7 +400,9 @@ export class Home extends Component {
           isValidTimeToOrder={this.isValidTimeToOrder()}
           history={history}
           isLiveOnline={enableLiveOnline}
+          enablePreOrder={this.isPreOrderEnabled()}
         />
+        {this.renderProOrderConfirmModal()}
       </section>
     );
   }
@@ -370,6 +421,7 @@ export default compose(
         categories: getCategoryProductList(state),
         allBusinessInfo: getAllBusinesses(state),
         businessLoaded: getBusinessIsLoaded(state),
+        popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
       };
     },

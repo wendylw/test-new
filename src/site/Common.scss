@@ -210,11 +210,20 @@ img {
   right: 0;
 }
 
+.sticky-wrapper {
+  position: -webkit-sticky;
+  position: sticky;
+}
+
 .fixed-wrapper {
   position: fixed;
   left: 0;
   right: 0;
   height: 100%;
+
+  &__main {
+    position: relative;
+  }
 
   &__container {
     width: 100%;
@@ -392,6 +401,10 @@ img {
 
   &__gray {
     fill: $gray-2;
+  }
+
+  &__white {
+    fill: $white;
   }
 
   &__big {
@@ -633,8 +646,6 @@ img {
 
 /* Header */
 .header {
-  position: -webkit-sticky;
-  position: sticky;
   top: 0;
   width: 100%;
   z-index: $z-index-base;
@@ -723,12 +734,4 @@ img {
   .margin-normal {
     margin: 16px;
   }
-
-  /* Site Banner */
-  .site-banner {
-    &__title {
-      margin-bottom: 8px * 4;
-    }
-  }
-  /* end of Site Banner */
 }

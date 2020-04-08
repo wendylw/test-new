@@ -37,6 +37,9 @@ const initialState = {
     isFetching: false,
     categoryIds: [],
   },
+  popUpModal: {
+    userConfirmed: false,
+  },
 };
 
 export const types = HOME_TYPES;
@@ -127,6 +130,10 @@ export const actions = {
   loadProductDetail: prod => dispatch => {
     return dispatch(fetchProductDetail({ productId: prod.id }));
   },
+
+  userConfirmPreOrder: () => ({
+    type: types.SET_PRE_ORDER_MODAL_CONFIRM,
+  }),
 };
 
 const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
@@ -262,11 +269,19 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
   }
 };
 
+const popUpModal = (state = initialState.popUpModal, action) => {
+  if (action.type === types.SET_PRE_ORDER_MODAL_CONFIRM) {
+    return { ...state, userConfirmed: true };
+  }
+  return state;
+};
+
 export default combineReducers({
   domProperties,
   currentProduct,
   shoppingCart,
   onlineCategory,
+  popUpModal,
 });
 
 // selectors
@@ -404,3 +419,5 @@ export const isVerticalMenuBusiness = state => {
     return verticalMenuBusinesses.includes(getBusiness(state));
   }
 };
+
+export const getPopUpModal = state => state.home.popUpModal;
