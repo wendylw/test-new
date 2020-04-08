@@ -45,8 +45,6 @@ class OfferDetails extends Component {
       return null;
     }
 
-    console.log(country);
-
     return (
       <React.Fragment>
         <section className="offer-details__bar" onClick={this.handleToggleOfferDetails}>
