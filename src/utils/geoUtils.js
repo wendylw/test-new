@@ -359,3 +359,11 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
 
   return result;
 };
+
+export const getCountryCodeByPlaceInfo = placeInfo => {
+  try {
+    return placeInfo.addressComponents.countryCode;
+  } catch (e) {
+    return '';
+  }
+};

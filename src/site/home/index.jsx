@@ -24,6 +24,7 @@ import {
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
+import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -193,6 +194,8 @@ class Home extends React.Component {
       return <i className="loader theme full-page text-size-huge"></i>;
     }
 
+    const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main">
         <DeliverToBar
@@ -236,11 +239,13 @@ class Home extends React.Component {
             </div>
           </div>
 
-          <OfferDetails
-            onToggle={() => {
-              this.setState({ campaignShown: !this.state.campaignShown });
-            }}
-          />
+          {countryCode.toUpperCase() === 'MY' ? (
+            <OfferDetails
+              onToggle={() => {
+                this.setState({ campaignShown: !this.state.campaignShown });
+              }}
+            />
+          ) : null}
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}

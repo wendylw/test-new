@@ -39,9 +39,8 @@ class OfferDetails extends Component {
   render() {
     const { t } = this.props;
     const { show } = this.state;
-    const { country } = fetchGeolocationByIp() || {};
 
-    if (!this.isCampaignValidTime() || country === 'Thailand') {
+    if (!this.isCampaignValidTime()) {
       return null;
     }
 
