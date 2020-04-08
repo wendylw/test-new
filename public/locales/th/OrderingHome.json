@@ -1,9 +1,12 @@
 {
   "OrderNow": "สั่งตอนนี้!",
+  "PreOrderNow": "สั่งล่วงหน้า ตอนนี้",
   "CartItemsInCategory": "{{cartQuantity}} รายการ",
   "NoProductDescription": "ไม่มีรายละเอียดของสินค้า",
   "MinimumChoicesDescription": "เลือกขั้นต่ำ {{minSelectionAmount}} ตัวเลือก\n",
   "MaximumChoicesDescription": "เลือกสูงสุด {{maxSelectionAmount}} ตัวเลือก\n",
   "MinMaximumChoicesDescription": "เลือกขั้นต่ำ {{minSelectionAmount}} และ สูงสุด {{maxSelectionAmount}} ตัวเลือก\n",
-  "StoreOffline": "ร้านออฟไลน์"
+  "StoreOffline": "ร้านออฟไลน์",
+  "PreOrderConfirmModalTitle": "เราปิดแล้วตอนนี้ แต่คุณยังสามารถสั่งซื้อได้!",
+  "PreOrderConfirmModalDescription": "ร้านเราเปิดตั้งแต่ {{validTimeFrom}} ถึง {{validTimeTo}} แต่! คุณสามารถดูเมนู และสั่งล่วงหน้าได้"
 }
