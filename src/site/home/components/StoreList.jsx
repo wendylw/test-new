@@ -119,7 +119,7 @@ class StoreList extends Component {
       <InfiniteScroll
         className="store-card-list"
         element="ul"
-        loader={<div key={'loading-0'} className="loader theme text-size-huge"></div>}
+        loader={<div key={'loading-0'} className="store-card-list__loader loader theme text-size-biggest"></div>}
         pageStart={0} // to count from page0, page1, ...
         initialLoad={false}
         hasMore={hasMore}

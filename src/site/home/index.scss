@@ -1,5 +1,12 @@
 @import "../Variables.scss";
 
+body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 /* Entry */
 .entry {
   &__deliver-to {
@@ -23,10 +30,11 @@
 
 .entry-home {
   position: relative;
-  padding-bottom: 56px;
+  bottom: 56px;
+  padding: 56px 0 66px;
   height: 100vh;
 
-  .loader {
+  &__huge-loader {
     margin: 9vh auto;
   }
 
@@ -61,6 +69,10 @@
     padding-top: 24px;
     padding-bottom: 24px;
     background-color: $white;
+  }
+
+  &__loader {
+    margin: 4vh auto;
   }
 
   &__item {
@@ -215,4 +227,10 @@
     }
   }
   /* end of Type Guider Aside */
+}
+
+@media screen and (aspect-ratio: 9/16), screen and (-webkit-min-device-pixel-ratio: 0) and (aspect-ratio: 3/4) {
+  .entry-home {
+    padding-bottom: 122px;
+  }
 }

@@ -12,6 +12,7 @@ import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import Constants from '../../utils/constants';
+import Utils from '../../utils/utils';
 import {
   homeActionCreators,
   getPaginationInfo,
@@ -163,7 +164,7 @@ class Home extends React.Component {
     const { keyword } = this.state;
 
     if (Boolean(keyword) && !loadedSearchingStores) {
-      return <div className="loader theme text-size-huge" />;
+      return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
 
     return (
@@ -210,7 +211,8 @@ class Home extends React.Component {
           style={{
             // quick fix to style: modal close bar is covered by "DELIVER TO" bar
             // Remove this and browse with Safari, open the campaign bar, you will see.
-            zIndex: this.state.campaignShown ? 101 : 'auto',
+            paddingBottom: Utils.getUserAgentInfo().browser.includes('Safari') ? '182px' : '66px',
+            zIndex: this.state.campaignShown ? 100 : 'auto',
           }}
         >
           <Banner className="entry-home__banner">
