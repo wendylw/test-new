@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { IconInfoOutline, IconClose } from '../../../components/Icons';
 import './OfferDetails.scss';
 import Utils from '../../../utils/utils';
+import { fetchGeolocationByIp } from '../../../utils/geoUtils';
 
 class OfferDetails extends Component {
   constructor(props) {
@@ -38,10 +39,13 @@ class OfferDetails extends Component {
   render() {
     const { t } = this.props;
     const { show } = this.state;
+    const { country } = fetchGeolocationByIp() || {};
 
-    if (!this.isCampaignValidTime()) {
+    if (!this.isCampaignValidTime() || country === 'Thailand') {
       return null;
     }
+
+    console.log(country);
 
     return (
       <React.Fragment>
