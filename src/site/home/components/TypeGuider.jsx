@@ -99,7 +99,9 @@ class TypeGuider extends Component {
         <div className="type-guider-aside__content aside__content absolute-wrapper padding-normal text-center">
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
           {currentText.description ? (
-            <p className="type-guider-aside__description text-opacity">{currentText.description}</p>
+            <p className="type-guider-aside__description padding-top-bottom-normal text-opacity">
+              {currentText.description}
+            </p>
           ) : null}
           {loading ? (
             this.renderLoading()
