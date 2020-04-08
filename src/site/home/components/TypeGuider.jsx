@@ -96,15 +96,15 @@ class TypeGuider extends Component {
 
     return (
       <aside className={classList.join(' ')} onClick={e => this.handleHideTypeGuider(e)}>
-        <div className="type-guider-aside__content aside__content absolute-wrapper text-center">
+        <div className="type-guider-aside__content aside__content absolute-wrapper padding-normal text-center">
           <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
           {currentText.description ? (
-            <p className="type-guider-aside__description padding-normal text-opacity">{currentText.description}</p>
+            <p className="type-guider-aside__description text-opacity">{currentText.description}</p>
           ) : null}
           {loading ? (
             this.renderLoading()
           ) : (
-            <div className="type-guider-aside__button-group padding-normal flex flex-middle flex-space-between">
+            <div className="type-guider-aside__button-group flex flex-middle flex-space-between">
               <button
                 className="button button__block button__outline margin-normal text-uppercase text-weight-bold"
                 onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
