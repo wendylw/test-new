@@ -156,7 +156,16 @@ export const getHistoricalDeliveryAddresses = async () => {
     if (!storageStr) {
       return [];
     }
-    return JSON.parse(storageStr);
+    const results = JSON.parse(storageStr);
+
+    // --Begin-- last version of cache doesn't have addressComponents field, we need it now
+    if (results && results.length && !results[0].addressComponents) {
+      localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+      return [];
+    }
+    // ---End--- last version of cache doesn't have addressComponents field, we need it now
+
+    return results;
   } catch (e) {
     console.error('failed to get historical delivery addresses', e);
     return [];
