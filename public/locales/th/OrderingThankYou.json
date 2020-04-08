@@ -1,0 +1,23 @@
+{
+  "OrderPaid": "ชำระเงินเรียบร้อยแล้ว",
+  "YourOrderNumber": "หมายเลขออร์เดอร์ของคุณ",
+  "PingStaffTitle": "แจ้งพนักงานเพื่อรับใบเสร็จ",
+  "ThankYou": "ขอบคุณ",
+  "PrepareOrderDescription": "เรากำลังเตรียมออร์เดอร์ของคุณอยู่",
+  "OrderConfirmed": "ออร์เดอร์ได้รับการยืนยันแล้ว",
+  "RiderPendingTips": "กำลังรอการยืนยันจากพนักงานส่งอาหาร",
+  "RiderOnTheWay": "พนักงานส่งอาหารกำลังเดินทางไปรับออร์เดอร์ของคุณ",
+  "OrderCancelledNoRide": "ออร์เดอร์ถูกยกเลิก ไม่มีพนักงานส่งอาหารว่างในขณะนี้",
+  "ContactUs": "ติดต่อเรา",
+  "OrderReceived": "ได้รับออร์เดอร์แล้ว",
+  "PendingMerchant": "กำลังรอร้านค้ายอมรับออร์เดอร์",
+  "MerchantAccepted": "ร้านค้ายอมรับแล้ว",
+  "FindingRider": "กำลังหาคนขับ",
+  "RiderAssigned": "มอบหมายคนขับแล้ว",
+  "RiderPickUp": "คนขับรับออร์เดอร์แล้ว",
+  "OrderOnTheWay": "ออร์เดอร์ของคุณกำลังเดินทางไปส่งคุณ",
+  "OrderCancelled": "ยกเลิกออร์เดอร์แล้ว",
+  "ThanksForOrderingWithUs": "ขอบคุณที่ออร์เดอร์กับเรา!",
+  "PreOrderDeliveryTimeDetails": "คำสั่งซื้อจัดส่งในวัน {{day}}, {{dayAndTime}} ถึง {{deliveryTo}}",
+  "PreOrderDeliverySMS": "เราจะส่งสถานะออร์เดอร์ให้คุณทาง SMS ในวันที่เราจัดส่ง"
+}
