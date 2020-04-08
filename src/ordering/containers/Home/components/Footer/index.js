@@ -30,7 +30,7 @@ export class Footer extends Component {
     const { history, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (enablePreOrder) {
+    if (enablePreOrder && Utils.isDeliveryType()) {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
