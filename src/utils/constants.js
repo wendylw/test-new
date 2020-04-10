@@ -60,6 +60,7 @@ const PAYMENT_METHODS = {
   CREDIT_CARD_PAY: 'CCPPCreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
+  TNG_PAY: 'CCPPTnGPay',
 };
 
 const HOME_ASIDE_NAMES = {

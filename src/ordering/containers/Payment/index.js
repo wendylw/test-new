@@ -23,6 +23,7 @@ import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
 import paymentBoostImage from '../../../images/payment-boost.png';
 import paymenbGrabImage from '../../../images/payment-grab.png';
+import paymenbTNGImage from '../../../images/payment-tng.svg';
 
 const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
 const dataSource = {
@@ -47,6 +48,11 @@ const dataSource = {
     name: PAYMENT_METHODS.GRAB_PAY,
     logo: paymenbGrabImage,
     labelKey: 'GrabPay',
+  },
+  TNG: {
+    name: PAYMENT_METHODS.TNG_PAY,
+    logo: paymenbTNGImage,
+    labelKey: 'TouchNGo',
   },
 };
 const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
