@@ -9,7 +9,7 @@ import {
   getPlaceDetailsFromPlaceId,
   computeStraightDistance,
 } from '../utils/geoUtils';
-import { IconGpsFixed, IconSearch, IconClose, IconBookmark } from './Icons';
+import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 
@@ -281,7 +281,7 @@ class LocationPicker extends Component {
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <IconBookmark className="location-picker__historical-address-icon" />
+                <IconBookmarks className="location-picker__historical-address-icon" />
                 <div className="location-picker__historical-address-content">
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>

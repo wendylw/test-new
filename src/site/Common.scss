@@ -676,6 +676,10 @@ img {
   &__text {
     margin: 0 5px;
   }
+
+  &__icon-small + &__text {
+    margin: 0;
+  }
 }
 /* end of Store Info */
 

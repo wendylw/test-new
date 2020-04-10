@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { debounce } from 'lodash';
-import { IconGpsFixed, IconSearch, IconClose, IconBookmark } from '../../../components/Icons';
+import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
 import Utils from '../../../utils/utils';
@@ -401,7 +401,7 @@ class Location extends Component {
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <IconBookmark className="location-page__historical-address-icon" />
+                <IconBookmarks className="location-page__historical-address-icon" />
                 <div className="location-page__historical-address-content">
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>
