@@ -67,26 +67,17 @@ class DeliveryMethods extends Component {
     const { hashCode } = this.props;
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
 
-    // deliveryAddress was set from ordering/Home
-    // to cover the case of page comes from beepit.com
-    if (currentMethod.name === DELIVERY_METHOD.DELIVERY) {
-      const deliveryTo = sessionStorage.getItem('deliveryAddress');
-      if (store.id && deliveryTo) {
-        console.warn('storeId and deliveryTo info is enough for delivery, redirect to ordering home');
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
-        return;
-      }
-    }
-
     // isValid
     const { allBusinessInfo, business } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({
       business,
       allBusinessInfo,
     });
-    //const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-    if (hashCode && !isStoreClosed && methodName === 'delivery') {
-      if (enablePreOrder) {
+    const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+    if (hashCode && currentMethod.name === DELIVERY_METHOD.DELIVERY) {
+      if (!isStoreClosed && enablePreOrder) {
+        // Should always let users select delivery time once they selected delivery not pickup
         await Utils.setSessionVariable(
           'deliveryTimeCallbackUrl',
           JSON.stringify({
@@ -98,7 +89,13 @@ class DeliveryMethods extends Component {
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}/?h=${hashCode ||
           ''}&type=${methodName}`;
         return;
-      } else {
+      }
+
+      if (store.id && deliveryTo) {
+        console.warn('storeId and deliveryTo info is enough for delivery, redirect to ordering home');
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
+        return;
+      } else if (!deliveryTo) {
         await Utils.setSessionVariable(
           'deliveryCallbackUrl',
           JSON.stringify({
@@ -111,7 +108,6 @@ class DeliveryMethods extends Component {
           ''}&type=${methodName}`;
         return;
       }
-    } else {
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
     }
   }
