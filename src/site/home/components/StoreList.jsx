@@ -98,6 +98,14 @@ class StoreList extends Component {
                     </li>
                   ) : null}
                 </ul>
+                {enableCashback ? (
+                  <div className="flex flex-middle">
+                    <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
+                    <span className="store-info__text text-size-small text-middle">
+                      {t('EnabledCashbackText', { cashbackRate: (cashbackRate || 0).toFixed(2) })}
+                    </span>
+                  </div>
+                ) : null}
                 {enableFreeShipping ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
@@ -113,14 +121,6 @@ class StoreList extends Component {
                         & above
                       </span>
                     </Trans>
-                  </div>
-                ) : null}
-                {enableCashback ? (
-                  <div className="flex flex-middle">
-                    <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
-                    <span className="store-info__text text-size-small text-middle">
-                      {t('EnabledCashbackText', { cashbackRate: (cashbackRate || 0).toFixed(2) })}
-                    </span>
                   </div>
                 ) : null}
               </summary>
