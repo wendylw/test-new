@@ -10,9 +10,9 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getTime } from '../../../utils/datetime-lib';
+import { toNumericTime, toLocaleDateString } from '../../../utils/datetime-lib';
 
-const { ROUTER_PATHS, WEEK_DAYS } = Constants;
+const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS } = Constants;
 
 // Accepts time format like 10:00, 10, and 10:40
 const getHourAndMinute = time => {
@@ -50,6 +50,17 @@ class LocationAndDate extends Component {
       selectedDate: date,
       selectedHour: hour,
     });
+  };
+
+  getBusinessCountry = () => {
+    try {
+      const { business, allBusinessInfo } = this.props;
+      const businessInfo = allBusinessInfo[business];
+      return businessInfo.country;
+    } catch (e) {
+      // this could happen when allBusinessInfo is not loaded.
+      return undefined;
+    }
   };
 
   componentDidUpdate = () => {
@@ -107,11 +118,12 @@ class LocationAndDate extends Component {
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
+    const country = this.getBusinessCountry();
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
-      const newDateWithoutMinutes = new Date(newDate).toLocaleDateString();
+      const newDateWithoutMinutes = toLocaleDateString(new Date(newDate), country);
       let isOpen = validDays.includes(weekday);
 
       // If store is closed today, don't show today in date list
@@ -126,7 +138,7 @@ class LocationAndDate extends Component {
       }
 
       deliveryDates.push({
-        date: new Date(newDateWithoutMinutes).toLocaleDateString(),
+        date: toLocaleDateString(new Date(newDateWithoutMinutes), country),
         isOpen: isOpen,
         isToday: !i,
       });
@@ -221,8 +233,9 @@ class LocationAndDate extends Component {
 
             return (
               <li
-                className={`location-display__date-item flex flex-space-between flex-column text-center ${deliverableTime.isOpen ||
-                  'disabled'} ${isSelected && 'selected'}`}
+                className={`location-display__date-item flex flex-space-between flex-column text-center ${
+                  deliverableTime.isOpen ? '' : 'disabled'
+                } ${isSelected ? 'selected' : ''}`}
                 onClick={() => {
                   this.handleSelectDate(deliverableTime);
                 }}
@@ -232,7 +245,7 @@ class LocationAndDate extends Component {
                   <span>{t('Now')}</span>
                 ) : (
                   <Fragment>
-                    <span>{WEEK_DAYS[weekday]}</span>
+                    <span>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
                     <span>{date}</span>
                   </Fragment>
                 )}
@@ -251,15 +264,13 @@ class LocationAndDate extends Component {
       { length: deliveryHours[1] - deliveryHours[0] },
       (v, i) => i + deliveryHours[0]
     );
+    const country = this.getBusinessCountry();
 
     return deliverHoursArray.map(hour => {
-      // todo: move into datetime-lib with good design
-      const getTimeByHour = hour => {
-        const dateTmp = new Date();
-        dateTmp.setHours(hour, 0);
-        return getTime(dateTmp);
-      };
-
+      const currHour = new Date();
+      currHour.setHours(hour, 0);
+      const nextHour = new Date();
+      nextHour.setHours(hour + 1, 0);
       return (
         <li
           className={`location-display__hour-item text-center ${selectedHour.from === hour ? 'selected' : ''}`}
@@ -271,7 +282,7 @@ class LocationAndDate extends Component {
           }}
           key={hour}
         >
-          {`${getTimeByHour(hour)} - ${getTimeByHour(hour + 1)}`}
+          {`${toNumericTime(currHour, country)} - ${toNumericTime(nextHour, country)}`}
         </li>
       );
     });

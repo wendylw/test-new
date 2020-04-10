@@ -147,7 +147,7 @@ const CONSUMERFLOW_STATUS = {
   PICKUP: 'pickedUp',
   CANCELLED: 'cancelled',
 };
-const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default {
   OTP_CODE_SIZE,
@@ -174,5 +174,5 @@ export default {
   ASIDE_NAMES,
   DELIVERY_METHOD,
   CONSUMERFLOW_STATUS,
-  WEEK_DAYS,
+  WEEK_DAYS_I18N_KEYS,
 };

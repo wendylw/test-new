@@ -316,6 +316,7 @@ Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
   }
 };
 
+// TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
   const { stores } = originalInfo || {};
