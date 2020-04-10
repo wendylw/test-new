@@ -281,9 +281,7 @@ class LocationPicker extends Component {
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <div className="location-picker__historical-address-icon">
-                  <IconBookmark />
-                </div>
+                <IconBookmark className="location-picker__historical-address-icon" />
                 <div className="location-picker__historical-address-content">
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>

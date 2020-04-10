@@ -401,9 +401,7 @@ class Location extends Component {
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <div className="location-page__historical-address-icon">
-                  <IconBookmark />
-                </div>
+                <IconBookmark className="location-page__historical-address-icon" />
                 <div className="location-page__historical-address-content">
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>

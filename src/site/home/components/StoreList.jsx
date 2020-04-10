@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
-import { /*IconMotorcycle,*/ IconLocation, IconLabelOutline } from '../../../components/Icons';
+import { /*IconMotorcycle,*/ IconLocation, IconBookmark } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -86,6 +86,12 @@ class StoreList extends Component {
                       price={deliveryFee}
                     />
                   </li> */}
+                  {isOpen && isOutOfDeliveryRange ? (
+                    <li className="store-info__item text-middle">
+                      <IconBookmark className="icon icon__smaller text-middle" />
+                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
+                    </li>
+                  ) : null}
                 </ul>
                 <div className="store-card-list__description flex flex-middle text-opacity">
                   <Trans i18nKey="MinimumOrder">
@@ -98,12 +104,6 @@ class StoreList extends Component {
                     />
                   </Trans>
                 </div>
-                {isOpen && isOutOfDeliveryRange ? (
-                  <div className="padding-top-bottom-small">
-                    <IconLabelOutline className="icon icon__privacy icon__smaller text-middle" />
-                    <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
-                  </div>
-                ) : null}
               </summary>
             </li>
           );
