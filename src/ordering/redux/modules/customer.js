@@ -24,7 +24,7 @@ export const actions = {
     if (shippingType === 'delivery') {
       const deliveryAddress = await fetchDeliveryAddress();
 
-      if (deliveryAddress.address) {
+      if (deliveryAddress) {
         newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
         newDeliveryDetails.deliveryToLocation = {
           longitude: deliveryAddress.coords.lng,
