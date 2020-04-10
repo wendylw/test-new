@@ -106,7 +106,7 @@ class StoreList extends Component {
                     </span>
                   </div>
                 ) : null}
-                {enableFreeShipping ? (
+                {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
                     <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={minimumSpendForFreeDelivery}>
