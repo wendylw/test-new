@@ -111,7 +111,6 @@ class LocationAndDate extends Component {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
-      const newDateWithoutMinutes = new Date(newDate).toLocaleDateString();
       let isOpen = validDays.includes(weekday);
 
       // If store is closed today, don't show today in date list
@@ -126,7 +125,7 @@ class LocationAndDate extends Component {
       }
 
       deliveryDates.push({
-        date: new Date(newDateWithoutMinutes).toLocaleDateString(),
+        date: new Date(newDate).toLocaleDateString(),
         isOpen: isOpen,
         isToday: !i,
       });
