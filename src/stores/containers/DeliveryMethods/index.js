@@ -47,10 +47,7 @@ class DeliveryMethods extends Component {
       const search = `?h=${this.props.hashCode}&type=delivery`;
       const searchStr = enablePreOrder ? `${search}&isPreOrder=true` : search;
 
-      this.props.history.push({
-        pathname: ROUTER_PATHS.ORDERING_BASE,
-        search: searchStr,
-      });
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${searchStr}`;
     }
   };
 

@@ -465,6 +465,7 @@ export class ThankYou extends Component {
           isPage={true}
           title={`#${orderId}`}
           navFunc={() =>
+            // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
             history.replace({
               pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
               search: `?table=${order.tableId}&storeId=${order.storeId}${type ? '&type=' + type : ''}`,
@@ -529,6 +530,7 @@ export class ThankYou extends Component {
               isPage={true}
               title={t('OrderPaid')}
               navFunc={() =>
+                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
                 history.replace({
                   pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
                   search: `?table=${order.tableId}&storeId=${order.storeId}${
