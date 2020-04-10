@@ -80,6 +80,7 @@
   "Name": "ชื่อ",
   "MobileNumber": "เบอร์โทรศัพท์",
   "AddAddressPlaceholder": "เพิ่มที่อยู่ของคุณ*",
+  "AddDeliveryTimePlaceholder": "ใส่เวลาจัดส่งของคุณ",
   "AddressDetailsPlaceholder": "เช่น ชั้น และ เบอร์ห้อง",
   "AddNoteToDriverPlaceholder": "เพิ่มโน๊ตให้คนขับ",
   "AddAddressDetailsPlaceholder": "เลขที่/ซอย/ชั้น",
@@ -105,5 +106,6 @@
   "Sat": "เสาร์",
   "Sun": "อาทิตย์",
   "Now": "ตอนนี้",
-  "Okay": "โอเค"
+  "Okay": "โอเค",
+  "DeliveryHours": "เวลาให้บริการจัดส่ง"
 }
