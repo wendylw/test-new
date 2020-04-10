@@ -125,7 +125,7 @@ class LocationAndDate extends Component {
       }
 
       deliveryDates.push({
-        date: new Date(newDate).toLocaleDateString(),
+        date: newDate.valueOf(),
         isOpen: isOpen,
         isToday: !i,
       });
