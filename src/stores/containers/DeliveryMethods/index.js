@@ -108,6 +108,7 @@ class DeliveryMethods extends Component {
           ''}&type=${methodName}`;
         return;
       }
+    } else {
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
     }
   }
