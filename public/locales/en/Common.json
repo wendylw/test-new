@@ -98,7 +98,7 @@
   "OutOfDeliveryRangeDescription": "Sorry, your selected location is out of the delivery range of this store and hence is only available for Self Pickup orders",
   "SelfPickupOnly": "Self Pickup Only",
   "OfferDetails": "Offer Details",
-  "EnabledCashbackText": "Get {{cashbackRate}}% extra cashback",
+  "EnabledCashbackText": "Get {{cashbackRate}}% Store cashback",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",
