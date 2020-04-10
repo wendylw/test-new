@@ -152,7 +152,6 @@ class Customer extends Component {
       return null;
     }
 
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     let deliveryTime;
     if (date.date && hour.from) {
@@ -171,7 +170,7 @@ class Customer extends Component {
             <IconEdit />
           </i>
         </div>
-        <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
+        <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
           {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
       </Fragment>
@@ -245,12 +244,14 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, business, allBusinessInfo } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -360,6 +361,7 @@ class Customer extends Component {
                 (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
+                !!(enablePreOrder && !date.date) ||
                 isFetching
               }
             >

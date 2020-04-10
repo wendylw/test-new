@@ -26,7 +26,7 @@ export const fetchDeliveryDetails = async () => {
 
 export const fetchDeliveryAddress = async () => {
   try {
-    return JSON.parse(sessionStorage.getItem('deliveryAddress'));
+    return JSON.parse(sessionStorage.getItem('deliveryAddress') || '{}');
   } catch (e) {
     console.error(e);
     return null;
