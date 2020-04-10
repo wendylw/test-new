@@ -86,7 +86,8 @@ class StoreList extends Component {
                       <IconBookmark className="icon icon__smaller text-middle" />
                       <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
                     </li>
-                  ) : (
+                  ) : null
+                  /*(
                     <li className="store-info__item text-middle">
                       <IconMotorcycle className="icon icon__smaller text-middle" />
                       <CurrencyNumber
@@ -96,7 +97,8 @@ class StoreList extends Component {
                         price={deliveryFee}
                       />
                     </li>
-                  )}
+                  )*/
+                  }
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
