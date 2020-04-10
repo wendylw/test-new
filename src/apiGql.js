@@ -10,6 +10,7 @@ apiGql.FRAGMENT_SHOPPNIG_CART_ITEMS = gql`
     parentProductId
     title
     variationTexts
+    inventoryType
     variations {
       variationId
       optionId
@@ -109,6 +110,11 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
       country
       state
       street
+      analyticTools {
+        name
+        trackingId
+      }
+      businessType
     }
   }
 `;
@@ -125,6 +131,7 @@ apiGql.GET_PRODUCT_DETAIL = gql`
       id
       title
       displayPrice
+      markedSoldOut
       unitPrice
       onlineUnitPrice
       inventoryType
@@ -185,6 +192,7 @@ apiGql.GET_ONLINE_CATEGORY = gql`
         trackInventory
         images
         markedSoldOut
+        quantityOnHand
         variations {
           id
           name
