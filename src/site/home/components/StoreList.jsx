@@ -119,7 +119,7 @@ class StoreList extends Component {
                   <div className="flex flex-middle">
                     <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
                     <span className="store-info__text text-size-small text-middle">
-                      {t('EnabledCashbackText', { cashbackRate })}
+                      {t('EnabledCashbackText', { cashbackRate: (cashbackRate || 0).toFixed(2) })}
                     </span>
                   </div>
                 ) : null}
