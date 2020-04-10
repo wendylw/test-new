@@ -106,18 +106,18 @@ class StoreList extends Component {
                     </span>
                   </div>
                 ) : null}
-                {enableFreeShipping ? (
+                {!enableFreeShipping ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
-                    <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={minimumSpendForFreeDelivery}>
+                    <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={5}>
                       <span className="store-info__text text-size-small text-middle">
-                        Free Delivery with{' '}
+                        Free Delivery with
                         <CurrencyNumber
                           className="store-info__text text-size-small text-middle"
                           locale={locale}
                           currency={currency}
-                          price={minimumSpendForFreeDelivery}
-                        />{' '}
+                          price={5}
+                        />
                         & above
                       </span>
                     </Trans>
