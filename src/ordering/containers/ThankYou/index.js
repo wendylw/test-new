@@ -40,6 +40,10 @@ export class ThankYou extends Component {
   state = {};
 
   componentDidMount() {
+    // expected delivery time is for pre order
+    // but there is no harm to do the cleanup for every order
+    Utils.removeExpectedDeliveryTime();
+
     const { thankYouActions } = this.props;
 
     thankYouActions.loadOrder(this.getReceiptNumber());

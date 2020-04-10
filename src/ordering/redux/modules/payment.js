@@ -167,10 +167,6 @@ export const actions = {
       }
     }
 
-    if (enablePreOrder) {
-      Utils.removeExpectedDeliveryTime();
-    }
-
     return result;
   },
 
