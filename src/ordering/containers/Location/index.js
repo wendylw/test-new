@@ -165,7 +165,7 @@ class Location extends Component {
       const historicalAddresses = await getHistoricalDeliveryAddresses(5);
       this.setState({ historicalAddresses });
     } catch (e) {
-      console.error('Failed to get historical addresses');
+      console.error('Failed to get historical addresses', e);
     }
   }
 
@@ -213,7 +213,6 @@ class Location extends Component {
 
   onSearchBoxChange = event => {
     const searchText = event.currentTarget.value;
-    console.log('typed:', searchText);
     this.setState({ searchText }, () => {
       this.debounceSearchPlaces();
     });
@@ -250,13 +249,17 @@ class Location extends Component {
           errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
         });
         return;
+      } else {
+        Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo, routerDistance: distance }));
       }
-
-      Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo, routerDistance: distance }));
-      const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
+      const callbackUrl = JSON.parse(Utils.getSessionVariable('deliveryCallbackUrl'));
       Utils.removeSessionVariable('deliveryCallbackUrl');
-      if (typeof callbackUrl === 'string') {
-        history.push(callbackUrl);
+      if (typeof callbackUrl === 'object') {
+        const { pathname, search } = callbackUrl;
+        history.push({
+          pathname: pathname,
+          search,
+        });
       } else {
         history.go(-1);
       }
@@ -299,9 +302,7 @@ class Location extends Component {
     return (
       <div className="location-page__search-box">
         <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-          <i className="location-page__search-box-search-icon" onClick={this.tryGeolocation}>
-            <IconSearch />
-          </i>
+          <IconSearch className="location-page__search-box-search-icon" onClick={this.tryGeolocation} />
           <input
             className="input input__block"
             type="text"
@@ -309,13 +310,11 @@ class Location extends Component {
             onChange={this.onSearchBoxChange}
             value={searchText}
           />
-          <i
+          <IconClose
             className="location-page__search-box-clear-icon"
             onClick={this.clearSearchBox}
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
-          >
-            <IconClose />
-          </i>
+          />
         </div>
       </div>
     );

@@ -75,6 +75,7 @@ const config = {
     terms: process.env.REACT_APP_TERMS_URL,
     privacy: process.env.REACT_APP_PRIVACY_URL,
   },
+  beepOnlineStoreUrl: business => (process.env.REACT_APP_MERCHANT_STORE_URL || '').replace('%business%', business),
   storeHubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
@@ -84,6 +85,7 @@ const config = {
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
   paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
+  beepitComUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}`,
   qrScanPageUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}/qrscan`,
   h() {
     try {

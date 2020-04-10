@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import Utils from '../../../../../utils/utils';
 
 class FormTextarea extends Component {
   state = {
@@ -17,33 +18,36 @@ class FormTextarea extends Component {
   componentDidMount = () => {
     // const oldInnerHeight = addressAsideInner.style.top;
     const windowWidth = document.body.clientWidth || window.innerWidth;
+    const { isMobile } = Utils.getUserAgentInfo();
 
-    if (windowWidth < 770) {
-      this.textareaRef.current.addEventListener(
-        'focus',
-        () => {
-          try {
-            this.addressAsideInnerRef.current.style.top = '20vh';
-          } catch (e) {
-            console.error(e);
-          }
-        },
-        false
-      );
-
-      this.textareaRef.current.addEventListener(
-        'blur',
-        () => {
-          setTimeout(() => {
+    if (isMobile) {
+      if (windowWidth < 770) {
+        this.textareaRef.current.addEventListener(
+          'focus',
+          () => {
             try {
-              this.addressAsideInnerRef.current.style.top = '';
+              this.addressAsideInnerRef.current.style.top = '20vh';
             } catch (e) {
               console.error(e);
             }
-          }, 100);
-        },
-        false
-      );
+          },
+          false
+        );
+
+        this.textareaRef.current.addEventListener(
+          'blur',
+          () => {
+            setTimeout(() => {
+              try {
+                this.addressAsideInnerRef.current.style.top = '';
+              } catch (e) {
+                console.error(e);
+              }
+            }, 100);
+          },
+          false
+        );
+      }
     }
   };
 

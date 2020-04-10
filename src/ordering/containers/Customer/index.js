@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import { IconEdit } from '../../../components/Icons';
@@ -6,16 +6,22 @@ import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
+import ErrorToast from '../../../components/ErrorToast';
 import Utils from '../../../utils/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators } from '../../redux/modules/payment';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getBusinessInfo } from '../../redux/modules/cart';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
+import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -25,6 +31,7 @@ class Customer extends Component {
     formTextareaTitle: null,
     asideName: null,
     sentOtp: false,
+    errorToast: '',
   };
 
   componentDidMount = async () => {
@@ -51,10 +58,37 @@ class Customer extends Component {
     });
   }
 
+  checkDistanceError = () => {
+    const { businessInfo: business, deliveryDetails, t } = this.props;
+    if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
+      return null;
+    }
+    const from = {
+      lat: business.stores[0].location.latitude,
+      lng: business.stores[0].location.longitude,
+    };
+    const to = {
+      lat: deliveryDetails.deliveryToLocation.latitude,
+      lng: deliveryDetails.deliveryToLocation.longitude,
+    };
+    const maxDistance = business.qrOrderingSettings.deliveryRadius;
+    const distance = computeStraightDistance(from, to);
+    if (distance / 1000 > maxDistance) {
+      return t(`OutOfDeliveryRange`, { distance: maxDistance.toFixed(1) });
+    }
+    return null;
+  };
+
   async handleCreateOrder() {
     const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
+
+    const checkDistanceResult = this.checkDistanceError();
+    if (checkDistanceResult) {
+      this.setState({ errorToast: checkDistanceResult });
+      return;
+    }
 
     if (!isValidPhoneNumber(phone)) {
       return;
@@ -105,8 +139,47 @@ class Customer extends Component {
     return type;
   }
 
+  clearErrorToast = () => {
+    this.setState({ errorToast: null });
+  };
+
+  renderDeliveryTime = () => {
+    const { business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { t } = this.props;
+
+    if (!enablePreOrder) {
+      return null;
+    }
+
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    let deliveryTime;
+    if (date.date && hour.from) {
+      deliveryTime = date.isToday ? t('DeliverNow') : formatToDeliveryTime({ date, hour });
+    } else {
+      deliveryTime = '';
+    }
+
+    console.log('[Customer] deliveryTime =', deliveryTime);
+
+    return (
+      <Fragment>
+        <div className="flex flex-middle flex-space-between">
+          <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverOn')}</label>
+          <i className="customer__edit-icon">
+            <IconEdit />
+          </i>
+        </div>
+        <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
+          {deliveryTime || t('AddDeliveryTimePlaceholder')}
+        </p>
+      </Fragment>
+    );
+  };
+
   renderDeliveryAddress() {
-    const { t, history } = this.props;
+    const { t, history, business, allBusinessInfo } = this.props;
 
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
@@ -114,6 +187,7 @@ class Customer extends Component {
 
     const { addressDetails, deliveryComments } = this.props.deliveryDetails;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     return (
       <React.Fragment>
@@ -121,36 +195,39 @@ class Customer extends Component {
           className="form__group"
           onClick={async () => {
             const { search } = window.location;
+            const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
 
             await Utils.setSessionVariable(
-              'deliveryCallbackUrl',
-              `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}/${search}`
+              locationPageCallbackUrl,
+              JSON.stringify({
+                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                search,
+              })
             );
 
             history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              pathname: enablePreOrder
+                ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
+                : Constants.ROUTER_PATHS.ORDERING_LOCATION,
               search,
             });
           }}
         >
           <div className="flex flex-middle flex-space-between">
             <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverTo')}</label>
-            <i className="customer__edit-icon">
-              <IconEdit />
-            </i>
+            <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
+          {this.renderDeliveryTime()}
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <div className="flex flex-middle flex-space-between">
             <label className="form__label font-weight-bold gray-font-opacity">
               {t('AddAddressDetailsPlaceholder')}
             </label>
-            <i className="customer__edit-icon">
-              <IconEdit />
-            </i>
+            <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
             {addressDetails || t('AddressDetailsPlaceholder')}
@@ -161,9 +238,7 @@ class Customer extends Component {
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
           <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
-          <i className="customer__edit-icon">
-            <IconEdit />
-          </i>
+          <IconEdit className="customer__edit-icon" />
         </div>
       </React.Fragment>
     );
@@ -171,7 +246,7 @@ class Customer extends Component {
 
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
-    const { asideName, formTextareaTitle } = this.state;
+    const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -282,9 +357,7 @@ class Customer extends Component {
               className="billing__link button button__fill button__block font-weight-bold"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
-                (type === DELIVERY_METHOD.DELIVERY &&
-                  (!Boolean((deliveryDetails.addressDetails || '').trim()) ||
-                    !Boolean((deliveryToAddress || '').trim()))) ||
+                (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
                 isFetching
@@ -294,13 +367,14 @@ class Customer extends Component {
             </button>
           </div>
         </footer>
+        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
       </section>
     );
   }
 }
 
 export default compose(
-  withTranslation(),
+  withTranslation('OrderingDelivery'),
   connect(
     state => {
       return {
@@ -308,6 +382,9 @@ export default compose(
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
+        business: getBusiness(state),
+        allBusinessInfo: getAllBusinesses(state),
+        businessInfo: getBusinessInfo(state),
       };
     },
     dispatch => ({

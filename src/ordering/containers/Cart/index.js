@@ -162,9 +162,7 @@ class Cart extends Component {
           onChange={this.handleChangeAdditionalComments.bind(this)}
         ></textarea>
         {additionalComments ? (
-          <i className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)}>
-            <IconClose />
-          </i>
+          <IconClose className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)} />
         ) : null}
       </div>
     );

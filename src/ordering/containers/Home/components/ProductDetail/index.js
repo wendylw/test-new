@@ -535,9 +535,7 @@ class ProductDetail extends Component {
             ...resizeImageStyles,
           }}
         >
-          <i className="product-description__back-icon" onClick={() => onToggle()}>
-            <IconLeftArrow />
-          </i>
+          <IconLeftArrow className="product-description__back-icon" onClick={() => onToggle()} />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}
@@ -598,7 +596,7 @@ class ProductDetail extends Component {
             </div>
 
             {Utils.isProductSoldOut(product || {}) ? (
-              <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+              <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
             ) : (
               <ItemOperator
                 className="flex-middle"
