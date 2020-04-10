@@ -361,7 +361,7 @@ class Customer extends Component {
                 (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
-                !!(enablePreOrder && !date.date) ||
+                !!(type === DELIVERY_METHOD.DELIVER && enablePreOrder && !date.date) ||
                 isFetching
               }
             >
