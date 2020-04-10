@@ -121,7 +121,7 @@ export const actions = {
         deliveryComments,
         deliveryToAddress: deliveryTo,
         deliveryToLocation: location,
-        routerDistance,
+        /*routerDistance,*/
       } = deliveryDetails || {};
 
       variables = {
@@ -162,10 +162,6 @@ export const actions = {
       } catch (e) {
         console.error(e);
       }
-    }
-
-    if (enablePreOrder) {
-      Utils.removeExpectedDeliveryTime();
     }
 
     return result;

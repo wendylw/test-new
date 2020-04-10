@@ -5,6 +5,7 @@ $bar-background-color: #242644;
 .offer-details {
   &__bar {
     position: relative;
+    min-height: 13vw;
     color: $white;
     background-color: $bar-background-color;
     cursor: pointer;
@@ -91,6 +92,14 @@ $bar-background-color: #242644;
 
     li {
       line-height: 1.6em;
+    }
+  }
+}
+
+@media (min-width: 770px) {
+  .offer-details {
+    &__bar {
+      min-height: 56px;
     }
   }
 }

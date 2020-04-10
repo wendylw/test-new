@@ -23,11 +23,14 @@ export const actions = {
 
     if (shippingType === 'delivery') {
       const deliveryAddress = await fetchDeliveryAddress();
-      newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
-      newDeliveryDetails.deliveryToLocation = {
-        longitude: deliveryAddress.coords.lng,
-        latitude: deliveryAddress.coords.lat,
-      };
+
+      if (deliveryAddress) {
+        newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
+        newDeliveryDetails.deliveryToLocation = {
+          longitude: deliveryAddress.coords.lng,
+          latitude: deliveryAddress.coords.lat,
+        };
+      }
 
       // if address chosen is different from address in session
       // then clean up the address details info
