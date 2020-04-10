@@ -59,9 +59,9 @@ export const getDayDateMonth = date => `${getDay(date)}, ${getDate(date)} ${getM
 export const formatToDeliveryTime = ({ date, hour }) => {
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
-  workDateFrom.setHours(hour.from);
+  workDateFrom.setHours(hour.from, 0, 0);
   const workDateTo = new Date(date.date);
-  workDateTo.setHours(hour.to);
+  workDateTo.setHours(hour.to, 0, 0);
 
   const part1 = getDayDateMonth(workDate);
   const part2 = getTimeRange(workDateFrom, workDateTo);
