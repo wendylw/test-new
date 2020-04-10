@@ -99,7 +99,7 @@ class StoreList extends Component {
                     </li>
                   ) : null}
                 </ul>
-                {enableCashback ? (
+                {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
                     <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
                     <span className="store-info__text text-size-small text-middle">
