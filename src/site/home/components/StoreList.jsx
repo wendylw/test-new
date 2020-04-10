@@ -114,7 +114,7 @@ class StoreList extends Component {
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery with
                         <CurrencyNumber
-                          className="store-info__text text-size-small text-middle"
+                          className="text-size-small text-middle"
                           locale={locale}
                           currency={currency}
                           price={minimumSpendForFreeDelivery}
