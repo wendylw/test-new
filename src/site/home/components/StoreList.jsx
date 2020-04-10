@@ -109,7 +109,7 @@ class StoreList extends Component {
                 {enableFreeShipping ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
-                    <Trans i18nKey="FreeDeliveryText">
+                    <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={minimumSpendForFreeDelivery}>
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery with{' '}
                         <CurrencyNumber
@@ -117,7 +117,7 @@ class StoreList extends Component {
                           locale={locale}
                           currency={currency}
                           price={minimumSpendForFreeDelivery}
-                        />
+                        />{' '}
                         & above
                       </span>
                     </Trans>
