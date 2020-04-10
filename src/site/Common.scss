@@ -677,8 +677,8 @@ img {
     margin: 0 5px;
   }
 
-  &__icon-small + &__text {
-    margin: 0;
+  &__icon-small {
+    padding: 4px 2px;
   }
 }
 /* end of Store Info */
