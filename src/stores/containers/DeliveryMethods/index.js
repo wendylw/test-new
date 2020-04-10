@@ -81,8 +81,8 @@ class DeliveryMethods extends Component {
         await Utils.setSessionVariable(
           'deliveryTimeCallbackUrl',
           JSON.stringify({
-            pathname: ROUTER_PATHS.STORES_HOME,
-            search: `/?h=${hashCode || ''}&type=${methodName}`,
+            pathname: ROUTER_PATHS.ORDERING_HOME,
+            search: `?h=${hashCode || ''}&type=${methodName}`,
           })
         );
 
@@ -99,8 +99,8 @@ class DeliveryMethods extends Component {
         await Utils.setSessionVariable(
           'deliveryCallbackUrl',
           JSON.stringify({
-            pathname: ROUTER_PATHS.STORES_HOME,
-            search: `/?h=${hashCode || ''}&type=${methodName}`,
+            pathname: ROUTER_PATHS.ORDERING_HOME,
+            search: `?h=${hashCode || ''}&type=${methodName}`,
           })
         );
 
