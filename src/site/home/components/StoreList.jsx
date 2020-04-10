@@ -81,7 +81,12 @@ class StoreList extends Component {
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  {isOpen && !isOutOfDeliveryRange ? (
+                  {isOutOfDeliveryRange ? (
+                    <li className="store-info__item text-middle">
+                      <IconBookmark className="icon icon__smaller text-middle" />
+                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
+                    </li>
+                  ) : (
                     <li className="store-info__item text-middle">
                       <IconMotorcycle className="icon icon__smaller text-middle" />
                       <CurrencyNumber
@@ -91,13 +96,7 @@ class StoreList extends Component {
                         price={deliveryFee}
                       />
                     </li>
-                  ) : null}
-                  {isOpen && isOutOfDeliveryRange ? (
-                    <li className="store-info__item text-middle">
-                      <IconBookmark className="icon icon__smaller text-middle" />
-                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
-                    </li>
-                  ) : null}
+                  )}
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
