@@ -125,7 +125,7 @@ class Home extends React.Component {
   };
 
   handleClearSearchText = () => {
-    this.props.homeActions.setSearchInfo({ keyword: '' });
+    this.props.homeActions.setSearchInfo({ keyword: '', scrollTop: 0 });
   };
 
   handleLoadMoreStores = () => {
