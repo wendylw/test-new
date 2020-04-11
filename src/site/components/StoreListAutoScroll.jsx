@@ -9,7 +9,11 @@ class StoreListAutoScroll extends React.Component {
 
   restoreScrollPosition = () => {
     const { defaultScrollTop, getScrollParent } = this.props;
-    getScrollParent().scrollTo(0, defaultScrollTop, { behavior: 'instant' });
+    const scrollParent = getScrollParent();
+    const scrollBehavior = scrollParent.style.scrollBehavior;
+    scrollParent.style.scrollBehavior = 'auto';
+    scrollParent.scrollTo(0, defaultScrollTop, { behavior: 'instant' });
+    scrollParent.style.scrollBehavior = scrollBehavior;
   };
 
   registerEventListeners = () => {
