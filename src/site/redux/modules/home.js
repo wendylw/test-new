@@ -25,6 +25,7 @@ const initialState = {
   },
   searchInfo: {
     keyword: '',
+    scrollTop: 0,
   },
   loadedSearchingStoreList: false,
   storeIds: [],

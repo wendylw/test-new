@@ -41,10 +41,13 @@ class Home extends React.Component {
 
     this.restoreState();
 
-    const { paginationInfo } = this.props;
+    const { paginationInfo, searchInfo } = this.props;
     const { scrollTop } = paginationInfo;
+    const { scrollTop: scrollTopOfSearch } = searchInfo;
 
     this.scrollTop = scrollTop || 0;
+    this.scrollTopOfSearch = scrollTopOfSearch || 0;
+
     this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
   }
@@ -129,11 +132,16 @@ class Home extends React.Component {
     return this.props.homeActions.getStoreList();
   };
 
-  handleStoreSelected = async store => {
+  handleStoreSelected = mode => async store => {
     const { homeActions } = this.props;
 
+    if (mode === 'search') {
+      homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
+    } else if (mode === 'stores') {
+      homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
+    }
+
     // to backup whole redux state when click store item
-    this.props.homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
     this.backupState();
 
     await homeActions.showTypePicker({
@@ -171,7 +179,7 @@ class Home extends React.Component {
             stores={stores}
             hasMore={hasMore}
             loadMoreStores={this.handleLoadMoreStores}
-            onStoreClicked={this.handleStoreSelected}
+            onStoreClicked={this.handleStoreSelected('stores')}
             getScrollParent={() => this.sectionRef.current}
             withInfiniteScroll
           />
@@ -188,11 +196,13 @@ class Home extends React.Component {
       currentPlaceInfo: { coords },
       loadedSearchingStores,
     } = this.props;
-    const { keyword } = searchInfo;
+    const { keyword, scrollTop } = searchInfo;
 
     if (Boolean(keyword) && !loadedSearchingStores) {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
+
+    console.log('[Home] [renderSearchResult] scrollTop =', searchInfo.scrollTop);
 
     return (
       <React.Fragment>
@@ -204,11 +214,19 @@ class Home extends React.Component {
             </p>
           </div>
         )}
-        <StoreList
-          key={`research-result-${coords.lng}-${coords.lat}`}
-          stores={searchResult}
-          onStoreClicked={this.handleStoreSelected}
-        />
+        {searchResult.length && this.sectionRef.current ? (
+          <StoreListAutoScroll
+            getScrollParent={() => this.sectionRef.current}
+            defaultScrollTop={scrollTop}
+            onScroll={scrollTop => (this.scrollTopOfSearch = scrollTop)}
+          >
+            <StoreList
+              key={`research-result-${coords.lng}-${coords.lat}`}
+              stores={searchResult}
+              onStoreClicked={this.handleStoreSelected('search')}
+            />
+          </StoreListAutoScroll>
+        ) : null}
       </React.Fragment>
     );
   };
