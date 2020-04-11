@@ -78,12 +78,10 @@ class Home extends React.Component {
     this.props.homeActions.getStoreList();
 
     if (Utils.getUserAgentInfo().browser.includes('Safari')) {
-      document.body.style = {
-        position: 'fixed',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-      };
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
     }
   };
 
