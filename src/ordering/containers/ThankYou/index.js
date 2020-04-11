@@ -40,6 +40,10 @@ export class ThankYou extends Component {
   state = {};
 
   componentDidMount() {
+    // expected delivery time is for pre order
+    // but there is no harm to do the cleanup for every order
+    Utils.removeExpectedDeliveryTime();
+
     const { thankYouActions } = this.props;
 
     thankYouActions.loadOrder(this.getReceiptNumber());
@@ -461,6 +465,7 @@ export class ThankYou extends Component {
           isPage={true}
           title={`#${orderId}`}
           navFunc={() =>
+            // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
             history.replace({
               pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
               search: `?table=${order.tableId}&storeId=${order.storeId}${type ? '&type=' + type : ''}`,
@@ -525,6 +530,7 @@ export class ThankYou extends Component {
               isPage={true}
               title={t('OrderPaid')}
               navFunc={() =>
+                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
                 history.replace({
                   pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
                   search: `?table=${order.tableId}&storeId=${order.storeId}${
