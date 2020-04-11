@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import Url from '../../../utils/url';
 
@@ -136,7 +137,7 @@ const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispat
 };
 
 // @reducers
-const storeIdsReducer = (state, action) => {
+const storeIdsReducer = (state = initialState.storeIds, action) => {
   if (action.type === types.GET_STORE_LIST_REQUEST) {
     if (action.context.page === 0) return [];
   } else if (action.type === types.GET_STORE_LIST_SUCCESS) {
@@ -148,12 +149,17 @@ const storeIdsReducer = (state, action) => {
   return state;
 };
 
-const storeIdsSearchResultReducer = (state, action) => {
+const storeIdsSearchResultReducer = (state = initialState.storeIdsSearchResult, action) => {
   const { response } = action;
-  return (response.stores || []).map(store => store.id);
+
+  if (response) {
+    return (response.stores || []).map(store => store.id);
+  }
+
+  return state;
 };
 
-const paginationInfoReducer = (state, action) => {
+const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
   switch (action.type) {
     case types.SET_PAGINATION_INFO:
       return { ...state, ...action.paginationInfo };
@@ -182,7 +188,7 @@ const paginationInfoReducer = (state, action) => {
   }
 };
 
-const typePickerReducer = (state, action) => {
+const typePickerReducer = (state = initialState.typePicker, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
     return { ...state, loading: true, show: context.isOpen };
@@ -193,6 +199,7 @@ const typePickerReducer = (state, action) => {
       hash: redirectTo,
       source: context.source,
     };
+
     return {
       ...state,
       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
@@ -203,50 +210,42 @@ const typePickerReducer = (state, action) => {
       loading: false,
     };
   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
-    return { show: false, loading: false };
+    return { ...state, show: false, loading: false };
   }
+
   return state;
 };
 
-const reducer = (state = initialState, action) => {
-  const { response } = action;
-
+const loadedSearchingStoreList = (state = initialState.loadedSearchingStoreList, action) => {
   switch (action.type) {
-    case types.SET_PAGINATION_INFO:
-    case types.GET_STORE_LIST_REQUEST:
-    case types.GET_STORE_LIST_SUCCESS:
-    case types.GET_STORE_LIST_FAILURE:
-      return {
-        ...state,
-        storeIds: storeIdsReducer(state.storeIds, action),
-        paginationInfo: paginationInfoReducer(state.paginationInfo, action),
-      };
-    case types.GET_SEARCHING_STORE_LIST_REQUEST:
     case types.SET_SEARCHING_STORES_STATUS:
-      return { ...state, loadedSearchingStoreList: false };
-    case types.GET_SEARCHING_STORE_LIST_FAILURE:
-      return { ...state, loadedSearchingStoreList: true };
+    case types.GET_SEARCHING_STORE_LIST_REQUEST:
+      return false;
     case types.GET_SEARCHING_STORE_LIST_SUCCESS:
-      const { stores: searchingStoreList } = response;
-
-      return {
-        ...state,
-        loadedSearchingStoreList: true,
-        searchingStoreList,
-        storeIdsSearchResult: storeIdsSearchResultReducer(state.storeIdsSearchResult, action),
-      };
-    case types.HIDE_TYPE_PICKER:
-    case types.FETCH_STORE_HASHCODE_REQUEST:
-    case types.FETCH_STORE_HASHCODE_SUCCESS:
-    case types.FETCH_STORE_HASHCODE_FAILURE:
-      return {
-        ...state,
-        typePicker: typePickerReducer(state.typePicker, action),
-      };
+    case types.GET_SEARCHING_STORE_LIST_FAILURE:
+      return true;
     default:
       return state;
   }
 };
+
+const searchingStoreList = (state = initialState.searchingStoreList, action) => {
+  if (types.GET_SEARCHING_STORE_LIST_SUCCESS) {
+    const { stores: searchingStoreList } = action.response || {};
+    return { ...state, ...searchingStoreList };
+  }
+
+  return state;
+};
+
+const reducer = combineReducers({
+  typePicker: typePickerReducer,
+  storeIds: storeIdsReducer,
+  paginationInfo: paginationInfoReducer,
+  loadedSearchingStoreList,
+  searchingStoreList,
+  storeIdsSearchResult: storeIdsSearchResultReducer,
+});
 
 export const homeActionCreators = actions;
 export default reducer;

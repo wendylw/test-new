@@ -15,15 +15,22 @@ class StoreList extends Component {
 
   restoreScrollPosition = () => {
     const { defaultScrollTop, getScrollParent } = this.props;
-    getScrollParent().scrollTo(0, defaultScrollTop);
+    const scrollParent = getScrollParent();
+
+    if (scrollParent) {
+      scrollParent.scrollTo(0, defaultScrollTop, { behavior: 'instant' });
+    }
   };
 
   registerEventListeners = () => {
-    const scrollParent = this.props.getScrollParent();
+    const { getScrollParent } = this.props;
+    const scrollParent = getScrollParent();
 
-    scrollParent.addEventListener('scroll', e => {
-      this.props.onScroll(e.target.scrollTop || 0);
-    });
+    if (scrollParent) {
+      scrollParent.addEventListener('scroll', e => {
+        this.props.onScroll(e.target.scrollTop || 0);
+      });
+    }
   };
 
   handleStoreClicked = store => {
