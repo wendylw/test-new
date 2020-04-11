@@ -76,6 +76,15 @@ class Home extends React.Component {
     }
 
     this.props.homeActions.getStoreList();
+
+    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+      document.body.style = {
+        position: 'fixed',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+      };
+    }
   };
 
   debounceSearchStores = debounce(() => {
