@@ -21,6 +21,7 @@ import {
   getAllCurrentStores,
   getSearchResult,
   getTypePicker,
+  getSearchInfo,
 } from '../redux/modules/home';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
@@ -35,15 +36,17 @@ class Home extends React.Component {
     super(props);
 
     this.state = {
-      keyword: '',
       campaignShown: false,
     };
 
-    this.storeListScrollTop = 0;
+    this.restoreState();
+
+    const { paginationInfo } = this.props;
+    const { scrollTop } = paginationInfo;
+
+    this.scrollTop = scrollTop || 0;
     this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
-
-    this.restoreState();
   }
 
   componentDidMount = async () => {
@@ -92,10 +95,9 @@ class Home extends React.Component {
   };
 
   debounceSearchStores = debounce(() => {
-    const { keyword } = this.state;
     const { currentPlaceInfo } = this.props;
 
-    this.props.homeActions.getSearchingStoreList({ keyword, ...currentPlaceInfo });
+    this.props.homeActions.getSearchingStoreList(currentPlaceInfo);
   }, 700);
 
   gotoLocationPage = () => {
@@ -115,14 +117,12 @@ class Home extends React.Component {
     const keyword = event.currentTarget.value;
 
     this.props.homeActions.setSearchingStoresStatus(false);
-
-    this.setState({ keyword }, () => {
-      this.debounceSearchStores();
-    });
+    this.props.homeActions.setSearchInfo({ keyword });
+    this.debounceSearchStores();
   };
 
   handleClearSearchText = () => {
-    this.setState({ keyword: '' });
+    this.props.homeActions.setSearchInfo({ keyword: '' });
   };
 
   handleLoadMoreStores = () => {
@@ -133,7 +133,7 @@ class Home extends React.Component {
     const { homeActions } = this.props;
 
     // to backup whole redux state when click store item
-    this.props.homeActions.setPaginationInfo({ scrollTop: this.storeListScrollTop });
+    this.props.homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
     this.backupState();
 
     await homeActions.showTypePicker({
@@ -164,7 +164,7 @@ class Home extends React.Component {
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
-          onScroll={scrollTop => (this.storeListScrollTop = scrollTop)}
+          onScroll={scrollTop => (this.scrollTop = scrollTop)}
         >
           <StoreList
             key={`store-list-${this.renderId}`}
@@ -183,11 +183,12 @@ class Home extends React.Component {
   renderSearchResult = () => {
     const {
       t,
+      searchInfo,
       searchResult,
       currentPlaceInfo: { coords },
       loadedSearchingStores,
     } = this.props;
-    const { keyword } = this.state;
+    const { keyword } = searchInfo;
 
     if (Boolean(keyword) && !loadedSearchingStores) {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
@@ -213,8 +214,8 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, typePicker } = this.props;
-    const { keyword } = this.state;
+    const { t, currentPlaceInfo, searchInfo, typePicker } = this.props;
+    const { keyword } = searchInfo;
 
     if (!currentPlaceInfo) {
       return <i className="loader theme full-page text-size-huge"></i>;
@@ -290,6 +291,7 @@ export default compose(
   connect(
     state => ({
       currentPlaceInfo: getCurrentPlaceInfo(state),
+      searchInfo: getSearchInfo(state),
       paginationInfo: getPaginationInfo(state),
       stores: getAllCurrentStores(state),
       searchingStores: getSearchingStores(state),

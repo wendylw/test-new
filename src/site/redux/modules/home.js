@@ -23,6 +23,9 @@ const initialState = {
     loading: false,
     scrollTop: 0,
   },
+  searchInfo: {
+    keyword: '',
+  },
   loadedSearchingStoreList: false,
   storeIds: [],
   storeIdsSearchResult: [],
@@ -32,6 +35,9 @@ const initialState = {
 const types = {
   // set pagination info
   SET_PAGINATION_INFO: 'SITE/HOME/SET_PAGINATION_INFO',
+
+  // set searchInfo
+  SET_SEARCH_INFO: 'SITE/HOME/SET_SEARCH_INFO',
 
   // query store url
   SHOW_TYPE_PICKER: 'SITE/HOME/SHOW_TYPE_PICKER',
@@ -56,6 +62,11 @@ const types = {
 
 // @actions
 const actions = {
+  setSearchInfo: searchInfo => ({
+    type: types.SET_SEARCH_INFO,
+    searchInfo,
+  }),
+
   setPaginationInfo: paginationInfo => ({
     type: types.SET_PAGINATION_INFO,
     paginationInfo,
@@ -86,7 +97,8 @@ const actions = {
     return dispatch(fetchStoreList(page));
   },
 
-  getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
+  getSearchingStoreList: ({ coords }) => async (dispatch, getState) => {
+    const { keyword } = getSearchInfo(getState());
     return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
   },
 };
@@ -190,6 +202,13 @@ const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
   }
 };
 
+const searchInfo = (state = initialState.searchInfo, action) => {
+  if (action.type === types.SET_SEARCH_INFO) {
+    return { ...state, ...action.searchInfo };
+  }
+  return state;
+};
+
 const typePickerReducer = (state = initialState.typePicker, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
@@ -244,6 +263,7 @@ const reducer = combineReducers({
   typePicker: typePickerReducer,
   storeIds: storeIdsReducer,
   paginationInfo: paginationInfoReducer,
+  searchInfo,
   loadedSearchingStoreList,
   searchingStoreList,
   storeIdsSearchResult: storeIdsSearchResultReducer,
@@ -253,6 +273,7 @@ export const homeActionCreators = actions;
 export default reducer;
 
 // @selectors
+export const getSearchInfo = state => state.home.searchInfo;
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getSearchingStores = state => state.home.searchingStoreList;
 export const loadedSearchingStores = state => state.home.loadedSearchingStoreList;
