@@ -218,7 +218,6 @@ class Home extends React.Component {
           style={{
             // quick fix to style: modal close bar is covered by "DELIVER TO" bar
             // Remove this and browse with Safari, open the campaign bar, you will see.
-            paddingBottom: Utils.getUserAgentInfo().browser.includes('Safari') ? '182px' : '66px',
             zIndex: this.state.campaignShown ? 100 : 'auto',
           }}
         >
