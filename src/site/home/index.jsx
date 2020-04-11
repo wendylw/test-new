@@ -202,8 +202,6 @@ class Home extends React.Component {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
 
-    console.log('[Home] [renderSearchResult] scrollTop =', searchInfo.scrollTop);
-
     return (
       <React.Fragment>
         {searchResult.length && loadedSearchingStores ? null : (
