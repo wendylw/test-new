@@ -2134,14 +2134,16 @@
   }
 
   &__historical-address-icon {
+    display: block;
+    margin-top: 8px;
+    padding: 16px;
+    float: left;
+
     svg {
       fill: $theme-color-translucent;
       width: 14px;
       height: 14px;
     }
-    margin-top: 8px;
-    padding: 16px;
-    float: left;
   }
 
   &__historical-address-content {

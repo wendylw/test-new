@@ -114,7 +114,7 @@ export const actions = {
         deliveryComments,
         deliveryToAddress: deliveryTo,
         deliveryToLocation: location,
-        routerDistance,
+        /*routerDistance,*/
       } = deliveryDetails || {};
 
       variables = {
