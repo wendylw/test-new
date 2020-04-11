@@ -49,11 +49,11 @@ export const types = {
 // action creators
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
-    const getExpectDeliveryDateInfo = (dateLocalString, hour1, hour2) => {
-      const d1 = new Date(dateLocalString);
-      d1.setHours(Number(hour1));
-      const d2 = new Date(dateLocalString);
-      d2.setHours(Number(hour2));
+    const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
+      const d1 = new Date(dateValue);
+      d1.setHours(Number(hour1), 0, 0);
+      const d2 = new Date(dateValue);
+      d2.setHours(Number(hour2), 0, 0);
       return {
         expectDeliveryDateFrom: d1.toISOString(),
         expectDeliveryDateTo: d2.toISOString(),

@@ -38,9 +38,9 @@ export const toDayDateMonth = (date, locale = 'MY') =>
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
-  workDateFrom.setHours(hour.from);
+  workDateFrom.setHours(hour.from, 0, 0);
   const workDateTo = new Date(date.date);
-  workDateTo.setHours(hour.to);
+  workDateTo.setHours(hour.to, 0, 0);
 
   const part1 = toDayDateMonth(workDate, locale);
   const part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);

@@ -77,7 +77,7 @@ class Location extends React.Component {
     }
 
     return (
-      <main className="fixed-wrapper">
+      <main className="fixed-wrapper fixed-wrapper__main">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
