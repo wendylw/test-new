@@ -20,6 +20,7 @@ const initialState = {
     pageSize: 5,
     hasMore: true,
     loading: false,
+    scrollTop: 0,
   },
   loadedSearchingStoreList: false,
   storeIds: [],
@@ -28,6 +29,9 @@ const initialState = {
 };
 
 const types = {
+  // set pagination info
+  SET_PAGINATION_INFO: 'SITE/HOME/SET_PAGINATION_INFO',
+
   // query store url
   SHOW_TYPE_PICKER: 'SITE/HOME/SHOW_TYPE_PICKER',
   HIDE_TYPE_PICKER: 'SITE/HOME/HIDE_TYPE_PICKER',
@@ -51,6 +55,11 @@ const types = {
 
 // @actions
 const actions = {
+  setPaginationInfo: paginationInfo => ({
+    type: types.SET_PAGINATION_INFO,
+    paginationInfo,
+  }),
+
   hideTypePicker: () => ({
     type: types.HIDE_TYPE_PICKER,
   }),
@@ -146,6 +155,8 @@ const storeIdsSearchResultReducer = (state, action) => {
 
 const paginationInfoReducer = (state, action) => {
   switch (action.type) {
+    case types.SET_PAGINATION_INFO:
+      return { ...state, ...action.paginationInfo };
     case types.GET_STORE_LIST_REQUEST:
       const newState = { ...state, page: state.page + 1 };
       if (action.context.page === 0) {
@@ -201,6 +212,7 @@ const reducer = (state = initialState, action) => {
   const { response } = action;
 
   switch (action.type) {
+    case types.SET_PAGINATION_INFO:
     case types.GET_STORE_LIST_REQUEST:
     case types.GET_STORE_LIST_SUCCESS:
     case types.GET_STORE_LIST_FAILURE:

@@ -140,14 +140,21 @@ class Home extends React.Component {
     });
   };
 
+  handleStoreListScroll = debounce(scrollTop => {
+    this.props.homeActions.setPaginationInfo({ scrollTop });
+  }, 700);
+
   renderStoreList = () => {
     const {
       t,
       stores,
-      paginationInfo: { hasMore },
+      paginationInfo: { hasMore, scrollTop },
     } = this.props;
 
-    if (!stores.length) {
+    // Caution:
+    // 1. scroll restore will not work if you remove !this.sectionRef.current
+    // 2. <StoreList /> pagination will not good if you remove !stores.length
+    if (!stores.length || !this.sectionRef.current) {
       return null;
     }
 
@@ -158,6 +165,8 @@ class Home extends React.Component {
           key={`store-list-${this.renderId}`}
           stores={stores}
           hasMore={hasMore}
+          defaultScrollTop={scrollTop}
+          onScroll={this.handleStoreListScroll}
           loadMoreStores={this.handleLoadMoreStores}
           onStoreClicked={this.handleStoreSelected}
           getScrollParent={() => this.sectionRef.current}

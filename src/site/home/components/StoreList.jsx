@@ -8,6 +8,24 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 
 class StoreList extends Component {
+  componentDidMount = () => {
+    this.restoreScrollPosition();
+    this.registerEventListeners();
+  };
+
+  restoreScrollPosition = () => {
+    const { defaultScrollTop, getScrollParent } = this.props;
+    getScrollParent().scrollTo(0, defaultScrollTop);
+  };
+
+  registerEventListeners = () => {
+    const scrollParent = this.props.getScrollParent();
+
+    scrollParent.addEventListener('scroll', e => {
+      this.props.onScroll(e.target.scrollTop || 0);
+    });
+  };
+
   handleStoreClicked = store => {
     this.props.onStoreClicked(store);
   };
@@ -171,6 +189,8 @@ class StoreList extends Component {
 StoreList.propTypes = {
   stores: PropTypes.array.isRequired,
   hasMore: PropTypes.bool,
+  defaultScrollTop: PropTypes.number,
+  onScroll: PropTypes.func,
   loadMoreStores: PropTypes.func,
   getScrollParent: PropTypes.func,
   onStoreClicked: PropTypes.func,
@@ -179,6 +199,8 @@ StoreList.propTypes = {
 
 StoreList.defaultProps = {
   stores: [],
+  defaultScrollTop: 0,
+  onScroll: () => {},
   loadMoreStores: () => {},
   getScrollParent: () => {},
   onStoreClicked: () => {},
