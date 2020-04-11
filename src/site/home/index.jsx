@@ -25,6 +25,7 @@ import {
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
+import { rootActionCreators } from '../redux/modules';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -36,6 +37,8 @@ class Home extends React.Component {
       keyword: '',
       campaignShown: false,
     };
+
+    this.restoreState();
 
     this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
@@ -78,6 +81,14 @@ class Home extends React.Component {
     this.props.homeActions.getStoreList();
   };
 
+  backupState = () => {
+    this.props.rootActions.backup();
+  };
+
+  restoreState = () => {
+    this.props.rootActions.restore();
+  };
+
   debounceSearchStores = debounce(() => {
     const { keyword } = this.state;
     const { currentPlaceInfo } = this.props;
@@ -118,6 +129,8 @@ class Home extends React.Component {
 
   handleStoreSelected = async store => {
     const { homeActions } = this.props;
+
+    this.backupState();
 
     await homeActions.showTypePicker({
       business: store.business,
@@ -272,6 +285,7 @@ export default compose(
       typePicker: getTypePicker(state),
     }),
     dispatch => ({
+      rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
