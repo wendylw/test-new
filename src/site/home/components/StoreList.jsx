@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
 import {
-  /*IconMotorcycle,*/ IconLocation,
+  /*IconMotorcycle,*/
+  IconLocation,
   IconBookmark,
   IconLocalOffer,
   IconAttachMoney,
@@ -93,16 +94,16 @@ class StoreList extends Component {
                     </li>
                   ) : null
                   /*(
-                        <li className="store-info__item text-middle">
-                          <IconMotorcycle className="icon icon__smaller text-middle" />
-                          <CurrencyNumber
-                            className="store-info__text text-size-small text-middle"
-                            locale={locale}
-                            currency={currency}
-                            price={deliveryFee}
-                          />
-                        </li>
-                      )*/
+                          <li className="store-info__item text-middle">
+                            <IconMotorcycle className="icon icon__smaller text-middle" />
+                            <CurrencyNumber
+                              className="store-info__text text-size-small text-middle"
+                              locale={locale}
+                              currency={currency}
+                              price={deliveryFee}
+                            />
+                          </li>
+                        )*/
                   }
                 </ul>
                 {enableCashback && cashbackRate ? (
