@@ -33,14 +33,14 @@
 
   &__banner {
     padding-top: 16px;
-    padding-bottom: 94px;
+    padding-bottom: 16px;
   }
 
   &__search {
-    position: relative;
-    margin-top: -102px;
-    padding: 22px 3.8vw;
-    z-index: $z-index-base;
+    // position: relative;
+    // margin-top: -102px;
+    padding: 16px 0;
+    // z-index: $z-index-base;
   }
 
   &__hero-image {
@@ -181,12 +181,12 @@
 
 @media (min-width: 770px) {
   /* Entry */
-  .entry-home {
-    &__search {
-      padding-left: 16px;
-      padding-right: 16px;
-    }
-  }
+  // .entry-home {
+  //   &__search {
+  //     padding-left: 16px;
+  //     padding-right: 16px;
+  //   }
+  // }
   /* end of Entry */
 
   /* Store Card List */

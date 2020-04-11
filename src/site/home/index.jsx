@@ -226,24 +226,25 @@ class Home extends React.Component {
             <figure className="entry-home__banner-image">
               <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
             </figure>
-          </Banner>
-          <div className="entry-home__search">
-            <div className="form__group flex flex-middle">
-              <IconSearch className="icon icon__normal icon__gray" />
-              <input
-                className="form__input"
-                type="type"
-                placeholder={t('SearchRestaurantPlaceholder')}
-                value={keyword}
-                onChange={this.handleSearchTextChange}
-              />
-              <IconClose
-                className="form__search-icon icon icon__small icon__gray"
-                onClick={this.handleClearSearchText}
-                style={{ visibility: keyword ? 'visible' : 'hidden' }}
-              />
+
+            <div className="entry-home__search">
+              <div className="form__group flex flex-middle">
+                <IconSearch className="icon icon__normal icon__gray" />
+                <input
+                  className="form__input"
+                  type="type"
+                  placeholder={t('SearchRestaurantPlaceholder')}
+                  value={keyword}
+                  onChange={this.handleSearchTextChange}
+                />
+                <IconClose
+                  className="form__search-icon icon icon__small icon__gray"
+                  onClick={this.handleClearSearchText}
+                  style={{ visibility: keyword ? 'visible' : 'hidden' }}
+                />
+              </div>
             </div>
-          </div>
+          </Banner>
 
           <OfferDetails
             onToggle={() => {
