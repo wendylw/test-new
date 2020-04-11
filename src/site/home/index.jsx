@@ -26,6 +26,7 @@ import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import { rootActionCreators } from '../redux/modules';
+import StoreListAutoScroll from '../components/StoreListAutoScroll';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -38,10 +39,11 @@ class Home extends React.Component {
       campaignShown: false,
     };
 
-    this.restoreState();
-
+    this.storeListScrollTop = 0;
     this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
+
+    this.restoreState();
   }
 
   componentDidMount = async () => {
@@ -130,6 +132,8 @@ class Home extends React.Component {
   handleStoreSelected = async store => {
     const { homeActions } = this.props;
 
+    // to backup whole redux state when click store item
+    this.props.homeActions.setPaginationInfo({ scrollTop: this.storeListScrollTop });
     this.backupState();
 
     await homeActions.showTypePicker({
@@ -139,10 +143,6 @@ class Home extends React.Component {
       isOutOfDeliveryRange: store.isOutOfDeliveryRange,
     });
   };
-
-  handleStoreListScroll = debounce(scrollTop => {
-    this.props.homeActions.setPaginationInfo({ scrollTop });
-  }, 700);
 
   renderStoreList = () => {
     const {
@@ -161,17 +161,21 @@ class Home extends React.Component {
     return (
       <React.Fragment>
         <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
-        <StoreList
-          key={`store-list-${this.renderId}`}
-          stores={stores}
-          hasMore={hasMore}
-          defaultScrollTop={scrollTop}
-          onScroll={this.handleStoreListScroll}
-          loadMoreStores={this.handleLoadMoreStores}
-          onStoreClicked={this.handleStoreSelected}
+        <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
-          withInfiniteScroll
-        />
+          defaultScrollTop={scrollTop}
+          onScroll={scrollTop => (this.storeListScrollTop = scrollTop)}
+        >
+          <StoreList
+            key={`store-list-${this.renderId}`}
+            stores={stores}
+            hasMore={hasMore}
+            loadMoreStores={this.handleLoadMoreStores}
+            onStoreClicked={this.handleStoreSelected}
+            getScrollParent={() => this.sectionRef.current}
+            withInfiniteScroll
+          />
+        </StoreListAutoScroll>
       </React.Fragment>
     );
   };

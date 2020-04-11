@@ -30,8 +30,8 @@ const rootReducer = (state, action) => {
   } else if (action.type === types.ROOT_RESTORE) {
     try {
       const legacyState = JSON.parse(sessionStorage.getItem(STORAGE_KEY_ROOT_BACKUP));
-      sessionStorage.removeItem(STORAGE_KEY_ROOT_BACKUP);
       if (legacyState) {
+        sessionStorage.removeItem(STORAGE_KEY_ROOT_BACKUP);
         return legacyState;
       }
     } catch (e) {

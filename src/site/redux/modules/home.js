@@ -150,10 +150,12 @@ const storeIdsReducer = (state = initialState.storeIds, action) => {
 };
 
 const storeIdsSearchResultReducer = (state = initialState.storeIdsSearchResult, action) => {
-  const { response } = action;
+  if (action.type === types.GET_SEARCHING_STORE_LIST_SUCCESS) {
+    const { response } = action;
 
-  if (response) {
-    return (response.stores || []).map(store => store.id);
+    if (response) {
+      return (response.stores || []).map(store => store.id);
+    }
   }
 
   return state;
