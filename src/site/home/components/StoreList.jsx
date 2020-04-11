@@ -81,7 +81,13 @@ class StoreList extends Component {
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  {isOpen && !isOutOfDeliveryRange ? (
+                  {isOutOfDeliveryRange ? (
+                    <li className="store-info__item text-middle">
+                      <IconBookmark className="icon icon__smaller text-middle" />
+                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
+                    </li>
+                  ) : null
+                  /*(
                     <li className="store-info__item text-middle">
                       <IconMotorcycle className="icon icon__smaller text-middle" />
                       <CurrencyNumber
@@ -91,13 +97,8 @@ class StoreList extends Component {
                         price={deliveryFee}
                       />
                     </li>
-                  ) : null}
-                  {isOpen && isOutOfDeliveryRange ? (
-                    <li className="store-info__item text-middle">
-                      <IconBookmark className="icon icon__smaller text-middle" />
-                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
-                    </li>
-                  ) : null}
+                  )*/
+                  }
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
@@ -107,7 +108,7 @@ class StoreList extends Component {
                     </span>
                   </div>
                 ) : null}
-                {enableFreeShipping ? (
+                {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
                     <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={minimumSpendForFreeDelivery}>
