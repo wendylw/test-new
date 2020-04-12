@@ -101,7 +101,7 @@ class OnlineBanking extends Component {
         payNowLoading: true,
       },
       async () => {
-        const { history, paymentActions, cartSummary, t } = this.props;
+        const { history, paymentActions, cartSummary } = this.props;
         const { totalCashback } = cartSummary || {};
         const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
