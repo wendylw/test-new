@@ -156,7 +156,16 @@ export const getHistoricalDeliveryAddresses = async () => {
     if (!storageStr) {
       return [];
     }
-    return JSON.parse(storageStr);
+    const results = JSON.parse(storageStr);
+
+    // --Begin-- last version of cache doesn't have addressComponents field, we need it now
+    if (results && results.length && !results[0].addressComponents) {
+      localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+      return [];
+    }
+    // ---End--- last version of cache doesn't have addressComponents field, we need it now
+
+    return results;
   } catch (e) {
     console.error('failed to get historical delivery addresses', e);
     return [];
@@ -271,7 +280,7 @@ export const getPlaceDetailsFromPlaceId = async (
     address: placeDetails.formatted_address,
     coords,
     placeId,
-    addressComponents: placeDetails.addressComponents && standardizeGeoAddress(placeDetails.address_components),
+    addressComponents: placeDetails.address_components && standardizeGeoAddress(placeDetails.address_components),
   };
 
   return ret;
@@ -358,4 +367,12 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
   Utils.setSessionVariable(CACHE_KEY, JSON.stringify(result));
 
   return result;
+};
+
+export const getCountryCodeByPlaceInfo = placeInfo => {
+  try {
+    return placeInfo.addressComponents.countryCode;
+  } catch (e) {
+    return '';
+  }
 };
