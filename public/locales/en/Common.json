@@ -36,7 +36,6 @@
   "Back": "Back",
   "ClearAll": "Clear All",
   "TableIdText": "Table {{tableId}}",
-  "SelfPickUp": "Self pick-up",
   "MinimumConsumption": "<0>Min </0><1></1>",
   "MinimumOrder": "<0>Min Order.</0><1></1>",
   "RemainingConsumption": "<0>Remaining </0><1></1>",

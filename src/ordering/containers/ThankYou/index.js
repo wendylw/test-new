@@ -495,9 +495,10 @@ export class ThankYou extends Component {
   render() {
     const { t, history, match, order } = this.props;
     const date = new Date();
-    const { tableId } = order || {};
+    const { orderId, createdTime, logs, deliveryInformation, status, tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
+    const isTakeaway = isDeliveryType || isPickUpType;
 
     return (
       <section
@@ -505,50 +506,49 @@ export class ThankYou extends Component {
           match.isExact ? '' : 'hide'
         }`}
       >
-        {isDeliveryType ? (
-          this.getDeliveryUI()
-        ) : (
-          <React.Fragment>
-            <Header
-              className="border__bottom-divider gray flex-middle"
-              isPage={true}
-              title={t('OrderPaid')}
-              navFunc={() =>
-                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-                history.replace({
-                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                  search: `?table=${order.tableId}&storeId=${order.storeId}${
-                    isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
-                  }`,
-                })
-              }
-            >
+        <React.Fragment>
+          <Header
+            className="border__bottom-divider gray flex-middle"
+            isPage={true}
+            title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
+            navFunc={() =>
+              // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+              history.replace({
+                pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                search: `?table=${order.tableId}&storeId=${order.storeId}${
+                  isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
+                }`,
+              })
+            }
+          >
+            {isTakeaway ? (
+              <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
+                <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
+              </button>
+            ) : (
               <span className="gray-font-opacity text-uppercase">
-                {tableId ? (
-                  <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span>
-                ) : (
-                  <span data-testid="thanks__self-pickup">{t('SelfPickUp')}</span>
-                )}
+                {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
               </span>
-            </Header>
-            <div className="thanks text-center">
-              <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
-              <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
-              <p>
-                {`${t('PrepareOrderDescription')} `}
-                <span role="img" aria-label="Goofy">
-                  😋
-                </span>
-              </p>
+            )}
+          </Header>
 
-              <div className="thanks__info-container">
-                {this.renderPickupInfo()}
-                {this.renderNeedReceipt()}
-                <PhoneLogin history={history} />
-              </div>
+          <div className="thanks text-center">
+            <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
+            <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
+            <p>
+              {`${t('PrepareOrderDescription')} `}
+              <span role="img" aria-label="Goofy">
+                😋
+              </span>
+            </p>
+
+            <div className="thanks__info-container">
+              {this.renderPickupInfo()}
+              {this.renderNeedReceipt()}
+              <PhoneLogin history={history} />
             </div>
-          </React.Fragment>
-        )}
+          </div>
+        </React.Fragment>
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
             <li>
