@@ -127,7 +127,7 @@ class Home extends React.Component {
     const keyword = event.currentTarget.value;
 
     this.props.homeActions.setSearchingStoresStatus(false);
-    this.props.homeActions.setSearchInfo({ keyword });
+    this.props.homeActions.setSearchInfo({ keyword, scrollTop: 0 });
     this.debounceSearchStores();
   };
 
