@@ -13,12 +13,12 @@ import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 import beepSuccessImage from '../../../images/beep-success.png';
+import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
 import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
 import beepOnTheWay from '../../../images/beep-on-the-way.svg';
 import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
 import beepOrderPending from '../../../images/beep-order-pending.svg';
 import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
-import Loader from '../Payment/components/Loader';
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -94,9 +94,9 @@ export class ThankYou extends Component {
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="gray-font-opacity font-weight-bold text-uppercase">{t('YourOrderNumber')}</label>
-          <span className="thanks-pickup__id-number" data-testid="thanks__pickup-number">
-            {pickUpId}
+          <label className="text-uppercase font-weight-bold">{t('OrderNumber')}</label>
+          <span className="thanks-pickup__id-number font-weight-bold" data-testid="thanks__pickup-number">
+            {`#${pickUpId}`}
           </span>
         </div>
       </div>
@@ -155,7 +155,7 @@ export class ThankYou extends Component {
     return targetInfo;
   };
 
-  getConsumerStatusFlowUI({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
+  renderConsumerStatusFlow({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
     if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -286,7 +286,9 @@ export class ThankYou extends Component {
   }
 
   renderStoreInfo = () => {
-    const { storeInfo, total, deliveryInformation } = this.props.order || {};
+    const isPickUpType = Utils.isPickUpType();
+    const { t, order } = this.props;
+    const { storeInfo, total, deliveryInformation } = order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
 
@@ -295,6 +297,13 @@ export class ThankYou extends Component {
 
     return (
       <div className="thanks__delivery-info text-left">
+        {isPickUpType ? (
+          <div className="thanks__pickup">
+            <label className="thanks__text font-weight-bold">{t('PickupAt')}</label>
+            <p className="thanks__pickup-time gray-font-opacity">Today, 11:15 AM</p>
+          </div>
+        ) : null}
+
         <div className="flex flex-middle flex-space-between">
           <label className="thanks__text font-weight-bold">{name}</label>
           <div>
@@ -302,12 +311,12 @@ export class ThankYou extends Component {
             <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
           </div>
         </div>
-        <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
+        {isPickUpType ? null : <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>}
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
-          <span className="gray-font-opacity">{deliveryAddress}</span>
+          <span className="gray-font-opacity">{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
       </div>
     );
@@ -429,60 +438,31 @@ export class ThankYou extends Component {
     );
   };
 
-  getDeliveryUI() {
-    const { t, history, order, onlineStoreInfo } = this.props;
-
-    if (!order) {
-      return <Loader />;
-    }
-
-    const { orderId, createdTime, logs, deliveryInformation, status } = order || {};
+  renderDeliveryImageAndTimeLine() {
+    const { t, order, onlineStoreInfo } = this.props;
+    const { createdTime, logs, deliveryInformation, status } = order || {};
     const { country } = onlineStoreInfo || {};
     const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
       <React.Fragment>
-        <Header
-          className="border__bottom-divider gray flex-middle"
-          isPage={true}
-          title={`#${orderId}`}
-          navFunc={() =>
-            // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-            history.replace({
-              pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-              search: `?table=${order.tableId}&storeId=${order.storeId}${type ? '&type=' + type : ''}`,
-            })
-          }
-        >
-          <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
-          </button>
-        </Header>
-        <div className="thanks text-center">
-          {this.isNowPaidPreOrder() ? (
-            <img
-              className="thanks__image"
-              src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
-              alt="Beep Success"
-            />
-          ) : (
-            this.getConsumerStatusFlowUI({
-              country,
-              logs,
-              createdTime,
-              t,
-              CONSUMERFLOW_STATUS,
-              useStorehubLogistics,
-            })
-          )}
-          <div className="thanks__info-container">
-            {this.isNowPaidPreOrder() ? this.renderPreOrderMessage() : this.renderStoreInfo()}
-            {this.renderViewDetail()}
-            <PhoneLogin history={history} />
-          </div>
-        </div>
+        {this.isNowPaidPreOrder() ? (
+          <img
+            className="thanks__image"
+            src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
+            alt="Beep Success"
+          />
+        ) : (
+          this.renderConsumerStatusFlow({
+            country,
+            logs,
+            createdTime,
+            t,
+            CONSUMERFLOW_STATUS,
+            useStorehubLogistics,
+          })
+        )}
       </React.Fragment>
     );
   }
@@ -495,10 +475,15 @@ export class ThankYou extends Component {
   render() {
     const { t, history, match, order } = this.props;
     const date = new Date();
-    const { orderId, createdTime, logs, deliveryInformation, status, tableId } = order || {};
+    const { orderId, tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isTakeaway = isDeliveryType || isPickUpType;
+    let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
+
+    if (isDeliveryType && this.isNowPaidPreOrder()) {
+      orderInfo = this.renderPreOrderMessage();
+    }
 
     return (
       <section
@@ -533,18 +518,29 @@ export class ThankYou extends Component {
           </Header>
 
           <div className="thanks text-center">
-            <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
-            <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
-            <p>
-              {`${t('PrepareOrderDescription')} `}
-              <span role="img" aria-label="Goofy">
-                😋
-              </span>
-            </p>
+            {isDeliveryType ? (
+              this.renderDeliveryImageAndTimeLine()
+            ) : (
+              <img
+                className="thanks__image"
+                src={isPickUpType ? beepPickupSuccessImage : beepSuccessImage}
+                alt="Beep Success"
+              />
+            )}
+            {isDeliveryType ? null : <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>}
+            {isDeliveryType ? null : (
+              <p className="thanks__prompt">
+                {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
+                <span role="img" aria-label="Goofy">
+                  😋
+                </span>
+              </p>
+            )}
 
             <div className="thanks__info-container">
-              {this.renderPickupInfo()}
-              {this.renderNeedReceipt()}
+              {isDeliveryType ? null : this.renderPickupInfo()}
+              {orderInfo}
+              {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
               <PhoneLogin history={history} />
             </div>
           </div>

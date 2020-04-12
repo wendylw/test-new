@@ -465,6 +465,10 @@
     .header__title + button {
       width: 180px;
     }
+
+    .thanks__info-container {
+      padding: 0;
+    }
   }
 
   &__receipt {
@@ -2352,6 +2356,11 @@
     color: $gray-1;
   }
 
+  &__prompt {
+    margin: auto;
+    max-width: 74%;
+  }
+
   &__text {
     font-size: 1.2rem;
   }
@@ -2374,6 +2383,15 @@
     > * ~ * {
       border-top: 1px solid $gray-3;
     }
+  }
+
+  &__pickup {
+    margin-bottom: 16px;
+  }
+
+  &__pickup-time {
+    margin: 8px 0;
+    font-size: 1.2rem;
   }
 
   &__delivery-status-container {
@@ -2514,18 +2532,19 @@
     @extend .border-radius-base;
 
     padding: 4vw;
-    opacity: 0.7;
 
     label {
       display: block;
       padding: 8px 0;
+      font-size: 1.2857rem;
+      color: $dark;
     }
   }
 
   &__id-number {
     display: block;
-    font-size: 3.4rem;
-    letter-spacing: 0.2em;
+    font-size: 2.1428rem;
+    color: $gray-1;
   }
 }
 
@@ -3555,6 +3574,10 @@ body.loading {
 
   .thanks {
     padding: 3vh 16px 9vh;
+
+    &__title {
+      margin: 16px 0;
+    }
   }
 
   .full-aside__content {
