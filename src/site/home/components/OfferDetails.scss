@@ -5,7 +5,8 @@ $bar-background-color: #242644;
 .offer-details {
   &__bar {
     position: relative;
-    min-height: 13vw;
+    height: 13vw;
+    max-height: 56px;
     color: $white;
     background-color: $bar-background-color;
     cursor: pointer;

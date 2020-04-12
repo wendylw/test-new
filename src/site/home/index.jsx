@@ -87,6 +87,13 @@ class Home extends React.Component {
     }
 
     this.props.homeActions.getStoreList();
+
+    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
   };
 
   backupState = () => {
@@ -254,7 +261,6 @@ class Home extends React.Component {
           style={{
             // quick fix to style: modal close bar is covered by "DELIVER TO" bar
             // Remove this and browse with Safari, open the campaign bar, you will see.
-            paddingBottom: Utils.getUserAgentInfo().browser.includes('Safari') ? '182px' : '66px',
             zIndex: this.state.campaignShown ? 100 : 'auto',
           }}
         >
@@ -262,24 +268,25 @@ class Home extends React.Component {
             <figure className="entry-home__banner-image">
               <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
             </figure>
-          </Banner>
-          <div className="entry-home__search">
-            <div className="form__group flex flex-middle">
-              <IconSearch className="icon icon__normal icon__gray" />
-              <input
-                className="form__input"
-                type="type"
-                placeholder={t('SearchRestaurantPlaceholder')}
-                value={keyword}
-                onChange={this.handleSearchTextChange}
-              />
-              <IconClose
-                className="form__search-icon icon icon__small icon__gray"
-                onClick={this.handleClearSearchText}
-                style={{ visibility: keyword ? 'visible' : 'hidden' }}
-              />
+
+            <div className="entry-home__search">
+              <div className="form__group flex flex-middle">
+                <IconSearch className="icon icon__normal icon__gray" />
+                <input
+                  className="form__input"
+                  type="type"
+                  placeholder={t('SearchRestaurantPlaceholder')}
+                  value={keyword}
+                  onChange={this.handleSearchTextChange}
+                />
+                <IconClose
+                  className="form__search-icon icon icon__small icon__gray"
+                  onClick={this.handleClearSearchText}
+                  style={{ visibility: keyword ? 'visible' : 'hidden' }}
+                />
+              </div>
             </div>
-          </div>
+          </Banner>
 
           <OfferDetails
             onToggle={() => {
