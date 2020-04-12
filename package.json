@@ -86,7 +86,7 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
     "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
-    "i18n-sync": "i18n-sync --poeditor-token=6aff1be4cf4bf11e0584b238217c9cd6 --tolerate-sync-error"
+    "i18n-sync": "i18n-sync --poeditor-token=bd608c0b2debdc1205e03ee20e2f46e6 --tolerate-sync-error"
   },
   "eslintConfig": {
     "extends": "react-app"
