@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 module.exports = {
-  projectId: '328441',
+  projectId: '331737',
   adaptor: {
     read() {
       const dirname = path.join(__dirname, 'public/locales/en');
