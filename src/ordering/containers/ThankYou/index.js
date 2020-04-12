@@ -286,6 +286,7 @@ export class ThankYou extends Component {
   }
 
   renderStoreInfo = () => {
+    const { t } = this.props;
     const { storeInfo, total, deliveryInformation } = this.props.order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
@@ -298,7 +299,7 @@ export class ThankYou extends Component {
         <div className="flex flex-middle flex-space-between">
           <label className="thanks__text font-weight-bold">{name}</label>
           <div>
-            <span className="thanks__text">Total</span>
+            <span className="thanks__text">{t('Total')}</span>
             <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
           </div>
         </div>
