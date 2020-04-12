@@ -232,7 +232,7 @@ const typePickerReducer = (state = initialState.typePicker, action) => {
       loading: false,
     };
   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
-    return { ...state, show: false, loading: false };
+    return { ...initialState.typePicker };
   }
 
   return state;
