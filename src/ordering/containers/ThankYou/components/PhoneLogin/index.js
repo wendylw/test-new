@@ -266,13 +266,14 @@ class PhoneLogin extends React.Component {
   }
 
   render() {
-    const { user, businessInfo, onlineStoreInfo } = this.props;
+    const { user, businessInfo, onlineStoreInfo, cashbackInfo } = this.props;
     const { claimedAnimationGifSrc, showCelebration } = this.state;
     const { customerId } = user || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
+    const { defaultLoyaltyRatio } = cashbackInfo || {};
 
-    if (!country || !enableCashback) {
+    if (!country || !enableCashback || defaultLoyaltyRatio === 0) {
       return null;
     }
 
