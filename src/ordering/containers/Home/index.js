@@ -283,7 +283,7 @@ export class Home extends Component {
         isValidTimeToOrder={this.isValidTimeToOrder()}
         enablePreOrder={this.isPreOrderEnabled()}
       >
-        {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
+        {tableId ? <span className="gray-font-opacity">{t('TableIdText', { tableId })}</span> : null}
         {isDeliveryType ? <IconInfoOutline className="header__info-icon" /> : null}
       </Header>
     );

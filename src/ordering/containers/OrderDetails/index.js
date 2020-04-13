@@ -81,7 +81,7 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
+          <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
             <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
           </button>
         </Header>
