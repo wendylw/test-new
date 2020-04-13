@@ -3599,4 +3599,12 @@ body.loading {
   .location-page__search-box {
     padding: 20px 10px;
   }
+
+  .location-display__content .form__group {
+    margin: auto 16px;
+  }
+
+  .location-display__date-container label.form__label {
+    margin: 16px 0;
+  }
 }

@@ -511,11 +511,11 @@ export class ThankYou extends Component {
             }
           >
             {isTakeaway ? (
-              <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
+              <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
                 <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
               </button>
             ) : (
-              <span className="gray-font-opacity text-uppercase">
+              <span className="gray-font-opacity">
                 {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
               </span>
             )}

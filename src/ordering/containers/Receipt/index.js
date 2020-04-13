@@ -89,9 +89,7 @@ export class ReceiptDetail extends Component {
           title={t('ViewReceipt')}
           navFunc={this.backToThankYou.bind(this)}
         >
-          <span className="gray-font-opacity text-uppercase">
-            {tableId ? t('TableIdText', { tableId }) : t('SelfPickUp')}
-          </span>
+          <span className="gray-font-opacity">{tableId ? t('TableIdText', { tableId }) : t('SelfPickUp')}</span>
         </Header>
         <div className="receipt__content text-center">
           <label className="receipt__label gray-font-opacity font-weight-bolder text-uppercase">
