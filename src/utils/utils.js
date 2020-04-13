@@ -352,7 +352,7 @@ Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
     hourInfo < Number(timeFrom[0]) ||
     hourInfo > Number(timeTo[0]) ||
     (hourInfo === Number(timeFrom[0]) && minutesInfo < Number(timeFrom[1])) ||
-    (hourInfo === Number(timeTo[0]) && minutesInfo > Number(timeTo[1]));
+    (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
 
   if (localValidDays && localValidDays.includes(weekInfo) && !isClosed) {
     return true;
