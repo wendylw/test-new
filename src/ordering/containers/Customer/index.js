@@ -255,6 +255,79 @@ class Customer extends Component {
     );
   }
 
+  renderPickUpInfo() {
+    const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
+    const { stores = [], country: locale } = businessInfo;
+
+    if (!stores.length) return;
+
+    const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
+
+    // const { storeAddress } = Utils.
+    // Should fetch pickUpAddress
+    const { deliveryComments } = this.props.deliveryDetails;
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+    // const { address: pickUpAddress } = JSON.parse(Utils.getSessionVariable('deliveryTime') || '{}');
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (this.getShippingType() !== DELIVERY_METHOD.PICKUP || !enablePreOrder) {
+      return null;
+    }
+    // Should get pickUpTime from session
+    // const { pickUpTime } =
+    const pickUpTime = formatToDeliveryTime({
+      date: date,
+      hour: hour,
+      locale,
+    });
+
+    return (
+      <React.Fragment>
+        <div
+          className="form__group"
+          onClick={async () => {
+            const { search } = window.location;
+
+            await Utils.setSessionVariable(
+              'deliveryTimeCallbackUrl',
+              JSON.stringify({
+                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                search,
+              })
+            );
+
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+              search,
+            });
+          }}
+        >
+          <div className="flex flex-middle flex-space-between">
+            <label className="form__label font-weight-bold gray-font-opacity">{t('PickupAt')}</label>
+            {/* <IconEdit className="customer__edit-icon" /> */}
+          </div>
+          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
+            {pickUpAddress || t('PickUpAtPlaceholder')}
+          </p>
+          <div className="flex flex-middle flex-space-between">
+            <label className="form__label font-weight-bold gray-font-opacity">{t('PickUpOn')}</label>
+            <IconEdit className="customer__edit-icon" />
+          </div>
+          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
+            {pickUpTime || t('PickUpAtPlaceholder')}
+          </p>
+        </div>
+        <div
+          className="form__group flex flex-middle flex-space-between"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
+        >
+          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
+          <IconEdit className="customer__edit-icon" />
+        </div>
+      </React.Fragment>
+    );
+  }
+
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails, business, allBusinessInfo } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
@@ -289,23 +362,6 @@ class Customer extends Component {
           }}
         ></Header>
         <div className="customer__content">
-          {/* <ul className="flex">
-            <li className="customer__method flex flex-middle">
-              <div className={`radio active`}>
-                <i className="radio__check-icon"></i>
-                <input type="radio"></input>
-              </div>
-              <label className="customer__method-label font-weight-bold">{t('FoodDelivery')}</label>
-            </li>
-            <li className="customer__method flex flex-middle">
-              <div className={`radio`}>
-                <i className="radio__check-icon"></i>
-                <input type="radio"></input>
-              </div>
-              <label className="customer__method-label font-weight-bold">{t('SelfPickup')}</label>
-            </li>
-          </ul> */}
-
           <form className="customer__form">
             <div className="form__group">
               <label className="form__label gray-font-opacity">{t('Name')}</label>
@@ -340,6 +396,7 @@ class Customer extends Component {
             </div>
 
             {this.renderDeliveryAddress()}
+            {this.renderPickUpInfo()}
           </form>
         </div>
 
@@ -373,7 +430,7 @@ class Customer extends Component {
                 (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
-                !!(type === DELIVERY_METHOD.DELIVER && enablePreOrder && !date.date) ||
+                !!(enablePreOrder && !date.date) ||
                 isFetching
               }
             >

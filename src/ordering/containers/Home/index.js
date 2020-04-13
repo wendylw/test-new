@@ -137,14 +137,15 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    if (!this.isValidTimeToOrder()) {
+    const { t, history, business, allBusinessInfo } = this.props;
+    const isValidTimeToOrder = this.isValidTimeToOrder();
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (!isValidTimeToOrder || (Utils.isPickUpType() && !enablePreOrder)) {
       return null;
     }
 
-    const { t, history, business, allBusinessInfo } = this.props;
     const { deliveryToAddress } = this.getDeliveryInfo();
-    const isValidTimeToOrder = this.isValidTimeToOrder();
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
       const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
@@ -179,11 +180,16 @@ export class Home extends Component {
             />
           ) : null}
           <div className="location-page__base-info">
-            <summary className="item__title text-uppercase font-weight-bold">{t('DeliverTo')}</summary>
-            <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+            <summary className="item__title text-uppercase font-weight-bold">
+              {Utils.isDeliveryType() && t('DeliverTo')}
+              {Utils.isPickUpType() && t('PickUpOn')}
+            </summary>
+            {Utils.isDeliveryType() ? (
+              <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+            ) : null}
             {this.renderDeliveryDate()}
           </div>
-          {isValidTimeToOrder ? <IconEdit className="location-page__edit" /> : null}
+          {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
         </div>
       </div>
     );
@@ -352,7 +358,8 @@ export class Home extends Component {
 
     return (
       <section className={classList.join(' ')}>
-        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
+        {/* {Utils.isDeliveryType() ? this.renderDeliverToBar() : null} */}
+        {this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
           <div className="top-message__second-level text-center">

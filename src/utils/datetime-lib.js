@@ -127,14 +127,41 @@ export const toDayDateMonth = (date, locale = 'MY') =>
   date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
+  const hourFrom = hour.from.split(':')[0];
+  const minuteFrom = hour.from.split(':')[1];
+  const hourTo = hour.to.split(':')[0];
+  const minuteTo = hour.to.split(':')[1];
+
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
-  workDateFrom.setHours(hour.from, 0, 0);
+  workDateFrom.setHours(hourFrom, minuteFrom, 0);
   const workDateTo = new Date(date.date);
-  workDateTo.setHours(hour.to, 0, 0);
+  workDateTo.setHours(hourTo, minuteTo, 0);
 
   const part1 = toDayDateMonth(workDate, locale);
   const part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
 
   return `${part1}, ${part2}`;
+};
+
+export const addTime = (date = new Date(), timeToAdd, unit) => {
+  const baseTime = new Date(date) || new Date();
+  const tempTime = new Date(baseTime);
+
+  switch (unit) {
+    case 'h': {
+      const newTime = tempTime.setHours(baseTime.getHours() + timeToAdd);
+      return new Date(newTime).toISOString();
+    }
+    case 'm': {
+      const newTime = tempTime.setMinutes(baseTime.getMinutes() + timeToAdd);
+      return new Date(newTime).toISOString();
+    }
+    case 's': {
+      const newTime = tempTime.setSeconds(baseTime.getSeconds() + timeToAdd);
+      return new Date(newTime).toISOString();
+    }
+    default:
+      return new Date(baseTime()).toISOString();
+  }
 };

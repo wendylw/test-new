@@ -70,6 +70,8 @@
   "SelectYourPreference": "Select Your Preference",
   "DeliverTo": "Deliver To",
   "DeliverOn": "Deliver On",
+  "PickupAt": "Pickup At",
+  "PickUpOn": "Pickup On",
   "DeliveryTime": "Delivery Time",
   "DeliverNow": "TODAY, immediately",
   "DeliverToErrorMessage": "Sorry order location is too far from store",
@@ -106,6 +108,7 @@
   "Sat": "Sat",
   "Sun": "Sun",
   "Now": "Now",
-  "Okay": "Okay",
-  "DeliveryHours": "Delivery Hours"
+  "DeliveryHours": "Delivery Hours",
+  "Today": "Today",
+  "Okay": "Okay"
 }

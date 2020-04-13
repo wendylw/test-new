@@ -50,16 +50,14 @@ class App extends Component {
       allBusinessInfo,
     });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-    if (isValidTimeToOrder) {
+    if (isValidTimeToOrder || enablePreOrder) {
       homeActions.setCurrentStore(storeId);
     } else {
-      // remove delivery time write in session to prevent date inconsistence issus
-      if (enablePreOrder) {
-        Utils.removeExpectedDeliveryTime();
-      }
       await homeActions.getStoreHashData(storeId);
       const { hashCode } = this.props;
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=delivery${enablePreOrder ? '&isPreOrder=true' : ''}`;
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=delivery${
+        enablePreOrder ? '&isPreOrder=true' : ''
+      }`;
     }
   }
 

@@ -85,9 +85,9 @@ export class ThankYou extends Component {
 
   renderPickupInfo() {
     const { t, order } = this.props;
-    const { tableId, pickUpId } = order || {};
+    const { tableId, orderId } = order || {};
 
-    if (!pickUpId || tableId) {
+    if (tableId) {
       return null;
     }
 
@@ -96,7 +96,7 @@ export class ThankYou extends Component {
         <div className="thanks-pickup__id-container">
           <label className="text-uppercase font-weight-bold">{t('OrderNumber')}</label>
           <span className="thanks-pickup__id-number font-weight-bold" data-testid="thanks__pickup-number">
-            {`#${pickUpId}`}
+            {`#${orderId}`}
           </span>
         </div>
       </div>
