@@ -140,7 +140,12 @@ class PhoneLogin extends React.Component {
     if (isCashbackZero && CASHBACK_ZERO_CLAIMED.includes(key)) {
       return '';
     }
-    return this.MESSAGES['Claimed_NotFirstTime'] || this.MESSAGES.Default;
+
+    if (isLogin) {
+      return this.MESSAGES['Claimed_NotFirstTime'];
+    }
+
+    return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
   async canClaimCheck(user) {
@@ -215,6 +220,10 @@ class PhoneLogin extends React.Component {
     const { isFetching, isWebview, isLogin, customerId } = user || {};
     const { country } = onlineStoreInfo || {};
 
+    if (isLogin) {
+      return null;
+    }
+
     if (!isLogin) {
       return (
         <PhoneView
@@ -270,7 +279,7 @@ class PhoneLogin extends React.Component {
     return (
       <div className="thanks__phone-view">
         <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
-        {/* {this.renderPhoneView()} */}
+        {this.renderPhoneView()}
 
         {/* <p className="terms-privacy text-center gray-font-opacity">
           <Trans i18nKey="TermsAndPrivacyDescription">
