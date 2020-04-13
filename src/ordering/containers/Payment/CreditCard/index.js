@@ -15,16 +15,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
+
 import paymentVisaImage from '../../../../images/payment-visa.svg';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
-import paymentJCBImage from '../../../../images/payment-JCB.svg';
-import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
+
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const { CREDIT_CARD_BRANDS } = Constants;
 class CreditCard extends Component {
   static propTypes = {};
 
@@ -64,8 +63,7 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
@@ -91,7 +89,7 @@ class CreditCard extends Component {
       redirectURL,
       webhookURL,
       payActionWay: 1,
-      paymentName: getPaymentName(merchantCountry, currentPayment),
+      paymentName: currentPayment,
       cardholderName,
       encryptedCardInfo,
       expYearCardInfo,
@@ -101,9 +99,7 @@ class CreditCard extends Component {
   };
 
   getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
-    const { t, merchantCountry } = this.props;
-    const { card } = this.state;
-
+    const { t } = this.props;
     const nameList = {
       cardNumber: 'number',
       validDate: 'expiration',
@@ -132,7 +128,7 @@ class CreditCard extends Component {
       },
       fixedLength: {
         message: t('CardNumberIncompleteMessage', { nameString, verb }),
-        length: card.ruler ? card.ruler.length + card.ruler.blocks.length - 1 : 19,
+        length: 19,
       },
       validCardNumber: {
         message: t('CardNumberInvalidMessage'),
@@ -155,9 +151,9 @@ class CreditCard extends Component {
     return {
       rules,
       validCardNumber: () => {
-        const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
+        const { card } = this.state;
 
-        return supportCreditCardBrands.includes(card.brand);
+        return Boolean(card.type);
       },
     };
   }
@@ -322,7 +318,7 @@ class CreditCard extends Component {
     }
 
     this.setState({
-      payNowLoading: !!orderId,
+      payNowLoading: true,
     });
   }
 
@@ -335,7 +331,7 @@ class CreditCard extends Component {
 
     this.setState(
       {
-        card: creditCardDetector(e.target.value),
+        card: Utils.creditCardDetector(e.target.value),
       },
       () => {
         if (this.cardNumberEl !== null) {
@@ -365,45 +361,6 @@ class CreditCard extends Component {
     });
   }
 
-  renderCreditBrands() {
-    const supportCreditCardBrands = getSupportCreditCardBrands(this.props.merchantCountry);
-    const { card } = this.state;
-
-    return (
-      <div className="payment-bank__card-type-container flex flex-middle">
-        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.VISA) ? (
-          <i
-            className={`payment-bank__card-type-icon visa text-middle ${
-              card.brand === CREDIT_CARD_BRANDS.VISA ? 'active' : ''
-            }`}
-          >
-            <img src={paymentVisaImage} />
-          </i>
-        ) : null}
-
-        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.MASTER_CARD) ? (
-          <i
-            className={`payment-bank__card-type-icon mastercard text-middle ${
-              card.brand === CREDIT_CARD_BRANDS.MASTER_CARD ? 'active' : ''
-            }`}
-          >
-            <img src={paymentMasterImage} />
-          </i>
-        ) : null}
-
-        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.JCB) ? (
-          <i
-            className={`payment-bank__card-type-icon JCB text-middle ${
-              card.brand === CREDIT_CARD_BRANDS.JCB ? 'active' : ''
-            }`}
-          >
-            <img src={paymentJCBImage} />
-          </i>
-        ) : null}
-      </div>
-    );
-  }
-
   renderForm() {
     const { t } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
@@ -431,11 +388,22 @@ class CreditCard extends Component {
                 className="input input__block"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
-                value={cardNumber || ''}
+                value={card.formattedCardNumber || ''}
                 onChange={this.handleChangeCardNumber.bind(this)}
                 onBlur={this.validCardInfo.bind(this)}
               />
-              {this.renderCreditBrands()}
+              <div className="payment-bank__card-type-container flex flex-middle">
+                <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
+                  <img src={paymentVisaImage} />
+                </i>
+                <i
+                  className={`payment-bank__card-type-icon mastercard text-middle ${
+                    card.type === 'mastercard' ? 'active' : ''
+                  }`}
+                >
+                  <img src={paymentMasterImage} />
+                </i>
+              </div>
             </div>
             <div className="input__list-bottom flex flex-middle flex-space-between">
               <input
@@ -569,9 +537,9 @@ export default compose(
       return {
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
+        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
