@@ -24,6 +24,7 @@ import {
   toNumericTimeRange,
   toLocaleDateString,
   toLocaleTimeString,
+  toNumericTime,
 } from '../../../utils/datetime-lib';
 
 const TIME_OPTIONS = {
@@ -287,20 +288,26 @@ export class ThankYou extends Component {
 
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
-    const { t, order } = this.props;
-    const { storeInfo, total, deliveryInformation } = order || {};
+    const { t, order, onlineStoreInfo = {} } = this.props;
+
+    if (!order) return;
+
+    const { country } = onlineStoreInfo;
+    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom } = order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
-
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
+    const pickupTime = toNumericTime(new Date(expectDeliveryDateFrom));
 
     return (
       <div className="thanks__delivery-info text-left">
         {isPickUpType ? (
           <div className="thanks__pickup">
             <label className="thanks__text font-weight-bold">{t('PickupAt')}</label>
-            <p className="thanks__pickup-time gray-font-opacity">Today, 11:15 AM</p>
+            <p className="thanks__pickup-time gray-font-opacity">
+              {pickupTime}
+            </p>
           </div>
         ) : null}
 

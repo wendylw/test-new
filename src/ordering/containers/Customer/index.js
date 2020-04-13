@@ -262,19 +262,13 @@ class Customer extends Component {
     if (!stores.length) return;
 
     const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
-
-    // const { storeAddress } = Utils.
-    // Should fetch pickUpAddress
     const { deliveryComments } = this.props.deliveryDetails;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
-    // const { address: pickUpAddress } = JSON.parse(Utils.getSessionVariable('deliveryTime') || '{}');
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     if (this.getShippingType() !== DELIVERY_METHOD.PICKUP || !enablePreOrder) {
       return null;
     }
-    // Should get pickUpTime from session
-    // const { pickUpTime } =
     const pickUpTime = formatToDeliveryTime({
       date: date,
       hour: hour,

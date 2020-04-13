@@ -383,6 +383,16 @@ class LocationAndDate extends Component {
         );
       }
 
+      let timeToDisplay;
+
+      if (Utils.isDeliveryType()) {
+        timeToDisplay = `${toNumericTime(new Date(item.from), country)} - ${toNumericTime(new Date(item.to), country)}`;
+      }
+
+      if (Utils.isPickUpType()) {
+        timeToDisplay = `${toNumericTime(new Date(item.from), country)}`;
+      }
+
       // item.from and item.to are time in ISOString format
       const from = getHourAndMinuteFromTime(item.from);
       const to = getHourAndMinuteFromTime(item.to);
@@ -394,7 +404,7 @@ class LocationAndDate extends Component {
           }}
           key={`${from} - ${to}`}
         >
-          {`${toNumericTime(new Date(item.from), country)} - ${toNumericTime(new Date(item.to), country)}`}
+          {timeToDisplay}
         </li>
       );
     });
@@ -531,6 +541,8 @@ class LocationAndDate extends Component {
         return false;
       }
     }
+
+    return true;
   };
 
   goToNext = () => {

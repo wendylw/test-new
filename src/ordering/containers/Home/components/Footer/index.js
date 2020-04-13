@@ -34,7 +34,9 @@ export class Footer extends Component {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
-      if (!deliveryToAddress || !date.date || !hour) {
+      if ((Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour))
+        || (Utils.isPickUpType() && (!date.date || !hour.from))
+      ) {
         const { search } = window.location;
         Utils.setSessionVariable(
           'deliveryTimeCallbackUrl',
