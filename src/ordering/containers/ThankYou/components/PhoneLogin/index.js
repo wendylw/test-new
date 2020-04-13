@@ -140,7 +140,7 @@ class PhoneLogin extends React.Component {
     if (isCashbackZero && CASHBACK_ZERO_CLAIMED.includes(key)) {
       return '';
     }
-    return this.MESSAGES[key] || this.MESSAGES.Default;
+    return this.MESSAGES['Claimed_NotFirstTime'] || this.MESSAGES.Default;
   }
 
   async canClaimCheck(user) {
@@ -270,9 +270,9 @@ class PhoneLogin extends React.Component {
     return (
       <div className="thanks__phone-view">
         <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
-        {this.renderPhoneView()}
+        {/* {this.renderPhoneView()} */}
 
-        <p className="terms-privacy text-center gray-font-opacity">
+        {/* <p className="terms-privacy text-center gray-font-opacity">
           <Trans i18nKey="TermsAndPrivacyDescription">
             By tapping to continue, you agree to our
             <br />
@@ -287,7 +287,7 @@ class PhoneLogin extends React.Component {
               .
             </BrowserRouter>
           </Trans>
-        </p>
+        </p> */}
         <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
