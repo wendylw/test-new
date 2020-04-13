@@ -110,7 +110,6 @@ class LocationAndDate extends Component {
       this.validPickUpTimeFrom = getHourAndMinuteFromTime(addTime(tempStartBaseTime, 30, 'm'));
       this.validPickUpTimeTo = getHourAndMinuteFromTime(addTime(tempEndBaseTime, -30, 'm'));
       this.pickupTimeList = this.getHoursList();
-      console.log('This is time list', this.pickupTimeList);
     }
   };
 
@@ -281,7 +280,8 @@ class LocationAndDate extends Component {
 
   getLocationDisplayTitle = () => {
     const { t } = this.props;
-    return t('DeliveryDetails');
+
+    return Utils.isDeliveryType() ? t('DeliveryDetails') : t('PickUpDetails');
   };
 
   renderDeliveryTo = () => {
@@ -365,6 +365,8 @@ class LocationAndDate extends Component {
 
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
+
+    const { t } = this.props;
     const { selectedHour = {} } = this.state;
     const country = this.getBusinessCountry();
 
@@ -378,7 +380,7 @@ class LocationAndDate extends Component {
             }}
             key="deliveryOnDemandOrder"
           >
-            Immediate
+            {t('Immediate')}
           </li>
         );
       }
