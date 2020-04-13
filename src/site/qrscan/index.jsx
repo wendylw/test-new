@@ -189,7 +189,7 @@ class QRScan extends Component {
     const showMessage = !/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
 
     return (
-      <main id="contentHolder" className="fixed-wrapper">
+      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main">
         {!showMessage ? null : (
           <div className="top-message primary padding-normal text-center absolute-wrapper">
             <p className="top-message__text text-weight-bold">{t('UseChromeMessage')}</p>

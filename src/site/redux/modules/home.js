@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import Url from '../../../utils/url';
 
@@ -20,6 +21,11 @@ const initialState = {
     pageSize: 5,
     hasMore: true,
     loading: false,
+    scrollTop: 0,
+  },
+  searchInfo: {
+    keyword: '',
+    scrollTop: 0,
   },
   loadedSearchingStoreList: false,
   storeIds: [],
@@ -28,6 +34,12 @@ const initialState = {
 };
 
 const types = {
+  // set pagination info
+  SET_PAGINATION_INFO: 'SITE/HOME/SET_PAGINATION_INFO',
+
+  // set searchInfo
+  SET_SEARCH_INFO: 'SITE/HOME/SET_SEARCH_INFO',
+
   // query store url
   SHOW_TYPE_PICKER: 'SITE/HOME/SHOW_TYPE_PICKER',
   HIDE_TYPE_PICKER: 'SITE/HOME/HIDE_TYPE_PICKER',
@@ -51,6 +63,16 @@ const types = {
 
 // @actions
 const actions = {
+  setSearchInfo: searchInfo => ({
+    type: types.SET_SEARCH_INFO,
+    searchInfo,
+  }),
+
+  setPaginationInfo: paginationInfo => ({
+    type: types.SET_PAGINATION_INFO,
+    paginationInfo,
+  }),
+
   hideTypePicker: () => ({
     type: types.HIDE_TYPE_PICKER,
   }),
@@ -76,7 +98,8 @@ const actions = {
     return dispatch(fetchStoreList(page));
   },
 
-  getSearchingStoreList: ({ coords, keyword }) => async (dispatch, getState) => {
+  getSearchingStoreList: ({ coords }) => async (dispatch, getState) => {
+    const { keyword } = getSearchInfo(getState());
     return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
   },
 };
@@ -127,7 +150,7 @@ const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispat
 };
 
 // @reducers
-const storeIdsReducer = (state, action) => {
+const storeIdsReducer = (state = initialState.storeIds, action) => {
   if (action.type === types.GET_STORE_LIST_REQUEST) {
     if (action.context.page === 0) return [];
   } else if (action.type === types.GET_STORE_LIST_SUCCESS) {
@@ -139,13 +162,22 @@ const storeIdsReducer = (state, action) => {
   return state;
 };
 
-const storeIdsSearchResultReducer = (state, action) => {
-  const { response } = action;
-  return (response.stores || []).map(store => store.id);
+const storeIdsSearchResultReducer = (state = initialState.storeIdsSearchResult, action) => {
+  if (action.type === types.GET_SEARCHING_STORE_LIST_SUCCESS) {
+    const { response } = action;
+
+    if (response) {
+      return (response.stores || []).map(store => store.id);
+    }
+  }
+
+  return state;
 };
 
-const paginationInfoReducer = (state, action) => {
+const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
   switch (action.type) {
+    case types.SET_PAGINATION_INFO:
+      return { ...state, ...action.paginationInfo };
     case types.GET_STORE_LIST_REQUEST:
       const newState = { ...state, page: state.page + 1 };
       if (action.context.page === 0) {
@@ -171,7 +203,14 @@ const paginationInfoReducer = (state, action) => {
   }
 };
 
-const typePickerReducer = (state, action) => {
+const searchInfo = (state = initialState.searchInfo, action) => {
+  if (action.type === types.SET_SEARCH_INFO) {
+    return { ...state, ...action.searchInfo };
+  }
+  return state;
+};
+
+const typePickerReducer = (state = initialState.typePicker, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
     return { ...state, loading: true, show: context.isOpen };
@@ -182,6 +221,7 @@ const typePickerReducer = (state, action) => {
       hash: redirectTo,
       source: context.source,
     };
+
     return {
       ...state,
       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
@@ -192,54 +232,49 @@ const typePickerReducer = (state, action) => {
       loading: false,
     };
   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
-    return { show: false, loading: false };
+    return { ...initialState.typePicker };
   }
+
   return state;
 };
 
-const reducer = (state = initialState, action) => {
-  const { response } = action;
-
+const loadedSearchingStoreList = (state = initialState.loadedSearchingStoreList, action) => {
   switch (action.type) {
-    case types.GET_STORE_LIST_REQUEST:
-    case types.GET_STORE_LIST_SUCCESS:
-    case types.GET_STORE_LIST_FAILURE:
-      return {
-        ...state,
-        storeIds: storeIdsReducer(state.storeIds, action),
-        paginationInfo: paginationInfoReducer(state.paginationInfo, action),
-      };
-    case types.GET_SEARCHING_STORE_LIST_REQUEST:
     case types.SET_SEARCHING_STORES_STATUS:
-      return { ...state, loadedSearchingStoreList: false };
-    case types.GET_SEARCHING_STORE_LIST_FAILURE:
-      return { ...state, loadedSearchingStoreList: true };
+    case types.GET_SEARCHING_STORE_LIST_REQUEST:
+      return false;
     case types.GET_SEARCHING_STORE_LIST_SUCCESS:
-      const { stores: searchingStoreList } = response;
-
-      return {
-        ...state,
-        loadedSearchingStoreList: true,
-        searchingStoreList,
-        storeIdsSearchResult: storeIdsSearchResultReducer(state.storeIdsSearchResult, action),
-      };
-    case types.HIDE_TYPE_PICKER:
-    case types.FETCH_STORE_HASHCODE_REQUEST:
-    case types.FETCH_STORE_HASHCODE_SUCCESS:
-    case types.FETCH_STORE_HASHCODE_FAILURE:
-      return {
-        ...state,
-        typePicker: typePickerReducer(state.typePicker, action),
-      };
+    case types.GET_SEARCHING_STORE_LIST_FAILURE:
+      return true;
     default:
       return state;
   }
 };
 
+const searchingStoreList = (state = initialState.searchingStoreList, action) => {
+  if (types.GET_SEARCHING_STORE_LIST_SUCCESS) {
+    const { stores: searchingStoreList } = action.response || {};
+    return { ...state, ...searchingStoreList };
+  }
+
+  return state;
+};
+
+const reducer = combineReducers({
+  typePicker: typePickerReducer,
+  storeIds: storeIdsReducer,
+  paginationInfo: paginationInfoReducer,
+  searchInfo,
+  loadedSearchingStoreList,
+  searchingStoreList,
+  storeIdsSearchResult: storeIdsSearchResultReducer,
+});
+
 export const homeActionCreators = actions;
 export default reducer;
 
 // @selectors
+export const getSearchInfo = state => state.home.searchInfo;
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getSearchingStores = state => state.home.searchingStoreList;
 export const loadedSearchingStores = state => state.home.loadedSearchingStoreList;
