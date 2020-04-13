@@ -180,7 +180,7 @@ export class Home extends Component {
             />
           ) : null}
           <div className="location-page__base-info">
-            <summary className="item__title text-uppercase font-weight-bold">
+            <summary className="item__title text-uppercase font-weight-bolder">
               {Utils.isDeliveryType() && t('DeliverTo')}
               {Utils.isPickUpType() && t('PickUpOn')}
             </summary>
@@ -303,7 +303,7 @@ export class Home extends Component {
           containerClass="pre-order__modal"
           button={
             <button
-              className="button button__fill button__block font-weight-bold border-radius-base text-uppercase"
+              className="button button__fill button__block font-weight-bolder border-radius-base text-uppercase"
               onClick={this.props.homeActions.userConfirmPreOrder}
             >
               {t('Okay')}

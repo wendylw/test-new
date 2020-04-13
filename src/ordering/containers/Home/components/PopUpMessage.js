@@ -11,7 +11,7 @@ class PopUpMessage extends React.Component {
       <Modal show={true} className={`align-middle ${containerClass}`} hideOnBlank>
         <Modal.Body className="active">
           <div className="modal__detail text-center">
-            <h4 className="modal__title font-weight-bold">{title}</h4>
+            <h4 className="modal__title font-weight-bolder">{title}</h4>
             {description ? <p className="modal__text">{description}</p> : null}
           </div>
         </Modal.Body>

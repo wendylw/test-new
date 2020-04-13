@@ -43,7 +43,7 @@
   }
 
   &__text {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     line-height: $line-height-base;
   }
@@ -628,7 +628,7 @@
 
 .phone-view-form {
   &__label {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     display: block;
     padding: 5px 0;
@@ -854,7 +854,7 @@
       color: $theme-color;
 
       label {
-        @extend .font-weight-bold;
+        @extend .font-weight-bolder;
 
         opacity: 1;
       }
@@ -1362,7 +1362,7 @@
   }
 
   &__amount-label {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
   }
 }
 
@@ -1763,7 +1763,7 @@
   }
 
   &__title {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     margin: 20px 0;
     font-size: 1.4rem;
@@ -1854,7 +1854,7 @@
   }
 
   &__money {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     padding: 0 10px;
     display: inline-block;
@@ -1871,7 +1871,7 @@
   }
 
   &__order-button {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
     @extend .text-uppercase;
     @extend .border-radius-base;
 
@@ -2675,7 +2675,7 @@
   }
 
   &__title-children {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     display: inline-block;
     font-size: 1.5rem;
@@ -2840,7 +2840,7 @@
   }
 
   &__title-children {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     display: inline-block;
     font-size: 1.5rem;
@@ -3184,7 +3184,7 @@ body.loading {
   .react-phone-number-input__input:focus {
     @extend .input;
     @extend .border-radius-base;
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     border: 0;
     text-align: center;

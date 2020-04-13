@@ -414,9 +414,9 @@ class CreditCard extends Component {
       <form id="bank-2c2p-form" className="form">
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
+            <label className="payment-bank__label font-weight-bolder">{t('CardInformation')}</label>
             {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
-              <span className="error-message font-weight-bold text-uppercase">{cardInfoError.messages.required}</span>
+              <span className="error-message font-weight-bolder text-uppercase">{cardInfoError.messages.required}</span>
             ) : null}
           </div>
           <div className="payment-bank__card-container">
@@ -475,9 +475,9 @@ class CreditCard extends Component {
         </div>
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bold">{t('NameOnCard')}</label>
+            <label className="payment-bank__label font-weight-bolder">{t('NameOnCard')}</label>
             {cardHolderNameError.key === FormValidate.errorNames.required ? (
-              <span className="error-message font-weight-bold text-uppercase">{cardHolderNameError.message}</span>
+              <span className="error-message font-weight-bolder text-uppercase">{cardHolderNameError.message}</span>
             ) : null}
           </div>
           <input
@@ -526,21 +526,21 @@ class CreditCard extends Component {
           <figure className="logo-default__image-container">
             <img src={logo} alt="" />
           </figure>
-          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
           {this.renderForm()}
         </div>
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
           >
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </button>
         </div>

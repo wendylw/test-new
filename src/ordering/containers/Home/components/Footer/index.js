@@ -34,8 +34,9 @@ export class Footer extends Component {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
-      if ((Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour))
-        || (Utils.isPickUpType() && (!date.date || !hour.from))
+      if (
+        (Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour)) ||
+        (Utils.isPickUpType() && (!date.date || !hour.from))
       ) {
         const { search } = window.location;
         Utils.setSessionVariable(
@@ -83,7 +84,7 @@ export class Footer extends Component {
             </div>
 
             <div className="cart-bar__money text-middle text-left">
-              <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
+              <CurrencyNumber className="font-weight-bolder" money={this.getDisplayPrice() || 0} />
               {this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="cart-bar__money-minimum">
                   {count ? (

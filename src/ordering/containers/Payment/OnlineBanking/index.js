@@ -174,12 +174,12 @@ class OnlineBanking extends Component {
 
         <div className="payment-bank">
           <Image className="logo-default__image-container" src={logo} />
-          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
           <form id="bank-2c2p-form" className="form">
             <div className="payment-bank__form-item">
               <div className="flex flex-middle flex-space-between">
-                <label className="payment-bank__label font-weight-bold">{t('SelectABank')}</label>
+                <label className="payment-bank__label font-weight-bolder">{t('SelectABank')}</label>
               </div>
               <div className="payment-bank__card-container">
                 <div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
@@ -201,14 +201,14 @@ class OnlineBanking extends Component {
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
           >
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </button>
         </div>

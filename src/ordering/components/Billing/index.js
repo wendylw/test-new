@@ -55,9 +55,9 @@ export class Billing extends Component {
           </li>
           {creditsBalance ? (
             <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
-              <label className="font-weight-bold">{t('BeepCashback')}</label>
-              <span className="font-weight-bold">
-                - <CurrencyNumber className="font-weight-bold" money={creditsBalance || 0} />
+              <label className="font-weight-bolder">{t('BeepCashback')}</label>
+              <span className="font-weight-bolder">
+                - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
               </span>
             </li>
           ) : null}
@@ -79,8 +79,8 @@ export class Billing extends Component {
           ) : null}
 
           <li className="billing__item show flex flex-middle flex-space-between">
-            <label className="font-weight-bold">{t('Total')}</label>
-            <CurrencyNumber className="font-weight-bold" money={total || 0} />
+            <label className="font-weight-bolder">{t('Total')}</label>
+            <CurrencyNumber className="font-weight-bolder" money={total || 0} />
           </li>
         </ul>
       </section>

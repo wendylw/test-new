@@ -87,7 +87,7 @@ export class OrderDetails extends Component {
         </Header>
         <div className="order-detail__info-container">
           <div className="border__bottom-divider">
-            <h3 className="order-detail__title font-weight-bold text-uppercase">{t('YourOrder')}</h3>
+            <h3 className="order-detail__title font-weight-bolder text-uppercase">{t('YourOrder')}</h3>
             {this.renderOrderBillings()}
           </div>
           <div>
@@ -110,8 +110,8 @@ export class OrderDetails extends Component {
               </li>
             </ul>
             <div className="flex flex-space-between flex-middle">
-              <label className="order-detail__title  font-weight-bold">{t('Total')}</label>
-              <CurrencyNumber className="font-weight-bold" money={total || 0} />
+              <label className="order-detail__title  font-weight-bolder">{t('Total')}</label>
+              <CurrencyNumber className="font-weight-bolder" money={total || 0} />
             </div>
           </div>
         </div>

@@ -55,8 +55,10 @@ class Header extends Component {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const normalTitle = isPickUpType ? (
-      <h2 className="header__title font-weight-bold text-middle">
-        <span className={`header__one-line-title font-weight-bold text-middle ${!isValidTimeToOrder ? 'has-tag' : ''}`}>
+      <h2 className="header__title font-weight-bolder text-middle">
+        <span
+          className={`header__one-line-title font-weight-bolder text-middle ${!isValidTimeToOrder ? 'has-tag' : ''}`}
+        >
           {title}
         </span>
         {isValidTimeToOrder ? null : (
@@ -66,7 +68,7 @@ class Header extends Component {
         )}
       </h2>
     ) : (
-      <h2 className="header__title font-weight-bold text-middle">{title}</h2>
+      <h2 className="header__title font-weight-bolder text-middle">{title}</h2>
     );
 
     if (className) {
@@ -87,7 +89,7 @@ class Header extends Component {
           <div className="header__title-container">
             <h1 className="header__title">
               <span
-                className={`header__one-line-title font-weight-bold text-middle ${
+                className={`header__one-line-title font-weight-bolder text-middle ${
                   !isValidTimeToOrder ? 'has-tag' : ''
                 }`}
               >
@@ -102,12 +104,12 @@ class Header extends Component {
             <ul className="header__info-list">
               <li className="header__info-item">
                 <IconMotorcycle className="header__motor-icon text-middle" />
-                <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={deliveryFee || 0} />
+                <CurrencyNumber className="header__info-text text-middle font-weight-bolder" money={deliveryFee || 0} />
               </li>
               <li className="header__info-item">
                 <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
                   <label className="text-middle">Min Order.</label>
-                  <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
+                  <CurrencyNumber className="header__info-text text-middle font-weight-bolder" money={minOrder || 0} />
                 </Trans>
               </li>
             </ul>

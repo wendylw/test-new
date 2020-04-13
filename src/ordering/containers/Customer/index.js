@@ -177,7 +177,7 @@ class Customer extends Component {
     return (
       <Fragment>
         <div className="flex flex-middle flex-space-between">
-          <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverOn')}</label>
+          <label className="form__label font-weight-bolder gray-font-opacity">{t('DeliverOn')}</label>
           <i className="customer__edit-icon">
             <IconEdit />
           </i>
@@ -225,7 +225,7 @@ class Customer extends Component {
           }}
         >
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverTo')}</label>
+            <label className="form__label font-weight-bolder gray-font-opacity">{t('DeliverTo')}</label>
             <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
@@ -235,7 +235,7 @@ class Customer extends Component {
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">
+            <label className="form__label font-weight-bolder gray-font-opacity">
               {t('AddAddressDetailsPlaceholder')}
             </label>
             <IconEdit className="customer__edit-icon" />
@@ -297,14 +297,14 @@ class Customer extends Component {
           }}
         >
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">{t('PickupAt')}</label>
+            <label className="form__label font-weight-bolder gray-font-opacity">{t('PickupAt')}</label>
             {/* <IconEdit className="customer__edit-icon" /> */}
           </div>
           <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">{t('PickUpOn')}</label>
+            <label className="form__label font-weight-bolder gray-font-opacity">{t('PickUpOn')}</label>
             <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
@@ -405,7 +405,7 @@ class Customer extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
-              className="billing__button button button__fill button__block dark font-weight-bold"
+              className="billing__button button button__fill button__block dark font-weight-bolder"
               onClick={() => {
                 history.push({
                   pathname: ROUTER_PATHS.ORDERING_CART,
@@ -418,7 +418,7 @@ class Customer extends Component {
           </div>
           <div className="footer-operation__item width-2-3">
             <button
-              className="billing__link button button__fill button__block font-weight-bold"
+              className="billing__link button button__fill button__block font-weight-bolder"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
                 (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||

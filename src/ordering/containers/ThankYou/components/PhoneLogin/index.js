@@ -206,7 +206,7 @@ class PhoneLogin extends React.Component {
       return null;
     }
 
-    return <CurrencyNumber className="font-weight-bold" money={Math.abs(cashback || 0)} />;
+    return <CurrencyNumber className="font-weight-bolder" money={Math.abs(cashback || 0)} />;
   }
 
   renderPhoneView() {
@@ -236,7 +236,7 @@ class PhoneLogin extends React.Component {
       return (
         <BrowserRouter basename="/">
           <Link
-            className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+            className="button__fill link__non-underline link__block border-radius-base font-weight-bolder text-uppercase"
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             target="_blank"
           >
@@ -248,7 +248,7 @@ class PhoneLogin extends React.Component {
 
     return (
       <button
-        className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+        className="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
         onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
       >
         {t('CheckMyBalance')}
@@ -277,11 +277,11 @@ class PhoneLogin extends React.Component {
             By tapping to continue, you agree to our
             <br />
             <BrowserRouter basename="/">
-              <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+              <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
                 Terms of Service
               </Link>
               , and{' '}
-              <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+              <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
                 Privacy Policy
               </Link>
               .
