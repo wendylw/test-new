@@ -55,17 +55,11 @@ const DOCUMENT_TITLE = {
   PRIVACY: 'Privacy',
 };
 
-const PAYMENT_METHOD_LABELS = {
-  ONLINE_BANKING_PAY: 'OnlineBanking',
-  CREDIT_CARD_PAY: 'CreditCard',
+const PAYMENT_METHODS = {
+  ONLINE_BANKING_PAY: 'CCPP',
+  CREDIT_CARD_PAY: 'CCPPCreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
-};
-
-const CREDIT_CARD_BRANDS = {
-  VISA: 'Visa',
-  MASTER_CARD: 'MasterCard',
-  JCB: 'JCB',
 };
 
 const HOME_ASIDE_NAMES = {
@@ -147,7 +141,7 @@ const CONSUMERFLOW_STATUS = {
   PICKUP: 'pickedUp',
   CANCELLED: 'cancelled',
 };
-const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default {
   OTP_CODE_SIZE,
@@ -156,8 +150,7 @@ export default {
   MANIFEST,
   ROUTER_PATHS,
   CASHBACK_SOURCE,
-  PAYMENT_METHOD_LABELS,
-  CREDIT_CARD_BRANDS,
+  PAYMENT_METHODS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
   CHANNEL_TYPE,
@@ -174,5 +167,5 @@ export default {
   ASIDE_NAMES,
   DELIVERY_METHOD,
   CONSUMERFLOW_STATUS,
-  WEEK_DAYS_I18N_KEYS,
+  WEEK_DAYS,
 };

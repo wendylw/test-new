@@ -1,5 +1,4 @@
 export const APP_TYPES = {
-  SHOW_ERROR: 'ORDERING/APP/SHOW_ERROR',
   CLEAR_ERROR: 'ORDERING/APP/CLEAR_ERROR',
 
   // fetch onlineStoreInfo

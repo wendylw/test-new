@@ -16,7 +16,7 @@ const i18nextConfig = {
   debug: process.env.NODE_ENV !== 'production',
   keySeparator: false, // we do not use keys in form messages.welcome
   nonExplicitWhitelist: true, // if true will pass eg. en-US if finding en in whitelist
-  whitelist: ['en', 'th'], // array of allowed languages, default value is `false`
+  whitelist: ['en'], // array of allowed languages, default value is `false`
   backend: {
     // for all available options read the backend's repository readme file
     loadPath: (lng, ns) => {

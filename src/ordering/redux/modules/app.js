@@ -112,12 +112,6 @@ export const actions = {
     prompt,
   }),
 
-  showError: ({ message, code = 500 }) => ({
-    type: types.SHOW_ERROR,
-    message,
-    code,
-  }),
-
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),
@@ -326,9 +320,3 @@ export const getOnlineStoreInfo = state => {
 };
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageModal = state => state.app.messageModal;
-export const getMerchantCountry = state => {
-  if (state.entities.businesses[state.app.business]) {
-    return state.entities.businesses[state.app.business].country;
-  }
-  return null;
-};

@@ -120,7 +120,7 @@ class DeliveryDetailModal extends Component {
           </div>
 
           <div className="store-info__delivery-hours flex flex-top flex-space-between">
-            <label className="font-weight-bold gray-font-opacity">{t('DeliveryHours')}</label>
+            <label className="font-weight-bold gray-font-opacity">Delivery Hours</label>
             <ul className="store-info__list">
               {this.renderDeliveryHour()}
               {/* <li className="store-info__item flex flex-middle flex-space-between">

@@ -19,6 +19,5 @@
   "OrderCancelled": "Order Cancelled",
   "ThanksForOrderingWithUs": "Thanks for ordering with us!",
   "PreOrderDeliveryTimeDetails": "Delivery Order for {{day}}, {{dayAndTime}} to {{deliveryTo}}.",
-  "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery.",
-  "Total": "Total"
+  "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery."
 }

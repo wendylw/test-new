@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
-import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import {
   actions as homeActionCreators,
   getCashbackHistory,
@@ -16,6 +15,11 @@ import {
   getFetchState,
 } from '../../../../redux/modules/home';
 
+const LANGUAGES = {
+  MY: 'EN',
+  TH: 'EN',
+  PH: 'EN',
+};
 const DATE_OPTIONS = {
   weekday: 'short',
   year: 'numeric',
@@ -99,7 +103,9 @@ class RecentActivities extends React.Component {
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>
-                  <time className="receipt-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
+                  <time className="receipt-list__time">
+                    {receiptTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
+                  </time>
                 </summary>
               </div>
             );

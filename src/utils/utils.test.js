@@ -25,6 +25,7 @@ describe('utils/utils', () => {
     getFormatPhoneNumber,
     DateFormatter,
     getValidAddress,
+    creditCardDetector,
     getQueryObject,
     initSmoothAnimation,
     getUserAgentInfo,
@@ -204,6 +205,27 @@ describe('utils/utils', () => {
     expect(DateFormatter('15/10')).toBe('12 / 10');
     expect(DateFormatter('12/101')).toBe('12 / 10');
     expect(DateFormatter('13/993')).toBe('12 / 99');
+  });
+
+  describe('utils.creditCardDetector', () => {
+    it('creditCardDetector: not digital', () => {
+      const card = creditCardDetector('hello');
+      expect(card.formattedCardNumber).toBe('');
+    });
+
+    it('creditCardDetector: visa', () => {
+      const cardNumberString = '4111 1111 1111 1111';
+      const card = creditCardDetector(cardNumberString);
+      expect(card.formattedCardNumber).toBe(cardNumberString);
+      expect(card.type).toBe('visa');
+    });
+
+    it('creditCardDetector: mastercard', () => {
+      const cardNumberString = '5155 1111 1111 1111';
+      const card = creditCardDetector(cardNumberString);
+      expect(card.formattedCardNumber).toBe(cardNumberString);
+      expect(card.type).toBe('mastercard');
+    });
   });
 
   it('getQueryObject', () => {
