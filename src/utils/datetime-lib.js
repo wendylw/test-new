@@ -1,5 +1,5 @@
 import CONSTANTS from './constants';
-export const standardizeLocale = countryCode => {
+export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
     MY: 'EN',
     TH: 'TH',
@@ -89,8 +89,8 @@ export const toLocaleString = (date, countryCode, options) => {
   let formatter;
   try {
     formatter = getDateTimeFormatter(countryCode, options);
-  } catch {
-    console.error('Fail to create instance of Intl.DateTimeFormat');
+  } catch (e) {
+    console.error('Fail to create instance of Intl.DateTimeFormat', e);
     return toLocaleStringFallback(date, countryCode, options);
   }
   if (formatter.format) {
