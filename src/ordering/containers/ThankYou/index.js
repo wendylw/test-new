@@ -19,13 +19,13 @@ import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
 import beepOrderPending from '../../../images/beep-order-pending.svg';
 import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
 import Loader from '../Payment/components/Loader';
-import { getDayDateMonth, getTimeRange } from '../../../utils/datetime-lib';
+import {
+  toDayDateMonth,
+  toNumericTimeRange,
+  toLocaleDateString,
+  toLocaleTimeString,
+} from '../../../utils/datetime-lib';
 
-const LANGUAGES = {
-  MY: 'EN',
-  TH: 'EN',
-  PH: 'EN',
-};
 const TIME_OPTIONS = {
   hour: 'numeric',
   minute: 'numeric',
@@ -248,11 +248,11 @@ export class ThankYou extends Component {
                 <time className="text-middle gray-font-opacity">
                   {`${
                     currentStatusObj.timeToShow
-                      ? currentStatusObj.timeToShow.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                      ? toLocaleTimeString(currentStatusObj.timeToShow, country, TIME_OPTIONS)
                       : ''
                   }, ${
                     currentStatusObj.timeToShow
-                      ? currentStatusObj.timeToShow.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                      ? toLocaleDateString(currentStatusObj.timeToShow, country, DATE_OPTIONS)
                       : ''
                   }`}
                 </time>
@@ -268,11 +268,11 @@ export class ThankYou extends Component {
                   <time className="text-middle gray-font-opacity">
                     {`${
                       currentStatusObj.secondTimeToShow
-                        ? currentStatusObj.secondTimeToShow.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
+                        ? toLocaleTimeString(currentStatusObj.secondTimeToShow, country, TIME_OPTIONS)
                         : ''
                     }, ${
                       currentStatusObj.secondTimeToShow
-                        ? currentStatusObj.secondTimeToShow.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
+                        ? toLocaleDateString(currentStatusObj.secondTimeToShow, country, DATE_OPTIONS)
                         : ''
                     }`}
                   </time>
@@ -286,6 +286,7 @@ export class ThankYou extends Component {
   }
 
   renderStoreInfo = () => {
+    const { t } = this.props;
     const { storeInfo, total, deliveryInformation } = this.props.order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
@@ -298,7 +299,7 @@ export class ThankYou extends Component {
         <div className="flex flex-middle flex-space-between">
           <label className="thanks__text font-weight-bold">{name}</label>
           <div>
-            <span className="thanks__text">Total</span>
+            <span className="thanks__text">{t('Total')}</span>
             <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
           </div>
         </div>
@@ -332,8 +333,8 @@ export class ThankYou extends Component {
         </div>
         <p className="thanks__address-details gray-font-opacity">
           {t('PreOrderDeliveryTimeDetails', {
-            day: getDayDateMonth(new Date(expectDeliveryDateFrom)),
-            dayAndTime: getTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
+            day: toDayDateMonth(new Date(expectDeliveryDateFrom)),
+            dayAndTime: toNumericTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
             deliveryTo: address,
           })}
         </p>
@@ -381,14 +382,8 @@ export class ThankYou extends Component {
                 <IconAccessTime />
               </i>
               <time className="text-middle gray-font-opacity">
-                {`${
-                  paidStatusObjTime
-                    ? paidStatusObjTime.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
-                    : ''
-                }, ${
-                  paidStatusObjTime
-                    ? paidStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
-                    : ''
+                {`${paidStatusObjTime ? toLocaleTimeString(paidStatusObjTime, country, TIME_OPTIONS) : ''}, ${
+                  paidStatusObjTime ? toLocaleDateString(paidStatusObjTime, country, DATE_OPTIONS) : ''
                 }`}
               </time>
             </div>
@@ -406,14 +401,8 @@ export class ThankYou extends Component {
                   <IconAccessTime />
                 </i>
                 <time className="text-middle gray-font-opacity">
-                  {`${
-                    pickingStatusObjTime
-                      ? pickingStatusObjTime.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
-                      : ''
-                  }, ${
-                    pickingStatusObjTime
-                      ? pickingStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
-                      : ''
+                  {`${pickingStatusObjTime ? toLocaleTimeString(pickingStatusObjTime, country, TIME_OPTIONS) : ''}, ${
+                    pickingStatusObjTime ? toLocaleDateString(pickingStatusObjTime, country, DATE_OPTIONS) : ''
                   }`}
                 </time>
               </div>
@@ -428,13 +417,9 @@ export class ThankYou extends Component {
                 </i>
                 <time className="text-middle gray-font-opacity">
                   {`${
-                    cancelledStatusObjTime
-                      ? cancelledStatusObjTime.toLocaleTimeString(LANGUAGES[country || 'MY'], TIME_OPTIONS)
-                      : ''
+                    cancelledStatusObjTime ? toLocaleTimeString(cancelledStatusObjTime, country, TIME_OPTIONS) : ''
                   }, ${
-                    cancelledStatusObjTime
-                      ? cancelledStatusObjTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)
-                      : ''
+                    cancelledStatusObjTime ? toLocaleDateString(cancelledStatusObjTime, country, DATE_OPTIONS) : ''
                   }`}
                 </time>
               </div>
