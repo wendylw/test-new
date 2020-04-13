@@ -214,9 +214,8 @@ export class Home extends Component {
     if (enablePreOrder) {
       const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
 
-      if (!date.isToday) {
-        deliveryTimeText = this.getExpectedDeliveryTime();
-      }
+      deliveryTimeText = this.getExpectedDeliveryTime();
+
       if (!date.date) {
         deliveryTimeText = '';
       }
