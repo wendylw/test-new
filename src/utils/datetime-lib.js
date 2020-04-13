@@ -133,17 +133,21 @@ export const toDayDateMonth = (date, locale = 'MY') =>
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   const hourFrom = hour.from.split(':')[0];
   const minuteFrom = hour.from.split(':')[1];
-  const hourTo = hour.to.split(':')[0];
-  const minuteTo = hour.to.split(':')[1];
-
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
   workDateFrom.setHours(hourFrom, minuteFrom, 0);
-  const workDateTo = new Date(date.date);
-  workDateTo.setHours(hourTo, minuteTo, 0);
+
+  let part2 = toNumericTime(workDateFrom, locale);
+
+  if (hour.to) {
+    const hourTo = hour.to.split(':')[0];
+    const minuteTo = hour.to.split(':')[1];
+    const workDateTo = new Date(date.date);
+    workDateTo.setHours(hourTo, minuteTo, 0);
+    part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
+  }
 
   const part1 = toDayDateMonth(workDate, locale);
-  const part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
 
   return `${part1}, ${part2}`;
 };

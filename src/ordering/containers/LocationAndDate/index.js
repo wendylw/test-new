@@ -220,8 +220,6 @@ class LocationAndDate extends Component {
 
   getFirstItemFromTimeList = date => {
     if (Utils.isDeliveryType() && Array.isArray(this.deliveryTimeList)) {
-      // const { selectedDate } = this.state;
-
       if (date.isToday) {
         return {
           from: 'now',
@@ -236,18 +234,20 @@ class LocationAndDate extends Component {
         };
       }
     } else if (Utils.isPickUpType() && Array.isArray(this.pickupTimeList)) {
+      // If is pickup, there won't be to
       if (date.isToday) {
         const timeList = this.getHoursList(date);
+        if (timeList) {
+          return {}
+        }
         const firstTimeItem = timeList[0];
         return {
           from: getHourAndMinuteFromTime(firstTimeItem.from),
-          to: getHourAndMinuteFromTime(firstTimeItem.to),
         };
       } else {
         const firstTimeItem = this.pickupTimeList[0];
         return {
           from: getHourAndMinuteFromTime(firstTimeItem.from),
-          to: getHourAndMinuteFromTime(firstTimeItem.to),
         };
       }
     }
@@ -256,15 +256,10 @@ class LocationAndDate extends Component {
   };
 
   handleSelectDate = date => {
-    // No hours list when either store is closed that day or order should be delivered today
     if (!date.isOpen) {
       return;
     }
     const selectedHour = this.getFirstItemFromTimeList(date);
-    // const selectedHour = {
-    //   from: `${this.validDeliveryTimeFrom}:00`,
-    //   to: `${this.validDeliveryTimeFrom + 1}:00`,
-    // };
 
     this.setState({
       selectedDate: date,
@@ -397,7 +392,7 @@ class LocationAndDate extends Component {
 
       // item.from and item.to are time in ISOString format
       const from = getHourAndMinuteFromTime(item.from);
-      const to = getHourAndMinuteFromTime(item.to);
+      const to = item.to && getHourAndMinuteFromTime(item.to);
       return (
         <li
           className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
@@ -474,10 +469,14 @@ class LocationAndDate extends Component {
       Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
 
     for (let i = new Date(startTime).toISOString(); compareTime(i.valueOf(), endTime.valueOf()); i = timeIncrease(i)) {
-      timeList.push({
-        from: i.valueOf(),
-        to: timeIncrease(i),
-      });
+      const timeItem = {
+        from: i,
+      };
+
+      if (Utils.isDeliveryType()) {
+        timeItem.to = timeIncrease(i);
+      }
+      timeList.push(timeItem);
     }
 
     return timeList;
