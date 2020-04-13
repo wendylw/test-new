@@ -2,7 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { withTranslation, Trans } from 'react-i18next';
-import { IconMotorcycle, IconLocation, IconBookmark, IconLocalOffer, IconAttachMoney } from '../../../components/Icons';
+import {
+  /*IconMotorcycle,*/
+  IconLocation,
+  IconBookmark,
+  IconLocalOffer,
+  IconAttachMoney,
+} from '../../../components/Icons';
 import Image from '../../../components/Image';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -88,16 +94,16 @@ class StoreList extends Component {
                     </li>
                   ) : null
                   /*(
-                    <li className="store-info__item text-middle">
-                      <IconMotorcycle className="icon icon__smaller text-middle" />
-                      <CurrencyNumber
-                        className="store-info__text text-size-small text-middle"
-                        locale={locale}
-                        currency={currency}
-                        price={deliveryFee}
-                      />
-                    </li>
-                  )*/
+                          <li className="store-info__item text-middle">
+                            <IconMotorcycle className="icon icon__smaller text-middle" />
+                            <CurrencyNumber
+                              className="store-info__text text-size-small text-middle"
+                              locale={locale}
+                              currency={currency}
+                              price={deliveryFee}
+                            />
+                          </li>
+                        )*/
                   }
                 </ul>
                 {enableCashback && cashbackRate ? (
@@ -111,16 +117,15 @@ class StoreList extends Component {
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
-                    <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={minimumSpendForFreeDelivery}>
+                    <Trans i18nKey="MvpFreeDeliveryPrompt" minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}>
                       <span className="store-info__text text-size-small text-middle">
-                        Free Delivery with
+                        Free Delivery above
                         <CurrencyNumber
                           className="text-size-small text-middle"
                           locale={locale}
                           currency={currency}
                           price={minimumSpendForFreeDelivery}
                         />
-                        & above
                       </span>
                     </Trans>
                   </div>
