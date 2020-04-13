@@ -36,7 +36,6 @@
   "Back": "กลับ",
   "ClearAll": "เคลียร์ทั้งหมด",
   "TableIdText": "ตาราง {{tableId}}",
-  "SelfPickUp": "รับด้วยตนเอง",
   "MinimumConsumption": "<0>ขั้นต่ำ </0><1></1>\n",
   "MinimumOrder": "<0>ยอดขั้นต่ำ</0><1></1>\n",
   "RemainingConsumption": "<0>คงเหลือ </0><1></1>\n",

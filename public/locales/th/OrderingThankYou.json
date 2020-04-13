@@ -1,6 +1,6 @@
 {
   "OrderPaid": "ชำระเงินเรียบร้อยแล้ว",
-  "YourOrderNumber": "หมายเลขออร์เดอร์ของคุณ",
+  "OrderNumber": "หมายเลขออร์เดอร์ของคุณ",
   "PingStaffTitle": "แจ้งพนักงานเพื่อรับใบเสร็จ",
   "ThankYou": "ขอบคุณ",
   "PrepareOrderDescription": "เรากำลังเตรียมออร์เดอร์ของคุณอยู่",
@@ -19,5 +19,7 @@
   "OrderCancelled": "ยกเลิกออร์เดอร์แล้ว",
   "ThanksForOrderingWithUs": "ขอบคุณที่ออร์เดอร์กับเรา!",
   "PreOrderDeliveryTimeDetails": "คำสั่งซื้อจัดส่งในวัน {{day}}, {{dayAndTime}} ถึง {{deliveryTo}}",
-  "PreOrderDeliverySMS": "เราจะส่งสถานะออร์เดอร์ให้คุณทาง SMS ในวันที่เราจัดส่ง"
+  "PreOrderDeliverySMS": "เราจะส่งสถานะออร์เดอร์ให้คุณทาง SMS ในวันที่เราจัดส่ง",
+  "ThankYouForPickingUpForUS": "",
+  "PickupAt": ""
 }

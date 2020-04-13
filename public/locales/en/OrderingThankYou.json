@@ -1,6 +1,6 @@
 {
   "OrderPaid": "Order Paid",
-  "YourOrderNumber": "Your Order Number",
+  "OrderNumber": "Order Number",
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
   "PrepareOrderDescription": "We're preparing your order now.",
@@ -20,5 +20,7 @@
   "ThanksForOrderingWithUs": "Thanks for ordering with us!",
   "PreOrderDeliveryTimeDetails": "Delivery Order for {{day}}, {{dayAndTime}} to {{deliveryTo}}.",
   "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery.",
-  "Total": "Total"
+  "Total": "Total",
+  "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food",
+  "PickupAt": "Pickup At"
 }
