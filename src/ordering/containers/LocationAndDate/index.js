@@ -290,7 +290,7 @@ class LocationAndDate extends Component {
       const { t } = this.props;
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
+          <label className="form__label font-weight-bolder">{t('DeliverTo')}</label>
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
@@ -313,7 +313,7 @@ class LocationAndDate extends Component {
       const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('PickupAt')}</label>
+          <label className="form__label font-weight-bolder">{t('PickupAt')}</label>
           <div className="form__textarea">{pickUpAddress}</div>
         </div>
       );
@@ -326,7 +326,7 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group">
-        <label className="form__label font-weight-bold">
+        <label className="form__label font-weight-bolder">
           {Utils.isDeliveryType() && t('DeliverOn')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </label>
@@ -515,7 +515,7 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>
+        <label className="form__label font-weight-bolder">{t('DeliveryTime')}</label>
         <ul className="location-display__hour">{this.renderHoursList(timeList)}</ul>
       </div>
     );
@@ -573,7 +573,7 @@ class LocationAndDate extends Component {
       <footer className="footer-operation grid flex flex-middle flex-space-between">
         <div className="footer-operation__item width-1-1">
           <button
-            className="billing__link button button__fill button__block font-weight-bold"
+            className="billing__link button button__fill button__block font-weight-bolder"
             disabled={this.checkIfCanContinue()}
             onClick={this.goToNext}
           >

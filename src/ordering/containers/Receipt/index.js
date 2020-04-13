@@ -65,7 +65,7 @@ export class ReceiptDetail extends Component {
               variation={(variationTexts || []).join(', ')}
               detail={
                 <CurrencyNumber
-                  className="price item__text font-weight-bold gray-font-opacity"
+                  className="price item__text font-weight-bolder gray-font-opacity"
                   money={displayPrice || unitPrice || 0}
                 />
               }
@@ -94,7 +94,7 @@ export class ReceiptDetail extends Component {
           </span>
         </Header>
         <div className="receipt__content text-center">
-          <label className="receipt__label gray-font-opacity font-weight-bold text-uppercase">
+          <label className="receipt__label gray-font-opacity font-weight-bolder text-uppercase">
             {t('ReceiptNumber')}
           </label>
           <span className="receipt__id-number">{orderId}</span>
@@ -102,7 +102,7 @@ export class ReceiptDetail extends Component {
         {this.renderProductItem()}
         {additionalComments ? (
           <article className="receipt__note border__bottom-divider">
-            <h4 className="receipt__title font-weight-bold text-uppercase">{t('Notes')}</h4>
+            <h4 className="receipt__title font-weight-bolder text-uppercase">{t('Notes')}</h4>
             <p className="receipt__text gray-font-opacity">{additionalComments}</p>
           </article>
         ) : null}

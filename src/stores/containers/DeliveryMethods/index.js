@@ -118,7 +118,7 @@ class DeliveryMethods extends Component {
               <figure className="delivery__image-container">
                 <img src={method.logo} alt={t(method.labelKey)}></img>
               </figure>
-              <label className="delivery__name font-weight-bold">{t(method.labelKey)}</label>
+              <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
               <i className="delivery__next-icon">
                 <IconNext />
               </i>

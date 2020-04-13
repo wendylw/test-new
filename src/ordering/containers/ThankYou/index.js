@@ -95,8 +95,8 @@ export class ThankYou extends Component {
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="text-uppercase font-weight-bold">{t('OrderNumber')}</label>
-          <span className="thanks-pickup__id-number font-weight-bold" data-testid="thanks__pickup-number">
+          <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
+          <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
             {`#${orderId}`}
           </span>
         </div>
@@ -111,10 +111,10 @@ export class ThankYou extends Component {
     if (this.state.needReceipt === 'detail') {
       return (
         <div className="thanks__receipt-info">
-          <h4 className="thanks__receipt-title font-weight-bold">{t('PingStaffTitle')}</h4>
+          <h4 className="thanks__receipt-title font-weight-bolder">{t('PingStaffTitle')}</h4>
           <div>
             <label className="thanks__receipt-label">{t('ReceiptNumber')}: </label>
-            <span className="thanks__receipt-number font-weight-bold">{orderId}</span>
+            <span className="thanks__receipt-number font-weight-bolder">{orderId}</span>
           </div>
         </div>
       );
@@ -122,7 +122,7 @@ export class ThankYou extends Component {
 
     return (
       <button
-        className="thanks__link link font-weight-bold text-uppercase button__block"
+        className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
@@ -135,7 +135,7 @@ export class ThankYou extends Component {
     const { t } = this.props;
     return (
       <button
-        className="thanks__link link font-weight-bold text-uppercase button__block"
+        className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
       >
@@ -241,7 +241,7 @@ export class ThankYou extends Component {
         <div className="thanks__delivery-status-container">
           <ul className="thanks__delivery-status-list text-left">
             <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{currentStatusObj.firstNote}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.firstNote}</label>
               <div className="thanks__delivery-status-time">
                 <i className="access-time-icon text-middle">
                   <IconAccessTime />
@@ -260,7 +260,7 @@ export class ThankYou extends Component {
               </div>
             </li>
             <li className={`thanks__delivery-status-item ${currentStatusObj.secondLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{currentStatusObj.secondNote}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.secondNote}</label>
               {currentStatusObj.secondTimeToShow ? (
                 <div className="thanks__delivery-status-time">
                   <i className="access-time-icon text-middle">
@@ -288,11 +288,10 @@ export class ThankYou extends Component {
 
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
-    const { t, order, onlineStoreInfo = {} } = this.props;
+    const { t, order } = this.props;
 
     if (!order) return;
 
-    const { country } = onlineStoreInfo;
     const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom } = order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
@@ -304,18 +303,16 @@ export class ThankYou extends Component {
       <div className="thanks__delivery-info text-left">
         {isPickUpType ? (
           <div className="thanks__pickup">
-            <label className="thanks__text font-weight-bold">{t('PickupAt')}</label>
-            <p className="thanks__pickup-time gray-font-opacity">
-              {pickupTime}
-            </p>
+            <label className="thanks__text font-weight-bolder">{t('PickupAt')}</label>
+            <p className="thanks__pickup-time gray-font-opacity">{pickupTime}</p>
           </div>
         ) : null}
 
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bold">{name}</label>
+          <label className="thanks__text font-weight-bolder">{name}</label>
           <div>
             <span className="thanks__text">{t('Total')}</span>
-            <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
+            <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
           </div>
         </div>
         {isPickUpType ? null : <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>}
@@ -344,7 +341,7 @@ export class ThankYou extends Component {
     return (
       <div className="thanks__delivery-info text-left">
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bold">{t('ThanksForOrderingWithUs')}</label>
+          <label className="thanks__text font-weight-bolder">{t('ThanksForOrderingWithUs')}</label>
         </div>
         <p className="thanks__address-details gray-font-opacity">
           {t('PreOrderDeliveryTimeDetails', {
@@ -391,7 +388,7 @@ export class ThankYou extends Component {
               this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
             }`}
           >
-            <label className="thanks__delivery-status-label font-weight-bold">{t('OrderConfirmed')}</label>
+            <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderConfirmed')}</label>
             <div className="thanks__delivery-status-time">
               <i className="access-time-icon text-middle">
                 <IconAccessTime />
@@ -405,12 +402,12 @@ export class ThankYou extends Component {
           </li>
           {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderPendingTips')}</label>
             </li>
           ) : null}
           {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderOnTheWay')}</label>
               <div className="thanks__delivery-status-time">
                 <i className="access-time-icon text-middle">
                   <IconAccessTime />
@@ -425,7 +422,7 @@ export class ThankYou extends Component {
           ) : null}
           {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{t('OrderCancelledNoRide')}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderCancelledNoRide')}</label>
               <div className="thanks__delivery-status-time">
                 <i className="access-time-icon text-middle">
                   <IconAccessTime />

@@ -18,7 +18,7 @@ html {
   background: $white;
   font-size: $font-size-base;
   color: $main-color;
-  font-weight: $font-weight-bold;
+  font-weight: $font-weight-bolder;
 
   font-family: system-ui, -apple-system, Roboto, Ubuntu, Helvetica, Arial, sans-serif;
   touch-action: manipulation;
@@ -84,8 +84,8 @@ address {
   font-weight: $font-weight-light;
 }
 
-.text-weight-bold {
-  font-weight: $font-weight-bold;
+.text-weight-bolder {
+  font-weight: $font-weight-bolder;
 }
 
 .text-opacity {

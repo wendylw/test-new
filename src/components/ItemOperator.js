@@ -20,7 +20,7 @@ export class ItemOperator extends Component {
           </button>
         ) : null}
 
-        {quantity > 0 ? <span className="font-weight-bold">{quantity}</span> : null}
+        {quantity > 0 ? <span className="font-weight-bolder">{quantity}</span> : null}
 
         {onIncrease ? (
           <button className="cart__ctrl-container" onClick={onIncrease} disabled={increaseDisabled}>

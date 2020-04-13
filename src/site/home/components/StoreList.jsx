@@ -19,7 +19,7 @@ class StoreList extends Component {
   };
 
   renderStoreItems = () => {
-    // const tagClassName = 'tag__card text-size-small text-weight-bold margin-normal';
+    // const tagClassName = 'tag__card text-size-small text-weight-bolder margin-normal';
     const { t, stores } = this.props;
 
     // const storeStatus = {
@@ -64,7 +64,7 @@ class StoreList extends Component {
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : (
-                  <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bold">
+                  <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
                     {t('ClosedForNow')}
                   </div>
                 )}
@@ -77,7 +77,7 @@ class StoreList extends Component {
                 />
               </div>
               <summary className="store-card-list__summary padding-left-right-small">
-                <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit__single-line">
+                <h3 className="store-card-list__title text-size-bigger text-weight-bolder text-omit__single-line">
                   {name}
                 </h3>
                 <ul className="store-info padding-top-bottom-smaller">
@@ -94,16 +94,16 @@ class StoreList extends Component {
                     </li>
                   ) : null
                   /*(
-                          <li className="store-info__item text-middle">
-                            <IconMotorcycle className="icon icon__smaller text-middle" />
-                            <CurrencyNumber
-                              className="store-info__text text-size-small text-middle"
-                              locale={locale}
-                              currency={currency}
-                              price={deliveryFee}
-                            />
-                          </li>
-                        )*/
+                            <li className="store-info__item text-middle">
+                              <IconMotorcycle className="icon icon__smaller text-middle" />
+                              <CurrencyNumber
+                                className="store-info__text text-size-small text-middle"
+                                locale={locale}
+                                currency={currency}
+                                price={deliveryFee}
+                              />
+                            </li>
+                          )*/
                   }
                 </ul>
                 {enableCashback && cashbackRate ? (

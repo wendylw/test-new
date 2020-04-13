@@ -15,13 +15,13 @@ class Error extends Component {
         description: isIOS ? (
           <Trans ns="Scanner" i18nKey="IosSorryText">
             <p className="text-size-big">
-              Please open beepit.co in <span className="text-weight-bold text-size-big">Safari.</span>
+              Please open beepit.co in <span className="text-weight-bolder text-size-big">Safari.</span>
             </p>
           </Trans>
         ) : (
           <Trans ns="Scanner" i18nKey="AndroidSorryText">
             <p className="text-size-big">
-              Please open beepit.co in <span className="text-weight-bold text-size-big">Google Chrome</span>.
+              Please open beepit.co in <span className="text-weight-bolder text-size-big">Google Chrome</span>.
             </p>
           </Trans>
         ),
