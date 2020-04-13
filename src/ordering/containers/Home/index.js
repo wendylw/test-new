@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLeftArrow } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -210,6 +210,7 @@ export class Home extends Component {
     const { t, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let deliveryTimeText = t('DeliverNow');
+    const isPickUpType = Utils.isPickUpType();
 
     if (enablePreOrder) {
       const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
@@ -222,7 +223,12 @@ export class Home extends Component {
       }
     }
 
-    return <p className="location-page__entry-address gray-font-opacity">{deliveryTimeText}</p>;
+    return (
+      <div className="location-page__entry-address pick-up flex flex-middle">
+        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
+        <p className="gray-font-opacity">{deliveryTimeText}</p>
+      </div>
+    );
   };
 
   isPreOrderEnabled = () => {
@@ -254,15 +260,16 @@ export class Home extends Component {
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
-    const { deliveryFee: legacyDeliveryFee, minOrder } = this.getDeliveryInfo();
+    const { deliveryFee: legacyDeliveryFee, minOrder, storeAddress } = this.getDeliveryInfo();
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
-    if (!tableId && !isDeliveryType) {
+    if (!tableId && !(isDeliveryType || isPickUpType)) {
       classList.push('has-right');
     }
 
-    if (isDeliveryType) {
+    if (isDeliveryType || isPickUpType) {
       classList.push('flex-top');
     } else {
       classList.push('border__bottom-divider gray flex-middle');
@@ -282,9 +289,10 @@ export class Home extends Component {
         navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
         enablePreOrder={this.isPreOrderEnabled()}
+        storeAddress={storeAddress}
       >
         {tableId ? <span className="gray-font-opacity">{t('TableIdText', { tableId })}</span> : null}
-        {isDeliveryType ? <IconInfoOutline className="header__info-icon" /> : null}
+        {isDeliveryType || isPickUpType ? <IconInfoOutline className="header__info-icon" /> : null}
       </Header>
     );
   }
@@ -352,7 +360,7 @@ export class Home extends Component {
       return null;
     }
 
-    if (Utils.isDeliveryType()) {
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
 
@@ -391,7 +399,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        {!Utils.isDeliveryType() ? null : (
+        {!Utils.isDeliveryType() && !Utils.isPickUpType() ? null : (
           <DeliveryDetailModal
             onlineStoreInfo={onlineStoreInfo}
             businessInfo={businessInfo}

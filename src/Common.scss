@@ -181,6 +181,56 @@ form {
   }
 }
 
+.icon {
+  @extend .reset-font-size;
+
+  display: inline-block;
+
+  &__privacy {
+    fill: $theme-color;
+  }
+
+  &__gray {
+    fill: $gray-2;
+  }
+
+  &__white {
+    fill: $white;
+  }
+
+  &__big {
+    padding: 12px;
+  }
+
+  &__normal {
+    padding: 8px;
+  }
+
+  &__small {
+    padding: 4px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__smaller {
+    padding: 4px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__item.active {
+    .icon__gray {
+      fill: $theme-color;
+    }
+  }
+}
+
 .form {
   &__error-message {
     display: inline-block;

@@ -12,15 +12,13 @@ import { isSourceBeepitCom } from '../ordering/containers/Home/utils';
 class Header extends Component {
   renderLogoAndNavDom() {
     const { isStoreHome, isPage, logo, title, isValidTimeToOrder, navFunc } = this.props;
-    const isDeliveryType = Utils.isDeliveryType();
 
     // if (Utils.isWebview()) {
     //   return null;
     // }
 
     const renderPageAction = () => {
-      const homepageBackButton = (isDeliveryType && !isValidTimeToOrder) || !isDeliveryType;
-      if (!isStoreHome || (isStoreHome && isSourceBeepitCom() && homepageBackButton)) {
+      if (!isStoreHome || (isStoreHome && isSourceBeepitCom() && !isValidTimeToOrder)) {
         const iconClassName = 'header__icon text-middle';
 
         return isPage ? (
@@ -45,31 +43,16 @@ class Header extends Component {
       className,
       isStoreHome,
       title,
+      storeAddress,
       children,
       onClickHandler,
       deliveryFee,
       minOrder,
       isValidTimeToOrder,
     } = this.props;
-    const classList = ['header flex flex-space-between'];
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
-    const normalTitle = isPickUpType ? (
-      <h2 className="header__title font-weight-bolder text-middle">
-        <span
-          className={`header__one-line-title font-weight-bolder text-middle ${!isValidTimeToOrder ? 'has-tag' : ''}`}
-        >
-          {title}
-        </span>
-        {isValidTimeToOrder ? null : (
-          <div className="tag__card-container text-middle">
-            <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
-          </div>
-        )}
-      </h2>
-    ) : (
-      <h2 className="header__title font-weight-bolder text-middle">{title}</h2>
-    );
+    const classList = [`header flex flex-space-between${isPickUpType ? ' pick-up' : ''}`];
 
     if (className) {
       classList.push(className);
@@ -79,13 +62,13 @@ class Header extends Component {
       <header
         className={classList.join(' ')}
         onClick={() => {
-          if (Utils.isDeliveryType()) {
+          if (isDeliveryType || isPickUpType) {
             onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
           }
         }}
       >
         {this.renderLogoAndNavDom()}
-        {isStoreHome && isDeliveryType ? (
+        {isStoreHome && (isDeliveryType || isPickUpType) ? (
           <div className="header__title-container">
             <h1 className="header__title">
               <span
@@ -101,21 +84,30 @@ class Header extends Component {
                 </div>
               )}
             </h1>
-            <ul className="header__info-list">
-              <li className="header__info-item">
-                <IconMotorcycle className="header__motor-icon text-middle" />
-                <CurrencyNumber className="header__info-text text-middle font-weight-bolder" money={deliveryFee || 0} />
-              </li>
-              <li className="header__info-item">
-                <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
-                  <label className="text-middle">Min Order.</label>
-                  <CurrencyNumber className="header__info-text text-middle font-weight-bolder" money={minOrder || 0} />
-                </Trans>
-              </li>
-            </ul>
+            {isDeliveryType ? (
+              <ul className="header__info-list">
+                <li className="header__info-item">
+                  <IconMotorcycle className="header__motor-icon text-middle" />
+                  <CurrencyNumber
+                    className="header__info-text text-middle font-weight-bolder"
+                    money={deliveryFee || 0}
+                  />
+                </li>
+                <li className="header__info-item">
+                  <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
+                    <label className="text-middle">Min Order.</label>
+                    <CurrencyNumber
+                      className="header__info-text text-middle font-weight-bolder"
+                      money={minOrder || 0}
+                    />
+                  </Trans>
+                </li>
+              </ul>
+            ) : null}
+            {isPickUpType ? <p className="header__pickup-address gray-font-opacity omit-text">{storeAddress}</p> : null}
           </div>
         ) : (
-          normalTitle
+          <h2 className="header__title font-weight-bolder text-middle">{title}</h2>
         )}
         {children}
       </header>
@@ -130,6 +122,7 @@ Header.propTypes = {
   isStoreHome: PropTypes.bool,
   logo: PropTypes.string,
   title: PropTypes.string,
+  storeAddress: PropTypes.string,
   navFunc: PropTypes.func,
   onClickHandler: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
@@ -140,6 +133,7 @@ Header.defaultProps = {
   isStoreHome: false,
   isValidTimeToOrder: true,
   title: '',
+  storeAddress: '',
   deliveryFee: 0,
   navFunc: () => {},
   onClickHandler: () => {},

@@ -243,9 +243,7 @@ export class ThankYou extends Component {
             <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
               <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.firstNote}</label>
               <div className="thanks__delivery-status-time">
-                <i className="access-time-icon text-middle">
-                  <IconAccessTime />
-                </i>
+                <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle gray-font-opacity">
                   {`${
                     currentStatusObj.timeToShow
@@ -263,9 +261,7 @@ export class ThankYou extends Component {
               <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.secondNote}</label>
               {currentStatusObj.secondTimeToShow ? (
                 <div className="thanks__delivery-status-time">
-                  <i className="access-time-icon text-middle">
-                    <IconAccessTime />
-                  </i>
+                  <IconAccessTime className="access-time-icon text-middle" />
                   <time className="text-middle gray-font-opacity">
                     {`${
                       currentStatusObj.secondTimeToShow
@@ -390,9 +386,7 @@ export class ThankYou extends Component {
           >
             <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderConfirmed')}</label>
             <div className="thanks__delivery-status-time">
-              <i className="access-time-icon text-middle">
-                <IconAccessTime />
-              </i>
+              <IconAccessTime className="access-time-icon text-middle" />
               <time className="text-middle gray-font-opacity">
                 {`${paidStatusObjTime ? toLocaleTimeString(paidStatusObjTime, country, TIME_OPTIONS) : ''}, ${
                   paidStatusObjTime ? toLocaleDateString(paidStatusObjTime, country, DATE_OPTIONS) : ''
@@ -409,9 +403,7 @@ export class ThankYou extends Component {
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
               <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderOnTheWay')}</label>
               <div className="thanks__delivery-status-time">
-                <i className="access-time-icon text-middle">
-                  <IconAccessTime />
-                </i>
+                <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle gray-font-opacity">
                   {`${pickingStatusObjTime ? toLocaleTimeString(pickingStatusObjTime, country, TIME_OPTIONS) : ''}, ${
                     pickingStatusObjTime ? toLocaleDateString(pickingStatusObjTime, country, DATE_OPTIONS) : ''
@@ -424,9 +416,7 @@ export class ThankYou extends Component {
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
               <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderCancelledNoRide')}</label>
               <div className="thanks__delivery-status-time">
-                <i className="access-time-icon text-middle">
-                  <IconAccessTime />
-                </i>
+                <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle gray-font-opacity">
                   {`${
                     cancelledStatusObjTime ? toLocaleTimeString(cancelledStatusObjTime, country, TIME_OPTIONS) : ''
