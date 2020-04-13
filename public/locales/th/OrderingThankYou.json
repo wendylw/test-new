@@ -20,6 +20,5 @@
   "ThanksForOrderingWithUs": "ขอบคุณที่ออร์เดอร์กับเรา!",
   "PreOrderDeliveryTimeDetails": "คำสั่งซื้อจัดส่งในวัน {{day}}, {{dayAndTime}} ถึง {{deliveryTo}}",
   "PreOrderDeliverySMS": "เราจะส่งสถานะออร์เดอร์ให้คุณทาง SMS ในวันที่เราจัดส่ง",
-  "ThankYouForPickingUpForUS": "",
-  "PickupAt": ""
+  "Total": "ทั้งหมด"
 }

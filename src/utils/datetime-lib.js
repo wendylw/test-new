@@ -1,5 +1,5 @@
 import CONSTANTS from './constants';
-export const standardizeLocale = countryCode => {
+export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
     MY: 'EN',
     TH: 'TH',
@@ -86,11 +86,15 @@ const toLocaleStringFallback = (date, countryCode, options) => {
 // for locale, refer to: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#Locale_identification_and_negotiation
 export const toLocaleString = (date, countryCode, options) => {
   const dateObj = new Date(date);
+  if (isNaN(dateObj.getTime())) {
+    console.warn('Invalid date object');
+    return '';
+  }
   let formatter;
   try {
     formatter = getDateTimeFormatter(countryCode, options);
-  } catch {
-    console.error('Fail to create instance of Intl.DateTimeFormat');
+  } catch (e) {
+    console.error('Fail to create instance of Intl.DateTimeFormat', e);
     return toLocaleStringFallback(date, countryCode, options);
   }
   if (formatter.format) {
@@ -117,7 +121,7 @@ export const toLocaleTimeString = (date, countryCode, options) => {
 };
 
 export const toNumericTime = (date, locale = 'MY') => {
-  return toLocaleTimeString(date, locale, { hour: 'numeric', minute: '2-digit' });
+  return toLocaleTimeString(date, locale, { hour: '2-digit', minute: '2-digit' });
 };
 
 export const toNumericTimeRange = (date1, date2, locale = 'MY') =>

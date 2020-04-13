@@ -97,6 +97,8 @@
   "OutOfDeliveryRangeDescription": "ขออภัย พื้นที่ที่คุณเลือกอยู่นอกพื้นที่ส่งอาหารของร้านนี้ แต่คุณยังสามารถไปรับสินค้าที่ร้านเองได้",
   "SelfPickupOnly": "รับสินค้าเองเท่านั้น",
   "OfferDetails": "รายละเอียดข้อเสนอ",
+  "MvpFreeDeliveryPrompt": "<0>ส่งฟรี เมื่อมียอดสั่งซื้อเกิน <1>{{minimumSpendForFreeDelivery}}</1></0>",
+  "EnabledCashbackText": "รับ {{cashbackRate}}% Cashback จากทางร้าน",
   "Mon": "จันทร์",
   "Tue": "อังคาร",
   "Wed": "พุธ",
