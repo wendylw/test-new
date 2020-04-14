@@ -36,6 +36,14 @@ export const getPlaceInfo = async ({ history, location }, withCache = true) => {
   if (withCache && !placeInfo) {
     try {
       placeInfo = JSON.parse(localStorage.getItem('user.placeInfo'));
+
+      // --Begin-- last version of cache doesn't have addressComponents field, we need it now
+      if (placeInfo && !placeInfo.addressComponents) {
+        localStorage.removeItem('user.placeInfo');
+        placeInfo = null;
+      }
+      // ---End--- last version of cache doesn't have addressComponents field, we need it now
+
       if (placeInfo) source = 'cache';
     } catch (e) {
       console.warn(e);

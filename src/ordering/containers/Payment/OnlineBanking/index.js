@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import qs from 'qs';
+import _find from 'lodash/find';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
@@ -15,15 +16,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import {
-  actions as paymentActionCreators,
-  getCurrentPayment,
-  getCurrentOrderId,
-  getBankList,
-} from '../../../redux/modules/payment';
-
+import { actions as paymentActionCreators, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
+import { getPaymentName } from '../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -35,7 +31,8 @@ class OnlineBanking extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -57,36 +54,43 @@ class OnlineBanking extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
     };
   };
 
-  async componentWillMount() {
-    const { homeActions, paymentActions } = this.props;
-
-    paymentActions.fetchBankList();
-    await homeActions.loadShoppingCart();
-  }
-
   componentDidMount() {
-    const { bankingList } = this.props;
-
-    this.initAgentCode(bankingList);
+    this.updateBankList();
+    this.props.homeActions.loadShoppingCart();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { bankingList } = nextProps;
+  updateBankList = async () => {
+    const { paymentActions, merchantCountry } = this.props;
 
-    if (bankingList && bankingList.length !== (this.props.bankingList || []).length) {
-      this.initAgentCode(bankingList);
+    if (merchantCountry) {
+      await paymentActions.fetchBankList(merchantCountry);
+
+      const findBank = _find(this.props.bankingList, { agentCode: this.state.agentCode });
+      if (!findBank) {
+        this.initAgentCode(this.props.bankingList);
+      }
     }
-  }
+  };
+
+  componentDidUpdate = async preProps => {
+    if (preProps.merchantCountry !== this.props.merchantCountry) {
+      this.updateBankList();
+    }
+  };
 
   initAgentCode(bankingList) {
     if (bankingList && bankingList.length) {
       this.setState({
         agentCode: bankingList[0].agentCode,
+      });
+    } else {
+      this.setState({
+        agentCode: null,
       });
     }
   }
@@ -97,13 +101,11 @@ class OnlineBanking extends Component {
         payNowLoading: true,
       },
       async () => {
-        const { history, paymentActions, cartSummary } = this.props;
+        const { history, paymentActions, cartSummary, t } = this.props;
         const { totalCashback } = cartSummary || {};
-        const { agentCode } = this.state;
         const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
         await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
         const { currentOrder } = this.props;
         const { orderId } = currentOrder || {};
 
@@ -112,7 +114,9 @@ class OnlineBanking extends Component {
           Utils.removeSessionVariable('deliveryComments');
         }
 
-        this.setState({ payNowLoading: !!agentCode });
+        this.setState({
+          payNowLoading: !!orderId,
+        });
       }
     );
   }
@@ -234,9 +238,9 @@ export default compose(
         bankingList: getBankList(state),
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({

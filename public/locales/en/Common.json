@@ -99,7 +99,7 @@
   "SelfPickupOnly": "Self Pickup Only",
   "OfferDetails": "Offer Details",
   "MvpFreeDeliveryPrompt": "<0>Free Delivery above <1>{{minimumSpendForFreeDelivery}}</1></0>",
-  "EnabledCashbackText": "Get {{cashbackRate}}% Store Cashback",
+  "EnabledCashbackText": "{{cashbackRate}}% Store Cashback",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",
@@ -108,5 +108,6 @@
   "Sat": "Sat",
   "Sun": "Sun",
   "Now": "Now",
-  "Okay": "Okay"
+  "Okay": "Okay",
+  "DeliveryHours": "Delivery Hours"
 }
