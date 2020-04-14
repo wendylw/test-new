@@ -80,7 +80,7 @@ class StoreList extends Component {
                 <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit__single-line">
                   {name}
                 </h3>
-                <ul className="store-info padding-top-bottom-smaller">
+                <ul className="store-info">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">
@@ -92,19 +92,7 @@ class StoreList extends Component {
                       <IconBookmark className="icon icon__smaller text-middle" />
                       <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
                     </li>
-                  ) : null
-                  /*(
-                          <li className="store-info__item text-middle">
-                            <IconMotorcycle className="icon icon__smaller text-middle" />
-                            <CurrencyNumber
-                              className="store-info__text text-size-small text-middle"
-                              locale={locale}
-                              currency={currency}
-                              price={deliveryFee}
-                            />
-                          </li>
-                        )*/
-                  }
+                  ) : null}
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
@@ -121,7 +109,7 @@ class StoreList extends Component {
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery above
                         <CurrencyNumber
-                          className="text-size-small text-middle"
+                          className="text-size-small"
                           locale={locale}
                           currency={currency}
                           price={minimumSpendForFreeDelivery}
