@@ -34,8 +34,8 @@ const getHourAndMinuteFromTime = time => {
   return `${hour}:${(minutes < 10 ? '0' : '') + minutes}`;
 };
 
-const compareTime = (time1, time2) => {
-  return new Date(time1).valueOf() < new Date(time2).valueOf();
+const isNoLaterThan = (time1, time2) => {
+  return new Date(time1).valueOf() <= new Date(time2).valueOf();
 };
 
 class LocationAndDate extends Component {
@@ -450,7 +450,11 @@ class LocationAndDate extends Component {
     const timeIncrease = i =>
       Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
 
-    for (let i = new Date(startTime).toISOString(); compareTime(i.valueOf(), endTime.valueOf()); i = timeIncrease(i)) {
+    for (
+      let i = new Date(startTime).toISOString();
+      isNoLaterThan(i.valueOf(), endTime.valueOf());
+      i = timeIncrease(i)
+    ) {
       const timeItem = {
         from: i,
       };
@@ -472,7 +476,7 @@ class LocationAndDate extends Component {
       const currentHour = currentTime.getHours();
       const currentMinute = currentTime.getMinutes();
       // If currentTime is smaller than validDeliveryTime, should
-      const isAfterDeliveryStartTime = compareTime(this.validDeliveryTimeTo, currentTime);
+      const isAfterDeliveryStartTime = isNoLaterThan(this.validDeliveryTimeTo, currentTime);
 
       const startTimeForToday = isAfterDeliveryStartTime
         ? currentMinute
@@ -492,7 +496,8 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        <label className="form__label font-weight-bolder">{t('DeliveryTime')}</label>
+        {Utils.isDeliveryType() && <label className="form__label font-weight-bolder">{t('DeliveryTime')}</label>}
+        {Utils.isPickUpType() && <label className="form__label font-weight-bolder">{t('PickupTime')}</label>}
         <ul className="location-display__hour">{this.renderHoursList(timeList)}</ul>
       </div>
     );
