@@ -400,7 +400,6 @@ class LocationAndDate extends Component {
     const closestMinutesInFifteenInterval = currentTime.setMinutes(closestMinute(currentMinute), 0);
     const startTimeForToday = addTime(closestMinutesInFifteenInterval, 30, 'm');
     const fullTimeList = this.pickupTimeList || [];
-
     const startTimeInList = fullTimeList.findIndex(item => isSameTime(item.from, startTimeForToday, ['h', 'm']));
     const hoursListForToday = fullTimeList.slice(startTimeInList);
 

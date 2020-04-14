@@ -56,7 +56,7 @@ export const actions = {
       let d2, toHour, toMinute;
 
       if (hour2) {
-        let d2 = new Date(dateValue);
+        d2 = new Date(dateValue);
         toHour = hour2.split(':')[0];
         toMinute = hour2.split(':')[1];
         d2.setHours(Number(toHour), Number(toMinute), 0);
