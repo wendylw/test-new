@@ -14,7 +14,18 @@ import { toNumericTime, addTime, isSameTime } from '../../../utils/datetime-lib'
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS } = Constants;
 
-const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i > minute);
+const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
+
+// If time is 8:14, should return valid time as 8:30
+// Logic for this one is given a time, calculate the closest time with 0/15/30/45/60
+const closestValidTime = (baseTime, timeGap = 0, timeUnit = 'm') => {
+  const baseTimeDate = baseTime ? new Date(baseTime) : new Date();
+  const baseMinute = baseTimeDate.getMinutes();
+  const closestMinutesInFifteenInterval = baseTimeDate.setMinutes(closestMinute(baseMinute), 0);
+  const resultTime = addTime(closestMinutesInFifteenInterval, timeGap, timeUnit);
+
+  return resultTime;
+};
 
 // Accepts time format like 10:00, 10, and 10:40
 const getHourAndMinuteFromString = time => {
@@ -26,16 +37,24 @@ const getHourAndMinuteFromString = time => {
   return { hour, minute };
 };
 
+// Create time with time string like '01:20', 01 is hour and 20 is minute
+const createTimeWithTimeString = timeString => {
+  const { hour, minute } = getHourAndMinuteFromString(timeString);
+  const currentTime = new Date();
+
+  return currentTime.setHours(hour || 0, minute || 0);
+};
+
 const getHourAndMinuteFromTime = time => {
   const timeDate = new Date(time);
   const hour = timeDate.getHours();
   const minutes = timeDate.getMinutes();
 
-  return `${hour}:${(minutes < 10 ? '0' : '') + minutes}`;
+  return `${hour}:${minutes}`;
 };
 
-const isNoLaterThan = (time1, time2) => {
-  return new Date(time1).valueOf() <= new Date(time2).valueOf();
+const isAfterTime = (time1, time2) => {
+  return new Date(time1).valueOf() < new Date(time2).valueOf();
 };
 
 class LocationAndDate extends Component {
@@ -46,9 +65,12 @@ class LocationAndDate extends Component {
   };
   deliveryHours = [];
   deliveryDates = [];
+
+  // Check if can remove following three variable
   validDays = [];
   validTimeFrom = null;
   validTimeTo = null;
+
   validDeliveryTimeFrom = null;
   validDeliveryTimeTo = null;
   pickupTimeList = null;
@@ -92,26 +114,25 @@ class LocationAndDate extends Component {
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
       this.validDeliveryTimeFrom = startMinute ? startHour + 2 : startHour + 1;
-      this.validDeliveryTimeTo = endHour;
+      this.validDeliveryTimeTo = endMinute ? endHour : endHour - 1;
       this.deliveryTimeList = this.getHoursList();
     }
 
     if (Utils.isPickUpType()) {
-      const nearestStartFifthMinute = 5 * Math.round(startMinute / 5);
-      const nearestEndFifthMinute = 5 * Math.ceil(endMinute / 5);
-      const tempStartBaseTime = new Date();
-      tempStartBaseTime.setHours(startHour, nearestStartFifthMinute);
+      const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
+      const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
-      const tempEndBaseTime = new Date();
-      tempEndBaseTime.setHours(endHour, nearestEndFifthMinute, 0);
+      const tempEndEndTime = createTimeWithTimeString(validTimeTo);
+      const validEndBaseTime = closestValidTime(tempEndEndTime, -30, 'm');
 
-      this.validPickUpTimeFrom = getHourAndMinuteFromTime(addTime(tempStartBaseTime, 30, 'm'));
-      this.validPickUpTimeTo = getHourAndMinuteFromTime(addTime(tempEndBaseTime, -30, 'm'));
+      this.validPickUpTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
+      this.validPickUpTimeTo = getHourAndMinuteFromTime(validEndBaseTime);
       this.pickupTimeList = this.getHoursList();
     }
   };
 
   componentDidUpdate = () => {
+    // Check if can remove validDays from this
     if (!(this.validDays.length && typeof this.validTimeFrom === 'string' && typeof this.validTimeTo === 'string')) {
       const { business, allBusinessInfo } = this.props;
       const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
@@ -395,10 +416,7 @@ class LocationAndDate extends Component {
   getHoursListForToday = (selectedDate = {}) => {
     if (!selectedDate.isToday || !this.pickupTimeList.length) return;
 
-    const currentTime = new Date();
-    const currentMinute = currentTime.getMinutes();
-    const closestMinutesInFifteenInterval = currentTime.setMinutes(closestMinute(currentMinute), 0);
-    const startTimeForToday = addTime(closestMinutesInFifteenInterval, 30, 'm');
+    const startTimeForToday = closestValidTime('', 30, 'm');
     const fullTimeList = this.pickupTimeList || [];
     const startTimeInList = fullTimeList.findIndex(item => isSameTime(item.from, startTimeForToday, ['h', 'm']));
     const hoursListForToday = fullTimeList.slice(startTimeInList);
@@ -444,11 +462,7 @@ class LocationAndDate extends Component {
     const timeIncrease = i =>
       Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
 
-    for (
-      let i = new Date(startTime).toISOString();
-      isNoLaterThan(i.valueOf(), endTime.valueOf());
-      i = timeIncrease(i)
-    ) {
+    for (let i = new Date(startTime).toISOString(); isAfterTime(i.valueOf(), endTime.valueOf()); i = timeIncrease(i)) {
       const timeItem = {
         from: i,
       };
@@ -470,7 +484,7 @@ class LocationAndDate extends Component {
       const currentHour = currentTime.getHours();
       const currentMinute = currentTime.getMinutes();
       // If currentTime is smaller than validDeliveryTime, should
-      const isAfterDeliveryStartTime = isNoLaterThan(this.validDeliveryTimeTo, currentTime);
+      const isAfterDeliveryStartTime = isAfterTime(this.validDeliveryTimeTo, currentTime);
 
       const startTimeForToday = isAfterDeliveryStartTime
         ? currentMinute
@@ -486,7 +500,16 @@ class LocationAndDate extends Component {
     const { selectedDate } = this.state;
 
     if (!selectedDate || !selectedDate.date) return;
-    const timeList = this.getHoursList(selectedDate);
+
+    let timeList;
+
+    if (!selectedDate.isToday) {
+      if (Utils.isDeliveryType()) timeList = this.deliveryTimeList || this.getHoursList(selectedDate);
+      if (Utils.isPickUpType()) timeList = this.pickupTimeList || this.getHoursList(selectedDate);
+    } else {
+      if (Utils.isDeliveryType()) timeList = this.getHoursList(selectedDate);
+      if (Utils.isPickUpType()) timeList = this.getHoursListForToday(selectedDate);
+    }
 
     return (
       <div className="form__group location-display__date-container">
