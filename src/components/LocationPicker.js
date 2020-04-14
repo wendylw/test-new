@@ -76,7 +76,7 @@ class LocationPicker extends Component {
 
   async getPlaceDetailsFromSearchResult(searchResult) {
     const placeDetail = await getPlaceDetailsFromPlaceId(searchResult.place_id, {
-      fields: ['geometry'],
+      fields: ['geometry', 'address_components'],
     });
     const { main_text, secondary_text } = searchResult.structured_formatting;
     placeDetail.address = `${main_text}, ${secondary_text}`;

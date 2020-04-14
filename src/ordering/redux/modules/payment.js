@@ -1,24 +1,22 @@
-import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getOnlineStoreInfo, getRequestInfo } from './app';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
+import i18next from 'i18next';
 
 const initialState = {
-  //currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
   currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
-  paymentList: [],
 };
 
 export const types = {
@@ -46,11 +44,6 @@ export const types = {
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
   FETCH_BANKLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_BANKLIST_FAILURE',
-
-  // getPaymentList
-  FETCH_PAYMENTLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_REQUEST',
-  FETCH_PAYMENTLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_SUCCESS',
-  FETCH_PAYMENTLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_FAILURE',
 };
 
 // action creators
@@ -156,6 +149,16 @@ export const actions = {
       )
     );
 
+    if (result.type === types.CREATEORDER_FAILURE) {
+      dispatch(
+        appActions.showError({
+          message: i18next.t('PlaceOrderFailedDescription', {
+            ns: 'OrderingPayment',
+          }),
+        })
+      );
+    }
+
     if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
       try {
         await setHistoricalDeliveryAddresses(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
@@ -171,9 +174,9 @@ export const actions = {
     return dispatch(fetchOrder({ orderId }));
   },
 
-  setCurrentPayment: paymentName => ({
+  setCurrentPayment: paymentLabel => ({
     type: types.SET_CURRENT_PAYMENT,
-    paymentName,
+    paymentLabel,
   }),
 
   fetchBraintreeToken: paymentName => ({
@@ -194,21 +197,13 @@ export const actions = {
     type: types.CLEAR_BRAINTREE_TOKEN,
   }),
 
-  fetchBankList: () => ({
+  fetchBankList: country => ({
     [API_REQUEST]: {
       types: [types.FETCH_BANKLIST_REQUEST, types.FETCH_BANKLIST_SUCCESS, types.FETCH_BANKLIST_FAILURE],
       ...Url.API_URLS.GET_BANKING_LIST,
+      params: { country },
     },
   }),
-
-  fetchPaymentList: () => dispatch => {
-    return dispatch({
-      type: types.FETCH_PAYMENTLIST_SUCCESS,
-      response: {
-        paymentList: config.paymentList,
-      },
-    });
-  },
 };
 
 const createOrder = variables => {
@@ -242,7 +237,7 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case types.SET_CURRENT_PAYMENT:
-      return { ...state, currentPayment: action.paymentName };
+      return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
       const { orders, redirectUrl } = data || {};
       const [order] = orders;
@@ -273,11 +268,6 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, bankingList };
     }
-    case types.FETCH_PAYMENTLIST_SUCCESS: {
-      const { paymentList } = response || {};
-
-      return { ...state, paymentList };
-    }
     default:
       return state;
   }
@@ -295,5 +285,3 @@ export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
-
-export const getPaymentList = state => state.payment.paymentList;

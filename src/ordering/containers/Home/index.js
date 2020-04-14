@@ -57,6 +57,16 @@ export class Home extends Component {
     homeActions.loadProductList();
   };
 
+  getBusinessCountry = () => {
+    try {
+      const { businessInfo } = this.props;
+      return businessInfo.country;
+    } catch (e) {
+      // this could happen when allBusinessInfo is not loaded.
+      return undefined;
+    }
+  };
+
   // get deliveryTo info from cookie and set into localStorage
   setupDeliveryAddressByRedirectState = async () => {
     const state = await fetchRedirectPageState();
@@ -181,10 +191,12 @@ export class Home extends Component {
 
   getExpectedDeliveryTime = () => {
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+    const locale = this.getBusinessCountry();
 
     return formatToDeliveryTime({
       date: date,
       hour: hour,
+      locale,
     });
   };
 
