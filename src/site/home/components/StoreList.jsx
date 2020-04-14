@@ -80,7 +80,7 @@ class StoreList extends Component {
                 <h3 className="store-card-list__title text-size-bigger text-weight-bold text-omit__single-line">
                   {name}
                 </h3>
-                <ul className="store-info margin-top-bottom-smaller">
+                <ul className="store-info">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">
@@ -95,7 +95,7 @@ class StoreList extends Component {
                   ) : null}
                 </ul>
                 {enableCashback && cashbackRate ? (
-                  <div className="flex flex-middle margin-top-bottom-smaller">
+                  <div className="flex flex-middle">
                     <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
                     <span className="store-info__text text-size-small text-middle">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
@@ -103,7 +103,7 @@ class StoreList extends Component {
                   </div>
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
-                  <div className="flex flex-middle margin-top-bottom-smaller">
+                  <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
                     <Trans i18nKey="MvpFreeDeliveryPrompt" minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}>
                       <span className="store-info__text text-size-small text-middle">
