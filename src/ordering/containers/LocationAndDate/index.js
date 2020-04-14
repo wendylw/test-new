@@ -178,10 +178,16 @@ class LocationAndDate extends Component {
     const deliveryDates = [];
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
+      const currentHour = currentTime.getHours();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
-      const isOpen = validDays.includes(weekday);
+      let isOpen = validDays.includes(weekday);
       const deliveryDate = new Date(newDate).setHours(0, 0, 0);
+
+      if (!i) {
+        isOpen = validDays.includes(weekday) && currentHour < this.validTimeTo;
+        if (!isOpen) continue;
+      }
 
       deliveryDates.push({
         date: new Date(deliveryDate).toISOString(),
@@ -437,14 +443,14 @@ class LocationAndDate extends Component {
       }
 
       // If user visit this page after store closes, show nothing
-      if (currentHour > this.validDeliveryTimeTo
-        || validHour > this.validDeliveryTimeTo
-      ) {
+      if (currentHour > this.validDeliveryTimeTo || validHour > this.validDeliveryTimeTo) {
         return [];
-      } 
+      }
 
       // If user visit this page in the middle of the day, first item should be 'immediate'
-      const startTimeInList = fullTimeList.findIndex(item => isSameTime(item.from, currentTime.setHours(validHour), ['h']));
+      const startTimeInList = fullTimeList.findIndex(item =>
+        isSameTime(item.from, currentTime.setHours(validHour), ['h'])
+      );
       hoursListForToday = fullTimeList.slice(startTimeInList);
       hoursListForToday.unshift({
         from: 'now',
@@ -495,7 +501,7 @@ class LocationAndDate extends Component {
     }
 
     return timeList;
-  }
+  };
 
   getHoursList = (selectedDate = {}) => {
     let timeList = [];
