@@ -1,4 +1,5 @@
 import CONSTANTS from './constants';
+import i18next from 'i18next';
 export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
     MY: 'EN',
@@ -131,7 +132,7 @@ export const toDayDateMonth = (date, locale = 'MY') =>
   date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
-  if (hour.from === 'now') return 'DeliverNow';
+  if (hour.from === 'now') return i18next.t('DeliverNow');
 
   const hourFrom = hour.from.split(':')[0];
   const minuteFrom = hour.from.split(':')[1];
@@ -141,7 +142,7 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   let part1;
 
   if (workDate.getDate() === new Date().getDate()) {
-    part1 = 'Today';
+    part1 = i18next.t('Today');
   } else {
     part1 = toDayDateMonth(workDate, locale);
   }
