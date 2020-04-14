@@ -272,6 +272,10 @@ img {
   padding-bottom: 3.8vw;
 }
 
+.margin-top-bottom-smaller {
+  margin: 2.4vw 0;
+}
+
 .margin-normal {
   margin: 3.8vw;
 }
@@ -827,6 +831,10 @@ img {
   .padding-top-bottom-normal {
     padding-top: 8px * 2;
     padding-bottom: 8px * 2;
+  }
+
+  .margin-top-bottom-smaller {
+    margin: 8px 0;
   }
 
   .margin-normal {

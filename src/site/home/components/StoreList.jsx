@@ -80,7 +80,7 @@ class StoreList extends Component {
                 <h3 className="store-card-list__title text-size-bigger text-weight-bolder text-omit__single-line">
                   {name}
                 </h3>
-                <ul className="store-info padding-top-bottom-smaller">
+                <ul className="store-info">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle">
@@ -121,7 +121,7 @@ class StoreList extends Component {
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery above
                         <CurrencyNumber
-                          className="text-size-small text-middle"
+                          className="text-size-small"
                           locale={locale}
                           currency={currency}
                           price={minimumSpendForFreeDelivery}

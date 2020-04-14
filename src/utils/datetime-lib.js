@@ -129,7 +129,7 @@ export const toNumericTimeRange = (date1, date2, locale = 'MY') =>
   `${toNumericTime(date1, locale)} - ${toNumericTime(date2, locale)}`;
 
 export const toDayDateMonth = (date, locale = 'MY') =>
-  date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+  toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   if (hour.from === 'now') return i18next.t('DeliverNow');
