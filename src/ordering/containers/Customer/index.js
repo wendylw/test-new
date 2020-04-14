@@ -165,9 +165,10 @@ class Customer extends Component {
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     let deliveryTime;
     if (date.date && hour.from) {
-      deliveryTime = date.isToday
-        ? t('DeliverNow')
-        : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
+      deliveryTime =
+        date.isToday && hour.from === 'now'
+          ? t('DeliverNow')
+          : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
     } else {
       deliveryTime = '';
     }

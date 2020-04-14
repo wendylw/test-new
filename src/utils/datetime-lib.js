@@ -131,11 +131,20 @@ export const toDayDateMonth = (date, locale = 'MY') =>
   date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
+  if (hour.from === 'now') return 'DeliverNow';
+
   const hourFrom = hour.from.split(':')[0];
   const minuteFrom = hour.from.split(':')[1];
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
   workDateFrom.setHours(hourFrom, minuteFrom, 0);
+  let part1;
+
+  if (workDate.getDate() === new Date().getDate()) {
+    part1 = 'Today';
+  } else {
+    part1 = toDayDateMonth(workDate, locale);
+  }
 
   let part2 = toNumericTime(workDateFrom, locale);
 
@@ -146,8 +155,6 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
     workDateTo.setHours(hourTo, minuteTo, 0);
     part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
   }
-
-  const part1 = toDayDateMonth(workDate, locale);
 
   return `${part1}, ${part2}`;
 };
