@@ -148,21 +148,13 @@ export class Home extends Component {
     const { deliveryToAddress } = this.getDeliveryInfo();
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
-      const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
-
-      Utils.setSessionVariable(
-        locationPageCallbackUrl,
-        JSON.stringify({
-          pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-          search,
-        })
-      );
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
       history.push({
         pathname: enablePreOrder
           ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
           : Constants.ROUTER_PATHS.ORDERING_LOCATION,
-        search,
+        search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };
 

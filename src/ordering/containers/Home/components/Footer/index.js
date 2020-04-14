@@ -39,17 +39,12 @@ export class Footer extends Component {
         (Utils.isPickUpType() && (!date.date || !hour.from))
       ) {
         const { search } = window.location;
-        Utils.setSessionVariable(
-          'deliveryTimeCallbackUrl',
-          JSON.stringify({
-            pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-            search,
-          })
-        );
+
+        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${search}`);
 
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-          search,
+          search: `${search}&callbackUrl=${callbackUrl}`,
         });
         return;
       }

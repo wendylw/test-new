@@ -188,17 +188,13 @@ class LocationAndDate extends Component {
     const { search } = window.location;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    Utils.setSessionVariable(
-      'deliveryCallbackUrl',
-      JSON.stringify({
-        pathname: enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION,
-        search,
-      })
+    const callbackUrl = encodeURIComponent(
+      `${enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION}${search}`
     );
 
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
-      search,
+      search: `${search}&callbackUrl=${callbackUrl}`,
     });
   };
 
@@ -536,14 +532,10 @@ class LocationAndDate extends Component {
       hour: selectedHour,
     });
 
-    const callbackUrl = JSON.parse(Utils.getSessionVariable('deliveryTimeCallbackUrl'));
-    Utils.removeSessionVariable('deliveryTimeCallbackUrl');
-    if (typeof callbackUrl === 'object') {
-      const { pathname, search } = callbackUrl;
-      history.push({
-        pathname: pathname,
-        search,
-      });
+    const callbackUrl = Utils.getQueryString('callbackUrl');
+
+    if (typeof callbackUrl === 'string') {
+      history.push(callbackUrl);
     } else {
       history.go(-1);
     }

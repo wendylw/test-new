@@ -61,16 +61,10 @@ class DeliveryMethods extends Component {
       // remove delivery time write in session to prevent date inconsistence issus
       Utils.removeExpectedDeliveryTime();
       // Should always let users select delivery time if this store has enabled preOrder
-      await Utils.setSessionVariable(
-        'deliveryTimeCallbackUrl',
-        JSON.stringify({
-          pathname: ROUTER_PATHS.ORDERING_HOME,
-          search: `?h=${hashCode || ''}&type=${methodName}`,
-        })
-      );
+      const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_HOME}?h=${hashCode || ''}&type=${methodName}`);
 
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}/?h=${hashCode ||
-        ''}&type=${methodName}`;
+        ''}&type=${methodName}&callbackUrl=${callbackUrl}`;
       return;
     }
 
@@ -80,16 +74,10 @@ class DeliveryMethods extends Component {
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
         return;
       } else if (!deliveryTo) {
-        await Utils.setSessionVariable(
-          'deliveryCallbackUrl',
-          JSON.stringify({
-            pathname: ROUTER_PATHS.ORDERING_HOME,
-            search: `?h=${hashCode || ''}&type=${methodName}`,
-          })
-        );
+        const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_HOME}?h=${hashCode || ''}&type=${methodName}`);
 
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
-          ''}&type=${methodName}`;
+          ''}&type=${methodName}&callbackUrl=${callbackUrl}`;
         return;
       }
     } else {

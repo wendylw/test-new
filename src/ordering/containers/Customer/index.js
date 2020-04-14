@@ -206,21 +206,14 @@ class Customer extends Component {
           className="form__group"
           onClick={async () => {
             const { search } = window.location;
-            const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
 
-            await Utils.setSessionVariable(
-              locationPageCallbackUrl,
-              JSON.stringify({
-                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                search,
-              })
-            );
+            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
             history.push({
               pathname: enablePreOrder
                 ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
                 : Constants.ROUTER_PATHS.ORDERING_LOCATION,
-              search,
+              search: `${search}&callbackUrl=${callbackUrl}`,
             });
           }}
         >
@@ -282,17 +275,11 @@ class Customer extends Component {
           onClick={async () => {
             const { search } = window.location;
 
-            await Utils.setSessionVariable(
-              'deliveryTimeCallbackUrl',
-              JSON.stringify({
-                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                search,
-              })
-            );
+            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-              search,
+              search: `${search}&callbackUrl=${callbackUrl}`,
             });
           }}
         >
