@@ -52,15 +52,19 @@ export const actions = {
     const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
       const fromHour = hour1.split(':')[0];
       const fromMinute = hour1.split(':')[1];
-      const toHour = hour2.split(':')[0];
-      const toMinute = hour2.split(':')[1];
       const d1 = new Date(dateValue);
+      let d2, toHour, toMinute;
+
+      if (hour2) {
+        let d2 = new Date(dateValue);
+        toHour = hour2.split(':')[0];
+        toMinute = hour2.split(':')[1];
+        d2.setHours(Number(toHour), Number(toMinute), 0);
+      }
       d1.setHours(Number(fromHour), Number(fromMinute), 0);
-      const d2 = new Date(dateValue);
-      d2.setHours(Number(toHour), Number(toMinute), 0);
       return {
         expectDeliveryDateFrom: d1.toISOString(),
-        expectDeliveryDateTo: d2.toISOString(),
+        expectDeliveryDateTo: d2 && d2.toISOString(),
       };
     };
 
