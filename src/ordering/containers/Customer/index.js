@@ -178,7 +178,7 @@ class Customer extends Component {
     return (
       <Fragment>
         <div className="flex flex-middle flex-space-between">
-          <label className="form__label font-weight-bolder gray-font-opacity">{t('DeliverOn')}</label>
+          <label className="form__label font-weight-bold">{t('DeliverOn')}</label>
           <i className="customer__edit-icon">
             <IconEdit />
           </i>
@@ -219,7 +219,7 @@ class Customer extends Component {
           }}
         >
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bolder gray-font-opacity">{t('DeliverTo')}</label>
+            <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
             <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
@@ -285,14 +285,14 @@ class Customer extends Component {
           }}
         >
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bolder gray-font-opacity">{t('PickupAt')}</label>
+            <label className="form__label font-weight-bold">{t('PickupAt')}</label>
             {/* <IconEdit className="customer__edit-icon" /> */}
           </div>
           <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bolder gray-font-opacity">{t('PickUpOn')}</label>
+            <label className="form__label font-weight-bold">{t('PickUpOn')}</label>
             <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>

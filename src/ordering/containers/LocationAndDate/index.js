@@ -270,7 +270,7 @@ class LocationAndDate extends Component {
       const { t } = this.props;
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bolder">{t('DeliverTo')}</label>
+          <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
@@ -293,7 +293,7 @@ class LocationAndDate extends Component {
       const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bolder">{t('PickupAt')}</label>
+          <label className="form__label font-weight-bold">{t('PickupAt')}</label>
           <div className="form__textarea">{pickUpAddress}</div>
         </div>
       );
@@ -306,7 +306,7 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group">
-        <label className="form__label font-weight-bolder">
+        <label className="form__label font-weight-bold">
           {Utils.isDeliveryType() && t('DeliverOn')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </label>
@@ -433,7 +433,6 @@ class LocationAndDate extends Component {
       displayTimeTo = this.validPickUpTimeTo;
       if (selectedDate.isToday) {
         return this.getHoursListForToday(selectedDate);
-        // displayTimeFrom = this.getStartTimeForToday();
       } else {
         displayTimeFrom = this.validPickUpTimeFrom;
       }
@@ -492,8 +491,8 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && <label className="form__label font-weight-bolder">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="form__label font-weight-bolder">{t('PickupTime')}</label>}
+        {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
+        {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
         <ul className="location-display__hour">{this.renderHoursList(timeList)}</ul>
       </div>
     );
