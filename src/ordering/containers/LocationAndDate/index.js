@@ -10,9 +10,11 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { toNumericTime, addTime } from '../../../utils/datetime-lib';
+import { toNumericTime, addTime, isSameTime } from '../../../utils/datetime-lib';
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS } = Constants;
+
+const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i > minute);
 
 // Accepts time format like 10:00, 10, and 10:40
 const getHourAndMinuteFromString = time => {
@@ -50,11 +52,9 @@ class LocationAndDate extends Component {
   validDeliveryTimeFrom = null;
   validDeliveryTimeTo = null;
   pickupTimeList = null;
-  // pickupTimeListForToday = null;
   validPickUpTimeFrom = null;
   validPickUpTimeTo = null;
   deliveryTimeList = null;
-  // deliveryTimeListForToday = null;
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
@@ -85,7 +85,7 @@ class LocationAndDate extends Component {
     }
   };
 
-  getValidTimeToOrder = (validDays, validTimeFrom, validTimeTo) => {
+  getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(validTimeTo);
 
@@ -93,8 +93,6 @@ class LocationAndDate extends Component {
       // Calculate valid delivery time range
       this.validDeliveryTimeFrom = startMinute ? startHour + 2 : startHour + 1;
       this.validDeliveryTimeTo = endHour;
-      // this.validDeliveryTimeFrom = `${startMinute ? startHour + 2 : startHour + 1}:00`;
-      // this.validDeliveryTimeTo = `${endHour}:00`;
       this.deliveryTimeList = this.getHoursList();
     }
 
@@ -127,7 +125,7 @@ class LocationAndDate extends Component {
         this.validTimeFrom = validTimeFrom;
         this.validTimeTo = validTimeTo;
 
-        this.getValidTimeToOrder(validDays, validTimeFrom, validTimeTo);
+        this.getValidTimeToOrder(validTimeFrom, validTimeTo);
         this.setDeliveryDays(this.validDays);
       }
 
@@ -146,26 +144,17 @@ class LocationAndDate extends Component {
     const initialSelectedTime =
       enablePreOrder && date.date ? Utils.getExpectedDeliveryDateFromSession() : { date: this.deliveryDates[0] };
 
-    // const hoursListForToday = this.getHoursList(initialSelectedTime.date);
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
-    // if (Utils.isDeliveryType() && initialSelectedTime.date.isToday && !initialSelectedTime.hour){
-    //   selectedHour = {
-    //     from: 'now',
-    //     to: 'now',
-    //   };
-    // }
 
     // if selectedDate is today, should auto select immediate
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
-      // || getHourAndMinuteFromTime(hoursListForToday[0]),
     });
   };
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
-    // const country = this.getBusinessCountry();
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -237,8 +226,8 @@ class LocationAndDate extends Component {
       // If is pickup, there won't be to
       if (date.isToday) {
         const timeList = this.getHoursList(date);
-        if (timeList) {
-          return {}
+        if (!timeList.length) {
+          return {};
         }
         const firstTimeItem = timeList[0];
         return {
@@ -407,27 +396,19 @@ class LocationAndDate extends Component {
     });
   };
 
-  getPreOrderStartEndTime = () => {
-    // const { selectedDate } = this.state;
-    let startTime;
-    let endTime;
+  getHoursListForToday = (selectedDate = {}) => {
+    if (!selectedDate.isToday || !this.pickupTimeList.length) return;
 
-    if (Utils.isDeliveryType()) {
-      // if (selectedDate.isToday) {
-      //   startTime =
-      // }
-      startTime = this.validDeliveryTimeFrom;
-      endTime = this.validDeliveryTimeTo;
-    }
+    const currentTime = new Date();
+    const currentMinute = currentTime.getMinutes();
+    const closestMinutesInFifteenInterval = currentTime.setMinutes(closestMinute(currentMinute), 0);
+    const startTimeForToday = addTime(closestMinutesInFifteenInterval, 30, 'm');
+    const fullTimeList = this.pickupTimeList || [];
 
-    if (Utils.isPickUpType()) {
-      // if (selectedDate.isToday) {
-      // }
-      startTime = this.validPickUpTimeFrom;
-      endTime = this.validPickUpTimeTo;
-    }
+    const startTimeInList = fullTimeList.findIndex(item => isSameTime(item.from, startTimeForToday, ['h', 'm']));
+    const hoursListForToday = fullTimeList.slice(startTimeInList);
 
-    return { startTime, endTime };
+    return hoursListForToday;
   };
 
   getHoursList = (selectedDate = {}) => {
@@ -455,7 +436,8 @@ class LocationAndDate extends Component {
     if (Utils.isPickUpType()) {
       displayTimeTo = this.validPickUpTimeTo;
       if (selectedDate.isToday) {
-        displayTimeFrom = this.getStartTimeForToday();
+        return this.getHoursListForToday(selectedDate);
+        // displayTimeFrom = this.getStartTimeForToday();
       } else {
         displayTimeFrom = this.validPickUpTimeFrom;
       }
@@ -485,15 +467,7 @@ class LocationAndDate extends Component {
   getStartTimeForToday = () => {
     const currentTime = new Date();
 
-    if (Utils.isPickUpType()) {
-      // Check what if store opens at 8am, and users get to this page on 5am
-      const nearestStartFifthMinute = 5 * Math.round(currentTime.getMinutes() / 5);
-      const tempStartBaseTime = new Date();
-      tempStartBaseTime.setHours(currentTime.getHours(), nearestStartFifthMinute, 0);
-
-      const startTimeForToday = getHourAndMinuteFromTime(addTime(tempStartBaseTime, 30, 'm'));
-      return startTimeForToday;
-    } else if (Utils.isDeliveryType()) {
+    if (Utils.isDeliveryType()) {
       // Check what if store opens at 8am, and users get to this page on 5am
       const currentHour = currentTime.getHours();
       const currentMinute = currentTime.getMinutes();
@@ -512,6 +486,8 @@ class LocationAndDate extends Component {
   renderHourSelector = () => {
     const { t } = this.props;
     const { selectedDate } = this.state;
+
+    if (!selectedDate || !selectedDate.date) return;
     const timeList = this.getHoursList(selectedDate);
 
     return (

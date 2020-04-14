@@ -173,3 +173,26 @@ export const addTime = (date = new Date(), timeToAdd, unit) => {
       return new Date(baseTime()).toISOString();
   }
 };
+
+export const isSameTime = (time1, time2, unitToCheck = []) => {
+  const timeDate1 = new Date(time1);
+  const timeDate2 = new Date(time2);
+
+  if (unitToCheck.includes('y')) {
+    if (timeDate1.getFullYear() !== timeDate2.getFullYear()) return false;
+  }
+
+  if (unitToCheck.includes('m')) {
+    if (timeDate1.getMonth() !== timeDate2.getMonth()) return false;
+  }
+
+  if (unitToCheck.includes('h')) {
+    if (timeDate1.getHours() !== timeDate2.getHours()) return false;
+  }
+
+  if (unitToCheck.includes('s')) {
+    if (timeDate1.getMinutes() !== timeDate2.getMinutes()) return false;
+  }
+
+  return true;
+};
