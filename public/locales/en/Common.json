@@ -86,6 +86,7 @@
   "AddDeliveryTimePlaceholder": "Add in your delivery time",
   "AddressDetailsPlaceholder": "e.g Floor, unit number",
   "AddNoteToDriverPlaceholder": "Add a note to driver",
+  "AddNoteToMerchantPlaceholder": "Add a note to merchant driver",
   "AddAddressDetailsPlaceholder": "Unit/Block/Floor",
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
