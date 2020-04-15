@@ -3230,15 +3230,6 @@ body.loading {
       }
     }
   }
-
-  .location-page {
-    &__entry-container {
-      .top-message__second-level ~ .list__container .category__header.fixed,
-      .top-message__second-level + .category-nav {
-        top: 154px;
-      }
-    }
-  }
 }
 
 @media (min-width: 600px) {
