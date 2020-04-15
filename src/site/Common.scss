@@ -18,7 +18,7 @@ html {
   background: $white;
   font-size: $font-size-base;
   color: $main-color;
-  font-weight: $font-weight-bold;
+  font-weight: $font-weight-bolder;
 
   font-family: system-ui, -apple-system, Roboto, Ubuntu, Helvetica, Arial, sans-serif;
   touch-action: manipulation;
@@ -68,6 +68,10 @@ address {
   text-transform: uppercase;
 }
 
+.text-capitalize {
+  text-transform: capitalize;
+}
+
 .text-error {
   color: $red;
 }
@@ -86,6 +90,10 @@ address {
 
 .text-weight-bold {
   font-weight: $font-weight-bold;
+}
+
+.text-weight-bolder {
+  font-weight: $font-weight-bolder;
 }
 
 .text-opacity {

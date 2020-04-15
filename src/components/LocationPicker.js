@@ -70,7 +70,7 @@ class LocationPicker extends Component {
       const historicalAddresses = await getHistoricalDeliveryAddresses();
       this.setState({ historicalAddresses });
     } catch (e) {
-      console.error('Failed to get historical addresses');
+      console.error('Failed to get historical addresses', e);
     }
   }
 
@@ -181,17 +181,17 @@ class LocationPicker extends Component {
     const { t } = this.props;
     return (
       <div className="location-picker__search-box">
-        <div className="form__group flex flex-middle">
-          <IconSearch className="icon icon__normal icon__gray" onClick={this.tryGeolocation} />
+        <div className="location-picker__search-box-inner flex flex-middle">
+          <IconSearch className="location-picker__search-box-magnifier-icon" onClick={this.tryGeolocation} />
           <input
-            className="form__input"
+            className="location-picker__search-box-input"
             type="text"
             placeholder={t('SearchYourAddress')}
             onChange={this.onSearchBoxChange}
             value={searchText}
           />
           <IconClose
-            className="form__search-icon icon icon__small icon__gray"
+            className="location-picker__search-box-close-icon"
             onClick={this.clearSearchBox}
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
           />

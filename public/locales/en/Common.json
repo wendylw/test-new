@@ -9,6 +9,7 @@
   "BackToHome": "Back to home",
   "Save": "Save",
   "Free": "Free",
+  "ContactUs": "Contact Us",
   "TermsAndPrivacyDescription": "By tapping to continue, you agree to our<1></1><2><3>Terms of Service</3>, and <3>Privacy Policy</3>.</2>",
   "DefaultMessage": "Oops, please scan QR to claim again.",
   "InvalidMessage": "After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!",
@@ -36,7 +37,6 @@
   "Back": "Back",
   "ClearAll": "Clear All",
   "TableIdText": "Table {{tableId}}",
-  "SelfPickUp": "Self pick-up",
   "MinimumConsumption": "<0>Min </0><1></1>",
   "MinimumOrder": "<0>Min Order.</0><1></1>",
   "RemainingConsumption": "<0>Remaining </0><1></1>",
@@ -71,7 +71,10 @@
   "SelectYourPreference": "Select Your Preference",
   "DeliverTo": "Deliver To",
   "DeliverOn": "Deliver On",
+  "PickupAt": "Pickup At",
+  "PickUpOn": "Pickup On",
   "DeliveryTime": "Delivery Time",
+  "PickupTime": "Pickup Time",
   "DeliverNow": "TODAY, immediately",
   "DeliverToErrorMessage": "Sorry order location is too far from store",
   "Closed": "Closed",
@@ -108,6 +111,8 @@
   "Sat": "Sat",
   "Sun": "Sun",
   "Now": "Now",
+  "DeliveryHours": "Delivery Hours",
+  "Today": "Today",
   "Okay": "Okay",
-  "DeliveryHours": "Delivery Hours"
+  "Immediate": "Immediate"
 }

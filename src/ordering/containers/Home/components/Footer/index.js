@@ -30,23 +30,21 @@ export class Footer extends Component {
     const { history, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (enablePreOrder && Utils.isDeliveryType()) {
+    if (enablePreOrder) {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
-      if (!deliveryToAddress || !date.date || !hour) {
+      if (
+        (Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour)) ||
+        (Utils.isPickUpType() && (!date.date || !hour.from))
+      ) {
         const { search } = window.location;
-        Utils.setSessionVariable(
-          'deliveryTimeCallbackUrl',
-          JSON.stringify({
-            pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-            search,
-          })
-        );
+
+        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${search}`);
 
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-          search,
+          search: `${search}&callbackUrl=${callbackUrl}`,
         });
         return;
       }
@@ -81,7 +79,7 @@ export class Footer extends Component {
             </div>
 
             <div className="cart-bar__money text-middle text-left">
-              <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
+              <CurrencyNumber className="font-weight-bolder" money={this.getDisplayPrice() || 0} />
               {this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="cart-bar__money-minimum">
                   {count ? (

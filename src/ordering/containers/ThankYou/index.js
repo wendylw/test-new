@@ -13,17 +13,18 @@ import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 import beepSuccessImage from '../../../images/beep-success.png';
+import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
 import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
 import beepOnTheWay from '../../../images/beep-on-the-way.svg';
 import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
 import beepOrderPending from '../../../images/beep-order-pending.svg';
 import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
-import Loader from '../Payment/components/Loader';
 import {
   toDayDateMonth,
   toNumericTimeRange,
   toLocaleDateString,
   toLocaleTimeString,
+  toNumericTime,
 } from '../../../utils/datetime-lib';
 
 const TIME_OPTIONS = {
@@ -87,15 +88,15 @@ export class ThankYou extends Component {
     const { t, order } = this.props;
     const { tableId, pickUpId } = order || {};
 
-    if (!pickUpId || tableId) {
+    if (tableId) {
       return null;
     }
 
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="gray-font-opacity font-weight-bold text-uppercase">{t('YourOrderNumber')}</label>
-          <span className="thanks-pickup__id-number" data-testid="thanks__pickup-number">
+          <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
+          <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
             {pickUpId}
           </span>
         </div>
@@ -110,10 +111,10 @@ export class ThankYou extends Component {
     if (this.state.needReceipt === 'detail') {
       return (
         <div className="thanks__receipt-info">
-          <h4 className="thanks__receipt-title font-weight-bold">{t('PingStaffTitle')}</h4>
+          <h4 className="thanks__receipt-title font-weight-bolder">{t('PingStaffTitle')}</h4>
           <div>
             <label className="thanks__receipt-label">{t('ReceiptNumber')}: </label>
-            <span className="thanks__receipt-number font-weight-bold">{orderId}</span>
+            <span className="thanks__receipt-number font-weight-bolder">{orderId}</span>
           </div>
         </div>
       );
@@ -121,7 +122,7 @@ export class ThankYou extends Component {
 
     return (
       <button
-        className="thanks__link link font-weight-bold text-uppercase button__block"
+        className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
@@ -134,7 +135,7 @@ export class ThankYou extends Component {
     const { t } = this.props;
     return (
       <button
-        className="thanks__link link font-weight-bold text-uppercase button__block"
+        className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
       >
@@ -155,7 +156,7 @@ export class ThankYou extends Component {
     return targetInfo;
   };
 
-  getConsumerStatusFlowUI({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
+  renderConsumerStatusFlow({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
     if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -240,11 +241,9 @@ export class ThankYou extends Component {
         <div className="thanks__delivery-status-container">
           <ul className="thanks__delivery-status-list text-left">
             <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{currentStatusObj.firstNote}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.firstNote}</label>
               <div className="thanks__delivery-status-time">
-                <i className="access-time-icon text-middle">
-                  <IconAccessTime />
-                </i>
+                <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle gray-font-opacity">
                   {`${
                     currentStatusObj.timeToShow
@@ -259,12 +258,10 @@ export class ThankYou extends Component {
               </div>
             </li>
             <li className={`thanks__delivery-status-item ${currentStatusObj.secondLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{currentStatusObj.secondNote}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.secondNote}</label>
               {currentStatusObj.secondTimeToShow ? (
                 <div className="thanks__delivery-status-time">
-                  <i className="access-time-icon text-middle">
-                    <IconAccessTime />
-                  </i>
+                  <IconAccessTime className="access-time-icon text-middle" />
                   <time className="text-middle gray-font-opacity">
                     {`${
                       currentStatusObj.secondTimeToShow
@@ -286,29 +283,41 @@ export class ThankYou extends Component {
   }
 
   renderStoreInfo = () => {
-    const { t } = this.props;
-    const { storeInfo, total, deliveryInformation } = this.props.order || {};
+    const isPickUpType = Utils.isPickUpType();
+    const { t, order } = this.props;
+    const { isPreOrder } = order || {};
+
+    if (!order) return;
+
+    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom } = order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
-
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
+    const pickupTime = toNumericTime(new Date(expectDeliveryDateFrom));
 
     return (
       <div className="thanks__delivery-info text-left">
+        {isPickUpType && isPreOrder ? (
+          <div className="thanks__pickup">
+            <label className="thanks__text font-weight-bolder">{t('PickupAt')}</label>
+            <p className="thanks__pickup-time gray-font-opacity">{pickupTime}</p>
+          </div>
+        ) : null}
+
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bold">{name}</label>
+          <label className="thanks__text font-weight-bolder">{name}</label>
           <div>
             <span className="thanks__text">{t('Total')}</span>
-            <CurrencyNumber className="thanks__text font-weight-bold" money={total || 0} />
+            <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
           </div>
         </div>
-        <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>
+        {isPickUpType ? null : <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>}
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
-          <span className="gray-font-opacity">{deliveryAddress}</span>
+          <span className="gray-font-opacity">{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
       </div>
     );
@@ -329,7 +338,7 @@ export class ThankYou extends Component {
     return (
       <div className="thanks__delivery-info text-left">
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bold">{t('ThanksForOrderingWithUs')}</label>
+          <label className="thanks__text font-weight-bolder">{t('ThanksForOrderingWithUs')}</label>
         </div>
         <p className="thanks__address-details gray-font-opacity">
           {t('PreOrderDeliveryTimeDetails', {
@@ -376,11 +385,9 @@ export class ThankYou extends Component {
               this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
             }`}
           >
-            <label className="thanks__delivery-status-label font-weight-bold">{t('OrderConfirmed')}</label>
+            <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderConfirmed')}</label>
             <div className="thanks__delivery-status-time">
-              <i className="access-time-icon text-middle">
-                <IconAccessTime />
-              </i>
+              <IconAccessTime className="access-time-icon text-middle" />
               <time className="text-middle gray-font-opacity">
                 {`${paidStatusObjTime ? toLocaleTimeString(paidStatusObjTime, country, TIME_OPTIONS) : ''}, ${
                   paidStatusObjTime ? toLocaleDateString(paidStatusObjTime, country, DATE_OPTIONS) : ''
@@ -390,16 +397,14 @@ export class ThankYou extends Component {
           </li>
           {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{t('RiderPendingTips')}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderPendingTips')}</label>
             </li>
           ) : null}
           {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{t('RiderOnTheWay')}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderOnTheWay')}</label>
               <div className="thanks__delivery-status-time">
-                <i className="access-time-icon text-middle">
-                  <IconAccessTime />
-                </i>
+                <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle gray-font-opacity">
                   {`${pickingStatusObjTime ? toLocaleTimeString(pickingStatusObjTime, country, TIME_OPTIONS) : ''}, ${
                     pickingStatusObjTime ? toLocaleDateString(pickingStatusObjTime, country, DATE_OPTIONS) : ''
@@ -410,11 +415,9 @@ export class ThankYou extends Component {
           ) : null}
           {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bold">{t('OrderCancelledNoRide')}</label>
+              <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderCancelledNoRide')}</label>
               <div className="thanks__delivery-status-time">
-                <i className="access-time-icon text-middle">
-                  <IconAccessTime />
-                </i>
+                <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle gray-font-opacity">
                   {`${
                     cancelledStatusObjTime ? toLocaleTimeString(cancelledStatusObjTime, country, TIME_OPTIONS) : ''
@@ -430,60 +433,31 @@ export class ThankYou extends Component {
     );
   };
 
-  getDeliveryUI() {
-    const { t, history, order, onlineStoreInfo } = this.props;
-
-    if (!order) {
-      return <Loader />;
-    }
-
-    const { orderId, createdTime, logs, deliveryInformation, status } = order || {};
+  renderDeliveryImageAndTimeLine() {
+    const { t, order, onlineStoreInfo } = this.props;
+    const { createdTime, logs, deliveryInformation, status } = order || {};
     const { country } = onlineStoreInfo || {};
     const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
       <React.Fragment>
-        <Header
-          className="border__bottom-divider gray flex-middle"
-          isPage={true}
-          title={`#${orderId}`}
-          navFunc={() =>
-            // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-            history.replace({
-              pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-              search: `?table=${order.tableId}&storeId=${order.storeId}${type ? '&type=' + type : ''}`,
-            })
-          }
-        >
-          <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
-          </button>
-        </Header>
-        <div className="thanks text-center">
-          {this.isNowPaidPreOrder() ? (
-            <img
-              className="thanks__image"
-              src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
-              alt="Beep Success"
-            />
-          ) : (
-            this.getConsumerStatusFlowUI({
-              country,
-              logs,
-              createdTime,
-              t,
-              CONSUMERFLOW_STATUS,
-              useStorehubLogistics,
-            })
-          )}
-          <div className="thanks__info-container">
-            {this.isNowPaidPreOrder() ? this.renderPreOrderMessage() : this.renderStoreInfo()}
-            {this.renderViewDetail()}
-            <PhoneLogin history={history} />
-          </div>
-        </div>
+        {this.isNowPaidPreOrder() ? (
+          <img
+            className="thanks__image"
+            src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
+            alt="Beep Success"
+          />
+        ) : (
+          this.renderConsumerStatusFlow({
+            country,
+            logs,
+            createdTime,
+            t,
+            CONSUMERFLOW_STATUS,
+            useStorehubLogistics,
+          })
+        )}
       </React.Fragment>
     );
   }
@@ -496,9 +470,15 @@ export class ThankYou extends Component {
   render() {
     const { t, history, match, order } = this.props;
     const date = new Date();
-    const { tableId } = order || {};
+    const { orderId, tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
+    const isTakeaway = isDeliveryType || isPickUpType;
+    let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
+
+    if (isDeliveryType && this.isNowPaidPreOrder()) {
+      orderInfo = this.renderPreOrderMessage();
+    }
 
     return (
       <section
@@ -506,50 +486,60 @@ export class ThankYou extends Component {
           match.isExact ? '' : 'hide'
         }`}
       >
-        {isDeliveryType ? (
-          this.getDeliveryUI()
-        ) : (
-          <React.Fragment>
-            <Header
-              className="border__bottom-divider gray flex-middle"
-              isPage={true}
-              title={t('OrderPaid')}
-              navFunc={() =>
-                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-                history.replace({
-                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                  search: `?table=${order.tableId}&storeId=${order.storeId}${
-                    isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
-                  }`,
-                })
-              }
-            >
-              <span className="gray-font-opacity text-uppercase">
-                {tableId ? (
-                  <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span>
-                ) : (
-                  <span data-testid="thanks__self-pickup">{t('SelfPickUp')}</span>
-                )}
+        <React.Fragment>
+          <Header
+            className="border__bottom-divider gray flex-middle"
+            isPage={true}
+            title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
+            navFunc={() =>
+              // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+              history.replace({
+                pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                search: `?table=${order.tableId}&storeId=${order.storeId}${
+                  isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
+                }`,
+              })
+            }
+          >
+            {isTakeaway ? (
+              <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
+                <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
+              </button>
+            ) : (
+              <span className="gray-font-opacity">
+                {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
               </span>
-            </Header>
-            <div className="thanks text-center">
-              <img className="thanks__image" src={beepSuccessImage} alt="Beep Success" />
-              <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>
-              <p>
-                {`${t('PrepareOrderDescription')} `}
+            )}
+          </Header>
+
+          <div className="thanks text-center">
+            {isDeliveryType ? (
+              this.renderDeliveryImageAndTimeLine()
+            ) : (
+              <img
+                className="thanks__image"
+                src={isPickUpType ? beepPickupSuccessImage : beepSuccessImage}
+                alt="Beep Success"
+              />
+            )}
+            {isDeliveryType ? null : <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>}
+            {isDeliveryType ? null : (
+              <p className="thanks__prompt">
+                {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
                   😋
                 </span>
               </p>
+            )}
 
-              <div className="thanks__info-container">
-                {this.renderPickupInfo()}
-                {this.renderNeedReceipt()}
-                <PhoneLogin history={history} />
-              </div>
+            <div className="thanks__info-container">
+              {isDeliveryType ? null : this.renderPickupInfo()}
+              {orderInfo}
+              {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
+              <PhoneLogin history={history} />
             </div>
-          </React.Fragment>
-        )}
+          </div>
+        </React.Fragment>
         <footer className="footer-link">
           <ul className="flex flex-middle flex-space-between">
             <li>

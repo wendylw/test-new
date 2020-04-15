@@ -50,13 +50,21 @@ export const types = {
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
     const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
+      const fromHour = hour1.split(':')[0];
+      const fromMinute = hour1.split(':')[1];
       const d1 = new Date(dateValue);
-      d1.setHours(Number(hour1), 0, 0);
-      const d2 = new Date(dateValue);
-      d2.setHours(Number(hour2), 0, 0);
+      let d2, toHour, toMinute;
+
+      if (hour2) {
+        d2 = new Date(dateValue);
+        toHour = hour2.split(':')[0];
+        toMinute = hour2.split(':')[1];
+        d2.setHours(Number(toHour), Number(toMinute), 0);
+      }
+      d1.setHours(Number(fromHour), Number(fromMinute), 0);
       return {
         expectDeliveryDateFrom: d1.toISOString(),
-        expectDeliveryDateTo: d2.toISOString(),
+        expectDeliveryDateTo: d2 && d2.toISOString(),
       };
     };
 
@@ -80,35 +88,34 @@ export const actions = {
       cashback,
     };
 
+    // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+    let expectDeliveryDateInfo = null;
+    try {
+      if (enablePreOrder) {
+        const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
+        // => {"from":2,"to":3}
+        const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
+        // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
+
+        if (expectedDeliveryHour.from !== 'now') {
+          console.log('This is a pre order');
+
+          expectDeliveryDateInfo = getExpectDeliveryDateInfo(
+            expectedDeliveryDate.date,
+            expectedDeliveryHour.from,
+            expectedDeliveryHour.to
+          );
+        }
+
+        console.log('[createOrder] expectDeliveryDateInfo =', expectDeliveryDateInfo);
+      }
+    } catch (e) {
+      console.error('failed to create expectDeliveryDateInfo');
+    }
+    // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+
     if (shippingType === 'delivery') {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
-
-      // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
-      let expectDeliveryDateInfo = null;
-      try {
-        if (enablePreOrder) {
-          const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
-          // => {"from":2,"to":3}
-          const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
-          // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
-
-          if (expectedDeliveryDate.isToday === false) {
-            console.log('This is a pre order');
-
-            expectDeliveryDateInfo = getExpectDeliveryDateInfo(
-              expectedDeliveryDate.date,
-              expectedDeliveryHour.from,
-              expectedDeliveryHour.to
-            );
-          }
-
-          console.log('[createOrder] expectDeliveryDateInfo =', expectDeliveryDateInfo);
-        }
-      } catch (e) {
-        console.error('failed to create expectDeliveryDateInfo');
-      }
-      // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
-
       const {
         addressDetails,
         deliveryComments,
@@ -135,6 +142,7 @@ export const actions = {
       variables = {
         ...variables,
         contactDetail,
+        ...expectDeliveryDateInfo,
       };
     }
 

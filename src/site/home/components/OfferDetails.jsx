@@ -4,7 +4,6 @@ import { withTranslation } from 'react-i18next';
 import { IconInfoOutline, IconClose } from '../../../components/Icons';
 import './OfferDetails.scss';
 import Utils from '../../../utils/utils';
-import { fetchGeolocationByIp } from '../../../utils/geoUtils';
 
 class OfferDetails extends Component {
   constructor(props) {
@@ -61,7 +60,7 @@ class OfferDetails extends Component {
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
                 <IconClose className="icon icon__big icon__gray text-middle" onClick={this.handleToggleOfferDetails} />
-                <h2 className="header__title text-middle text-size-big text-weight-bold text-uppercase text-omit__single-line">
+                <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
                   {t('OfferDetails')}
                 </h2>
               </div>

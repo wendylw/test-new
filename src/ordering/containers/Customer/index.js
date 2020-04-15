@@ -165,9 +165,10 @@ class Customer extends Component {
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     let deliveryTime;
     if (date.date && hour.from) {
-      deliveryTime = date.isToday
-        ? t('DeliverNow')
-        : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
+      deliveryTime =
+        date.isToday && hour.from === 'now'
+          ? t('DeliverNow')
+          : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
     } else {
       deliveryTime = '';
     }
@@ -177,7 +178,7 @@ class Customer extends Component {
     return (
       <Fragment>
         <div className="flex flex-middle flex-space-between">
-          <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverOn')}</label>
+          <label className="form__label font-weight-bold">{t('DeliverOn')}</label>
           <i className="customer__edit-icon">
             <IconEdit />
           </i>
@@ -206,26 +207,19 @@ class Customer extends Component {
           className="form__group"
           onClick={async () => {
             const { search } = window.location;
-            const locationPageCallbackUrl = enablePreOrder ? 'deliveryTimeCallbackUrl' : 'deliveryCallbackUrl';
 
-            await Utils.setSessionVariable(
-              locationPageCallbackUrl,
-              JSON.stringify({
-                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                search,
-              })
-            );
+            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
             history.push({
               pathname: enablePreOrder
                 ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
                 : Constants.ROUTER_PATHS.ORDERING_LOCATION,
-              search,
+              search: `${search}&callbackUrl=${callbackUrl}`,
             });
           }}
         >
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">{t('DeliverTo')}</label>
+            <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
             <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
@@ -235,13 +229,74 @@ class Customer extends Component {
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
           <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold gray-font-opacity">
+            <label className="form__label font-weight-bolder gray-font-opacity">
               {t('AddAddressDetailsPlaceholder')}
             </label>
             <IconEdit className="customer__edit-icon" />
           </div>
           <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
             {addressDetails || t('AddressDetailsPlaceholder')}
+          </p>
+        </div>
+        <div
+          className="form__group flex flex-middle flex-space-between"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
+        >
+          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
+          <IconEdit className="customer__edit-icon" />
+        </div>
+      </React.Fragment>
+    );
+  }
+
+  renderPickUpInfo() {
+    const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
+    const { stores = [], country: locale } = businessInfo;
+
+    if (!stores.length) return;
+
+    const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
+    const { deliveryComments } = this.props.deliveryDetails;
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (this.getShippingType() !== DELIVERY_METHOD.PICKUP || !enablePreOrder) {
+      return null;
+    }
+    const pickUpTime = formatToDeliveryTime({
+      date: date,
+      hour: hour,
+      locale,
+    });
+
+    return (
+      <React.Fragment>
+        <div
+          className="form__group"
+          onClick={async () => {
+            const { search } = window.location;
+
+            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+              search: `${search}&callbackUrl=${callbackUrl}`,
+            });
+          }}
+        >
+          <div className="flex flex-middle flex-space-between">
+            <label className="form__label font-weight-bold">{t('PickupAt')}</label>
+            {/* <IconEdit className="customer__edit-icon" /> */}
+          </div>
+          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
+            {pickUpAddress || t('PickUpAtPlaceholder')}
+          </p>
+          <div className="flex flex-middle flex-space-between">
+            <label className="form__label font-weight-bold">{t('PickUpOn')}</label>
+            <IconEdit className="customer__edit-icon" />
+          </div>
+          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
+            {pickUpTime || t('PickUpAtPlaceholder')}
           </p>
         </div>
         <div
@@ -289,23 +344,6 @@ class Customer extends Component {
           }}
         ></Header>
         <div className="customer__content">
-          {/* <ul className="flex">
-            <li className="customer__method flex flex-middle">
-              <div className={`radio active`}>
-                <i className="radio__check-icon"></i>
-                <input type="radio"></input>
-              </div>
-              <label className="customer__method-label font-weight-bold">{t('FoodDelivery')}</label>
-            </li>
-            <li className="customer__method flex flex-middle">
-              <div className={`radio`}>
-                <i className="radio__check-icon"></i>
-                <input type="radio"></input>
-              </div>
-              <label className="customer__method-label font-weight-bold">{t('SelfPickup')}</label>
-            </li>
-          </ul> */}
-
           <form className="customer__form">
             <div className="form__group">
               <label className="form__label gray-font-opacity">{t('Name')}</label>
@@ -340,6 +378,7 @@ class Customer extends Component {
             </div>
 
             {this.renderDeliveryAddress()}
+            {this.renderPickUpInfo()}
           </form>
         </div>
 
@@ -354,7 +393,7 @@ class Customer extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
-              className="billing__button button button__fill button__block dark font-weight-bold"
+              className="billing__button button button__fill button__block dark font-weight-bolder"
               onClick={() => {
                 history.push({
                   pathname: ROUTER_PATHS.ORDERING_CART,
@@ -367,13 +406,13 @@ class Customer extends Component {
           </div>
           <div className="footer-operation__item width-2-3">
             <button
-              className="billing__link button button__fill button__block font-weight-bold"
+              className="billing__link button button__fill button__block font-weight-bolder"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={
                 (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
                 !Boolean((deliveryDetails.username || '').trim()) ||
                 !isValidPhoneNumber(deliveryDetails.phone) ||
-                !!(type === DELIVERY_METHOD.DELIVER && enablePreOrder && !date.date) ||
+                !!(enablePreOrder && !date.date) ||
                 isFetching
               }
             >

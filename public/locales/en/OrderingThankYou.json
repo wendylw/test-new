@@ -1,6 +1,6 @@
 {
   "OrderPaid": "Order Paid",
-  "YourOrderNumber": "Your Order Number",
+  "OrderNumber": "Order Number",
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
   "PrepareOrderDescription": "We're preparing your order now.",
@@ -8,7 +8,6 @@
   "RiderPendingTips": "Pending Rider Confirm",
   "RiderOnTheWay": "Rider is on the way to pick up order",
   "OrderCancelledNoRide": "Order Cancelled. No rider available",
-  "ContactUs": "Contact Us",
   "OrderReceived": "Order Received",
   "PendingMerchant": "Pending merchant to accept order",
   "MerchantAccepted": "Merchant Accepted",
@@ -20,5 +19,6 @@
   "ThanksForOrderingWithUs": "Thanks for ordering with us!",
   "PreOrderDeliveryTimeDetails": "Delivery Order for {{day}}, {{dayAndTime}} to {{deliveryTo}}.",
   "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery.",
-  "Total": "Total"
+  "Total": "Total",
+  "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food"
 }

@@ -85,7 +85,7 @@ class DeliveryDetailModal extends Component {
             <div className="header__title-container">
               <h2 className="header__title">
                 <span
-                  className={`header__one-line-title font-weight-bold text-middle ${
+                  className={`header__one-line-title font-weight-bolder text-middle ${
                     !isValidTimeToOrder ? 'has-tag' : ''
                   }`}
                 >
@@ -105,14 +105,17 @@ class DeliveryDetailModal extends Component {
               <ul className="header__info-list">
                 <li className="header__info-item text-middle">
                   <IconMotorcycle className="header__motor-icon text-middle" />
-                  <span className="header__info-text text-middle font-weight-bold">
+                  <span className="header__info-text text-middle font-weight-bolder">
                     <CurrencyNumber money={deliveryFee || 0} />
                   </span>
                 </li>
                 <li className="header__info-item text-middle">
                   <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
                     <label className="text-middle">Min Order.</label>
-                    <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
+                    <CurrencyNumber
+                      className="header__info-text text-middle font-weight-bolder"
+                      money={minOrder || 0}
+                    />
                   </Trans>
                 </li>
               </ul>
@@ -120,7 +123,7 @@ class DeliveryDetailModal extends Component {
           </div>
 
           <div className="store-info__delivery-hours flex flex-top flex-space-between">
-            <label className="font-weight-bold gray-font-opacity">{t('DeliveryHours')}</label>
+            <label className="font-weight-bolder gray-font-opacity">{t('DeliveryHours')}</label>
             <ul className="store-info__list">
               {this.renderDeliveryHour()}
               {/* <li className="store-info__item flex flex-middle flex-space-between">

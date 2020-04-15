@@ -143,7 +143,7 @@ class Payment extends Component {
   }
 
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary, t } = this.props;
+    const { history, currentPayment, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -210,7 +210,7 @@ class Payment extends Component {
                   <figure className="payment__image-container">
                     <img src={payment.logo} alt={payment.label}></img>
                   </figure>
-                  <label className="payment__name font-weight-bold">{this.getPaymentShowLabel(payment)}</label>
+                  <label className="payment__name font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
                   <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
@@ -223,7 +223,7 @@ class Payment extends Component {
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             disabled={payNowLoading}
             onClick={this.handleClickPayNow}
           >
