@@ -656,6 +656,7 @@
   width: 100%;
   padding: 10px 3.8vw;
   height: 50px;
+  background-color: $white;
 
   &.gray {
     background-color: $gray-5;
@@ -2976,6 +2977,7 @@
   }
 
   &__date {
+    min-height: 56px;
     overflow-x: scroll;
 
     &-item {
@@ -2983,11 +2985,11 @@
       background-color: $white;
       color: $main-color;
       border: solid 1px #dededf;
-      padding: 11px 28px;
+      padding: 5px 28px;
       margin-right: 16px;
       align-items: center;
       justify-content: center;
-      height: 70px;
+      height: 56px;
       width: 80px;
 
       span {

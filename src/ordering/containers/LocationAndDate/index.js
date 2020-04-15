@@ -42,12 +42,12 @@ class LocationAndDate extends Component {
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
     const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
 
+    this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
+
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
       deliveryToAddress,
     });
-
-    this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
   };
 
   getExpectedTimeFromSession = () => {
