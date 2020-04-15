@@ -86,8 +86,7 @@ export class ThankYou extends Component {
 
   renderPickupInfo() {
     const { t, order } = this.props;
-    const isPickUpType = Utils.isPickUpType();
-    const { tableId, orderId, pickUpId } = order || {};
+    const { tableId, pickUpId } = order || {};
 
     if (tableId) {
       return null;
@@ -98,7 +97,7 @@ export class ThankYou extends Component {
         <div className="thanks-pickup__id-container">
           <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
           <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
-            {isPickUpType ? pickUpId : orderId}
+            {pickUpId}
           </span>
         </div>
       </div>
