@@ -75,12 +75,10 @@ class LocationAndDate extends Component {
   validTimeFrom = null;
   validTimeTo = null;
 
-  // pickupTimeList and deliveryTimeList are for the full time list displayed for future days
+  // fullTimeList are pickupTimeList and deliveryTimeList for the full time list displayed for future days
   // They'll be calculated and stored as static data for later use just to real time computing
-  validDeliveryTimeFrom = null;
-  pickupTimeList = null;
-  validPickUpTimeFrom = null;
-  deliveryTimeList = null;
+  validPreOrderTimeFrom = null;
+  fullTimeList = [];
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
@@ -114,19 +112,18 @@ class LocationAndDate extends Component {
   getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
+    this.fullTimeList = this.getFullHourList();
 
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
-      this.validDeliveryTimeFrom = startMinute ? startHour + 2 : startHour + 1;
-      this.deliveryTimeList = this.getFullHourList();
+      this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
     }
 
     if (Utils.isPickUpType()) {
       const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
-      this.validPickUpTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
-      this.pickupTimeList = this.getFullHourList();
+      this.validPreOrderTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
     }
   };
 
@@ -225,14 +222,7 @@ class LocationAndDate extends Component {
       const hoursListForToday = this.getHoursListForToday(date);
       firstListItem = hoursListForToday[0] || {};
     } else {
-      if (Utils.isDeliveryType()) {
-        const firstDeliveryItem = this.deliveryTimeList[0];
-        firstListItem = firstDeliveryItem;
-      }
-      if (Utils.isPickUpType()) {
-        const firstDeliveryItem = this.pickupTimeList[0];
-        firstListItem = firstDeliveryItem;
-      }
+      firstListItem = this.fullTimeList[0];
     }
 
     if (firstListItem.from === ON_DEMAND_ORDER.from) return firstListItem;
@@ -425,13 +415,7 @@ class LocationAndDate extends Component {
 
     // If user visit this webpage before store opens, show full time list
     if (isAfterTime(currentTime, storeOpenTime)) {
-      if (Utils.isDeliveryType()) {
-        return this.deliveryTimeList;
-      }
-
-      if (Utils.isPickUpType()) {
-        return this.pickupTimeList;
-      }
+      return this.fullTimeList;
     }
 
     // If user visit this page in the middle of the day, first item should be 'immediate'
@@ -463,18 +447,9 @@ class LocationAndDate extends Component {
       return [];
     }
 
-    let displayTimeFrom;
     let timeList = [];
 
-    if (Utils.isDeliveryType()) {
-      displayTimeFrom = this.validDeliveryTimeFrom;
-    }
-
-    if (Utils.isPickUpType()) {
-      displayTimeFrom = this.validPickUpTimeFrom;
-    }
-
-    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(displayTimeFrom);
+    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(this.validPreOrderTimeFrom);
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(this.validTimeTo);
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0);
@@ -519,11 +494,11 @@ class LocationAndDate extends Component {
       timeList = this.getHoursListForToday(selectedDate);
     } else {
       if (Utils.isDeliveryType()) {
-        timeList = this.deliveryTimeList;
+        timeList = this.fullTimeList;
       }
 
       if (Utils.isPickUpType()) {
-        timeList = this.pickupTimeList;
+        timeList = this.fullTimeLis;
       }
     }
 
