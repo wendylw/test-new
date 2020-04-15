@@ -303,7 +303,7 @@ class Customer extends Component {
           className="form__group flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
-          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
+          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToMerchantPlaceholder')}</p>
           <IconEdit className="customer__edit-icon" />
         </div>
       </React.Fragment>
