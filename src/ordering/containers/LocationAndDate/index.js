@@ -10,9 +10,13 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { toNumericTime, addTime, isSameTime } from '../../../utils/datetime-lib';
+import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS } = Constants;
+const ON_DEMAND_ORDER = {
+  from: 'now',
+  to: 'now',
+};
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -47,8 +51,8 @@ const createTimeWithTimeString = timeString => {
 
 const getHourAndMinuteFromTime = time => {
   const timeDate = new Date(time);
-  const hour = timeDate.getHours();
-  const minutes = timeDate.getMinutes();
+  const hour = padZero(timeDate.getHours());
+  const minutes = padZero(timeDate.getMinutes());
 
   return `${hour}:${minutes}`;
 };
@@ -71,11 +75,11 @@ class LocationAndDate extends Component {
   validTimeFrom = null;
   validTimeTo = null;
 
+  // pickupTimeList and deliveryTimeList are for the full time list displayed for future days
+  // They'll be calculated and stored as static data for later use just to real time computing
   validDeliveryTimeFrom = null;
-  validDeliveryTimeTo = null;
   pickupTimeList = null;
   validPickUpTimeFrom = null;
-  validPickUpTimeTo = null;
   deliveryTimeList = null;
 
   componentDidMount = () => {
@@ -109,12 +113,11 @@ class LocationAndDate extends Component {
 
   getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
-    const { hour: endHour } = getHourAndMinuteFromString(validTimeTo);
+    this.validTimeTo = validTimeTo;
 
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
       this.validDeliveryTimeFrom = startMinute ? startHour + 2 : startHour + 1;
-      this.validDeliveryTimeTo = endHour;
       this.deliveryTimeList = this.getFullHourList();
     }
 
@@ -122,11 +125,7 @@ class LocationAndDate extends Component {
       const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
-      const tempEndEndTime = createTimeWithTimeString(validTimeTo);
-      const validEndBaseTime = closestValidTime(tempEndEndTime, -30, 'm');
-
       this.validPickUpTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
-      this.validPickUpTimeTo = getHourAndMinuteFromTime(validEndBaseTime);
       this.pickupTimeList = this.getFullHourList();
     }
   };
@@ -224,7 +223,7 @@ class LocationAndDate extends Component {
     let firstListItem = {};
     if (date.isToday) {
       const hoursListForToday = this.getHoursListForToday(date);
-      firstListItem = hoursListForToday[0];
+      firstListItem = hoursListForToday[0] || {};
     } else {
       if (Utils.isDeliveryType()) {
         const firstDeliveryItem = this.deliveryTimeList[0];
@@ -236,7 +235,7 @@ class LocationAndDate extends Component {
       }
     }
 
-    if (firstListItem.from === 'now') return firstListItem;
+    if (firstListItem.from === ON_DEMAND_ORDER.from) return firstListItem;
 
     return {
       from: getHourAndMinuteFromTime(firstListItem.from),
@@ -355,10 +354,12 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     return timeList.map(item => {
-      if (item.from === 'now') {
+      if (item.from === ON_DEMAND_ORDER.from) {
         return (
           <li
-            className={`location-display__hour-item text-center ${selectedHour.from === 'now' ? 'selected' : ''}`}
+            className={`location-display__hour-item text-center ${
+              selectedHour.from === ON_DEMAND_ORDER.from ? 'selected' : ''
+            }`}
             onClick={() => {
               this.handleSelectHour({ ...item });
             }}
@@ -396,61 +397,65 @@ class LocationAndDate extends Component {
     });
   };
 
-  getHoursListForToday = (selectedDate = {}) => {
-    if (!selectedDate.isToday) return;
-    let hoursListForToday = [];
-
-    if (Utils.isPickUpType()) {
-      const startTimeForToday = closestValidTime('', 30, 'm');
-      const fullTimeList = this.pickupTimeList || [];
-
-      // If user visit this webpage before store opens, show full time list
-      if (isAfterTime(startTimeForToday, fullTimeList[0].from)) {
-        return fullTimeList;
-      }
-      const startTimeInList = fullTimeList.findIndex(item => isSameTime(item.from, startTimeForToday, ['h', 'm']));
-
-      hoursListForToday = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
-    }
+  getValidStartingTimeString = (baseTimeString = this.validTimeFrom) => {
+    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(baseTimeString);
+    let validStartingTime;
 
     if (Utils.isDeliveryType()) {
-      const fullTimeList = this.deliveryTimeList || [];
-      const currentTime = new Date();
-      const currentHour = currentTime.getHours();
-      const currentMinute = currentTime.getMinutes();
-      // When user visits webpage at 12:30pm, validHour is 2:00pm
-      const validHour = currentMinute ? currentHour + 2 : currentHour + 1;
-      const endHour = parseInt(this.validTimeTo.split(':')[0], 10);
-
-      // If user visit this page before store opens, should show all the time list
-      if (currentHour < this.validDeliveryTimeFrom) {
-        return this.deliveryTimeList || [];
-      }
-
-      // If user visit this page after valid deliver time, but before store closes
-      if (validHour > endHour || currentHour < endHour) {
-        return [
-          {
-            from: 'now',
-            to: 'now',
-          },
-        ];
-      }
-
-      // If user visit this page in the middle of the day, first item should be 'immediate'
-      const startTimeInList = fullTimeList.findIndex(item =>
-        isSameTime(item.from, currentTime.setHours(validHour), ['h'])
-      );
-      hoursListForToday = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
-      hoursListForToday.unshift({
-        from: 'now',
-        to: 'now',
-      });
-
-      return hoursListForToday;
+      validStartingTime = `${startMinute ? startHour + 2 : startHour + 1} : ${startMinute}`;
     }
 
-    return hoursListForToday;
+    if (Utils.isPickUpType()) {
+      const tempStartBaseTime = createTimeWithTimeString(baseTimeString);
+      const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
+
+      validStartingTime = getHourAndMinuteFromTime(validStartBaseTime);
+    }
+
+    return validStartingTime;
+  };
+
+  getHoursListForToday = (selectedDate = {}) => {
+    if (!selectedDate.isToday) return;
+    const currentTime = new Date();
+    const storeOpenTime = createTimeWithTimeString(this.validTimeFrom);
+    const storeCloseTime = createTimeWithTimeString(this.validTimeTo);
+    const validStartingTimeString = this.getValidStartingTimeString(getHourAndMinuteFromTime(currentTime));
+    const fullTimeList = this.getHoursList();
+
+    // If user visit this webpage before store opens, show full time list
+    if (isAfterTime(currentTime, storeOpenTime)) {
+      if (Utils.isDeliveryType()) {
+        return this.deliveryTimeList;
+      }
+
+      if (Utils.isPickUpType()) {
+        return this.pickupTimeList;
+      }
+    }
+
+    // If user visit this page in the middle of the day, first item should be 'immediate'
+    if (isAfterTime(storeOpenTime, currentTime) && isAfterTime(currentTime, storeCloseTime)) {
+      // If calculated first item display is after store close
+      if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
+        return [ON_DEMAND_ORDER];
+      }
+      const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
+      const startTimeInList = fullTimeList.findIndex(item =>
+        isSameTime(item.from, createTimeWithTimeString(validStartingTimeString), timeUnitToCompare)
+      );
+
+      const timeListToDisplay = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
+      timeListToDisplay.unshift(ON_DEMAND_ORDER);
+
+      return timeListToDisplay;
+    }
+
+    if (isAfterTime(currentTime, storeCloseTime)) {
+      return [ON_DEMAND_ORDER];
+    }
+
+    return [];
   };
 
   getFullHourList = () => {
@@ -459,21 +464,18 @@ class LocationAndDate extends Component {
     }
 
     let displayTimeFrom;
-    let displayTimeTo;
     let timeList = [];
 
     if (Utils.isDeliveryType()) {
-      displayTimeTo = this.validDeliveryTimeTo;
       displayTimeFrom = this.validDeliveryTimeFrom;
     }
 
     if (Utils.isPickUpType()) {
-      displayTimeTo = this.validPickUpTimeTo;
       displayTimeFrom = this.validPickUpTimeFrom;
     }
 
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(displayTimeFrom);
-    const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(displayTimeTo);
+    const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(this.validTimeTo);
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0);
     const timeIncrease = i =>
