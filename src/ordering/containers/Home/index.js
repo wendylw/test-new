@@ -243,13 +243,13 @@ export class Home extends Component {
 
   renderHeader() {
     const { t, onlineStoreInfo, businessInfo, requestInfo, cartSummary } = this.props;
-    const { stores, multipleStores } = businessInfo || {};
+    const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { tableId } = requestInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
-    const { deliveryFee: legacyDeliveryFee, minOrder } = this.getDeliveryInfo();
+    const { deliveryFee: legacyDeliveryFee } = this.getDeliveryInfo();
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
     if (!tableId && !isDeliveryType) {
@@ -272,7 +272,8 @@ export class Home extends Component {
         onClickHandler={this.handleToggleAside.bind(this)}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
-        minOrder={minOrder}
+        enableCashback={enableCashback}
+        defaultLoyaltyRatio={defaultLoyaltyRatio}
         navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
         enablePreOrder={this.isPreOrderEnabled()}
@@ -327,7 +328,6 @@ export class Home extends Component {
     } = this.props;
     const {
       deliveryFee: legacyDeliveryFee,
-      minOrder,
       storeAddress,
       telephone,
       validDays,
@@ -392,7 +392,6 @@ export class Home extends Component {
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
             deliveryFee={cartSummary ? cartSummary.shippingFee : legacyDeliveryFee}
-            minOrder={minOrder}
             storeAddress={storeAddress}
             telephone={telephone}
             validDays={validDays}

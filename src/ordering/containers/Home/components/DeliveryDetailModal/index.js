@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
-import { IconMotorcycle } from '../../../../../components/Icons';
+import { IconMotorcycle, IconWallet } from '../../../../../components/Icons';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
@@ -49,8 +49,9 @@ class DeliveryDetailModal extends Component {
       // enablePreOrder,
     } = this.props;
     const { initDom } = this.state;
-    const { stores, multipleStores } = businessInfo || {};
+    const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+    const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
     const classList = ['store-info__aside aside'];
 
     if (!businessLoaded) {
@@ -107,12 +108,14 @@ class DeliveryDetailModal extends Component {
                     <CurrencyNumber money={deliveryFee || 0} />
                   </span>
                 </li>
-                {/* <li className="header__info-item text-middle">
-                  <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
-                    <label className="text-middle">Min Order.</label>
-                    <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
-                  </Trans>
-                </li> */}
+                {enableCashback && cashbackRatePercentage ? (
+                  <li className="header__info-item text-middle">
+                    <IconWallet className="header__motor-icon text-middle" />
+                    <span className="header__info-text text-middle">
+                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
+                    </span>
+                  </li>
+                ) : null}
               </ul>
 
               <div className="store-info__delivery-hours">
