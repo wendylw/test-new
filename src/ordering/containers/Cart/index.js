@@ -157,7 +157,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
-    const { expandBilling, isCreatingOrder } = this.state;
+    const { isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -195,12 +195,7 @@ class Cart extends Component {
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
-          <i
-            className="aside-bottom__slide-button"
-            onClick={() => this.setState({ expandBilling: !expandBilling })}
-          ></i>
           <Billing
-            className={!expandBilling ? 'billing__collapse' : ''}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}

@@ -4,7 +4,6 @@ import { withTranslation } from 'react-i18next';
 import { IconInfoOutline, IconClose } from '../../../components/Icons';
 import './OfferDetails.scss';
 import Utils from '../../../utils/utils';
-import { fetchGeolocationByIp } from '../../../utils/geoUtils';
 
 class OfferDetails extends Component {
   constructor(props) {

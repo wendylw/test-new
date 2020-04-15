@@ -68,6 +68,10 @@ address {
   text-transform: uppercase;
 }
 
+.text-capitalize {
+  text-transform: capitalize;
+}
+
 .text-error {
   color: $red;
 }

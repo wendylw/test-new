@@ -143,7 +143,7 @@ class Payment extends Component {
   }
 
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary, t } = this.props;
+    const { history, currentPayment, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 

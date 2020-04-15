@@ -97,7 +97,7 @@ class StoreList extends Component {
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
                     <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
-                    <span className="store-info__text text-size-small text-middle">
+                    <span className="store-info__text text-size-small text-middle text-capitalize">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
                     </span>
                   </div>
