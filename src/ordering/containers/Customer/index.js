@@ -49,6 +49,16 @@ class Customer extends Component {
     }
   }
 
+  getBusinessCountry = () => {
+    try {
+      const { businessInfo } = this.props;
+      return businessInfo.country;
+    } catch (e) {
+      // this could happen when allBusinessInfo is not loaded.
+      return undefined;
+    }
+  };
+
   visitPaymentPage() {
     const { history } = this.props;
 
@@ -155,7 +165,9 @@ class Customer extends Component {
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     let deliveryTime;
     if (date.date && hour.from) {
-      deliveryTime = date.isToday ? t('DeliverNow') : formatToDeliveryTime({ date, hour });
+      deliveryTime = date.isToday
+        ? t('DeliverNow')
+        : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
     } else {
       deliveryTime = '';
     }

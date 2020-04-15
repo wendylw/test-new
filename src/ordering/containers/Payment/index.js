@@ -11,43 +11,35 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
-import {
-  actions as paymentActionCreators,
-  getCurrentPayment,
-  getCurrentOrderId,
-  getPaymentList,
-} from '../../redux/modules/payment';
+import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
+import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
+import { getPaymentName, getPaymentList, getSupportCreditCardBrands } from './utils';
 import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
 import paymentBoostImage from '../../../images/payment-boost.png';
 import paymenbGrabImage from '../../../images/payment-grab.png';
 import paymenbTNGImage from '../../../images/payment-tng.svg';
 
-const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
+const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
 const dataSource = {
   onlineBanking: {
-    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
     logo: paymentBankingImage,
-    labelKey: 'OnlineBanking',
+    label: 'OnlineBanking',
     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   creditCard: {
-    name: PAYMENT_METHODS.CREDIT_CARD_PAY,
     logo: paymentCreditImage,
-    labelKey: 'CreditCard',
+    label: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
   boost: {
-    name: PAYMENT_METHODS.BOOST_PAY,
     logo: paymentBoostImage,
-    labelKey: 'Boost',
+    label: 'Boost',
   },
   grabPay: {
-    name: PAYMENT_METHODS.GRAB_PAY,
     logo: paymenbGrabImage,
-    labelKey: 'GrabPay',
+    label: 'GrabPay',
   },
   TNG: {
     name: PAYMENT_METHODS.TNG_PAY,
@@ -55,32 +47,55 @@ const dataSource = {
     labelKey: 'TouchNGo',
   },
 };
-const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
+const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
   state = {
     payNowLoading: false,
+    paymentList: [],
   };
 
   componentDidMount = async () => {
-    const { homeActions, paymentActions } = this.props;
-    await paymentActions.fetchPaymentList();
-    /* set default payment by dynamic setting*/
-    const { paymentList } = this.props;
-    this.setDefaultPayment(paymentList);
+    const { homeActions } = this.props;
+    this.updatePaymentList(() => {
+      /* set default payment by dynamic setting*/
+      this.setDefaultPayment(this.state.paymentList);
+    });
 
     await homeActions.loadShoppingCart();
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.merchantCountry !== this.props.merchantCountry) {
+      this.updatePaymentList(() => {
+        if (!this.currentPayment) {
+          this.setDefaultPayment(this.state.paymentList);
+        }
+      });
+    }
+  }
+
+  updatePaymentList = cb => {
+    const { merchantCountry } = this.props;
+    if (merchantCountry) {
+      this.setState(
+        {
+          paymentList: getPaymentList(merchantCountry),
+        },
+        cb
+      );
+    }
   };
 
   setDefaultPayment = paymentList => {
     if (paymentList && paymentList.length > 0) {
       const payment = dataSource[paymentList[0]];
-      this.setCurrentPayment(payment.name);
+      this.setCurrentPayment(payment.label);
     }
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
@@ -101,7 +116,7 @@ class Payment extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
     };
   };
 
@@ -115,12 +130,26 @@ class Payment extends Component {
     });
   };
 
-  setCurrentPayment = paymentName => {
-    this.props.paymentActions.setCurrentPayment(paymentName);
+  setCurrentPayment = paymentLabel => {
+    this.props.paymentActions.setCurrentPayment(paymentLabel);
   };
 
+  getPaymentShowLabel(payment) {
+    const { t, merchantCountry } = this.props;
+    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
+      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
+      return supportCreditCardBrands
+        .map(brand => {
+          return t(brand);
+        })
+        .join(' / ');
+    } else {
+      return t(payment.label);
+    }
+  }
+
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary } = this.props;
+    const { history, currentPayment, cartSummary, t } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -129,7 +158,7 @@ class Payment extends Component {
     });
 
     if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-      const { pathname } = Object.values(dataSource).find(payment => payment.name === currentPayment) || {};
+      const { pathname } = Object.values(dataSource).find(payment => payment.label === currentPayment) || {};
 
       history.push({
         pathname,
@@ -150,13 +179,13 @@ class Payment extends Component {
     }
 
     this.setState({
-      payNowLoading: orderId,
+      payNowLoading: !!orderId,
     });
   };
 
   render() {
-    const { t, currentPayment, paymentList } = this.props;
-    const { payNowLoading } = this.state;
+    const { t, currentPayment } = this.props;
+    const { payNowLoading, paymentList } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
 
@@ -180,15 +209,15 @@ class Payment extends Component {
 
               return (
                 <li
-                  key={payment.name}
+                  key={payment.label}
                   className="payment__item border__bottom-divider flex flex-middle flex-space-between"
-                  onClick={() => this.setCurrentPayment(payment.name)}
+                  onClick={() => this.setCurrentPayment(payment.label)}
                 >
                   <figure className="payment__image-container">
-                    <img src={payment.logo} alt={payment.labelKey}></img>
+                    <img src={payment.logo} alt={payment.label}></img>
                   </figure>
-                  <label className="payment__name font-weight-bold">{t(payment.labelKey)}</label>
-                  <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
+                  <label className="payment__name font-weight-bold">{this.getPaymentShowLabel(payment)}</label>
+                  <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
                   </div>
@@ -234,11 +263,10 @@ export default compose(
         currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        paymentList: getPaymentList(state),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })

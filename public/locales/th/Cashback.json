@@ -1,0 +1,15 @@
+{
+  "EarnCashbackNow": "เริ่มรับเงินคืนเลย",
+  "TotalCashback": "เงินคืนทั้งหมด",
+  "Receipt": "ใบเสร็จ",
+  "Receipts": "ใบเสร็จ",
+  "Loading": "กำลังโหลด",
+  "CashbackPercentage": "เงินคืน {{percentage}}%",
+  "CashbackPending": "เงินคืนที่กำลังรอดำเนินการ",
+  "Redeemed": "แลกรับแล้ว",
+  "YouEarned": "คุณได้รับ",
+  "CashbackHistory": "ประวัติเงินคืน",
+  "HowToUseCashback": "วิธีใช้เงินคืน",
+  "UseCashbackStep1": "แจ้งเบอร์โทรศัพท์ของคุณกับพนักงานเมื่อชำระเงิน",
+  "UseCashbackStep2": "ยอดบิลของคุณจะได้รับส่วนลดตามจำนวนเงินคืนที่คุณมี"
+}

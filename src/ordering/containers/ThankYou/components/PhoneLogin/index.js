@@ -140,6 +140,11 @@ class PhoneLogin extends React.Component {
     if (isCashbackZero && CASHBACK_ZERO_CLAIMED.includes(key)) {
       return '';
     }
+
+    if (isLogin) {
+      return this.MESSAGES['Claimed_NotFirstTime'];
+    }
+
     return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
@@ -215,6 +220,10 @@ class PhoneLogin extends React.Component {
     const { isFetching, isWebview, isLogin, customerId } = user || {};
     const { country } = onlineStoreInfo || {};
 
+    if (isLogin) {
+      return null;
+    }
+
     if (!isLogin) {
       return (
         <PhoneView
@@ -257,13 +266,14 @@ class PhoneLogin extends React.Component {
   }
 
   render() {
-    const { user, businessInfo, onlineStoreInfo } = this.props;
+    const { user, businessInfo, onlineStoreInfo, cashbackInfo } = this.props;
     const { claimedAnimationGifSrc, showCelebration } = this.state;
     const { customerId } = user || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
+    const { defaultLoyaltyRatio } = cashbackInfo || {};
 
-    if (!country || !enableCashback) {
+    if (!country || !enableCashback || defaultLoyaltyRatio === 0) {
       return null;
     }
 
@@ -272,7 +282,7 @@ class PhoneLogin extends React.Component {
         <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
 
-        <p className="terms-privacy text-center gray-font-opacity">
+        {/* <p className="terms-privacy text-center gray-font-opacity">
           <Trans i18nKey="TermsAndPrivacyDescription">
             By tapping to continue, you agree to our
             <br />
@@ -287,7 +297,7 @@ class PhoneLogin extends React.Component {
               .
             </BrowserRouter>
           </Trans>
-        </p>
+        </p> */}
         <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
