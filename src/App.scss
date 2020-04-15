@@ -1560,7 +1560,7 @@
   }
 
   &__delivery-hours {
-    padding: 0 5px;
+    padding: 0 2vw;
     margin: 20px 0;
   }
 
@@ -3517,7 +3517,8 @@ body.loading {
   .store-info__address,
   .store-info__phone,
   .modal__title,
-  .modal__text {
+  .modal__text,
+  .store-info__delivery-hours {
     padding: 0 20px;
   }
 
