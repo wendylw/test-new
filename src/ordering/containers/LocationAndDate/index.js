@@ -491,13 +491,7 @@ class LocationAndDate extends Component {
     if (selectedDate.isToday) {
       timeList = this.getHoursListForToday(selectedDate);
     } else {
-      if (Utils.isDeliveryType()) {
-        timeList = this.fullTimeList;
-      }
-
-      if (Utils.isPickUpType()) {
-        timeList = this.fullTimeLis;
-      }
+      timeList = this.fullTimeList;
     }
 
     return timeList;

@@ -25,7 +25,7 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ASIDE_NAMES, DELIVERY_METHOD } = Constants;
+const { ROUTER_PATHS, ASIDE_NAMES, DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 class Customer extends Component {
   state = {
     formTextareaTitle: null,
@@ -166,7 +166,7 @@ class Customer extends Component {
     let deliveryTime;
     if (date.date && hour.from) {
       deliveryTime =
-        date.isToday && hour.from === 'now'
+        date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
           ? t('DeliverNow')
           : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
     } else {
