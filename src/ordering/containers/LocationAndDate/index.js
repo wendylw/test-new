@@ -109,12 +109,12 @@ class LocationAndDate extends Component {
 
   getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
-    const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(validTimeTo);
+    const { hour: endHour } = getHourAndMinuteFromString(validTimeTo);
 
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
       this.validDeliveryTimeFrom = startMinute ? startHour + 2 : startHour + 1;
-      this.validDeliveryTimeTo = endMinute ? endHour : endHour - 1;
+      this.validDeliveryTimeTo = endHour;
       this.deliveryTimeList = this.getFullHourList();
     }
 
@@ -411,16 +411,23 @@ class LocationAndDate extends Component {
       const currentTime = new Date();
       const currentHour = currentTime.getHours();
       const currentMinute = currentTime.getMinutes();
+      // When user visits webpage at 12:30pm, validHour is 2:00pm
       const validHour = currentMinute ? currentHour + 2 : currentHour + 1;
+      const endHour = parseInt(this.validTimeTo.split(':')[0], 10);
 
       // If user visit this page before store opens, should show all the time list
       if (currentHour < this.validDeliveryTimeFrom) {
         return this.deliveryTimeList || [];
       }
 
-      // If user visit this page after store closes, show nothing
-      if (currentHour > this.validDeliveryTimeTo || validHour > this.validDeliveryTimeTo) {
-        return [];
+      // If user visit this page after valid deliver time, but before store closes
+      if (validHour > endHour || currentHour < endHour) {
+        return [
+          {
+            from: 'now',
+            to: 'now',
+          },
+        ];
       }
 
       // If user visit this page in the middle of the day, first item should be 'immediate'
@@ -465,7 +472,24 @@ class LocationAndDate extends Component {
     const timeIncrease = i =>
       Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
 
-    for (let i = new Date(startTime).toISOString(); isAfterTime(i.valueOf(), endTime.valueOf()); i = timeIncrease(i)) {
+    const loopCheck = i => {
+      // Assuming store closes at 10:00 pm
+      // Final delivery time should be 10:00 pm and final pickup time should be 9:30pm
+      // Data structure of the last item in hour list
+      // For delivery is { from: "21:00" , to: "22:00" }
+      // For pickup is { from: "21:15" , to: "21:30" }
+      if (Utils.isDeliveryType()) {
+        return timeIncrease(i);
+      }
+
+      if (Utils.isPickUpType()) {
+        return i;
+      }
+
+      return new Date();
+    };
+
+    for (let i = new Date(startTime).toISOString(); isAfterTime(loopCheck(i), endTime.valueOf()); i = timeIncrease(i)) {
       const timeItem = {
         from: i,
       };
