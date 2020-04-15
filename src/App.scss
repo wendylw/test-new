@@ -1552,7 +1552,7 @@
   &__phone {
     display: block;
     margin-top: 6px;
-    padding: 0 2.4vw;
+    padding: 0 5vw;
   }
 
   &__address {
@@ -1560,7 +1560,7 @@
   }
 
   &__delivery-hours {
-    padding: 0 2.4vw;
+    padding: 0 5vw;
     margin: 20px 0;
   }
 
@@ -3214,11 +3214,19 @@ body.loading {
   .header {
     &__title:not(.header__one-line-title),
     &__info-list {
-      padding: 0 2vw;
+      padding: 0 2.4vw;
     }
 
     &__icon ~ &__title-container &__one-line-title.has-tag {
       max-width: 34vw;
+    }
+  }
+
+  .store-info {
+    &__address,
+    &__phone,
+    &__delivery-hours {
+      padding: 0 2.4vw;
     }
   }
 
