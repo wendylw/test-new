@@ -811,6 +811,9 @@
   }
 
   &__motor-icon {
+    display: inline-block;
+    font-size: 0;
+
     svg {
       width: 14px;
       height: 14px;
@@ -1557,12 +1560,12 @@
   }
 
   &__delivery-hours {
-    padding: 0 20px;
+    padding: 0 5px;
     margin: 34px 0;
   }
 
   &__list {
-    width: 60%;
+    margin: 15px 0;
   }
 
   &__item ~ &__item {
@@ -3061,7 +3064,7 @@
 
     footer {
       padding: 0 20px;
-      margin: 0 0 40px;
+      margin: 0 0 20px;
     }
   }
 }

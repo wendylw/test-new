@@ -107,7 +107,7 @@ class Header extends Component {
                 <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={deliveryFee || 0} />
               </li>
               {enableCashback && cashbackRatePercentage ? (
-                <li className="header__info-item text-middle">
+                <li className="header__info-item">
                   <IconWallet className="header__motor-icon text-middle" />
                   <span className="header__info-text text-middle">
                     {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
