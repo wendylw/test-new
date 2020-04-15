@@ -132,7 +132,7 @@ export const toDayDateMonth = (date, locale = 'MY') =>
   toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
-  if (hour.from === 'now') return i18next.t('DeliverNow');
+  if (hour.from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow');
 
   const hourFrom = hour.from.split(':')[0];
   const minuteFrom = hour.from.split(':')[1];
@@ -156,6 +156,23 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
     workDateTo.setHours(hourTo, minuteTo, 0);
     part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
   }
+
+  return `${part1}, ${part2}`;
+};
+
+export const formatPickupAddress = ({ date, locale }) => {
+  const orderTime = new Date(date);
+  // const orderHour = orderTime.getHours();
+  // const orderMinutes = orderTime.getMinutes();
+  let part1;
+
+  if (orderTime.getDate() === new Date().getDate()) {
+    part1 = i18next.t('Today');
+  } else {
+    part1 = toDayDateMonth(orderTime, locale);
+  }
+
+  const part2 = toNumericTime(orderTime, locale);
 
   return `${part1}, ${part2}`;
 };
