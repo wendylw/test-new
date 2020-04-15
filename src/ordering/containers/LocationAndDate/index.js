@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { toNumericTime, toLocaleDateString } from '../../../utils/datetime-lib';
+import { toNumericTime } from '../../../utils/datetime-lib';
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS } = Constants;
 
@@ -118,7 +118,6 @@ class LocationAndDate extends Component {
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
-    const country = this.getBusinessCountry();
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;

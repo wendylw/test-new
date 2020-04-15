@@ -48,7 +48,7 @@ class Header extends Component {
       children,
       onClickHandler,
       deliveryFee,
-      minOrder,
+      // minOrder,
       isValidTimeToOrder,
     } = this.props;
     const classList = ['header flex flex-space-between'];
@@ -104,12 +104,12 @@ class Header extends Component {
                 <IconMotorcycle className="header__motor-icon text-middle" />
                 <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={deliveryFee || 0} />
               </li>
-              <li className="header__info-item">
+              {/* <li className="header__info-item">
                 <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
                   <label className="text-middle">Min Order.</label>
                   <CurrencyNumber className="header__info-text text-middle font-weight-bold" money={minOrder || 0} />
                 </Trans>
-              </li>
+              </li> */}
             </ul>
           </div>
         ) : (

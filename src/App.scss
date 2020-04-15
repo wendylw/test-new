@@ -410,7 +410,7 @@
     }
 
     .billing__list {
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
 
     .billing__item {
@@ -813,16 +813,6 @@
     svg {
       width: 14px;
       height: 14px;
-    }
-  }
-
-  &__info-icon {
-    width: 20px;
-    height: 20px;
-
-    svg {
-      width: inherit;
-      height: inherit;
     }
   }
 
@@ -1536,6 +1526,10 @@
     margin-top: 10px;
   }
 
+  &__header {
+    margin: 20px 0;
+  }
+
   &__aside.aside {
     top: 50px;
 
@@ -1556,6 +1550,7 @@
   }
 
   &__delivery-hours {
+    padding: 0 20px;
     margin: 34px 0;
   }
 
@@ -3273,19 +3268,19 @@ body.loading {
   }
 
   .header__one-line-title {
-    max-width: 300px;
+    max-width: 296px;
   }
 
   .header__icon ~ .header__title .header__one-line-title {
-    max-width: 250px;
+    max-width: 246px;
   }
 
   .header__one-line-title.has-tag {
-    max-width: 200px;
+    max-width: 196px;
   }
 
   .header__icon ~ .header__title-container .header__one-line-title.has-tag {
-    max-width: 180px;
+    max-width: 176px;
   }
 
   .category-nav.category-nav__vertical,
