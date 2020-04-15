@@ -14,7 +14,7 @@ export const getDateTimeFormatter = (countryCode, options) => {
   return new Intl.DateTimeFormat(standardizeLocale(countryCode), options);
 };
 
-const padZero = num => {
+export const padZero = num => {
   const str = num.toString();
   if (str.length === 1) {
     return `0${str}`;
