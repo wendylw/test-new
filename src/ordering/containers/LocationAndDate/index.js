@@ -12,11 +12,7 @@ import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
 
-const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS } = Constants;
-const ON_DEMAND_ORDER = {
-  from: 'now',
-  to: 'now',
-};
+const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -75,12 +71,10 @@ class LocationAndDate extends Component {
   validTimeFrom = null;
   validTimeTo = null;
 
-  // pickupTimeList and deliveryTimeList are for the full time list displayed for future days
+  // fullTimeList are pickupTimeList and deliveryTimeList for the full time list displayed for future days
   // They'll be calculated and stored as static data for later use just to real time computing
-  validDeliveryTimeFrom = null;
-  pickupTimeList = null;
-  validPickUpTimeFrom = null;
-  deliveryTimeList = null;
+  validPreOrderTimeFrom = null;
+  fullTimeList = [];
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
@@ -117,17 +111,17 @@ class LocationAndDate extends Component {
 
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
-      this.validDeliveryTimeFrom = startMinute ? startHour + 2 : startHour + 1;
-      this.deliveryTimeList = this.getFullHourList();
+      this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
     }
 
     if (Utils.isPickUpType()) {
       const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
-      this.validPickUpTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
-      this.pickupTimeList = this.getFullHourList();
+      this.validPreOrderTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
     }
+    // Should place it here because we need validPreOrderTimeFrom to check the function
+    this.fullTimeList = this.getFullHourList();
   };
 
   componentDidUpdate = () => {
@@ -225,17 +219,10 @@ class LocationAndDate extends Component {
       const hoursListForToday = this.getHoursListForToday(date);
       firstListItem = hoursListForToday[0] || {};
     } else {
-      if (Utils.isDeliveryType()) {
-        const firstDeliveryItem = this.deliveryTimeList[0];
-        firstListItem = firstDeliveryItem;
-      }
-      if (Utils.isPickUpType()) {
-        const firstDeliveryItem = this.pickupTimeList[0];
-        firstListItem = firstDeliveryItem;
-      }
+      firstListItem = this.fullTimeList[0];
     }
 
-    if (firstListItem.from === ON_DEMAND_ORDER.from) return firstListItem;
+    if (firstListItem.from === PREORDER_IMMEDIATE_TAG.from) return firstListItem;
 
     return {
       from: getHourAndMinuteFromTime(firstListItem.from),
@@ -293,7 +280,7 @@ class LocationAndDate extends Component {
 
       if (!stores.length) return;
 
-      const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
+      const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.CITY);
       return (
         <div className="form__group">
           <label className="form__label font-weight-bold">{t('PickupAt')}</label>
@@ -354,11 +341,11 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     return timeList.map(item => {
-      if (item.from === ON_DEMAND_ORDER.from) {
+      if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return (
           <li
             className={`location-display__hour-item text-center ${
-              selectedHour.from === ON_DEMAND_ORDER.from ? 'selected' : ''
+              selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
             }`}
             onClick={() => {
               this.handleSelectHour({ ...item });
@@ -425,20 +412,14 @@ class LocationAndDate extends Component {
 
     // If user visit this webpage before store opens, show full time list
     if (isAfterTime(currentTime, storeOpenTime)) {
-      if (Utils.isDeliveryType()) {
-        return this.deliveryTimeList;
-      }
-
-      if (Utils.isPickUpType()) {
-        return this.pickupTimeList;
-      }
+      return this.fullTimeList;
     }
 
     // If user visit this page in the middle of the day, first item should be 'immediate'
     if (isAfterTime(storeOpenTime, currentTime) && isAfterTime(currentTime, storeCloseTime)) {
       // If calculated first item display is after store close
       if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
-        return [ON_DEMAND_ORDER];
+        return [PREORDER_IMMEDIATE_TAG];
       }
       const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
       const startTimeInList = fullTimeList.findIndex(item =>
@@ -446,13 +427,13 @@ class LocationAndDate extends Component {
       );
 
       const timeListToDisplay = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
-      timeListToDisplay.unshift(ON_DEMAND_ORDER);
+      timeListToDisplay.unshift(PREORDER_IMMEDIATE_TAG);
 
       return timeListToDisplay;
     }
 
     if (isAfterTime(currentTime, storeCloseTime)) {
-      return [ON_DEMAND_ORDER];
+      return [PREORDER_IMMEDIATE_TAG];
     }
 
     return [];
@@ -463,18 +444,9 @@ class LocationAndDate extends Component {
       return [];
     }
 
-    let displayTimeFrom;
     let timeList = [];
 
-    if (Utils.isDeliveryType()) {
-      displayTimeFrom = this.validDeliveryTimeFrom;
-    }
-
-    if (Utils.isPickUpType()) {
-      displayTimeFrom = this.validPickUpTimeFrom;
-    }
-
-    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(displayTimeFrom);
+    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(this.validPreOrderTimeFrom);
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(this.validTimeTo);
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0);
@@ -483,10 +455,11 @@ class LocationAndDate extends Component {
 
     const loopCheck = i => {
       // Assuming store closes at 10:00 pm
-      // Final delivery time should be 10:00 pm and final pickup time should be 9:30pm
+      // Final delivery time should be 22:00 and final pickup time should be 21:30
       // Data structure of the last item in hour list
       // For delivery is { from: "21:00" , to: "22:00" }
-      // For pickup is { from: "21:15" , to: "21:30" }
+      // For pickup is { from: "21:30" , to: "21:45" }
+      // So for delivery should compare 'to' and for pickup should compare 'from'
       if (Utils.isDeliveryType()) {
         return timeIncrease(i);
       }
@@ -518,13 +491,7 @@ class LocationAndDate extends Component {
     if (selectedDate.isToday) {
       timeList = this.getHoursListForToday(selectedDate);
     } else {
-      if (Utils.isDeliveryType()) {
-        timeList = this.deliveryTimeList;
-      }
-
-      if (Utils.isPickUpType()) {
-        timeList = this.pickupTimeList;
-      }
+      timeList = this.fullTimeList;
     }
 
     return timeList;

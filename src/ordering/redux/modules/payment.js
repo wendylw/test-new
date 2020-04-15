@@ -1,5 +1,6 @@
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions } from './app';
@@ -97,7 +98,7 @@ export const actions = {
         const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
         // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
 
-        if (expectedDeliveryHour.from !== 'now') {
+        if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
           console.log('This is a pre order');
 
           expectDeliveryDateInfo = getExpectDeliveryDateInfo(
