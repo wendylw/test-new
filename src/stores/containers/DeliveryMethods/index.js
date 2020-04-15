@@ -12,12 +12,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getStoreHashCode, isStoreClosed } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
-const METHODS_LIST = [
+let METHODS_LIST = [
   {
     name: DELIVERY_METHOD.DELIVERY,
     logo: DeliveryImage,
@@ -36,12 +35,19 @@ class DeliveryMethods extends Component {
   componentDidMount = async () => {
     await this.props.homeActions.loadCoreBusiness();
     await this.props.homeActions.getStoreHashData(this.props.store.id);
+    const { allBusinessInfo, business } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    // remove delivery time write in session to prevent date inconsistence issus
+    if (enablePreOrder) {
+      Utils.removeExpectedDeliveryTime();
+    }
 
     if (this.props.isStoreClosed) {
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
-        search: `?h=${this.props.hashCode}&type=delivery`, // only 'delivery' type has closed status
-      });
+      const search = `?h=${this.props.hashCode}&type=delivery`;
+      const searchStr = enablePreOrder ? `${search}&isPreOrder=true` : search;
+
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${searchStr}`;
     }
   };
 
@@ -52,22 +58,53 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
-    // TODO: duplicate logic with componentDidMount, need optimize
+    const { isStoreClosed } = this.props;
     const { store, homeActions } = this.props;
-
     await homeActions.getStoreHashData(store.id);
-
     const { hashCode } = this.props;
-
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
+
     // isValid
     const { allBusinessInfo, business } = this.props;
-    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-    if (hashCode && isValidTimeToOrder) {
-      await Utils.setSessionVariable('deliveryCallbackUrl', `/?h=${hashCode || ''}&type=${methodName}`);
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
-        ''}&type=${methodName}`;
+    const { enablePreOrder } = Utils.getDeliveryInfo({
+      business,
+      allBusinessInfo,
+    });
+    const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+    if (hashCode && currentMethod.name === DELIVERY_METHOD.DELIVERY) {
+      if (!isStoreClosed && enablePreOrder) {
+        // Should always let users select delivery time once they selected delivery not pickup
+        await Utils.setSessionVariable(
+          'deliveryTimeCallbackUrl',
+          JSON.stringify({
+            pathname: ROUTER_PATHS.ORDERING_HOME,
+            search: `?h=${hashCode || ''}&type=${methodName}`,
+          })
+        );
+
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}/?h=${hashCode ||
+          ''}&type=${methodName}`;
+        return;
+      }
+
+      if (store.id && deliveryTo) {
+        console.warn('storeId and deliveryTo info is enough for delivery, redirect to ordering home');
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
+        return;
+      } else if (!deliveryTo) {
+        await Utils.setSessionVariable(
+          'deliveryCallbackUrl',
+          JSON.stringify({
+            pathname: ROUTER_PATHS.ORDERING_HOME,
+            search: `?h=${hashCode || ''}&type=${methodName}`,
+          })
+        );
+
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
+          ''}&type=${methodName}`;
+        return;
+      }
     } else {
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
     }
@@ -119,9 +156,9 @@ export default compose(
   connect(
     state => ({
       hashCode: getStoreHashCode(state),
+      isStoreClosed: isStoreClosed(state),
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
-      isStoreClosed: isStoreClosed(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

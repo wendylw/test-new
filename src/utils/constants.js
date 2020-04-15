@@ -16,6 +16,7 @@ const ROUTER_PATHS = {
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOCATION_AND_DATE: '/location-date',
   ORDERING_LOCATION: '/location',
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
@@ -27,8 +28,11 @@ const ROUTER_PATHS = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
-  // Qrscan App basename
+  // site
+  SITE_HOME: '/home',
   QRSCAN: '/qrscan',
+  SCAN: '/scan',
+  SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
 };
 
@@ -51,11 +55,17 @@ const DOCUMENT_TITLE = {
   PRIVACY: 'Privacy',
 };
 
-const PAYMENT_METHODS = {
-  ONLINE_BANKING_PAY: 'CCPP',
-  CREDIT_CARD_PAY: 'CCPPCreditCard',
+const PAYMENT_METHOD_LABELS = {
+  ONLINE_BANKING_PAY: 'OnlineBanking',
+  CREDIT_CARD_PAY: 'CreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
+};
+
+const CREDIT_CARD_BRANDS = {
+  VISA: 'Visa',
+  MASTER_CARD: 'MasterCard',
+  JCB: 'JCB',
 };
 
 const HOME_ASIDE_NAMES = {
@@ -129,6 +139,16 @@ const DELIVERY_METHOD = {
   PICKUP: 'pickup',
 };
 
+const CONSUMERFLOW_STATUS = {
+  PAID: 'paid',
+  ACCEPTED: 'accepted',
+  LOGISTIC_CONFIRMED: 'logisticsConfirmed',
+  CONFIMRMED: 'confirmed',
+  PICKUP: 'pickedUp',
+  CANCELLED: 'cancelled',
+};
+const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -136,7 +156,8 @@ export default {
   MANIFEST,
   ROUTER_PATHS,
   CASHBACK_SOURCE,
-  PAYMENT_METHODS,
+  PAYMENT_METHOD_LABELS,
+  CREDIT_CARD_BRANDS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
   CHANNEL_TYPE,
@@ -152,4 +173,6 @@ export default {
   LANGUAGES,
   ASIDE_NAMES,
   DELIVERY_METHOD,
+  CONSUMERFLOW_STATUS,
+  WEEK_DAYS_I18N_KEYS,
 };

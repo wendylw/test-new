@@ -1,9 +1,12 @@
 {
   "OrderNow": "Order now",
+  "PreOrderNow": "PRE-ORDER NOW",
   "CartItemsInCategory": "{{cartQuantity}} Items",
   "NoProductDescription": "No product description",
   "MinimumChoicesDescription": "Select minimum of {{minSelectionAmount}} choices",
   "MaximumChoicesDescription": "Select maximum of {{maxSelectionAmount}} choices",
   "MinMaximumChoicesDescription": "Select minimum of {{minSelectionAmount}} and maximum of {{maxSelectionAmount}} choices",
-  "StoreOffline": "STORE OFFLINE"
+  "StoreOffline": "STORE OFFLINE",
+  "PreOrderConfirmModalTitle": "We’re closed for now, but you can still order!",
+  "PreOrderConfirmModalDescription": "Our opening hours are from {{validTimeFrom}} to {{validTimeTo}}. But you can browse the menu & pre-order instead!"
 }

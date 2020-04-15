@@ -1,0 +1,40 @@
+@import "../Variables.scss";
+
+/* Site Banner */
+.site-banner {
+  position: relative;
+  width: 100%;
+  color: $white;
+  background: linear-gradient(134.77deg, $theme-color 0%, $red 100%);
+
+  &__circle {
+    position: absolute;
+    bottom: 20%;
+    display: block;
+    width: 195%;
+    background: linear-gradient(190.02deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.08) 100%);
+    border-radius: 50%;
+
+    &::before {
+      content: "";
+      display: block;
+      padding: 50% 0;
+    }
+  }
+
+  &__title {
+    padding-top: 50px;
+    margin-bottom: 3.8vw * 2;
+  }
+}
+/* end of Site Banner */
+
+@media (min-width: 770px) {
+  /* Site Banner */
+  .site-banner {
+    &__title {
+      margin-bottom: 8px * 4;
+    }
+  }
+  /* end of Site Banner */
+}

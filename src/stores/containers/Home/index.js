@@ -23,11 +23,9 @@ const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {};
 
-  async componentDidMount() {
-    const { homeActions } = this.props;
-
-    await homeActions.loadCoreStores();
-  }
+  componentDidMount = async () => {
+    await this.props.homeActions.loadCoreStores();
+  };
 
   async visitStore(storeId) {
     const { homeActions } = this.props;
@@ -47,14 +45,21 @@ class App extends Component {
     await homeActions.loadCoreBusiness();
     // if store is closed,go straight to ordering page and let it display store is closed
     const { allBusinessInfo, business } = this.props;
-    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = Utils.getDeliveryInfo({
+      business,
+      allBusinessInfo,
+    });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
     if (isValidTimeToOrder) {
       homeActions.setCurrentStore(storeId);
     } else {
+      // remove delivery time write in session to prevent date inconsistence issus
+      if (enablePreOrder) {
+        Utils.removeExpectedDeliveryTime();
+      }
       await homeActions.getStoreHashData(storeId);
       const { hashCode } = this.props;
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=delivery`;
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=delivery${enablePreOrder ? '&isPreOrder=true' : ''}`;
     }
   }
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { debounce } from 'lodash';
-import { IconGpsFixed, IconSearch, IconClose, IconBookmark } from '../../../components/Icons';
+import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from '../../../components/Icons';
 import ErrorToast from '../../../components/ErrorToast';
 import ErrorImage from '../../../images/delivery-error.png';
 import Utils from '../../../utils/utils';
@@ -165,7 +165,7 @@ class Location extends Component {
       const historicalAddresses = await getHistoricalDeliveryAddresses(5);
       this.setState({ historicalAddresses });
     } catch (e) {
-      console.error('Failed to get historical addresses');
+      console.error('Failed to get historical addresses', e);
     }
   }
 
@@ -213,7 +213,6 @@ class Location extends Component {
 
   onSearchBoxChange = event => {
     const searchText = event.currentTarget.value;
-    console.log('typed:', searchText);
     this.setState({ searchText }, () => {
       this.debounceSearchPlaces();
     });
@@ -250,12 +249,17 @@ class Location extends Component {
           errorToast: t(`OutOfDeliveryRange`, { distance: (this.deliveryDistanceMeter / 1000).toFixed(1) }),
         });
         return;
+      } else {
+        Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo, routerDistance: distance }));
       }
-      Utils.setSessionVariable('deliveryAddress', JSON.stringify(placeInfo));
-      const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
+      const callbackUrl = JSON.parse(Utils.getSessionVariable('deliveryCallbackUrl'));
       Utils.removeSessionVariable('deliveryCallbackUrl');
-      if (typeof callbackUrl === 'string') {
-        history.push(callbackUrl);
+      if (typeof callbackUrl === 'object') {
+        const { pathname, search } = callbackUrl;
+        history.push({
+          pathname: pathname,
+          search,
+        });
       } else {
         history.go(-1);
       }
@@ -298,9 +302,7 @@ class Location extends Component {
     return (
       <div className="location-page__search-box">
         <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-          <i className="location-page__search-box-search-icon" onClick={this.tryGeolocation}>
-            <IconSearch />
-          </i>
+          <IconSearch className="location-page__search-box-search-icon" onClick={this.tryGeolocation} />
           <input
             className="input input__block"
             type="text"
@@ -308,13 +310,11 @@ class Location extends Component {
             onChange={this.onSearchBoxChange}
             value={searchText}
           />
-          <i
+          <IconClose
             className="location-page__search-box-clear-icon"
             onClick={this.clearSearchBox}
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
-          >
-            <IconClose />
-          </i>
+          />
         </div>
       </div>
     );
@@ -401,9 +401,7 @@ class Location extends Component {
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <div className="location-page__historical-address-icon">
-                  <IconBookmark />
-                </div>
+                <IconBookmarks className="location-page__historical-address-icon" />
                 <div className="location-page__historical-address-content">
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>

@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://ck.beep.test16.shub.us/",
+  "proxy": "https://wenjingzhang.beep.test16.shub.us/",
   "engines": {
     "node": ">=8.17.0"
   },
@@ -85,7 +85,8 @@
     "test:coverage": "react-scripts test --coverage",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
-    "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000"
+    "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
+    "i18n-sync": "i18n-sync --poeditor-token=bd608c0b2debdc1205e03ee20e2f46e6 --tolerate-sync-error"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -105,6 +106,7 @@
     "enzyme-adapter-react-16": "^1.15.1",
     "fs-extra": "^8.1.0",
     "husky": "^3.1.0",
+    "i18n-sync": "^1.2.1",
     "jest-fetch-mock": "^2.1.2",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
