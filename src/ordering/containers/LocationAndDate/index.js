@@ -178,14 +178,15 @@ class LocationAndDate extends Component {
     const deliveryDates = [];
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
-      const currentHour = currentTime.getHours();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
       let isOpen = validDays.includes(weekday);
       const deliveryDate = new Date(newDate).setHours(0, 0, 0);
 
       if (!i) {
-        isOpen = validDays.includes(weekday) && currentHour < this.validTimeTo.split(':')[0];
+        // Today option is open when user visits delivery time page before store is closed
+        const isBeforeStoreClose = isAfterTime(currentTime, createTimeWithTimeString(this.validTimeTo));
+        isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
       }
 
@@ -402,8 +403,14 @@ class LocationAndDate extends Component {
     if (Utils.isPickUpType()) {
       const startTimeForToday = closestValidTime('', 30, 'm');
       const fullTimeList = this.pickupTimeList || [];
+
+      // If user visit this webpage before store opens, show full time list
+      if (isAfterTime(startTimeForToday, fullTimeList[0].from)) {
+        return fullTimeList;
+      }
       const startTimeInList = fullTimeList.findIndex(item => isSameTime(item.from, startTimeForToday, ['h', 'm']));
-      hoursListForToday = fullTimeList.slice(startTimeInList);
+
+      hoursListForToday = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
     }
 
     if (Utils.isDeliveryType()) {
@@ -434,7 +441,7 @@ class LocationAndDate extends Component {
       const startTimeInList = fullTimeList.findIndex(item =>
         isSameTime(item.from, currentTime.setHours(validHour), ['h'])
       );
-      hoursListForToday = fullTimeList.slice(startTimeInList);
+      hoursListForToday = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
       hoursListForToday.unshift({
         from: 'now',
         to: 'now',
