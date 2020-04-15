@@ -14,7 +14,7 @@
   "InvalidMessage": "After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!",
   "ClaimedFirstTimeTitle": "Awesome, you've earned your first cashback! 🎉",
   "ClaimedFirstTimeTitleInThankYou": "Awesome, you've earned {{currencySymbol}} {{cashback}} your first cashback! 🎉 ",
-  "ClaimedNotFirstTimeTitleInThankYou": "You've earned {{currencySymbol}} {{cashback}} cashback! 🎉",
+  "ClaimedNotFirstTimeTitleInThankYou": "You've earned {{currencySymbol}} {{cashback}} Store Cashback for this order. You can use this on your next purchase!",
   "ClaimedFirstTimeDescription": "Tap the button below to learn how to use your cashback.",
   "ClaimedNotFirstTimeTitle": "You've earned more cashback! 🎉",
   "ClaimedProcessing": "You've earned more cashback! We'll add it once it's been processed.😉",
