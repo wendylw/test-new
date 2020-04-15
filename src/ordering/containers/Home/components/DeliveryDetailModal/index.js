@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
-import { IconMotorcycle, IconWallet } from '../../../../../components/Icons';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
   state = {
@@ -44,14 +42,12 @@ class DeliveryDetailModal extends Component {
       onToggle,
       storeAddress,
       telephone,
-      deliveryFee,
       isValidTimeToOrder,
       // enablePreOrder,
     } = this.props;
     const { initDom } = this.state;
-    const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
+    const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
     const classList = ['store-info__aside aside'];
 
     if (!businessLoaded) {
@@ -101,22 +97,6 @@ class DeliveryDetailModal extends Component {
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
               </a>
-              <ul className="header__info-list">
-                <li className="header__info-item text-middle">
-                  <IconMotorcycle className="header__motor-icon text-middle" />
-                  <span className="header__info-text text-middle font-weight-bold">
-                    <CurrencyNumber money={deliveryFee || 0} />
-                  </span>
-                </li>
-                {enableCashback && cashbackRatePercentage ? (
-                  <li className="header__info-item text-middle">
-                    <IconWallet className="header__motor-icon text-middle" />
-                    <span className="header__info-text text-middle">
-                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
 
               <div className="store-info__delivery-hours">
                 <label className="font-weight-bold gray-font-opacity">{t('DeliveryHours')}</label>
