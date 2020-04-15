@@ -327,7 +327,6 @@ export class Home extends Component {
       ...otherProps
     } = this.props;
     const {
-      deliveryFee: legacyDeliveryFee,
       storeAddress,
       telephone,
       validDays,
@@ -391,7 +390,6 @@ export class Home extends Component {
             businessLoaded={businessLoaded}
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
-            deliveryFee={cartSummary ? cartSummary.shippingFee : legacyDeliveryFee}
             storeAddress={storeAddress}
             telephone={telephone}
             validDays={validDays}
