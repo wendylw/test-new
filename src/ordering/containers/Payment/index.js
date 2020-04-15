@@ -18,32 +18,27 @@ import { getPaymentName, getPaymentList, getSupportCreditCardBrands } from './ut
 import paymentBankingImage from '../../../images/payment-banking.png';
 import paymentCreditImage from '../../../images/payment-credit.png';
 import paymentBoostImage from '../../../images/payment-boost.png';
-import paymentGrabImage from '../../../images/payment-grab.png';
-import paymentTNGImage from '../../../images/payment-tng.svg';
+import paymenbGrabImage from '../../../images/payment-grab.png';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
 const dataSource = {
   onlineBanking: {
     logo: paymentBankingImage,
-    label: PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY,
+    label: 'OnlineBanking',
     pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
   },
   creditCard: {
     logo: paymentCreditImage,
-    label: PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY,
+    label: 'CreditCard',
     pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
   },
   boost: {
     logo: paymentBoostImage,
-    label: PAYMENT_METHOD_LABELS.BOOST_PAY,
+    label: 'Boost',
   },
   grabPay: {
-    logo: paymentGrabImage,
-    label: PAYMENT_METHOD_LABELS.GRAB_PAY,
-  },
-  TNG: {
-    logo: paymentTNGImage,
-    label: PAYMENT_METHOD_LABELS.TNG_PAY,
+    logo: paymenbGrabImage,
+    label: 'GrabPay',
   },
 };
 const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];

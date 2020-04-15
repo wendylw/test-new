@@ -13,21 +13,13 @@ import '../../../App.scss';
 import Home from '../Home';
 import DeliveryMethods from '../DeliveryMethods';
 
-import { gtmSetUserProperties } from '../../../utils/gtm';
-
-
 class App extends Component {
   componentDidMount() {
     const { appActions } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
     this.visitErrorPage();
-    fetchOnlineStoreInfo().then(({ responseGql }) => {
-      const { data } = responseGql;
-      const { onlineStoreInfo } = data;
-
-      gtmSetUserProperties(onlineStoreInfo);
-    });
+    fetchOnlineStoreInfo();
   }
 
   componentDidUpdate(prevProps) {
