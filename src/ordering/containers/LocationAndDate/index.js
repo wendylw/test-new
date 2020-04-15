@@ -33,14 +33,21 @@ class LocationAndDate extends Component {
   validDays = [];
   validTimeFrom = null;
   validTimeTo = null;
+  timeListRef = React.createRef();
+  footerRef = React.createRef();
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
+    const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
       deliveryToAddress,
     });
+
+    this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
   };
 
   getExpectedTimeFromSession = () => {
@@ -297,7 +304,9 @@ class LocationAndDate extends Component {
     return (
       <div className="form__group location-display__date-container">
         <label className="form__label font-weight-bold gray-font-opacity">{t('DeliveryTime')}</label>
-        <ul className="location-display__hour">{this.renderHoursList()}</ul>
+        <ul ref={this.timeListRef} className="location-display__hour">
+          {this.renderHoursList()}
+        </ul>
       </div>
     );
   };
@@ -347,7 +356,7 @@ class LocationAndDate extends Component {
   renderContinueButton = () => {
     const { t } = this.props;
     return (
-      <footer className="footer-operation grid flex flex-middle flex-space-between">
+      <footer ref={this.footerRef} className="footer-operation grid flex flex-middle flex-space-between">
         <div className="footer-operation__item width-1-1">
           <button
             className="billing__link button button__fill button__block font-weight-bold"
