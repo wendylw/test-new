@@ -97,7 +97,7 @@ export class ThankYou extends Component {
         <div className="thanks-pickup__id-container">
           <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
           <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
-            {`#${orderId}`}
+            {orderId}
           </span>
         </div>
       </div>
