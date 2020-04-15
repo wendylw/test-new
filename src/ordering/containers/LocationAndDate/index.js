@@ -185,7 +185,7 @@ class LocationAndDate extends Component {
       const deliveryDate = new Date(newDate).setHours(0, 0, 0);
 
       if (!i) {
-        isOpen = validDays.includes(weekday) && currentHour < this.validTimeTo;
+        isOpen = validDays.includes(weekday) && currentHour < this.validTimeTo.split(':')[0];
         if (!isOpen) continue;
       }
 
@@ -220,51 +220,27 @@ class LocationAndDate extends Component {
   };
 
   getFirstItemFromTimeList = date => {
-    if (Utils.isDeliveryType() && Array.isArray(this.deliveryTimeList)) {
-      if (date.isToday) {
-        const currentTime = new Date();
-
-        if (currentTime.getHours() < this.validDeliveryTimeTo) {
-          const firstTimeItem = this.deliveryTimeList[0];
-          // should check if current time is late than validDelivery or pickup time
-          return {
-            from: getHourAndMinuteFromTime(firstTimeItem.from),
-            to: getHourAndMinuteFromTime(firstTimeItem.to),
-          };
-        } else {
-          return {
-            from: 'now',
-            to: 'now',
-          };
-        }
-      } else {
-        const firstTimeItem = this.deliveryTimeList[0];
-        // should check if current time is late than validDelivery or pickup time
-        return {
-          from: getHourAndMinuteFromTime(firstTimeItem.from),
-          to: getHourAndMinuteFromTime(firstTimeItem.to),
-        };
+    let firstListItem = {};
+    if (date.isToday) {
+      const hoursListForToday = this.getHoursListForToday(date);
+      firstListItem = hoursListForToday[0];
+    } else {
+      if (Utils.isDeliveryType()) {
+        const firstDeliveryItem = this.deliveryTimeList[0];
+        firstListItem = firstDeliveryItem;
       }
-    } else if (Utils.isPickUpType() && Array.isArray(this.pickupTimeList)) {
-      // If is pickup, there won't be to
-      if (date.isToday) {
-        const timeList = this.getHoursList(date);
-        if (!timeList.length) {
-          return {};
-        }
-        const firstTimeItem = timeList[0];
-        return {
-          from: getHourAndMinuteFromTime(firstTimeItem.from),
-        };
-      } else {
-        const firstTimeItem = this.pickupTimeList[0];
-        return {
-          from: getHourAndMinuteFromTime(firstTimeItem.from),
-        };
+      if (Utils.isPickUpType()) {
+        const firstDeliveryItem = this.pickupTimeList[0];
+        firstListItem = firstDeliveryItem;
       }
     }
 
-    return {};
+    if (firstListItem.from === 'now') return firstListItem;
+
+    return {
+      from: getHourAndMinuteFromTime(firstListItem.from),
+      to: getHourAndMinuteFromTime(firstListItem.to),
+    };
   };
 
   handleSelectDate = date => {
@@ -506,43 +482,19 @@ class LocationAndDate extends Component {
   getHoursList = (selectedDate = {}) => {
     let timeList = [];
 
-    if (Utils.isDeliveryType()) {
-      if (selectedDate.isToday) {
-        // This one needs sometime to work on
-        timeList = this.getHoursListForToday(selectedDate);
-      } else {
+    if (selectedDate.isToday) {
+      timeList = this.getHoursListForToday(selectedDate);
+    } else {
+      if (Utils.isDeliveryType()) {
         timeList = this.deliveryTimeList;
       }
-    }
 
-    if (Utils.isPickUpType()) {
-      if (selectedDate.isToday) {
-        timeList = this.getHoursListForToday(selectedDate);
-      } else {
+      if (Utils.isPickUpType()) {
         timeList = this.pickupTimeList;
       }
     }
 
     return timeList;
-  };
-
-  getStartTimeForToday = () => {
-    const currentTime = new Date();
-
-    if (Utils.isDeliveryType()) {
-      // Check what if store opens at 8am, and users get to this page on 5am
-      const currentHour = currentTime.getHours();
-      const currentMinute = currentTime.getMinutes();
-      // If currentTime is smaller than validDeliveryTime, should
-      const isAfterDeliveryStartTime = isAfterTime(this.validDeliveryTimeTo, currentTime);
-
-      const startTimeForToday = isAfterDeliveryStartTime
-        ? currentMinute
-          ? currentHour + 2
-          : currentHour + 1
-        : this.validDeliveryTimeFrom;
-      return startTimeForToday;
-    }
   };
 
   renderHourSelector = () => {
