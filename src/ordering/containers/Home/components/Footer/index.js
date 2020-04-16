@@ -74,7 +74,7 @@ export class Footer extends Component {
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
         <div className="cart-bar has-products flex flex-middle flex-space-between">
-          <button onClick={onClickCart}>
+          <button className="flex__shrink-fixed" onClick={onClickCart}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
               <IconCart />
               <span className="tag__number">{count || 0}</span>

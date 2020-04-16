@@ -3205,6 +3205,14 @@ body.loading {
   }
 }
 
+@media (max-width: 413px) {
+  .header {
+    &__icon ~ &__title-container &__one-line-title.has-tag {
+      max-width: 34vw;
+    }
+  }
+}
+
 @media (max-width: 374px) {
   *,
   html {
@@ -3218,7 +3226,7 @@ body.loading {
     }
 
     &__icon ~ &__title-container &__one-line-title.has-tag {
-      max-width: 34vw;
+      max-width: 31vw;
     }
   }
 
