@@ -18,6 +18,7 @@ import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modu
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -83,7 +84,19 @@ class Cart extends Component {
     });
   };
 
+  handleGtmEventTracking = async callback => {
+    const { shoppingCart, cartSummary } = this.props;
+    const itemsInCart = shoppingCart.items.map(item => item.id);
+    const gtmEventData = {
+      product_id: itemsInCart,
+      cart_size: cartSummary.count,
+      cart_value_local: cartSummary.total,
+    };
+    gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
+  };
+
   handleCheckPaymentStatus = async () => {
+    this.handleGtmEventTracking();
     const { history, cartSummary, user } = this.props;
     const { isLogin } = user;
     const { total, totalCashback } = cartSummary || {};
@@ -157,7 +170,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
-    const { expandBilling, isCreatingOrder } = this.state;
+    const { isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -195,12 +208,7 @@ class Cart extends Component {
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
-          <i
-            className="aside-bottom__slide-button"
-            onClick={() => this.setState({ expandBilling: !expandBilling })}
-          ></i>
           <Billing
-            className={!expandBilling ? 'billing__collapse' : ''}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}

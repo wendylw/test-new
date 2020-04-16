@@ -70,6 +70,8 @@ class LocationAndDate extends Component {
   validDays = [];
   validTimeFrom = null;
   validTimeTo = null;
+  timeListRef = React.createRef();
+  footerRef = React.createRef();
 
   // fullTimeList are pickupTimeList and deliveryTimeList for the full time list displayed for future days
   // They'll be calculated and stored as static data for later use just to real time computing
@@ -78,6 +80,11 @@ class LocationAndDate extends Component {
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
+    const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
+
+    this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
@@ -507,9 +514,15 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
-        <ul className="location-display__hour">{this.renderHoursList(timeList)}</ul>
+        {Utils.isDeliveryType() && (
+          <label className="form__label font-weight-bold gray-font-opacity">{t('DeliveryTime')}</label>
+        )}
+        {Utils.isPickUpType() && (
+          <label className="form__label font-weight-bold gray-font-opacity">{t('PickupTime')}</label>
+        )}
+        <ul ref={this.timeListRef} className="location-display__hour">
+          {this.renderHoursList(timeList)}
+        </ul>
       </div>
     );
   };
@@ -559,7 +572,7 @@ class LocationAndDate extends Component {
   renderContinueButton = () => {
     const { t } = this.props;
     return (
-      <footer className="footer-operation grid flex flex-middle flex-space-between">
+      <footer ref={this.footerRef} className="footer-operation grid flex flex-middle flex-space-between">
         <div className="footer-operation__item width-1-1">
           <button
             className="billing__link button button__fill button__block font-weight-bolder"
