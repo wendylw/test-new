@@ -42,7 +42,7 @@ const createTimeWithTimeString = timeString => {
   const { hour, minute } = getHourAndMinuteFromString(timeString);
   const currentTime = new Date();
 
-  return currentTime.setHours(hour || 0, minute || 0);
+  return currentTime.setHours(hour || 0, minute || 0, 0, 0);
 };
 
 const getHourAndMinuteFromTime = time => {
@@ -53,9 +53,9 @@ const getHourAndMinuteFromTime = time => {
   return `${hour}:${minutes}`;
 };
 
-const isAfterTime = (time1, time2) => {
-  return new Date(time1).valueOf() <= new Date(time2).valueOf();
-};
+const isAfterTime = (time1, time2) => new Date(time1).valueOf <= new Date(time2).valueOf();
+
+const isNoLaterThan = (time1, time2) => new Date(time1).valueOf() <= new Date(time2).valueOf();
 
 class LocationAndDate extends Component {
   state = {
@@ -174,11 +174,11 @@ class LocationAndDate extends Component {
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
       let isOpen = validDays.includes(weekday);
-      const deliveryDate = new Date(newDate).setHours(0, 0, 0);
+      const deliveryDate = new Date(newDate).setHours(0, 0, 0, 0);
 
       if (!i) {
         // Today option is open when user visits delivery time page before store is closed
-        const isBeforeStoreClose = isAfterTime(currentTime, createTimeWithTimeString(this.validTimeTo));
+        const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
       }
@@ -411,13 +411,15 @@ class LocationAndDate extends Component {
     const fullTimeList = this.getHoursList();
 
     // If user visit this webpage before store opens, show full time list
-    if (isAfterTime(currentTime, storeOpenTime)) {
+    if (isNoLaterThan(currentTime, storeOpenTime)) {
       return this.fullTimeList;
     }
 
     // If user visit this page in the middle of the day, first item should be 'immediate'
-    if (isAfterTime(storeOpenTime, currentTime) && isAfterTime(currentTime, storeCloseTime)) {
+    if (isNoLaterThan(storeOpenTime, currentTime) && isNoLaterThan(currentTime, storeCloseTime)) {
       // If calculated first item display is after store close
+      // Check here use isAfterTime because there is a case if what needs to display after 'immediate'
+      // is 6:30, and close time is 6: 30, should show 6:30
       if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
         return [PREORDER_IMMEDIATE_TAG];
       }
@@ -432,7 +434,7 @@ class LocationAndDate extends Component {
       return timeListToDisplay;
     }
 
-    if (isAfterTime(currentTime, storeCloseTime)) {
+    if (isNoLaterThan(currentTime, storeCloseTime)) {
       return [PREORDER_IMMEDIATE_TAG];
     }
 
@@ -448,8 +450,8 @@ class LocationAndDate extends Component {
 
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(this.validPreOrderTimeFrom);
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(this.validTimeTo);
-    const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0);
-    const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0);
+    const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0, 0);
+    const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0, 0);
     const timeIncrease = i =>
       Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
 
@@ -471,7 +473,11 @@ class LocationAndDate extends Component {
       return new Date();
     };
 
-    for (let i = new Date(startTime).toISOString(); isAfterTime(loopCheck(i), endTime.valueOf()); i = timeIncrease(i)) {
+    for (
+      let i = new Date(startTime).toISOString();
+      isNoLaterThan(loopCheck(i), endTime.valueOf());
+      i = timeIncrease(i)
+    ) {
       const timeItem = {
         from: i,
       };
