@@ -171,7 +171,7 @@ export class Home extends Component {
     return (
       <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
         <div className="item__detail-content flex flex-top flex-space-between">
-          {isSourceBeepitCom() ? (
+          {isSourceBeepitCom() || enablePreOrder ? (
             <IconLeftArrow
               className="header__icon"
               onClick={event => {

@@ -11,14 +11,14 @@ import { isSourceBeepitCom } from '../ordering/containers/Home/utils';
 
 class Header extends Component {
   renderLogoAndNavDom() {
-    const { isStoreHome, isPage, logo, title, isValidTimeToOrder, navFunc } = this.props;
+    const { isStoreHome, isPage, logo, title, isValidTimeToOrder, enablePreOrder, navFunc } = this.props;
 
     // if (Utils.isWebview()) {
     //   return null;
     // }
 
     const renderPageAction = () => {
-      if (!isStoreHome || (isStoreHome && isSourceBeepitCom() && !isValidTimeToOrder)) {
+      if (!isStoreHome || (isStoreHome && (isSourceBeepitCom() || enablePreOrder) && !isValidTimeToOrder)) {
         const iconClassName = 'header__icon text-middle';
 
         return isPage ? (
