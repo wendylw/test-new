@@ -3308,6 +3308,18 @@ body.loading {
   }
 }
 
+@media (max-width: 413px) {
+  .header {
+    &__icon ~ &__title-container &__one-line-title.has-tag {
+      max-width: 34vw;
+    }
+
+    &__info-item {
+      margin: 0 5px;
+    }
+  }
+}
+
 @media (max-width: 374px) {
   *,
   html {
@@ -3317,11 +3329,11 @@ body.loading {
   .header {
     &__title:not(.header__one-line-title),
     &__info-list {
-      padding: 0 2.4vw;
+      padding: 0 1.4vw;
     }
 
     &__icon ~ &__title-container &__one-line-title.has-tag {
-      max-width: 34vw;
+      max-width: 31vw;
     }
   }
 
