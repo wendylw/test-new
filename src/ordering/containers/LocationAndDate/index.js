@@ -53,7 +53,7 @@ const getHourAndMinuteFromTime = time => {
   return `${hour}:${minutes}`;
 };
 
-const isAfterTime = (time1, time2) => new Date(time1).valueOf <= new Date(time2).valueOf();
+const isAfterTime = (time1, time2) => new Date(time1).valueOf < new Date(time2).valueOf();
 
 const isNoLaterThan = (time1, time2) => new Date(time1).valueOf() <= new Date(time2).valueOf();
 
@@ -82,7 +82,7 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
-    const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
+    const listOffset = Utils.elementPartialOffsetTop(this.timeListRef);
 
     this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
 
@@ -396,7 +396,7 @@ class LocationAndDate extends Component {
     let validStartingTime;
 
     if (Utils.isDeliveryType()) {
-      validStartingTime = `${startMinute ? startHour + 2 : startHour + 1} : ${startMinute}`;
+      validStartingTime = `${startMinute ? startHour + 2 : startHour + 1} : 0`;
     }
 
     if (Utils.isPickUpType()) {
@@ -480,6 +480,8 @@ class LocationAndDate extends Component {
       return new Date();
     };
 
+    // Every item in hours list has format like { from: time1, to: time2 }
+    // following i is like from and addTime(i) is like to
     for (
       let i = new Date(startTime).toISOString();
       isNoLaterThan(loopCheck(i), endTime.valueOf());
@@ -560,6 +562,8 @@ class LocationAndDate extends Component {
   goToNext = () => {
     const { history } = this.props;
     const { selectedDate, selectedHour } = this.state;
+
+    if (Utils.isPickUpType) delete selectedHour.to;
 
     Utils.setExpectedDeliveryTime({
       date: selectedDate,
