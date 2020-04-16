@@ -55,20 +55,6 @@ class Header extends Component {
     const isPickUpType = Utils.isPickUpType();
     const classList = [`header flex flex-space-between${isPickUpType ? ' pick-up' : ''}`];
     const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
-    const normalTitle = isPickUpType ? (
-      <h2 className="header__title font-weight-bold text-middle">
-        <span className={`header__one-line-title font-weight-bold text-middle ${!isValidTimeToOrder ? 'has-tag' : ''}`}>
-          {title}
-        </span>
-        {isValidTimeToOrder ? null : (
-          <div className="tag__card-container text-middle">
-            <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
-          </div>
-        )}
-      </h2>
-    ) : (
-      <h2 className="header__title font-weight-bold text-middle">{title}</h2>
-    );
 
     if (className) {
       classList.push(className);
