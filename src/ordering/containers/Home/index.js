@@ -119,6 +119,7 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
+    const { history } = this.props;
     const enablePreOrder = this.isPreOrderEnabled();
 
     if (enablePreOrder) {
