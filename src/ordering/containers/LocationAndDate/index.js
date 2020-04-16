@@ -287,7 +287,7 @@ class LocationAndDate extends Component {
 
       if (!stores.length) return;
 
-      const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.CITY);
+      const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
         <div className="form__group">
           <label className="form__label font-weight-bold">{t('PickupAt')}</label>

@@ -254,7 +254,7 @@ class Customer extends Component {
   renderPickUpInfo() {
     const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
     const { stores = [], country: locale } = businessInfo;
-    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
+    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
     const { deliveryComments } = this.props.deliveryDetails;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
