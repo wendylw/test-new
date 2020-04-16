@@ -119,7 +119,16 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    window.location.href = config.beepitComUrl;
+    const enablePreOrder = this.isPreOrderEnabled();
+
+    if (enablePreOrder) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        search: window.location.search,
+      });
+    } else {
+      window.location.href = config.beepitComUrl;
+    }
   };
 
   handleToggleAside(asideName) {
@@ -141,7 +150,7 @@ export class Home extends Component {
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (!isValidTimeToOrder || !enablePreOrder || !(Utils.isPickUpType() && Utils.isDeliveryType())) {
+    if (!isValidTimeToOrder || !enablePreOrder || (!Utils.isPickUpType() && !Utils.isDeliveryType())) {
       return null;
     }
 
@@ -166,7 +175,16 @@ export class Home extends Component {
               className="header__icon"
               onClick={event => {
                 event.preventDefault();
-                window.location.href = config.beepitComUrl;
+
+                if (enablePreOrder) {
+                  history.push({
+                    pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+                    search: window.location.search,
+                  });
+                } else {
+                  window.location.href = config.beepitComUrl;
+                }
+
                 event.stopPropagation();
               }}
             />
@@ -356,7 +374,6 @@ export class Home extends Component {
 
     return (
       <section className={classList.join(' ')}>
-        {/* {Utils.isDeliveryType() ? this.renderDeliverToBar() : null} */}
         {this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
