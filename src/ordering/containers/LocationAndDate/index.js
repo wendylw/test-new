@@ -566,7 +566,7 @@ class LocationAndDate extends Component {
     const { history } = this.props;
     const { selectedDate, selectedHour } = this.state;
 
-    if (Utils.isPickUpType) delete selectedHour.to;
+    if (Utils.isPickUpType()) delete selectedHour.to;
 
     Utils.setExpectedDeliveryTime({
       date: selectedDate,
