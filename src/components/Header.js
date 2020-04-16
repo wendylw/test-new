@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation, Trans } from 'react-i18next';
-import { IconLeftArrow, IconClose, IconMotorcycle } from './Icons';
+import { withTranslation } from 'react-i18next';
+import { IconLeftArrow, IconClose, IconMotorcycle, IconWallet } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
@@ -47,12 +47,28 @@ class Header extends Component {
       children,
       onClickHandler,
       deliveryFee,
-      minOrder,
       isValidTimeToOrder,
+      enableCashback,
+      defaultLoyaltyRatio,
     } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const classList = [`header flex flex-space-between${isPickUpType ? ' pick-up' : ''}`];
+    const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
+    const normalTitle = isPickUpType ? (
+      <h2 className="header__title font-weight-bold text-middle">
+        <span className={`header__one-line-title font-weight-bold text-middle ${!isValidTimeToOrder ? 'has-tag' : ''}`}>
+          {title}
+        </span>
+        {isValidTimeToOrder ? null : (
+          <div className="tag__card-container text-middle">
+            <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
+          </div>
+        )}
+      </h2>
+    ) : (
+      <h2 className="header__title font-weight-bold text-middle">{title}</h2>
+    );
 
     if (className) {
       classList.push(className);
@@ -93,15 +109,14 @@ class Header extends Component {
                     money={deliveryFee || 0}
                   />
                 </li>
-                <li className="header__info-item">
-                  <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
-                    <label className="text-middle">Min Order.</label>
-                    <CurrencyNumber
-                      className="header__info-text text-middle font-weight-bolder"
-                      money={minOrder || 0}
-                    />
-                  </Trans>
-                </li>
+                {enableCashback && cashbackRatePercentage ? (
+                  <li className="header__info-item">
+                    <IconWallet className="header__motor-icon text-middle" />
+                    <span className="header__info-text text-middle font-weight-bold">
+                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
+                    </span>
+                  </li>
+                ) : null}
               </ul>
             ) : null}
             {isPickUpType ? <p className="header__pickup-address gray-font-opacity omit-text">{storeAddress}</p> : null}
@@ -126,15 +141,19 @@ Header.propTypes = {
   navFunc: PropTypes.func,
   onClickHandler: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
+  enableCashback: PropTypes.bool,
+  defaultLoyaltyRatio: PropTypes.number,
 };
 
 Header.defaultProps = {
   isPage: false,
   isStoreHome: false,
   isValidTimeToOrder: true,
+  enableCashback: false,
   title: '',
   storeAddress: '',
   deliveryFee: 0,
+  defaultLoyaltyRatio: 0,
   navFunc: () => {},
   onClickHandler: () => {},
 };

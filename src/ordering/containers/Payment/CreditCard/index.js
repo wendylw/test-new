@@ -503,8 +503,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary, onlineStoreInfo } = this.props;
-    const { logo } = onlineStoreInfo || {};
+    const { t, match, history, cartSummary } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
@@ -523,10 +522,7 @@ class CreditCard extends Component {
           }}
         />
         <div className="payment-bank">
-          <figure className="logo-default__image-container">
-            <img src={logo} alt="" />
-          </figure>
-          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
 
           {this.renderForm()}
         </div>

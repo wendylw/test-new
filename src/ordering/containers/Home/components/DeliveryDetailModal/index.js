@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
-import { IconMotorcycle } from '../../../../../components/Icons';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class DeliveryDetailModal extends Component {
   state = {
@@ -44,10 +42,7 @@ class DeliveryDetailModal extends Component {
       onToggle,
       storeAddress,
       telephone,
-      deliveryFee,
-      minOrder,
       isValidTimeToOrder,
-      // enablePreOrder,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
@@ -74,14 +69,13 @@ class DeliveryDetailModal extends Component {
         }}
       >
         <div className="store-info">
-          <i className="aside-bottom__slide-button"></i>
-
-          <div className="flex flex-top flex-space-between">
+          <div className="store-info__header flex flex-top flex-space-between">
             <Image
               className="header__image-container text-middle"
               src={onlineStoreInfo.logo}
               alt={onlineStoreInfo.title}
             />
+
             <div className="header__title-container">
               <h2 className="header__title">
                 <span
@@ -98,63 +92,16 @@ class DeliveryDetailModal extends Component {
                   </div>
                 )}
               </h2>
-              <p className="store-info__address gray-font-opacity">{storeAddress}</p>
+              <p className="store-info__address">{storeAddress}</p>
               <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
                 {telephone}
               </a>
-              <ul className="header__info-list">
-                <li className="header__info-item text-middle">
-                  <IconMotorcycle className="header__motor-icon text-middle" />
-                  <span className="header__info-text text-middle font-weight-bolder">
-                    <CurrencyNumber money={deliveryFee || 0} />
-                  </span>
-                </li>
-                <li className="header__info-item text-middle">
-                  <Trans i18nKey="MinimumOrder" minOrder={minOrder}>
-                    <label className="text-middle">Min Order.</label>
-                    <CurrencyNumber
-                      className="header__info-text text-middle font-weight-bolder"
-                      money={minOrder || 0}
-                    />
-                  </Trans>
-                </li>
-              </ul>
-            </div>
-          </div>
 
-          <div className="store-info__delivery-hours flex flex-top flex-space-between">
-            <label className="font-weight-bolder gray-font-opacity">{t('DeliveryHours')}</label>
-            <ul className="store-info__list">
-              {this.renderDeliveryHour()}
-              {/* <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li>
-                            <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li>
-                            <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li>
-                            <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li>
-                            <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li>
-                            <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li>
-                            <li className="store-info__item flex flex-middle flex-space-between">
-                                <span>Sun</span>
-                                <time>11:00 - 22:30</time>
-                            </li> */}
-            </ul>
+              <div className="store-info__delivery-hours">
+                <label className="font-weight-bold gray-font-opacity">{t('DeliveryHours')}</label>
+                <ul className="store-info__list">{this.renderDeliveryHour()}</ul>
+              </div>
+            </div>
           </div>
         </div>
       </aside>

@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
@@ -47,8 +48,29 @@ export class ThankYou extends Component {
 
     const { thankYouActions } = this.props;
 
-    thankYouActions.loadOrder(this.getReceiptNumber());
+    thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
+      const { data = {} } = responseGql;
+      this.handleGtmEventTracking(data);
+    });
   }
+
+  handleGtmEventTracking = ({ order = {} }) => {
+    const productsInOrder = order.items || [];
+    const gtmEventData = {
+      product_name: productsInOrder.map(item => item.title) || [],
+      product_id: productsInOrder.map(item => item.id) || [],
+      price_local: order.total,
+      fulfilment_option: order.shippingType,
+      delivery_option: order.deliveryInformation || [],
+      store_option: order.storeInfo,
+      order_id: order.orderId,
+      order_size: order.items.length,
+      order_value_local: order.total,
+      revenue_local: order.total,
+    };
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
+  };
 
   getReceiptNumber = () => {
     const { history } = this.props;
