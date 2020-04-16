@@ -410,7 +410,7 @@
     }
 
     .billing__list {
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
 
     .billing__item {
@@ -660,6 +660,7 @@
   width: 100%;
   padding: 10px 3.8vw;
   height: 50px;
+  background-color: $white;
 
   &.gray {
     background-color: $gray-5;
@@ -814,19 +815,12 @@
   }
 
   &__motor-icon {
+    display: inline-block;
+    font-size: 0;
+
     svg {
       width: 14px;
       height: 14px;
-    }
-  }
-
-  &__info-icon {
-    width: 20px;
-    height: 20px;
-
-    svg {
-      width: inherit;
-      height: inherit;
     }
   }
 
@@ -985,6 +979,12 @@
   padding: 2.4vw;
   background-color: $white;
   list-style: none;
+
+  .sold-out {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
 
   &.flex-column {
     .sold-out {
@@ -1549,6 +1549,10 @@
     margin-top: 10px;
   }
 
+  &__header {
+    margin: 20px 0;
+  }
+
   &__aside.aside {
     top: 50px;
 
@@ -1569,11 +1573,12 @@
   }
 
   &__delivery-hours {
-    margin: 34px 0;
+    padding: 0 5vw;
+    margin: 20px 0;
   }
 
   &__list {
-    width: 60%;
+    margin: 15px 0;
   }
 
   &__item ~ &__item {
@@ -3077,6 +3082,7 @@
   }
 
   &__date {
+    min-height: 56px;
     overflow-x: scroll;
 
     &-item {
@@ -3084,11 +3090,11 @@
       background-color: $white;
       color: $main-color;
       border: solid 1px #dededf;
-      padding: 11px 28px;
+      padding: 5px 28px;
       margin-right: 16px;
       align-items: center;
       justify-content: center;
-      height: 70px;
+      height: 56px;
       width: 80px;
 
       span {
@@ -3160,7 +3166,7 @@
 
     footer {
       padding: 0 20px;
-      margin: 0 0 40px;
+      margin: 0 0 20px;
     }
   }
 }
@@ -3310,11 +3316,19 @@ body.loading {
   .header {
     &__title:not(.header__one-line-title),
     &__info-list {
-      padding: 0 2vw;
+      padding: 0 2.4vw;
     }
 
     &__icon ~ &__title-container &__one-line-title.has-tag {
       max-width: 34vw;
+    }
+  }
+
+  .store-info {
+    &__address,
+    &__phone,
+    &__delivery-hours {
+      padding: 0 2.4vw;
     }
   }
 
@@ -3326,15 +3340,6 @@ body.loading {
     &__icon-container.empty {
       img {
         width: 30px;
-      }
-    }
-  }
-
-  .location-page {
-    &__entry-container {
-      .top-message__second-level ~ .list__container .category__header.fixed,
-      .top-message__second-level + .category-nav {
-        top: 154px;
       }
     }
   }
@@ -3375,19 +3380,19 @@ body.loading {
   }
 
   .header__one-line-title {
-    max-width: 300px;
+    max-width: 296px;
   }
 
   .header__icon ~ .header__title .header__one-line-title {
-    max-width: 250px;
+    max-width: 246px;
   }
 
   .header__one-line-title.has-tag {
-    max-width: 200px;
+    max-width: 196px;
   }
 
   .header__icon ~ .header__title-container .header__one-line-title.has-tag {
-    max-width: 180px;
+    max-width: 176px;
   }
 
   .category-nav.category-nav__vertical,
@@ -3622,7 +3627,8 @@ body.loading {
   .store-info__address,
   .store-info__phone,
   .modal__title,
-  .modal__text {
+  .modal__text,
+  .store-info__delivery-hours {
     padding: 0 20px;
   }
 

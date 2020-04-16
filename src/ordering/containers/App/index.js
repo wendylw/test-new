@@ -16,6 +16,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
+import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
@@ -27,18 +28,23 @@ class App extends Component {
     this.visitErrorPage();
 
     await appActions.getLoginStatus();
-    await appActions.fetchOnlineStoreInfo();
+    const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
 
     const { user } = this.props;
     const { isLogin } = user || {};
+    const { onlineStoreInfo } = responseGql.data || {};
 
     if (isLogin) {
-      appActions.loadCustomerProfile();
+      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
+        const { data = {} } = responseGql;
+        gtmSetUserProperties(null, data.user);
+      });
     }
 
     this.getTokens(isLogin);
-    // this.postAppMessage(user);
+
+    gtmSetUserProperties(onlineStoreInfo, user);
   }
 
   componentDidUpdate(prevProps) {
@@ -55,7 +61,10 @@ class App extends Component {
     }
 
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
-      appActions.loadCustomerProfile();
+      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
+        const { data = {} } = responseGql;
+        gtmSetUserProperties(null, data.user);
+      });
     }
   }
 
