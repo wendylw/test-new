@@ -134,6 +134,8 @@ class Customer extends Component {
       formTextareaTitle = t('AddNoteToDriverPlaceholder');
     } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
       formTextareaTitle = t('AddAddressDetailsPlaceholder');
+    } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
+      formTextareaTitle = t('AddNoteToMerchantPlaceholder');
     }
 
     this.setState({
@@ -252,10 +254,7 @@ class Customer extends Component {
   renderPickUpInfo() {
     const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
     const { stores = [], country: locale } = businessInfo;
-
-    if (!stores.length) return;
-
-    const pickUpAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.CITY);
+    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
     const { deliveryComments } = this.props.deliveryDetails;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
@@ -263,11 +262,15 @@ class Customer extends Component {
     if (this.getShippingType() !== DELIVERY_METHOD.PICKUP || !enablePreOrder) {
       return null;
     }
-    const pickUpTime = formatToDeliveryTime({
-      date: date,
-      hour: hour,
-      locale,
-    });
+
+    const pickUpTime =
+      date &&
+      date.date &&
+      formatToDeliveryTime({
+        date,
+        hour,
+        locale,
+      });
 
     return (
       <React.Fragment>
@@ -301,7 +304,7 @@ class Customer extends Component {
         </div>
         <div
           className="form__group flex flex-middle flex-space-between"
-          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
           <p className="gray-font-opacity">{deliveryComments || t('AddNoteToMerchantPlaceholder')}</p>
           <IconEdit className="customer__edit-icon" />
@@ -328,6 +331,9 @@ class Customer extends Component {
     } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
       textareaValue = deliveryDetails.addressDetails;
       updateTextFunc = this.handleAddressDetails.bind(this);
+    } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
+      textareaValue = deliveryDetails.deliveryComments;
+      updateTextFunc = this.handleDriverComments.bind(this);
     }
 
     return (

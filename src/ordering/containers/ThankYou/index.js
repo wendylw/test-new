@@ -79,7 +79,7 @@ export class ThankYou extends Component {
       delivery_option: order.deliveryInformation || [],
       store_option: order.storeInfo,
       order_id: order.orderId,
-      order_size: order.items.length,
+      order_size: productsInOrder.length,
       order_value_local: order.total,
       revenue_local: order.total,
     };
