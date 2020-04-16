@@ -60,9 +60,9 @@ export const actions = {
         d2 = new Date(dateValue);
         toHour = hour2.split(':')[0];
         toMinute = hour2.split(':')[1];
-        d2.setHours(Number(toHour), Number(toMinute), 0);
+        d2.setHours(Number(toHour), Number(toMinute), 0, 0);
       }
-      d1.setHours(Number(fromHour), Number(fromMinute), 0);
+      d1.setHours(Number(fromHour), Number(fromMinute), 0, 0);
       return {
         expectDeliveryDateFrom: d1.toISOString(),
         expectDeliveryDateTo: d2 && d2.toISOString(),
