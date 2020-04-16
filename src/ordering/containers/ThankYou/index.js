@@ -10,7 +10,7 @@ import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
+import { actions as thankYouActionCreators, getOrder, getStoreHashCode } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
@@ -46,12 +46,27 @@ export class ThankYou extends Component {
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
 
-    const { thankYouActions } = this.props;
+    const { thankYouActions, order } = this.props;
+    const { storeId } = order || {};
+
+    if (storeId) {
+      thankYouActions.getStoreHashData(storeId);
+    }
 
     thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
       const { data = {} } = responseGql;
       this.handleGtmEventTracking(data);
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    const { order } = prevProps;
+    const { storeId: prevStoreId } = order || {};
+    const { storeId } = this.props.order || {};
+
+    if (storeId && prevStoreId !== storeId) {
+      this.props.thankYouActions.getStoreHashData(storeId);
+    }
   }
 
   handleGtmEventTracking = ({ order = {} }) => {
@@ -64,7 +79,7 @@ export class ThankYou extends Component {
       delivery_option: order.deliveryInformation || [],
       store_option: order.storeInfo,
       order_id: order.orderId,
-      order_size: order.items.length,
+      order_size: productsInOrder.length,
       order_value_local: order.total,
       revenue_local: order.total,
     };
@@ -493,16 +508,25 @@ export class ThankYou extends Component {
   }
 
   render() {
-    const { t, history, match, order } = this.props;
+    const { t, history, match, order, storeHashCode } = this.props;
     const date = new Date();
     const { orderId, tableId } = order || {};
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
+    const options = [`h=${storeHashCode}`];
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
+    }
+
+    if (tableId) {
+      options.push(`table=${tableId}`);
+    }
+
+    if (isTakeaway) {
+      options.push(`type=${isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY}`);
     }
 
     return (
@@ -520,9 +544,7 @@ export class ThankYou extends Component {
               // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
               history.replace({
                 pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                search: `?table=${order.tableId}&storeId=${order.storeId}${
-                  isPickUpType ? `&type=${Constants.DELIVERY_METHOD.PICKUP}` : ''
-                }`,
+                search: `?${options.join('&')}`,
               })
             }
           >
@@ -585,6 +607,7 @@ export default compose(
   connect(
     state => ({
       onlineStoreInfo: getOnlineStoreInfo(state),
+      storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
     }),
     dispatch => ({

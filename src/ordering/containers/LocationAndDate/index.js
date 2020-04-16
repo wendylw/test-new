@@ -82,9 +82,12 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
-    const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
 
-    this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
+    if (this.timeListRef.current) {
+      const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
+
+      this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
+    }
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
@@ -508,7 +511,7 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     const { selectedDate } = this.state;
 
-    if (!selectedDate || !selectedDate.date) return;
+    if (!selectedDate || !selectedDate.date) return null;
 
     const timeList = this.getHoursList(selectedDate);
 
