@@ -141,7 +141,7 @@ export class Home extends Component {
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (!isValidTimeToOrder || (Utils.isPickUpType() && !enablePreOrder)) {
+    if (!isValidTimeToOrder || !enablePreOrder || !(Utils.isPickUpType() && Utils.isDeliveryType())) {
       return null;
     }
 
