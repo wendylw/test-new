@@ -132,10 +132,12 @@ export const toDayDateMonth = (date, locale = 'MY') =>
   toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
-  if (hour.from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow');
+  const { from, to } = hour || {};
 
-  const hourFrom = hour.from.split(':')[0];
-  const minuteFrom = hour.from.split(':')[1];
+  if (from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow');
+
+  const hourFrom = (from || '').split(':')[0];
+  const minuteFrom = (from || '').split(':')[1];
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
   workDateFrom.setHours(hourFrom, minuteFrom, 0, 0);
@@ -149,9 +151,9 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
 
   let part2 = toNumericTime(workDateFrom, locale);
 
-  if (hour.to) {
-    const hourTo = hour.to.split(':')[0];
-    const minuteTo = hour.to.split(':')[1];
+  if (to) {
+    const hourTo = (to || '').split(':')[0];
+    const minuteTo = (to || '').split(':')[1];
     const workDateTo = new Date(date.date);
     workDateTo.setHours(hourTo, minuteTo, 0, 0);
     part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
