@@ -138,7 +138,7 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   const minuteFrom = hour.from.split(':')[1];
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
-  workDateFrom.setHours(hourFrom, minuteFrom, 0);
+  workDateFrom.setHours(hourFrom, minuteFrom, 0, 0);
   let part1;
 
   if (workDate.getDate() === new Date().getDate()) {
@@ -153,7 +153,7 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
     const hourTo = hour.to.split(':')[0];
     const minuteTo = hour.to.split(':')[1];
     const workDateTo = new Date(date.date);
-    workDateTo.setHours(hourTo, minuteTo, 0);
+    workDateTo.setHours(hourTo, minuteTo, 0, 0);
     part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
   }
 
@@ -162,8 +162,6 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
 
 export const formatPickupAddress = ({ date, locale }) => {
   const orderTime = new Date(date);
-  // const orderHour = orderTime.getHours();
-  // const orderMinutes = orderTime.getMinutes();
   let part1;
 
   if (orderTime.getDate() === new Date().getDate()) {
