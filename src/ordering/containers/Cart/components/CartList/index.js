@@ -7,6 +7,7 @@ import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/home';
 import Constants from '../../../../../utils/constants';
 import constants from '../../../../../utils/constants';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;
@@ -36,6 +37,22 @@ class CartList extends Component {
       this.props.homeActions.loadShoppingCart();
     });
   };
+
+  handleGtmEventTracking = (product) => {
+    // In cart page, image count is always either 1 or 0
+    const gtmEventDate = {
+      product_name: product.title,
+      product_id: product.productId,
+      price_local: product.displayPrice,
+      variant: product.variations,
+      quantity: product.quantityOnHand,
+      product_type: product.inventoryType,
+      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: product.image || 0,
+    };
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
+  }
 
   generateProductItemView = cartItem => {
     const { isList } = this.props;
@@ -78,6 +95,7 @@ class CartList extends Component {
           }
         }}
         onIncrease={() => {
+          this.handleGtmEventTracking(cartItem);
           this.handleAddOrUpdateShoppingCartItem({
             action: 'edit',
             productId,
