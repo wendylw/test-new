@@ -2,14 +2,32 @@ import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   CardElement,
-  // CardNumberElement,
-  // CardExpiryElement,
-  // CardCvcElement,
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
   Elements,
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
 // import '../styles/2-Card-Detailed.css';
+
+const CardNumberField = ({ onChange }) => (
+  <div>
+    <CardNumberElement onChange={onChange} />
+  </div>
+);
+
+const CardExpiryField = ({ onChange }) => (
+  <div>
+    <CardExpiryElement onChange={onChange} />
+  </div>
+);
+
+const CardCvcField = ({ onChange }) => (
+  <div>
+    <CardCvcElement onChange={onChange} />
+  </div>
+);
 
 const CARD_OPTIONS = {
   iconStyle: 'solid',
@@ -100,7 +118,9 @@ const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
-  const [cardComplete, setCardComplete] = useState(false);
+  const [cardNumberComplete, setCardNumberComplete] = useState(false);
+  const [cardExpiryComplete, setCardExpiryComplete] = useState(false);
+  const [cardCvcComplete, setCardCvcComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [billingDetails, setBillingDetails] = useState({
@@ -108,6 +128,7 @@ const CheckoutForm = () => {
     phone: '',
     name: '',
   });
+  const cardComplete = cardNumberComplete && cardExpiryComplete && cardCvcComplete;
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -129,7 +150,7 @@ const CheckoutForm = () => {
 
     const payload = await stripe.createPaymentMethod({
       type: 'card',
-      card: elements.getElement(CardElement),
+      card: elements.getElement(CardNumberElement),
       billing_details: billingDetails,
     });
 
@@ -204,10 +225,34 @@ const CheckoutForm = () => {
         />
       </fieldset>
       <fieldset className="FormGroup">
-        <CardField
+        {/*<CardField*/}
+        {/*  onChange={e => {*/}
+        {/*    setError(e.error);*/}
+        {/*    setCardComplete(e.complete);*/}
+        {/*  }}*/}
+        {/*/>*/}
+
+        <CardNumberField
           onChange={e => {
             setError(e.error);
-            setCardComplete(e.complete);
+            setCardNumberComplete(e.complete);
+            console.log('[Strip] CardNumberField.onChange triggered');
+          }}
+        />
+
+        <CardExpiryField
+          onChange={e => {
+            setError(e.error);
+            setCardExpiryComplete(e.complete);
+            console.log('[Strip] CardExpiryField.onChange triggered');
+          }}
+        />
+
+        <CardCvcField
+          onChange={e => {
+            setError(e.error);
+            setCardCvcComplete(e.complete);
+            console.log('[Strip] CardCvcField.onChange triggered');
           }}
         />
       </fieldset>
