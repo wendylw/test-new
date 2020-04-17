@@ -20,6 +20,7 @@ import paymentCreditImage from '../../../images/payment-credit.png';
 import paymentBoostImage from '../../../images/payment-boost.png';
 import paymentGrabImage from '../../../images/payment-grab.png';
 import paymentTNGImage from '../../../images/payment-tng.svg';
+import paymentGcashImage from '../../../images/payment-gcash.png';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
 const dataSource = {
@@ -44,6 +45,10 @@ const dataSource = {
   TNG: {
     logo: paymentTNGImage,
     label: PAYMENT_METHOD_LABELS.TNG_PAY,
+  },
+  gcash: {
+    logo: paymentGcashImage,
+    label: PAYMENT_METHOD_LABELS.GCASH_PAY,
   },
 };
 const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];

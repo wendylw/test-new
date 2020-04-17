@@ -61,6 +61,7 @@ const PAYMENT_METHOD_LABELS = {
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
   TNG_PAY: 'TouchNGo',
+  GCASH_PAY: 'GCash',
 };
 
 const CREDIT_CARD_BRANDS = {

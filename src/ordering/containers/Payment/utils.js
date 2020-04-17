@@ -3,6 +3,9 @@ import Constants from '../../../utils/constants';
 
 const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
 
+// the payment name define by payment-api
+// https://github.com/storehubnet/payment-api/wiki/API
+
 const PAYMENT_NAME_MY = {
   [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'CCPP',
   [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPCreditCard',
@@ -18,6 +21,7 @@ const PAYMENT_NAME_TH = {
 
 const PAYMENT_NAME_PH = {
   [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepPHCreditCard',
+  [PAYMENT_METHOD_LABELS.GCASH_PAY]: 'BeepPHCCPPGcash',
 };
 
 const PAYMENT_NAME_COUNTRY_MAP = {

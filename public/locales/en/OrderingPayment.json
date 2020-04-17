@@ -7,6 +7,7 @@
   "Boost": "Boost",
   "GrabPay": "GrabPay",
   "TouchNGo": "TouchNGo",
+  "GCash": "GCash",
   "RequiredMessage": "Required",
   "CardNumberIncompleteMessage": "Your card's {{nameString}} {{verb}} incomplete.",
   "CardNumberInvalidMessage": "Your card number is invalid",
