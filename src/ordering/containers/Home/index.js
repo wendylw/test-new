@@ -52,6 +52,11 @@ export class Home extends Component {
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
+
+      // Remove user previously selected delivery/pickup time from session
+      // Just in case the previous one they select is delivery and the new one is pickup
+      // which will cause delivery/pickup time displayed in header incorrect
+      Utils.removeExpectedDeliveryTime();
     }
 
     homeActions.loadProductList();
