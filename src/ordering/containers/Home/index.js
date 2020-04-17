@@ -52,14 +52,32 @@ export class Home extends Component {
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
-
-      // Remove user previously selected delivery/pickup time from session
-      // Just in case the previous one they select is delivery and the new one is pickup
-      // which will cause delivery/pickup time displayed in header incorrect
-      Utils.removeExpectedDeliveryTime();
     }
 
+    this.handleDeliveryTimeInSession();
+
     homeActions.loadProductList();
+  };
+
+  // Remove user previously selected delivery/pickup time from session
+  // Just in case the previous one they select is delivery and the new one is pickup
+  // which will cause delivery/pickup time displayed in header incorrect
+  handleDeliveryTimeInSession = () => {
+    const { hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    let previousDeliveryMethod = '';
+
+    if (hour.from && hour.to) {
+      previousDeliveryMethod = Constants.DELIVERY_METHOD.DELIVERY;
+    } else if (hour.from && !hour.to) {
+      previousDeliveryMethod = Constants.DELIVERY_METHOD.PICKUP;
+    }
+
+    if (
+      (Utils.isPickUpType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.DELIVERY) ||
+      (Utils.isDeliveryType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.PICKUP)
+    ) {
+      Utils.removeExpectedDeliveryTime();
+    }
   };
 
   getBusinessCountry = () => {
