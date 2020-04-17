@@ -227,10 +227,12 @@ class LocationAndDate extends Component {
     let firstListItem = {};
     if (date.isToday) {
       const hoursListForToday = this.getHoursListForToday(date);
-      firstListItem = hoursListForToday[0] || {};
+      firstListItem = hoursListForToday[0];
     } else {
       firstListItem = this.fullTimeList[0];
     }
+
+    if (!firstListItem) return {};
 
     if (firstListItem.from === PREORDER_IMMEDIATE_TAG.from) return firstListItem;
 
@@ -525,12 +527,8 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && (
-          <label className="form__label font-weight-bold gray-font-opacity">{t('DeliveryTime')}</label>
-        )}
-        {Utils.isPickUpType() && (
-          <label className="form__label font-weight-bold gray-font-opacity">{t('PickupTime')}</label>
-        )}
+        {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
+        {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
         <ul ref={this.timeListRef} className="location-display__hour">
           {this.renderHoursList(timeList)}
         </ul>
