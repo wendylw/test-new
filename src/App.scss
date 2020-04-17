@@ -1653,6 +1653,12 @@
     background-color: $red;
   }
 
+  &__card.blue {
+    border-color: $link-blue;
+    color: $white;
+    background-color: $link-blue;
+  }
+
   &__card.disabled {
     pointer-events: none;
     border-color: $gray-3;

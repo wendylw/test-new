@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import config from '../../../config';
 import RedirectForm from '../../../ordering/containers/Payment/components/RedirectForm';
+import Utils from '../../utils/utils';
 
 class TypeGuider extends Component {
   state = {
@@ -38,12 +39,14 @@ class TypeGuider extends Component {
   }
 
   handleGotoOrderingPage(url, action) {
-    if (action)
+    if (action) {
+      Utils.removeExpectedDeliveryTime();
       this.setState({ url }, () => {
         this.state.url = '';
         this.props.onRedirect();
         this.redirectForm.current.submit(); // the form uses real url, not the one empty
       });
+    }
   }
 
   renderLoading = () => {

@@ -48,6 +48,7 @@ class Header extends Component {
       onClickHandler,
       deliveryFee,
       isValidTimeToOrder,
+      enablePreOrder,
       enableCashback,
       defaultLoyaltyRatio,
     } = this.props;
@@ -82,7 +83,11 @@ class Header extends Component {
               </span>
               {isValidTimeToOrder ? null : (
                 <div className="tag__card-container text-middle">
-                  <Tag text={t('Closed')} className="tag__card warning downsize text-middle"></Tag>
+                  {enablePreOrder ? (
+                    <Tag text={t('PreOrder')} className="tag__card blue downsize text-middle" />
+                  ) : (
+                    <Tag text={t('Closed')} className="tag__card warning downsize text-middle" />
+                  )}
                 </div>
               )}
             </h1>
