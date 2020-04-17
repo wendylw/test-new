@@ -21,6 +21,7 @@ const ROUTER_PATHS = {
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
   ORDERING_PAYMENT: '/payment',
+  ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   NEED_HELP: '/need-help',
@@ -56,6 +57,7 @@ const DOCUMENT_TITLE = {
 };
 
 const PAYMENT_METHOD_LABELS = {
+  STRIPE: 'stripe',
   ONLINE_BANKING_PAY: 'OnlineBanking',
   CREDIT_CARD_PAY: 'CreditCard',
   GRAB_PAY: 'GrabPay',
