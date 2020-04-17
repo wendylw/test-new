@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import config from '../../../config';
 import RedirectForm from '../../../ordering/containers/Payment/components/RedirectForm';
-import Utils from '../../utils/utils';
+import Utils from '../../../utils/utils';
 
 class TypeGuider extends Component {
   state = {
