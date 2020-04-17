@@ -18,7 +18,7 @@ class Header extends Component {
     // }
 
     const renderPageAction = () => {
-      if (!isStoreHome || (isStoreHome && (isSourceBeepitCom() || enablePreOrder) && !isValidTimeToOrder)) {
+      if (!isStoreHome || (isStoreHome && !isValidTimeToOrder && (isSourceBeepitCom() || enablePreOrder))) {
         const iconClassName = 'header__icon text-middle';
 
         return isPage ? (
