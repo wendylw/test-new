@@ -1657,6 +1657,7 @@
     border-color: $link-blue;
     color: $white;
     background-color: $link-blue;
+    white-space: nowrap;
   }
 
   &__card.disabled {
