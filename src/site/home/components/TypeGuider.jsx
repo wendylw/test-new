@@ -40,7 +40,6 @@ class TypeGuider extends Component {
 
   handleGotoOrderingPage(url, action) {
     if (action) {
-      Utils.removeExpectedDeliveryTime();
       this.setState({ url }, () => {
         this.state.url = '';
         this.props.onRedirect();
