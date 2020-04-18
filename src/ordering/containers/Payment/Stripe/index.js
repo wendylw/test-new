@@ -75,7 +75,7 @@ const SubmitButton = ({ processing, error, children, disabled }) => (
   </button>
 );
 
-const CheckoutForm = ({ renderRedirectForm, getPaymentData }) => {
+const CheckoutForm = ({ renderRedirectForm, onPreSubmit }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -84,7 +84,6 @@ const CheckoutForm = ({ renderRedirectForm, getPaymentData }) => {
   const [cardCvcComplete, setCardCvcComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
-  const [paymentData, setPaymentData] = useState(null);
   const [billingDetails, setBillingDetails] = useState({
     // email: '',
     // phone: '',
@@ -118,8 +117,7 @@ const CheckoutForm = ({ renderRedirectForm, getPaymentData }) => {
       setProcessing(true);
     }
 
-    const paymentData = await getPaymentData();
-    setPaymentData(paymentData);
+    await onPreSubmit();
 
     const payload = await stripe.createPaymentMethod({
       type: 'card',
@@ -138,11 +136,8 @@ const CheckoutForm = ({ renderRedirectForm, getPaymentData }) => {
     }
   };
 
-  return paymentMethod && paymentData ? (
-    renderRedirectForm({
-      ...paymentData,
-      paymentMethodId: paymentMethod.id,
-    })
+  return paymentMethod ? (
+    renderRedirectForm(paymentMethod)
   ) : (
     <form className="Form" onSubmit={handleSubmit}>
       <CardNumberElement
@@ -194,7 +189,7 @@ class Stripe extends Component {
     this.props.homeActions.loadShoppingCart();
   }
 
-  handleGetPaymentData = async () => {
+  createOrder = async () => {
     const { history, paymentActions, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -208,8 +203,6 @@ class Stripe extends Component {
       Utils.removeSessionVariable('additionalComments');
       Utils.removeSessionVariable('deliveryComments');
     }
-
-    return this.getPaymentEntryRequestData();
   };
 
   getPaymentEntryRequestData = () => {
@@ -265,16 +258,22 @@ class Stripe extends Component {
 
         <Elements stripe={stripePromise} options={{}}>
           <CheckoutForm
-            getPaymentData={this.handleGetPaymentData}
-            renderRedirectForm={paymentData => {
-              console.log('paymentData =', paymentData);
+            onPreSubmit={this.createOrder}
+            renderRedirectForm={paymentMethod => {
+              if (!paymentMethod) return null;
+
+              const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
+
+              // todo: remove this before deploy
+              console.log('requestData =', requestData);
               return null;
-              return paymentData ? (
+
+              return requestData ? (
                 <RedirectForm
                   key="stripe-payment-redirect-form"
                   action={config.storeHubPaymentEntryURL}
                   method="POST"
-                  data={paymentData}
+                  data={requestData}
                 />
               ) : null;
             }}
