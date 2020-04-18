@@ -1,67 +1,3 @@
-// import React, { useState } from 'react';
-// import { loadStripe } from '@stripe/stripe-js';
-// import {
-//   CardElement,
-//   CardNumberElement,
-//   CardExpiryElement,
-//   CardCvcElement,
-//   Elements,
-//   useElements,
-//   useStripe,
-// } from '@stripe/react-stripe-js';
-// // import '../styles/2-Card-Detailed.css';
-
-// const CARD_OPTIONS = {
-//   iconStyle: 'solid',
-//   style: {
-//     base: {
-//       iconColor: '#c4f0ff',
-//       color: '#fff',
-//       fontWeight: 500,
-//       fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
-//       fontSize: '16px',
-//       fontSmoothing: 'antialiased',
-//       ':-webkit-autofill': {
-//         color: '#fce883',
-//       },
-//       '::placeholder': {
-//         color: '#87bbfd',
-//       },
-//     },
-//     invalid: {
-//       iconColor: '#ffc7ee',
-//       color: '#ffc7ee',
-//     },
-//   },
-// };
-
-// const CardField = ({ onChange }) => (
-//   <div className="FormRow">
-//     <CardElement options={CARD_OPTIONS} onChange={onChange} />
-//   </div>
-// );
-
-// const ELEMENTS_OPTIONS = {
-//   fonts: [
-//     {
-//     },
-//   ],
-// };
-
-// // Make sure to call `loadStripe` outside of a component’s render to avoid
-// // recreating the `Stripe` object on every render.
-// const stripePromise = loadStripe('pk_test_c1feolngsqL68jkzxIl7mPui00ANmwtZHb');
-
-// const StripePayment = () => {
-//   return (
-//     <div className="AppWrapper">
-//       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
-//         <CheckoutForm />
-//       </Elements>
-//     </div>
-//   );
-// };
-
 import qs from 'qs';
 import React, { Component, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -88,6 +24,7 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import Utils from '../../../../utils/utils';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -138,7 +75,7 @@ const SubmitButton = ({ processing, error, children, disabled }) => (
   </button>
 );
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ renderRedirectForm, getPaymentData }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -147,12 +84,21 @@ const CheckoutForm = () => {
   const [cardCvcComplete, setCardCvcComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
+  const [paymentData, setPaymentData] = useState(null);
   const [billingDetails, setBillingDetails] = useState({
     // email: '',
     // phone: '',
     name: '',
   });
   const cardComplete = cardNumberComplete && cardExpiryComplete && cardCvcComplete;
+
+  if (typeof renderRedirectForm !== 'function') {
+    throw new Error('Error: getRedirectFrom should be a function');
+  }
+
+  const redirectForm = renderRedirectForm();
+
+  console.log('[Stripe] redirectForm =', redirectForm);
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -172,13 +118,16 @@ const CheckoutForm = () => {
       setProcessing(true);
     }
 
+    const paymentData = await getPaymentData();
+    setPaymentData(paymentData);
+
     const payload = await stripe.createPaymentMethod({
       type: 'card',
       card: elements.getElement(CardNumberElement),
       billing_details: billingDetails,
     });
 
-    console.log(payload);
+    console.log('[Stripe] stripe.createPaymentMethod() => ', payload);
 
     setProcessing(false);
 
@@ -189,15 +138,11 @@ const CheckoutForm = () => {
     }
   };
 
-  return paymentMethod ? (
-    <div className="Result">
-      <div className="ResultTitle" role="alert">
-        Payment successful
-      </div>
-      <div className="ResultMessage">
-        Thanks for trying Stripe Elements. No money was charged, but we generated a PaymentMethod: {paymentMethod.id}
-      </div>
-    </div>
+  return paymentMethod && paymentData ? (
+    renderRedirectForm({
+      ...paymentData,
+      paymentMethodId: paymentMethod.id,
+    })
   ) : (
     <form className="Form" onSubmit={handleSubmit}>
       <CardNumberElement
@@ -240,23 +185,47 @@ const CheckoutForm = () => {
   );
 };
 
-class CreditCard extends Component {
+class Stripe extends Component {
   state = {
     payNowLoading: false,
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.homeActions.loadShoppingCart();
+  }
+
+  handleGetPaymentData = async () => {
+    const { history, paymentActions, cartSummary } = this.props;
+    const { totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+
+    const { currentOrder } = this.props;
+    const { orderId } = currentOrder || {};
+
+    if (orderId) {
+      Utils.removeSessionVariable('additionalComments');
+      Utils.removeSessionVariable('deliveryComments');
+    }
+
+    return this.getPaymentEntryRequestData();
+  };
 
   getPaymentEntryRequestData = () => {
     const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
-    const { card } = this.state;
-    const { cardholderName } = card || {};
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
+    console.log('[Stripe] { onlineStoreInfo, currentOrder, currentPayment } => ', {
+      onlineStoreInfo,
+      currentOrder,
+      currentPayment,
+    });
+
+    if (!onlineStoreInfo || !currentOrder || !currentPayment) {
       return null;
     }
 
@@ -278,10 +247,7 @@ class CreditCard extends Component {
   };
 
   render() {
-    const { t, match, history, cartSummary } = this.props;
-    const { payNowLoading, domLoaded } = this.state;
-    const { total } = cartSummary || {};
-    const paymentData = this.getPaymentEntryRequestData();
+    const { t, match, history } = this.props;
 
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -298,7 +264,21 @@ class CreditCard extends Component {
         />
 
         <Elements stripe={stripePromise} options={{}}>
-          <CheckoutForm />
+          <CheckoutForm
+            getPaymentData={this.handleGetPaymentData}
+            renderRedirectForm={paymentData => {
+              console.log('paymentData =', paymentData);
+              return null;
+              return paymentData ? (
+                <RedirectForm
+                  key="stripe-payment-redirect-form"
+                  action={config.storeHubPaymentEntryURL}
+                  method="POST"
+                  data={paymentData}
+                />
+              ) : null;
+            }}
+          />
         </Elements>
 
         {/* <div className="footer-operation">
@@ -314,15 +294,6 @@ class CreditCard extends Component {
               )}
           </button>
         </div> */}
-
-        {paymentData ? (
-          <RedirectForm
-            ref={ref => (this.form = ref)}
-            action={config.storeHubPaymentEntryURL}
-            method="POST"
-            data={paymentData}
-          />
-        ) : null}
 
         {/* <Loader loaded={domLoaded} /> */}
       </section>
@@ -349,4 +320,4 @@ export default compose(
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })
   )
-)(CreditCard);
+)(Stripe);
