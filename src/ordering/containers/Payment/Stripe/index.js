@@ -25,6 +25,7 @@ import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import Utils from '../../../../utils/utils';
+// import '../styles/2-Card-Detailed.css';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -66,16 +67,19 @@ const ErrorMessage = ({ children }) => (
 );
 
 const SubmitButton = ({ processing, error, children, disabled }) => (
-  <button
-    className={`SubmitButton ${error ? 'SubmitButton--error' : ''}`}
-    type="submit"
-    disabled={processing || disabled}
-  >
-    {processing ? 'Processing...' : children}
-  </button>
+  <div className="footer-operation">
+    <button
+      className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+      type="submit"
+      disabled={processing || disabled}
+    >
+      {processing ? <div className="loader"></div> : children}
+    </button>
+  </div>
 );
 
-const CheckoutForm = ({ renderRedirectForm, onPreSubmit }) => {
+const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
+  const { total } = cartSummary || {};
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -140,29 +144,126 @@ const CheckoutForm = ({ renderRedirectForm, onPreSubmit }) => {
     renderRedirectForm(paymentMethod)
   ) : (
     <form className="Form" onSubmit={handleSubmit}>
-      <CardNumberElement
-        onChange={e => {
-          setError(e.error);
-          setCardNumberComplete(e.complete);
+      <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
+      <div
+        className="input__list-top"
+        style={{
+          height: '50px',
+          padding: '12px',
         }}
-      />
+      >
+        <CardNumberElement
+          options={{
+            style: {
+              base: {
+                height: '50px',
+                color: '#303030',
+                fontWeight: 500,
+                fontSize: '1.5rem',
+                fontSmoothing: 'antialiased',
+                ':-webkit-autofill': {
+                  color: '#dededf',
+                },
+                '::placeholder': {
+                  color: '#dededf',
+                },
+              },
+              invalid: {
+                color: '#ff5821',
+              },
+            },
+          }}
+          onChange={e => {
+            setError(e.error);
+            setCardNumberComplete(e.complete);
+          }}
+        />
+      </div>
 
-      <CardExpiryElement
-        onChange={e => {
-          setError(e.error);
-          setCardExpiryComplete(e.complete);
-        }}
-      />
-
-      <CardCvcElement
-        onChange={e => {
-          setError(e.error);
-          setCardCvcComplete(e.complete);
-        }}
-      />
+      <div className="input__list-bottomn">
+        <div
+          style={{
+            display: 'inline-block',
+            height: '50px',
+            width: '50%',
+            padding: '12px',
+            borderWidth: '0 1px 1px 1px',
+            borderStyle: 'solid',
+            borderColor: '#dededf',
+            borderBottomLeftRadius: '4px',
+          }}
+        >
+          <CardExpiryElement
+            options={{
+              style: {
+                base: {
+                  height: '50px',
+                  color: '#303030',
+                  fontWeight: 500,
+                  fontSize: '1.5rem',
+                  fontSmoothing: 'antialiased',
+                  ':-webkit-autofill': {
+                    color: '#dededf',
+                  },
+                  '::placeholder': {
+                    color: '#dededf',
+                  },
+                },
+                invalid: {
+                  color: '#ff5821',
+                },
+              },
+            }}
+            onChange={e => {
+              setError(e.error);
+              setCardExpiryComplete(e.complete);
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: 'inline-block',
+            height: '50px',
+            width: '50%',
+            padding: '12px',
+            borderWidth: '0 1px 1px 0',
+            borderStyle: 'solid',
+            borderColor: '#dededf',
+            borderBottomRightRadius: '4px',
+          }}
+        >
+          <CardCvcElement
+            options={{
+              style: {
+                base: {
+                  height: '50px',
+                  color: '#303030',
+                  fontWeight: 500,
+                  fontSize: '1.5rem',
+                  fontSmoothing: 'antialiased',
+                  ':-webkit-autofill': {
+                    color: '#dededf',
+                  },
+                  '::placeholder': {
+                    color: '#dededf',
+                  },
+                },
+                invalid: {
+                  color: '#ff5821',
+                },
+              },
+            }}
+            onChange={e => {
+              setError(e.error);
+              setCardCvcComplete(e.complete);
+            }}
+          />
+        </div>
+      </div>
 
       <Field
-        label="Name"
+        label={t('NameOnCard')}
+        inputClassName="input input__block border-radius-base"
         id="name"
         type="text"
         required
@@ -174,7 +275,7 @@ const CheckoutForm = ({ renderRedirectForm, onPreSubmit }) => {
       />
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <SubmitButton processing={processing} error={error} disabled={!stripe}>
-        Pay $25
+        <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
       </SubmitButton>
     </form>
   );
@@ -183,9 +284,12 @@ const CheckoutForm = ({ renderRedirectForm, onPreSubmit }) => {
 class Stripe extends Component {
   state = {
     payNowLoading: false,
+    domLoaded: false,
   };
 
   componentDidMount() {
+    this.setState({ domLoaded: true });
+
     this.props.homeActions.loadShoppingCart();
   }
 
@@ -240,12 +344,14 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history } = this.props;
+    const { t, match, history, cartSummary } = this.props;
+    const { total } = cartSummary || {};
+    const { domLoaded } = this.state;
 
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right"
+          className="flex-middle border__bottom-divider gray has-right"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -256,29 +362,35 @@ class Stripe extends Component {
           }}
         />
 
-        <Elements stripe={stripePromise} options={{}}>
-          <CheckoutForm
-            onPreSubmit={this.createOrder}
-            renderRedirectForm={paymentMethod => {
-              if (!paymentMethod) return null;
+        <div className="payment-bank">
+          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
 
-              const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
+          <Elements stripe={stripePromise} options={{}}>
+            <CheckoutForm
+              t={t}
+              cartSummary={cartSummary}
+              onPreSubmit={this.createOrder}
+              renderRedirectForm={paymentMethod => {
+                if (!paymentMethod) return null;
 
-              // todo: remove this before deploy
-              console.log('requestData =', requestData);
-              return null;
+                const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
 
-              return requestData ? (
-                <RedirectForm
-                  key="stripe-payment-redirect-form"
-                  action={config.storeHubPaymentEntryURL}
-                  method="POST"
-                  data={requestData}
-                />
-              ) : null;
-            }}
-          />
-        </Elements>
+                // todo: remove this before deploy
+                console.log('requestData =', requestData);
+                // return null;
+
+                return requestData ? (
+                  <RedirectForm
+                    key="stripe-payment-redirect-form"
+                    action={config.storeHubPaymentEntryURL}
+                    method="POST"
+                    data={requestData}
+                  />
+                ) : null;
+              }}
+            />
+          </Elements>
+        </div>
 
         {/* <div className="footer-operation">
           <button
@@ -294,7 +406,7 @@ class Stripe extends Component {
           </button>
         </div> */}
 
-        {/* <Loader loaded={domLoaded} /> */}
+        <Loader loaded={domLoaded} />
       </section>
     );
   }
