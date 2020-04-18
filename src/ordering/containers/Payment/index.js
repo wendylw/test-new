@@ -23,11 +23,11 @@ import paymentTNGImage from '../../../images/payment-tng.svg';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
 const dataSource = {
-  Stripe: {
-    logo: paymentTNGImage,
-    label: PAYMENT_METHOD_LABELS.STRIPE,
-    pathname: ROUTER_PATHS.ORDERING_STRIPE_PAYMENT,
-  },
+  // Stripe: {
+  //   logo: paymentTNGImage,
+  //   label: PAYMENT_METHOD_LABELS.STRIPE,
+  //   pathname: ROUTER_PATHS.ORDERING_STRIPE_PAYMENT,
+  // },
   onlineBanking: {
     logo: paymentBankingImage,
     label: PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY,
