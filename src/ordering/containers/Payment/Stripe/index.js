@@ -270,10 +270,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
             height: '50px',
             width: '50%',
             padding: '12px',
-            borderWidth:
-              (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
-                ? '1px'
-                : '1px 1px 1px 0',
+            borderWidth: error && error.code === 'incomplete_cvc' ? '1px' : '1px 1px 1px 0',
             borderStyle: 'solid',
             borderColor:
               (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
