@@ -32,6 +32,7 @@ import Utils from '../../../../utils/utils';
 const stripePromise = loadStripe('pk_test_c1feolngsqL68jkzxIl7mPui00ANmwtZHb');
 
 const Field = ({
+  t,
   label,
   formClassName,
   inputClassName,
@@ -40,13 +41,20 @@ const Field = ({
   placeholder,
   required,
   autoComplete,
+  isNotNameComplete,
+  isFormTouched,
   value,
   onChange,
 }) => (
   <div className={formClassName}>
-    <label htmlFor={id} className="payment-bank__label font-weight-bold">
-      {label}
-    </label>
+    <div className="flex flex-middle flex-space-between">
+      <label htmlFor={id} className="payment-bank__label font-weight-bold">
+        {label}
+      </label>
+      {isFormTouched && isNotNameComplete ? (
+        <span className="error-message font-weight-bold text-uppercase">{t('RequiredMessage')}</span>
+      ) : null}
+    </div>
     <input
       className={inputClassName}
       id={id}
@@ -61,16 +69,17 @@ const Field = ({
 );
 
 const ErrorMessage = ({ children }) => (
-  <div className="has-error" role="alert">
+  <div className="error-message__container has-error" role="alert">
     {children}
   </div>
 );
 
-const SubmitButton = ({ processing, error, children, disabled }) => (
+const SubmitButton = ({ processing, error, children, disabled, onClick }) => (
   <div className="footer-operation">
     <button
       className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
       type="submit"
+      onClick={onClick}
       disabled={processing || disabled}
     >
       {processing ? <div className="loader"></div> : children}
@@ -87,6 +96,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
   const [cardExpiryComplete, setCardExpiryComplete] = useState(false);
   const [cardCvcComplete, setCardCvcComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [isFormTouched, setIsFormTouched] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [billingDetails, setBillingDetails] = useState({
     // email: '',
@@ -140,15 +150,43 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
     }
   };
 
-  console.log(error);
+  const isNotCardComplete = !cardNumberComplete && !cardExpiryComplete && !cardCvcComplete;
+
+  const isNotNameComplete = !Boolean(billingDetails.name);
+
+  const renderFieldErrorMessage = () => {
+    if (error.code === 'invalid_number') {
+      return t('CardNumberInvalidMessage');
+    } else if (error.code === 'incomplete_number') {
+      return t('CardNumberStringIncompleteMessage');
+    } else if (error.code === 'incomplete_expiry') {
+      return t('CardExpiryIncompleteMessage');
+    } else if (error.code === 'incomplete_cvc') {
+      return t('CardCVCIncompleteMessage');
+    }
+  };
+
+  // 'onfocus', (e ) => e.target.checkValidity()
+
+  console.log('(isFormTouched, isNotCardComplete) =>', isFormTouched, isNotCardComplete);
 
   return paymentMethod ? (
     renderRedirectForm(paymentMethod)
   ) : (
-    <form className="Form" onSubmit={handleSubmit}>
-      <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
+    <form className="form" onSubmit={handleSubmit}>
+      <div className="flex flex-middle flex-space-between">
+        <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
+        {isFormTouched && isNotCardComplete ? (
+          <span className="error-message font-weight-bold text-uppercase">{t('RequiredMessage')}</span>
+        ) : null}
+      </div>
       <div
-        className="input__list-top"
+        className={`input__list-top${
+          (isFormTouched && isNotCardComplete) ||
+          (error && (error.code === 'invalid_number' || error.code === 'incomplete_number'))
+            ? ' has-error'
+            : ''
+        }`}
         style={{
           height: '50px',
           padding: '12px',
@@ -189,10 +227,14 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
             height: '50px',
             width: '50%',
             padding: '12px',
-            borderWidth: '0 1px 1px 1px',
+            borderWidth: '1px',
             borderStyle: 'solid',
-            borderColor: '#dededf',
+            borderColor:
+              (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_expiry')
+                ? '#ff5821'
+                : '#dededf',
             borderBottomLeftRadius: '4px',
+            transform: 'translateY(-1px)',
           }}
         >
           <CardExpiryElement
@@ -228,10 +270,17 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
             height: '50px',
             width: '50%',
             padding: '12px',
-            borderWidth: '0 1px 1px 0',
+            borderWidth:
+              (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
+                ? '1px'
+                : '1px 1px 1px 0',
             borderStyle: 'solid',
-            borderColor: '#dededf',
+            borderColor:
+              (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
+                ? '#ff5821'
+                : '#dededf',
             borderBottomRightRadius: '4px',
+            transform: 'translateY(-1px)',
           }}
         >
           <CardCvcElement
@@ -261,23 +310,28 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
             }}
           />
         </div>
+        {error && <ErrorMessage>{renderFieldErrorMessage()}</ErrorMessage>}
       </div>
 
       <Field
+        t={t}
         label={t('NameOnCard')}
         formClassName="payment-bank__form-item"
-        inputClassName="input input__block border-radius-base"
+        inputClassName={`input input__block border-radius-base${
+          isFormTouched && isNotCardComplete ? ' has-error' : ''
+        }`}
         id="name"
         type="text"
         required
         autoComplete="name"
         value={billingDetails.name}
+        isNotNameComplete={isNotNameComplete}
+        isFormTouched={isFormTouched}
         onChange={e => {
           setBillingDetails({ ...billingDetails, name: e.target.value });
         }}
       />
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
-      <SubmitButton processing={processing} error={error} disabled={!stripe}>
+      <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
         <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
       </SubmitButton>
     </form>
@@ -395,7 +449,7 @@ class Stripe extends Component {
           </Elements>
         </div>
 
-        {/* <div className="footer-operation">
+        {/*<div className="footer-operation">
           <button
             className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
