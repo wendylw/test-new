@@ -4,12 +4,12 @@ const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
 
 const initialState = {
   data: {
-    // stripe: {
-    //   key: 'stripe',
-    //   logo: 'paymentTNGImage',
-    //   label: PAYMENT_METHOD_LABELS.STRIPE,
-    //   pathname: ROUTER_PATHS.ORDERING_STRIPE_PAYMENT,
-    // },
+    stripe: {
+      key: 'stripe',
+      logo: 'paymentCreditImage',
+      label: PAYMENT_METHOD_LABELS.STRIPE,
+      pathname: ROUTER_PATHS.ORDERING_STRIPE_PAYMENT,
+    },
     onlineBanking: {
       key: 'onlineBanking',
       logo: 'paymentBankingImage', // refer to imports in file PaymentLogo/index.js

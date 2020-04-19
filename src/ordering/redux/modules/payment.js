@@ -308,3 +308,7 @@ export const getDefaultPayment = state => {
     return '';
   }
 };
+
+export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
+  return payments.find(payment => payment.label === currentPayment);
+});

@@ -34,7 +34,8 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION_AND_DATE} component={LocationAndDate} />
-            <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={StripePayment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
+            <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />

@@ -18,6 +18,7 @@ import {
   getCurrentOrderId,
   getPayments,
   getDefaultPayment,
+  getCurrentPaymentInfo,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import { getPaymentName, getSupportCreditCardBrands } from './utils';
@@ -94,7 +95,7 @@ class Payment extends Component {
   }
 
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary, payments } = this.props;
+    const { history, currentPaymentInfo, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -102,11 +103,11 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-      const { pathname } = payments.find(payment => payment.label === currentPayment) || {};
-
+    // redirect to customized payment page when the payment contains pathname of page router
+    if (currentPaymentInfo.pathname) {
+      console.log('currentPaymentInfo.pathname =', currentPaymentInfo.pathname);
       history.push({
-        pathname,
+        pathname: currentPaymentInfo.pathname,
         search: window.location.search,
       });
 
@@ -211,6 +212,7 @@ export default compose(
       return {
         payments: getPayments(state),
         currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
+        currentPaymentInfo: getCurrentPaymentInfo(state),
         user: getUser(state),
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
