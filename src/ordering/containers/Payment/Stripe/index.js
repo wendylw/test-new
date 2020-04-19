@@ -61,7 +61,7 @@ const Field = ({
 );
 
 const ErrorMessage = ({ children }) => (
-  <div className="ErrorMessage" role="alert">
+  <div className="has-error" role="alert">
     {children}
   </div>
 );
@@ -139,6 +139,8 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
       setPaymentMethod(payload.paymentMethod);
     }
   };
+
+  console.log(error);
 
   return paymentMethod ? (
     renderRedirectForm(paymentMethod)
@@ -263,6 +265,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
 
       <Field
         label={t('NameOnCard')}
+        formClassName="payment-bank__form-item"
         inputClassName="input input__block border-radius-base"
         id="name"
         type="text"
