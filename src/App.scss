@@ -43,7 +43,7 @@
   }
 
   &__text {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     line-height: $line-height-base;
   }
@@ -465,6 +465,10 @@
     .header__title + button {
       width: 180px;
     }
+
+    .thanks__info-container {
+      padding: 0;
+    }
   }
 
   &__receipt {
@@ -624,7 +628,7 @@
 
 .phone-view-form {
   &__label {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     display: block;
     padding: 5px 0;
@@ -823,6 +827,15 @@
   &__info-text {
     margin-left: 5px;
   }
+
+  &__pickup-address {
+    padding: 0 20px;
+    margin: 5px 0;
+    font-size: 0.85rem;
+    line-height: $line-height-base;
+    max-height: 32px;
+    max-width: 90%;
+  }
 }
 
 .category-nav {
@@ -844,7 +857,7 @@
       color: $theme-color;
 
       label {
-        @extend .font-weight-bold;
+        @extend .font-weight-bolder;
 
         opacity: 1;
       }
@@ -1358,7 +1371,7 @@
   }
 
   &__amount-label {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
   }
 }
 
@@ -1640,6 +1653,13 @@
     background-color: $red;
   }
 
+  &__card.blue {
+    border-color: $link-blue;
+    color: $white;
+    background-color: $link-blue;
+    white-space: nowrap;
+  }
+
   &__card.disabled {
     pointer-events: none;
     border-color: $gray-3;
@@ -1764,7 +1784,7 @@
   }
 
   &__title {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     margin: 20px 0;
     font-size: 1.4rem;
@@ -1855,7 +1875,7 @@
   }
 
   &__money {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     padding: 0 10px;
     display: inline-block;
@@ -1872,7 +1892,7 @@
   }
 
   &__order-button {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
     @extend .text-uppercase;
     @extend .border-radius-base;
 
@@ -2238,12 +2258,21 @@
     & ~ .store-info__aside.aside {
       top: 134px;
     }
+
+    & ~ .pick-up ~ .aside,
+    & ~ .pick-up ~ .store-info__aside.aside {
+      top: 154px;
+    }
   }
 
   &__entry-container {
     .header {
       height: 64px;
       background-color: $white;
+
+      &.pick-up {
+        height: 84px;
+      }
     }
 
     .category-nav {
@@ -2251,12 +2280,33 @@
       height: auto;
     }
 
+    .pick-up ~ .category-nav {
+      top: 84px;
+    }
+
+    .pick-up ~ .list__container {
+      top: 34px;
+    }
+
+    .location-page__entry ~ .pick-up ~ .list__container {
+      top: 103px;
+    }
+
     .category__header.fixed {
       top: 64px;
     }
 
+    .pick-up ~ .list__container .category__header.fixed {
+      top: 84px;
+    }
+
     .location-page__entry ~ .category-nav {
       top: 134px;
+    }
+
+    .location-page__entry ~ .pick-up ~ .category-nav,
+    .location-page__entry ~ .pick-up ~ .list__container .category__header.fixed {
+      top: 154px;
     }
 
     .top-message__second-level {
@@ -2266,12 +2316,24 @@
       z-index: 100;
     }
 
+    .pick-up ~ .top-message__second-level {
+      top: 84px;
+    }
+
     .location-page__entry ~ .top-message__second-level {
       top: 134px;
     }
 
+    .location-page__entry ~ .pick-up ~ .top-message__second-level {
+      top: 154px;
+    }
+
     .top-message__second-level ~ .list__container {
       top: 50px;
+    }
+
+    .pick-up ~ .top-message__second-level ~ .list__container {
+      top: 70px;
     }
 
     .top-message__second-level ~ .list__container .category__header.fixed,
@@ -2279,8 +2341,17 @@
       top: 100px;
     }
 
+    .pick-up ~ .top-message__second-level ~ .list__container .category__header.fixed,
+    .pick-up ~ .top-message__second-level + .category-nav {
+      top: 120px;
+    }
+
     .location-page__entry ~ .top-message__second-level ~ .list__container {
       top: 127px;
+    }
+
+    .location-page__entry ~ .pick-up ~ .top-message__second-level ~ .list__container {
+      top: 147px;
     }
 
     .location-page__entry ~ .top-message__second-level ~ .list__container .category__header.fixed,
@@ -2288,9 +2359,19 @@
       top: 171px;
     }
 
+    .location-page__entry ~ .pick-up ~ .top-message__second-level ~ .list__container .category__header.fixed,
+    .location-page__entry ~ .pick-up ~ .top-message__second-level + .category-nav {
+      top: 191px;
+    }
+
     .store-info__aside,
     .cover {
       top: 64px;
+    }
+
+    .pick-up ~ .store-info__aside,
+    .pick-up ~ .cover {
+      top: 84px;
     }
   }
 
@@ -2307,6 +2388,7 @@
 
   &__base-info {
     width: 85vw;
+    margin-top: 0;
   }
 
   .header__icon ~ &__base-info {
@@ -2321,6 +2403,19 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    p {
+      font-size: inherit;
+    }
+
+    .icon + p {
+      margin-left: 4px;
+      font-size: 1rem;
+    }
+
+    &.pick-up {
+      margin-top: 8px;
+    }
   }
 
   &__edit {
@@ -2357,6 +2452,11 @@
     color: $gray-1;
   }
 
+  &__prompt {
+    margin: auto;
+    max-width: 74%;
+  }
+
   &__text {
     font-size: 1.2rem;
   }
@@ -2379,6 +2479,15 @@
     > * ~ * {
       border-top: 1px solid $gray-3;
     }
+  }
+
+  &__pickup {
+    margin-bottom: 16px;
+  }
+
+  &__pickup-time {
+    margin: 8px 0;
+    font-size: 1.2rem;
   }
 
   &__delivery-status-container {
@@ -2519,18 +2628,19 @@
     @extend .border-radius-base;
 
     padding: 4vw;
-    opacity: 0.7;
 
     label {
       display: block;
       padding: 8px 0;
+      font-size: 1.2857rem;
+      color: $dark;
     }
   }
 
   &__id-number {
     display: block;
-    font-size: 3.4rem;
-    letter-spacing: 0.2em;
+    font-size: 2.1428rem;
+    color: $gray-1;
   }
 }
 
@@ -2661,7 +2771,7 @@
   }
 
   &__title-children {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     display: inline-block;
     font-size: 1.5rem;
@@ -2826,7 +2936,7 @@
   }
 
   &__title-children {
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     display: inline-block;
     font-size: 1.5rem;
@@ -2974,6 +3084,7 @@
     }
 
     .form__group {
+      padding: 8px 0;
       overflow: hidden;
       margin: auto 3.8vw;
     }
@@ -2997,7 +3108,6 @@
 
       span {
         display: block;
-        font-size: 16px;
         font-weight: 500;
       }
 
@@ -3171,7 +3281,7 @@ body.loading {
   .react-phone-number-input__input:focus {
     @extend .input;
     @extend .border-radius-base;
-    @extend .font-weight-bold;
+    @extend .font-weight-bolder;
 
     border: 0;
     text-align: center;
@@ -3573,6 +3683,10 @@ body.loading {
 
   .thanks {
     padding: 3vh 16px 9vh;
+
+    &__title {
+      margin: 16px 0;
+    }
   }
 
   .full-aside__content {
@@ -3593,5 +3707,13 @@ body.loading {
 
   .location-page__search-box {
     padding: 20px 10px;
+  }
+
+  .location-display__content .form__group {
+    margin: auto 16px;
+  }
+
+  .location-display__date-container label.form__label {
+    margin: 16px 0;
   }
 }

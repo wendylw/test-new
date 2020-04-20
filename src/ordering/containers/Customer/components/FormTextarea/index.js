@@ -103,7 +103,7 @@ class FormTextarea extends Component {
             ></textarea>
           </div>
           <button
-            className="button button__fill button__block font-weight-bold border-radius-base"
+            className="button button__fill button__block font-weight-bolder border-radius-base"
             onClick={() => {
               onToggle();
               onUpdateText(textValue);

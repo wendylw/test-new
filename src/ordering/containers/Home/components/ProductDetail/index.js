@@ -454,7 +454,7 @@ class ProductDetail extends Component {
 
         <div ref={ref => (this.buttonEl = ref)} className="aside__section-container bottom">
           <button
-            className="button__fill button__block font-weight-bold"
+            className="button__fill button__block font-weight-bolder"
             type="button"
             disabled={
               !this.isSubmitable() ||
@@ -586,10 +586,10 @@ class ProductDetail extends Component {
             <div className="item__content flex flex-top">
               <div className="item__detail flex flex-column flex-space-between">
                 <div className="item__detail-content">
-                  <summary className="item__title font-weight-bold">{title}</summary>
+                  <summary className="item__title font-weight-bolder">{title}</summary>
                 </div>
                 <CurrencyNumber
-                  className="gray-font-opacity font-weight-bold"
+                  className="gray-font-opacity font-weight-bolder"
                   money={Number(this.displayPrice()) || 0}
                 />
               </div>

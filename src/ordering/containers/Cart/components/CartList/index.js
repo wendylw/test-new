@@ -38,7 +38,7 @@ class CartList extends Component {
     });
   };
 
-  handleGtmEventTracking = (product) => {
+  handleGtmEventTracking = product => {
     // In cart page, image count is always either 1 or 0
     const gtmEventDate = {
       product_name: product.title,
@@ -52,7 +52,7 @@ class CartList extends Component {
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
-  }
+  };
 
   generateProductItemView = cartItem => {
     const { isList } = this.props;

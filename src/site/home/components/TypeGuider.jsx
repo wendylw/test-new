@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import config from '../../../config';
 import RedirectForm from '../../../ordering/containers/Payment/components/RedirectForm';
+import Utils from '../../../utils/utils';
 
 class TypeGuider extends Component {
   state = {
@@ -38,12 +39,13 @@ class TypeGuider extends Component {
   }
 
   handleGotoOrderingPage(url, action) {
-    if (action)
+    if (action) {
       this.setState({ url }, () => {
         this.state.url = '';
         this.props.onRedirect();
         this.redirectForm.current.submit(); // the form uses real url, not the one empty
       });
+    }
   }
 
   renderLoading = () => {
@@ -97,7 +99,7 @@ class TypeGuider extends Component {
     return (
       <aside className={classList.join(' ')} onClick={e => this.handleHideTypeGuider(e)}>
         <div className="type-guider-aside__content aside__content absolute-wrapper padding-normal text-center">
-          <h2 className="padding-small text-size-biggest text-weight-bold">{currentText.title}</h2>
+          <h2 className="padding-small text-size-biggest text-weight-bolder">{currentText.title}</h2>
           {currentText.description ? (
             <p className="type-guider-aside__description padding-top-bottom-normal text-opacity">
               {currentText.description}
@@ -108,13 +110,13 @@ class TypeGuider extends Component {
           ) : (
             <div className="type-guider-aside__button-group flex flex-middle flex-space-between">
               <button
-                className="button button__block button__outline margin-normal text-uppercase text-weight-bold"
+                className="button button__block button__outline margin-normal text-uppercase text-weight-bolder"
                 onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
               >
                 {t('SelfPickup')}
               </button>
               <button
-                className="button button__block button__fill margin-normal text-uppercase text-weight-bold"
+                className="button button__block button__fill margin-normal text-uppercase text-weight-bolder"
                 disabled={isOutOfDeliveryRange}
                 onClick={this.handleGotoOrderingPage.bind(this, deliveryUrl, !isOutOfDeliveryRange)}
               >

@@ -181,8 +181,8 @@ class Cart extends Component {
       t('Pay')
     ) : (
       <Trans i18nKey="MinimumConsumption">
-        <span className="font-weight-bold">Min</span>
-        <CurrencyNumber className="font-weight-bold" money={minTotal} />
+        <span className="font-weight-bolder">Min</span>
+        <CurrencyNumber className="font-weight-bolder" money={minTotal} />
       </Trans>
     );
 
@@ -222,7 +222,7 @@ class Cart extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
-              className="billing__button button button__fill button__block dark font-weight-bold"
+              className="billing__button button button__fill button__block dark font-weight-bolder"
               onClick={this.handleClickBack.bind(this)}
             >
               {t('Back')}
@@ -230,7 +230,7 @@ class Cart extends Component {
           </div>
           <div className="footer-operation__item width-2-3">
             <button
-              className="billing__link button button__fill button__block font-weight-bold"
+              className="billing__link button button__fill button__block font-weight-bolder"
               onClick={this.handleCheckPaymentStatus.bind(this)}
               disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
             >

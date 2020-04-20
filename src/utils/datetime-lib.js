@@ -1,4 +1,5 @@
 import CONSTANTS from './constants';
+import i18next from 'i18next';
 export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
     MY: 'EN',
@@ -13,7 +14,7 @@ export const getDateTimeFormatter = (countryCode, options) => {
   return new Intl.DateTimeFormat(standardizeLocale(countryCode), options);
 };
 
-const padZero = num => {
+export const padZero = num => {
   const str = num.toString();
   if (str.length === 1) {
     return `0${str}`;
@@ -131,14 +132,93 @@ export const toDayDateMonth = (date, locale = 'MY') =>
   toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
+  const { from, to } = hour || {};
+
+  if (from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow');
+
+  const hourFrom = (from || '').split(':')[0];
+  const minuteFrom = (from || '').split(':')[1];
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
-  workDateFrom.setHours(hour.from, 0, 0);
-  const workDateTo = new Date(date.date);
-  workDateTo.setHours(hour.to, 0, 0);
+  workDateFrom.setHours(hourFrom, minuteFrom, 0, 0);
+  let part1;
 
-  const part1 = toDayDateMonth(workDate, locale);
-  const part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
+  if (workDate.getDate() === new Date().getDate()) {
+    part1 = i18next.t('Today');
+  } else {
+    part1 = toDayDateMonth(workDate, locale);
+  }
+
+  let part2 = toNumericTime(workDateFrom, locale);
+
+  if (to) {
+    const hourTo = (to || '').split(':')[0];
+    const minuteTo = (to || '').split(':')[1];
+    const workDateTo = new Date(date.date);
+    workDateTo.setHours(hourTo, minuteTo, 0, 0);
+    part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
+  }
 
   return `${part1}, ${part2}`;
+};
+
+export const formatPickupAddress = ({ date, locale }) => {
+  const orderTime = new Date(date);
+  let part1;
+
+  if (orderTime.getDate() === new Date().getDate()) {
+    part1 = i18next.t('Today');
+  } else {
+    part1 = toDayDateMonth(orderTime, locale);
+  }
+
+  const part2 = toNumericTime(orderTime, locale);
+
+  return `${part1}, ${part2}`;
+};
+
+export const addTime = (date = new Date(), timeToAdd, unit) => {
+  const baseTime = new Date(date) || new Date();
+  const tempTime = new Date(baseTime);
+
+  switch (unit) {
+    case 'h': {
+      const newTime = tempTime.setHours(baseTime.getHours() + timeToAdd);
+      return new Date(newTime).toISOString();
+    }
+    case 'm': {
+      const newTime = tempTime.setMinutes(baseTime.getMinutes() + timeToAdd);
+      return new Date(newTime).toISOString();
+    }
+    case 's': {
+      const newTime = tempTime.setSeconds(baseTime.getSeconds() + timeToAdd);
+      return new Date(newTime).toISOString();
+    }
+    default:
+      return new Date(baseTime()).toISOString();
+  }
+};
+
+export const isSameTime = (time1, time2, unitToCheck = []) => {
+  const timeDate1 = new Date(time1);
+  const timeDate2 = new Date(time2);
+
+  if (unitToCheck.includes('y')) {
+    if (timeDate1.getFullYear() !== timeDate2.getFullYear()) return false;
+  }
+
+  // M for month, and m for minute
+  if (unitToCheck.includes('M')) {
+    if (timeDate1.getMonth() !== timeDate2.getMonth()) return false;
+  }
+
+  if (unitToCheck.includes('h')) {
+    if (timeDate1.getHours() !== timeDate2.getHours()) return false;
+  }
+
+  if (unitToCheck.includes('m')) {
+    if (timeDate1.getMinutes() !== timeDate2.getMinutes()) return false;
+  }
+
+  return true;
 };

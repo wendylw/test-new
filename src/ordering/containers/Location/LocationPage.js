@@ -76,9 +76,8 @@ class LocationPage extends Component {
       });
       return;
     }
-    Utils.setSessionVariable('deliveryAddress', JSON.stringify(placeInfo));
-    const callbackUrl = Utils.getSessionVariable('deliveryCallbackUrl');
-    Utils.removeSessionVariable('deliveryCallbackUrl');
+    Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
+    const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
       history.push(callbackUrl);
     } else {

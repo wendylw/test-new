@@ -20,7 +20,8 @@ $theme-color-translucent: rgba(255, 148, 25, 0.5);
 $gray-1-active: #4f515f;
 $theme-color-active: #de8115;
 $font-weight-light: 300;
-$font-weight-bold: 600;
+$font-weight-bold: 500;
+$font-weight-bolder: 600;
 $border-radius-base: 4px;
 $line-height-base: 1.4em;
 
@@ -40,7 +41,7 @@ html {
   background: $white;
   font-size: $font-size-base;
   color: $main-color;
-  font-weight: $font-weight-bold;
+  font-weight: $font-weight-bolder;
 
   font-family: system-ui, -apple-system, Roboto, Ubuntu, Helvetica, Arial, sans-serif;
   touch-action: manipulation;
@@ -176,6 +177,56 @@ form {
 
     &__container {
       margin: 10px 0;
+    }
+  }
+}
+
+.icon {
+  @extend .reset-font-size;
+
+  display: inline-block;
+
+  &__privacy {
+    fill: $theme-color;
+  }
+
+  &__gray {
+    fill: $gray-2;
+  }
+
+  &__white {
+    fill: $white;
+  }
+
+  &__big {
+    padding: 12px;
+  }
+
+  &__normal {
+    padding: 8px;
+  }
+
+  &__small {
+    padding: 4px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__smaller {
+    padding: 4px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__item.active {
+    .icon__gray {
+      fill: $theme-color;
     }
   }
 }
@@ -417,8 +468,8 @@ form {
   font-weight: $font-weight-light;
 }
 
-.font-weight-bold {
-  font-weight: $font-weight-bold;
+.font-weight-bolder {
+  font-weight: $font-weight-bolder;
 }
 
 .text-uppercase {

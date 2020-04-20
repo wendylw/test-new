@@ -33,7 +33,7 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
           ...codeMap,
           [name]: trackingId,
         }),
-        {},
+        {}
       );
     }
     storeInfoForGtm = {
@@ -45,7 +45,7 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
       fbPixelEnabled: !!(onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB),
       gaID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.GA,
       fbPixelID: onlineStoreInfo.analytics && onlineStoreInfo.analytics.FB,
-    }
+    };
   }
 
   if (userInfo && Object.keys(userInfo).length) {
@@ -53,7 +53,7 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
       userID: userInfo.consumerId,
       isGuest: !(userInfo && userInfo.consumerId),
       phoneNumber: Utils.getLocalStorageVariable('user.p'),
-    }
+    };
   }
 
   window.dataLayer = window.dataLayer || [];

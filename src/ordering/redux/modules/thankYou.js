@@ -8,61 +8,60 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
 
-
 const initialState = {
   orderId: null,
-  cashbackInfo: null, /* included: customerId, consumerId, status */
+  cashbackInfo: null /* included: customerId, consumerId, status */,
+  storeHashCode: null,
 };
 
 export const types = THANK_YOU_TYPES;
 
 export const actions = {
-  loadOrder: (orderId) => (dispatch) => {
+  loadOrder: orderId => dispatch => {
     return dispatch(fetchOrder({ orderId }));
   },
 
-  getCashbackInfo: (receiptNumber) => ({
+  getCashbackInfo: receiptNumber => ({
     [API_REQUEST]: {
-      types: [
-        types.FETCH_CASHBACKINFO_REQUEST,
-        types.FETCH_CASHBACKINFO_SUCCESS,
-        types.FETCH_CASHBACKINFO_FAILURE,
-      ],
+      types: [types.FETCH_CASHBACKINFO_REQUEST, types.FETCH_CASHBACKINFO_SUCCESS, types.FETCH_CASHBACKINFO_FAILURE],
       ...Url.API_URLS.GET_CASHBACK,
       params: {
         receiptNumber,
         source: Constants.CASHBACK_SOURCE.QR_ORDERING,
       },
-    }
+    },
   }),
 
   createCashbackInfo: ({ receiptNumber, phone, source }) => ({
     [API_REQUEST]: {
-      types: [
-        types.CREATE_CASHBACKINFO_REQUEST,
-        types.CREATE_CASHBACKINFO_SUCCESS,
-        types.CREATE_CASHBACKINFO_FAILURE,
-      ],
+      types: [types.CREATE_CASHBACKINFO_REQUEST, types.CREATE_CASHBACKINFO_SUCCESS, types.CREATE_CASHBACKINFO_FAILURE],
       ...Url.API_URLS.POST_CASHBACK,
       payload: {
         receiptNumber,
         phone,
         source,
-      }
-    }
+      },
+    },
+  }),
+
+  getStoreHashData: storeId => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_REQUEST,
+        types.FETCH_STORE_HASHCODE_SUCCESS,
+        types.FETCH_STORE_HASHCODE_FAILURE,
+      ],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
+    },
   }),
 };
 
 const fetchOrder = variables => ({
   [FETCH_GRAPHQL]: {
-    types: [
-      types.FETCH_ORDER_REQUEST,
-      types.FETCH_ORDER_SUCCESS,
-      types.FETCH_ORDER_FAILURE,
-    ],
+    types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
     endpoint: Url.apiGql('Order'),
     variables,
-  }
+  },
 });
 
 // reducer
@@ -83,7 +82,7 @@ const reducer = (state = initialState, action) => {
         cashbackInfo: {
           ...state.cashbackInfo,
           isFetching: true,
-        }
+        },
       };
     case types.FETCH_CASHBACKINFO_FAILURE:
     case types.CREATE_CASHBACKINFO_FAILURE:
@@ -92,7 +91,7 @@ const reducer = (state = initialState, action) => {
         cashbackInfo: {
           ...state.cashbackInfo,
           isFetching: false,
-        }
+        },
       };
     case types.FETCH_CASHBACKINFO_SUCCESS: {
       return {
@@ -102,7 +101,7 @@ const reducer = (state = initialState, action) => {
           ...response,
           isFetching: false,
           createdCashbackInfo: false,
-        }
+        },
       };
     }
     case types.CREATE_CASHBACKINFO_SUCCESS: {
@@ -113,24 +112,31 @@ const reducer = (state = initialState, action) => {
           ...response,
           isFetching: false,
           createdCashbackInfo: true,
-        }
+        },
       };
+    }
+    case types.FETCH_STORE_HASHCODE_SUCCESS: {
+      const { response } = action;
+      const { redirectTo } = response || {};
+
+      return { ...state, storeHashCode: redirectTo };
     }
     default:
       return state;
   }
-}
+};
 
 export default reducer;
 
 // selectors
 export const getOrder = state => {
-  return getOrderByOrderId(state, state.thankYou.orderId)
+  return getOrderByOrderId(state, state.thankYou.orderId);
 };
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
   return getBusinessByName(state, business);
-}
+};
 
+export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;

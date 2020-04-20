@@ -35,20 +35,6 @@ class DeliveryMethods extends Component {
   componentDidMount = async () => {
     await this.props.homeActions.loadCoreBusiness();
     await this.props.homeActions.getStoreHashData(this.props.store.id);
-    const { allBusinessInfo, business } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-
-    // remove delivery time write in session to prevent date inconsistence issus
-    if (enablePreOrder) {
-      Utils.removeExpectedDeliveryTime();
-    }
-
-    if (this.props.isStoreClosed) {
-      const search = `?h=${this.props.hashCode}&type=delivery`;
-      const searchStr = enablePreOrder ? `${search}&isPreOrder=true` : search;
-
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${searchStr}`;
-    }
   };
 
   handleClickBack() {
@@ -58,7 +44,7 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
-    const { isStoreClosed } = this.props;
+    // const { isStoreClosed } = this.props;
     const { store, homeActions } = this.props;
     await homeActions.getStoreHashData(store.id);
     const { hashCode } = this.props;
@@ -71,38 +57,27 @@ class DeliveryMethods extends Component {
       allBusinessInfo,
     });
     const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+    if (enablePreOrder) {
+      // remove delivery time write in session to prevent date inconsistence issus
+      Utils.removeExpectedDeliveryTime();
+      // Should always let users select delivery time if this store has enabled preOrder
+      const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_HOME}?h=${hashCode || ''}&type=${methodName}`);
 
-    if (hashCode && currentMethod.name === DELIVERY_METHOD.DELIVERY) {
-      if (!isStoreClosed && enablePreOrder) {
-        // Should always let users select delivery time once they selected delivery not pickup
-        await Utils.setSessionVariable(
-          'deliveryTimeCallbackUrl',
-          JSON.stringify({
-            pathname: ROUTER_PATHS.ORDERING_HOME,
-            search: `?h=${hashCode || ''}&type=${methodName}`,
-          })
-        );
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}/?h=${hashCode ||
+        ''}&type=${methodName}&callbackUrl=${callbackUrl}`;
+      return;
+    }
 
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}/?h=${hashCode ||
-          ''}&type=${methodName}`;
-        return;
-      }
-
+    if (currentMethod.name === DELIVERY_METHOD.DELIVERY) {
       if (store.id && deliveryTo) {
         console.warn('storeId and deliveryTo info is enough for delivery, redirect to ordering home');
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
         return;
       } else if (!deliveryTo) {
-        await Utils.setSessionVariable(
-          'deliveryCallbackUrl',
-          JSON.stringify({
-            pathname: ROUTER_PATHS.ORDERING_HOME,
-            search: `?h=${hashCode || ''}&type=${methodName}`,
-          })
-        );
+        const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_HOME}?h=${hashCode || ''}&type=${methodName}`);
 
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
-          ''}&type=${methodName}`;
+          ''}&type=${methodName}&callbackUrl=${callbackUrl}`;
         return;
       }
     } else {
@@ -131,7 +106,7 @@ class DeliveryMethods extends Component {
               <figure className="delivery__image-container">
                 <img src={method.logo} alt={t(method.labelKey)}></img>
               </figure>
-              <label className="delivery__name font-weight-bold">{t(method.labelKey)}</label>
+              <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
               <i className="delivery__next-icon">
                 <IconNext />
               </i>

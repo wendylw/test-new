@@ -177,7 +177,7 @@ class Home extends React.Component {
 
     return (
       <React.Fragment>
-        <h2 className="text-size-biggest text-weight-bold">{t('NearbyRestaurants')}</h2>
+        <h2 className="text-size-biggest text-weight-bolder">{t('NearbyRestaurants')}</h2>
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
