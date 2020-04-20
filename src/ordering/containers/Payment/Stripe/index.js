@@ -376,7 +376,7 @@ class Stripe extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const { history, onlineStoreInfo, currentOrder, business } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
