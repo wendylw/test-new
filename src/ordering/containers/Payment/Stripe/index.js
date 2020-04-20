@@ -48,11 +48,11 @@ const Field = ({
 }) => (
   <div className={formClassName}>
     <div className="flex flex-middle flex-space-between">
-      <label htmlFor={id} className="payment-bank__label font-weight-bold">
+      <label htmlFor={id} className="payment-bank__label font-weight-bolder">
         {label}
       </label>
       {isFormTouched && isNotNameComplete ? (
-        <span className="error-message font-weight-bold text-uppercase">{t('RequiredMessage')}</span>
+        <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
       ) : null}
     </div>
     <input
@@ -77,7 +77,7 @@ const ErrorMessage = ({ children }) => (
 const SubmitButton = ({ processing, error, children, disabled, onClick }) => (
   <div className="footer-operation">
     <button
-      className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+      className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
       type="submit"
       onClick={onClick}
       disabled={processing || disabled}
@@ -92,6 +92,9 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
+  const [cardNumberDomLoaded, setCardNumberDom] = useState(false);
+  const [cardExpiryDomLoaded, setCardExpiryDom] = useState(false);
+  const [cardCVCDomLoaded, setCardCVCDom] = useState(false);
   const [cardNumberComplete, setCardNumberComplete] = useState(false);
   const [cardExpiryComplete, setCardExpiryComplete] = useState(false);
   const [cardCvcComplete, setCardCvcComplete] = useState(false);
@@ -175,9 +178,9 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
   ) : (
     <form className="form" onSubmit={handleSubmit}>
       <div className="flex flex-middle flex-space-between">
-        <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
+        <label className="payment-bank__label font-weight-bolder">{t('CardInformation')}</label>
         {isFormTouched && isNotCardComplete ? (
-          <span className="error-message font-weight-bold text-uppercase">{t('RequiredMessage')}</span>
+          <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
         ) : null}
       </div>
       <div
@@ -216,6 +219,9 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
           onChange={e => {
             setError(e.error);
             setCardNumberComplete(e.complete);
+          }}
+          onReady={e => {
+            setCardNumberDom(true);
           }}
         />
       </div>
@@ -262,6 +268,9 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
               setError(e.error);
               setCardExpiryComplete(e.complete);
             }}
+            onReady={e => {
+              setCardExpiryDom(true);
+            }}
           />
         </div>
         <div
@@ -305,6 +314,9 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
               setError(e.error);
               setCardCvcComplete(e.complete);
             }}
+            onReady={e => {
+              setCardCVCDom(true);
+            }}
           />
         </div>
         {error && <ErrorMessage>{renderFieldErrorMessage()}</ErrorMessage>}
@@ -329,8 +341,10 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
         }}
       />
       <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
-        <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
+        <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
       </SubmitButton>
+
+      <Loader loaded={cardNumberDomLoaded && cardExpiryDomLoaded && cardCVCDomLoaded} />
     </form>
   );
 };
@@ -342,8 +356,6 @@ class Stripe extends Component {
   };
 
   componentDidMount() {
-    this.setState({ domLoaded: true });
-
     this.props.homeActions.loadShoppingCart();
   }
 
@@ -400,7 +412,6 @@ class Stripe extends Component {
   render() {
     const { t, match, history, cartSummary } = this.props;
     const { total } = cartSummary || {};
-    const { domLoaded } = this.state;
 
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
@@ -417,7 +428,7 @@ class Stripe extends Component {
         />
 
         <div className="payment-bank">
-          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
           <Elements stripe={stripePromise} options={{}}>
             <CheckoutForm
@@ -459,8 +470,6 @@ class Stripe extends Component {
               )}
           </button>
         </div> */}
-
-        <Loader loaded={domLoaded} />
       </section>
     );
   }
