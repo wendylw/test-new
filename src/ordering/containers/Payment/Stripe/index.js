@@ -173,9 +173,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
 
   console.log('(isFormTouched, isNotCardComplete) =>', isFormTouched, isNotCardComplete);
 
-  return paymentMethod ? (
-    renderRedirectForm(paymentMethod)
-  ) : (
+  return (
     <form className="form" onSubmit={handleSubmit}>
       <div className="flex flex-middle flex-space-between">
         <label className="payment-bank__label font-weight-bolder">{t('CardInformation')}</label>
@@ -344,6 +342,8 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
         <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
       </SubmitButton>
 
+      {paymentMethod ? renderRedirectForm(paymentMethod) : null}
+
       <Loader loaded={cardNumberDomLoaded && cardExpiryDomLoaded && cardCVCDomLoaded} />
     </form>
   );
@@ -456,20 +456,6 @@ class Stripe extends Component {
             />
           </Elements>
         </div>
-
-        {/*<div className="footer-operation">
-          <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
-            onClick={this.payNow.bind(this)}
-            disabled={payNowLoading}
-          >
-            {payNowLoading ? (
-              <div className="loader"></div>
-            ) : (
-                <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
-              )}
-          </button>
-        </div> */}
       </section>
     );
   }
