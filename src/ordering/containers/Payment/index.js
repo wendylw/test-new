@@ -105,7 +105,6 @@ class Payment extends Component {
 
     // redirect to customized payment page when the payment contains pathname of page router
     if (currentPaymentInfo.pathname) {
-      console.log('currentPaymentInfo.pathname =', currentPaymentInfo.pathname);
       history.push({
         pathname: currentPaymentInfo.pathname,
         search: window.location.search,
