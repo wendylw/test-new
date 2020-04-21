@@ -32,7 +32,8 @@ const PAYMENT_LIST_COUNTRY_MAP = {
 };
 
 export function getPaymentList(country) {
-  return _get(PAYMENT_LIST_COUNTRY_MAP, country, '').split(',');
+  const payments = _get(PAYMENT_LIST_COUNTRY_MAP, country, null);
+  return payments ? payments.split(',') : [];
 }
 
 // support credit card brands country map
