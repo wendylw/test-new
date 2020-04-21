@@ -38,7 +38,8 @@ const initialState = {
       label: PAYMENT_METHOD_LABELS.TNG_PAY,
     },
     gcash: {
-      logo: paymentGcashImage,
+      key: 'gcash',
+      logo: 'paymentGcashImage',
       label: PAYMENT_METHOD_LABELS.GCASH_PAY,
     },
   },
