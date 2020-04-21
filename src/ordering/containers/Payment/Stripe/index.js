@@ -112,10 +112,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
     throw new Error('Error: getRedirectFrom should be a function');
   }
 
-  const redirectForm = renderRedirectForm();
-
-  console.log('[Stripe] redirectForm =', redirectForm);
-
   const handleSubmit = async event => {
     event.preventDefault();
 
@@ -141,8 +137,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
       card: elements.getElement(CardNumberElement),
       billing_details: billingDetails,
     });
-
-    console.log('[Stripe] stripe.createPaymentMethod() => ', payload);
 
     setProcessing(false);
 
@@ -170,8 +164,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
   };
 
   // 'onfocus', (e ) => e.target.checkValidity()
-
-  console.log('(isFormTouched, isNotCardComplete) =>', isFormTouched, isNotCardComplete);
 
   return (
     <form className="form" onSubmit={handleSubmit}>
@@ -382,12 +374,6 @@ class Stripe extends Component {
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
-    console.log('[Stripe] { onlineStoreInfo, currentOrder, currentPayment } => ', {
-      onlineStoreInfo,
-      currentOrder,
-      currentPayment,
-    });
-
     if (!onlineStoreInfo || !currentOrder || !currentPayment) {
       return null;
     }
@@ -439,10 +425,6 @@ class Stripe extends Component {
                 if (!paymentMethod) return null;
 
                 const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
-
-                // todo: remove this before deploy
-                console.log('requestData =', requestData);
-                // return null;
 
                 return requestData ? (
                   <RedirectForm
