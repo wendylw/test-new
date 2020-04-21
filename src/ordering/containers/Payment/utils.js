@@ -17,6 +17,7 @@ const PAYMENT_NAME_COUNTRY_MAP = {
   },
   PH: {
     [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepPHCreditCard',
+    [PAYMENT_METHOD_LABELS.GCASH_PAY]: 'BeepPHCCPPGcash',
   },
 };
 
