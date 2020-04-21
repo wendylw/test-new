@@ -12,6 +12,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness } from './app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 // import { getBusinessInfo } from './cart';
 
 const initialState = {
@@ -285,6 +286,12 @@ export default combineReducers({
 });
 
 // selectors
+export const getDeliveryInfo = createSelector([getBusiness, getAllBusinesses], (business, allBusinessInfo) => {
+  // ignore for now since home page needs address from it.
+  // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
+  return Utils.getDeliveryInfo({ business, allBusinessInfo });
+});
+
 export const isFetched = state => state.home.shoppingCart.isFetched;
 
 export const getCartItemIds = state => state.home.shoppingCart.itemIds;

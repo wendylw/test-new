@@ -7,7 +7,7 @@ import Image from './Image';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
-import { isSourceBeepitCom } from '../ordering/containers/Home/utils';
+import { BackPosition, showBackButton } from '../utils/backHelper';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -18,7 +18,15 @@ class Header extends Component {
     // }
 
     const renderPageAction = () => {
-      if (!isStoreHome || (isStoreHome && !isValidTimeToOrder && (isSourceBeepitCom() || enablePreOrder))) {
+      if (
+        !isStoreHome ||
+        (isStoreHome &&
+          showBackButton({
+            isValidTimeToOrder,
+            enablePreOrder,
+            backPosition: BackPosition.STORE_NAME,
+          }))
+      ) {
         const iconClassName = 'header__icon text-middle';
 
         return isPage ? (

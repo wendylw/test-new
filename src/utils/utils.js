@@ -281,13 +281,17 @@ Utils.removeHtmlTag = function removeHtmlTag(str) {
   return str.replace(/<[^>]+>/g, '');
 };
 
-Utils.isDeliveryType = () => {
+Utils.getOrderTypeFromUrl = () => {
   const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-  return type === 'delivery';
+  return type;
 };
+
+Utils.isDeliveryType = () => {
+  return Utils.getOrderTypeFromUrl() === 'delivery';
+};
+
 Utils.isPickUpType = () => {
-  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-  return type === 'pickup';
+  return Utils.getOrderTypeFromUrl() === 'pickup';
 };
 
 Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {

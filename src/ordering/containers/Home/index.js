@@ -17,11 +17,12 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
-import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
-import { getAllBusinesses, getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
+import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
   getCategoryProductList,
+  getDeliveryInfo,
   getPopUpModal,
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
@@ -30,6 +31,7 @@ import PopUpMessage from './components/PopUpMessage';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
+import { BackPosition, showBackButton } from '../../../utils/backHelper';
 
 const localState = {
   blockScrollTop: 0,
@@ -142,17 +144,8 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    const { history } = this.props;
-    const enablePreOrder = this.isPreOrderEnabled();
-
-    if (enablePreOrder) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-        search: window.location.search,
-      });
-    } else {
-      window.location.href = config.beepitComUrl;
-    }
+    // back button always goes back to beepit.com, because it shows only when source=beepit.com
+    window.location.href = config.beepitComUrl;
   };
 
   handleToggleAside(asideName) {
@@ -170,15 +163,20 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t, history, business, allBusinessInfo } = this.props;
-    const isValidTimeToOrder = this.isValidTimeToOrder();
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { t, history, deliveryInfo } = this.props;
 
-    if (!isValidTimeToOrder || !enablePreOrder || (!Utils.isPickUpType() && !Utils.isDeliveryType())) {
+    if (!deliveryInfo) {
       return null;
     }
 
-    const { deliveryToAddress } = this.getDeliveryInfo();
+    // table ordering situation
+    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
+      return null;
+    }
+
+    const isValidTimeToOrder = this.isValidTimeToOrder();
+    const { enablePreOrder, deliveryToAddress } = deliveryInfo;
+
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
@@ -191,69 +189,70 @@ export class Home extends Component {
       });
     };
 
-    return (
-      <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
-        <div className="item__detail-content flex flex-top flex-space-between">
-          {isSourceBeepitCom() || enablePreOrder ? (
-            <IconLeftArrow
-              className="header__icon"
-              onClick={event => {
-                event.preventDefault();
-
-                if (enablePreOrder) {
-                  history.push({
-                    pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-                    search: window.location.search,
-                  });
-                } else {
+    if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
+      return (
+        <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
+          <div className="item__detail-content flex flex-top flex-space-between">
+            {showBackButton({
+              isValidTimeToOrder,
+              enablePreOrder,
+              backPosition: BackPosition.DELIVERY_TO,
+            }) ? (
+              <IconLeftArrow
+                className="header__icon"
+                onClick={event => {
+                  event.preventDefault();
                   window.location.href = config.beepitComUrl;
-                }
-
-                event.stopPropagation();
-              }}
-            />
-          ) : null}
-          <div className="location-page__base-info">
-            <summary className="item__title text-uppercase font-weight-bolder">
-              {Utils.isDeliveryType() && t('DeliverTo')}
-              {Utils.isPickUpType() && t('PickUpOn')}
-            </summary>
-            {Utils.isDeliveryType() ? (
-              <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+                  event.stopPropagation();
+                }}
+              />
             ) : null}
-            {this.renderDeliveryDate()}
+            <div className="location-page__base-info">
+              <summary className="item__title text-uppercase font-weight-bolder">
+                {Utils.isDeliveryType() && t('DeliverTo')}
+                {Utils.isPickUpType() && t('PickUpOn')}
+              </summary>
+              {Utils.isDeliveryType() ? (
+                <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+              ) : null}
+              {this.renderDeliveryDate()}
+            </div>
+            {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
           </div>
-          {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
         </div>
-      </div>
-    );
+      );
+    }
+    return null;
   }
 
   getExpectedDeliveryTime = () => {
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const locale = this.getBusinessCountry();
 
-    return formatToDeliveryTime({
-      date: date,
-      hour: hour,
-      locale,
-    });
+    if (date && hour && locale) {
+      return formatToDeliveryTime({
+        date: date,
+        hour: hour,
+        locale,
+      });
+    }
+
+    return '';
   };
 
   renderDeliveryDate = () => {
-    const { t, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { t, deliveryInfo } = this.props;
+
+    if (!deliveryInfo) {
+      return null;
+    }
+
+    const { enablePreOrder } = deliveryInfo;
     let deliveryTimeText = t('DeliverNow');
     const isPickUpType = Utils.isPickUpType();
 
     if (enablePreOrder) {
-      const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
-
       deliveryTimeText = this.getExpectedDeliveryTime();
-
-      if (!date.date) {
-        deliveryTimeText = '';
-      }
     }
 
     return (
@@ -265,29 +264,24 @@ export class Home extends Component {
   };
 
   isPreOrderEnabled = () => {
-    const { enablePreOrder } = this.getDeliveryInfo();
-
-    return enablePreOrder;
+    const { enablePreOrder } = this.props.deliveryInfo;
+    return !!enablePreOrder;
   };
 
   isValidTimeToOrder = () => {
+    const { deliveryInfo } = this.props;
+
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
 
     return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
-  getDeliveryInfo = () => {
-    const { allBusinessInfo, business } = this.props;
-
-    return Utils.getDeliveryInfo({ business, allBusinessInfo });
-  };
-
   renderHeader() {
-    const { t, onlineStoreInfo, businessInfo, requestInfo, cartSummary } = this.props;
+    const { t, onlineStoreInfo, businessInfo, requestInfo, cartSummary, deliveryInfo } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { tableId } = requestInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
@@ -295,7 +289,7 @@ export class Home extends Component {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
-    const { deliveryFee: legacyDeliveryFee, storeAddress } = this.getDeliveryInfo();
+    const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
     if (!tableId && !(isDeliveryType || isPickUpType)) {
@@ -332,8 +326,8 @@ export class Home extends Component {
   }
 
   renderProOrderConfirmModal = () => {
-    const { popUpModal, t } = this.props;
-    const { validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    const { popUpModal, t, deliveryInfo } = this.props;
+    const { validTimeFrom, validTimeTo } = deliveryInfo;
 
     if (this.isPreOrderEnabled() && !this.isValidTimeToOrder() && !popUpModal.userConfirmed) {
       return (
@@ -360,17 +354,16 @@ export class Home extends Component {
 
   render() {
     const {
-      business,
       categories,
       onlineStoreInfo,
       businessInfo,
       businessLoaded,
       requestInfo,
       isVerticalMenu,
-      allBusinessInfo,
       history,
       freeDeliveryFee,
       cartSummary,
+      deliveryInfo,
       ...otherProps
     } = this.props;
     const {
@@ -382,7 +375,7 @@ export class Home extends Component {
       freeShippingMinAmount,
       enableConditionalFreeShipping,
       enableLiveOnline,
-    } = this.getDeliveryInfo();
+    } = deliveryInfo;
 
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
@@ -469,13 +462,12 @@ export default compose(
   connect(
     state => {
       return {
-        business: getBusiness(state),
+        deliveryInfo: getDeliveryInfo(state),
         businessInfo: getBusinessInfo(state),
         isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
-        allBusinessInfo: getAllBusinesses(state),
         businessLoaded: getBusinessIsLoaded(state),
         popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
