@@ -37,6 +37,10 @@ const initialState = {
       logo: 'paymentTNGImage', // refer to imports in file PaymentLogo/index.js
       label: PAYMENT_METHOD_LABELS.TNG_PAY,
     },
+    gcash: {
+      logo: paymentGcashImage,
+      label: PAYMENT_METHOD_LABELS.GCASH_PAY,
+    },
   },
 };
 

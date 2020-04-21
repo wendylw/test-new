@@ -29,7 +29,7 @@ import Utils from '../../../../utils/utils';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe('pk_test_c1feolngsqL68jkzxIl7mPui00ANmwtZHb');
+const stripePromise = loadStripe('pk_live_YAnoXq4QExadNzSfI6ndX9rX00e7xNOfLH');
 
 const Field = ({
   t,
