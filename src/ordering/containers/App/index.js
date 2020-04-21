@@ -36,7 +36,7 @@ class App extends Component {
     const { onlineStoreInfo } = responseGql.data || {};
 
     if (isLogin) {
-      appActions.loadCustomerProfile().then(({ responseGql= {} }) => {
+      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
         const { data = {} } = responseGql;
         gtmSetUserProperties(null, data.user);
       });
@@ -61,7 +61,7 @@ class App extends Component {
     }
 
     if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
-      appActions.loadCustomerProfile().then(({ responseGql= {} }) => {
+      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
         const { data = {} } = responseGql;
         gtmSetUserProperties(null, data.user);
       });

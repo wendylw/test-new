@@ -120,14 +120,8 @@ apiGql.GET_ONLINE_STORE_INFO = gql`
 `;
 
 apiGql.GET_PRODUCT_DETAIL = gql`
-  query ProductDetail (
-    $business: String!,
-    $productId: String!
-  ) {
-    product(
-      business: $business,
-      productId: $productId
-    ) {
+  query ProductDetail($business: String!, $productId: String!) {
+    product(business: $business, productId: $productId) {
       id
       title
       displayPrice
@@ -234,10 +228,7 @@ apiGql.GET_SHOPPING_CART = gql`
 
 apiGql.REMOVE_SHOPPING_CART_ITEM = gql`
   mutation RemoveShoppingCartItem($productId: String!, $variations: [inputVariation]) {
-    removeShoppingCartItem(input: {
-      productId: $productId,
-      variations: $variations
-    }) {
+    removeShoppingCartItem(input: { productId: $productId, variations: $variations }) {
       productId
     }
   }
@@ -312,10 +303,10 @@ apiGql.ADD_OR_UPDATE_SHOPPING_CART_ITEM = gql`
 `;
 
 /* revert
-* $additionalComments: String,
-* additionalComments: $additionalComments,
-* when release BEEP-1
-*/
+ * $additionalComments: String,
+ * additionalComments: $additionalComments,
+ * when release BEEP-1
+ */
 apiGql.CREATE_ORDER = gql`
   mutation CreateOrder(
     $business: String!,

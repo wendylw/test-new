@@ -134,6 +134,7 @@ const ASIDE_NAMES = {
   DELIVERY_DETAIL: 'DELIVERY_DETAIL',
   ADD_ADDRESS_DETAIL: 'ADD_ADDRESS_DETAIL',
   ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
+  ADD_MERCHANT_NOTE: 'ADD_MERCHANT_NOTE',
 };
 
 const DELIVERY_METHOD = {
@@ -150,6 +151,11 @@ const CONSUMERFLOW_STATUS = {
   CANCELLED: 'cancelled',
 };
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const PREORDER_IMMEDIATE_TAG = {
+  from: 'now',
+  to: 'now',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -177,4 +183,5 @@ export default {
   DELIVERY_METHOD,
   CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
+  PREORDER_IMMEDIATE_TAG,
 };

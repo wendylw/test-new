@@ -15,7 +15,6 @@ import DeliveryMethods from '../DeliveryMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 
-
 class App extends Component {
   componentDidMount() {
     const { appActions } = this.props;

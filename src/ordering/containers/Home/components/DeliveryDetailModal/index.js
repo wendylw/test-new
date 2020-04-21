@@ -43,7 +43,6 @@ class DeliveryDetailModal extends Component {
       storeAddress,
       telephone,
       isValidTimeToOrder,
-      // enablePreOrder,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
@@ -80,7 +79,7 @@ class DeliveryDetailModal extends Component {
             <div className="header__title-container">
               <h2 className="header__title">
                 <span
-                  className={`header__one-line-title font-weight-bold text-middle ${
+                  className={`header__one-line-title font-weight-bolder text-middle ${
                     !isValidTimeToOrder ? 'has-tag' : ''
                   }`}
                 >

@@ -192,7 +192,7 @@ class QRScan extends Component {
       <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main">
         {!showMessage ? null : (
           <div className="top-message primary padding-normal text-center absolute-wrapper">
-            <p className="top-message__text text-weight-bold">{t('UseChromeMessage')}</p>
+            <p className="top-message__text text-weight-bolder">{t('UseChromeMessage')}</p>
           </div>
         )}
         <video ref={this.videoRef} className="qrscan__video-player" autoPlay playsInline />

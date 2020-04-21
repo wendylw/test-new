@@ -1,9 +1,44 @@
+// @import "../site/Common.scss";
 @import "../site/Variables.scss";
 
 .location-picker {
   &__search-box {
     padding: 22px 3.8vw;
     background-color: $white;
+
+    &-inner {
+      // @extend .border-radius-base;
+      border-radius: $border-radius-base;
+      border: 1px solid $gray-3;
+      background-color: $white;
+    }
+    &-input {
+      padding: 16px 0;
+      border: 0;
+      line-height: 26px;
+      height: 56px;
+      width: 100%;
+      background-color: $white;
+      outline: none;
+      box-shadow: none;
+      caret-color: $gray-2;
+    }
+    &-magnifier-icon {
+      padding: 8px;
+      fill: $gray-2;
+      svg {
+        vertical-align: top;
+      }
+    }
+    &-close-icon {
+      padding: 18px 8px;
+      fill: $gray-2;
+      svg {
+        width: 18px;
+        height: 18px;
+        vertical-align: top;
+      }
+    }
   }
 
   &__detected-position {
