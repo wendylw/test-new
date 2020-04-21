@@ -7,7 +7,7 @@ const initialState = {
     stripe: {
       key: 'stripe',
       logo: 'paymentCreditImage',
-      label: PAYMENT_METHOD_LABELS.STRIPE,
+      label: PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY,
       pathname: ROUTER_PATHS.ORDERING_STRIPE_PAYMENT,
     },
     onlineBanking: {

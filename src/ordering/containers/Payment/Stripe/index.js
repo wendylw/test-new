@@ -29,7 +29,7 @@ import Utils from '../../../../utils/utils';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe('pk_live_YAnoXq4QExadNzSfI6ndX9rX00e7xNOfLH');
+const stripePromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_KEY || '');
 
 const Field = ({
   t,
@@ -427,9 +427,6 @@ class Stripe extends Component {
                 if (!paymentMethod) return null;
 
                 const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
-
-                // todo: remove this before deploy
-                // return null;
 
                 return requestData ? (
                   <RedirectForm

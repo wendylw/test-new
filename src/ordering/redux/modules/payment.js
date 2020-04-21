@@ -103,16 +103,12 @@ export const actions = {
         // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
 
         if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
-          console.log('This is a pre order');
-
           expectDeliveryDateInfo = getExpectDeliveryDateInfo(
             expectedDeliveryDate.date,
             expectedDeliveryHour.from,
             expectedDeliveryHour.to
           );
         }
-
-        console.log('[createOrder] expectDeliveryDateInfo =', expectDeliveryDateInfo);
       }
     } catch (e) {
       console.error('failed to create expectDeliveryDateInfo');
