@@ -196,7 +196,7 @@ class LocationAndDate extends Component {
         if (!isOpen) continue;
       }
 
-      if (disableTodayPreOrder && isToday) {
+      if (disableTodayPreOrder && !i) {
         continue;
       }
 
