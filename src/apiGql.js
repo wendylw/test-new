@@ -326,7 +326,7 @@ apiGql.CREATE_ORDER = gql`
     }) {
       orders {
         id
-        total
+        total: actualPaymentAmount
         orderId
       }
     }

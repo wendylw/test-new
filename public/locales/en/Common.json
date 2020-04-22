@@ -114,8 +114,11 @@
   "Sat": "Sat",
   "Sun": "Sun",
   "Now": "Now",
-  "DeliveryHours": "Delivery Hours",
   "Today": "Today",
   "Okay": "Okay",
+  "DeliveryHours": "Delivery Hours",
+  "AddPromoCode": "Add a promo code/voucher",
+  "Voucher": "Voucher",
+  "ConnectionIssue": "Sorry there was some issue with the connection, please try again",
   "Immediate": "Immediate"
 }
