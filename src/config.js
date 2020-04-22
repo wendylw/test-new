@@ -2,15 +2,6 @@ import Utils from './utils/utils';
 
 let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
 
-// To mock data
-if (process.env.NODE_ENV === 'development') {
-  business = 'wenjingzhang';
-  document.cookie = 'business=wenjingzhang; path=/';
-  document.cookie = '__h=U2FsdGVkX18tpToUnEBR%2B1seFOoe1nGWDJWZxdAOvdYo6Vdv6rOfkVEsMp8tW5Qd; path=/';
-  document.cookie = '__s=5e5dd6c7407cf700063ba869; path=/';
-  document.cookie = '__t=; path=/';
-}
-
 /* eslint-disable */
 function guid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
