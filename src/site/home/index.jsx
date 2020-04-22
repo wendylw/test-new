@@ -25,11 +25,12 @@ import {
   homeActionCreators,
   loadedSearchingStores,
 } from '../redux/modules/home';
-import Campaign from './components/Campaign';
+import Campaign from './containers/CampaignBar/components/Campaign';
 import StoreList from './components/StoreList';
 import TypeGuider from './components/TypeGuider';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
+import CampaignBar from './containers/CampaignBar';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -310,13 +311,12 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {countryCode.toUpperCase() === 'MY' ? (
-            <Campaign
-              onToggle={() => {
-                this.setState({ campaignShown: !this.state.campaignShown });
-              }}
-            />
-          ) : null}
+          <CampaignBar
+            countryCode={countryCode}
+            onToggle={() => {
+              this.setState({ campaignShown: !this.state.campaignShown });
+            }}
+          />
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
