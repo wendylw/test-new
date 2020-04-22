@@ -1,9 +1,9 @@
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { IconLocation, IconCropFree } from './Icons';
 import Constants from '../utils/constants';
 import './DeliverToBar.scss';
+import { IconLocation, IconScanner } from './Icons';
 
 class DeliverToBar extends PureComponent {
   render() {
@@ -25,7 +25,7 @@ class DeliverToBar extends PureComponent {
           </div>
         </div>
         <Link to={ROUTER_PATHS.QRSCAN}>
-          <IconCropFree className="icon icon__privacy" />
+          <IconScanner className="icon icon__privacy" />
         </Link>
       </section>
     );
