@@ -8,7 +8,7 @@ class MessageModal extends Component {
 
   render() {
     const { t, data } = this.props;
-    const { message, description, buttonText } = data;
+    const { message, description } = data;
 
     return (
       <section className="modal__align-middle modal flex flex-middle flex-space-between" style={styles.section}>
@@ -21,7 +21,7 @@ class MessageModal extends Component {
           </div>
           <footer>
             <button className="button__fill button__block font-weight-bolder" onClick={this.handleClickOK}>
-              {buttonText || t('OK')}
+              {t('OK')}
             </button>
           </footer>
         </div>

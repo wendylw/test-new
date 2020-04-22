@@ -20,7 +20,6 @@ const ROUTER_PATHS = {
   ORDERING_LOCATION: '/location',
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
-  ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
@@ -155,15 +154,6 @@ const CONSUMERFLOW_STATUS = {
 };
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const PROMOTION_APPLIED_STATUS = {
-  VALID: 'valid',
-  REDEEMED: 'redeemed',
-  NOT_MATCH_MINIMUM_PURCHASE: 'lessThanMinSpeed',
-  EXPIRED: 'expired',
-  NOT_START: 'beforeValid',
-  INVALID: 'invalid',
-};
-
 const PREORDER_IMMEDIATE_TAG = {
   from: 'now',
   to: 'now',
@@ -195,6 +185,5 @@ export default {
   DELIVERY_METHOD,
   CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
-  PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
 };

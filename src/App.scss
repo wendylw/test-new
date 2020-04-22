@@ -421,54 +421,9 @@
         font-size: inherit;
       }
 
-      label:not(.font-weight-bolder),
-      span:not(.font-weight-bolder) {
+      label:not(.font-weight-bold),
+      span:not(.font-weight-bold) {
         @extend .gray-font-opacity;
-      }
-    }
-
-    .promotion__item {
-      border-top: 1px solid #dededf;
-      border-bottom: 1px solid #dededf;
-      margin-top: 10px;
-
-      .tag-icon {
-        align-self: center;
-        margin-right: 7px;
-        margin-left: -5px;
-        & > svg {
-          width: 17px;
-          height: 17px;
-        }
-      }
-      .promotion__container {
-        font-size: inherit;
-      }
-      .promotion-info__container {
-        font-size: inherit;
-      }
-      .promotion-code__container {
-        font-size: inherit;
-      }
-      .add-promo__button {
-        width: 100%;
-        text-align: left;
-      }
-      .dismiss__button {
-        width: 20px;
-        height: 20px;
-        margin-left: 3px;
-        border: none;
-        svg {
-          fill: $gray-1;
-          width: 100%;
-          height: 100%;
-        }
-      }
-      .promotion__error {
-        white-space: normal;
-        color: $red;
-        font-weight: $font-weight-bolder;
       }
     }
   }
@@ -535,62 +490,6 @@
 
     padding: 5vh 0;
     background-color: $white;
-  }
-
-  &__promotion {
-    width: 100%;
-
-    .header {
-      .header__icon {
-        position: absolute;
-      }
-
-      background-color: white !important;
-      text-align: center;
-      border-bottom: none;
-    }
-
-    .promotion-code__input-container {
-      position: relative;
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 1.2em;
-      input {
-        padding-right: 30px;
-        height: 50px;
-      }
-
-      .clean__button {
-        position: absolute;
-        top: 21px;
-        right: 15px;
-        fill: $gray-1;
-      }
-
-      .promotion-code__message {
-        margin-top: 8px;
-        font-weight: bold;
-        padding-left: 5px;
-      }
-
-      &.has-error {
-        input {
-          border: 1px solid $red;
-        }
-        .promotion-code__message {
-          color: $red;
-        }
-      }
-
-      &.has-success {
-        input {
-          border: 1px solid $green;
-        }
-        .promotion-code__message {
-          color: $green;
-        }
-      }
-    }
   }
 }
 

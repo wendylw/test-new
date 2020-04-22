@@ -61,13 +61,13 @@ export const actions = {
   },
 
   // load shopping cart
-  loadShoppingCart: () => async (dispatch, getState) => {
+  loadShoppingCart: () => (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     let deliveryCoords;
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
     }
-    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
   },
 
   removeShoppingCartItem: variables => dispatch => {

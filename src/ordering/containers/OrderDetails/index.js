@@ -6,7 +6,7 @@ import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 
-import { actions as thankYouActionCreators, getOrder, getPromotion } from '../../redux/modules/thankYou';
+import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
 
 export class OrderDetails extends Component {
   state = {};
@@ -62,22 +62,6 @@ export class OrderDetails extends Component {
     );
   }
 
-  renderPromotion() {
-    const { promotion, t } = this.props;
-    if (!promotion) {
-      return null;
-    }
-
-    return (
-      <li className="item flex flex-space-between flex-middle">
-        <span className="gray-font-opacity">
-          {t('Voucher')} ({promotion.promoCode})
-        </span>
-        <CurrencyNumber className="gray-font-opacity" money={-promotion.discount} />
-      </li>
-    );
-  }
-
   render() {
     const { order, history, t } = this.props;
     const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
@@ -113,6 +97,10 @@ export class OrderDetails extends Component {
                 <CurrencyNumber className="gray-font-opacity" money={subtotal || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('Cashback')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={-displayDiscount || 0} />
+              </li>
+              <li className="item flex flex-space-between flex-middle">
                 <span className="gray-font-opacity">{t('Tax')}</span>
                 <CurrencyNumber className="gray-font-opacity" money={tax || 0} />
               </li>
@@ -120,11 +108,6 @@ export class OrderDetails extends Component {
                 <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
                 <CurrencyNumber className="gray-font-opacity" money={shippingFee || 0} />
               </li>
-              <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={-displayDiscount || 0} />
-              </li>
-              {this.renderPromotion()}
             </ul>
             <div className="flex flex-space-between flex-middle">
               <label className="order-detail__title  font-weight-bolder">{t('Total')}</label>
@@ -142,7 +125,6 @@ export default compose(
   connect(
     state => ({
       order: getOrder(state),
-      promotion: getPromotion(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

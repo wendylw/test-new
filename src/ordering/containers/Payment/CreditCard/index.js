@@ -511,7 +511,7 @@ class CreditCard extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="border__bottom-divider gray has-right"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {

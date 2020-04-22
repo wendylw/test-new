@@ -7,8 +7,7 @@ export const standardizeLocale = (countryCode = 'MY') => {
     PH: 'EN',
     EN: 'EN',
   };
-  const country = countryCode || 'MY';
-  return standardizedLocaleMap[country.toUpperCase()] || 'EN';
+  return standardizedLocaleMap[countryCode.toUpperCase()] || 'EN';
 };
 
 export const getDateTimeFormatter = (countryCode, options) => {
@@ -131,10 +130,6 @@ export const toNumericTimeRange = (date1, date2, locale = 'MY') =>
 
 export const toDayDateMonth = (date, locale = 'MY') =>
   toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
-
-// formate: 04/30/2020 (MM/DD/YYY)
-export const toNumericDate = (date, locale = 'MY') =>
-  toLocaleDateString(date, locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   const { from, to } = hour || {};

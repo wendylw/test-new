@@ -9,7 +9,6 @@ const initialState = {
     tax: 0,
     storeCreditsBalance: 0,
   },
-  promotion: null, // { promoCode: '', discount: 0.0, status: '', validFrom: '' }
   data: {},
 };
 
@@ -19,18 +18,8 @@ const commonReducer = (state = initialState, action) => {
       return state;
     }
 
-    const { items, unavailableItems, voucher, ...summary } = action.response;
+    const { items, unavailableItems, ...summary } = action.response;
 
-    // promotion & voucher
-    let promotion = null;
-    if (voucher) {
-      promotion = {
-        promoCode: voucher.voucherCode,
-        status: voucher.status,
-        discount: voucher.value,
-        validFrom: new Date(voucher.validFrom),
-      };
-    }
     // Only deal with response.data.shoppingCart
     const kvData = {};
     items.forEach(item => {
@@ -49,13 +38,12 @@ const commonReducer = (state = initialState, action) => {
     return {
       ...state,
       summary,
-      promotion,
-      data: kvData,
+      data: kvData
     };
   }
 
   return state;
-};
+}
 
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
@@ -79,24 +67,20 @@ const reducer = (state = initialState, action) => {
   }
 
   return commonReducer(state, action);
-};
+}
 
 export default reducer;
 
 // selectors
 
-export const getAllCartItems = state => {
+export const getAllCartItems = (state) => {
   return state.entities.carts.data;
-};
+}
 
 export const getCartItemById = (state, id) => {
   return state.entities.carts.data[id];
-};
+}
 
-export const getCartSummary = state => {
+export const getCartSummary = (state) => {
   return state.entities.carts.summary;
-};
-
-export const getPromotion = state => {
-  return state.entities.carts.promotion;
-};
+}
