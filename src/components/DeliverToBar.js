@@ -1,18 +1,11 @@
-import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
-import Constants from '../utils/constants';
+import PropTypes from 'prop-types';
+import { IconLocation, IconEdit } from './Icons';
 import './DeliverToBar.scss';
-import { IconLocation, IconScanner } from './Icons';
 
 class DeliverToBar extends PureComponent {
-  handleScannerClicked = () => {
-    this.props.onScannerClicked();
-  };
-
   render() {
     const { title, address, className, gotoLocationPage } = this.props;
-    const { ROUTER_PATHS } = Constants;
     const classList = ['deliver-to-entry flex flex-middle flex-space-between'];
 
     if (className) {
@@ -20,17 +13,15 @@ class DeliverToBar extends PureComponent {
     }
 
     return (
-      <section className={classList.join(' ')}>
-        <div className="deliver-to-entry__content" onClick={() => gotoLocationPage()}>
+      <section className={classList.join(' ')} onClick={() => gotoLocationPage()}>
+        <div className="deliver-to-entry__content">
           <label className="deliver-to-entry__label text-uppercase text-weight-bold">{title}</label>
           <div>
             <IconLocation className="icon icon__small icon__gray text-middle" />
             <span className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">{address}</span>
           </div>
         </div>
-        <Link to={ROUTER_PATHS.QRSCAN}>
-          <IconScanner className="icon icon__privacy" onClick={this.handleScannerClicked} />
-        </Link>
+        <IconEdit className="icon icon__small icon__privacy text-middle" />
       </section>
     );
   }

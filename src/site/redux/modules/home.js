@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
-import { get } from '../../../utils/request';
-import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
-import { getCurrentPlaceInfo } from './app';
 import { getStoreById, storesActionCreators } from './entities/stores';
+import Url from '../../../utils/url';
+
+import { get } from '../../../utils/request';
+import { getCurrentPlaceInfo } from './app';
+import Utils from '../../../utils/utils';
 
 const initialState = {
   typePicker: {
@@ -76,11 +77,11 @@ const actions = {
     type: types.HIDE_TYPE_PICKER,
   }),
 
-  showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange, isOpen, isPreOrder }) => (
+  showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange, isOpen }) => (
     dispatch,
     getState
   ) => {
-    const context = { storeId, business, source, isOutOfDeliveryRange, isOpen, isPreOrder };
+    const context = { storeId, business, source, isOutOfDeliveryRange, isOpen };
     return dispatch(fetchStoreUrlHash(storeId, context));
   },
 
@@ -212,7 +213,7 @@ const searchInfo = (state = initialState.searchInfo, action) => {
 const typePickerReducer = (state = initialState.typePicker, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
-    return { ...state, loading: true, show: context.isOpen || context.isPreOrder };
+    return { ...state, loading: true, show: context.isOpen };
   } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
     const { redirectTo } = action.response || {};
     const storeUrlParams = {
@@ -226,7 +227,7 @@ const typePickerReducer = (state = initialState.typePicker, action) => {
       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
       pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
-      isOpen: context.isOpen || context.isPreOrder,
+      isOpen: context.isOpen,
       business: context.business,
       loading: false,
     };

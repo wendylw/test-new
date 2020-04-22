@@ -1,34 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Trans, withTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroller';
+import { withTranslation, Trans } from 'react-i18next';
 import {
-  IconAttachMoney,
-  IconBookmark,
-  IconLocalOffer,
   /*IconMotorcycle,*/
   IconLocation,
+  IconBookmark,
+  IconLocalOffer,
+  IconAttachMoney,
 } from '../../../components/Icons';
 import Image from '../../../components/Image';
-import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
     this.props.onStoreClicked(store);
-  };
-
-  renderClosedStoreTag = enablePreOrder => {
-    const { t } = this.props;
-    return enablePreOrder ? (
-      <label className="store-card-list__tag tag tag__small tag__reverse-privacy text-uppercase text-weight-bolder">
-        {t('PreOrderTag')}
-      </label>
-    ) : (
-      <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
-        {t('ClosedForNow')}
-      </div>
-    );
   };
 
   renderStoreItems = () => {
@@ -62,7 +49,6 @@ class StoreList extends Component {
             isOutOfDeliveryRange,
             enableFreeShipping,
             enableCashback,
-            enablePreOrder,
             cashbackRate,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
@@ -77,7 +63,11 @@ class StoreList extends Component {
               }}
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
-                {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
+                {isOpen ? null : (
+                  <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
+                    {t('ClosedForNow')}
+                  </div>
+                )}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
