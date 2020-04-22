@@ -25,6 +25,7 @@ import {
   homeActionCreators,
   loadedSearchingStores,
 } from '../redux/modules/home';
+import Campaign from './components/Campaign';
 import StoreList from './components/StoreList';
 import TypeGuider from './components/TypeGuider';
 import './index.scss';
@@ -309,13 +310,13 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {/* {countryCode.toUpperCase() === 'MY' ? (
-            <OfferDetails
+          {countryCode.toUpperCase() === 'MY' ? (
+            <Campaign
               onToggle={() => {
                 this.setState({ campaignShown: !this.state.campaignShown });
               }}
             />
-          ) : null} */}
+          ) : null}
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
