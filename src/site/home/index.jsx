@@ -157,6 +157,7 @@ class Home extends React.Component {
       business: store.business,
       storeId: store.id,
       isOpen: store.isOpen,
+      isPreOrder: store.enablePreOrder,
       isOutOfDeliveryRange: store.isOutOfDeliveryRange,
     });
   };
