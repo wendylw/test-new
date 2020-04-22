@@ -15,6 +15,7 @@ import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList } from '../../containers/Payment/utils';
+import config from '../../../config';
 
 const initialState = {
   currentPayment: '',
@@ -22,6 +23,7 @@ const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
+  onlineBankingMerchantList: [],
 };
 
 export const types = {
@@ -49,6 +51,9 @@ export const types = {
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
   FETCH_BANKLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_BANKLIST_FAILURE',
+
+  // get online banking merchant list
+  FETCH_ONLINE_BANKING_MERCHANT_LIST: 'ORDERING/PAYMENT/FETCH_ONLINE_BANKING_MERCHANT_LIST',
 };
 
 // action creators
@@ -213,6 +218,10 @@ export const actions = {
       params: { country },
     },
   }),
+
+  fetchOnlineBankingMerchantList: () => ({
+    type: types.FETCH_ONLINE_BANKING_MERCHANT_LIST,
+  }),
 };
 
 const createOrder = variables => {
@@ -277,6 +286,9 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, bankingList };
     }
+    case types.FETCH_ONLINE_BANKING_MERCHANT_LIST: {
+      return { ...state, onlineBankingMerchantList: config.onlineBankingMerchantList };
+    }
     default:
       return state;
   }
@@ -294,6 +306,8 @@ export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
+
+export const getOnlineBankingMerchantList = state => state.payment.onlineBankingMerchantList;
 
 export const getPayments = createSelector(
   [getMerchantCountry, getAllPaymentOptions],
