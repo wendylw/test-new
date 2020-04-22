@@ -179,7 +179,8 @@ class LocationAndDate extends Component {
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
-    const disableTodayPreOrder = Utils.getDeliveryInfo();
+    const { business, allBusinessInfo } = this.props;
+    const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
