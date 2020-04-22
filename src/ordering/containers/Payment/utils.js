@@ -3,61 +3,46 @@ import Constants from '../../../utils/constants';
 
 const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
 
-// the payment name define by payment-api
-// https://github.com/storehubnet/payment-api/wiki/API
-
-const PAYMENT_NAME_MY = {
-  [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'CCPP',
-  [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPCreditCard',
-  [PAYMENT_METHOD_LABELS.GRAB_PAY]: 'GrabPay',
-  [PAYMENT_METHOD_LABELS.TNG_PAY]: 'CCPPTnGPay',
-  [PAYMENT_METHOD_LABELS.BOOST_PAY]: 'Boost',
-};
-
-const PAYMENT_NAME_TH = {
-  [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'BeepTHOnlineBanking',
-  [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepTHCreditCard',
-};
-
-const PAYMENT_NAME_PH = {
-  [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepPHCreditCard',
-  [PAYMENT_METHOD_LABELS.GCASH_PAY]: 'BeepPHCCPPGcash',
-};
-
 const PAYMENT_NAME_COUNTRY_MAP = {
-  MY: PAYMENT_NAME_MY,
-  TH: PAYMENT_NAME_TH,
-  PH: PAYMENT_NAME_PH,
+  MY: {
+    [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'CCPP',
+    [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPCreditCard',
+    [PAYMENT_METHOD_LABELS.GRAB_PAY]: 'GrabPay',
+    [PAYMENT_METHOD_LABELS.TNG_PAY]: 'CCPPTnGPay',
+    [PAYMENT_METHOD_LABELS.BOOST_PAY]: 'Boost',
+  },
+  TH: {
+    [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'BeepTHOnlineBanking',
+    [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepTHCreditCard',
+  },
+  PH: {
+    [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepPHCreditCard',
+    [PAYMENT_METHOD_LABELS.GCASH_PAY]: 'BeepPHCCPPGcash',
+  },
 };
 
 export function getPaymentName(country, paymentLabel) {
-  const path = `${country}.${paymentLabel}`;
-  return _get(PAYMENT_NAME_COUNTRY_MAP, path, null);
+  return _get(PAYMENT_NAME_COUNTRY_MAP, `${country}.${paymentLabel}`, null);
 }
 
 const PAYMENT_LIST_COUNTRY_MAP = {
   MY: process.env.REACT_APP_PAYMENT_LIST_MY,
   TH: process.env.REACT_APP_PAYMENT_LIST_TH,
   PH: process.env.REACT_APP_PAYMENT_LIST_PH,
+  SG: process.env.REACT_APP_PAYMENT_LIST_SG,
 };
 
 export function getPaymentList(country) {
-  const paymentList = _get(PAYMENT_LIST_COUNTRY_MAP, country, null);
-
-  return paymentList ? paymentList.split(',') : [];
+  const payments = _get(PAYMENT_LIST_COUNTRY_MAP, country, null);
+  return payments ? payments.split(',') : [];
 }
-
-const CREDIT_CARD_BRANDS_MY = [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD];
-
-const CREDIT_CARD_BRANDS_TH = [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD, CREDIT_CARD_BRANDS.JCB];
-
-const CREDIT_CARD_BRANDS_PH = [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD];
 
 // support credit card brands country map
 const CREDIT_CARD_BRANDS_COUNTRY_MAP = {
-  MY: CREDIT_CARD_BRANDS_MY,
-  TH: CREDIT_CARD_BRANDS_TH,
-  PH: CREDIT_CARD_BRANDS_PH,
+  MY: [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD],
+  TH: [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD, CREDIT_CARD_BRANDS.JCB],
+  PH: [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD],
+  SG: [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD],
 };
 
 export function getSupportCreditCardBrands(country) {

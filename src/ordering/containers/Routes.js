@@ -11,6 +11,7 @@ import NotFound from '../../NotFound';
 
 const Location = lazy(() => import('./Location/LocationPage'));
 const Receipt = lazy(() => import('./Receipt'));
+const StripePayment = lazy(() => import('./Payment/Stripe'));
 const CreditCard = lazy(() => import('./Payment/CreditCard'));
 const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
 const ThankYou = lazy(() => import('./ThankYou'));
@@ -36,6 +37,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION_AND_DATE} component={LocationAndDate} />
             <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
+            <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />

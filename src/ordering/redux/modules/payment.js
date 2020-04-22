@@ -1,9 +1,11 @@
+import { createSelector } from 'reselect';
+
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions } from './app';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getMerchantCountry } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -11,6 +13,8 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
+import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
+import { getPaymentList } from '../../containers/Payment/utils';
 
 const initialState = {
   currentPayment: '',
@@ -99,16 +103,12 @@ export const actions = {
         // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
 
         if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
-          console.log('This is a pre order');
-
           expectDeliveryDateInfo = getExpectDeliveryDateInfo(
             expectedDeliveryDate.date,
             expectedDeliveryHour.from,
             expectedDeliveryHour.to
           );
         }
-
-        console.log('[createOrder] expectDeliveryDateInfo =', expectDeliveryDateInfo);
       }
     } catch (e) {
       console.error('failed to create expectDeliveryDateInfo');
@@ -294,3 +294,26 @@ export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
+
+export const getPayments = createSelector(
+  [getMerchantCountry, getAllPaymentOptions],
+  (merchantCountry, paymentOptions) => {
+    if (!merchantCountry) {
+      return [];
+    }
+    const paymentList = getPaymentList(merchantCountry);
+    return paymentList.map(paymentKey => paymentOptions[paymentKey]);
+  }
+);
+
+export const getDefaultPayment = state => {
+  try {
+    return getPayments(state)[0].label;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
+  return payments.find(payment => payment.label === currentPayment);
+});
