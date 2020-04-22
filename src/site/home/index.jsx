@@ -1,34 +1,34 @@
-import React from 'react';
 import { debounce } from 'lodash';
+import React from 'react';
 import { withTranslation } from 'react-i18next';
-import './index.scss';
-import { IconSearch, IconClose } from '../../components/Icons';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
 import DeliverToBar from '../../components/DeliverToBar';
+import { IconClose, IconSearch } from '../../components/Icons';
+import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
+import MvpNotFoundImage from '../../images/mvp-not-found.png';
+import Constants from '../../utils/constants';
+import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
+import Utils from '../../utils/utils';
 import Banner from '../components/Banner';
-import StoreList from './components/StoreList';
-import TypeGuider from './components/TypeGuider';
+import StoreListAutoScroll from '../components/StoreListAutoScroll';
+import { rootActionCreators } from '../redux/modules';
 // import OfferDetails from './components/OfferDetails';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-import Constants from '../../utils/constants';
-import Utils from '../../utils/utils';
 import {
-  homeActionCreators,
-  getPaginationInfo,
-  getSearchingStores,
-  loadedSearchingStores,
   getAllCurrentStores,
+  getPaginationInfo,
+  getSearchInfo,
+  getSearchingStores,
   getSearchResult,
   getTypePicker,
-  getSearchInfo,
+  homeActionCreators,
+  loadedSearchingStores,
 } from '../redux/modules/home';
+import StoreList from './components/StoreList';
+import TypeGuider from './components/TypeGuider';
+import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
-import MvpNotFoundImage from '../../images/mvp-not-found.png';
-import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
-import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
-import { rootActionCreators } from '../redux/modules';
-import StoreListAutoScroll from '../components/StoreListAutoScroll';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -161,6 +161,18 @@ class Home extends React.Component {
     });
   };
 
+  handleScannerSelected = mode => () => {
+    const { homeActions } = this.props;
+
+    if (mode === 'search') {
+      homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
+    } else if (mode === 'stores') {
+      homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
+    }
+
+    this.backupState();
+  };
+
   renderStoreList = () => {
     const {
       t,
@@ -257,6 +269,9 @@ class Home extends React.Component {
           }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
+          onScannerClicked={
+            Boolean(keyword) ? this.handleScannerSelected('search') : this.handleScannerSelected('stores')
+          }
         />
 
         <section

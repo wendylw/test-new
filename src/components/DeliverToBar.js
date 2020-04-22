@@ -6,6 +6,10 @@ import './DeliverToBar.scss';
 import { IconLocation, IconScanner } from './Icons';
 
 class DeliverToBar extends PureComponent {
+  handleScannerClicked = () => {
+    this.props.onScannerClicked();
+  };
+
   render() {
     const { title, address, className, gotoLocationPage } = this.props;
     const { ROUTER_PATHS } = Constants;
@@ -25,7 +29,12 @@ class DeliverToBar extends PureComponent {
           </div>
         </div>
         <Link to={ROUTER_PATHS.QRSCAN}>
-          <IconScanner className="icon icon__privacy" />
+          <IconScanner
+            className="icon icon__privacy"
+            onClick={() => {
+              this.handleScannerClicked();
+            }}
+          />
         </Link>
       </section>
     );

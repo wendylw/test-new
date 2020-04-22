@@ -5,6 +5,5 @@
   "IosSorryText": "Please open beepit.com in <1>Safari</1>",
   "AndroidSorryText": "Please open beepit.com in <1>Google Chrome</1>",
   "UnsupportedBrowser": "Unsupported Browser",
-  "UseChromeMessage": "We recommend that you use Google Chrome",
-  "ScanQR": "Scan QR"
+  "UseChromeMessage": "We recommend that you use Google Chrome"
 }

@@ -212,7 +212,7 @@ class QRScan extends Component {
           <div>
             <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
-              {t('ScanQR')}
+              {t('ScanQRCode')}
             </h2>
           </div>
         </header>
