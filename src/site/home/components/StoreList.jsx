@@ -18,6 +18,19 @@ class StoreList extends Component {
     this.props.onStoreClicked(store);
   };
 
+  renderClosedStoreTag = enablePreOrder => {
+    const { t } = this.props;
+    return enablePreOrder ? (
+      <label className="store-card-list__tag tag tag__small tag__reverse-privacy text-uppercase text-weight-bolder">
+        {t('PreOrderTag')}
+      </label>
+    ) : (
+      <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
+        {t('ClosedForNow')}
+      </div>
+    );
+  };
+
   renderStoreItems = () => {
     // const tagClassName = 'tag__card text-size-small text-weight-bolder margin-normal';
     const { t, stores } = this.props;
@@ -64,15 +77,7 @@ class StoreList extends Component {
               }}
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
-                {isOpen ? null : enablePreOrder ? (
-                  <label className="store-card-list__tag tag tag__small tag__reverse-privacy text-uppercase text-weight-bolder">
-                    {t('PreOrderTag')}
-                  </label>
-                ) : (
-                  <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
-                    {t('ClosedForNow')}
-                  </div>
-                )}
+                {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}

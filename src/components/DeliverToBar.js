@@ -29,12 +29,7 @@ class DeliverToBar extends PureComponent {
           </div>
         </div>
         <Link to={ROUTER_PATHS.QRSCAN}>
-          <IconScanner
-            className="icon icon__privacy"
-            onClick={() => {
-              this.handleScannerClicked();
-            }}
-          />
+          <IconScanner className="icon icon__privacy" onClick={this.handleScannerClicked} />
         </Link>
       </section>
     );

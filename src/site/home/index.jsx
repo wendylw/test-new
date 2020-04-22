@@ -165,6 +165,7 @@ class Home extends React.Component {
   handleScannerSelected = mode => () => {
     const { homeActions } = this.props;
 
+    // user can click scanner in two modes, 'search'（using search bar） and 'stores'(nearby stores)
     if (mode === 'search') {
       homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
     } else if (mode === 'stores') {
