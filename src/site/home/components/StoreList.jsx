@@ -65,7 +65,7 @@ class StoreList extends Component {
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : enablePreOrder ? (
-                  <label className="store-card-list__pre-order tag__card text-uppercase text-weight-bolder downsize">
+                  <label className="store-card-list__tag tag tag__small tag__reverse-privacy text-uppercase text-weight-bolder">
                     {t('PreOrderTag')}
                   </label>
                 ) : (
