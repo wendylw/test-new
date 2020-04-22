@@ -179,6 +179,8 @@ class LocationAndDate extends Component {
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
+    const disableTodayPreOrder = Utils.getDeliveryInfo();
+
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -191,6 +193,10 @@ class LocationAndDate extends Component {
         const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
+      }
+
+      if (disableTodayPreOrder && isToday) {
+        continue;
       }
 
       deliveryDates.push({
