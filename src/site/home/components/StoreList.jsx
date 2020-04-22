@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Trans, withTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroller';
-import { withTranslation, Trans } from 'react-i18next';
 import {
-  /*IconMotorcycle,*/
-  IconLocation,
+  IconAttachMoney,
   IconBookmark,
   IconLocalOffer,
-  IconAttachMoney,
+  /*IconMotorcycle,*/
+  IconLocation,
 } from '../../../components/Icons';
 import Image from '../../../components/Image';
-import CurrencyNumber from '../../components/CurrencyNumber';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
+import CurrencyNumber from '../../components/CurrencyNumber';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -49,6 +49,7 @@ class StoreList extends Component {
             isOutOfDeliveryRange,
             enableFreeShipping,
             enableCashback,
+            enablePreOrder,
             cashbackRate,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
@@ -63,7 +64,11 @@ class StoreList extends Component {
               }}
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
-                {isOpen ? null : (
+                {isOpen ? null : enablePreOrder ? (
+                  <label className="store-card-list__pre-order tag__card text-uppercase text-weight-bolder downsize">
+                    {t('PreOrderTag')}
+                  </label>
+                ) : (
                   <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
                     {t('ClosedForNow')}
                   </div>

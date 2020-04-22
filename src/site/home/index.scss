@@ -81,6 +81,15 @@
     overflow: hidden;
   }
 
+  &__pre-order {
+    position: absolute;
+    left: 4px;
+    top: 5px;
+    color: $theme-color;
+    background: $white;
+    white-space: nowrap;
+  }
+
   &__image-cover {
     position: absolute;
     left: 0;
