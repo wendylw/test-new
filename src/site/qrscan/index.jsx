@@ -1,8 +1,9 @@
+import QrcodeDecoder from 'qrcode-decoder';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import QrcodeDecoder from 'qrcode-decoder';
-import Constants from '../../utils/constants';
+import { IconLeftArrow } from '../../components/Icons';
 import ShapeImage from '../../images/shape.png';
+import Constants from '../../utils/constants';
 import './index.scss';
 
 const { ERROR, SCAN_NOT_SUPPORT } = Constants.ROUTER_PATHS;
@@ -184,12 +185,37 @@ class QRScan extends Component {
     this.getQRCode(video, canvas, context);
   }
 
+  backToPreviousPage = data => {
+    const { history, location } = this.props;
+    const pathname = (location.state && location.state.from && location.state.from.pathname) || '/home';
+
+    history.push({
+      pathname,
+      state: {
+        from: location,
+        data,
+      },
+    });
+  };
+
+  handleBackClicked = () => {
+    this.backToPreviousPage();
+  };
+
   render() {
     const { t } = this.props;
     const showMessage = !/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
 
     return (
       <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main">
+        <header className="header flex flex-space-between flex-middle sticky-wrapper">
+          <div>
+            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
+            <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
+              {t('ScanQR')}
+            </h2>
+          </div>
+        </header>
         {!showMessage ? null : (
           <div className="top-message primary padding-normal text-center absolute-wrapper">
             <p className="top-message__text text-weight-bolder">{t('UseChromeMessage')}</p>
