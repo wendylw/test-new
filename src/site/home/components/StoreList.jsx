@@ -23,7 +23,7 @@ class StoreList extends Component {
     return enablePreOrder ? (
       <div className="store-card-list__image-cover">
         <label className="store-card-list__tag tag tag__small tag__privacy text-uppercase text-weight-bolder">
-          {t('PreOrderTag')}
+          {t('PreOrder')}
         </label>
       </div>
     ) : (
