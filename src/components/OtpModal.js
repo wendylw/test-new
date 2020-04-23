@@ -156,7 +156,7 @@ class OtpModal extends React.Component {
 
         <footer className="footer-operation opt">
           <button
-            className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+            className="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
             disabled={isSendingOtp || !otp || otp.length !== Constants.OTP_CODE_SIZE}
             onClick={() => sendOtp(otp)}
           >

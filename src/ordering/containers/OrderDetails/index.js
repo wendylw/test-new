@@ -6,7 +6,7 @@ import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 
-import { actions as thankYouActionCreators, getOrder } from '../../redux/modules/thankYou';
+import { actions as thankYouActionCreators, getOrder, getPromotion } from '../../redux/modules/thankYou';
 
 export class OrderDetails extends Component {
   state = {};
@@ -62,9 +62,28 @@ export class OrderDetails extends Component {
     );
   }
 
+  renderPromotion() {
+    const { promotion, t } = this.props;
+    if (!promotion) {
+      return null;
+    }
+
+    return (
+      <li className="item flex flex-space-between flex-middle">
+        <span className="gray-font-opacity">
+          {t('Voucher')} ({promotion.promoCode})
+        </span>
+        <CurrencyNumber className="gray-font-opacity" money={-promotion.discount} />
+      </li>
+    );
+  }
+
   render() {
     const { order, history, t } = this.props;
-    const { shippingFee, subtotal, total, tax } = order || '';
+    const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
+
+    const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+
     return (
       <section className="order-detail">
         <Header
@@ -78,13 +97,13 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <button className="gray-font-opacity text-uppercase" onClick={this.handleNeedHelp}>
+          <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
             <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
           </button>
         </Header>
         <div className="order-detail__info-container">
           <div className="border__bottom-divider">
-            <h3 className="order-detail__title font-weight-bold text-uppercase">{t('YourOrder')}</h3>
+            <h3 className="order-detail__title font-weight-bolder text-uppercase">{t('YourOrder')}</h3>
             {this.renderOrderBillings()}
           </div>
           <div>
@@ -101,10 +120,15 @@ export class OrderDetails extends Component {
                 <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
                 <CurrencyNumber className="gray-font-opacity" money={shippingFee || 0} />
               </li>
+              <li className="item flex flex-space-between flex-middle">
+                <span className="gray-font-opacity">{t('Cashback')}</span>
+                <CurrencyNumber className="gray-font-opacity" money={-displayDiscount || 0} />
+              </li>
+              {this.renderPromotion()}
             </ul>
             <div className="flex flex-space-between flex-middle">
-              <label className="order-detail__title  font-weight-bold">{t('Total')}</label>
-              <CurrencyNumber className="font-weight-bold" money={total || 0} />
+              <label className="order-detail__title  font-weight-bolder">{t('Total')}</label>
+              <CurrencyNumber className="font-weight-bolder" money={total || 0} />
             </div>
           </div>
         </div>
@@ -118,6 +142,7 @@ export default compose(
   connect(
     state => ({
       order: getOrder(state),
+      promotion: getPromotion(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

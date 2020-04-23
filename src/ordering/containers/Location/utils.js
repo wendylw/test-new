@@ -3,6 +3,7 @@
 
 import config from '../../../config';
 import Utils from '../../../utils/utils';
+import { post } from '../../../utils/request';
 import { intersection, findIndex } from 'lodash';
 
 export const saveDevicePosition = position => {
@@ -33,14 +34,8 @@ export const getStoreInfo = () => {
     throw new Error(`business=${business} and storeId=${storeId} param are required.`);
   }
 
-  return fetch('/api/gql/CoreBusiness', {
-    method: 'POST',
-    body: JSON.stringify({ business, storeId }),
-    credentials: 'include',
-  })
-    .then(response => response.json())
+  return post('/api/gql/CoreBusiness', { business, storeId })
     .then(response => {
-      console.log(response.data);
       if (response.data.business) {
         const { qrOrderingSettings, country } = response.data.business;
         const { stores } = response.data.business;
@@ -67,8 +62,6 @@ const getPlaceId = async address => {
         input: address,
       },
       (results, status) => {
-        console.log('getPlaceDetails: results', results);
-
         if (results && results.length) {
           resolve(results[0].place_id);
         } else {
@@ -77,8 +70,6 @@ const getPlaceId = async address => {
       }
     );
   });
-  console.log('placeId =', placeId);
-
   return placeId;
 };
 
@@ -114,8 +105,6 @@ export const getPlaceDetails = async (
     placeId,
     addressComponents: placeDetails.addressComponents && standardizeGeoAddress(placeDetails.address_components),
   };
-  console.log('transformed placeDetails =', ret);
-
   return ret;
 };
 
@@ -147,21 +136,15 @@ export const getStorePositionFromStoreInfo = async store => {
 };
 
 export const getStorePositionFromSearch = async store => {
-  console.log('store', store);
-
   const address = ['street2', 'city', 'country']
     .map(field => store[field])
     .filter(v => !!v)
     .join(', ');
 
-  console.log('address =', address);
-
   // What if store position is wrong and we cache it???
   let storePosition = JSON.parse(localStorage.getItem('store.position'));
 
   if (storePosition && storePosition.address === address) {
-    console.log('getStorePosition from localStorage');
-    console.log('storePosition =', storePosition);
     return storePosition;
   }
 
@@ -174,7 +157,6 @@ export const getStorePositionFromSearch = async store => {
 
   // cache result
   localStorage.setItem('store.position', JSON.stringify(storePosition));
-  console.log('storePosition =', storePosition);
 
   return storePosition;
 };
@@ -197,18 +179,15 @@ const getSessionToken = () => {
       return sessionToken;
     })();
 
-  console.log('sessionToken =', sessionToken);
   return sessionToken;
   // ---End--- sessionToken to reduce request billing when user search addresses
 };
 
 export const getPlacesByText = async (input, { position, radius, country }) => {
   let positionPair = position;
-  console.log('getPlacesByText params', input, position, radius, country);
 
   if (!positionPair) {
     positionPair = fetchDevicePosition();
-    console.log('getPlacesByText: positionPair =', positionPair);
   }
 
   const google_map_position = positionPair && new window.google.maps.LatLng(positionPair.lat, positionPair.lng);
@@ -230,8 +209,6 @@ export const getPlacesByText = async (input, { position, radius, country }) => {
         ...(country ? { componentRestrictions: { country } } : undefined),
       },
       (results, status) => {
-        console.log('getPlaceDetails: results', results);
-
         if (results && results.length) {
           resolve(results);
         } else {
@@ -240,7 +217,6 @@ export const getPlacesByText = async (input, { position, radius, country }) => {
       }
     );
   });
-  console.log('places =', places);
 
   return places;
 };
@@ -279,8 +255,6 @@ export const standardizeGeoAddress = addressComponents => {
 
   address.street2 = street2.join(', ');
 
-  console.log('address =', address);
-
   return address;
 };
 
@@ -310,7 +284,6 @@ const tryGetDevicePosition = async () => {
       maximumAge: 300000,
     });
   } catch (e) {
-    console.log('failed to use high accuracy gps, try low accuracy...');
     console.error(e);
     return await getDevicePosition({
       enableHighAccuracy: false,
@@ -330,10 +303,10 @@ export const getCurrentAddressInfo = async () => {
   const position = await tryGetDevicePosition();
   const crd = position.coords;
 
-  console.log('Your current position is:');
-  console.log(`Latitude : ${crd.latitude}`);
-  console.log(`Longitude: ${crd.longitude}`);
-  console.log(`More or less ${crd.accuracy} meters.`);
+  console.debug('Your current position is:');
+  console.debug(`Latitude : ${crd.latitude}`);
+  console.debug(`Longitude: ${crd.longitude}`);
+  console.debug(`More or less ${crd.accuracy} meters.`);
 
   saveDevicePosition(`${crd.latitude},${crd.longitude}`);
 
@@ -360,8 +333,6 @@ export const getCurrentAddressInfo = async () => {
   const result = await new Promise((resolve, reject) => {
     const google_maps_geocoder = new window.google.maps.Geocoder();
     google_maps_geocoder.geocode({ location: google_map_position }, function geocode(results, status) {
-      console.log('geocode location', results);
-
       if (status === window.google.maps.GeocoderStatus.OK && results.length) {
         const location = pickPreferredGeoCodeResult(results);
         resolve({

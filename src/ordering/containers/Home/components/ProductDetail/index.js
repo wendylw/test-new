@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -315,8 +316,32 @@ class ProductDetail extends Component {
     this.closeModal();
   }
 
+  handleGtmEventTracking = variables => {
+    const { product } = this.props;
+    let selectedProduct = product.childrenMap.find(child => child.childId === variables.productId);
+
+    if (!selectedProduct) {
+      selectedProduct = product;
+    }
+
+    const gtmEventData = {
+      product_name: product.title,
+      product_id: variables.productId,
+      price_local: selectedProduct.displayPrice,
+      variant: variables.variations,
+      quantity: selectedProduct.quantityOnHand,
+      product_type: product.inventoryType,
+      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: (product.images && product.images.length) || 0,
+    };
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
+  };
+
   handleAddOrUpdateShoppingCartItem = async variables => {
     const { homeActions } = this.props;
+
+    this.handleGtmEventTracking(variables);
 
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
@@ -429,7 +454,7 @@ class ProductDetail extends Component {
 
         <div ref={ref => (this.buttonEl = ref)} className="aside__section-container bottom">
           <button
-            className="button__fill button__block font-weight-bold"
+            className="button__fill button__block font-weight-bolder"
             type="button"
             disabled={
               !this.isSubmitable() ||
@@ -510,9 +535,7 @@ class ProductDetail extends Component {
             ...resizeImageStyles,
           }}
         >
-          <i className="product-description__back-icon" onClick={() => onToggle()}>
-            <IconLeftArrow />
-          </i>
+          <IconLeftArrow className="product-description__back-icon" onClick={() => onToggle()} />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}
@@ -563,17 +586,17 @@ class ProductDetail extends Component {
             <div className="item__content flex flex-top">
               <div className="item__detail flex flex-column flex-space-between">
                 <div className="item__detail-content">
-                  <summary className="item__title font-weight-bold">{title}</summary>
+                  <summary className="item__title font-weight-bolder">{title}</summary>
                 </div>
                 <CurrencyNumber
-                  className="gray-font-opacity font-weight-bold"
+                  className="gray-font-opacity font-weight-bolder"
                   money={Number(this.displayPrice()) || 0}
                 />
               </div>
             </div>
 
             {Utils.isProductSoldOut(product || {}) ? (
-              <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+              <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
             ) : (
               <ItemOperator
                 className="flex-middle"

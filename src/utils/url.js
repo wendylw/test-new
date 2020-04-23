@@ -3,10 +3,20 @@ const API_URLS = {
     url: '/api/cart',
     method: 'get',
   },
-  GET_CART_TYPE: isDeliveryType => {
+  GET_CART_TYPE: (isDeliveryType, deliveryCoords) => {
     let CartObj = API_URLS.GET_CART;
+    const params = {};
     if (isDeliveryType) {
-      CartObj.url = '/api/cart?shippingType=delivery';
+      params.shippingType = 'delivery';
+      if (deliveryCoords) {
+        params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
+      }
+    }
+    const queryString = Object.keys(params)
+      .map(key => `${key}=${params[key]}`)
+      .join('&');
+    if (isDeliveryType) {
+      CartObj.url = `/api/cart?${queryString}`;
     }
     return CartObj;
   },
@@ -82,6 +92,22 @@ const API_URLS = {
   DELETE_CARTITEMS_BY_PRODUCTS: {
     url: '/api/cart/items',
     method: 'del',
+  },
+  GET_STORE_LIST: {
+    url: '/api/stores',
+    method: 'get',
+  },
+  GET_SEARCHING_STORE_LIST: {
+    url: '/api/stores/search',
+    method: 'get',
+  },
+  APPLY_PROMOTION_CODE: {
+    url: '/api/cart/applyVoucher',
+    method: 'post',
+  },
+  DISMISS_PROMOTION_CODE: {
+    url: '/api/cart/unApplyVoucher',
+    method: 'post',
   },
 };
 

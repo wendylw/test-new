@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
-
 export class Billing extends Component {
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo } = this.props;
@@ -26,6 +25,26 @@ export class Billing extends Component {
     );
   }
 
+  renderPromotion() {
+    const { promotion, t } = this.props;
+    if (!promotion) {
+      return null;
+    }
+
+    return (
+      <li className="billing__item flex flex-middle flex-space-between">
+        <label className="flex flex-middle">
+          <span className="font-weight-bolder">
+            {t('Voucher')} ({promotion.promoCode})
+          </span>
+        </label>
+        <span className="text-nowrap">
+          {'-'} <CurrencyNumber className="font-weight-bolder" money={promotion.discount} />
+        </span>
+      </li>
+    );
+  }
+
   render() {
     const {
       t,
@@ -37,6 +56,7 @@ export class Billing extends Component {
       businessInfo,
       isDeliveryType,
       shippingFee,
+      children,
     } = this.props;
     const { stores = [] } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
@@ -53,14 +73,6 @@ export class Billing extends Component {
             <label>{t('Subtotal')}</label>
             <CurrencyNumber money={subtotal || 0} />
           </li>
-          {creditsBalance ? (
-            <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
-              <label className="font-weight-bold">{t('BeepCashback')}</label>
-              <span className="font-weight-bold">
-                - <CurrencyNumber className="font-weight-bold" money={creditsBalance || 0} />
-              </span>
-            </li>
-          ) : null}
           <li className="billing__item flex flex-middle flex-space-between">
             <label>{(receiptTemplateData || {}).taxName || t('Tax')}</label>
             <CurrencyNumber money={tax || 0} />
@@ -78,9 +90,22 @@ export class Billing extends Component {
             </li>
           ) : null}
 
+          {creditsBalance ? (
+            <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
+              <label className="font-weight-bolder">{t('BeepCashback')}</label>
+              <span className="font-weight-bolder">
+                - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
+              </span>
+            </li>
+          ) : null}
+
+          {this.renderPromotion()}
+
+          {children}
+
           <li className="billing__item show flex flex-middle flex-space-between">
-            <label className="font-weight-bold">{t('Total')}</label>
-            <CurrencyNumber className="font-weight-bold" money={total || 0} />
+            <label className="font-weight-bolder">{t('Total')}</label>
+            <CurrencyNumber className="font-weight-bolder" money={total || 0} />
           </li>
         </ul>
       </section>
@@ -97,6 +122,10 @@ Billing.propTypes = {
   total: PropTypes.number,
   creditsBalance: PropTypes.number,
   shippingFee: PropTypes.number,
+  promotion: PropTypes.shape({
+    promoCode: PropTypes.string,
+    discount: PropTypes.number,
+  }),
 };
 
 Billing.defaultProps = {
@@ -108,6 +137,7 @@ Billing.defaultProps = {
   total: 0,
   creditsBalance: 0,
   shippingFee: 0,
+  promotion: null,
 };
 
 export default withTranslation()(Billing);

@@ -20,6 +20,7 @@ is now so popular for quick started and production friendly.
     1. [Quick start](#quick-start)
     1. [when use local mockdata as backend](#quick-start-mockdata-mode)
     1. [when use UAT as backend](#quick-start-uat-integration-mode)
+1. [Get started with beepit.com](#get-started-site)
 1. [Customize Workbox Service Workers](#customize-workbox-service-workers)
 1. [I18N JSON File Style Guide](#i18n-json-style-guide)
 1. [Analyzing bundle size](#analyzing-bundle-size)
@@ -137,6 +138,35 @@ is now so popular for quick started and production friendly.
 4. See result
 
     Browse dev server site http://ck.local.beep.test12.shub.us
+
+<a name="get-started-site"></a>
+## Get started with beepit.com
+
+1. What is beepit.com
+
+this Beep project serves two kind of sites:
+
+  - beepit.com
+    * this is a customer landing page, they can discover stores here
+    * this is a customer quick qr scan tool as well
+  - {business}.beepit.co
+    * this is a business store site for customer buy foods
+      - can by foods by delivery, pick-up even eating in the hall
+
+2. Configure .env file to support your local domain
+
+for example for `{business}.beep.test15.shub.us` in testing environment,
+ to visit by `localhost:3000` host, and HTTPS supported for scanning QR  
+
+```text
+REACT_APP_MERCHANT_STORE_URL=https://%business%.beep.test15.shub.us
+REACT_APP_QR_SCAN_DOMAINS=localhost,beepit.com,www.beepit.com
+HOST=localhost
+HTTPS=true
+```
+
+3. Restart your front-end then it will work
+ 
 
 <a name="customize-workbox-service-workers"></a>
 ## Customize Workbox Service Workers

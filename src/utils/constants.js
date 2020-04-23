@@ -16,10 +16,13 @@ const ROUTER_PATHS = {
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOCATION_AND_DATE: '/location-date',
   ORDERING_LOCATION: '/location',
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
+  ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
+  ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   NEED_HELP: '/need-help',
@@ -27,8 +30,11 @@ const ROUTER_PATHS = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
-  // Qrscan App basename
+  // site
+  SITE_HOME: '/home',
   QRSCAN: '/qrscan',
+  SCAN: '/scan',
+  SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
 };
 
@@ -51,11 +57,20 @@ const DOCUMENT_TITLE = {
   PRIVACY: 'Privacy',
 };
 
-const PAYMENT_METHODS = {
-  ONLINE_BANKING_PAY: 'CCPP',
-  CREDIT_CARD_PAY: 'CCPPCreditCard',
+const PAYMENT_METHOD_LABELS = {
+  STRIPE: 'stripe',
+  ONLINE_BANKING_PAY: 'OnlineBanking',
+  CREDIT_CARD_PAY: 'CreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
+  TNG_PAY: 'TouchNGo',
+  GCASH_PAY: 'GCash',
+};
+
+const CREDIT_CARD_BRANDS = {
+  VISA: 'Visa',
+  MASTER_CARD: 'MasterCard',
+  JCB: 'JCB',
 };
 
 const HOME_ASIDE_NAMES = {
@@ -122,11 +137,36 @@ const ASIDE_NAMES = {
   DELIVERY_DETAIL: 'DELIVERY_DETAIL',
   ADD_ADDRESS_DETAIL: 'ADD_ADDRESS_DETAIL',
   ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
+  ADD_MERCHANT_NOTE: 'ADD_MERCHANT_NOTE',
 };
 
 const DELIVERY_METHOD = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
+};
+
+const CONSUMERFLOW_STATUS = {
+  PAID: 'paid',
+  ACCEPTED: 'accepted',
+  LOGISTIC_CONFIRMED: 'logisticsConfirmed',
+  CONFIMRMED: 'confirmed',
+  PICKUP: 'pickedUp',
+  CANCELLED: 'cancelled',
+};
+const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const PROMOTION_APPLIED_STATUS = {
+  VALID: 'valid',
+  REDEEMED: 'redeemed',
+  NOT_MATCH_MINIMUM_PURCHASE: 'lessThanMinSpeed',
+  EXPIRED: 'expired',
+  NOT_START: 'beforeValid',
+  INVALID: 'invalid',
+};
+
+const PREORDER_IMMEDIATE_TAG = {
+  from: 'now',
+  to: 'now',
 };
 
 export default {
@@ -136,7 +176,8 @@ export default {
   MANIFEST,
   ROUTER_PATHS,
   CASHBACK_SOURCE,
-  PAYMENT_METHODS,
+  PAYMENT_METHOD_LABELS,
+  CREDIT_CARD_BRANDS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
   CHANNEL_TYPE,
@@ -152,4 +193,8 @@ export default {
   LANGUAGES,
   ASIDE_NAMES,
   DELIVERY_METHOD,
+  CONSUMERFLOW_STATUS,
+  WEEK_DAYS_I18N_KEYS,
+  PROMOTION_APPLIED_STATUS,
+  PREORDER_IMMEDIATE_TAG,
 };

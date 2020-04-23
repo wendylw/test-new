@@ -14,7 +14,7 @@ class Sorry extends Component {
         sorryText = (
           <Trans ns="Scanner" i18nKey="IosSorryText">
             <p>
-              Please open beepit.co in <span className="text-bold">Safari</span>
+              Please open beepit.com in <span className="text-bold">Safari</span>
             </p>
           </Trans>
         );
@@ -22,7 +22,7 @@ class Sorry extends Component {
         sorryText = (
           <Trans ns="Scanner" i18nKey="AndroidSorryText">
             <p>
-              Please open beepit.co in <span className="text-bold">Google Chrome</span>
+              Please open beepit.com in <span className="text-bold">Google Chrome</span>
             </p>
           </Trans>
         );

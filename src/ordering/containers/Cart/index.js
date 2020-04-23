@@ -3,7 +3,7 @@ import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
-import { IconDelete, IconClose } from '../../../components/Icons';
+import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
@@ -12,15 +12,24 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getCartSummary, getPromotion } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as promotionActionCreators } from '../../redux/modules/promotion';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
+  getBusiness,
+  getMerchantCountry,
+} from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
+import { getErrorMessageByPromoStatus } from '../Promotion/utils';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
-
+const { PROMOTION_APPLIED_STATUS } = Constants;
 class Cart extends Component {
   state = {
     expandBilling: true,
@@ -83,12 +92,42 @@ class Cart extends Component {
     });
   };
 
+  isPromotionValid() {
+    const { promotion } = this.props;
+    if (!promotion) {
+      return true;
+    }
+
+    return promotion.status === PROMOTION_APPLIED_STATUS.VALID;
+  }
+
+  handleGtmEventTracking = async callback => {
+    const { shoppingCart, cartSummary } = this.props;
+    const itemsInCart = shoppingCart.items.map(item => item.id);
+    const gtmEventData = {
+      product_id: itemsInCart,
+      cart_size: cartSummary.count,
+      cart_value_local: cartSummary.total,
+    };
+    gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
+  };
+
   handleCheckPaymentStatus = async () => {
-    const { history, cartSummary, user } = this.props;
+    this.handleGtmEventTracking();
+    const { history, cartSummary, user, t } = this.props;
     const { isLogin } = user;
     const { total, totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const pathname = type ? Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO : Constants.ROUTER_PATHS.ORDERING_PAYMENT;
+
+    if (!this.isPromotionValid()) {
+      this.props.appActions.showMessageModal({
+        message: t('InvalidPromoCode'),
+        description: this.getPromotionErrorMessage(),
+        buttonText: t('Dismiss'),
+      });
+      return;
+    }
 
     if (isLogin && !total && !type) {
       const { paymentActions } = this.props;
@@ -135,6 +174,48 @@ class Cart extends Component {
     this.setState({ additionalComments: null });
   }
 
+  getPromotionErrorMessage = () => {
+    const { promotion, merchantCountry } = this.props;
+    if (!promotion) {
+      return '';
+    }
+
+    return getErrorMessageByPromoStatus(promotion, merchantCountry);
+  };
+
+  handleDismissPromotion = e => {
+    this.dismissPromotion();
+  };
+
+  dismissPromotion = async () => {
+    const { promotionActions, homeActions } = this.props;
+
+    await promotionActions.dismissPromotion();
+    await homeActions.loadShoppingCart();
+  };
+
+  handleGotoPromotion = () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
+      search: window.location.search,
+    });
+  };
+
+  showShortPromoCode() {
+    const { promotion } = this.props;
+    const SHOW_LENGTH = 10;
+    // show like "Promo..."
+    if (promotion && promotion.promoCode) {
+      if (promotion.promoCode.length > SHOW_LENGTH) {
+        return promotion.promoCode.substring(0, SHOW_LENGTH) + '...';
+      } else {
+        return promotion.promoCode;
+      }
+    } else {
+      return '';
+    }
+  }
+
   renderAdditionalComments() {
     const { t } = this.props;
     const { additionalComments } = this.state;
@@ -149,29 +230,63 @@ class Cart extends Component {
           onChange={this.handleChangeAdditionalComments.bind(this)}
         ></textarea>
         {additionalComments ? (
-          <i className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)}>
-            <IconClose />
-          </i>
+          <IconClose className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)} />
         ) : null}
       </div>
     );
   }
 
+  renderPromotionItem() {
+    const { t, promotion } = this.props;
+
+    return (
+      <li className="billing__item promotion__item">
+        {promotion ? (
+          <div className="promotion__container flex flex-middle flex-space-between">
+            <span className="flex font-weight-bolder">
+              <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
+              <div className="promotion-info__container">
+                <div className="promotion-code__container flex flex-middle text-nowrap">
+                  <span className="promotion-code font-weight-bolder">
+                    {t('Voucher')} ({this.showShortPromoCode()})
+                  </span>
+                  <button onClick={this.handleDismissPromotion} className="dismiss__button">
+                    <IconClose className="icon" />
+                  </button>
+                </div>
+                <div className="promotion__error">{this.getPromotionErrorMessage()}</div>
+              </div>
+            </span>
+            <span className="promotion-discount__container font-weight-bolder text-nowrap">
+              {'-'} <CurrencyNumber className="font-weight-bolder" money={promotion.discount} />
+            </span>
+          </div>
+        ) : (
+          <button className="add-promo__button" onClick={this.handleGotoPromotion}>
+            <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
+            {t('AddPromoCode')}
+          </button>
+        )}
+      </li>
+    );
+  }
+
   render() {
     const { t, cartSummary, shoppingCart, businessInfo } = this.props;
-    const { expandBilling, isCreatingOrder } = this.state;
+    const { isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
     const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
     const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
+
     const buttonText = !isInvalidTotal ? (
       t('Pay')
     ) : (
       <Trans i18nKey="MinimumConsumption">
-        <span className="font-weight-bold">Min</span>
-        <CurrencyNumber className="font-weight-bold" money={minTotal} />
+        <span className="font-weight-bolder">Min</span>
+        <CurrencyNumber className="font-weight-bolder" money={minTotal} />
       </Trans>
     );
 
@@ -197,12 +312,7 @@ class Cart extends Component {
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
-          <i
-            className="aside-bottom__slide-button"
-            onClick={() => this.setState({ expandBilling: !expandBilling })}
-          ></i>
           <Billing
-            className={!expandBilling ? 'billing__collapse' : ''}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
@@ -211,12 +321,14 @@ class Cart extends Component {
             creditsBalance={cashback}
             isDeliveryType={Utils.isDeliveryType()}
             shippingFee={shippingFee}
-          />
+          >
+            {this.renderPromotionItem()}
+          </Billing>
         </aside>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
-              className="billing__button button button__fill button__block dark font-weight-bold"
+              className="billing__button button button__fill button__block dark font-weight-bolder"
               onClick={this.handleClickBack.bind(this)}
             >
               {t('Back')}
@@ -224,7 +336,7 @@ class Cart extends Component {
           </div>
           <div className="footer-operation__item width-2-3">
             <button
-              className="billing__link button button__fill button__block font-weight-bold"
+              className="billing__link button button__fill button__block font-weight-bolder"
               onClick={this.handleCheckPaymentStatus.bind(this)}
               disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
             >
@@ -239,7 +351,7 @@ class Cart extends Component {
 }
 /* TODO: backend data */
 export default compose(
-  withTranslation(['OrderingCart']),
+  withTranslation(['OrderingCart', 'OrderingPromotion']),
   connect(
     state => {
       const currentOrderId = getCurrentOrderId(state);
@@ -248,6 +360,7 @@ export default compose(
         business: getBusiness(state),
         user: getUser(state),
         cartSummary: getCartSummary(state),
+        promotion: getPromotion(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
@@ -255,6 +368,7 @@ export default compose(
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
@@ -262,6 +376,7 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      promotionActions: bindActionCreators(promotionActionCreators, dispatch),
     })
   )
 )(Cart);

@@ -11,60 +11,39 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
 import {
   actions as paymentActionCreators,
   getCurrentPayment,
   getCurrentOrderId,
-  getPaymentList,
+  getPayments,
+  getDefaultPayment,
+  getCurrentPaymentInfo,
+  getOnlineBankingMerchantList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import paymentBankingImage from '../../../images/payment-banking.png';
-import paymentCreditImage from '../../../images/payment-credit.png';
-import paymentBoostImage from '../../../images/payment-boost.png';
-import paymenbGrabImage from '../../../images/payment-grab.png';
+import { getPaymentName, getSupportCreditCardBrands } from './utils';
+import Loader from './components/Loader';
+import PaymentLogo from './components/PaymentLogo';
 
-const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
-const dataSource = {
-  onlineBanking: {
-    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-    logo: paymentBankingImage,
-    labelKey: 'OnlineBanking',
-    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-  },
-  creditCard: {
-    name: PAYMENT_METHODS.CREDIT_CARD_PAY,
-    logo: paymentCreditImage,
-    labelKey: 'CreditCard',
-    pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
-  },
-  boost: {
-    name: PAYMENT_METHODS.BOOST_PAY,
-    logo: paymentBoostImage,
-    labelKey: 'Boost',
-  },
-  grabPay: {
-    name: PAYMENT_METHODS.GRAB_PAY,
-    logo: paymenbGrabImage,
-    labelKey: 'GrabPay',
-  },
-};
-const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
+const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
+
+const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
   state = {
     payNowLoading: false,
   };
 
-  componentDidMount() {
-    const { homeActions, paymentActions } = this.props;
-
-    paymentActions.fetchPaymentList();
-    homeActions.loadShoppingCart();
-  }
+  componentDidMount = async () => {
+    const { currentPayment } = this.props;
+    this.props.paymentActions.fetchOnlineBankingMerchantList();
+    this.props.paymentActions.setCurrentPayment(currentPayment);
+    await this.props.homeActions.loadShoppingCart();
+  };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
@@ -85,7 +64,7 @@ class Payment extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
     };
   };
 
@@ -99,12 +78,26 @@ class Payment extends Component {
     });
   };
 
-  setCurrentPayment = paymentName => {
-    this.props.paymentActions.setCurrentPayment(paymentName);
+  setCurrentPayment = paymentLabel => {
+    this.props.paymentActions.setCurrentPayment(paymentLabel);
   };
 
+  getPaymentShowLabel(payment) {
+    const { t, merchantCountry } = this.props;
+    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
+      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
+      return supportCreditCardBrands
+        .map(brand => {
+          return t(brand);
+        })
+        .join(' / ');
+    } else {
+      return t(payment.label);
+    }
+  }
+
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary } = this.props;
+    const { history, currentPaymentInfo, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -112,11 +105,10 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-      const { pathname } = Object.values(dataSource).find(payment => payment.name === currentPayment) || {};
-
+    // redirect to customized payment page when the payment contains pathname of page router
+    if (currentPaymentInfo.pathname) {
       history.push({
-        pathname,
+        pathname: currentPaymentInfo.pathname,
         search: window.location.search,
       });
 
@@ -134,15 +126,18 @@ class Payment extends Component {
     }
 
     this.setState({
-      payNowLoading: orderId,
+      payNowLoading: !!orderId,
     });
   };
 
   render() {
-    const { t, currentPayment, paymentList } = this.props;
+    const { t, currentPayment, payments, onlineBankingMerchantList, business } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
+    const currentOnlineBankingMerchantList = onlineBankingMerchantList
+      ? onlineBankingMerchantList.filter(m => m)
+      : onlineBankingMerchantList;
 
     return (
       <section className={className.join(' ')}>
@@ -155,24 +150,29 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            {paymentList.map(paymentKey => {
-              const payment = dataSource[paymentKey];
+            {payments.map(payment => {
+              const isInvalidOnlineBanking =
+                (!currentOnlineBankingMerchantList && payment.label === 'OnlineBanking') ||
+                (currentOnlineBankingMerchantList &&
+                  currentOnlineBankingMerchantList.length &&
+                  !currentOnlineBankingMerchantList.includes(business) &&
+                  payment.label === 'OnlineBanking');
 
-              if (!payment) {
+              if (!payment || isInvalidOnlineBanking) {
                 return null;
               }
 
               return (
                 <li
-                  key={payment.name}
+                  key={payment.label}
                   className="payment__item border__bottom-divider flex flex-middle flex-space-between"
-                  onClick={() => this.setCurrentPayment(payment.name)}
+                  onClick={() => this.setCurrentPayment(payment.label)}
                 >
                   <figure className="payment__image-container">
-                    <img src={payment.logo} alt={payment.labelKey}></img>
+                    <PaymentLogo payment={payment} />
                   </figure>
-                  <label className="payment__name font-weight-bold">{t(payment.labelKey)}</label>
-                  <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
+                  <label className="payment__name font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
+                  <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
                   </div>
@@ -184,7 +184,7 @@ class Payment extends Component {
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             disabled={payNowLoading}
             onClick={this.handleClickPayNow}
           >
@@ -205,6 +205,15 @@ class Payment extends Component {
   }
 }
 
+// to use container to make Payment initialization based on payments from a country
+const PaymentContainer = props => {
+  if (!props.merchantCountry) {
+    return <Loader />;
+  }
+
+  return <Payment {...props} />;
+};
+
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
@@ -212,19 +221,21 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        payments: getPayments(state),
+        currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
+        currentPaymentInfo: getCurrentPaymentInfo(state),
         user: getUser(state),
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        paymentList: getPaymentList(state),
+        merchantCountry: getMerchantCountry(state),
+        onlineBankingMerchantList: getOnlineBankingMerchantList(state),
       };
     },
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(Payment);
+)(PaymentContainer);

@@ -8,20 +8,20 @@ class MessageModal extends Component {
 
   render() {
     const { t, data } = this.props;
-    const { message, description } = data;
+    const { message, description, buttonText } = data;
 
     return (
       <section className="modal__align-middle modal flex flex-middle flex-space-between" style={styles.section}>
         <div className="modal__content">
           <header className="hint-modal__header modal__header">
-            <h4 className="font-weight-bold">{message}</h4>
+            <h4 className="font-weight-bolder">{message}</h4>
           </header>
           <div className="modal__body">
             <p className="modal__text">{description}</p>
           </div>
           <footer>
-            <button className="button__fill button__block font-weight-bold" onClick={this.handleClickOK}>
-              {t('OK')}
+            <button className="button__fill button__block font-weight-bolder" onClick={this.handleClickOK}>
+              {buttonText || t('OK')}
             </button>
           </footer>
         </div>

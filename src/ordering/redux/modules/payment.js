@@ -1,24 +1,29 @@
-import config from '../../../config';
+import { createSelector } from 'reselect';
+
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getMerchantCountry } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { getDeliveryDetails } from './customer';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
+import { fetchDeliveryDetails } from '../../containers/Customer/utils';
+import i18next from 'i18next';
+import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
+import { getPaymentList } from '../../containers/Payment/utils';
+import config from '../../../config';
 
 const initialState = {
-  currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+  currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
-  paymentList: [],
+  onlineBankingMerchantList: [],
 };
 
 export const types = {
@@ -47,25 +52,44 @@ export const types = {
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
   FETCH_BANKLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_BANKLIST_FAILURE',
 
-  // getPaymentList
-  FETCH_PAYMENTLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_REQUEST',
-  FETCH_PAYMENTLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_SUCCESS',
-  FETCH_PAYMENTLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_PAYMENTLIST_FAILURE',
+  // get online banking merchant list
+  FETCH_ONLINE_BANKING_MERCHANT_LIST: 'ORDERING/PAYMENT/FETCH_ONLINE_BANKING_MERCHANT_LIST',
 };
 
 // action creators
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
+    const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
+      const fromHour = hour1.split(':')[0];
+      const fromMinute = hour1.split(':')[1];
+      const d1 = new Date(dateValue);
+      let d2, toHour, toMinute;
+
+      if (hour2) {
+        d2 = new Date(dateValue);
+        toHour = hour2.split(':')[0];
+        toMinute = hour2.split(':')[1];
+        d2.setHours(Number(toHour), Number(toMinute), 0, 0);
+      }
+      d1.setHours(Number(fromHour), Number(fromMinute), 0, 0);
+      return {
+        expectDeliveryDateFrom: d1.toISOString(),
+        expectDeliveryDateTo: d2 && d2.toISOString(),
+      };
+    };
+
+    // expectedDeliveryHour & expectedDeliveryDate will always be there if
+    // there is preOrder in url
     const business = getBusiness(getState());
+    const businessInfo = getBusinessByName(getState(), business);
+    const { qrOrderingSettings = {} } = businessInfo;
+    const { enablePreOrder } = qrOrderingSettings;
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
-    const deliveryDetails = getDeliveryDetails(getState());
-    const { country } = getBusinessByName(getState(), business);
-    const contactDetail = {
-      phone: deliveryDetails.phone,
-      name: deliveryDetails.username,
-    };
+    const deliveryDetails = await fetchDeliveryDetails();
+    const { phone, username: name } = deliveryDetails || {};
+    const contactDetail = { phone, name };
     let variables = {
       business,
       storeId,
@@ -74,26 +98,46 @@ export const actions = {
       cashback,
     };
 
+    // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+    let expectDeliveryDateInfo = null;
+    try {
+      if (enablePreOrder) {
+        const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
+        // => {"from":2,"to":3}
+        const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
+        // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
+
+        if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
+          expectDeliveryDateInfo = getExpectDeliveryDateInfo(
+            expectedDeliveryDate.date,
+            expectedDeliveryHour.from,
+            expectedDeliveryHour.to
+          );
+        }
+      }
+    } catch (e) {
+      console.error('failed to create expectDeliveryDateInfo');
+    }
+    // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+
     if (shippingType === 'delivery') {
-      const { coords, address: deliveryTo } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-      const { lat, lng } = coords || {};
-      const location =
-        lat && lng
-          ? {
-              longitude: lng,
-              latitude: lat,
-            }
-          : null;
-      const addressDetails = deliveryDetails.addressDetails;
-      const deliveryComments = deliveryDetails.deliveryComments;
+      const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
+      const {
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress: deliveryTo,
+        deliveryToLocation: location,
+        /*routerDistance,*/
+      } = deliveryDetails || {};
 
       variables = {
         ...variables,
         shippingType,
+        ...expectDeliveryDateInfo,
         deliveryAddressInfo: {
           ...contactDetail,
           addressDetails,
-          address: `${addressDetails}, ${deliveryTo}`,
+          address: addressDetails ? `${addressDetails}, ${deliveryTo}` : deliveryTo,
           country,
           deliveryTo,
           location,
@@ -104,6 +148,7 @@ export const actions = {
       variables = {
         ...variables,
         contactDetail,
+        ...expectDeliveryDateInfo,
       };
     }
 
@@ -117,6 +162,16 @@ export const actions = {
             }
       )
     );
+
+    if (result.type === types.CREATEORDER_FAILURE) {
+      dispatch(
+        appActions.showError({
+          message: i18next.t('PlaceOrderFailedDescription', {
+            ns: 'OrderingPayment',
+          }),
+        })
+      );
+    }
 
     if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
       try {
@@ -133,9 +188,9 @@ export const actions = {
     return dispatch(fetchOrder({ orderId }));
   },
 
-  setCurrentPayment: paymentName => ({
+  setCurrentPayment: paymentLabel => ({
     type: types.SET_CURRENT_PAYMENT,
-    paymentName,
+    paymentLabel,
   }),
 
   fetchBraintreeToken: paymentName => ({
@@ -156,21 +211,17 @@ export const actions = {
     type: types.CLEAR_BRAINTREE_TOKEN,
   }),
 
-  fetchBankList: () => ({
+  fetchBankList: country => ({
     [API_REQUEST]: {
       types: [types.FETCH_BANKLIST_REQUEST, types.FETCH_BANKLIST_SUCCESS, types.FETCH_BANKLIST_FAILURE],
       ...Url.API_URLS.GET_BANKING_LIST,
+      params: { country },
     },
   }),
 
-  fetchPaymentList: () => dispatch => {
-    return dispatch({
-      type: types.FETCH_PAYMENTLIST_SUCCESS,
-      response: {
-        paymentList: config.paymentList,
-      },
-    });
-  },
+  fetchOnlineBankingMerchantList: () => ({
+    type: types.FETCH_ONLINE_BANKING_MERCHANT_LIST,
+  }),
 };
 
 const createOrder = variables => {
@@ -204,7 +255,7 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case types.SET_CURRENT_PAYMENT:
-      return { ...state, currentPayment: action.paymentName };
+      return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
       const { orders, redirectUrl } = data || {};
       const [order] = orders;
@@ -235,10 +286,8 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, bankingList };
     }
-    case types.FETCH_PAYMENTLIST_SUCCESS: {
-      const { paymentList } = response || {};
-
-      return { ...state, paymentList };
+    case types.FETCH_ONLINE_BANKING_MERCHANT_LIST: {
+      return { ...state, onlineBankingMerchantList: config.onlineBankingMerchantList };
     }
     default:
       return state;
@@ -258,4 +307,27 @@ export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
 
-export const getPaymentList = state => state.payment.paymentList;
+export const getOnlineBankingMerchantList = state => state.payment.onlineBankingMerchantList;
+
+export const getPayments = createSelector(
+  [getMerchantCountry, getAllPaymentOptions],
+  (merchantCountry, paymentOptions) => {
+    if (!merchantCountry) {
+      return [];
+    }
+    const paymentList = getPaymentList(merchantCountry);
+    return paymentList.map(paymentKey => paymentOptions[paymentKey]);
+  }
+);
+
+export const getDefaultPayment = state => {
+  try {
+    return getPayments(state)[0].label;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
+  return payments.find(payment => payment.label === currentPayment);
+});
