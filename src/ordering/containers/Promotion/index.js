@@ -104,7 +104,7 @@ class Promotion extends Component {
             value={promoCode}
             autoFocus
             className="input input__block"
-            placeholder="E.g: BEELPL"
+            placeholder={t('EnterPromoCodeHere')}
           />
           {showCleanButton ? (
             <button onClick={this.handleCleanClick} className="clean__button">
