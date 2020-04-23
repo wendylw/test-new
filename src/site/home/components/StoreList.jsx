@@ -27,7 +27,7 @@ class StoreList extends Component {
         </label>
       </div>
     ) : (
-      <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
+      <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-line-height-base text-weight-bolder">
         {t('ClosedForNow')}
       </div>
     );

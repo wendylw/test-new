@@ -21,7 +21,13 @@ class DeliverToBar extends PureComponent {
 
     return (
       <section className={classList.join(' ')}>
-        <div className="deliver-to-entry__content" onClick={() => gotoLocationPage()}>
+        <div
+          className="deliver-to-entry__content"
+          onClick={() => {
+            this.handleScannerClicked();
+            gotoLocationPage();
+          }}
+        >
           <label className="deliver-to-entry__label text-uppercase text-weight-bold">{title}</label>
           <div>
             <IconLocation className="icon icon__small icon__gray text-middle" />
