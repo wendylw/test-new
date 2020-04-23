@@ -3150,6 +3150,14 @@
   &__form {
     padding: 0 3.8vw;
 
+    .form__group {
+      padding: 8px 0;
+    }
+
+    .react-phone-number-input {
+      margin: 0;
+    }
+
     .input,
     .react-phone-number-input--focus .react-phone-number-input__input,
     .react-phone-number-input .react-phone-number-input__input:focus,

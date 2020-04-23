@@ -179,12 +179,6 @@ class Customer extends Component {
 
     return (
       <Fragment>
-        <div className="flex flex-middle flex-space-between">
-          <label className="form__label font-weight-bold">{t('DeliverOn')}</label>
-          <i className="customer__edit-icon">
-            <IconEdit />
-          </i>
-        </div>
         <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
           {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
@@ -205,6 +199,7 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
+        <label class="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
         <div
           className="form__group"
           onClick={async () => {
@@ -220,22 +215,12 @@ class Customer extends Component {
             });
           }}
         >
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
-            <IconEdit className="customer__edit-icon" />
-          </div>
+          {this.renderDeliveryTime()}
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
-          {this.renderDeliveryTime()}
         </div>
         <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bolder gray-font-opacity">
-              {t('AddAddressDetailsPlaceholder')}
-            </label>
-            <IconEdit className="customer__edit-icon" />
-          </div>
           <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
             {addressDetails || t('AddressDetailsPlaceholder')}
           </p>
@@ -245,7 +230,6 @@ class Customer extends Component {
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
           <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
-          <IconEdit className="customer__edit-icon" />
         </div>
       </React.Fragment>
     );
@@ -274,6 +258,7 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
+        <label class="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
         <div
           className="form__group"
           onClick={async () => {
@@ -287,19 +272,11 @@ class Customer extends Component {
             });
           }}
         >
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold">{t('PickupAt')}</label>
-            {/* <IconEdit className="customer__edit-icon" /> */}
-          </div>
-          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
-            {pickUpAddress || t('PickUpAtPlaceholder')}
-          </p>
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold">{t('PickUpOn')}</label>
-            <IconEdit className="customer__edit-icon" />
-          </div>
           <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
             {pickUpTime || t('PickUpAtPlaceholder')}
+          </p>
+          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
+            {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
         </div>
         <div
@@ -307,7 +284,6 @@ class Customer extends Component {
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
           <p className="gray-font-opacity">{deliveryComments || t('AddNoteToMerchantPlaceholder')}</p>
-          <IconEdit className="customer__edit-icon" />
         </div>
       </React.Fragment>
     );
@@ -352,10 +328,10 @@ class Customer extends Component {
         <div className="customer__content">
           <form className="customer__form">
             <div className="form__group">
-              <label className="form__label gray-font-opacity">{t('Name')}</label>
               <input
                 className="input input__block"
                 type="text"
+                placeholder={t('Name')}
                 defaultValue={deliveryDetails.username}
                 onChange={e => {
                   this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
@@ -363,8 +339,7 @@ class Customer extends Component {
               />
             </div>
 
-            <div className="form__group border__bottom-divider">
-              <label className="form__label gray-font-opacity">{t('MobileNumber')}</label>
+            <div className="form__group">
               <PhoneInput
                 smartCaret={false}
                 placeholder=""
