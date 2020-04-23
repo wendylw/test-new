@@ -312,7 +312,8 @@ export const getPayments = createSelector(
         const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
 
         if (payment.label === Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY) {
-          return onlineBankingMerchantList.length === 0 || onlineBankingMerchantList.split(',').includes(business);
+          const onlineBankingForAllMerchants = onlineBankingMerchantList.length === 0;
+          return onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business);
         }
 
         return true;
