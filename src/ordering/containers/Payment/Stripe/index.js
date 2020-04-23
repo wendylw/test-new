@@ -112,8 +112,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
     throw new Error('Error: getRedirectFrom should be a function');
   }
 
-  const redirectForm = renderRedirectForm();
-
   const handleSubmit = async event => {
     event.preventDefault();
 

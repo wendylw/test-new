@@ -80,6 +80,26 @@ class LocationAndDate extends Component {
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+
+    this.setTimeListMaxHeight();
+
+    // Should do setState to here for what is in componentDidUpdate to work
+    this.setState({
+      deliveryToAddress,
+    });
+  };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    const { selectedDate } = this.state;
+    const { selectedDate: prevSelectDate } = prevState;
+    const { date } = prevSelectDate || {};
+
+    if (selectedDate && selectedDate.date && (!prevSelectDate || !date)) {
+      this.setTimeListMaxHeight();
+    }
+  };
+
+  setTimeListMaxHeight = () => {
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
@@ -88,11 +108,6 @@ class LocationAndDate extends Component {
 
       this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
     }
-
-    // Should do setState to here for what is in componentDidUpdate to work
-    this.setState({
-      deliveryToAddress,
-    });
   };
 
   getExpectedTimeFromSession = () => {
