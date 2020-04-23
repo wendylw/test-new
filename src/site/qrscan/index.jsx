@@ -60,17 +60,17 @@ class QRScan extends Component {
 
   gotoNotSupport() {
     if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-      this.props.history.push({
+      this.props.history.replace({
         pathname: `${ERROR}${SCAN_NOT_SUPPORT}`,
         state: { isIOS: true },
       });
     } else if (/android/i.test(navigator.userAgent)) {
-      this.props.history.push({
+      this.props.history.replace({
         pathname: `${ERROR}${SCAN_NOT_SUPPORT}`,
         state: { isIOS: false },
       });
     } else {
-      this.props.history.push({
+      this.props.history.replace({
         pathname: `${ERROR}${SCAN_NOT_SUPPORT}`,
         state: { isIOS: false },
       });

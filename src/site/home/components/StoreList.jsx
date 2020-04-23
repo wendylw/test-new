@@ -21,9 +21,11 @@ class StoreList extends Component {
   renderClosedStoreTag = enablePreOrder => {
     const { t } = this.props;
     return enablePreOrder ? (
-      <label className="store-card-list__tag tag tag__small tag__reverse-privacy text-uppercase text-weight-bolder">
-        {t('PreOrderTag')}
-      </label>
+      <div className="store-card-list__image-cover">
+        <label className="store-card-list__tag tag tag__small tag__privacy text-uppercase text-weight-bolder">
+          {t('PreOrderTag')}
+        </label>
+      </div>
     ) : (
       <div className="store-card-list__image-cover flex flex-middle flex-center text-center text-weight-bolder">
         {t('ClosedForNow')}
