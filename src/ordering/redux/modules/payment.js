@@ -310,11 +310,9 @@ export const getPayments = createSelector(
       .map(paymentKey => paymentOptions[paymentKey])
       .filter(payment => {
         const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
+
         if (payment.label === Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY) {
-          return !(
-            onlineBankingMerchantList.toLowerCase() === 'none' ||
-            !onlineBankingMerchantList.split(',').includes(business)
-          );
+          return onlineBankingMerchantList.length === 0 || onlineBankingMerchantList.split(',').includes(business);
         }
 
         return true;
