@@ -1,10 +1,10 @@
 import Constants from '../../../utils/constants';
-import { toNumericDate } from '../../../utils/datetime-lib';
+import { toISODateString } from '../../../utils/datetime-lib';
 import i18next from 'i18next';
 
 const { PROMOTION_APPLIED_STATUS } = Constants;
 
-export function getErrorMessageByPromoStatus({ status, validFrom }, merchantCountry) {
+export function getErrorMessageByPromoStatus({ status, validFrom }) {
   switch (status) {
     case PROMOTION_APPLIED_STATUS.VALID:
       return '';
@@ -15,7 +15,7 @@ export function getErrorMessageByPromoStatus({ status, validFrom }, merchantCoun
     case PROMOTION_APPLIED_STATUS.EXPIRED:
       return i18next.t('OrderingPromotion:Expired');
     case PROMOTION_APPLIED_STATUS.NOT_START:
-      return i18next.t('OrderingPromotion:NotStart', { date: toNumericDate(validFrom, merchantCountry) });
+      return i18next.t('OrderingPromotion:NotStart', { date: toISODateString(validFrom) });
     case PROMOTION_APPLIED_STATUS.INVALID:
     default:
       return i18next.t('OrderingPromotion:Invalid');

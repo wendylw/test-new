@@ -13,7 +13,6 @@ import {
   isAppliedError,
   isInProcess,
 } from '../../redux/modules/promotion';
-import { getMerchantCountry } from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import { getErrorMessageByPromoStatus } from './utils';
@@ -63,17 +62,14 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { promoStatus, validFrom, merchantCountry } = this.props;
+    const { promoStatus, validFrom } = this.props;
     if (!promoStatus) {
       return '';
     }
-    return getErrorMessageByPromoStatus(
-      {
-        status: promoStatus,
-        validFrom,
-      },
-      merchantCountry
-    );
+    return getErrorMessageByPromoStatus({
+      status: promoStatus,
+      validFrom,
+    });
   };
 
   render() {
@@ -104,7 +100,7 @@ class Promotion extends Component {
             value={promoCode}
             autoFocus
             className="input input__block"
-            placeholder="E.g: BEELPL"
+            placeholder={t('EnterPromoCodeHere')}
           />
           {showCleanButton ? (
             <button onClick={this.handleCleanClick} className="clean__button">
@@ -139,7 +135,6 @@ export default compose(
         isAppliedSuccess: isAppliedSuccess(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),
-        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
