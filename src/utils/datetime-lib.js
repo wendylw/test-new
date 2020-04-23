@@ -132,17 +132,10 @@ export const toNumericTimeRange = (date1, date2, locale = 'MY') =>
 export const toDayDateMonth = (date, locale = 'MY') =>
   toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
-function pad(number) {
-  if (number < 10) {
-    return '0' + number;
-  }
-  return number;
-}
-
 // formate: 2020-4-23 (YYYY-MM-DD)
 export const toISODateString = date => {
   const dateObj = new Date(date);
-  return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(dateObj.getDate())}`;
+  return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;
 };
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
