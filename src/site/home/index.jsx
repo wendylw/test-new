@@ -162,7 +162,7 @@ class Home extends React.Component {
     });
   };
 
-  handleScannerSelected = mode => () => {
+  backLeftPosition = mode => () => {
     const { homeActions } = this.props;
 
     // user can click scanner in two modes, 'search'（using search bar） and 'stores'(nearby stores)
@@ -271,9 +271,7 @@ class Home extends React.Component {
           }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
-          onScannerClicked={
-            Boolean(keyword) ? this.handleScannerSelected('search') : this.handleScannerSelected('stores')
-          }
+          backLeftPosition={Boolean(keyword) ? this.backLeftPosition('search') : this.backLeftPosition('stores')}
         />
 
         <section

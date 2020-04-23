@@ -7,7 +7,7 @@ import { IconLocation, IconScanner } from './Icons';
 
 class DeliverToBar extends PureComponent {
   handleScannerClicked = () => {
-    this.props.onScannerClicked();
+    this.props.backLeftPosition();
   };
 
   render() {
