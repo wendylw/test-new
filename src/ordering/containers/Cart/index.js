@@ -17,13 +17,7 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getUser,
-  getBusiness,
-  getMerchantCountry,
-} from '../../redux/modules/app';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
@@ -175,12 +169,12 @@ class Cart extends Component {
   }
 
   getPromotionErrorMessage = () => {
-    const { promotion, merchantCountry } = this.props;
+    const { promotion } = this.props;
     if (!promotion) {
       return '';
     }
 
-    return getErrorMessageByPromoStatus(promotion, merchantCountry);
+    return getErrorMessageByPromoStatus(promotion);
   };
 
   handleDismissPromotion = e => {
@@ -368,7 +362,6 @@ export default compose(
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),
-        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
