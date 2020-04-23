@@ -120,6 +120,5 @@
   "AddPromoCode": "Add a promo code/voucher",
   "Voucher": "Voucher",
   "ConnectionIssue": "Sorry there was some issue with the connection, please try again",
-  "Immediate": "Immediate",
-  "PreOrderTag": "Pre Order"
+  "Immediate": "Immediate"
 }
