@@ -24,7 +24,6 @@ import {
   homeActionCreators,
   loadedSearchingStores,
 } from '../redux/modules/home';
-// import OfferDetails from './components/OfferDetails';
 import Campaign from './components/Campaign';
 import StoreList from './components/StoreList';
 import TypeGuider from './components/TypeGuider';
@@ -158,8 +157,22 @@ class Home extends React.Component {
       business: store.business,
       storeId: store.id,
       isOpen: store.isOpen,
+      isPreOrder: store.enablePreOrder,
       isOutOfDeliveryRange: store.isOutOfDeliveryRange,
     });
+  };
+
+  handleScannerSelected = mode => () => {
+    const { homeActions } = this.props;
+
+    // user can click scanner in two modes, 'search'（using search bar） and 'stores'(nearby stores)
+    if (mode === 'search') {
+      homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
+    } else if (mode === 'stores') {
+      homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
+    }
+
+    this.backupState();
   };
 
   renderStoreList = () => {
@@ -258,6 +271,9 @@ class Home extends React.Component {
           }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
+          onScannerClicked={
+            Boolean(keyword) ? this.handleScannerSelected('search') : this.handleScannerSelected('stores')
+          }
         />
 
         <section

@@ -81,6 +81,13 @@
     overflow: hidden;
   }
 
+  &__tag {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    margin: 5px;
+  }
+
   &__image-cover {
     position: absolute;
     left: 0;
