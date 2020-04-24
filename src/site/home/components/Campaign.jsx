@@ -70,8 +70,6 @@ class Campaign extends Component {
             </article>
           </div>
         </aside>
-        {/* {show ? (
-        ) : null} */}
       </React.Fragment>
     );
   }
