@@ -1,4 +1,6 @@
 {
   "OrderNotesPlaceholder": "Special Instructions E.g. Less rice, more garlic",
-  "ProductsInOrderText": "Order {{count}} Items"
+  "ProductsInOrderText": "Order {{count}} Items",
+  "InvalidPromoCode": "Invalid Promo/Voucher",
+  "Dismiss": "DISMISS"
 }

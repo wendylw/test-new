@@ -101,6 +101,14 @@ const API_URLS = {
     url: '/api/stores/search',
     method: 'get',
   },
+  APPLY_PROMOTION_CODE: {
+    url: '/api/cart/applyVoucher',
+    method: 'post',
+  },
+  DISMISS_PROMOTION_CODE: {
+    url: '/api/cart/unApplyVoucher',
+    method: 'post',
+  },
 };
 
 export default {
