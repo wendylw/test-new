@@ -483,9 +483,17 @@
       bottom: 21.6vw;
     }
 
+    .form__label {
+      margin: 8px 0;
+    }
+
+    .form__label ~ .form__group {
+      padding: 16px;
+      border: 1px solid $gray-3;
+    }
+
     .form__textarea {
-      margin: 5px 0;
-      padding-right: 34px;
+      min-height: 0;
       word-break: break-word;
       -webkit-hyphens: auto;
       -ms-hyphens: auto;
@@ -3151,7 +3159,8 @@
     padding: 0 3.8vw;
 
     .form__group {
-      padding: 8px 0;
+      padding: 0;
+      margin: 16px 0;
     }
 
     .react-phone-number-input {

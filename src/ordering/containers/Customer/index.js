@@ -1,7 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import qs from 'qs';
 import { withTranslation } from 'react-i18next';
-import { IconEdit } from '../../../components/Icons';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Header from '../../../components/Header';
@@ -175,14 +174,12 @@ class Customer extends Component {
       deliveryTime = '';
     }
 
-    console.log('[Customer] deliveryTime =', deliveryTime);
-
     return (
-      <Fragment>
+      <div className="form__group border-radius-base">
         <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
           {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
-      </Fragment>
+      </div>
     );
   };
 
@@ -200,8 +197,10 @@ class Customer extends Component {
     return (
       <React.Fragment>
         <label class="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
+        {this.renderDeliveryTime()}
+
         <div
-          className="form__group"
+          className="form__group border-radius-base"
           onClick={async () => {
             const { search } = window.location;
 
@@ -215,21 +214,26 @@ class Customer extends Component {
             });
           }}
         >
-          {this.renderDeliveryTime()}
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
         </div>
-        <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
+        <div
+          className="form__group border-radius-base"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}
+        >
           <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
             {addressDetails || t('AddressDetailsPlaceholder')}
           </p>
         </div>
         <div
-          className="form__group flex flex-middle flex-space-between"
+          className="form__group border-radius-base"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
-          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
+          <p className="form__textarea gray-font-opacity">
+            {deliveryComments ||
+              `${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          </p>
         </div>
       </React.Fragment>
     );
@@ -259,8 +263,13 @@ class Customer extends Component {
     return (
       <React.Fragment>
         <label class="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
+        <div className="form__group border-radius-base">
+          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
+            {pickUpTime || t('PickUpAtPlaceholder')}
+          </p>
+        </div>
         <div
-          className="form__group"
+          className="form__group border-radius-base"
           onClick={async () => {
             const { search } = window.location;
 
@@ -272,18 +281,18 @@ class Customer extends Component {
             });
           }}
         >
-          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
-            {pickUpTime || t('PickUpAtPlaceholder')}
-          </p>
           <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
         </div>
         <div
-          className="form__group flex flex-middle flex-space-between"
+          className="form__group border-radius-base flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
-          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToMerchantPlaceholder')}</p>
+          <p className="gray-font-opacity">
+            {deliveryComments ||
+              `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          </p>
         </div>
       </React.Fragment>
     );
@@ -315,7 +324,7 @@ class Customer extends Component {
     return (
       <section className={`table-ordering__customer` /* hide */}>
         <Header
-          className="text-center gray has-right flex-middle"
+          className="text-center gray flex-middle"
           isPage={true}
           title={type === DELIVERY_METHOD.DELIVERY ? t('DeliveryDetails') : t('PickUpDetails')}
           navFunc={() => {
