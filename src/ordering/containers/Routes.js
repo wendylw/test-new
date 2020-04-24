@@ -18,6 +18,7 @@ const ThankYou = lazy(() => import('./ThankYou'));
 const Sorry = lazy(() => import('./Sorry'));
 const ErrorPage = lazy(() => import('./Error'));
 const LocationAndDate = lazy(() => import('./LocationAndDate'));
+const Promotion = lazy(() => import('./Promotion'));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -30,6 +31,7 @@ class Routes extends Component {
           <Switch>
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
+            <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
             <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={Customer} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />

@@ -333,6 +333,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     validTimeTo,
     enableLiveOnline,
     enablePreOrder,
+    disableTodayPreOrder,
   } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
@@ -356,6 +357,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enableConditionalFreeShipping,
     enableLiveOnline,
     enablePreOrder,
+    disableTodayPreOrder,
   };
 };
 

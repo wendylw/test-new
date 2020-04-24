@@ -26,6 +26,7 @@ const initialState = {
     show: false,
     message: '',
     description: '',
+    buttonText: '',
   }, // message modal
   business: config.business,
   onlineStoreInfo: {
@@ -122,10 +123,11 @@ export const actions = {
     type: types.CLEAR_ERROR,
   }),
 
-  showMessageModal: ({ message, description }) => ({
+  showMessageModal: ({ message, description, buttonText = '' }) => ({
     type: types.SET_MESSAGE_INFO,
     message,
     description,
+    buttonText,
   }),
 
   hideMessageModal: () => ({
@@ -295,11 +297,11 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
     case types.SET_MESSAGE_INFO: {
-      const { message, description } = action;
-      return { ...state, show: true, message, description };
+      const { message, description, buttonText } = action;
+      return { ...state, show: true, message, description, buttonText };
     }
     case types.HIDE_MESSAGE_MODAL: {
-      return { ...state, show: false, message: '', description: '' };
+      return { ...state, show: false, message: '', description: '', buttonText: '' };
     }
     default:
       return state;

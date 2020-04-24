@@ -7,7 +7,8 @@ export const standardizeLocale = (countryCode = 'MY') => {
     PH: 'EN',
     EN: 'EN',
   };
-  return standardizedLocaleMap[countryCode.toUpperCase()] || 'EN';
+  const country = countryCode || 'MY';
+  return standardizedLocaleMap[country.toUpperCase()] || 'EN';
 };
 
 export const getDateTimeFormatter = (countryCode, options) => {
@@ -21,6 +22,15 @@ export const padZero = num => {
   }
   return str;
 };
+
+export const isValidDate = date => {
+  if (date instanceof Date) {
+    return date.toString() !== 'Invalid Date';
+  } else {
+    return false;
+  }
+};
+
 // An imperfect fallback in case Intl.DateTimeFormat doesn't work
 // Will display numeric date and time ignoring countryCode for now.
 const toLocaleStringFallback = (date, countryCode, options) => {
@@ -87,7 +97,7 @@ const toLocaleStringFallback = (date, countryCode, options) => {
 // for locale, refer to: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#Locale_identification_and_negotiation
 export const toLocaleString = (date, countryCode, options) => {
   const dateObj = new Date(date);
-  if (isNaN(dateObj.getTime())) {
+  if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
     return '';
   }
@@ -130,6 +140,16 @@ export const toNumericTimeRange = (date1, date2, locale = 'MY') =>
 
 export const toDayDateMonth = (date, locale = 'MY') =>
   toLocaleDateString(date, locale, { weekday: 'long', day: 'numeric', month: 'long' });
+
+// formate: 2020-4-23 (YYYY-MM-DD)
+export const toISODateString = date => {
+  const dateObj = new Date(date);
+  if (!isValidDate(dateObj)) {
+    console.warn('Invalid date object');
+    return '';
+  }
+  return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;
+};
 
 export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
   const { from, to } = hour || {};
