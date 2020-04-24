@@ -15,6 +15,7 @@ import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList } from '../../containers/Payment/utils';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 
 const initialState = {
   currentPayment: '',
@@ -299,15 +300,26 @@ export const getBraintreeToken = state => state.payment.braintreeToken;
 export const getBankList = state => state.payment.bankingList;
 
 export const getPayments = createSelector(
-  [getBusiness, getMerchantCountry, getAllPaymentOptions],
-  (business, merchantCountry, paymentOptions) => {
+  [getBusiness, getMerchantCountry, getAllPaymentOptions, getCartSummary],
+  (business, merchantCountry, paymentOptions, cartSummary) => {
     if (!merchantCountry) {
       return [];
     }
+
     const paymentList = getPaymentList(merchantCountry);
 
     return paymentList
-      .map(paymentKey => paymentOptions[paymentKey])
+      .map(paymentKey => {
+        const { total } = cartSummary;
+
+        // for Malaysia
+        if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
+          // TODO: replace the money threshold for switch
+          return paymentOptions[total < 20 ? 'creditCard' : 'stripe'];
+        }
+
+        return paymentOptions[paymentKey];
+      })
       .filter(payment => {
         const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
 
