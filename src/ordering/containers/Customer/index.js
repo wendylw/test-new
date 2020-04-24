@@ -3,6 +3,7 @@ import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
@@ -200,7 +201,7 @@ class Customer extends Component {
         {this.renderDeliveryTime()}
 
         <div
-          className="form__group border-radius-base"
+          className="form__group border-radius-base flex flex-middle flex-space-between"
           onClick={async () => {
             const { search } = window.location;
 
@@ -217,6 +218,7 @@ class Customer extends Component {
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
+          <IconNext className="flex__shrink-fixed" />
         </div>
         <div
           className="form__group border-radius-base"
