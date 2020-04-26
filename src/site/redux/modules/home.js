@@ -228,6 +228,7 @@ const typePickerReducer = (state = initialState.typePicker, action) => {
       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
       isOpen: context.isOpen || context.isPreOrder,
       business: context.business,
+      storeId: context.storeId,
       loading: false,
     };
   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
