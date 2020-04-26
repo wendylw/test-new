@@ -156,9 +156,8 @@ class Customer extends Component {
   };
 
   renderDeliveryTime = () => {
-    const { business, allBusinessInfo } = this.props;
+    const { t, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    const { t } = this.props;
 
     if (!enablePreOrder) {
       return null;
@@ -176,7 +175,19 @@ class Customer extends Component {
     }
 
     return (
-      <div className="form__group border-radius-base">
+      <div
+        className="form__group border-radius-base"
+        onClick={async () => {
+          const { search } = window.location;
+
+          const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+            search: `${search}&callbackUrl=${callbackUrl}`,
+          });
+        }}
+      >
         <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
           {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
@@ -193,7 +204,6 @@ class Customer extends Component {
 
     const { addressDetails, deliveryComments } = this.props.deliveryDetails;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     return (
       <React.Fragment>
@@ -208,9 +218,7 @@ class Customer extends Component {
             const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
             history.push({
-              pathname: enablePreOrder
-                ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
-                : Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
               search: `${search}&callbackUrl=${callbackUrl}`,
             });
           }}
@@ -232,7 +240,7 @@ class Customer extends Component {
           className="form__group border-radius-base"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
-          <p className="form__textarea gray-font-opacity">
+          <p className={`form__textarea ${deliveryComments ? '' : 'gray-font-opacity'}`}>
             {deliveryComments ||
               `${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
           </p>
@@ -265,11 +273,6 @@ class Customer extends Component {
     return (
       <React.Fragment>
         <label class="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
-        <div className="form__group border-radius-base">
-          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
-            {pickUpTime || t('PickUpAtPlaceholder')}
-          </p>
-        </div>
         <div
           className="form__group border-radius-base"
           onClick={async () => {
@@ -283,6 +286,11 @@ class Customer extends Component {
             });
           }}
         >
+          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
+            {pickUpTime || t('PickUpAtPlaceholder')}
+          </p>
+        </div>
+        <div className="form__group border-radius-base">
           <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
@@ -291,7 +299,7 @@ class Customer extends Component {
           className="form__group border-radius-base flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
-          <p className="gray-font-opacity">
+          <p className={`${deliveryComments ? '' : 'gray-font-opacity'}`}>
             {deliveryComments ||
               `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
           </p>
