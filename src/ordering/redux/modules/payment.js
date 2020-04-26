@@ -315,7 +315,9 @@ export const getPayments = createSelector(
         // for Malaysia
         if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
           // TODO: replace the money threshold for switch
-          return paymentOptions[total < 20 ? 'creditCard' : 'stripe'];
+          return paymentOptions[
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_SPLIT_TOTAL) ? 'creditCard' : 'stripe'
+          ];
         }
 
         return paymentOptions[paymentKey];
