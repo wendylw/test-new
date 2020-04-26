@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getStoreHashCode, isStoreClosed } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
+import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
@@ -86,7 +87,7 @@ class DeliveryMethods extends Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, removePickUpMerchantList, business } = this.props;
 
     return (
       <section className="delivery">
@@ -97,21 +98,27 @@ class DeliveryMethods extends Component {
           navFunc={this.handleClickBack.bind(this)}
         />
         <ul className="delivery__list">
-          {METHODS_LIST.map(method => (
-            <li
-              key={method.name}
-              className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
-              onClick={() => this.handleVisitStore(method.name)}
-            >
-              <figure className="delivery__image-container">
-                <img src={method.logo} alt={t(method.labelKey)}></img>
-              </figure>
-              <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
-              <i className="delivery__next-icon">
-                <IconNext />
-              </i>
-            </li>
-          ))}
+          {METHODS_LIST.map(method => {
+            if (removePickUpMerchantList.includes(business) && method.name === DELIVERY_METHOD.PICKUP) {
+              return null;
+            }
+
+            return (
+              <li
+                key={method.name}
+                className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
+                onClick={() => this.handleVisitStore(method.name)}
+              >
+                <figure className="delivery__image-container">
+                  <img src={method.logo} alt={t(method.labelKey)}></img>
+                </figure>
+                <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
+                <i className="delivery__next-icon">
+                  <IconNext />
+                </i>
+              </li>
+            );
+          })}
         </ul>
       </section>
     );
@@ -133,6 +140,7 @@ export default compose(
       hashCode: getStoreHashCode(state),
       isStoreClosed: isStoreClosed(state),
       business: getBusiness(state),
+      removePickUpMerchantList: getRemovedPickUpMerchantList(state),
       allBusinessInfo: getAllBusinesses(state),
     }),
     dispatch => ({
