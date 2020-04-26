@@ -316,7 +316,7 @@ export const getPayments = createSelector(
         if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
           // TODO: replace the money threshold for switch
           return paymentOptions[
-            total <= parseFloat(process.env.REACT_APP_PAYMENT_SPLIT_TOTAL) ? 'creditCard' : 'stripe'
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_SPRITE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
           ];
         }
 
