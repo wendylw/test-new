@@ -194,7 +194,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
                 height: '50px',
                 color: '#303030',
                 fontWeight: 500,
-                fontSize: '1.5rem',
+                fontSize: '1.3rem',
                 fontSmoothing: 'antialiased',
                 ':-webkit-autofill': {
                   color: '#dededf',
@@ -252,7 +252,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
                   height: '50px',
                   color: '#303030',
                   fontWeight: 500,
-                  fontSize: '1.5rem',
+                  fontSize: '1.3rem',
                   fontSmoothing: 'antialiased',
                   ':-webkit-autofill': {
                     color: '#dededf',
@@ -298,7 +298,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
                   height: '50px',
                   color: '#303030',
                   fontWeight: 500,
-                  fontSize: '1.5rem',
+                  fontSize: '1.3rem',
                   fontSmoothing: 'antialiased',
                   ':-webkit-autofill': {
                     color: '#dededf',
@@ -425,7 +425,7 @@ class Stripe extends Component {
           }}
         />
 
-        <div className="payment-bank">
+        <div className="payment-bank stripe">
           <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
           <Elements stripe={stripePromise} options={{}}>

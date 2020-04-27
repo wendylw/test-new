@@ -2130,6 +2130,7 @@
   }
 
   .input__list-top {
+    position: relative;
     border: 1px solid $gray-3;
     border-radius: 4px 4px 0 0;
 
@@ -2184,6 +2185,26 @@
 
     &.JCB {
       width: 10vw;
+    }
+  }
+
+  &.stripe {
+    .payment-bank__card-type-icon {
+      position: absolute;
+      right: 5px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      z-index: 100;
+    }
+
+    .payment-bank__card-type-icon.visa {
+      right: 45px;
+      height: 33px;
+    }
+
+    .payment-bank__card-type-icon.mastercard {
+      height: 38px;
     }
   }
 }
