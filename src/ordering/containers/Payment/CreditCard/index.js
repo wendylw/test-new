@@ -18,13 +18,10 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import paymentVisaImage from '../../../../images/payment-visa.svg';
-import paymentMasterImage from '../../../../images/payment-mastercard.svg';
-import paymentJCBImage from '../../../../images/payment-JCB.svg';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
+import PaymentCardBrands from '../components/PaymentCardBrands';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const { CREDIT_CARD_BRANDS } = Constants;
 class CreditCard extends Component {
   static propTypes = {};
 
@@ -366,40 +363,15 @@ class CreditCard extends Component {
   }
 
   renderCreditBrands() {
-    const supportCreditCardBrands = getSupportCreditCardBrands(this.props.merchantCountry);
     const { card } = this.state;
 
     return (
       <div className="payment-bank__card-type-container flex flex-middle">
-        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.VISA) ? (
-          <i
-            className={`payment-bank__card-type-icon visa text-middle ${
-              card.brand === CREDIT_CARD_BRANDS.VISA ? 'active' : ''
-            }`}
-          >
-            <img src={paymentVisaImage} />
-          </i>
-        ) : null}
-
-        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.MASTER_CARD) ? (
-          <i
-            className={`payment-bank__card-type-icon mastercard text-middle ${
-              card.brand === CREDIT_CARD_BRANDS.MASTER_CARD ? 'active' : ''
-            }`}
-          >
-            <img src={paymentMasterImage} />
-          </i>
-        ) : null}
-
-        {supportCreditCardBrands.includes(CREDIT_CARD_BRANDS.JCB) ? (
-          <i
-            className={`payment-bank__card-type-icon JCB text-middle ${
-              card.brand === CREDIT_CARD_BRANDS.JCB ? 'active' : ''
-            }`}
-          >
-            <img src={paymentJCBImage} />
-          </i>
-        ) : null}
+        <PaymentCardBrands
+          iconClassName={'payment-bank__card-type-icon'}
+          country={this.props.merchantCountry}
+          brand={card.brand}
+        />
       </div>
     );
   }
