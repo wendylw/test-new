@@ -156,7 +156,7 @@ class Customer extends Component {
   };
 
   renderDeliveryTime = () => {
-    const { t, business, allBusinessInfo } = this.props;
+    const { t, business, allBusinessInfo, history } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     if (!enablePreOrder) {
