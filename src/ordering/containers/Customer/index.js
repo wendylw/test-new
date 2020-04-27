@@ -207,7 +207,7 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <label class="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
+        <label className="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
         {this.renderDeliveryTime()}
 
         <div
@@ -272,7 +272,7 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <label class="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
+        <label className="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
         <div
           className="form__group border-radius-base"
           onClick={async () => {
