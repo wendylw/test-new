@@ -23,5 +23,8 @@
   "PreOrderDeliveryTimeDetails": "Delivery Order for {{day}}, {{dayAndTime}} to {{deliveryTo}}.",
   "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery.",
   "Total": "Total",
-  "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food"
+  "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food",
+  "EarnedCashBackTitle": "You’ve earned cash back",
+  "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",
+  "DeliveringTo": "Delivering to"
 }

@@ -2596,6 +2596,11 @@
     font-size: 1.2rem;
   }
 
+  &__total-text {
+    margin: 0 5px;
+    font-size: 1.7142rem;
+  }
+
   &__text ~ &__text {
     margin-left: 10px;
   }
@@ -2614,6 +2619,14 @@
     > * ~ * {
       border-top: 1px solid $gray-3;
     }
+  }
+
+  &__info-container-title {
+    margin-top: 24px;
+  }
+
+  &__info-container-title ~ &__info-container {
+    margin-top: 10px;
   }
 
   &__pickup {

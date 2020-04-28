@@ -10,7 +10,12 @@ import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
-import { actions as thankYouActionCreators, getOrder, getStoreHashCode } from '../../redux/modules/thankYou';
+import {
+  actions as thankYouActionCreators,
+  getOrder,
+  getStoreHashCode,
+  getCashbackInfo,
+} from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
@@ -198,7 +203,7 @@ export class ThankYou extends Component {
     return targetInfo;
   };
 
-  renderConsumerStatusFlow({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
+  renderConsumerStatusFlow({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics, cashbackInfo }) {
     if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -208,6 +213,7 @@ export class ThankYou extends Component {
     const confirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CONFIMRMED);
     const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
     const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
+    const { cashback } = cashbackInfo || {};
 
     const getTimeFromStatusObj = statusObj => {
       return new Date((statusObj && statusObj.time) || createdTime || '');
@@ -283,8 +289,6 @@ export class ThankYou extends Component {
       };
     }
 
-    console.log(currentStatusObj);
-
     return (
       <React.Fragment>
         <img className="thanks__image" src={currentStatusObj.bannerImage} alt="Beep Success" />
@@ -312,6 +316,16 @@ export class ThankYou extends Component {
               <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
             </div>
           ) : null}
+        </div>
+        <div className="thanks__delivery-status-container">
+          <CurrencyNumber className="text-size-huge font-weight-bolder" money={cashback || 0} />
+          <h3>
+            <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
+            <span role="img" aria-label="Celebration">
+              🎉
+            </span>
+          </h3>
+          <p>{t('EarnedCashBackDescription')}</p>
         </div>
         {/* <div className="thanks__delivery-status-container">
           <ul className="thanks__delivery-status-list text-left">
@@ -385,18 +399,24 @@ export class ThankYou extends Component {
 
         <div className="flex flex-middle flex-space-between">
           <label className="thanks__text font-weight-bolder">{name}</label>
-          <div>
-            <span className="thanks__text">{t('Total')}</span>
-            <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
-          </div>
+          {isPickUpType ? (
+            <div>
+              <span className="thanks__text">{t('Total')}</span>
+              <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
+            </div>
+          ) : null}
         </div>
-        {isPickUpType ? null : <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>}
+        <h4>{t('DeliveringTo')}</h4>
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
           <span className="gray-font-opacity">{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
+        <div className="text-center">
+          <span className="thanks__total-text">{t('Total')}</span>
+          <CurrencyNumber className="thanks__total-text font-weight-bolder" money={total || 0} />
+        </div>
       </div>
     );
   };
@@ -512,7 +532,7 @@ export class ThankYou extends Component {
   };
 
   renderDeliveryImageAndTimeLine() {
-    const { t, order, onlineStoreInfo } = this.props;
+    const { t, order, onlineStoreInfo, cashbackInfo } = this.props;
     const { createdTime, logs, deliveryInformation, status } = order || {};
     const { country } = onlineStoreInfo || {};
     const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
@@ -534,6 +554,7 @@ export class ThankYou extends Component {
             t,
             CONSUMERFLOW_STATUS,
             useStorehubLogistics,
+            cashbackInfo,
           })
         )}
       </React.Fragment>
@@ -617,6 +638,9 @@ export class ThankYou extends Component {
               </p>
             )}
 
+            <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
+              {t('OrderDetails')}
+            </h4>
             <div className="thanks__info-container">
               {isDeliveryType ? null : this.renderPickupInfo()}
               {orderInfo}
@@ -647,6 +671,7 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
+      cashbackInfo: getCashbackInfo(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
