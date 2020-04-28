@@ -1,0 +1,20 @@
+@import "~normalize.css/normalize.css";
+@import "../Common.scss";
+
+.footer-operation {
+  position: fixed;
+  padding: 3.8vw;
+  left: 0;
+  bottom: 0;
+  z-index: 200;
+  width: 100%;
+  background-color: $dark;
+
+  .button {
+    @extend .border-radius-base;
+  }
+}
+
+.select-voucher__button.active {
+  background-color: red;
+}

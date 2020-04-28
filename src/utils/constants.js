@@ -36,6 +36,11 @@ const ROUTER_PATHS = {
   SCAN: '/scan',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
+  // voucher
+  VOUCHER_HOME: '/voucher',
+  VOUCHER_CONTACT: '/voucher/contact',
+  VOUCHER_THANK_YOU: '/voucher/thank-you',
+  VOUCHER_SORRY: '/voucher/sorry',
 };
 
 const CASHBACK_SOURCE = {
