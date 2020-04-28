@@ -15,11 +15,16 @@ import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
-import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
-import beepOnTheWay from '../../../images/beep-on-the-way.svg';
-import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
-import beepOrderPending from '../../../images/beep-order-pending.svg';
-import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+// import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
+// import beepOnTheWay from '../../../images/beep-on-the-way.svg';
+// import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
+// import beepOrderPending from '../../../images/beep-order-pending.svg';
+// import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
+import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
+import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
+import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
+import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -217,7 +222,7 @@ export class ThankYou extends Component {
         secondNote: t('PendingMerchant'),
         secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
-        bannerImage: beepDeliverySuccessImage,
+        bannerImage: beepOrderStatusPaid,
       };
     }
     /** accepted status */
@@ -230,7 +235,7 @@ export class ThankYou extends Component {
         secondNote: t('FindingRider'),
         secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(acceptedStatusObj),
-        bannerImage: beepOrderPending,
+        bannerImage: beepOrderStatusAccepted,
       };
     }
     /** logistic confirmed and confirmed */
@@ -243,7 +248,7 @@ export class ThankYou extends Component {
         secondNote: t('RiderOnTheWay'),
         secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(logisticConfirmedStatusObj && confirmedStatusObj),
-        bannerImage: beepOrderPickedUp,
+        bannerImage: beepOrderStatusConfirmed,
       };
     }
 
@@ -257,7 +262,7 @@ export class ThankYou extends Component {
         secondNote: t('OrderOnTheWay'),
         secondLiClassName: 'active',
         timeToShow: getTimeFromStatusObj(pickupStatusObj),
-        bannerImage: beepOnTheWay,
+        bannerImage: beepOrderStatusPickedUp,
       };
     }
     if (paidStatusObj && cancelleStatusObj) {
@@ -268,13 +273,20 @@ export class ThankYou extends Component {
         secondNote: t('OrderCancelled'),
         secondLiClassName: 'error',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
-        bannerImage: beepOrderCancelled,
+        bannerImage: beepOrderStatusCancelled,
         secondTimeToShow: getTimeFromStatusObj(cancelleStatusObj),
       };
     }
     return (
       <React.Fragment>
         <img className="thanks__image" src={currentStatusObj.bannerImage} alt="Beep Success" />
+        <div className="thanks__delivery-status-container">
+          <div>
+            <i></i>
+          </div>
+          <h4 className="text-size-big font-weight-bolder">Rider is on the way to you</h4>
+          <a>Track your order here</a>
+        </div>
         <div className="thanks__delivery-status-container">
           <ul className="thanks__delivery-status-list text-left">
             <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
@@ -485,7 +497,7 @@ export class ThankYou extends Component {
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
+            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepOrderStatusPaid}`}
             alt="Beep Success"
           />
         ) : (
