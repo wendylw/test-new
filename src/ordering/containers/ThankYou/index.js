@@ -15,6 +15,7 @@ import {
   getOrder,
   getStoreHashCode,
   getCashbackInfo,
+  getBusinessInfo,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 
@@ -203,7 +204,7 @@ export class ThankYou extends Component {
     return targetInfo;
   };
 
-  renderConsumerStatusFlow({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics, cashbackInfo }) {
+  renderConsumerStatusFlow({ logs, createdTime, t, CONSUMERFLOW_STATUS, cashbackInfo, businessInfo }) {
     if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -214,6 +215,7 @@ export class ThankYou extends Component {
     const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
     const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
     const { cashback } = cashbackInfo || {};
+    const { enableCashback } = businessInfo || {};
 
     const getTimeFromStatusObj = statusObj => {
       return new Date((statusObj && statusObj.time) || createdTime || '');
@@ -325,7 +327,9 @@ export class ThankYou extends Component {
           ) : null}
           {currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp' ? (
             <div className="thanks__status-description">
-              <a className="link text-uppercase font-weight-bolder">{currentStatusObj.secondNote}</a>
+              <a href="" className="link text-uppercase font-weight-bolder">
+                {currentStatusObj.secondNote}
+              </a>
             </div>
           ) : null}
           {currentStatusObj.status === 'accepted' ? (
@@ -335,19 +339,21 @@ export class ThankYou extends Component {
             </div>
           ) : null}
         </div>
-        <div className="thanks__delivery-status-container">
-          <CurrencyNumber
-            className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
-            money={cashback || 0}
-          />
-          <h3>
-            <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
-            <span role="img" aria-label="Celebration">
-              🎉
-            </span>
-          </h3>
-          <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
-        </div>
+        {enableCashback ? (
+          <div className="thanks__delivery-status-container">
+            <CurrencyNumber
+              className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+              money={cashback || 0}
+            />
+            <h3>
+              <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
+              <span role="img" aria-label="Celebration">
+                🎉
+              </span>
+            </h3>
+            <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
+          </div>
+        ) : null}
       </React.Fragment>
     );
   }
@@ -513,7 +519,7 @@ export class ThankYou extends Component {
   };
 
   renderDeliveryImageAndTimeLine() {
-    const { t, order, onlineStoreInfo, cashbackInfo } = this.props;
+    const { t, order, onlineStoreInfo, cashbackInfo, businessInfo } = this.props;
     const { createdTime, logs, deliveryInformation, status } = order || {};
     const { country } = onlineStoreInfo || {};
     const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
@@ -529,13 +535,12 @@ export class ThankYou extends Component {
           />
         ) : (
           this.renderConsumerStatusFlow({
-            country,
             logs,
             createdTime,
             t,
             CONSUMERFLOW_STATUS,
-            useStorehubLogistics,
             cashbackInfo,
+            businessInfo,
           })
         )}
       </React.Fragment>
@@ -653,6 +658,7 @@ export default compose(
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
       cashbackInfo: getCashbackInfo(state),
+      businessInfo: getBusinessInfo(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

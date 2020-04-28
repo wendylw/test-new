@@ -196,7 +196,7 @@ class Customer extends Component {
   };
 
   renderDeliveryAddress() {
-    const { t, history, business, allBusinessInfo } = this.props;
+    const { t, history } = this.props;
 
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
