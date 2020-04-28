@@ -30,7 +30,9 @@ import PaymentCardBrands from '../components/PaymentCardBrands';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_KEY || '');
+const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
+const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
+
 
 const Field = ({
   t,
@@ -428,7 +430,7 @@ class Stripe extends Component {
         <div className="payment-bank stripe">
           <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
-          <Elements stripe={stripePromise} options={{}}>
+          <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm
               t={t}
               country={merchantCountry}
