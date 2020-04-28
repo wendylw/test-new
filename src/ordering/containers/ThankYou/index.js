@@ -224,6 +224,9 @@ export class ThankYou extends Component {
       currentStatusObj = {
         statusObj: paidStatusObj,
         status: 'paid',
+        style: {
+          width: '25%',
+        },
         firstNote: t('OrderReceived'),
         // firstLiClassName: 'active',
         secondNote: t('OrderReceivedDescription'),
@@ -238,6 +241,9 @@ export class ThankYou extends Component {
       currentStatusObj = {
         statusObj: acceptedStatusObj,
         status: 'accepted',
+        style: {
+          width: '50%',
+        },
         firstNote: t('MerchantAccepted'),
         // firstLiClassName: 'active',
         secondNote: t('FindingRider'),
@@ -252,6 +258,9 @@ export class ThankYou extends Component {
       currentStatusObj = {
         statusObj: logisticConfirmedStatusObj && confirmedStatusObj,
         status: 'confirmed',
+        style: {
+          width: '75%',
+        },
         firstNote: t('RiderAssigned'),
         // firstLiClassName: 'active',
         secondNote: t('TrackYourOrder'),
@@ -267,6 +276,9 @@ export class ThankYou extends Component {
       currentStatusObj = {
         statusObj: pickupStatusObj,
         status: 'riderPickUp',
+        style: {
+          width: '100%',
+        },
         firstNote: t('RiderPickUp'),
         // firstLiClassName: 'active finished',
         secondNote: t('TrackYourOrder'),
@@ -293,9 +305,15 @@ export class ThankYou extends Component {
       <React.Fragment>
         <img className="thanks__image" src={currentStatusObj.bannerImage} alt="Beep Success" />
         <div className="thanks__delivery-status-container">
-          <div>
-            <i></i>
-          </div>
+          {currentStatusObj.status !== 'cancelled' ? (
+            <div className="progress-bar__container">
+              <i
+                className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}
+                style={currentStatusObj.style}
+              ></i>
+            </div>
+          ) : null}
+
           <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
           {currentStatusObj.status === 'paid' ? (
             <div className="thanks__status-description flex flex-middle">
@@ -318,55 +336,18 @@ export class ThankYou extends Component {
           ) : null}
         </div>
         <div className="thanks__delivery-status-container">
-          <CurrencyNumber className="text-size-huge font-weight-bolder" money={cashback || 0} />
+          <CurrencyNumber
+            className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+            money={cashback || 0}
+          />
           <h3>
             <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
             <span role="img" aria-label="Celebration">
               🎉
             </span>
           </h3>
-          <p>{t('EarnedCashBackDescription')}</p>
+          <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
         </div>
-        {/* <div className="thanks__delivery-status-container">
-          <ul className="thanks__delivery-status-list text-left">
-            <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.firstNote}</label>
-              <div className="thanks__delivery-status-time">
-                <IconAccessTime className="access-time-icon text-middle" />
-                <time className="text-middle gray-font-opacity">
-                  {`${
-                    currentStatusObj.timeToShow
-                      ? toLocaleTimeString(currentStatusObj.timeToShow, country, TIME_OPTIONS)
-                      : ''
-                    }, ${
-                    currentStatusObj.timeToShow
-                      ? toLocaleDateString(currentStatusObj.timeToShow, country, DATE_OPTIONS)
-                      : ''
-                    }`}
-                </time>
-              </div>
-            </li>
-            <li className={`thanks__delivery-status-item ${currentStatusObj.secondLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.secondNote}</label>
-              {currentStatusObj.secondTimeToShow ? (
-                <div className="thanks__delivery-status-time">
-                  <IconAccessTime className="access-time-icon text-middle" />
-                  <time className="text-middle gray-font-opacity">
-                    {`${
-                      currentStatusObj.secondTimeToShow
-                        ? toLocaleTimeString(currentStatusObj.secondTimeToShow, country, TIME_OPTIONS)
-                        : ''
-                      }, ${
-                      currentStatusObj.secondTimeToShow
-                        ? toLocaleDateString(currentStatusObj.secondTimeToShow, country, DATE_OPTIONS)
-                        : ''
-                      }`}
-                  </time>
-                </div>
-              ) : null}
-            </li>
-          </ul>
-        </div> */}
       </React.Fragment>
     );
   }
@@ -406,14 +387,14 @@ export class ThankYou extends Component {
             </div>
           ) : null}
         </div>
-        <h4>{t('DeliveringTo')}</h4>
+        <h4 className="thanks__delivering-title">{t('DeliveringTo')}</h4>
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
           <span className="gray-font-opacity">{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
-        <div className="text-center">
+        <div className="thanks__total-container text-center">
           <span className="thanks__total-text">{t('Total')}</span>
           <CurrencyNumber className="thanks__total-text font-weight-bolder" money={total || 0} />
         </div>

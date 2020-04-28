@@ -2581,10 +2581,25 @@
     margin: 8px 0;
   }
 
+  &__earned-cashback-total {
+    display: block;
+    padding: 12px 0;
+  }
+
+  &__earned-cashback-description {
+    margin: 8px auto;
+    max-width: 300px;
+    line-height: $line-height-base;
+  }
+
   &__title {
     margin: 4vw 0;
     font-size: 2.4rem;
     color: $gray-1;
+  }
+
+  &__delivering-title {
+    margin-top: 20px;
   }
 
   &__prompt {
@@ -2605,12 +2620,24 @@
     margin-left: 10px;
   }
 
+  &__total-container {
+    margin: 10px 0;
+  }
+
   &__info-container,
   &__delivery-status-container {
     @extend .border-radius-base;
 
+    position: relative;
     background-color: $gray-5;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+
+    .progress-bar__container {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
   }
 
   &__info-container {
