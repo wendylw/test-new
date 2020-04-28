@@ -207,7 +207,7 @@ export class ThankYou extends Component {
     const logisticConfirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, LOGISTIC_CONFIRMED);
     const confirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CONFIMRMED);
     const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
-    const cancelleStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
+    const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
 
     const getTimeFromStatusObj = statusObj => {
       return new Date((statusObj && statusObj.time) || createdTime || '');
@@ -217,10 +217,11 @@ export class ThankYou extends Component {
     if (paidStatusObj && acceptedStatusObj === undefined) {
       currentStatusObj = {
         statusObj: paidStatusObj,
+        status: 'paid',
         firstNote: t('OrderReceived'),
-        firstLiClassName: 'active',
-        secondNote: t('PendingMerchant'),
-        secondLiClassName: 'normal',
+        // firstLiClassName: 'active',
+        secondNote: t('OrderReceivedDescription'),
+        // secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
         bannerImage: beepOrderStatusPaid,
       };
@@ -230,10 +231,11 @@ export class ThankYou extends Component {
     if (acceptedStatusObj && logisticConfirmedStatusObj === undefined) {
       currentStatusObj = {
         statusObj: acceptedStatusObj,
+        status: 'accepted',
         firstNote: t('MerchantAccepted'),
-        firstLiClassName: 'active',
+        // firstLiClassName: 'active',
         secondNote: t('FindingRider'),
-        secondLiClassName: 'normal',
+        // secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(acceptedStatusObj),
         bannerImage: beepOrderStatusAccepted,
       };
@@ -243,10 +245,11 @@ export class ThankYou extends Component {
     if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined) {
       currentStatusObj = {
         statusObj: logisticConfirmedStatusObj && confirmedStatusObj,
+        status: 'confirmed',
         firstNote: t('RiderAssigned'),
-        firstLiClassName: 'active',
-        secondNote: t('RiderOnTheWay'),
-        secondLiClassName: 'normal',
+        // firstLiClassName: 'active',
+        secondNote: t('TrackYourOrder'),
+        // secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(logisticConfirmedStatusObj && confirmedStatusObj),
         bannerImage: beepOrderStatusConfirmed,
       };
@@ -257,26 +260,31 @@ export class ThankYou extends Component {
     if (pickupStatusObj) {
       currentStatusObj = {
         statusObj: pickupStatusObj,
+        status: 'riderPickUp',
         firstNote: t('RiderPickUp'),
-        firstLiClassName: 'active finished',
-        secondNote: t('OrderOnTheWay'),
-        secondLiClassName: 'active',
+        // firstLiClassName: 'active finished',
+        secondNote: t('TrackYourOrder'),
+        // secondLiClassName: 'active',
         timeToShow: getTimeFromStatusObj(pickupStatusObj),
         bannerImage: beepOrderStatusPickedUp,
       };
     }
-    if (paidStatusObj && cancelleStatusObj) {
+    if (paidStatusObj && cancelledStatusObj) {
       currentStatusObj = {
-        statusObj: cancelleStatusObj,
-        firstNote: t('OrderPaid'),
-        firstLiClassName: 'active',
+        statusObj: cancelledStatusObj,
+        status: 'cancelled',
+        firstNote: t('OrderCancelledDescription'),
+        // firstLiClassName: 'active',
         secondNote: t('OrderCancelled'),
-        secondLiClassName: 'error',
+        // secondLiClassName: 'error',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
         bannerImage: beepOrderStatusCancelled,
-        secondTimeToShow: getTimeFromStatusObj(cancelleStatusObj),
+        secondTimeToShow: getTimeFromStatusObj(cancelledStatusObj),
       };
     }
+
+    console.log(currentStatusObj);
+
     return (
       <React.Fragment>
         <img className="thanks__image" src={currentStatusObj.bannerImage} alt="Beep Success" />
@@ -284,10 +292,28 @@ export class ThankYou extends Component {
           <div>
             <i></i>
           </div>
-          <h4 className="text-size-big font-weight-bolder">Rider is on the way to you</h4>
-          <a>Track your order here</a>
+          <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
+          {currentStatusObj.status === 'paid' ? (
+            <div className="thanks__status-description flex flex-middle">
+              <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
+              <span role="img" aria-label="Goofy">
+                😋
+              </span>
+            </div>
+          ) : null}
+          {currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp' ? (
+            <div className="thanks__status-description">
+              <a className="link text-uppercase font-weight-bolder">{currentStatusObj.secondNote}</a>
+            </div>
+          ) : null}
+          {currentStatusObj.status === 'accepted' ? (
+            <div className="thanks__status-description flex flex-middle">
+              <IconAccessTime />
+              <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
+            </div>
+          ) : null}
         </div>
-        <div className="thanks__delivery-status-container">
+        {/* <div className="thanks__delivery-status-container">
           <ul className="thanks__delivery-status-list text-left">
             <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
               <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.firstNote}</label>
@@ -298,11 +324,11 @@ export class ThankYou extends Component {
                     currentStatusObj.timeToShow
                       ? toLocaleTimeString(currentStatusObj.timeToShow, country, TIME_OPTIONS)
                       : ''
-                  }, ${
+                    }, ${
                     currentStatusObj.timeToShow
                       ? toLocaleDateString(currentStatusObj.timeToShow, country, DATE_OPTIONS)
                       : ''
-                  }`}
+                    }`}
                 </time>
               </div>
             </li>
@@ -316,17 +342,17 @@ export class ThankYou extends Component {
                       currentStatusObj.secondTimeToShow
                         ? toLocaleTimeString(currentStatusObj.secondTimeToShow, country, TIME_OPTIONS)
                         : ''
-                    }, ${
+                      }, ${
                       currentStatusObj.secondTimeToShow
                         ? toLocaleDateString(currentStatusObj.secondTimeToShow, country, DATE_OPTIONS)
                         : ''
-                    }`}
+                      }`}
                   </time>
                 </div>
               ) : null}
             </li>
           </ul>
-        </div>
+        </div> */}
       </React.Fragment>
     );
   }
