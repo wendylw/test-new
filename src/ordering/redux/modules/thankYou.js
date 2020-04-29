@@ -133,6 +133,18 @@ export const getOrder = state => {
   return getOrderByOrderId(state, state.thankYou.orderId);
 };
 
+export const getPromotion = state => {
+  const order = getOrder(state);
+  if (order && order.appliedVoucher) {
+    return {
+      promoCode: order.appliedVoucher.voucherCode,
+      discount: order.appliedVoucher.value,
+    };
+  } else {
+    return null;
+  }
+};
+
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
   return getBusinessByName(state, business);

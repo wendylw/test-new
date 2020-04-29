@@ -472,12 +472,20 @@ form {
   font-weight: $font-weight-bolder;
 }
 
+.font-weight-bold {
+  font-weight: $font-weight-bold;
+}
+
 .text-uppercase {
   text-transform: uppercase;
 }
 
 .text-error {
   color: $red;
+}
+
+.text-nowrap {
+  white-space: nowrap;
 }
 
 .border-radius-base {

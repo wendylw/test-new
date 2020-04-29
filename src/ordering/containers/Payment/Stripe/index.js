@@ -25,11 +25,13 @@ import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import Utils from '../../../../utils/utils';
+import PaymentCardBrands from '../components/PaymentCardBrands';
 // import '../styles/2-Card-Detailed.css';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_KEY || '');
+const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
+const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
 
 const Field = ({
   t,
@@ -87,11 +89,12 @@ const SubmitButton = ({ processing, error, children, disabled, onClick }) => (
   </div>
 );
 
-const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
+const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country }) => {
   const { total } = cartSummary || {};
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
+  const [cardBrand, setCardBrand] = useState('');
   const [cardNumberDomLoaded, setCardNumberDom] = useState(false);
   const [cardExpiryDomLoaded, setCardExpiryDom] = useState(false);
   const [cardCVCDomLoaded, setCardCVCDom] = useState(false);
@@ -111,8 +114,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
   if (typeof renderRedirectForm !== 'function') {
     throw new Error('Error: getRedirectFrom should be a function');
   }
-
-  const redirectForm = renderRedirectForm();
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -194,7 +195,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
                 height: '50px',
                 color: '#303030',
                 fontWeight: 500,
-                fontSize: '1.5rem',
+                fontSize: '1.3rem',
                 fontSmoothing: 'antialiased',
                 ':-webkit-autofill': {
                   color: '#dededf',
@@ -210,11 +211,21 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
           }}
           onChange={e => {
             setError(e.error);
+            // Card brand. Can be American Express, Diners Club, Discover, JCB, MasterCard, UnionPay, Visa, or Unknown.
+            // The card brand of the card number being entered.
+            // Can be one of visa, mastercard, amex, discover, diners, jcb, unionpay, or unknown.
+            setCardBrand(e.brand);
             setCardNumberComplete(e.complete);
           }}
           onReady={e => {
             setCardNumberDom(true);
           }}
+        />
+        <PaymentCardBrands
+          iconClassName={'payment-bank__card-type-icon'}
+          country={country}
+          brand={cardBrand}
+          vendor={PaymentCardBrands.VENDOR_STRIPE}
         />
       </div>
 
@@ -242,7 +253,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
                   height: '50px',
                   color: '#303030',
                   fontWeight: 500,
-                  fontSize: '1.5rem',
+                  fontSize: '1.3rem',
                   fontSmoothing: 'antialiased',
                   ':-webkit-autofill': {
                     color: '#dededf',
@@ -288,7 +299,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary }) => {
                   height: '50px',
                   color: '#303030',
                   fontWeight: 500,
-                  fontSize: '1.5rem',
+                  fontSize: '1.3rem',
                   fontSmoothing: 'antialiased',
                   ':-webkit-autofill': {
                     color: '#dededf',
@@ -398,7 +409,7 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history, cartSummary } = this.props;
+    const { t, match, history, cartSummary, merchantCountry } = this.props;
     const { total } = cartSummary || {};
 
     return (
@@ -415,12 +426,13 @@ class Stripe extends Component {
           }}
         />
 
-        <div className="payment-bank">
+        <div className="payment-bank stripe">
           <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
-          <Elements stripe={stripePromise} options={{}}>
+          <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm
               t={t}
+              country={merchantCountry}
               cartSummary={cartSummary}
               onPreSubmit={this.createOrder}
               renderRedirectForm={paymentMethod => {

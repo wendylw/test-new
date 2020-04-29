@@ -13,7 +13,6 @@ import Utils from '../../utils/utils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
-// import OfferDetails from './components/OfferDetails';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import {
   getAllCurrentStores,
@@ -164,7 +163,7 @@ class Home extends React.Component {
     });
   };
 
-  handleScannerSelected = mode => () => {
+  backLeftPosition = mode => () => {
     const { homeActions } = this.props;
 
     // user can click scanner in two modes, 'search'（using search bar） and 'stores'(nearby stores)
@@ -273,9 +272,7 @@ class Home extends React.Component {
           }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
-          onScannerClicked={
-            Boolean(keyword) ? this.handleScannerSelected('search') : this.handleScannerSelected('stores')
-          }
+          backLeftPosition={Boolean(keyword) ? this.backLeftPosition('search') : this.backLeftPosition('stores')}
         />
 
         <section

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
+import { Trans, withTranslation } from 'react-i18next';
+import { IconLeftArrow } from '../../components/Icons';
 import beepWarningImage from '../../images/beep-warning.png';
 import './index.scss';
 
@@ -31,22 +32,50 @@ class Error extends Component {
     return errorList[type] || {};
   }
 
+  backToPreviousPage = data => {
+    const { history, location } = this.props;
+    const pathname = (location.state && location.state.from && location.state.from.pathname) || '/home';
+
+    history.push({
+      pathname,
+      state: {
+        from: location,
+        data,
+      },
+    });
+  };
+
+  handleBackClicked = () => {
+    this.backToPreviousPage();
+  };
+
   render() {
+    const { t } = this.props;
     const error = this.getErrorContent();
 
     return (
-      <main className="prompt-page fixed-wrapper">
-        <figure className="prompt-page__image-container text-center">
-          <img src={error.logo} alt="error found" />
-        </figure>
+      <main className="fixed-wrapper fixed-wrapper__main">
+        <header className="header flex flex-space-between flex-middle sticky-wrapper">
+          <div>
+            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
+            <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
+              {t('ScanQRCode')}
+            </h2>
+          </div>
+        </header>
+        <section className="prompt-page">
+          <figure className="prompt-page__image-container text-center">
+            <img src={error.logo} alt="error found" />
+          </figure>
 
-        <div className="prompt-page__content">
-          <h2 className="prompt-page__title text-center text-size-huge">{error.title}</h2>
-          <div className="prompt-page__paragraphs text-center">{error.description}</div>
-        </div>
+          <div className="prompt-page__content">
+            <h2 className="prompt-page__title text-center text-size-huge">{error.title}</h2>
+            <div className="prompt-page__paragraphs text-center">{error.description}</div>
+          </div>
+        </section>
       </main>
     );
   }
 }
 
-export default withTranslation()(Error);
+export default withTranslation(['Scanner'])(Error);

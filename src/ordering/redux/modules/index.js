@@ -3,6 +3,7 @@ import entities from '../../../redux/modules/entities';
 import app from './app';
 import home from './home';
 import cart from './cart';
+import promotion from './promotion';
 import payment from './payment';
 import thankYou from './thankYou';
 import customer from './customer';
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   customer,
   payment,
   thankYou,
+  promotion,
 });
 
 export default rootReducer;

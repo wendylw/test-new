@@ -2,15 +2,6 @@ import Utils from './utils/utils';
 
 let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
 
-// To mock data
-if (process.env.NODE_ENV === 'development') {
-  business = 'wenjingzhang';
-  document.cookie = 'business=wenjingzhang; path=/';
-  document.cookie = '__h=U2FsdGVkX18tpToUnEBR%2B1seFOoe1nGWDJWZxdAOvdYo6Vdv6rOfkVEsMp8tW5Qd; path=/';
-  document.cookie = '__s=5e5dd6c7407cf700063ba869; path=/';
-  document.cookie = '__t=; path=/';
-}
-
 /* eslint-disable */
 function guid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -83,14 +74,11 @@ const config = {
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
   imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
-  onlineBankingMerchantList:
-    process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST !== 'none'
-      ? (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').split(',')
-      : null,
   paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
   beepitComUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}`,
   qrScanPageUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}/qrscan`,
+  removePickupMerchantList: (process.env.REACT_APP_REMOVE_PICKUP_MERCHANT_LIST || '').split(','),
   h() {
     try {
       return document.cookie

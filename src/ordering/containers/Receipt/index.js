@@ -12,7 +12,12 @@ import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as thankYouActionCreators, getOrder, getBusinessInfo } from '../../redux/modules/thankYou';
+import {
+  actions as thankYouActionCreators,
+  getOrder,
+  getBusinessInfo,
+  getPromotion,
+} from '../../redux/modules/thankYou';
 
 export class ReceiptDetail extends Component {
   componentWillMount() {
@@ -79,17 +84,17 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, order, businessInfo } = this.props;
+    const { t, order, businessInfo, promotion } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, tableId, additionalComments } = order || {};
 
     return (
       <section className="table-ordering__receipt">
         <Header
-          className="border__bottom-divider gray"
+          className="border__bottom-divider gray flex-middle"
           title={t('ViewReceipt')}
           navFunc={this.backToThankYou.bind(this)}
         >
-          <span className="gray-font-opacity">{tableId ? t('TableIdText', { tableId }) : t('SelfPickUp')}</span>
+          <span className="gray-font-opacity">{tableId ? t('TableIdText', { tableId }) : t('SelfPickup')}</span>
         </Header>
         <div className="receipt__content text-center">
           <label className="receipt__label gray-font-opacity font-weight-bolder text-uppercase">
@@ -110,6 +115,7 @@ export class ReceiptDetail extends Component {
           serviceCharge={serviceCharge}
           subtotal={subtotal}
           total={total}
+          promotion={promotion}
           creditsBalance={this.getSpendCashback()}
         />
       </section>
@@ -123,6 +129,7 @@ export default compose(
     state => ({
       businessInfo: getBusinessInfo(state),
       order: getOrder(state),
+      promotion: getPromotion(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

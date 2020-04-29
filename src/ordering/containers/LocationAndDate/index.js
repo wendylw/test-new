@@ -179,6 +179,9 @@ class LocationAndDate extends Component {
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
+    const { business, allBusinessInfo } = this.props;
+    const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -191,6 +194,10 @@ class LocationAndDate extends Component {
         const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
+      }
+
+      if (disableTodayPreOrder && !i) {
+        continue;
       }
 
       deliveryDates.push({
@@ -276,9 +283,7 @@ class LocationAndDate extends Component {
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
-              <i className="delivery__next-icon">
-                <IconNext />
-              </i>
+              <IconNext className="delivery__next-icon" />
             </div>
           </div>
         </div>
