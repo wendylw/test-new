@@ -38,7 +38,9 @@ class Contact extends Component {
         <Header clickBack={this.handleClickBack} />
         <div className="gift-card__page">
           <div className="gift-card__card">
-            <h2 className="header__title font-weight-bolder text-center gift-card__subtitle">You've selected:</h2>
+            <h2 className="header__title font-weight-bolder text-center gift-card__subtitle">
+              {t('GiftCardSelected')}
+            </h2>
             <div className="gift-card__card-container">
               <div className="gift-card__store">
                 <div className="gift-card__store-item gift-card__store-logo">
@@ -55,10 +57,8 @@ class Contact extends Component {
             </div>
           </div>
           <div className="gift-card__email">
-            <h2 className="header__title font-weight-bolder gift-card__email-title">
-              Who are we sending this gift voucher to?
-            </h2>
-            <h2 className="gift-card__email-note">We'll be sending this gift voucher & redemption details via email</h2>
+            <h2 className="header__title font-weight-bolder gift-card__email-title">{'SendGiftCardTo'}</h2>
+            <h2 className="gift-card__email-note">{t('GiftCardEmailNote')}</h2>
             <input className="gift-card__email-input" onChange={this.handleEmailChange} value={contactEmail} />
           </div>
         </div>
@@ -67,6 +67,7 @@ class Contact extends Component {
             <button
               className="continue__button button button__fill button__block font-weight-bolder"
               onClick={this.handleContinue}
+              disabled={!contactEmail}
             >
               {t('CONTINUE')}
             </button>

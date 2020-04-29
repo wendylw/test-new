@@ -1,3 +1,10 @@
 {
-    "CONTINUE": "CONTINUE"
+    "CONTINUE": "CONTINUE",
+    "GiftCardFindOutMore": "Find out more about ",
+    "GiftCardChooseAmount": "Send a gift instantly in any amount you choose",
+    "GiftCardAbout": "About this Gift Voucher",
+    "GiftCardToKnow": "Things you need to know",
+    "GiftCardSelected": "You've selected:",
+    "SendGiftCardTo": "Who are we sending this gift voucher to?",
+    "GiftCardEmailNote": "We'll be sending this gift voucher & redemption details via email"
 }

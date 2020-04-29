@@ -70,14 +70,14 @@
       bottom: 20px;
       left: 25px;
       font-size: 28px;
-      color: white;
+      color: $white;
     }
 
     &-name {
       right: 25px;
       bottom: 20px;
-      font-size: 14px;
-      color: white;
+      font-size: $font-size-base;
+      color: $white;
       text-transform: uppercase;
     }
   }
@@ -118,7 +118,7 @@
       }
 
       &.selected {
-        color: white;
+        color: $white;
         background-color: $theme-color;
         border: 1px solid $theme-color;
       }
@@ -186,14 +186,10 @@
       margin-top: 16px;
     }
   }
-
-  &__button.active {
-    background-color: red;
-  }
 }
 
 .header {
-  background-color: white;
+  background-color: $white;
   padding: 10px;
   .header__back-button {
     fill: #909090;

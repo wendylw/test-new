@@ -47,13 +47,12 @@ class Home extends Component {
             </div>
           </div>
           <div className="gift-card__caption text-center">
-            Find out more about <a href={beepSiteUrl}>{businessName} ></a>
+            {t('GiftCardFindOutMore')}
+            <a href={beepSiteUrl}>{businessName} ></a>
           </div>
         </div>
         <div className="gift-card__amount">
-          <h2 className="header__title font-weight-bolder text-center">
-            Send a gift instantly in any amount you choose
-          </h2>
+          <h2 className="header__title font-weight-bolder text-center">{t('GiftCardChooseAmount')}</h2>
           <ul className="flex flex-middle flex-space-between gift-card__amount-items">
             {voucherList.map(voucher => (
               <li
@@ -69,7 +68,7 @@ class Home extends Component {
         </div>
         <div className="gift-card__notes">
           <div className="gift-card__note">
-            <h2 className="header__title">About this Gift Voucher</h2>
+            <h2 className="header__title">{t('GiftCardAbout')}</h2>
             <ul>
               <li>Validity period: 60 days from purchase date</li>
               <li>
@@ -78,7 +77,7 @@ class Home extends Component {
             </ul>
           </div>
           <div className="gift-card__note">
-            <h2 className="header__title">Things you need to know</h2>
+            <h2 className="header__title">{t('GiftCardToKnow')}</h2>
             <ul>
               <li>
                 The gift voucher(s) purchased are digital only and will be will be emailed to you or any designated
@@ -112,6 +111,7 @@ class Home extends Component {
             <button
               className="continue__button button button__fill button__block font-weight-bolder"
               onClick={this.handleContinue}
+              disabled={!selectedVoucher}
             >
               {t('CONTINUE')}
             </button>
