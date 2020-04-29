@@ -1,6 +1,10 @@
 @import "~normalize.css/normalize.css";
 @import "../Common.scss";
 
+.voucher-ordering {
+  padding-top: 50px;
+}
+
 .footer-operation {
   position: fixed;
   padding: 3.8vw;
@@ -12,6 +16,20 @@
 
   .button {
     @extend .border-radius-base;
+  }
+}
+
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  width: 100%;
+  background-color: $white;
+  padding: 10px;
+  height: 50px;
+  .header__back-button {
+    fill: #909090;
   }
 }
 
@@ -188,14 +206,6 @@
   }
 }
 
-.header {
-  background-color: $white;
-  padding: 10px;
-  .header__back-button {
-    fill: #909090;
-  }
-}
-
 @media (min-width: 600px) {
   .container {
     position: relative;
@@ -219,5 +229,83 @@
 
   .gift-card__page {
     margin-bottom: 90px;
+  }
+}
+
+.thankyou-page {
+  background-color: $gray-4;
+  &__title {
+    font-size: 2.4rem;
+    text-align: center;
+    color: $gray-1;
+    padding-bottom: 1vh;
+    padding-top: 5vh;
+    font-weight: $font-weight-light;
+  }
+
+  &__gifCard {
+    text-align: center;
+    img {
+      width: 160px;
+      height: 160px;
+    }
+    margin: 15px 0;
+  }
+
+  &__contact-info {
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: $line-height-base;
+    .contact-info__email {
+      font-size: inherit;
+      font-weight: $font-weight-bolder;
+    }
+  }
+
+  &__order-info {
+    background-color: white;
+    border: 1px solid $gray-3;
+    margin: 15px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.1);
+
+    .voucher-code__container {
+      text-align: center;
+      padding: 20px 0px;
+      border-bottom: 1px solid $gray-3;
+    }
+
+    .voucher-code__title {
+      font-weight: $font-weight-bolder;
+      font-size: 1.2rem;
+    }
+
+    .voucher-code__content {
+      font-size: 1.8rem;
+      font-weight: $font-weight-bolder;
+      color: $gray-1;
+      padding-top: 10px;
+    }
+
+    .store-info__container {
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .store-info__logo {
+      img {
+        width: 80px;
+        height: 80px;
+      }
+      margin-bottom: 15px;
+    }
+
+    .store-info__site {
+      a {
+        text-decoration: none;
+        font-weight: $font-weight-bolder;
+        color: $link-blue;
+      }
+    }
   }
 }

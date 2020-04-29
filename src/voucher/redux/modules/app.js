@@ -20,6 +20,7 @@ const initialState = {
   },
   onlineStoreInfo: null,
   businessInfo: null,
+  order: null,
 };
 
 export const actions = {
@@ -54,6 +55,13 @@ export const actions = {
       email: email.trim(),
     });
   },
+  loadOrder: orderId => ({
+    [FETCH_GRAPHQL]: {
+      types: [TYPES.FETCH_ORDER_REQUEST, TYPES.FETCH_ORDER_SUCCESS, TYPES.FETCH_ORDER_FAILURE],
+      endpoint: Url.apiGql('Order'),
+      variables: { orderId },
+    },
+  }),
 };
 
 const onlineStoreInfoReducer = (state = initialState.onlineStoreInfo, action) => {
@@ -115,11 +123,26 @@ const contactInfoReducer = (state = initialState.contactInfo, action) => {
   return state;
 };
 
+const orderReducer = (state = initialState.order, action) => {
+  switch (action.type) {
+    case TYPES.FETCH_ORDER_SUCCESS:
+      const { order } = action.responseGql.data;
+      return {
+        ...state,
+        ...order,
+      };
+    default:
+      break;
+  }
+  return state;
+};
+
 export default combineReducers({
   onlineStoreInfo: onlineStoreInfoReducer,
   businessInfo: businessInfoReducer,
   selectedVoucher: selectedVoucherReducer,
   contactInfo: contactInfoReducer,
+  order: orderReducer,
 });
 
 export function getOnlineStoreInfo(state) {
@@ -135,7 +158,7 @@ export function getOnlineStoreInfoLogo(state) {
 }
 
 export function getBusinessDisplayName(state) {
-  return _get(state.app, 'businessInfo.displayName', '');
+  return _get(state.app, 'businessInfo.name', '');
 }
 
 export function getBusinessName(state) {
@@ -160,4 +183,17 @@ export const getContactEmail = state => {
 
 export const getVoucherList = state => {
   return [5, 10, 20, 50];
+};
+
+export const getOrderReceiptNumber = state => {
+  return _get(state.app, 'order.orderId', '');
+};
+
+export const getOrderVoucherCode = state => {
+  return _get(state.app, 'order.createdVoucherCodes.0', '');
+};
+
+export const getOrderContactEmail = state => {
+  return 'huaicheng.liu@storehub.com';
+  return _get(state.app, 'order.createdVoucherCodes.0', '');
 };
