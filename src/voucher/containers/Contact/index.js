@@ -18,7 +18,6 @@ class Contact extends Component {
   handleContinue = () => {};
   handleEmailChange = e => {
     const email = e.target.value;
-    console.log(email);
     this.props.appActions.updateContactEmail(email);
   };
 
