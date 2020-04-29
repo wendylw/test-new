@@ -75,7 +75,7 @@ class Home extends Component {
             <ul>
               <li>Validity period: 60 days from purchase date</li>
               <li>
-                Gift voucher(s) can only be applied to purchases made on {businessName}'s online store at {beepSiteUrl}
+                Gift voucher(s) can only be applied to purchases made on {businessName}'s online store at beepit.com
               </li>
             </ul>
           </div>
@@ -83,28 +83,26 @@ class Home extends Component {
             <h2 className="header__title">{t('GiftCardToKnow')}</h2>
             <ul>
               <li>
-                The gift voucher(s) purchased are digital only and will be will be emailed to you or any designated
+                The gift voucher purchased is digital only and will be will be emailed to you or any designated
                 recipient upon successful purchase.
               </li>
               <li>
-                The gift voucher(s) are only available for one-time use, and are valid for 60 days from purchase date.
+                The gift voucher is only available for one-time use, and are valid for 60 days from purchase date.
               </li>
-              <li>To utilize the gift voucher(s), please place your order at the partner’s beepit.com online store.</li>
+              <li>To utilize the gift voucher, please place your order at the partner’s beepit.com online store.</li>
               <li>
-                Apply the gift voucher(s) voucher code to your order upon check out and the gift voucher(s)’s value will
-                be deducted automatically
+                Apply the gift voucher's code to your order upon check out and the gift voucher's value will be deducted
+                automatically
               </li>
               <li>
                 If the value of your order exceeds the value of the gift voucher, the outstanding balance will be
                 charged to your chosen payment method
               </li>
               <li>
-                The gift voucher(s) value will be valid for 60 days from the date of purchase with no extension after
+                The gift voucher value will be valid for 60 days from the date of purchase with no extension after
                 expiry
               </li>
-              <li>
-                The gift voucher(s) are non-cancellable / non-refundable / non-exchangeable for cash upon purchase.
-              </li>
+              <li>The gift voucher is non-cancellable / non-refundable / non-exchangeable for cash upon purchase.</li>
               <li>Partner exclusions may apply.</li>
             </ul>
           </div>
