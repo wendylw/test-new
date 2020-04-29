@@ -36,20 +36,32 @@ class Contact extends Component {
     return (
       <div className="update-contact__page">
         <Header clickBack={this.handleClickBack} />
-        <dl>
-          <dt>Business Logo</dt>
-          <dd>{onlineStoreLogo}</dd>
-          <dt>Business Name</dt>
-          <dd>{businessName}</dd>
-          <dt>Beep site url</dt>
-          <dd>{beepSiteUrl}</dd>
-          <dt>selected voucher</dt>
-          <dd>{currencySymbol + selectedVoucher}</dd>
-        </dl>
-        <label>
-          Email:
-          <input style={{ border: '1px solid black' }} onChange={this.handleEmailChange} value={contactEmail} />
-        </label>
+        <div className="gift-card__page">
+          <div className="gift-card__card">
+            <h2 className="header__title font-weight-bolder text-center gift-card__subtitle">You've selected:</h2>
+            <div className="gift-card__card-container">
+              <div className="gift-card__store">
+                <div className="gift-card__store-item gift-card__store-logo">
+                  <img alt="store-logo" src={onlineStoreLogo} />
+                </div>
+                {selectedVoucher ? (
+                  <div className="gift-card__store-item gift-card__store-amount">
+                    {currencySymbol}
+                    {selectedVoucher}
+                  </div>
+                ) : null}
+                <div className="gift-card__store-item gift-card__store-name">{businessName}</div>
+              </div>
+            </div>
+          </div>
+          <div className="gift-card__email">
+            <h2 className="header__title font-weight-bolder gift-card__email-title">
+              Who are we sending this gift voucher to?
+            </h2>
+            <h2 className="gift-card__email-note">We'll be sending this gift voucher & redemption details via email</h2>
+            <input className="gift-card__email-input" onChange={this.handleEmailChange} value={contactEmail} />
+          </div>
+        </div>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button

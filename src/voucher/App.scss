@@ -26,6 +26,12 @@
     padding-bottom: 24px;
   }
 
+  &__subtitle {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+
   &__card {
     margin-bottom: 30px;
   }
@@ -152,6 +158,33 @@
   &__note:last-child ul {
     margin-top: 5px;
     margin-bottom: 5px;
+  }
+
+  &__email {
+    font-size: 16px;
+
+    &-title {
+      font-weight: 500;
+      font-size: 16px;
+      height: 24px;
+    }
+
+    &-note {
+      color: #8f9092;
+      font-size: 16px;
+      line-height: 22px;
+    }
+
+    &-input {
+      border: 1px solid #dededf;
+      height: 56px;
+      width: 100%;
+      border-radius: 4px;
+      color: #303030;
+      font-size: 20px;
+      padding: 4px 16px;
+      margin-top: 16px;
+    }
   }
 
   &__button.active {
