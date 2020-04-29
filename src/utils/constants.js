@@ -153,6 +153,7 @@ const ASIDE_NAMES = {
 const DELIVERY_METHOD = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
+  DIGITAL: 'digital',
 };
 
 const CONSUMERFLOW_STATUS = {

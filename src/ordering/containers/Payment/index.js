@@ -25,7 +25,7 @@ import { getPaymentName, getSupportCreditCardBrands } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 
-const { PAYMENT_METHOD_LABELS, ROUTER_PATHS } = Constants;
+const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];
 
@@ -69,9 +69,23 @@ class Payment extends Component {
   handleClickBack = () => {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let pathname;
+
+    switch (type) {
+      case DELIVERY_METHOD.PICKUP:
+      case DELIVERY_METHOD.DELIVERY:
+        pathname = ROUTER_PATHS.ORDERING_CUSTOMER_INFO;
+        break;
+      case DELIVERY_METHOD.DIGITAL:
+        pathname = ROUTER_PATHS.DIGITAL;
+        break;
+      default:
+        pathname = ROUTER_PATHS.ORDERING_CART;
+        break;
+    }
 
     history.push({
-      pathname: type ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : ROUTER_PATHS.ORDERING_CART,
+      pathname: pathname,
       search: window.location.search,
     });
   };
