@@ -59,6 +59,9 @@ class Home extends Component {
                 className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
                   voucher === selectedVoucher ? 'selected' : ''
                 }`}
+                onClick={() => {
+                  this.handleSelectVoucher(voucher);
+                }}
               >
                 <span>{currencySymbol}</span>
                 <span className="font-weight-bolder gift-card__amount-number">{voucher}</span>
