@@ -18,3 +18,11 @@
 .select-voucher__button.active {
   background-color: red;
 }
+
+.header {
+  background-color: white;
+  padding: 10px;
+  .header__back-button {
+    fill: #909090;
+  }
+}

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Constants from '../../../utils/constants';
+import Header from '../../components/Header';
+
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -16,15 +18,24 @@ import {
 
 class Contact extends Component {
   handleContinue = () => {};
+
   handleEmailChange = e => {
     const email = e.target.value;
     this.props.appActions.updateContactEmail(email);
+  };
+
+  handleClickBack = () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.VOUCHER_HOME,
+      search: window.location.search,
+    });
   };
 
   render() {
     const { t, contactEmail, onlineStoreLog, businessName, beepSiteUrl, currencySymbol, selectedVoucher } = this.props;
     return (
       <div className="update-contact__page">
+        <Header clickBack={this.handleClickBack} />
         <dl>
           <dt>Business Logo</dt>
           <dd>{onlineStoreLog}</dd>
