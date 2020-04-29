@@ -34,10 +34,16 @@ class Home extends Component {
           <h1 className="header__title font-weight-bolder gift-card__header text-center">Give the perfect gift</h1>
           <div className="gift-card__card-container">
             <div className="gift-card__store">
-              <div className="gift-card__store-logo">
+              <div className="gift-card__store-item gift-card__store-logo">
                 <img alt="store-logo" src={onlineStoreLogo} />
               </div>
-              <div className="gift-card__store-name">{businessName}</div>
+              {selectedVoucher ? (
+                <div className="gift-card__store-item gift-card__store-amount">
+                  {currencySymbol}
+                  {selectedVoucher}
+                </div>
+              ) : null}
+              <div className="gift-card__store-item gift-card__store-name">{businessName}</div>
             </div>
           </div>
           <div className="gift-card__caption text-center">

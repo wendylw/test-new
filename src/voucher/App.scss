@@ -45,17 +45,29 @@
     background-position: center;
     background-repeat: no-repeat;
 
-    &-logo img {
-      height: 40px;
-      width: 40px;
-      border-radius: 50%;
+    &-item {
       position: absolute;
+    }
+
+    &-logo {
       top: 15px;
       left: 25px;
     }
 
+    &-logo img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+    }
+
+    &-amount {
+      bottom: 20px;
+      left: 25px;
+      font-size: 28px;
+      color: white;
+    }
+
     &-name {
-      position: absolute;
       right: 25px;
       bottom: 20px;
       font-size: 14px;
