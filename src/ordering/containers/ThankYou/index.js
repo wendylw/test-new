@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import qs from 'qs';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
@@ -204,7 +204,18 @@ export class ThankYou extends Component {
     return targetInfo;
   };
 
-  renderConsumerStatusFlow({ logs, createdTime, t, CONSUMERFLOW_STATUS, cashbackInfo, businessInfo }) {
+  /* eslint-disable jsx-a11y/anchor-is-valid */
+  renderConsumerStatusFlow({
+    logs,
+    createdTime,
+    t,
+    CONSUMERFLOW_STATUS,
+    cashbackInfo,
+    businessInfo,
+    trackingUrl,
+    cancelOperator,
+    order,
+  }) {
     if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -216,6 +227,13 @@ export class ThankYou extends Component {
     const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
+    const { total, storeInfo } = order || {};
+    const { name } = storeInfo || {};
+    const cancelledDescriptionKey = {
+      ist: 'ISTCancelledDescription',
+      auto_cancelled: 'AutoCancelledDescription',
+      merchant: 'MerchantCancelledDescription',
+    };
 
     const getTimeFromStatusObj = statusObj => {
       return new Date((statusObj && statusObj.time) || createdTime || '');
@@ -293,9 +311,10 @@ export class ThankYou extends Component {
       currentStatusObj = {
         statusObj: cancelledStatusObj,
         status: 'cancelled',
-        firstNote: t('OrderCancelledDescription'),
+        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        // firstNote: t('OrderCancelledDescription'),
         // firstLiClassName: 'active',
-        secondNote: t('OrderCancelled'),
+        // secondNote: t('OrderCancelled'),
         // secondLiClassName: 'error',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
         bannerImage: beepOrderStatusCancelled,
@@ -316,7 +335,16 @@ export class ThankYou extends Component {
             </div>
           ) : null}
 
-          <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
+          {currentStatusObj.status === 'cancelled' ? (
+            <Trans i18nKey={currentStatusObj.descriptionKey} storeName={name}>
+              <h4 className="thanks__status-title text-size-big font-weight-bolder">
+                <CurrencyNumber className="font-weight-bolder" money={total || 0} />
+              </h4>
+            </Trans>
+          ) : (
+            <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
+          )}
+
           {currentStatusObj.status === 'paid' ? (
             <div className="thanks__status-description flex flex-middle">
               <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
@@ -327,7 +355,11 @@ export class ThankYou extends Component {
           ) : null}
           {currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp' ? (
             <div className="thanks__status-description">
-              <a href="" className="link text-uppercase font-weight-bolder">
+              <a
+                href={trackingUrl && trackingUrl[0] ? trackingUrl[0] : ''}
+                target="__blank"
+                className="link text-uppercase font-weight-bolder"
+              >
                 {currentStatusObj.secondNote}
               </a>
             </div>
@@ -357,6 +389,7 @@ export class ThankYou extends Component {
       </React.Fragment>
     );
   }
+  /* eslint-enable jsx-a11y/anchor-is-valid */
 
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
@@ -519,10 +552,9 @@ export class ThankYou extends Component {
   };
 
   renderDeliveryImageAndTimeLine() {
-    const { t, order, onlineStoreInfo, cashbackInfo, businessInfo } = this.props;
-    const { createdTime, logs, deliveryInformation, status } = order || {};
-    const { country } = onlineStoreInfo || {};
-    const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
+    const { t, order, cashbackInfo, businessInfo } = this.props;
+    const { createdTime, logs, status, deliveryInformation, cancelOperator } = order || {};
+    const { trackingUrl } = deliveryInformation || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -541,6 +573,9 @@ export class ThankYou extends Component {
             CONSUMERFLOW_STATUS,
             cashbackInfo,
             businessInfo,
+            trackingUrl,
+            cancelOperator,
+            order,
           })
         )}
       </React.Fragment>

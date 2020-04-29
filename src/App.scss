@@ -2579,6 +2579,10 @@
   &__status-title,
   &__status-description {
     margin: 8px 0;
+
+    .link {
+      text-decoration: none;
+    }
   }
 
   &__earned-cashback-total {
