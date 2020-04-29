@@ -14,7 +14,7 @@ const dataSource = [
         type: 'campaign_period',
         subject: 'Campaign Period',
         fields: {
-          activeDateRange: '21st April 2020 - 30th April 2020',
+          activeDateRange: '23 April 2020 - 8 May 2020',
         },
       },
       {
@@ -23,7 +23,7 @@ const dataSource = [
         fields: {
           conditions: [
             "Applicable to all Touch 'n Go eWallet users",
-            'Earn RM3 cashback credited to your eWallet when you spend at least RM20 on beepit.com or on businesses on the Beep Delivery platform.',
+            "The RM3 Cashback will be credited back to the eligible Touch 'n Go eWallet user's account within three(3) working days from the transaction date.",
             'Each user is only entitled to receive the RM3 Cashback once throughout the Promotion Period.',
             'This offer is limited to the first 3,000 transactions. The Promotion will end once there has been 3,000 Transactions carried out or on expiry of the Promotion Period, whichever is earlier.',
           ],
