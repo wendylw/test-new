@@ -58,6 +58,19 @@ export const types = {
 // action creators
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
+    const isDigital = Utils.isDigitalType();
+    if (isDigital) {
+      const business = getBusiness(getState());
+      const { total } = getCartSummary(getState());
+      const payload = {
+        businessName: business,
+        amount: total,
+        email: '345321071@qq.com',
+      };
+      await dispatch(createVoucherOrder(payload));
+      return;
+    }
+
     const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
       const fromHour = hour1.split(':')[0];
       const fromMinute = hour1.split(':')[1];
@@ -243,6 +256,15 @@ const fetchOrder = variables => {
   };
 };
 
+const createVoucherOrder = payload => {
+  return {
+    [API_REQUEST]: {
+      types: [types.CREATEORDER_REQUEST, types.CREATEORDER_SUCCESS, types.CREATEORDER_FAILURE],
+      payload,
+      ...Url.API_URLS.CREATE_VOUCHER_ORDER,
+    },
+  };
+};
 // reducers
 const reducer = (state = initialState, action) => {
   const { response, responseGql } = action;
@@ -252,12 +274,19 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_PAYMENT:
       return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
-      const { orders, redirectUrl } = data || {};
-      const [order] = orders;
+      if (responseGql) {
+        const { orders, redirectUrl } = data || {};
+        const [order] = orders;
 
-      if (order) {
-        return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        if (order) {
+          return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        }
       }
+
+      if (response) {
+        return { ...state, orderId: response.orderId };
+      }
+
       return state;
     }
     case types.FETCH_ORDER_SUCCESS: {

@@ -109,6 +109,10 @@ const API_URLS = {
     url: '/api/cart/unApplyVoucher',
     method: 'post',
   },
+  CREATE_VOUCHER_ORDER: {
+    url: '/api/transactions',
+    method: 'post',
+  },
 };
 
 export default {

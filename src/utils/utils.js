@@ -287,11 +287,15 @@ Utils.getOrderTypeFromUrl = () => {
 };
 
 Utils.isDeliveryType = () => {
-  return Utils.getOrderTypeFromUrl() === 'delivery';
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DELIVERY;
 };
 
 Utils.isPickUpType = () => {
-  return Utils.getOrderTypeFromUrl() === 'pickup';
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.PICKUP;
+};
+
+Utils.isDigitalType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
 Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {

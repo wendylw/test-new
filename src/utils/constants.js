@@ -41,6 +41,7 @@ const ROUTER_PATHS = {
   VOUCHER_CONTACT: '/voucher/contact',
   VOUCHER_THANK_YOU: '/voucher/thank-you',
   VOUCHER_SORRY: '/voucher/sorry',
+  VOUCHER_PAYMENT: '/ordering/payment',
 };
 
 const CASHBACK_SOURCE = {

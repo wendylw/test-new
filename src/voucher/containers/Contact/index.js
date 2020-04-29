@@ -17,7 +17,12 @@ import {
 } from '../../redux/modules/app';
 
 class Contact extends Component {
-  handleContinue = () => {};
+  handleContinue = () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.VOUCHER_PAYMENT,
+      search: `${window.location.search}&type=${Constants.DELIVERY_METHOD.DIGITAL}`,
+    });
+  };
 
   handleEmailChange = e => {
     const email = e.target.value;
