@@ -32,13 +32,13 @@ class Contact extends Component {
   };
 
   render() {
-    const { t, contactEmail, onlineStoreLog, businessName, beepSiteUrl, currencySymbol, selectedVoucher } = this.props;
+    const { t, contactEmail, onlineStoreLogo, businessName, beepSiteUrl, currencySymbol, selectedVoucher } = this.props;
     return (
       <div className="update-contact__page">
         <Header clickBack={this.handleClickBack} />
         <dl>
           <dt>Business Logo</dt>
-          <dd>{onlineStoreLog}</dd>
+          <dd>{onlineStoreLogo}</dd>
           <dt>Business Name</dt>
           <dd>{businessName}</dd>
           <dt>Beep site url</dt>
@@ -71,7 +71,7 @@ export default compose(
     state => {
       return {
         contactEmail: getContactEmail(state),
-        onlineStoreLog: getOnlineStoreInfoLogo(state),
+        onlineStoreLogo: getOnlineStoreInfoLogo(state),
         businessName: getBusinessName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         selectedVoucher: getSelectedVoucher(state),

@@ -15,8 +15,136 @@
   }
 }
 
-.select-voucher__button.active {
-  background-color: red;
+.gift-card {
+  &__page {
+    padding: 24px 16px;
+    margin-bottom: 100px;
+  }
+
+  &__header {
+    font-size: 30px;
+    padding-bottom: 24px;
+  }
+
+  &__card {
+    margin-bottom: 30px;
+  }
+
+  &__card-container {
+    width: 100%;
+  }
+
+  &__store {
+    margin: 0 auto;
+    position: relative;
+    height: 171px;
+    width: 300px;
+    background-image: url("../../src/images/gift-card.png");
+    position: relative;
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &-logo img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      position: absolute;
+      top: 15px;
+      left: 25px;
+    }
+
+    &-name {
+      position: absolute;
+      right: 25px;
+      bottom: 20px;
+      font-size: 14px;
+      color: white;
+      text-transform: uppercase;
+    }
+  }
+
+  &__caption {
+    margin: 12px auto;
+    font-size: 14px;
+    font-weight: 500;
+    color: #a9aaab;
+
+    a {
+      text-decoration: none;
+      color: #358ee9;
+    }
+  }
+
+  &__amount {
+    h2 {
+      font-size: 16px;
+    }
+
+    &-items {
+      margin-top: 32px;
+      margin-bottom: 48px;
+    }
+
+    &-item {
+      height: 56px;
+      width: 80px;
+      border: 1px solid #dededf;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      border-radius: 4px;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      &.selected {
+        color: white;
+        background-color: $theme-color;
+        border: 1px solid $theme-color;
+      }
+    }
+
+    &-number {
+      font-size: 18px;
+    }
+  }
+
+  &__notes {
+    color: #8f9092;
+  }
+
+  &__note {
+    h2 {
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    ul {
+      list-style: disc;
+      margin-left: 30px;
+    }
+
+    li {
+      line-height: 22px;
+    }
+  }
+
+  &__note:first-child ul {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 30px;
+  }
+
+  &__note:last-child ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  &__button.active {
+    background-color: red;
+  }
 }
 
 .header {
