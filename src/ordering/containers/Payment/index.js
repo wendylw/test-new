@@ -19,7 +19,6 @@ import {
   getPayments,
   getDefaultPayment,
   getCurrentPaymentInfo,
-  getOnlineBankingMerchantList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import { getPaymentName, getSupportCreditCardBrands } from './utils';
@@ -37,7 +36,6 @@ class Payment extends Component {
 
   componentDidMount = async () => {
     const { currentPayment } = this.props;
-    this.props.paymentActions.fetchOnlineBankingMerchantList();
     this.props.paymentActions.setCurrentPayment(currentPayment);
     await this.props.homeActions.loadShoppingCart();
   };
@@ -131,13 +129,10 @@ class Payment extends Component {
   };
 
   render() {
-    const { t, currentPayment, payments, onlineBankingMerchantList, business } = this.props;
+    const { t, currentPayment, payments } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
-    const currentOnlineBankingMerchantList = onlineBankingMerchantList
-      ? onlineBankingMerchantList.filter(m => m)
-      : onlineBankingMerchantList;
 
     return (
       <section className={className.join(' ')}>
@@ -151,14 +146,7 @@ class Payment extends Component {
         <div>
           <ul className="payment__list">
             {payments.map(payment => {
-              const isInvalidOnlineBanking =
-                (!currentOnlineBankingMerchantList && payment.label === 'OnlineBanking') ||
-                (currentOnlineBankingMerchantList &&
-                  currentOnlineBankingMerchantList.length &&
-                  !currentOnlineBankingMerchantList.includes(business) &&
-                  payment.label === 'OnlineBanking');
-
-              if (!payment || isInvalidOnlineBanking) {
+              if (!payment) {
                 return null;
               }
 
@@ -230,7 +218,6 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
-        onlineBankingMerchantList: getOnlineBankingMerchantList(state),
       };
     },
     dispatch => ({
