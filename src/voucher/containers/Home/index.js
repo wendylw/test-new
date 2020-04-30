@@ -76,6 +76,7 @@ class Home extends Component {
           <ul className="flex flex-middle flex-space-between gift-card__amount-items">
             {voucherList.map(voucher => (
               <li
+                key={voucher}
                 className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
                   voucher === selectedVoucher ? 'selected' : ''
                 }`}
