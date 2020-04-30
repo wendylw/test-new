@@ -472,4 +472,9 @@ if (process.env.NODE_ENV !== 'production') {
   window.Utils = Utils;
 }
 
+Utils.checkEmailIsValid = email => {
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return emailRegex.test(email);
+};
+
 export default Utils;

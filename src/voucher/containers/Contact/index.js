@@ -10,22 +10,35 @@ import {
   actions as appActionCreators,
   getContactEmail,
   getOnlineStoreInfoLogo,
-  getBusinessName,
+  getBusinessDisplayName,
   getBeepSiteUrl,
   getSelectedVoucher,
   getCurrencySymbol,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStore } from '../../utils';
+import Utils from '../../../utils/utils';
 
 class Contact extends Component {
+  state = {
+    invalidEmail: false,
+  };
+
   componentDidMount() {
     this.props.appActions.initialVoucherOrderingInfo();
   }
 
   handleContinue = () => {
+    if (!Utils.checkEmailIsValid(this.props.contactEmail)) {
+      this.setState({
+        invalidEmail: true,
+      });
+      return;
+    }
+
     updateVoucherOrderingInfoToSessionStore({
       contactEmail: this.props.contactEmail,
     });
+
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_PAYMENT,
       search: `${window.location.search}&type=${Constants.DELIVERY_METHOD.DIGITAL}`,
@@ -33,8 +46,12 @@ class Contact extends Component {
   };
 
   handleEmailChange = e => {
-    const email = e.target.value;
+    const email = e.target.value.trim();
     this.props.appActions.updateContactEmail(email);
+
+    this.setState({
+      invalidEmail: false,
+    });
   };
 
   handleClickBack = () => {
@@ -45,19 +62,20 @@ class Contact extends Component {
   };
 
   render() {
-    const { t, contactEmail, onlineStoreLogo, businessName, beepSiteUrl, currencySymbol, selectedVoucher } = this.props;
+    const { t, contactEmail, onlineStoreLogo, businessDisplayName, currencySymbol, selectedVoucher } = this.props;
+    const { invalidEmail } = this.state;
+    const invalidEmailClass = invalidEmail ? 'input__error' : '';
+
     return (
       <div className="update-contact__page">
         <Header clickBack={this.handleClickBack} />
         <div className="gift-card__page">
           <div className="gift-card__card">
-            <h2 className="header__title font-weight-bolder text-center gift-card__subtitle">
-              {t('GiftCardSelected')}
-            </h2>
+            <h2 className="font-weight-bolder text-center gift-card__subtitle">{t('GiftCardSelected')}</h2>
             <div className="gift-card__card-container">
               <div className="gift-card__store">
                 <div className="gift-card__store-item gift-card__store-logo">
-                  <img alt="store-logo" src={onlineStoreLogo} />
+                  {onlineStoreLogo ? <img alt="store-logo" src={onlineStoreLogo} /> : null}
                 </div>
                 {selectedVoucher ? (
                   <div className="gift-card__store-item gift-card__store-amount">
@@ -65,14 +83,19 @@ class Contact extends Component {
                     {selectedVoucher}
                   </div>
                 ) : null}
-                <div className="gift-card__store-item gift-card__store-name">{businessName}</div>
+                <div className="gift-card__store-item gift-card__store-name">{businessDisplayName}</div>
               </div>
             </div>
           </div>
           <div className="gift-card__email">
-            <h2 className="header__title font-weight-bolder gift-card__email-title">{'SendGiftCardTo'}</h2>
-            <h2 className="gift-card__email-note">{t('GiftCardEmailNote')}</h2>
-            <input className="gift-card__email-input" onChange={this.handleEmailChange} value={contactEmail} />
+            <h2 className="gift-card__email-title">{t('SendGiftCardTo')}</h2>
+            <div className="gift-card__email-note">{t('GiftCardEmailNote')}</div>
+            <input
+              className={`gift-card__email-input input input__block ${invalidEmailClass}`}
+              onChange={this.handleEmailChange}
+              value={contactEmail}
+            />
+            {invalidEmail ? <div className="input__error-message">{t('InvalidEmail')}</div> : null}
           </div>
         </div>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
@@ -98,7 +121,7 @@ export default compose(
       return {
         contactEmail: getContactEmail(state),
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        businessName: getBusinessName(state),
+        businessDisplayName: getBusinessDisplayName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         selectedVoucher: getSelectedVoucher(state),
         currencySymbol: getCurrencySymbol(state),

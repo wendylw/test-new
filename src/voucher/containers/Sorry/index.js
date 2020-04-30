@@ -12,7 +12,7 @@ class Sorry extends Component {
   gotoPaymentPage = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_PAYMENT,
-      search: `${window.location.search}&type=${Constants.DELIVERY_METHOD.DIGITAL}`,
+      search: `type=${Constants.DELIVERY_METHOD.DIGITAL}`,
     });
   };
 
@@ -21,12 +21,14 @@ class Sorry extends Component {
     return (
       <section className="sorry-page">
         <Header clickBack={this.handleClickBack} />
-        <div className="sorry-page__title">{t('Sorry')}!</div>
+        <div className="sorry-page__title">{t('TransactionFailed')}</div>
         <div className="sorry-page__image">
           <img alt="Sorry" src={beepErrorImage} />
         </div>
         <div className="sorry-page__content">
-          Your payment method was declined update it or use a new payment method and try again
+          {t('PaymentMethodDeclined')}
+          <br />
+          {t('PleaseUpdateAndTryAgain')}
         </div>
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
@@ -34,7 +36,7 @@ class Sorry extends Component {
               className="continue__button button button__fill button__block font-weight-bolder"
               onClick={this.handleClickBack}
             >
-              {t('BackToPayment')}
+              {t('TryAgain')}
             </button>
           </div>
         </footer>

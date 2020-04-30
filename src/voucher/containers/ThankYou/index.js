@@ -33,25 +33,25 @@ class ThankYou extends Component {
     return (
       <section className="thankyou-page">
         <Header clickBack={this.handlerClickBack} />
-        <h1 className="thankyou-page__title">{t('Thank You!')}</h1>
+        <h1 className="thankyou-page__title">{t('ThankYou')}!</h1>
         <div className="thankyou-page__gifCard">
           <img alt="Gift Card" src={giftCardImage} />
         </div>
         <div className="thankyou-page__contact-info">
-          The gift voucher and redemption details have been sent to
-          <span className="contact-info__email"> {contactEmail}</span>
+          {t('VoucherHaveBeenSentTo')}
+          <span className="contact-info__email">{contactEmail}</span>
         </div>
         <div className="thankyou-page__order-info">
           <div className="voucher-code__container">
-            <p className="voucher-code__title">Your Gift Voucher Code</p>
+            <p className="voucher-code__title">{t('YourGiftVoucherCode')}</p>
             <p className="voucher-code__content">{voucherCode}</p>
           </div>
           <div className="store-info__container">
             <p className="store-info__logo">
-              <img alt={businessDisplayName} src={onlineStoreLogo} />
+              {onlineStoreLogo ? <img alt={businessDisplayName} src={onlineStoreLogo} /> : null}
             </p>
             <p className="store-info__site">
-              <a href={beepSiteUrl}>Visit {businessDisplayName} to use the gift voucher now</a>
+              <a href={beepSiteUrl}>{t('VisitSiteToUseVoucherNow', { businessDisplayName })}</a>
             </p>
           </div>
         </div>

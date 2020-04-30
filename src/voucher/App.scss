@@ -1,8 +1,16 @@
 @import "~normalize.css/normalize.css";
 @import "../Common.scss";
 
+.container {
+  position: relative;
+  margin: auto;
+  height: 100%;
+  min-height: 100%;
+}
+
 .voucher-ordering {
   padding-top: 50px;
+  height: 100%;
 }
 
 .footer-operation {
@@ -116,8 +124,11 @@
   }
 
   &__amount {
-    h2 {
+    &-title {
+      font-weight: $font-weight-bolder;
+      text-align: center;
       font-size: 1.2rem;
+      line-height: $line-height-base;
     }
 
     &-items {
@@ -151,29 +162,35 @@
   }
 
   &__email {
-    font-size: 16px;
+    font-size: 1.2rem;
 
     &-title {
-      font-weight: 500;
-      font-size: 16px;
-      height: 24px;
+      font-weight: $font-weight-bolder;
+      font-size: inherit;
+      margin-bottom: 10px;
     }
 
     &-note {
-      color: #8f9092;
-      font-size: 16px;
-      line-height: 22px;
+      color: $gray-1;
+      font-size: inherit;
+      line-height: $line-height-base;
     }
 
     &-input {
-      border: 1px solid #dededf;
       height: 56px;
-      width: 100%;
-      border-radius: 4px;
-      color: #303030;
-      font-size: 20px;
       padding: 4px 16px;
       margin-top: 16px;
+      font-size: inherit;
+      font-weight: $font-weight-bolder;
+    }
+
+    &-input.input__error {
+      border-color: $red;
+    }
+
+    .input__error-message {
+      margin-top: 5px;
+      font-weight: $font-weight-bolder;
     }
   }
 }
@@ -224,10 +241,19 @@
   .gift-card__page {
     margin-bottom: 90px;
   }
+
+  .header {
+    max-width: 414px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
 }
 
 .thankyou-page {
+  height: 100%;
   background-color: $gray-4;
+  padding-bottom: 30px;
   &__title {
     font-size: 2.4rem;
     text-align: center;
@@ -290,8 +316,8 @@
       img {
         width: 80px;
         height: 80px;
+        margin-bottom: 15px;
       }
-      margin-bottom: 15px;
     }
 
     .store-info__site {
@@ -299,12 +325,14 @@
         text-decoration: none;
         font-weight: $font-weight-bolder;
         color: $link-blue;
+        font-size: 1.1rem;
       }
     }
   }
 }
 
 .sorry-page {
+  height: 100%;
   background-color: $gray-4;
   &__title {
     font-size: 2.4rem;
@@ -317,12 +345,17 @@
   &__image {
     text-align: center;
     margin: 30px 0;
+    img {
+      height: 150px;
+    }
   }
   &__content {
     text-align: center;
     font-size: 1.1em;
     line-height: $line-height-base;
+    color: $gray-0;
   }
+
   footer {
     background-color: transparent;
   }

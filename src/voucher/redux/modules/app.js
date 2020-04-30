@@ -65,7 +65,7 @@ export const actions = {
   updateContactEmail: email => dispatch => {
     return dispatch({
       type: TYPES.UPDATE_CONTACT_EMAIL,
-      email: email.trim(),
+      email: email,
     });
   },
   loadOrder: orderId => ({

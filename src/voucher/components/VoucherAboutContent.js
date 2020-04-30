@@ -7,14 +7,14 @@ class VoucherAboutContent extends Component {
     return (
       <div className="gift-voucher-notes">
         <div className="gift-voucher-notes__note">
-          <h2 className="header__title">{t('GiftCardAbout')}</h2>
+          <h2>{t('GiftCardAbout')}</h2>
           <ul>
             <li>{t('ValidityPeriodNote', { periodDays })}</li>
             <li>{t('CanPurchasesBusinessNote', { businessDisplayName })}</li>
           </ul>
         </div>
         <div className="gift-voucher-notes__note">
-          <h2 className="header__title">{t('GiftCardToKnow')}</h2>
+          <h2>{t('GiftCardToKnow')}</h2>
           <ul>
             <li>{t('GiftCardToKnow_1')}</li>
             <li>{t('GiftCardToKnow_2')}</li>

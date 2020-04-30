@@ -50,7 +50,7 @@ class Home extends Component {
     return (
       <div className="gift-card__page">
         <div className="gift-card__card">
-          <h1 className="header__title font-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
+          <h1 className="font-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
           <div className="gift-card__card-container">
             <div className="gift-card__store">
               <div className="gift-card__store-item gift-card__store-logo">
@@ -71,7 +71,7 @@ class Home extends Component {
           </div>
         </div>
         <div className="gift-card__amount">
-          <h2 className="header__title font-weight-bolder text-center">{t('GiftCardChooseAmount')}</h2>
+          <h2 className="gift-card__amount-title">{t('GiftCardChooseAmount')}</h2>
           <ul className="flex flex-middle flex-space-between gift-card__amount-items">
             {voucherList.map(voucher => (
               <li
