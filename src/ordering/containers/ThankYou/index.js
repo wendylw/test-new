@@ -55,20 +55,35 @@ export class ThankYou extends Component {
 
     thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
       const { data = {} } = responseGql;
-      this.handleGtmEventTracking(data);
+      const { onlineStoreInfo } = this.props;
+      const tySourceCookie = this.getThankYouSource();
+      if (onlineStoreInfo && this.isSourceFromPayment(tySourceCookie)) {
+        this.handleGtmEventTracking(data);
+      }
     });
   }
 
   componentDidUpdate(prevProps) {
-    const { order } = prevProps;
+    const { order, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = order || {};
     const { storeId } = this.props.order || {};
+    const { onlineStoreInfo } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
       this.props.thankYouActions.getStoreHashData(storeId);
     }
+    const tySourceCookie = this.getThankYouSource();
+    if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo && this.isSourceFromPayment(tySourceCookie)) {
+      this.handleGtmEventTracking({ order: this.props.order });
+    }
   }
 
+  getThankYouSource = () => {
+    return Utils.getCookieVariable('__ty_source');
+  };
+  isSourceFromPayment = source => {
+    return source === 'payment';
+  };
   handleGtmEventTracking = ({ order = {} }) => {
     const productsInOrder = order.items || [];
     const gtmEventData = {
@@ -84,7 +99,10 @@ export class ThankYou extends Component {
       revenue_local: order.total,
     };
 
+    console.log('send handleGtmEventTracking');
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
+    // immidiately remove __ty_source cookie after send the request.
+    Utils.removeCookieVariable('__ty_source');
   };
 
   getReceiptNumber = () => {
