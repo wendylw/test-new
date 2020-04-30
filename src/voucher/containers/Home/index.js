@@ -14,7 +14,7 @@ import {
   getSelectedVoucher,
   getCurrencySymbol,
 } from '../../redux/modules/app';
-import { updateVoucherOrderingInfoToSessionStore } from '../../utils';
+import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import VoucherAboutContent from '../../components/VoucherAboutContent';
 
 class Home extends Component {
@@ -23,7 +23,7 @@ class Home extends Component {
   }
 
   handleContinue = () => {
-    updateVoucherOrderingInfoToSessionStore({
+    updateVoucherOrderingInfoToSessionStorage({
       selectedVoucher: this.props.selectedVoucher,
     });
 

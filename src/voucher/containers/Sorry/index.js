@@ -10,10 +10,7 @@ class Sorry extends Component {
   };
 
   gotoPaymentPage = () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.VOUCHER_PAYMENT,
-      search: `type=${Constants.DELIVERY_METHOD.DIGITAL}`,
-    });
+    window.location.href = Constants.ROUTER_PATHS.VOUCHER_PAYMENT + '?type=' + Constants.DELIVERY_METHOD.DIGITAL;
   };
 
   render() {

@@ -15,7 +15,7 @@ import {
   getSelectedVoucher,
   getCurrencySymbol,
 } from '../../redux/modules/app';
-import { updateVoucherOrderingInfoToSessionStore } from '../../utils';
+import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import Utils from '../../../utils/utils';
 
 class Contact extends Component {
@@ -35,14 +35,15 @@ class Contact extends Component {
       return;
     }
 
-    updateVoucherOrderingInfoToSessionStore({
+    updateVoucherOrderingInfoToSessionStorage({
       contactEmail: this.props.contactEmail,
     });
 
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.VOUCHER_PAYMENT,
-      search: `${window.location.search}&type=${Constants.DELIVERY_METHOD.DIGITAL}`,
-    });
+    this.gotoPaymentPage();
+  };
+
+  gotoPaymentPage = () => {
+    window.location.href = Constants.ROUTER_PATHS.VOUCHER_PAYMENT + '?type=' + Constants.DELIVERY_METHOD.DIGITAL;
   };
 
   handleEmailChange = e => {

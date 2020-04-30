@@ -69,25 +69,25 @@ class Payment extends Component {
   handleClickBack = () => {
     const { history } = this.props;
     const type = Utils.getOrderTypeFromUrl();
-    let pathname;
 
     switch (type) {
       case DELIVERY_METHOD.PICKUP:
       case DELIVERY_METHOD.DELIVERY:
-        pathname = ROUTER_PATHS.ORDERING_CUSTOMER_INFO;
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+          search: window.location.search,
+        });
         break;
       case DELIVERY_METHOD.DIGITAL:
-        pathname = ROUTER_PATHS.VOUCHER_HOME;
+        window.location.href = ROUTER_PATHS.VOUCHER_CONTACT;
         break;
       default:
-        pathname = ROUTER_PATHS.ORDERING_CART;
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_CART,
+          search: window.location.search,
+        });
         break;
     }
-
-    history.push({
-      pathname: pathname,
-      search: window.location.search,
-    });
   };
 
   setCurrentPayment = paymentLabel => {

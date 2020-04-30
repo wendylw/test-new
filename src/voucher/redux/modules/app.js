@@ -4,7 +4,7 @@ import _get from 'lodash/get';
 import TYPES from '../types';
 import Url from '../../../utils/url';
 import config from '../../../config';
-import { getVoucherOrderingInfoFromSessionStore } from '../../utils';
+import { getVoucherOrderingInfoFromSessionStorage } from '../../utils';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -23,7 +23,7 @@ const initialState = {
 
 export const actions = {
   initialVoucherOrderingInfo: () => dispatch => {
-    const orderingInfo = getVoucherOrderingInfoFromSessionStore();
+    const orderingInfo = getVoucherOrderingInfoFromSessionStorage();
     if (Object.prototype.hasOwnProperty.call(orderingInfo, 'selectedVoucher')) {
       dispatch({
         type: TYPES.SELECT_VOUCHER,

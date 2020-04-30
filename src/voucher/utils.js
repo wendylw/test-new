@@ -38,14 +38,14 @@ export const generatorVirtualShoppingCart = voucher => {
   return shoppingCart;
 };
 
-export const getVoucherOrderingInfoFromSessionStore = () => {
+export const getVoucherOrderingInfoFromSessionStorage = () => {
   const voucherOrderingInfo = Utils.getSessionVariable(VOUCHER_ORDERING_INFO_KEY);
 
   return JSON.parse(voucherOrderingInfo || '{}');
 };
 
-export const updateVoucherOrderingInfoToSessionStore = data => {
-  const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStore(VOUCHER_ORDERING_INFO_KEY);
+export const updateVoucherOrderingInfoToSessionStorage = data => {
+  const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage(VOUCHER_ORDERING_INFO_KEY);
   if (Object.prototype.hasOwnProperty.call(data, 'contactEmail')) {
     voucherOrderingInfo.contactEmail = data.contactEmail;
   }
