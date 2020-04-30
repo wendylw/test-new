@@ -27,7 +27,6 @@ class ThankYou extends Component {
   handlerClickBack = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_HOME,
-      search: window.location.search,
     });
   };
 

@@ -11,6 +11,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const DEFAULT_SELECTED_VOUCHER = 50;
 const VOUCHER_VALIDITY_PERIOD_DAYS = 60;
+const VOUCHER_LIST = [5, 10, 20, 50];
 
 const initialState = {
   selectedVoucher: DEFAULT_SELECTED_VOUCHER,
@@ -196,7 +197,7 @@ export const getContactEmail = state => {
 };
 
 export const getVoucherList = state => {
-  return [5, 10, 20, 50];
+  return VOUCHER_LIST;
 };
 
 export const getVoucherValidityPeriodDays = state => {
