@@ -253,7 +253,7 @@
 .thankyou-page {
   height: 100%;
   background-color: $gray-4;
-  padding-bottom: 30px;
+
   &__title {
     font-size: 2.4rem;
     text-align: center;
@@ -314,10 +314,9 @@
 
     .store-info__logo {
       img {
-        width: 80px;
         height: 80px;
-        margin-bottom: 15px;
       }
+      margin-bottom: 15px;
     }
 
     .store-info__site {
@@ -328,6 +327,11 @@
         font-size: 1.1rem;
       }
     }
+  }
+  .gift-voucher-notes {
+    background-color: inherit;
+    padding: 15px;
+    margin-top: -2px;
   }
 }
 

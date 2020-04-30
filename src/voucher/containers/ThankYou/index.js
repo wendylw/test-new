@@ -10,12 +10,15 @@ import Constants from '../../../utils/constants';
 import {
   actions as appActionCreators,
   getOnlineStoreInfoLogo,
-  getBusinessDisplayName,
+  getOnlineStoreName,
   getBeepSiteUrl,
   getOrderContactEmail,
   getOrderVoucherCode,
+  getVoucherValidityPeriodDays,
 } from '../../redux/modules/app';
 import giftCardImage from '../../../images/thankyou-giftcard.svg';
+import VoucherAboutContent from '../../components/VoucherAboutContent';
+
 class ThankYou extends Component {
   componentDidMount() {
     const receiptNumber = Utils.getQueryString('receiptNumber');
@@ -29,7 +32,15 @@ class ThankYou extends Component {
   };
 
   render() {
-    const { t, beepSiteUrl, onlineStoreLogo, contactEmail, voucherCode, businessDisplayName } = this.props;
+    const {
+      t,
+      beepSiteUrl,
+      onlineStoreLogo,
+      contactEmail,
+      voucherCode,
+      onlineStoreName,
+      validityPeriodDays,
+    } = this.props;
     return (
       <section className="thankyou-page">
         <Header clickBack={this.handlerClickBack} />
@@ -47,15 +58,18 @@ class ThankYou extends Component {
             <p className="voucher-code__content">{voucherCode}</p>
           </div>
           <div className="store-info__container">
-            <p className="store-info__logo">
-              {onlineStoreLogo ? <img alt={businessDisplayName} src={onlineStoreLogo} /> : null}
-            </p>
+            {onlineStoreLogo ? (
+              <p className="store-info__logo">
+                <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} />
+              </p>
+            ) : null}
+
             <p className="store-info__site">
-              <a href={beepSiteUrl}>{t('VisitSiteToUseVoucherNow', { businessDisplayName })}</a>
+              <a href={beepSiteUrl}>{t('VisitSiteToUseVoucherNow', { onlineStoreName })}</a>
             </p>
           </div>
         </div>
-        <div className="gift-card__notes"></div>
+        <VoucherAboutContent onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
       </section>
     );
   }
@@ -67,10 +81,11 @@ export default compose(
     state => {
       return {
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        businessDisplayName: getBusinessDisplayName(state),
+        onlineStoreName: getOnlineStoreName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         contactEmail: getOrderContactEmail(state),
         voucherCode: getOrderVoucherCode(state),
+        validityPeriodDays: getVoucherValidityPeriodDays(state),
       };
     },
     dispatch => ({

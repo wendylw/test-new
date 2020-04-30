@@ -10,7 +10,7 @@ import {
   actions as appActionCreators,
   getContactEmail,
   getOnlineStoreInfoLogo,
-  getBusinessDisplayName,
+  getOnlineStoreName,
   getBeepSiteUrl,
   getSelectedVoucher,
   getCurrencySymbol,
@@ -63,7 +63,7 @@ class Contact extends Component {
   };
 
   render() {
-    const { t, contactEmail, onlineStoreLogo, businessDisplayName, currencySymbol, selectedVoucher } = this.props;
+    const { t, contactEmail, onlineStoreLogo, onlineStoreName, currencySymbol, selectedVoucher } = this.props;
     const { invalidEmail } = this.state;
     const invalidEmailClass = invalidEmail ? 'input__error' : '';
 
@@ -76,7 +76,7 @@ class Contact extends Component {
             <div className="gift-card__card-container">
               <div className="gift-card__store">
                 <div className="gift-card__store-item gift-card__store-logo">
-                  {onlineStoreLogo ? <img alt="store-logo" src={onlineStoreLogo} /> : null}
+                  {onlineStoreLogo ? <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} /> : null}
                 </div>
                 {selectedVoucher ? (
                   <div className="gift-card__store-item gift-card__store-amount">
@@ -84,7 +84,7 @@ class Contact extends Component {
                     {selectedVoucher}
                   </div>
                 ) : null}
-                <div className="gift-card__store-item gift-card__store-name">{businessDisplayName}</div>
+                <div className="gift-card__store-item gift-card__store-name">{onlineStoreName}</div>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default compose(
       return {
         contactEmail: getContactEmail(state),
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        businessDisplayName: getBusinessDisplayName(state),
+        onlineStoreName: getOnlineStoreName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         selectedVoucher: getSelectedVoucher(state),
         currencySymbol: getCurrencySymbol(state),

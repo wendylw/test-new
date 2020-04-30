@@ -7,12 +7,12 @@ import { bindActionCreators } from 'redux';
 import {
   actions as appActionCreators,
   getOnlineStoreInfoLogo,
-  getBusinessName,
-  getBusinessDisplayName,
+  getOnlineStoreName,
   getVoucherList,
   getBeepSiteUrl,
   getSelectedVoucher,
   getCurrencySymbol,
+  getVoucherValidityPeriodDays,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import VoucherAboutContent from '../../components/VoucherAboutContent';
@@ -41,11 +41,12 @@ class Home extends Component {
     const {
       t,
       onlineStoreLogo,
-      businessDisplayName,
+      onlineStoreName,
       beepSiteUrl,
       voucherList,
       currencySymbol,
       selectedVoucher,
+      validityPeriodDays,
     } = this.props;
     return (
       <div className="gift-card__page">
@@ -54,7 +55,7 @@ class Home extends Component {
           <div className="gift-card__card-container">
             <div className="gift-card__store">
               <div className="gift-card__store-item gift-card__store-logo">
-                {onlineStoreLogo ? <img alt="store-logo" src={onlineStoreLogo} /> : null}
+                {onlineStoreLogo ? <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} /> : null}
               </div>
               {selectedVoucher ? (
                 <div className="gift-card__store-item gift-card__store-amount">
@@ -62,12 +63,12 @@ class Home extends Component {
                   {selectedVoucher}
                 </div>
               ) : null}
-              <div className="gift-card__store-item gift-card__store-name">{businessDisplayName}</div>
+              <div className="gift-card__store-item gift-card__store-name">{onlineStoreName}</div>
             </div>
           </div>
           <div className="gift-card__caption text-center">
             {t('GiftCardFindOutMore')}
-            <a href={beepSiteUrl}>{businessDisplayName} ></a>
+            <a href={beepSiteUrl}>{onlineStoreName} ></a>
           </div>
         </div>
         <div className="gift-card__amount">
@@ -88,7 +89,7 @@ class Home extends Component {
             ))}
           </ul>
         </div>
-        <VoucherAboutContent businessDisplayName={businessDisplayName} periodDays={60} />
+        <VoucherAboutContent onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
@@ -111,12 +112,12 @@ export default compose(
     state => {
       return {
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        businessName: getBusinessName(state),
-        businessDisplayName: getBusinessDisplayName(state),
+        onlineStoreName: getOnlineStoreName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         voucherList: getVoucherList(state),
         selectedVoucher: getSelectedVoucher(state),
         currencySymbol: getCurrencySymbol(state),
+        validityPeriodDays: getVoucherValidityPeriodDays(state),
       };
     },
     dispatch => ({

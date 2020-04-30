@@ -10,6 +10,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const DEFAULT_SELECTED_VOUCHER = 50;
+const VOUCHER_VALIDITY_PERIOD_DAYS = 60;
 
 const initialState = {
   selectedVoucher: DEFAULT_SELECTED_VOUCHER,
@@ -174,6 +175,10 @@ export function getBusinessName(state) {
   return _get(state.app, 'businessInfo.name', '');
 }
 
+export function getOnlineStoreName(state) {
+  return _get(state.app, 'onlineStoreInfo.storeName', '');
+}
+
 export function getCurrencySymbol(state) {
   return _get(state.app, 'onlineStoreInfo.currencySymbol', '');
 }
@@ -192,6 +197,10 @@ export const getContactEmail = state => {
 
 export const getVoucherList = state => {
   return [5, 10, 20, 50];
+};
+
+export const getVoucherValidityPeriodDays = state => {
+  return VOUCHER_VALIDITY_PERIOD_DAYS;
 };
 
 export const getOrderReceiptNumber = state => {
