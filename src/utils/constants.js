@@ -71,6 +71,11 @@ const CREDIT_CARD_BRANDS = {
   VISA: 'Visa',
   MASTER_CARD: 'MasterCard',
   JCB: 'JCB',
+  AMEX: 'American Express',
+  DISCOVER: 'Discover',
+  DINERS: 'Diners Club',
+  UNION_PAY: 'UnionPay',
+  UNKNOWN: 'Unknown',
 };
 
 const HOME_ASIDE_NAMES = {

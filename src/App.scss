@@ -483,9 +483,17 @@
       bottom: 21.6vw;
     }
 
+    .form__label {
+      margin: 8px 0;
+    }
+
+    .form__label ~ .form__group {
+      padding: 16px;
+      border: 1px solid $gray-3;
+    }
+
     .form__textarea {
-      margin: 5px 0;
-      padding-right: 34px;
+      min-height: 0;
       word-break: break-word;
       -webkit-hyphens: auto;
       -ms-hyphens: auto;
@@ -2133,6 +2141,7 @@
   }
 
   .input__list-top {
+    position: relative;
     border: 1px solid $gray-3;
     border-radius: 4px 4px 0 0;
 
@@ -2187,6 +2196,26 @@
 
     &.JCB {
       width: 10vw;
+    }
+  }
+
+  &.stripe {
+    .payment-bank__card-type-icon {
+      position: absolute;
+      right: 5px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      z-index: 100;
+    }
+
+    .payment-bank__card-type-icon.visa {
+      right: 45px;
+      height: 33px;
+    }
+
+    .payment-bank__card-type-icon.mastercard {
+      height: 38px;
     }
   }
 }
@@ -3159,6 +3188,15 @@
 
   &__form {
     padding: 0 3.8vw;
+
+    .form__group {
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .react-phone-number-input {
+      margin: 0;
+    }
 
     .input,
     .react-phone-number-input--focus .react-phone-number-input__input,

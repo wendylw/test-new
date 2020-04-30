@@ -283,9 +283,7 @@ class LocationAndDate extends Component {
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
-              <i className="delivery__next-icon">
-                <IconNext />
-              </i>
+              <IconNext className="delivery__next-icon" />
             </div>
           </div>
         </div>

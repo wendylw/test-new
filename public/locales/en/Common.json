@@ -86,10 +86,11 @@
   "AddAddressPlaceholder": "Add in your address*",
   "AddDeliveryTimePlaceholder": "Add in your delivery time",
   "PickUpAtPlaceholder": "Add in your pick up time",
-  "AddressDetailsPlaceholder": "e.g Floor, unit number",
-  "AddNoteToDriverPlaceholder": "Add a note to driver",
-  "AddNoteToMerchantPlaceholder": "Add a note to merchant",
-  "AddAddressDetailsPlaceholder": "Unit/Block/Floor",
+  "AddressDetailsPlaceholder": "House/floor/unit no. (optional)",
+  "AddNoteToDriverPlaceholder": "Note to driver",
+  "AddNoteToDriverOrMerchantPlaceholderExample": "e.g meet at lobby (optional)",
+  "AddNoteToMerchantPlaceholder": "Note to merchant",
+  "AddAddressDetailsPlaceholder": "House/floor/unit no.",
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
   "SearchRestaurantPlaceholder": "Search for a restaurant",
@@ -120,5 +121,6 @@
   "AddPromoCode": "Add a promo code/voucher",
   "Voucher": "Voucher",
   "ConnectionIssue": "Sorry there was some issue with the connection, please try again",
-  "Immediate": "Immediate"
+  "Immediate": "Immediate",
+  "PreOrderTag": "Pre Order"
 }

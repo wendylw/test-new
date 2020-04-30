@@ -54,7 +54,7 @@ export class Home extends Component {
     const { tableId, storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if ((!storeId && !h) || tableId === 'DEMO') {
+    if (!h || !storeId || tableId === 'DEMO') {
       window.location.href = '/';
     }
 
