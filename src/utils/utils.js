@@ -468,4 +468,16 @@ if (process.env.NODE_ENV !== 'production') {
   window.Utils = Utils;
 }
 
+Utils.getCookieByName = name => {
+  var value = '; ' + document.cookie;
+  var parts = value.split('; ' + name + '=');
+  if (parts.length == 2)
+    return parts
+      .pop()
+      .split(';')
+      .shift();
+};
+Utils.removeCookieByName = name => {
+  document.cookie = name + '=; path=/';
+};
 export default Utils;

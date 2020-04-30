@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
@@ -9,9 +9,9 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as thankYouActionCreators, getOrder, getStoreHashCode } from '../../redux/modules/thankYou';
-import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
+import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
@@ -38,52 +38,59 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
-export class ThankYou extends Component {
+export class ThankYou extends PureComponent {
   state = {};
 
   componentDidMount() {
+    console.log('--ThankYou--componentDidMount-----');
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    console.log('调试');
+    console.log('调试test111');
 
-    const { thankYouActions, order } = this.props;
+    const { thankYouActions, order, onlineStoreInfo, user } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
     }
+    console.log('---ThankYou--componentDidMount----gtmSetUserProperties----');
+    gtmSetUserProperties(onlineStoreInfo, user);
 
     thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
       const { data = {} } = responseGql;
-      const { onlineStoreInfo } = this.props;
       const tySourceCookie = this.getThankYouSource();
-      console.log('----componentDidMount-----', tySourceCookie);
-      if (onlineStoreInfo && this.isSourceFromPayment(tySourceCookie)) {
+      if (this.isSourceFromPayment(tySourceCookie)) {
+        console.log('---loadOrder---handleGtmEventTracking----');
         this.handleGtmEventTracking(data);
       }
     });
   }
 
   componentDidUpdate(prevProps) {
+    console.log('--ThankYou----componentDidUpdate-----');
     const { order, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = order || {};
     const { storeId } = this.props.order || {};
-    const { onlineStoreInfo } = this.props;
+    const { onlineStoreInfo, user } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
       this.props.thankYouActions.getStoreHashData(storeId);
     }
-
     const tySourceCookie = this.getThankYouSource();
-    console.log('----componentDidUpdate-----', tySourceCookie);
-    if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo && this.isSourceFromPayment(tySourceCookie)) {
-      this.handleGtmEventTracking({ order: this.props.order });
+    if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo) {
+      console.log('-----gtmSetUserProperties----');
+      gtmSetUserProperties(onlineStoreInfo, user);
+      if (this.isSourceFromPayment(tySourceCookie)) {
+        const orderInfo = this.props.order;
+        console.log('handleGtmEventTracking----');
+        this.handleGtmEventTracking({ order: orderInfo });
+      }
     }
   }
 
   getThankYouSource = () => {
-    return Utils.getCookieVariable('__ty_source');
+    return Utils.getCookieByName('__ty_source');
   };
   isSourceFromPayment = source => {
     return source === 'payment';
@@ -106,7 +113,7 @@ export class ThankYou extends Component {
     console.log('send handleGtmEventTracking');
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     // immidiately remove __ty_source cookie after send the request.
-    //Utils.removeCookieVariable('__ty_source');
+    Utils.removeCookieByName('__ty_source');
   };
 
   getReceiptNumber = () => {
@@ -631,6 +638,7 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
+      user: getUser(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
