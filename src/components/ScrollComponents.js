@@ -44,42 +44,10 @@ function getScrollToHeight(container, targetId, categoryLis) {
 function getScrollToHeightInContainer(container, targetId) {
   let categoryLis = container.querySelectorAll('li');
   return getScrollToHeight(container, targetId, categoryLis);
-  // if (!container || !targetId) return 0;
-  // let targetHeight = 0;
-  // let hasFoundTarget = false;
-  // let categoryLis = container.querySelectorAll('li');
-  // let liIndex = 0;
-  // while (liIndex < categoryLis.length && !hasFoundTarget) {
-  //   let el = categoryLis[liIndex];
-  //   let rectInfo = el.getBoundingClientRect();
-  //   if (el.id === targetId) {
-  //     hasFoundTarget = true;
-  //   } else {
-  //     targetHeight += rectInfo.height;
-  //   }
-  //   liIndex++;
-  // }
-  // return targetHeight;
 }
 function getScrollToHeightInWindow(container, targetId) {
   let categoryLis = container.childNodes;
   return getScrollToHeight(container, targetId, categoryLis);
-  // if (!container || !targetId) return 0;
-  // let targetHeight = 0;
-  // let hasFoundTarget = false;
-  // let categoryLis = container.childNodes;
-  // let liIndex = 0;
-  // while (liIndex < categoryLis.length && !hasFoundTarget) {
-  //   let el = categoryLis[liIndex];
-  //   let rectInfo = el.getBoundingClientRect();
-  //   if (el.id === targetId) {
-  //     hasFoundTarget = true;
-  //   } else {
-  //     targetHeight += rectInfo.height;
-  //   }
-  //   liIndex++;
-  // }
-  // return targetHeight;
 }
 function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
   const userAgentInfo = Utils.getUserAgentInfo();
