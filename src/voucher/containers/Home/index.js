@@ -13,9 +13,18 @@ import {
   getSelectedVoucher,
   getCurrencySymbol,
 } from '../../redux/modules/app';
+import { updateVoucherOrderingInfoToSessionStore } from '../../utils';
 
 class Home extends Component {
+  componentDidMount() {
+    this.props.appActions.initialVoucherOrderingInfo();
+  }
+
   handleContinue = () => {
+    updateVoucherOrderingInfoToSessionStore({
+      selectedVoucher: this.props.selectedVoucher,
+    });
+
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_CONTACT,
       search: window.location.search,

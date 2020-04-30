@@ -15,9 +15,17 @@ import {
   getSelectedVoucher,
   getCurrencySymbol,
 } from '../../redux/modules/app';
+import { updateVoucherOrderingInfoToSessionStore } from '../../utils';
 
 class Contact extends Component {
+  componentDidMount() {
+    this.props.appActions.initialVoucherOrderingInfo();
+  }
+
   handleContinue = () => {
+    updateVoucherOrderingInfoToSessionStore({
+      contactEmail: this.props.contactEmail,
+    });
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_PAYMENT,
       search: `${window.location.search}&type=${Constants.DELIVERY_METHOD.DIGITAL}`,

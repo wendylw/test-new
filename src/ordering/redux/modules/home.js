@@ -156,7 +156,9 @@ const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
 
 // generator a virtual shopping cart for Customer place a Voucher Order
 const generatorShoppingCartForVoucherOrdering = () => {
-  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart();
+  const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStore();
+  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
+
   return {
     type: types.FETCH_SHOPPINGCART_SUCCESS,
     response: shoppingCart,

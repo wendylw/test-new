@@ -4,17 +4,15 @@ import _get from 'lodash/get';
 import TYPES from '../types';
 import Url from '../../../utils/url';
 import config from '../../../config';
+import { getVoucherOrderingInfoFromSessionStore } from '../../utils';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
-const DEFAULT_SELECT_VOUCHER = 50;
+const DEFAULT_SELECTED_VOUCHER = 50;
 
 const initialState = {
-  selectedVoucher: {
-    value: DEFAULT_SELECT_VOUCHER,
-    cost: 0,
-  },
+  selectedVoucher: DEFAULT_SELECTED_VOUCHER,
   contactInfo: {
     email: '',
   },
@@ -24,6 +22,21 @@ const initialState = {
 };
 
 export const actions = {
+  initialVoucherOrderingInfo: () => dispatch => {
+    const orderingInfo = getVoucherOrderingInfoFromSessionStore();
+    if (Object.prototype.hasOwnProperty.call(orderingInfo, 'selectedVoucher')) {
+      dispatch({
+        type: TYPES.SELECT_VOUCHER,
+        voucher: orderingInfo.selectedVoucher,
+      });
+    }
+    if (Object.prototype.hasOwnProperty.call(orderingInfo, 'contactEmail')) {
+      dispatch({
+        type: TYPES.UPDATE_CONTACT_EMAIL,
+        email: orderingInfo.contactEmail,
+      });
+    }
+  },
   loadOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -100,11 +113,7 @@ const selectedVoucherReducer = (state = initialState.selectedVoucher, action) =>
   const { type } = action;
   switch (type) {
     case TYPES.SELECT_VOUCHER:
-      return {
-        ...state,
-        value: action.voucher,
-        cost: action.voucher,
-      };
+      return action.voucher;
     default:
       return state;
   }
@@ -170,7 +179,7 @@ export function getCurrencySymbol(state) {
 }
 
 export const getSelectedVoucher = state => {
-  return _get(state.app, 'selectedVoucher.value', DEFAULT_SELECT_VOUCHER);
+  return _get(state.app, 'selectedVoucher', DEFAULT_SELECTED_VOUCHER);
 };
 
 export const getBeepSiteUrl = createSelector([getBusinessName], business => {
@@ -194,6 +203,5 @@ export const getOrderVoucherCode = state => {
 };
 
 export const getOrderContactEmail = state => {
-  return 'huaicheng.liu@storehub.com';
-  return _get(state.app, 'order.createdVoucherCodes.0', '');
+  return _get(state.app, 'order.contactDetail.email', '');
 };

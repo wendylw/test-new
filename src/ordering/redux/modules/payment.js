@@ -16,6 +16,7 @@ import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList } from '../../containers/Payment/utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getVoucherOrderingInfoFromSessionStore } from '../../../voucher/utils';
 
 const initialState = {
   currentPayment: '',
@@ -62,10 +63,11 @@ export const actions = {
     if (isDigital) {
       const business = getBusiness(getState());
       const { total } = getCartSummary(getState());
+      const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStore();
       const payload = {
         businessName: business,
         amount: total,
-        email: '345321071@qq.com',
+        email: voucherOrderingInfo.contactEmail,
       };
       await dispatch(createVoucherOrder(payload));
       return;

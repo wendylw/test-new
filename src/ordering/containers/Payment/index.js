@@ -77,7 +77,7 @@ class Payment extends Component {
         pathname = ROUTER_PATHS.ORDERING_CUSTOMER_INFO;
         break;
       case DELIVERY_METHOD.DIGITAL:
-        pathname = ROUTER_PATHS.DIGITAL;
+        pathname = ROUTER_PATHS.VOUCHER_HOME;
         break;
       default:
         pathname = ROUTER_PATHS.ORDERING_CART;
