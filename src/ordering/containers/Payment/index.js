@@ -68,7 +68,7 @@ class Payment extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = Utils.getOrderTypeFromUrl();
     let pathname;
 
     switch (type) {
