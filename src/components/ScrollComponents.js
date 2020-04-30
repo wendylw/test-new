@@ -27,7 +27,6 @@ function getScrollToHeight(container, targetId, categoryLis) {
   if (!container || !targetId) return 0;
   let targetHeight = 0;
   let hasFoundTarget = false;
-  //let categoryLis = container.querySelectorAll('li');
   let liIndex = 0;
   while (liIndex < categoryLis.length && !hasFoundTarget) {
     let el = categoryLis[liIndex];
