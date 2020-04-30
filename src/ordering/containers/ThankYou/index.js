@@ -45,6 +45,7 @@ export class ThankYou extends Component {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
+    console.log('调试');
 
     const { thankYouActions, order } = this.props;
     const { storeId } = order || {};
@@ -57,6 +58,7 @@ export class ThankYou extends Component {
       const { data = {} } = responseGql;
       const { onlineStoreInfo } = this.props;
       const tySourceCookie = this.getThankYouSource();
+      console.log('----componentDidMount-----', tySourceCookie);
       if (onlineStoreInfo && this.isSourceFromPayment(tySourceCookie)) {
         this.handleGtmEventTracking(data);
       }
@@ -72,7 +74,9 @@ export class ThankYou extends Component {
     if (storeId && prevStoreId !== storeId) {
       this.props.thankYouActions.getStoreHashData(storeId);
     }
+
     const tySourceCookie = this.getThankYouSource();
+    console.log('----componentDidUpdate-----', tySourceCookie);
     if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo && this.isSourceFromPayment(tySourceCookie)) {
       this.handleGtmEventTracking({ order: this.props.order });
     }
@@ -102,7 +106,7 @@ export class ThankYou extends Component {
     console.log('send handleGtmEventTracking');
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     // immidiately remove __ty_source cookie after send the request.
-    Utils.removeCookieVariable('__ty_source');
+    //Utils.removeCookieVariable('__ty_source');
   };
 
   getReceiptNumber = () => {
