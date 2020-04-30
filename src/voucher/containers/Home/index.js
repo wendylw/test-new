@@ -8,12 +8,14 @@ import {
   actions as appActionCreators,
   getOnlineStoreInfoLogo,
   getBusinessName,
+  getBusinessDisplayName,
   getVoucherList,
   getBeepSiteUrl,
   getSelectedVoucher,
   getCurrencySymbol,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStore } from '../../utils';
+import VoucherAboutContent from '../../components/VoucherAboutContent';
 
 class Home extends Component {
   componentDidMount() {
@@ -36,15 +38,23 @@ class Home extends Component {
   };
 
   render() {
-    const { t, onlineStoreLogo, businessName, beepSiteUrl, voucherList, currencySymbol, selectedVoucher } = this.props;
+    const {
+      t,
+      onlineStoreLogo,
+      businessDisplayName,
+      beepSiteUrl,
+      voucherList,
+      currencySymbol,
+      selectedVoucher,
+    } = this.props;
     return (
       <div className="gift-card__page">
         <div className="gift-card__card">
-          <h1 className="header__title font-weight-bolder gift-card__header text-center">Give the perfect gift</h1>
+          <h1 className="header__title font-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
           <div className="gift-card__card-container">
             <div className="gift-card__store">
               <div className="gift-card__store-item gift-card__store-logo">
-                <img alt="store-logo" src={onlineStoreLogo} />
+                {onlineStoreLogo ? <img alt="store-logo" src={onlineStoreLogo} /> : null}
               </div>
               {selectedVoucher ? (
                 <div className="gift-card__store-item gift-card__store-amount">
@@ -52,12 +62,12 @@ class Home extends Component {
                   {selectedVoucher}
                 </div>
               ) : null}
-              <div className="gift-card__store-item gift-card__store-name">{businessName}</div>
+              <div className="gift-card__store-item gift-card__store-name">{businessDisplayName}</div>
             </div>
           </div>
           <div className="gift-card__caption text-center">
             {t('GiftCardFindOutMore')}
-            <a href={beepSiteUrl}>{businessName} ></a>
+            <a href={beepSiteUrl}>{businessDisplayName} ></a>
           </div>
         </div>
         <div className="gift-card__amount">
@@ -78,44 +88,7 @@ class Home extends Component {
             ))}
           </ul>
         </div>
-        <div className="gift-card__notes">
-          <div className="gift-card__note">
-            <h2 className="header__title">{t('GiftCardAbout')}</h2>
-            <ul>
-              <li>Validity period: 60 days from purchase date</li>
-              <li>
-                Gift voucher(s) can only be applied to purchases made on {businessName}'s online store at beepit.com
-              </li>
-            </ul>
-          </div>
-          <div className="gift-card__note">
-            <h2 className="header__title">{t('GiftCardToKnow')}</h2>
-            <ul>
-              <li>
-                The gift voucher purchased is digital only and will be will be emailed to you or any designated
-                recipient upon successful purchase.
-              </li>
-              <li>
-                The gift voucher is only available for one-time use, and are valid for 60 days from purchase date.
-              </li>
-              <li>To utilize the gift voucher, please place your order at the partner’s beepit.com online store.</li>
-              <li>
-                Apply the gift voucher's code to your order upon check out and the gift voucher's value will be deducted
-                automatically
-              </li>
-              <li>
-                If the value of your order exceeds the value of the gift voucher, the outstanding balance will be
-                charged to your chosen payment method
-              </li>
-              <li>
-                The gift voucher value will be valid for 60 days from the date of purchase with no extension after
-                expiry
-              </li>
-              <li>The gift voucher is non-cancellable / non-refundable / non-exchangeable for cash upon purchase.</li>
-              <li>Partner exclusions may apply.</li>
-            </ul>
-          </div>
-        </div>
+        <VoucherAboutContent businessDisplayName={businessDisplayName} periodDays={60} />
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
@@ -139,6 +112,7 @@ export default compose(
       return {
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
         businessName: getBusinessName(state),
+        businessDisplayName: getBusinessDisplayName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         voucherList: getVoucherList(state),
         selectedVoucher: getSelectedVoucher(state),

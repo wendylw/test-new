@@ -167,7 +167,7 @@ export function getOnlineStoreInfoLogo(state) {
 }
 
 export function getBusinessDisplayName(state) {
-  return _get(state.app, 'businessInfo.name', '');
+  return _get(state.app, 'businessInfo.displayBusinessName', '');
 }
 
 export function getBusinessName(state) {
