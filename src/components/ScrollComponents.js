@@ -5,6 +5,10 @@ import PropTypes from 'prop-types';
 import Utils from '../utils/utils';
 
 let observableContainer = {};
+let causeByNavClick = false;
+let currentCategoryId = null;
+let isScrolling = null;
+
 const TOP_BAR_HEIGHT = 50;
 const CATEGORY_BAR_HEIGHT = 50;
 const SCROLL_SPEED = {
@@ -13,6 +17,70 @@ const SCROLL_SPEED = {
   faster_y: 120,
 };
 
+/** calculate container's scrollTo height
+ * 1.find all children within container
+ * 2.find all children above target element(not including target), calculate their total height
+ * 3.this total height is what container need to scrollTo to show the targetElement.(so we don't need to worry about whatever other DOM is around container)
+ */
+
+function getScrollToHeight(container, targetId, categoryLis) {
+  if (!container || !targetId) return 0;
+  let targetHeight = 0;
+  let hasFoundTarget = false;
+  //let categoryLis = container.querySelectorAll('li');
+  let liIndex = 0;
+  while (liIndex < categoryLis.length && !hasFoundTarget) {
+    let el = categoryLis[liIndex];
+    let rectInfo = el.getBoundingClientRect();
+    if (el.id === targetId) {
+      hasFoundTarget = true;
+    } else {
+      targetHeight += rectInfo.height;
+    }
+    liIndex++;
+  }
+  return targetHeight;
+}
+function getScrollToHeightInContainer(container, targetId) {
+  let categoryLis = container.querySelectorAll('li');
+  return getScrollToHeight(container, targetId, categoryLis);
+  // if (!container || !targetId) return 0;
+  // let targetHeight = 0;
+  // let hasFoundTarget = false;
+  // let categoryLis = container.querySelectorAll('li');
+  // let liIndex = 0;
+  // while (liIndex < categoryLis.length && !hasFoundTarget) {
+  //   let el = categoryLis[liIndex];
+  //   let rectInfo = el.getBoundingClientRect();
+  //   if (el.id === targetId) {
+  //     hasFoundTarget = true;
+  //   } else {
+  //     targetHeight += rectInfo.height;
+  //   }
+  //   liIndex++;
+  // }
+  // return targetHeight;
+}
+function getScrollToHeightInWindow(container, targetId) {
+  let categoryLis = container.childNodes;
+  return getScrollToHeight(container, targetId, categoryLis);
+  // if (!container || !targetId) return 0;
+  // let targetHeight = 0;
+  // let hasFoundTarget = false;
+  // let categoryLis = container.childNodes;
+  // let liIndex = 0;
+  // while (liIndex < categoryLis.length && !hasFoundTarget) {
+  //   let el = categoryLis[liIndex];
+  //   let rectInfo = el.getBoundingClientRect();
+  //   if (el.id === targetId) {
+  //     hasFoundTarget = true;
+  //   } else {
+  //     targetHeight += rectInfo.height;
+  //   }
+  //   liIndex++;
+  // }
+  // return targetHeight;
+}
 function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
   const userAgentInfo = Utils.getUserAgentInfo();
   const el = document.getElementById(targetId);
@@ -22,7 +90,6 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
     w: document.documentElement.clientWidth || document.body.clientWidth,
     h: document.documentElement.clientHeight || document.body.clientHeight,
   };
-
   if (
     !el ||
     document
@@ -32,7 +99,6 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
   ) {
     return;
   }
-
   const containerScrolledDistance = {
     x: document.body.scrollLeft || document.documentElement.scrollLeft || window.pageXOffset,
     y: document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset,
@@ -98,8 +164,20 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
       containerScrolledDistance[direction] = scrollPosition;
     }
 
-    (container || window).scrollTo(containerScrolledDistance.x, containerScrolledDistance.y);
-
+    /** Side menu shouldn't scroll when user taps on it
+     * when user tabs on menu, data condition:causeByNavClick is true and container point to  'id=CategoryNavContent' element
+     * causeByNavClick && container equal true shows user taps on menu. otherwise,follow the previous scroll logic.
+     */
+    if (!(causeByNavClick && container)) {
+      /** fix the calculation for side menu scroll height */
+      if (container && targetId) {
+        const targetHeight = getScrollToHeightInContainer(container, targetId);
+        container.scrollTo(containerScrolledDistance.x, targetHeight);
+      } else {
+        const targetHeight = getScrollToHeightInWindow(el.parentNode, targetId);
+        window.scrollTo(containerScrolledDistance.x, targetHeight);
+      }
+    }
     if (containerScrolledDistance[direction] !== scrollPosition) {
       requestAnimationFrame(_run);
     } else if (typeof afterScroll === 'function') {
@@ -186,12 +264,20 @@ export class ScrollObserver extends React.Component {
   }
 
   handleScroll = () => {
-    const scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
-
+    window.clearTimeout(isScrolling);
+    isScrolling = setTimeout(function() {
+      causeByNavClick = false;
+      currentCategoryId = null;
+    }, 50);
+    let scrollid;
+    if (currentCategoryId) {
+      scrollid = currentCategoryId;
+    } else {
+      scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
+    }
     if (!scrollid) {
       return;
     }
-
     const { isVerticalMenu, containerId, targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
 
@@ -221,8 +307,9 @@ export class ScrollObserver extends React.Component {
   };
 
   handleSelectedTarget = async options => {
-    const { targetId } = options;
-
+    const { targetId, categoryId } = options;
+    causeByNavClick = true;
+    currentCategoryId = categoryId;
     this.setState({ drivenToScroll: true, scrollid: targetId });
 
     await scrollToSmoothly({

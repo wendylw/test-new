@@ -951,6 +951,7 @@
     height: 100%;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    background-color: $gray-6;
   }
 
   &__item {
@@ -977,12 +978,14 @@
   &__horizontal &__item {
     &.active {
       border-color: $theme-color;
+      border-bottom: none;
     }
   }
 
   &__vertical &__item {
-    color: $gray-1;
-
+    background-color: $gray-6;
+    color: $gray-7;
+    border-bottom: solid 1px $gray-8;
     label {
       opacity: 0.8;
       word-break: break-word;
@@ -1019,7 +1022,7 @@
 
   &__vertical &__item {
     padding: 3.8vw;
-    border-left: 6px solid transparent;
+    border-left: 3px solid transparent;
   }
 
   &__horizontal {
@@ -2515,7 +2518,14 @@
     }
 
     &.pick-up {
-      margin-top: 8px;
+      margin-top: 4px;
+    }
+
+    &__icon {
+      float: left;
+      width: 24px;
+      margin-top: -6px;
+      margin-left: -6px;
     }
   }
 

@@ -32,6 +32,7 @@ import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
+import locationIcon from '../../../images/Pin.svg';
 
 const localState = {
   blockScrollTop: 0,
@@ -40,8 +41,14 @@ const localState = {
 export class Home extends Component {
   state = {
     viewAside: null,
+    dScrollY: 0,
   };
-
+  handleScroll = () => {
+    const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+    this.setState({
+      dScrollY: documentScrollY,
+    });
+  };
   componentDidMount = async () => {
     const { history, homeActions, requestInfo } = this.props;
     const { tableId, storeId } = requestInfo;
@@ -59,6 +66,8 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     homeActions.loadProductList();
+
+    window.addEventListener('scroll', this.handleScroll);
   };
 
   // Remove user previously selected delivery/pickup time from session
@@ -213,7 +222,11 @@ export class Home extends Component {
                 {Utils.isPickUpType() && t('PickUpOn')}
               </summary>
               {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+                <p className="location-page__entry-address gray-font-opacity">
+                  {' '}
+                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+                  {deliveryToAddress}
+                </p>
               ) : null}
               {this.renderDeliveryDate()}
             </div>
@@ -388,12 +401,14 @@ export class Home extends Component {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
-
     return (
       <section className={classList.join(' ')}>
         {this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        {enableConditionalFreeShipping &&
+        freeShippingMinAmount &&
+        Utils.isDeliveryType() &&
+        this.state.dScrollY < 30 ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
@@ -402,6 +417,7 @@ export class Home extends Component {
             </Trans>
           </div>
         ) : null}
+
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}
