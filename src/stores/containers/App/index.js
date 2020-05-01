@@ -24,7 +24,6 @@ class App extends Component {
     fetchOnlineStoreInfo().then(({ responseGql }) => {
       const { data } = responseGql;
       const { onlineStoreInfo } = data;
-
       gtmSetUserProperties(onlineStoreInfo);
     });
   }
