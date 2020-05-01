@@ -420,12 +420,8 @@ Utils.getDeliveryCoords = () => {
   }
 };
 
-Utils.isSiteApp = (domain = document.location.hostname) => {
-  const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
-    .split(',')
-    .map(d => d.trim())
-    .filter(d => d);
-  return domainList.some(d => domain.endsWith(d));
+Utils.isSiteApp = () => {
+  return (process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',').includes(document.location.hostname);
 };
 
 // unicode string to base64
@@ -463,7 +459,7 @@ Utils.getDeliveryAddressCookie = () => {
 Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
   if (type) storeUrl += `&type=${type}`;
-  if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
+  if (source) storeUrl += `&source=${source}`;
   return storeUrl;
 };
 

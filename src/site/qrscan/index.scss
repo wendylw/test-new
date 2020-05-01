@@ -2,13 +2,9 @@
 
 /* QRScan */
 .qrscan {
-  &__recommend {
-    top: 48px;
-  }
-
   &__cover {
     position: absolute;
-    top: 48px;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;

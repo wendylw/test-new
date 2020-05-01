@@ -1,5 +1,5 @@
 import { debounce } from 'lodash';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -17,19 +17,18 @@ import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import {
   getAllCurrentStores,
   getPaginationInfo,
-  getStoreLinkInfo,
   getSearchInfo,
   getSearchingStores,
   getSearchResult,
-  getStoreCollections,
+  getTypePicker,
   homeActionCreators,
   loadedSearchingStores,
 } from '../redux/modules/home';
 import Campaign from './components/Campaign';
-import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
+import TypeGuider from './components/TypeGuider';
 import './index.scss';
-import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
+import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission } from './utils';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 
@@ -134,11 +133,6 @@ class Home extends React.Component {
     this.debounceSearchStores();
   };
 
-  handleLoadSearchPage = () => {
-    this.backLeftPosition('stores')();
-    this.props.history.push({ pathname: '/search' });
-  };
-
   handleClearSearchText = () => {
     this.props.homeActions.setSearchInfo({ keyword: '', scrollTop: 0 });
   };
@@ -148,7 +142,7 @@ class Home extends React.Component {
   };
 
   handleStoreSelected = mode => async store => {
-    const { homeActions, currentPlaceInfo } = this.props;
+    const { homeActions } = this.props;
 
     if (mode === 'search') {
       homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
@@ -158,7 +152,14 @@ class Home extends React.Component {
 
     // to backup whole redux state when click store item
     this.backupState();
-    await submitStoreMenu({ deliveryAddress: currentPlaceInfo, store: store, source: document.location.href });
+
+    await homeActions.showTypePicker({
+      business: store.business,
+      storeId: store.id,
+      isOpen: store.isOpen,
+      isPreOrder: store.enablePreOrder,
+      isOutOfDeliveryRange: store.isOutOfDeliveryRange,
+    });
   };
 
   backLeftPosition = mode => () => {
@@ -170,6 +171,8 @@ class Home extends React.Component {
     } else if (mode === 'stores') {
       homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
     }
+
+    this.backupState();
   };
 
   renderStoreList = () => {
@@ -250,11 +253,11 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, searchInfo, storeCollections, storeLinkInfo } = this.props;
+    const { t, currentPlaceInfo, searchInfo, typePicker } = this.props;
     const { keyword } = searchInfo;
 
     if (!currentPlaceInfo) {
-      return <i className="loader theme full-page text-size-huge" />;
+      return <i className="loader theme full-page text-size-huge"></i>;
     }
 
     const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
@@ -287,14 +290,13 @@ class Home extends React.Component {
 
             <div className="entry-home__search">
               <div className="form__group flex flex-middle">
-                <IconSearch className="entry-home__search-icon icon icon__small icon__gray" />
+                <IconSearch className="icon icon__normal icon__gray" />
                 <input
-                  className="form__input entry-home__input"
+                  className="form__input"
                   type="type"
                   placeholder={t('SearchRestaurantPlaceholder')}
                   value={keyword}
                   onChange={this.handleSearchTextChange}
-                  onClick={this.handleLoadSearchPage}
                 />
                 <IconClose
                   className="form__search-icon icon icon__small icon__gray"
@@ -313,14 +315,16 @@ class Home extends React.Component {
             />
           ) : null}
 
-          <Suspense fallback={null}>
-            <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
-          </Suspense>
-
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
           </div>
         </section>
+        <TypeGuider
+          {...typePicker}
+          deliveryAddress={currentPlaceInfo}
+          onToggle={() => this.props.homeActions.hideTypePicker()}
+          onRedirect={() => this.props.homeActions.hideTypePicker()}
+        />
       </main>
     );
   }
@@ -330,7 +334,6 @@ export default compose(
   withTranslation(),
   connect(
     state => ({
-      // typePicker: getTypePicker(state),
       currentPlaceInfo: getCurrentPlaceInfo(state),
       searchInfo: getSearchInfo(state),
       paginationInfo: getPaginationInfo(state),
@@ -338,8 +341,7 @@ export default compose(
       searchingStores: getSearchingStores(state),
       searchResult: getSearchResult(state),
       loadedSearchingStores: loadedSearchingStores(state),
-      storeLinkInfo: getStoreLinkInfo(state),
-      storeCollections: getStoreCollections(state),
+      typePicker: getTypePicker(state),
     }),
     dispatch => ({
       rootActions: bindActionCreators(rootActionCreators, dispatch),

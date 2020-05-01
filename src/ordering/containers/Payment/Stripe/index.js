@@ -33,6 +33,7 @@ import PaymentCardBrands from '../components/PaymentCardBrands';
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
 const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
 
+
 const Field = ({
   t,
   label,
