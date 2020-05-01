@@ -42,40 +42,30 @@ export class ThankYou extends PureComponent {
   state = {};
 
   componentDidMount() {
-    console.log('--ThankYou--componentDidMount-----');
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    console.log('调试hello');
-
     const { thankYouActions, order } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
     }
-    // console.log('---ThankYou--componentDidMount----gtmSetUserProperties----');
-    // gtmSetUserProperties(onlineStoreInfo, user);
-
     thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
       const { data = {} } = responseGql;
       const tySourceCookie = this.getThankYouSource();
       const { onlineStoreInfo, user } = this.props;
       if (this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        console.log('---loadOrder---gtmSetUserProperties--111--');
         gtmSetUserProperties(onlineStoreInfo, user);
-        console.log('---loadOrder---handleGtmEventTracking----');
         this.handleGtmEventTracking(data);
       }
       if (!this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        console.log('---loadOrder---gtmSetUserProperties--222--');
         gtmSetUserProperties(onlineStoreInfo, user);
       }
     });
   }
 
   componentDidUpdate(prevProps) {
-    console.log('--ThankYou----componentDidUpdate-----');
     const { order, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = order || {};
     const { storeId } = this.props.order || {};
@@ -88,12 +78,9 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo) {
       if (this.isSourceFromPayment(tySourceCookie)) {
         const orderInfo = this.props.order;
-        console.log('-----gtmSetUserProperties--111--');
         gtmSetUserProperties(onlineStoreInfo, user);
-        console.log('handleGtmEventTracking----');
         this.handleGtmEventTracking({ order: orderInfo });
       } else {
-        console.log('-----gtmSetUserProperties--222--');
         gtmSetUserProperties(onlineStoreInfo, user);
       }
     }
@@ -119,8 +106,6 @@ export class ThankYou extends PureComponent {
       order_value_local: order.total,
       revenue_local: order.total,
     };
-
-    console.log('send handleGtmEventTracking');
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     // immidiately remove __ty_source cookie after send the request.
     Utils.removeCookieByName('__ty_source');

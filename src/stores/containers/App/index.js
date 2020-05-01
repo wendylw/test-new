@@ -17,7 +17,6 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 
 class App extends Component {
   componentDidMount() {
-    console.log('--STORE--APP----componentDidMount');
     const { appActions } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
@@ -25,13 +24,11 @@ class App extends Component {
     fetchOnlineStoreInfo().then(({ responseGql }) => {
       const { data } = responseGql;
       const { onlineStoreInfo } = data;
-      console.log('---fetchOnlineStoreInfo---gtmSetUserProperties----');
       gtmSetUserProperties(onlineStoreInfo);
     });
   }
 
   componentDidUpdate(prevProps) {
-    console.log('--STORE--APP----componentDidUpdate');
     const { pageError } = this.props;
     const { code } = prevProps.pageError || {};
 

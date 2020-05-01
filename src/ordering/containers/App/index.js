@@ -23,11 +23,8 @@ class App extends Component {
   state = {};
 
   async componentDidMount() {
-    console.log('--ordering--APPcontainer---componentDidMount');
     const { appActions } = this.props;
-
     this.visitErrorPage();
-
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
@@ -48,13 +45,11 @@ class App extends Component {
     const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
     if (window.location.pathname !== thankYouPageUrl) {
-      console.log('----22222--gtmSetUserProperties');
       gtmSetUserProperties(onlineStoreInfo, user);
     }
   }
 
   componentDidUpdate(prevProps) {
-    console.log('--ordering--APPcontainer----componentDidUpdate');
     const { appActions, user, pageError } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
