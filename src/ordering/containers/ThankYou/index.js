@@ -46,23 +46,29 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    console.log('调试test111');
+    console.log('调试hello');
 
-    const { thankYouActions, order, onlineStoreInfo, user } = this.props;
+    const { thankYouActions, order } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
     }
-    console.log('---ThankYou--componentDidMount----gtmSetUserProperties----');
-    gtmSetUserProperties(onlineStoreInfo, user);
+    // console.log('---ThankYou--componentDidMount----gtmSetUserProperties----');
+    // gtmSetUserProperties(onlineStoreInfo, user);
 
     thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
       const { data = {} } = responseGql;
       const tySourceCookie = this.getThankYouSource();
-      if (this.isSourceFromPayment(tySourceCookie)) {
+      const { onlineStoreInfo, user } = this.props;
+      if (this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
+        console.log('---loadOrder---gtmSetUserProperties----');
+        gtmSetUserProperties(onlineStoreInfo, user);
         console.log('---loadOrder---handleGtmEventTracking----');
         this.handleGtmEventTracking(data);
+      }
+      if (!this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
+        gtmSetUserProperties(onlineStoreInfo, user);
       }
     });
   }
