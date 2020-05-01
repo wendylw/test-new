@@ -87,7 +87,7 @@ export class ThankYou extends PureComponent {
   }
 
   getThankYouSource = () => {
-    return Utils.getCookieByName('__ty_source');
+    return Utils.getCookieVariable('__ty_source', '');
   };
   isSourceFromPayment = source => {
     return source === 'payment';
@@ -108,7 +108,7 @@ export class ThankYou extends PureComponent {
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     // immidiately remove __ty_source cookie after send the request.
-    Utils.removeCookieByName('__ty_source');
+    Utils.removeCookieVariable('__ty_source', '');
   };
 
   getReceiptNumber = () => {
