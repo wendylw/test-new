@@ -62,12 +62,13 @@ export class ThankYou extends PureComponent {
       const tySourceCookie = this.getThankYouSource();
       const { onlineStoreInfo, user } = this.props;
       if (this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        console.log('---loadOrder---gtmSetUserProperties----');
+        console.log('---loadOrder---gtmSetUserProperties--111--');
         gtmSetUserProperties(onlineStoreInfo, user);
         console.log('---loadOrder---handleGtmEventTracking----');
         this.handleGtmEventTracking(data);
       }
       if (!this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
+        console.log('---loadOrder---gtmSetUserProperties--222--');
         gtmSetUserProperties(onlineStoreInfo, user);
       }
     });
@@ -85,12 +86,15 @@ export class ThankYou extends PureComponent {
     }
     const tySourceCookie = this.getThankYouSource();
     if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo) {
-      console.log('-----gtmSetUserProperties----');
-      gtmSetUserProperties(onlineStoreInfo, user);
       if (this.isSourceFromPayment(tySourceCookie)) {
         const orderInfo = this.props.order;
+        console.log('-----gtmSetUserProperties--111--');
+        gtmSetUserProperties(onlineStoreInfo, user);
         console.log('handleGtmEventTracking----');
         this.handleGtmEventTracking({ order: orderInfo });
+      } else {
+        console.log('-----gtmSetUserProperties--222--');
+        gtmSetUserProperties(onlineStoreInfo, user);
       }
     }
   }
