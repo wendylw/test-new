@@ -42,6 +42,14 @@ export class Home extends Component {
     viewAside: null,
   };
 
+  get navBackUrl() {
+    const source = Utils.getQueryString('source');
+    if (source) {
+      return source;
+    }
+    return config.beepitComUrl;
+  }
+
   componentDidMount = async () => {
     const { history, homeActions, requestInfo } = this.props;
     const { tableId, storeId } = requestInfo;
@@ -144,8 +152,7 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    // back button always goes back to beepit.com, because it shows only when source=beepit.com
-    window.location.href = config.beepitComUrl;
+    window.location.href = this.navBackUrl;
   };
 
   handleToggleAside(asideName) {
@@ -202,7 +209,7 @@ export class Home extends Component {
                 className="header__icon"
                 onClick={event => {
                   event.preventDefault();
-                  window.location.href = config.beepitComUrl;
+                  window.location.href = this.navBackUrl;
                   event.stopPropagation();
                 }}
               />
