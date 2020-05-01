@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroller';
 import {
-  IconAttachMoney,
-  IconBookmark,
   IconLocalOffer,
   /*IconMotorcycle,*/
   IconLocation,
+  IconWallet,
 } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -59,6 +58,7 @@ class StoreList extends Component {
             isOpen,
             geoDistance,
             id,
+            searchingTags,
             locale,
             currency,
             isOutOfDeliveryRange,
@@ -88,39 +88,39 @@ class StoreList extends Component {
                   alt={name}
                 />
               </div>
-              <summary className="store-card-list__summary padding-left-right-small">
+              <summary
+                className={`store-card-list__summary padding-left-right-small ${
+                  isOpen || enablePreOrder ? '' : 'text-opacity'
+                }`}
+              >
                 <h3 className="store-card-list__title text-size-bigger text-weight-bolder text-omit__single-line">
                   {name}
                 </h3>
+                {searchingTags.length > 0 && (
+                  <div className="padding-left-right-smaller">
+                    <span className="text-size-smaller store-card-list__tags-text text-omit__single-line">
+                      {(searchingTags || []).join(', ')}
+                    </span>
+                  </div>
+                )}
                 <ul className="store-info">
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
-                    <span className="store-info__text text-size-small text-middle">
+                    <span className="store-info__text text-size-smaller text-middle">
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  {isOutOfDeliveryRange ? (
+                  {/* {isOutOfDeliveryRange ? (
                     <li className="store-info__item text-middle">
                       <IconBookmark className="icon icon__smaller text-middle" />
                       <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
                     </li>
                   ) : null
-                  /*(
-                            <li className="store-info__item text-middle">
-                              <IconMotorcycle className="icon icon__smaller text-middle" />
-                              <CurrencyNumber
-                                className="store-info__text text-size-small text-middle"
-                                locale={locale}
-                                currency={currency}
-                                price={deliveryFee}
-                              />
-                            </li>
-                          )*/
-                  }
+                  } */}
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconAttachMoney className="store-info__icon-small icon icon__privacy icon__small text-middle" />
+                    <IconWallet className="icon icon__privacy icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle text-capitalize">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
                     </span>
