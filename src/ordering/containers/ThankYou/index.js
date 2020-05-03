@@ -120,11 +120,12 @@ export class ThankYou extends PureComponent {
 
   handleClickViewReceipt = () => {
     const { history, order } = this.props;
+    const type = Utils.getOrderTypeFromUrl();
     const { orderId } = order || {};
 
     history.push({
       pathname: Constants.ROUTER_PATHS.RECEIPT_DETAIL,
-      search: `?receiptNumber=${orderId || ''}`,
+      search: `?receiptNumber=${orderId || ''}&type=${type}`,
     });
   };
 
@@ -535,6 +536,7 @@ export class ThankYou extends PureComponent {
     const { t, history, match, order, storeHashCode } = this.props;
     const date = new Date();
     const { orderId, tableId } = order || {};
+    const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isTakeaway = isDeliveryType || isPickUpType;
@@ -549,8 +551,8 @@ export class ThankYou extends PureComponent {
       options.push(`table=${tableId}`);
     }
 
-    if (isTakeaway) {
-      options.push(`type=${isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY}`);
+    if (type) {
+      options.push(`type=${type}`);
     }
 
     return (

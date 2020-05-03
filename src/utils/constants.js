@@ -36,6 +36,7 @@ const ROUTER_PATHS = {
   SCAN: '/scan',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
+  DINE: '/dine',
 };
 
 const CASHBACK_SOURCE = {
@@ -148,6 +149,8 @@ const ASIDE_NAMES = {
 const DELIVERY_METHOD = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
+  DINE_IN: 'dine-in',
+  TAKE_AWAY: 'takeaway',
 };
 
 const CONSUMERFLOW_STATUS = {
