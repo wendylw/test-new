@@ -32,6 +32,7 @@ import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
+const isCampaignActive = false; // feature switch
 
 class Home extends React.Component {
   constructor(props) {
@@ -305,7 +306,7 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {countryCode.toUpperCase() === 'MY' ? (
+          {isCampaignActive && countryCode.toUpperCase() === 'MY' ? (
             <Campaign
               onToggle={() => {
                 this.setState({ campaignShown: !this.state.campaignShown });
