@@ -42,6 +42,8 @@ const ROUTER_PATHS = {
   VOUCHER_THANK_YOU: '/voucher/thank-you',
   VOUCHER_SORRY: '/voucher/sorry',
   VOUCHER_PAYMENT: '/ordering/payment',
+  // dine
+  DINE: '/dine',
 };
 
 const CASHBACK_SOURCE = {
@@ -154,6 +156,8 @@ const ASIDE_NAMES = {
 const DELIVERY_METHOD = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
+  DINE_IN: 'dine-in',
+  TAKE_AWAY: 'takeaway',
   DIGITAL: 'digital',
 };
 

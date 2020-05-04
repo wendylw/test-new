@@ -11,14 +11,21 @@ import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
 import Home from '../Home';
+import { withRouter } from 'react-router-dom';
 import DeliveryMethods from '../DeliveryMethods';
+import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
+import Utils from '../../../utils/utils';
 
 class App extends Component {
   componentDidMount() {
     const { appActions } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
+
+    if (this.isDinePath()) {
+      Utils.removeExpectedDeliveryTime();
+    }
 
     this.visitErrorPage();
     fetchOnlineStoreInfo().then(({ responseGql }) => {
@@ -26,6 +33,10 @@ class App extends Component {
       const { onlineStoreInfo } = data;
       gtmSetUserProperties(onlineStoreInfo);
     });
+  }
+
+  isDinePath() {
+    return this.props.match.path === Constants.ROUTER_PATHS.DINE;
   }
 
   componentDidUpdate(prevProps) {
@@ -53,19 +64,27 @@ class App extends Component {
     }
   }
 
+  renderDeliveryOrDineMethods() {
+    const { enableDelivery, stores, currentStoreId } = this.props;
+
+    if (this.isDinePath()) {
+      return <DineMethods />;
+    }
+
+    if (enableDelivery) {
+      return <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} />;
+    }
+  }
+
   render() {
-    const { error, pageError, onlineStoreInfo, stores, enableDelivery, currentStoreId } = this.props;
+    const { error, pageError, onlineStoreInfo, currentStoreId } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="store-list">
-        {currentStoreId && enableDelivery ? (
-          <DeliveryMethods store={stores.find(store => store.id === currentStoreId)} />
-        ) : (
-          <Home />
-        )}
+        {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home />}
 
-        {error && !pageError.code ? <ErrorToast message={error} clearError={this.handleClearError} /> : null}
+        {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
@@ -84,4 +103,4 @@ export default connect(
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
   })
-)(App);
+)(withRouter(App));
