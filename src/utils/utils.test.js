@@ -28,6 +28,7 @@ describe('utils/utils', () => {
     getQueryObject,
     initSmoothAnimation,
     getUserAgentInfo,
+    checkEmailIsValid,
   } = Utils;
 
   it('getQueryString', () => {
@@ -223,5 +224,17 @@ describe('utils/utils', () => {
   it('getUserAgentInfo: only test isMobile', () => {
     const userAgentInfo = getUserAgentInfo();
     expect(userAgentInfo.isMobile).toBeFalsy();
+  });
+
+  describe('Utils.checkEmailIsValid', () => {
+    it('check valid email', () => {
+      const validEmail = 'my.email@beep.com';
+      expect(checkEmailIsValid(validEmail)).toBeTruthy();
+    });
+
+    it('check invalid email', () => {
+      const invalidEmail = 'invalid@email';
+      expect(checkEmailIsValid(invalidEmail)).toBeFalsy();
+    });
   });
 });
