@@ -14,6 +14,7 @@ import {
   getBeepSiteUrl,
   getSelectedVoucher,
   getCurrencySymbol,
+  getBusinessDisplayName,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import Utils from '../../../utils/utils';
@@ -63,9 +64,18 @@ class Contact extends Component {
   };
 
   render() {
-    const { t, contactEmail, onlineStoreLogo, onlineStoreName, currencySymbol, selectedVoucher } = this.props;
+    const {
+      t,
+      contactEmail,
+      onlineStoreLogo,
+      onlineStoreName,
+      businessDisplayName,
+      currencySymbol,
+      selectedVoucher,
+    } = this.props;
     const { invalidEmail } = this.state;
     const invalidEmailClass = invalidEmail ? 'input__error' : '';
+    const storeName = onlineStoreName || businessDisplayName;
 
     return (
       <div className="update-contact__page">
@@ -76,7 +86,7 @@ class Contact extends Component {
             <div className="gift-card__card-container">
               <div className="gift-card__store">
                 <div className="gift-card__store-item gift-card__store-logo">
-                  {onlineStoreLogo ? <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} /> : null}
+                  {onlineStoreLogo ? <img alt={`${storeName} Logo`} src={onlineStoreLogo} /> : null}
                 </div>
                 {selectedVoucher ? (
                   <div className="gift-card__store-item gift-card__store-amount">
@@ -84,7 +94,7 @@ class Contact extends Component {
                     {selectedVoucher}
                   </div>
                 ) : null}
-                <div className="gift-card__store-item gift-card__store-name">{onlineStoreName}</div>
+                <div className="gift-card__store-item gift-card__store-name">{storeName}</div>
               </div>
             </div>
           </div>
@@ -123,6 +133,7 @@ export default compose(
         contactEmail: getContactEmail(state),
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
         onlineStoreName: getOnlineStoreName(state),
+        businessDisplayName: getBusinessDisplayName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         selectedVoucher: getSelectedVoucher(state),
         currencySymbol: getCurrencySymbol(state),

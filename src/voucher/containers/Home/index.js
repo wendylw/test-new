@@ -13,6 +13,7 @@ import {
   getSelectedVoucher,
   getCurrencySymbol,
   getVoucherValidityPeriodDays,
+  getBusinessDisplayName,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import VoucherAboutContent from '../../components/VoucherAboutContent';
@@ -47,7 +48,11 @@ class Home extends Component {
       currencySymbol,
       selectedVoucher,
       validityPeriodDays,
+      businessDisplayName,
     } = this.props;
+
+    const storeName = onlineStoreName || businessDisplayName;
+
     return (
       <div className="gift-card__page">
         <div className="gift-card__card">
@@ -55,7 +60,7 @@ class Home extends Component {
           <div className="gift-card__card-container">
             <div className="gift-card__store">
               <div className="gift-card__store-item gift-card__store-logo">
-                {onlineStoreLogo ? <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} /> : null}
+                {onlineStoreLogo ? <img alt={`${storeName} Logo`} src={onlineStoreLogo} /> : null}
               </div>
               {selectedVoucher ? (
                 <div className="gift-card__store-item gift-card__store-amount">
@@ -63,12 +68,12 @@ class Home extends Component {
                   {selectedVoucher}
                 </div>
               ) : null}
-              <div className="gift-card__store-item gift-card__store-name">{onlineStoreName}</div>
+              <div className="gift-card__store-item gift-card__store-name">{storeName}</div>
             </div>
           </div>
           <div className="gift-card__caption text-center">
             {t('GiftCardFindOutMore')}
-            <a href={beepSiteUrl}>{onlineStoreName} ></a>
+            <a href={beepSiteUrl}>{storeName} ></a>
           </div>
         </div>
         <div className="gift-card__amount">
@@ -90,7 +95,7 @@ class Home extends Component {
             ))}
           </ul>
         </div>
-        <VoucherAboutContent onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
+        <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
@@ -114,6 +119,7 @@ export default compose(
       return {
         onlineStoreLogo: getOnlineStoreInfoLogo(state),
         onlineStoreName: getOnlineStoreName(state),
+        businessDisplayName: getBusinessDisplayName(state),
         beepSiteUrl: getBeepSiteUrl(state),
         voucherList: getVoucherList(state),
         selectedVoucher: getSelectedVoucher(state),

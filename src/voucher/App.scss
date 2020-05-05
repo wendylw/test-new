@@ -103,6 +103,9 @@
       font-size: $font-size-base;
       color: $white;
       text-transform: uppercase;
+      width: 150px;
+      word-break: break-all;
+      text-align: right;
     }
   }
 
@@ -111,8 +114,10 @@
     font-size: 1.1rem;
     font-weight: $font-weight-bold;
     color: $gray-1;
+    line-height: $line-height-base;
 
     a {
+      display: inline-block;
       font-size: inherit;
       text-decoration: none;
       color: #358ee9;
