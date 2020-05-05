@@ -71,19 +71,16 @@ class Payment extends Component {
     const type = Utils.getOrderTypeFromUrl();
 
     switch (type) {
-      case DELIVERY_METHOD.PICKUP:
-      case DELIVERY_METHOD.DELIVERY:
-        history.push({
-          pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-          search: window.location.search,
-        });
-        break;
       case DELIVERY_METHOD.DIGITAL:
         window.location.href = ROUTER_PATHS.VOUCHER_CONTACT;
         break;
+      case DELIVERY_METHOD.DINE_IN:
+      case DELIVERY_METHOD.TAKE_AWAY:
+      case DELIVERY_METHOD.DELIVERY:
+      case DELIVERY_METHOD.PICKUP:
       default:
         history.push({
-          pathname: ROUTER_PATHS.ORDERING_CART,
+          pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
           search: window.location.search,
         });
         break;
