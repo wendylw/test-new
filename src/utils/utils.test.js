@@ -228,13 +228,25 @@ describe('utils/utils', () => {
 
   describe('Utils.checkEmailIsValid', () => {
     it('check valid email', () => {
-      const validEmail = 'my.email@beep.com';
-      expect(checkEmailIsValid(validEmail)).toBeTruthy();
+      expect(checkEmailIsValid('myemail@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my-email@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email+beep@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email+beep@123.com')).toBeTruthy();
+      expect(checkEmailIsValid('my-email+123@beep.com.cn')).toBeTruthy();
     });
 
     it('check invalid email', () => {
-      const invalidEmail = 'invalid@email';
-      expect(checkEmailIsValid(invalidEmail)).toBeFalsy();
+      expect(checkEmailIsValid('invalid@email')).toBeFalsy();
+      expect(checkEmailIsValid('@email.com')).toBeFalsy();
+      expect(checkEmailIsValid('invalid@')).toBeFalsy();
+      expect(checkEmailIsValid('email@.com')).toBeFalsy();
+    });
+
+    it('check email is empty', () => {
+      expect(checkEmailIsValid(null)).toBeFalsy();
+      expect(checkEmailIsValid('')).toBeFalsy();
+      expect(checkEmailIsValid()).toBeFalsy();
     });
   });
 });
