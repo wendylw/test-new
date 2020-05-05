@@ -73,7 +73,16 @@ export const actions = {
         amount: total,
         email: voucherOrderingInfo.contactEmail,
       };
-      await dispatch(createVoucherOrder(payload));
+      const result = await dispatch(createVoucherOrder(payload));
+
+      if (result.type === types.CREATEORDER_FAILURE) {
+        const message = i18next.t('OrderingPayment:PlaceOrderFailedDescription');
+        dispatch(
+          appActions.showError({
+            message,
+          })
+        );
+      }
       return;
     }
 
