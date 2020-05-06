@@ -8,7 +8,7 @@
   "GrabPay": "GrabPay",
   "TouchNGo": "Touch 'n Go eWallet",
   "GCash": "GCash",
-  "Line": "Line",
+  "Line": "LINE Pay",
   "RequiredMessage": "Required",
   "CardNumberIncompleteMessage": "Your card's {{nameString}} {{verb}} incomplete.",
   "CardNumberStringIncompleteMessage": "Your card’s number is incomplete.",
