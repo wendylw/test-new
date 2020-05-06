@@ -36,6 +36,7 @@ const ROUTER_PATHS = {
   SCAN: '/scan',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
+  DINE: '/dine',
 };
 
 const CASHBACK_SOURCE = {
@@ -71,6 +72,11 @@ const CREDIT_CARD_BRANDS = {
   VISA: 'Visa',
   MASTER_CARD: 'MasterCard',
   JCB: 'JCB',
+  AMEX: 'American Express',
+  DISCOVER: 'Discover',
+  DINERS: 'Diners Club',
+  UNION_PAY: 'UnionPay',
+  UNKNOWN: 'Unknown',
 };
 
 const HOME_ASIDE_NAMES = {
@@ -143,6 +149,8 @@ const ASIDE_NAMES = {
 const DELIVERY_METHOD = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
+  DINE_IN: 'dine-in',
+  TAKE_AWAY: 'takeaway',
 };
 
 const CONSUMERFLOW_STATUS = {

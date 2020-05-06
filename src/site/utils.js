@@ -1,3 +1,5 @@
+import config from '../config';
+
 export const fakeAuth = {
   isAuthenticated: false,
   authenticate(cb) {

@@ -1,0 +1,10 @@
+.common-search {
+  position: relative;
+  padding: 10px 15px 5px 5px;
+  z-index: 100;
+  width: 100%;
+
+  &__icon {
+    padding: 0 8px;
+  }
+}

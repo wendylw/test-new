@@ -1,9 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import qs from 'qs';
+import isEmpty from 'lodash/isEmpty';
 import { withTranslation } from 'react-i18next';
-import { IconEdit } from '../../../components/Icons';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
@@ -155,10 +156,54 @@ class Customer extends Component {
     this.setState({ errorToast: null });
   };
 
-  renderDeliveryTime = () => {
-    const { business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+  getHeaderTitle = () => {
     const { t } = this.props;
+    const type = Utils.getOrderTypeFromUrl();
+
+    switch (type) {
+      case DELIVERY_METHOD.DELIVERY:
+        return t('DeliveryDetails');
+      case DELIVERY_METHOD.PICKUP:
+        return t('PickUpDetails');
+      case DELIVERY_METHOD.DINE_IN:
+      case DELIVERY_METHOD.TAKE_AWAY:
+      default:
+        return t('CustomerDetails');
+    }
+  };
+
+  getCanContinue = () => {
+    const { isFetching, deliveryDetails, business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const type = Utils.getOrderTypeFromUrl();
+    const username = (deliveryDetails.username || '').trim();
+    const phone = deliveryDetails.phone;
+
+    if (isFetching || !isValidPhoneNumber(phone) || isEmpty(username)) {
+      return false;
+    }
+
+    if (enablePreOrder && (type === DELIVERY_METHOD.DELIVERY || type === DELIVERY_METHOD.PICKUP)) {
+      if (!date.date) {
+        return false;
+      }
+    }
+
+    switch (type) {
+      case DELIVERY_METHOD.DELIVERY:
+        const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+        const address = (deliveryAddress.address || '').trim();
+        return !isEmpty(address);
+      default:
+    }
+
+    return true;
+  };
+
+  renderDeliveryTime = () => {
+    const { t, business, allBusinessInfo, history } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     if (!enablePreOrder) {
       return null;
@@ -175,25 +220,29 @@ class Customer extends Component {
       deliveryTime = '';
     }
 
-    console.log('[Customer] deliveryTime =', deliveryTime);
-
     return (
-      <Fragment>
-        <div className="flex flex-middle flex-space-between">
-          <label className="form__label font-weight-bold">{t('DeliverOn')}</label>
-          <i className="customer__edit-icon">
-            <IconEdit />
-          </i>
-        </div>
+      <div
+        className="form__group border-radius-base"
+        onClick={async () => {
+          const { search } = window.location;
+
+          const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+            search: `${search}&callbackUrl=${callbackUrl}`,
+          });
+        }}
+      >
         <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
           {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
-      </Fragment>
+      </div>
     );
   };
 
   renderDeliveryAddress() {
-    const { t, history, business, allBusinessInfo } = this.props;
+    const { t, history } = this.props;
 
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
@@ -201,51 +250,46 @@ class Customer extends Component {
 
     const { addressDetails, deliveryComments } = this.props.deliveryDetails;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     return (
       <React.Fragment>
+        <label className="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
+        {this.renderDeliveryTime()}
+
         <div
-          className="form__group"
+          className="form__group border-radius-base flex flex-middle flex-space-between"
           onClick={async () => {
             const { search } = window.location;
 
             const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
             history.push({
-              pathname: enablePreOrder
-                ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
-                : Constants.ROUTER_PATHS.ORDERING_LOCATION,
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
               search: `${search}&callbackUrl=${callbackUrl}`,
             });
           }}
         >
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
-            <IconEdit className="customer__edit-icon" />
-          </div>
           <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
-          {this.renderDeliveryTime()}
+          <IconNext className="flex__shrink-fixed" />
         </div>
-        <div className="form__group" onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}>
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bolder gray-font-opacity">
-              {t('AddAddressDetailsPlaceholder')}
-            </label>
-            <IconEdit className="customer__edit-icon" />
-          </div>
+        <div
+          className="form__group border-radius-base"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}
+        >
           <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
             {addressDetails || t('AddressDetailsPlaceholder')}
           </p>
         </div>
         <div
-          className="form__group flex flex-middle flex-space-between"
+          className="form__group border-radius-base"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
         >
-          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToDriverPlaceholder')}</p>
-          <IconEdit className="customer__edit-icon" />
+          <p className={`form__textarea ${deliveryComments ? '' : 'gray-font-opacity'}`}>
+            {deliveryComments ||
+              `${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          </p>
         </div>
       </React.Fragment>
     );
@@ -274,8 +318,9 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
+        <label className="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
         <div
-          className="form__group"
+          className="form__group border-radius-base"
           onClick={async () => {
             const { search } = window.location;
 
@@ -287,41 +332,33 @@ class Customer extends Component {
             });
           }}
         >
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold">{t('PickupAt')}</label>
-            {/* <IconEdit className="customer__edit-icon" /> */}
-          </div>
-          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
-            {pickUpAddress || t('PickUpAtPlaceholder')}
-          </p>
-          <div className="flex flex-middle flex-space-between">
-            <label className="form__label font-weight-bold">{t('PickUpOn')}</label>
-            <IconEdit className="customer__edit-icon" />
-          </div>
           <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
             {pickUpTime || t('PickUpAtPlaceholder')}
           </p>
         </div>
+        <div className="form__group border-radius-base">
+          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
+            {pickUpAddress || t('PickUpAtPlaceholder')}
+          </p>
+        </div>
         <div
-          className="form__group flex flex-middle flex-space-between"
+          className="form__group border-radius-base flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
-          <p className="gray-font-opacity">{deliveryComments || t('AddNoteToMerchantPlaceholder')}</p>
-          <IconEdit className="customer__edit-icon" />
+          <p className={`${deliveryComments ? '' : 'gray-font-opacity'}`}>
+            {deliveryComments ||
+              `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          </p>
         </div>
       </React.Fragment>
     );
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, business, allBusinessInfo } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -339,9 +376,9 @@ class Customer extends Component {
     return (
       <section className={`table-ordering__customer` /* hide */}>
         <Header
-          className="text-center gray has-right flex-middle"
+          className="text-center gray flex-middle"
           isPage={true}
-          title={type === DELIVERY_METHOD.DELIVERY ? t('DeliveryDetails') : t('PickUpDetails')}
+          title={this.getHeaderTitle()}
           navFunc={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
@@ -352,10 +389,10 @@ class Customer extends Component {
         <div className="customer__content">
           <form className="customer__form">
             <div className="form__group">
-              <label className="form__label gray-font-opacity">{t('Name')}</label>
               <input
                 className="input input__block"
                 type="text"
+                placeholder={t('Name')}
                 defaultValue={deliveryDetails.username}
                 onChange={e => {
                   this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
@@ -363,8 +400,7 @@ class Customer extends Component {
               />
             </div>
 
-            <div className="form__group border__bottom-divider">
-              <label className="form__label gray-font-opacity">{t('MobileNumber')}</label>
+            <div className="form__group">
               <PhoneInput
                 smartCaret={false}
                 placeholder=""
@@ -414,13 +450,7 @@ class Customer extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bolder"
               onClick={this.handleCreateOrder.bind(this)}
-              disabled={
-                (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
-                !Boolean((deliveryDetails.username || '').trim()) ||
-                !isValidPhoneNumber(deliveryDetails.phone) ||
-                !!(enablePreOrder && !date.date) ||
-                isFetching
-              }
+              disabled={!this.getCanContinue()}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
             </button>

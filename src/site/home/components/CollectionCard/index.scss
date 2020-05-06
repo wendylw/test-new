@@ -1,0 +1,11 @@
+.store-collections {
+  &__item {
+    width: 25%;
+  }
+
+  &__name {
+    display: block;
+    padding-top: 4px;
+    white-space: nowrap;
+  }
+}

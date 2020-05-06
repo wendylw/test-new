@@ -483,9 +483,17 @@
       bottom: 21.6vw;
     }
 
+    .form__label {
+      margin: 8px 0;
+    }
+
+    .form__label ~ .form__group {
+      padding: 16px;
+      border: 1px solid $gray-3;
+    }
+
     .form__textarea {
-      margin: 5px 0;
-      padding-right: 34px;
+      min-height: 0;
       word-break: break-word;
       -webkit-hyphens: auto;
       -ms-hyphens: auto;
@@ -2130,6 +2138,7 @@
   }
 
   .input__list-top {
+    position: relative;
     border: 1px solid $gray-3;
     border-radius: 4px 4px 0 0;
 
@@ -2184,6 +2193,26 @@
 
     &.JCB {
       width: 10vw;
+    }
+  }
+
+  &.stripe {
+    .payment-bank__card-type-icon {
+      position: absolute;
+      right: 5px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      z-index: 100;
+    }
+
+    .payment-bank__card-type-icon.visa {
+      right: 45px;
+      height: 33px;
+    }
+
+    .payment-bank__card-type-icon.mastercard {
+      height: 38px;
     }
   }
 }
@@ -3150,6 +3179,15 @@
   &__form {
     padding: 0 3.8vw;
 
+    .form__group {
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .react-phone-number-input {
+      margin: 0;
+    }
+
     .input,
     .react-phone-number-input--focus .react-phone-number-input__input,
     .react-phone-number-input .react-phone-number-input__input:focus,
@@ -3816,5 +3854,58 @@ body.loading {
 
   .location-display__date-container label.form__label {
     margin: 16px 0;
+  }
+}
+
+.dine {
+  width: 100%;
+}
+
+.tables {
+  padding: 0 10px;
+  padding-bottom: 30vw;
+  width: 100%;
+  &__continue-button {
+    text-transform: uppercase;
+  }
+
+  &__title {
+    font-size: 1.2rem;
+    font-weight: $font-weight-bolder;
+    margin-top: 20px;
+    margin-left: 10px;
+  }
+  &__list {
+    @extend .flex;
+    @extend .flex-center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    margin: 10px 0;
+    width: 100%;
+    &-item {
+      width: 17vw;
+      height: 15vw;
+      border: 1px solid $gray-3;
+      border-radius: 8px;
+      margin: 10px;
+      line-height: $line-height-base;
+      &.active {
+        background-color: $theme-color;
+        color: white;
+        border: none;
+      }
+    }
+
+    &-table-name {
+      font-weight: $font-weight-bolder;
+    }
+  }
+  .header {
+    background-color: white;
+    border: none;
+    .header__title {
+      text-transform: unset;
+      padding-left: 2vw;
+    }
   }
 }

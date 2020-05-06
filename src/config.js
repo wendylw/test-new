@@ -30,10 +30,12 @@ const getClientSID = () => {
 
 const getTableId = () => {
   try {
-    return document.cookie
-      .split(';')
-      .find(s => s.includes('__t='))
-      .split('=')[1];
+    return decodeURIComponent(
+      document.cookie
+        .split(';')
+        .find(s => s.includes('__t='))
+        .split('=')[1]
+    );
   } catch (e) {
     return null;
   }
@@ -74,14 +76,11 @@ const config = {
   imageS3Domain: process.env.REACT_APP_IMAGE_S3_DOMAIN,
   imageCompressionDomain: process.env.REACT_APP_IMAGE_COMPRESSION_DOMAIN,
   authApiUrl: process.env.REACT_APP_AUTH_API_URL,
-  onlineBankingMerchantList:
-    process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST !== 'none'
-      ? (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').split(',')
-      : null,
   paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
   beepitComUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}`,
   qrScanPageUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}/qrscan`,
+  removePickupMerchantList: (process.env.REACT_APP_REMOVE_PICKUP_MERCHANT_LIST || '').split(','),
   h() {
     try {
       return document.cookie
