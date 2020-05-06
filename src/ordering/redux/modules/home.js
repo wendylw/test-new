@@ -286,11 +286,13 @@ export default combineReducers({
 });
 
 // selectors
-export const getDeliveryInfo = createSelector([getBusiness, getAllBusinesses], (business, allBusinessInfo) => {
+export const getDeliveryInfo = state => {
+  const business = getBusiness(state);
+  const allBusinessInfo = getAllBusinesses(state);
   // ignore for now since home page needs address from it.
   // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
   return Utils.getDeliveryInfo({ business, allBusinessInfo });
-});
+};
 
 export const isFetched = state => state.home.shoppingCart.isFetched;
 

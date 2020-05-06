@@ -179,6 +179,9 @@ class LocationAndDate extends Component {
 
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
+    const { business, allBusinessInfo } = this.props;
+    const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -193,6 +196,10 @@ class LocationAndDate extends Component {
         if (!isOpen) continue;
       }
 
+      if (disableTodayPreOrder && !i) {
+        continue;
+      }
+
       deliveryDates.push({
         date: new Date(deliveryDate).toISOString(),
         isOpen: isOpen,
@@ -205,12 +212,14 @@ class LocationAndDate extends Component {
 
   showLocationSearch = () => {
     const { history, business, allBusinessInfo } = this.props;
-    const { search } = window.location;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    let { search } = window.location;
 
     const callbackUrl = encodeURIComponent(
       `${enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION}${search}`
     );
+    // next page don't need current page's callbackUrl.
+    search = search.replace(/&?callbackUrl=[^&]*/, '');
 
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
@@ -276,9 +285,7 @@ class LocationAndDate extends Component {
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
-              <i className="delivery__next-icon">
-                <IconNext />
-              </i>
+              <IconNext className="delivery__next-icon" />
             </div>
           </div>
         </div>

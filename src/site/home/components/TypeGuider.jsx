@@ -4,6 +4,8 @@ import { withTranslation } from 'react-i18next';
 import config from '../../../config';
 import RedirectForm from '../../../ordering/containers/Payment/components/RedirectForm';
 
+const disabledPickupList = ['5ea0203a433b7415bbe13529', '5ea25997d4d63725b156b815'];
+
 class TypeGuider extends Component {
   state = {
     url: '',
@@ -74,7 +76,7 @@ class TypeGuider extends Component {
   };
 
   render() {
-    const { t, show, pickupUrl, deliveryUrl, isOutOfDeliveryRange, loading = true } = this.props;
+    const { t, show, pickupUrl, deliveryUrl, isOutOfDeliveryRange, loading = true, storeId } = this.props;
     const contentText = {
       withinDeliveryRange: {
         title: t('SelectYourPreference'),
@@ -111,6 +113,7 @@ class TypeGuider extends Component {
               <button
                 className="button button__block button__outline margin-normal text-uppercase text-weight-bolder"
                 onClick={this.handleGotoOrderingPage.bind(this, pickupUrl, true)}
+                disabled={disabledPickupList.includes(storeId)}
               >
                 {t('SelfPickup')}
               </button>

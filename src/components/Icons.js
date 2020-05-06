@@ -101,11 +101,13 @@ export const IconLeftArrow = props => (
   </i>
 );
 
-export const IconNext = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-    <path d="M0 0h24v24H0z" fill="none" />
-  </svg>
+export const IconNext = props => (
+  <i {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+      <path d="M0 0h24v24H0z" fill="none" />
+    </svg>
+  </i>
 );
 
 export const IconDelete = () => (
@@ -275,6 +277,14 @@ export const IconWallet = props => (
     <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
       <path d="M0 0h24v24H0z" fill="none" />
       <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+    </svg>
+  </i>
+);
+
+export const IconScanner = props => (
+  <i {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 16 16" width="24">
+      <path d="M.6 9.7c.4 0 .6.3.6.6h0v2.2c0 .1.1.2.2.2h2.2c.4 0 .6.3.6.6s-.2.7-.5.7h0-2.2A1.54 1.54 0 0 1 0 12.5h0v-2.2a.65.65 0 0 1 .6-.6zm12.8 0c.4 0 .6.3.6.6h0v2.2a1.54 1.54 0 0 1-1.5 1.5h0-2.2c-.4 0-.6-.3-.6-.6a.65.65 0 0 1 .6-.6h2.2c.1 0 .2-.1.2-.2h0v-2.2a.68.68 0 0 1 .7-.7zm0-3.2c.3 0 .6.2.6.5s-.3.5-.6.5h0H.6C.3 7.5 0 7.3 0 7s.3-.5.6-.5h12.8zM12.5 0A1.54 1.54 0 0 1 14 1.5h0v2.2c0 .4-.3.6-.6.6s-.7-.3-.7-.6h0V1.5c0-.1-.1-.2-.2-.2h0-2.2c-.3 0-.6-.3-.6-.7s.3-.6.6-.6h2.2zM3.7 0a.65.65 0 0 1 .6.6c0 .3-.3.7-.6.7h0-2.2c-.1 0-.2.1-.2.2h0v2.2c0 .3-.3.6-.7.6S0 4 0 3.7h0V1.5A1.54 1.54 0 0 1 1.5 0h2.2z" />
     </svg>
   </i>
 );

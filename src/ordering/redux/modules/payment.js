@@ -15,7 +15,11 @@ import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList } from '../../containers/Payment/utils';
-import config from '../../../config';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+
+const { DELIVERY_METHOD } = Constants;
+
+const ALLOW_USE_ONLINE_BANKING_ORDER_TYPES = [DELIVERY_METHOD.TAKE_AWAY, DELIVERY_METHOD.DINE_IN];
 
 const initialState = {
   currentPayment: '',
@@ -23,7 +27,6 @@ const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
-  onlineBankingMerchantList: [],
 };
 
 export const types = {
@@ -120,7 +123,7 @@ export const actions = {
     }
     // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
 
-    if (shippingType === 'delivery') {
+    if (shippingType === DELIVERY_METHOD.DELIVERY) {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
       const {
         addressDetails,
@@ -144,11 +147,16 @@ export const actions = {
         },
         deliveryComments,
       };
-    } else if (shippingType === 'pickup') {
+    } else if (shippingType === DELIVERY_METHOD.PICKUP) {
       variables = {
         ...variables,
         contactDetail,
         ...expectDeliveryDateInfo,
+      };
+    } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
+      variables = {
+        ...variables,
+        contactDetail,
       };
     }
 
@@ -218,10 +226,6 @@ export const actions = {
       params: { country },
     },
   }),
-
-  fetchOnlineBankingMerchantList: () => ({
-    type: types.FETCH_ONLINE_BANKING_MERCHANT_LIST,
-  }),
 };
 
 const createOrder = variables => {
@@ -286,9 +290,6 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, bankingList };
     }
-    case types.FETCH_ONLINE_BANKING_MERCHANT_LIST: {
-      return { ...state, onlineBankingMerchantList: config.onlineBankingMerchantList };
-    }
     default:
       return state;
   }
@@ -307,16 +308,48 @@ export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
 
-export const getOnlineBankingMerchantList = state => state.payment.onlineBankingMerchantList;
-
 export const getPayments = createSelector(
-  [getMerchantCountry, getAllPaymentOptions],
-  (merchantCountry, paymentOptions) => {
+  [getBusiness, getMerchantCountry, getAllPaymentOptions, getCartSummary],
+  (business, merchantCountry, paymentOptions, cartSummary) => {
     if (!merchantCountry) {
       return [];
     }
+
     const paymentList = getPaymentList(merchantCountry);
-    return paymentList.map(paymentKey => paymentOptions[paymentKey]);
+
+    return paymentList
+      .map(paymentKey => {
+        const { total } = cartSummary;
+
+        // for Malaysia
+        if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
+          return paymentOptions[
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_SPRITE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
+          ];
+        }
+
+        return paymentOptions[paymentKey];
+      })
+      .filter(payment => {
+        const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
+        const orderType = Utils.getOrderTypeFromUrl();
+
+        if (payment.label === Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY) {
+          // dine-in and takeaway order can use onlineBanking
+          if (ALLOW_USE_ONLINE_BANKING_ORDER_TYPES.includes(orderType)) {
+            return true;
+          }
+
+          const onlineBankingForAllMerchants = onlineBankingMerchantList.length === 0;
+          if (onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business)) {
+            return true;
+          }
+
+          return false;
+        }
+
+        return true;
+      });
   }
 );
 

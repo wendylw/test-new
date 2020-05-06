@@ -2,11 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import ErrorToast from '../../../components/ErrorToast';
-import Routes from '../../Routes';
 import SiteFooter from '../../components/SiteFooter';
 import { appActionCreators, getError } from '../../redux/modules/app';
+import Routes from '../../Routes';
 
 class SiteApp extends React.Component {
+  showSiteFooter = false; // hide the siteFooter temporarily, could show it in the future
+
   componentDidMount = async () => {
     await this.props.appActions.ping();
   };
@@ -27,7 +29,7 @@ class SiteApp extends React.Component {
         ) : null}
         {/* <SiteFakeHeader /> */}
         <Routes />
-        <SiteFooter />
+        {this.showSiteFooter && <SiteFooter />}
       </React.Fragment>
     );
   }

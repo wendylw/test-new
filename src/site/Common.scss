@@ -64,6 +64,10 @@ address {
   font-size: 0.7142rem;
 }
 
+.text-line-height-base {
+  line-height: $line-height-base;
+}
+
 .text-uppercase {
   text-transform: uppercase;
 }
@@ -252,6 +256,10 @@ img {
 
 .padding-left-right-small {
   padding: 0 2.4vw;
+}
+
+.padding-left-right-smaller {
+  padding: 0 1.4vw;
 }
 
 .padding-top-bottom-small {
@@ -558,72 +566,35 @@ img {
 }
 
 .tag {
-  &__number {
-    display: inline-block;
-    padding: 2px;
-    min-width: 20px;
-    height: 20px;
-    line-height: 16px;
-    font-size: 0.8rem;
-    color: $white;
-    background-color: $blue;
-    border-radius: 12px;
+  text-align: center;
+  padding: 3px 5px;
+  border-radius: $border-radius-base;
+  font-size: 0.8571rem;
+  text-transform: uppercase;
+  color: $white;
+  font-style: normal;
+  white-space: nowrap;
+
+  &__block {
+    display: block;
+    width: 100%;
   }
 
-  &__cards {
-    margin: 0 -2vw;
+  &__small {
+    font-size: 0.7142rem;
   }
 
-  &__card {
-    @extend .border-radius-base;
-
-    display: inline-block;
-    padding: 2px 12px;
-    margin: 2vw;
-    border: 1px solid $white;
-    background-color: transparent;
-    font-style: normal;
-  }
-
-  &__card-container {
-    height: 3.8vw;
-  }
-
-  &__card.variation:not(.active) {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-  }
-
-  &__card.info {
-    padding: 3px;
-    color: $white;
-    line-height: 1em;
-    border-color: $gray-1;
-    background-color: $gray-1;
-  }
-
-  &__card.active {
-    border-color: $theme-color;
-    color: $white;
+  &__privacy {
     background-color: $theme-color;
   }
 
-  &__card.warning {
-    border-color: $red;
-    color: $white;
+  &__reverse-privacy {
+    color: $theme-color;
+    background-color: $white;
+  }
+
+  &__error {
     background-color: $red;
-  }
-
-  &__card.disabled {
-    pointer-events: none;
-    border-color: $gray-3;
-    color: $gray-1;
-    background-color: $gray-3;
-  }
-
-  &__card.downsize {
-    transform: scale(0.6);
-    transform-origin: left top;
-    margin: 0;
   }
 }
 
@@ -691,10 +662,10 @@ img {
   }
 
   &__input {
-    padding: 16px 0;
+    padding: 8px 0;
     border: 0;
     line-height: 26px;
-    height: 56px;
+    height: 40px;
     width: 100%;
     background-color: $white;
     outline: none;
@@ -703,7 +674,7 @@ img {
   }
 
   &__search-icon {
-    padding: 18px 8px;
+    padding: 10px 8px;
   }
 }
 
@@ -774,10 +745,6 @@ img {
   &__text {
     margin: 0 5px;
   }
-
-  &__icon-small {
-    padding: 4px 2px;
-  }
 }
 /* end of Store Info */
 
@@ -826,6 +793,10 @@ img {
   .padding-left-right-normal {
     padding-left: 8px * 2;
     padding-right: 8px * 2;
+  }
+
+  .padding-left-right-smaller {
+    padding: 0 4px;
   }
 
   .padding-top-bottom-normal {

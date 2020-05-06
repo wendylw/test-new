@@ -10,8 +10,14 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators, getStoreHashCode, isStoreClosed } from '../../redux/modules/home';
+import {
+  actions as homeActionCreators,
+  getOneStoreInfo,
+  getStoreHashCode,
+  isStoreClosed,
+} from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
+import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
@@ -86,8 +92,8 @@ class DeliveryMethods extends Component {
   }
 
   render() {
-    const { t } = this.props;
-
+    const { t, currentStoreInfo } = this.props;
+    const { fulfillmentOptions } = currentStoreInfo || {};
     return (
       <section className="delivery">
         <Header
@@ -97,21 +103,23 @@ class DeliveryMethods extends Component {
           navFunc={this.handleClickBack.bind(this)}
         />
         <ul className="delivery__list">
-          {METHODS_LIST.map(method => (
-            <li
-              key={method.name}
-              className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
-              onClick={() => this.handleVisitStore(method.name)}
-            >
-              <figure className="delivery__image-container">
-                <img src={method.logo} alt={t(method.labelKey)}></img>
-              </figure>
-              <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
-              <i className="delivery__next-icon">
-                <IconNext />
-              </i>
-            </li>
-          ))}
+          {METHODS_LIST.map(method => {
+            return fulfillmentOptions && fulfillmentOptions.find(item => item.toLowerCase() === method.name) ? (
+              <li
+                key={method.name}
+                className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
+                onClick={() => this.handleVisitStore(method.name)}
+              >
+                <figure className="delivery__image-container">
+                  <img src={method.logo} alt={t(method.labelKey)}></img>
+                </figure>
+                <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
+                <i className="delivery__next-icon">
+                  <IconNext />
+                </i>
+              </li>
+            ) : null;
+          })}
         </ul>
       </section>
     );
@@ -129,11 +137,13 @@ DeliveryMethods.defaultProps = {
 export default compose(
   withTranslation(),
   connect(
-    state => ({
+    (state, ownProps) => ({
       hashCode: getStoreHashCode(state),
       isStoreClosed: isStoreClosed(state),
       business: getBusiness(state),
+      removePickUpMerchantList: getRemovedPickUpMerchantList(state),
       allBusinessInfo: getAllBusinesses(state),
+      currentStoreInfo: getOneStoreInfo(state, ownProps.store.id),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

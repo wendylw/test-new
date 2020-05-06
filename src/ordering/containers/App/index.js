@@ -24,9 +24,7 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
-
     this.visitErrorPage();
-
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
@@ -44,7 +42,11 @@ class App extends Component {
 
     this.getTokens(isLogin);
 
-    gtmSetUserProperties(onlineStoreInfo, user);
+    const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
+
+    if (window.location.pathname !== thankYouPageUrl) {
+      gtmSetUserProperties(onlineStoreInfo, user);
+    }
   }
 
   componentDidUpdate(prevProps) {

@@ -21,6 +21,7 @@ const initialState = {
     tableId: config.table,
     storeId: config.storeId,
   },
+  removePickUpMerchantList: config.removePickupMerchantList,
 };
 
 export const types = {
@@ -87,6 +88,7 @@ const error = (state = initialState.error, action) => {
 };
 
 const business = (state = initialState.business, action) => state;
+const removePickUpMerchantList = (state = initialState.removePickUpMerchantList, action) => state;
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
@@ -127,12 +129,14 @@ export default combineReducers({
   error,
   messageModal,
   business,
+  removePickUpMerchantList,
   onlineStoreInfo,
   requestInfo,
 });
 
 // selectors
 export const getBusiness = state => state.app.business;
+export const getRemovedPickUpMerchantList = state => state.app.removePickUpMerchantList;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
