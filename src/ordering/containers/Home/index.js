@@ -424,6 +424,7 @@ export class Home extends Component {
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
+    const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -439,7 +440,7 @@ export class Home extends Component {
         {enableConditionalFreeShipping &&
         freeShippingMinAmount &&
         Utils.isDeliveryType() &&
-        this.state.dScrollY < 30 ? (
+        this.state.dScrollY < adBarHeight ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
