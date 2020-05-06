@@ -80,6 +80,10 @@ export class Home extends Component {
     window.addEventListener('scroll', this.handleScroll);
   };
 
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
+
   // Remove user previously selected delivery/pickup time from session
   // Just in case the previous one they select is delivery and the new one is pickup
   // which will cause delivery/pickup time displayed in header incorrect
