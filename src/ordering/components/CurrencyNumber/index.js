@@ -2,16 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getOnlineStoreInfo } from '../../redux/modules/app';
+import Utils from '../../../utils/utils';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsMoney() {
-    const { locale, currency, money } = this.props;
+    const { locale, currency, money, country } = this.props;
+    const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
 
     if (!(locale && currency)) {
       return money;
     }
 
-    return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
+    const price = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
+
+    if (country === 'MY' && isSafari) {
+      return price.replace(/^(\D+)/, '$1 ');
+    }
+
+    return price;
   }
 
   render() {
@@ -36,10 +44,11 @@ CurrencyNumber.defaultProps = {
 };
 
 export default connect(state => {
-  const { locale, currency } = getOnlineStoreInfo(state) || {};
+  const { locale, currency, country } = getOnlineStoreInfo(state) || {};
 
   return {
     locale,
     currency,
+    country,
   };
 })(CurrencyNumber);
