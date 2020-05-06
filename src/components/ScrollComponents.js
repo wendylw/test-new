@@ -40,14 +40,17 @@ function getScrollToHeight(container, targetId, categoryLis) {
   }
   return targetHeight;
 }
+
 function getScrollToHeightInContainer(container, targetId) {
-  let categoryLis = container.querySelectorAll('li');
-  return getScrollToHeight(container, targetId, categoryLis);
+  let categoryList = container.querySelectorAll('li');
+  return getScrollToHeight(container, targetId, categoryList);
 }
+
 function getScrollToHeightInWindow(container, targetId) {
-  let categoryLis = container.childNodes;
-  return getScrollToHeight(container, targetId, categoryLis);
+  let categoryList = container.childNodes;
+  return getScrollToHeight(container, targetId, categoryList);
 }
+
 function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
   const userAgentInfo = Utils.getUserAgentInfo();
   const el = document.getElementById(targetId);
