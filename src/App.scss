@@ -1109,8 +1109,8 @@
     @extend .border-radius-base;
 
     position: relative;
-    min-width: 21vw;
-    min-height: 21vw;
+    min-width: 18.5vw;
+    min-height: 18.5vw;
     background-color: $gray-5;
     background-repeat: no-repeat;
     background-size: contain;
@@ -1133,7 +1133,8 @@
 
   &__image-container ~ &__detail {
     padding: 0 2.4vw;
-    min-height: 21vw;
+    // min-height: 21vw;
+    min-height: 18.5vw;
   }
 
   &__detail {
@@ -1145,6 +1146,13 @@
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
+    &-productName {
+      display: block;
+      line-height: 22px;
+      max-height: 44px;
+      overflow: hidden;
+      font-weight: 600;
+    }
   }
 
   &__detail-content > * ~ * {
@@ -1164,7 +1172,7 @@
   }
 
   &__text {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 
     &.price {
       margin-top: 15px;

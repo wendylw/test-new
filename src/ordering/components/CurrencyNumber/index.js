@@ -5,12 +5,14 @@ import { getOnlineStoreInfo } from '../../redux/modules/app';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsMoney() {
-    const { locale, currency, money } = this.props;
+    const { locale, currency, money, showCurrency } = this.props;
 
     if (!(locale && currency)) {
       return money;
     }
-
+    if (!showCurrency) {
+      return Intl.NumberFormat(locale).format(parseFloat(money));
+    }
     return Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
   }
 
@@ -29,10 +31,12 @@ CurrencyNumber.propTypes = {
   className: PropTypes.string,
   addonBefore: PropTypes.string,
   money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  showCurrency: PropTypes.bool,
 };
 
 CurrencyNumber.defaultProps = {
   money: 0,
+  showCurrency: true,
 };
 
 export default connect(state => {

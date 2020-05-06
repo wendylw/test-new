@@ -166,9 +166,15 @@ export class Home extends Component {
       this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
-    this.setState({
-      viewAside: asideName,
-    });
+    if (asideName === Constants.ASIDE_NAMES.CART && this.state.viewAside === Constants.ASIDE_NAMES.CART) {
+      this.setState({
+        viewAside: null,
+      });
+    } else {
+      this.setState({
+        viewAside: asideName,
+      });
+    }
   }
 
   renderDeliverToBar() {

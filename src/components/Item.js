@@ -31,7 +31,7 @@ export class Item extends Component {
     }
 
     return (
-      <li className={classList.join(' ')}>
+      <li className={classList.join(' ')} style={{ padding: '2.8vw 2.8vw 4vw 2.5vw' }}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
           <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
           <div className="item__detail flex flex-column flex-space-between">
@@ -41,7 +41,9 @@ export class Item extends Component {
                   <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
                 </div>
               ) : null}
-              <summary className="item__title font-weight-bolder">{title}</summary>
+              <summary className="item__title font-weight-bolder">
+                <span className="item__title-productName">{title}</span>
+              </summary>
               {variation ? <p className="item__description">{variation}</p> : null}
             </div>
             {detail}
