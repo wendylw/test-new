@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import qs from 'qs';
+import isEmpty from 'lodash/isEmpty';
 import { withTranslation } from 'react-i18next';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -153,6 +154,51 @@ class Customer extends Component {
 
   clearErrorToast = () => {
     this.setState({ errorToast: null });
+  };
+
+  getHeaderTitle = () => {
+    const { t } = this.props;
+    const type = Utils.getOrderTypeFromUrl();
+
+    switch (type) {
+      case DELIVERY_METHOD.DELIVERY:
+        return t('DeliveryDetails');
+      case DELIVERY_METHOD.PICKUP:
+        return t('PickUpDetails');
+      case DELIVERY_METHOD.DINE_IN:
+      case DELIVERY_METHOD.TAKE_AWAY:
+      default:
+        return t('CustomerDetails');
+    }
+  };
+
+  getCanContinue = () => {
+    const { isFetching, deliveryDetails, business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const type = Utils.getOrderTypeFromUrl();
+    const username = (deliveryDetails.username || '').trim();
+    const phone = deliveryDetails.phone;
+
+    if (isFetching || !isValidPhoneNumber(phone) || isEmpty(username)) {
+      return false;
+    }
+
+    if (enablePreOrder && (type === DELIVERY_METHOD.DELIVERY || type === DELIVERY_METHOD.PICKUP)) {
+      if (!date.date) {
+        return false;
+      }
+    }
+
+    switch (type) {
+      case DELIVERY_METHOD.DELIVERY:
+        const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+        const address = (deliveryAddress.address || '').trim();
+        return !isEmpty(address);
+      default:
+    }
+
+    return true;
   };
 
   renderDeliveryTime = () => {
@@ -309,14 +355,10 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, business, allBusinessInfo } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -336,7 +378,7 @@ class Customer extends Component {
         <Header
           className="text-center gray flex-middle"
           isPage={true}
-          title={type === DELIVERY_METHOD.DELIVERY ? t('DeliveryDetails') : t('PickUpDetails')}
+          title={this.getHeaderTitle()}
           navFunc={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
@@ -408,13 +450,7 @@ class Customer extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bolder"
               onClick={this.handleCreateOrder.bind(this)}
-              disabled={
-                (type === DELIVERY_METHOD.DELIVERY && !Boolean((deliveryToAddress || '').trim())) ||
-                !Boolean((deliveryDetails.username || '').trim()) ||
-                !isValidPhoneNumber(deliveryDetails.phone) ||
-                !!(enablePreOrder && !date.date) ||
-                isFetching
-              }
+              disabled={!this.getCanContinue()}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
             </button>

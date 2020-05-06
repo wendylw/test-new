@@ -38,6 +38,7 @@ const localState = {
   blockScrollTop: 0,
 };
 
+const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
   state = {
     viewAside: null,
@@ -49,6 +50,15 @@ export class Home extends Component {
       dScrollY: documentScrollY,
     });
   };
+
+  get navBackUrl() {
+    const source = Utils.getQueryString('source');
+    if (source) {
+      return source;
+    }
+    return config.beepitComUrl;
+  }
+
   componentDidMount = async () => {
     const { history, homeActions, requestInfo } = this.props;
     const { tableId, storeId } = requestInfo;
@@ -153,8 +163,7 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    // back button always goes back to beepit.com, because it shows only when source=beepit.com
-    window.location.href = config.beepitComUrl;
+    window.location.href = this.navBackUrl;
   };
 
   handleToggleAside(asideName) {
@@ -218,7 +227,7 @@ export class Home extends Component {
                 className="header__icon"
                 onClick={event => {
                   event.preventDefault();
-                  window.location.href = config.beepitComUrl;
+                  window.location.href = this.navBackUrl;
                   event.stopPropagation();
                 }}
               />
@@ -300,10 +309,26 @@ export class Home extends Component {
     return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
+  renderHeaderChildren() {
+    const { requestInfo, t } = this.props;
+    const type = Utils.getOrderTypeFromUrl();
+    switch (type) {
+      case DELIVERY_METHOD.DINE_IN:
+        const { tableId } = requestInfo || {};
+        return <span className="gray-font-opacity">{t('TableIdText', { tableId })}</span>;
+      case DELIVERY_METHOD.TAKE_AWAY:
+        return <span className="gray-font-opacity">{t('TAKE_AWAY')}</span>;
+      case DELIVERY_METHOD.DELIVERY:
+      case DELIVERY_METHOD.PICKUP:
+        return <IconInfoOutline className="header__info-icon" />;
+      default:
+        return null;
+    }
+  }
+
   renderHeader() {
-    const { t, onlineStoreInfo, businessInfo, requestInfo, cartSummary, deliveryInfo } = this.props;
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
-    const { tableId } = requestInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
@@ -311,10 +336,6 @@ export class Home extends Component {
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
-
-    if (!tableId && !(isDeliveryType || isPickUpType)) {
-      classList.push('has-right');
-    }
 
     if (isDeliveryType || isPickUpType) {
       classList.push('flex-top');
@@ -339,8 +360,7 @@ export class Home extends Component {
         enablePreOrder={this.isPreOrderEnabled()}
         storeAddress={storeAddress}
       >
-        {tableId ? <span className="gray-font-opacity">{t('TableIdText', { tableId })}</span> : null}
-        {isDeliveryType || isPickUpType ? <IconInfoOutline className="header__info-icon" /> : null}
+        {this.renderHeaderChildren()}
       </Header>
     );
   }

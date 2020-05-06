@@ -30,10 +30,12 @@ const getClientSID = () => {
 
 const getTableId = () => {
   try {
-    return document.cookie
-      .split(';')
-      .find(s => s.includes('__t='))
-      .split('=')[1];
+    return decodeURIComponent(
+      document.cookie
+        .split(';')
+        .find(s => s.includes('__t='))
+        .split('=')[1]
+    );
   } catch (e) {
     return null;
   }
