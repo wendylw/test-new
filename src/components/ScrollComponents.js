@@ -23,13 +23,13 @@ const SCROLL_SPEED = {
  * 3.this total height is what container need to scrollTo to show the targetElement.(so we don't need to worry about whatever other DOM is around container)
  */
 
-function getScrollToHeight(container, targetId, categoryLis) {
+function getScrollToHeight(container, targetId, categoryList) {
   if (!container || !targetId) return 0;
   let targetHeight = 0;
   let hasFoundTarget = false;
   let liIndex = 0;
-  while (liIndex < categoryLis.length && !hasFoundTarget) {
-    let el = categoryLis[liIndex];
+  while (liIndex < categoryList.length && !hasFoundTarget) {
+    let el = categoryList[liIndex];
     let rectInfo = el.getBoundingClientRect();
     if (el.id === targetId) {
       hasFoundTarget = true;
@@ -40,14 +40,17 @@ function getScrollToHeight(container, targetId, categoryLis) {
   }
   return targetHeight;
 }
+
 function getScrollToHeightInContainer(container, targetId) {
-  let categoryLis = container.querySelectorAll('li');
-  return getScrollToHeight(container, targetId, categoryLis);
+  let categoryList = container.querySelectorAll('li');
+  return getScrollToHeight(container, targetId, categoryList);
 }
+
 function getScrollToHeightInWindow(container, targetId) {
-  let categoryLis = container.childNodes;
-  return getScrollToHeight(container, targetId, categoryLis);
+  let categoryList = container.childNodes;
+  return getScrollToHeight(container, targetId, categoryList);
 }
+
 function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
   const userAgentInfo = Utils.getUserAgentInfo();
   const el = document.getElementById(targetId);

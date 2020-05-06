@@ -19,7 +19,7 @@ export class Item extends Component {
       productDetailImageRef,
       hasTag,
     } = this.props;
-    const classList = ['item border__bottom-divider'];
+    const classList = ['item border__bottom-divider item-padding'];
     const contentClassList = ['item__content flex'];
 
     if (className) {
@@ -31,7 +31,7 @@ export class Item extends Component {
     }
 
     return (
-      <li className={classList.join(' ')} style={{ padding: '2.8vw 2.8vw 4vw 2.5vw' }}>
+      <li className={classList.join(' ')}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
           <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
           <div className="item__detail flex flex-column flex-space-between">
