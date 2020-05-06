@@ -2,7 +2,6 @@
   "StoreName": "ชื่อร้าน",
   "ContactInfo": "รายละเอียดการติดต่อ",
   "StoreAddress": "ที่อยู่ร้าน",
-  "OrderDetails": "รายละเอียดออร์เดอร์",
   "YourOrder": "ออร์เดอร์ของคุณ",
   "Total": "จำนวนเงินทั้งหมด",
   "Subtotal": "จำนวนเงิน",
