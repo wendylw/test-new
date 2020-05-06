@@ -356,7 +356,7 @@
 
     .aside {
       top: 50px;
-      bottom: 21.6vw;
+      bottom: 18.8vw;
     }
 
     .header__image-container {
@@ -409,7 +409,7 @@
     }
 
     .aside-bottom {
-      bottom: 21.6vw;
+      bottom: 18.8vw;
     }
 
     .billing__list {
@@ -480,10 +480,10 @@
     @extend .main-section;
 
     background-color: $white;
-    padding-bottom: 21.6vw;
+    padding-bottom: 18.8vw;
 
     .aside {
-      bottom: 21.6vw;
+      bottom: 18.8vw;
     }
 
     .form__label {
@@ -1016,7 +1016,7 @@
   }
 
   &__vertical {
-    bottom: 21.6vw;
+    bottom: 18.8vw;
     height: auto;
     width: 25%;
 
@@ -1032,8 +1032,8 @@
   }
 
   &__vertical &__item {
-    padding: 3.8vw;
-    border-left: 3px solid transparent;
+    padding: 3.8vw 1.8vw;
+    border-left: 6px solid transparent;
   }
 
   &__horizontal {
@@ -1076,8 +1076,13 @@
   &__header {
     width: 100%;
     padding: 10px 3.8vw;
-    height: 50px;
+    font-size: 0.85rem;
+    height: 36px;
     background-color: $gray-5;
+
+    label {
+      font-size: inherit;
+    }
 
     &.fixed {
       position: fixed;
@@ -1112,8 +1117,8 @@
     @extend .border-radius-base;
 
     position: relative;
-    min-width: 18.5vw;
-    min-height: 18.5vw;
+    width: 18.5vw;
+    height: 18.5vw;
     background-color: $gray-5;
     background-repeat: no-repeat;
     background-size: contain;
@@ -1799,7 +1804,7 @@
 
 .footer-operation {
   position: fixed;
-  padding: 3.8vw;
+  padding: 2.4vw 3.8vw;
   left: 0;
   bottom: 0;
   z-index: 200;
@@ -2491,7 +2496,7 @@
     }
 
     .location-page__entry ~ .top-message__second-level ~ .list__container {
-      top: 127px;
+      top: 119px;
     }
 
     .location-page__entry ~ .pick-up ~ .top-message__second-level ~ .list__container {
@@ -2500,7 +2505,7 @@
 
     .location-page__entry ~ .top-message__second-level ~ .list__container .category__header.fixed,
     .location-page__entry ~ .top-message__second-level + .category-nav {
-      top: 171px;
+      top: 170px;
     }
 
     .location-page__entry ~ .pick-up ~ .top-message__second-level ~ .list__container .category__header.fixed,
@@ -2549,6 +2554,7 @@
     text-overflow: ellipsis;
 
     p {
+      margin-left: 18px;
       font-size: inherit;
     }
 
@@ -3676,7 +3682,13 @@ body.loading {
     max-width: 180px;
   }
 
-  .item__image-container,
+  .item__image-container {
+    width: 87px;
+    height: 87px;
+    min-width: 87px;
+    min-height: 87px;
+  }
+
   .item__image-container ~ .item__detail {
     min-width: 87px;
     min-height: 87px;
