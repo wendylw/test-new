@@ -19,7 +19,7 @@ export class Item extends Component {
       productDetailImageRef,
       hasTag,
     } = this.props;
-    const classList = ['item border__bottom-divider itemPadding'];
+    const classList = ['item border__bottom-divider item-padding'];
     const contentClassList = ['item__content flex'];
 
     if (className) {
