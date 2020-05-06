@@ -504,7 +504,7 @@ class ProductDetail extends Component {
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
-    const descriptionStr = Utils.removeHtmlTag(description || '');
+    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
     let swipeHeight = '80vw';
@@ -612,9 +612,11 @@ class ProductDetail extends Component {
             className="aside__section-container bottom"
             style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
           >
-            <p className="product-description__text gray-font-opacity">
-              {Boolean(descriptionStr) ? descriptionStr : t('NoProductDescription')}
-            </p>
+            {Boolean(descriptionStr) ? (
+              <p className="product-description__text gray-font-opacity" dangerouslySetInnerHTML={descriptionStr} />
+            ) : (
+              <p className="product-description__text gray-font-opacity">{t('NoProductDescription')}</p>
+            )}
           </article>
         </div>
       </div>

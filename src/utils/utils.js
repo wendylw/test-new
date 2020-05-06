@@ -278,6 +278,10 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
 };
 
 Utils.removeHtmlTag = function removeHtmlTag(str) {
+  if (!str) {
+    return '';
+  }
+
   return str.replace(/<[^>]+>/g, '');
 };
 
