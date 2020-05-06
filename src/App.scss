@@ -1626,10 +1626,8 @@
   }
 
   &__text {
-    @extend .omit-text;
-
     max-height: 100%;
-    -webkit-line-clamp: 3;
+    overflow-y: auto;
   }
 
   &.transition {
@@ -3855,6 +3853,12 @@ body.loading {
   .location-display__date-container label.form__label {
     margin: 16px 0;
   }
+
+  .table-ordering__home .item__content,
+  .product-description .item__content::before,
+  .product-description .item__detail {
+    min-height: 88px;
+  }
 }
 
 .dine {
@@ -3900,6 +3904,7 @@ body.loading {
       font-weight: $font-weight-bolder;
     }
   }
+
   .header {
     background-color: white;
     border: none;
