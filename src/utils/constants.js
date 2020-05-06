@@ -66,6 +66,7 @@ const PAYMENT_METHOD_LABELS = {
   BOOST_PAY: 'Boost',
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
+  LINE_PAY: 'Line',
 };
 
 const CREDIT_CARD_BRANDS = {
