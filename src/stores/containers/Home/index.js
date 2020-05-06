@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { withRouter } from 'react-router-dom';
 
 import {
   actions as homeActionCreators,
@@ -25,6 +26,10 @@ class App extends Component {
 
   componentDidMount = async () => {
     await this.props.homeActions.loadCoreStores();
+    if (Array.isArray(this.props.stores) && this.props.stores.length === 1) {
+      const defaultSelectStore = this.props.stores[0];
+      this.selectStore(defaultSelectStore.id);
+    }
   };
 
   async visitStore(storeId) {
@@ -39,7 +44,7 @@ class App extends Component {
     }
   }
 
-  async setCurrentStoreId(storeId) {
+  async gotoDelivery(storeId) {
     const { homeActions } = this.props;
     // 请求 coreBusiness
     await homeActions.loadCoreBusiness();
@@ -61,8 +66,26 @@ class App extends Component {
     }
   }
 
+  gotoDine(storeId) {
+    this.props.homeActions.setCurrentStore(storeId);
+    this.props.history.push({
+      pathname: ROUTER_PATHS.DINE,
+      search: window.location.search,
+    });
+  }
+
+  selectStore = storeId => {
+    const { enableDelivery } = this.props;
+
+    if (enableDelivery) {
+      this.gotoDelivery(storeId);
+    } else {
+      this.gotoDine(storeId);
+    }
+  };
+
   render() {
-    const { t, show, stores, enableDelivery, onlineStoreInfo } = this.props;
+    const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
 
     if (!show) {
@@ -84,10 +107,7 @@ class App extends Component {
           {!stores || !stores.length ? (
             <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
           ) : (
-            <StoreList
-              storeList={stores}
-              onSelect={enableDelivery ? this.setCurrentStoreId.bind(this) : this.visitStore.bind(this)}
-            />
+            <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
           )}
         </div>
       </section>
@@ -112,4 +132,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(App);
+)(withRouter(App));

@@ -80,7 +80,10 @@ class ProductDetail extends Component {
     }
 
     if (!show && prevProps.show !== show) {
-      this.setState({ resizedImage: false });
+      this.setState({
+        resizedImage: false,
+        minimumVariations: [],
+      });
     }
 
     if (prevState.productElHeight !== this.productEl.clientHeight) {

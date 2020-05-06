@@ -49,6 +49,7 @@ class QRScan extends Component {
   videoRef = React.createRef();
   canvasRef = React.createRef();
   mediaStreamTrackList = [];
+  show = true;
 
   componentDidMount() {
     this.getCamera();
@@ -217,7 +218,7 @@ class QRScan extends Component {
           </div>
         </header>
         {!showMessage ? null : (
-          <div className="top-message primary padding-normal text-center absolute-wrapper">
+          <div className="qrscan__recommend top-message primary padding-normal text-center absolute-wrapper">
             <p className="top-message__text text-weight-bolder">{t('UseChromeMessage')}</p>
           </div>
         )}

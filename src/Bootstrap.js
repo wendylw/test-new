@@ -1,5 +1,6 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Route, Redirect, Switch, BrowserRouter as Router } from 'react-router-dom';
+import qs from 'qs';
 import Constants from './utils/constants';
 import Utils from './utils/utils';
 import NotFound from './NotFound';
@@ -16,7 +17,7 @@ const AsyncQRScanner = lazy(() => import('./qrscan'));
 
 const AsyncSite = lazy(() => import('./site'));
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
   renderSitePages = () => {
@@ -34,13 +35,24 @@ class Bootstrap extends Component {
           <Route
             exact
             path={ROUTER_PATHS.STORES_HOME}
-            render={(...args) => {
+            render={routeProps => {
+              const queries = qs.parse(routeProps.location.search, { ignoreQueryPrefix: true });
+
               // goto stores when visit home page without scaning QR Code.
-              if (!Utils.getQueryString('h')) {
+              if (!queries.h) {
                 return <AsyncStoresApp />;
               }
 
-              return <Redirect to={ROUTER_PATHS.ORDERING_BASE} />;
+              // if type is empty then fallback to dine-in order
+              queries.type = queries.type || DELIVERY_METHOD.DINE_IN;
+              return (
+                <Redirect
+                  to={{
+                    pathname: ROUTER_PATHS.ORDERING_BASE,
+                    search: qs.stringify(queries, { addQueryPrefix: true }),
+                  }}
+                />
+              );
             }}
           />
           <Route path={ROUTER_PATHS.TERMS_OF_USE} render={props => <AsyncTermsPrivacy {...props} pageName="terms" />} />
@@ -48,6 +60,7 @@ class Bootstrap extends Component {
           <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
           <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
           <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
+          <Route path={ROUTER_PATHS.DINE} component={AsyncStoresApp} />
           <Route path={'*'} component={NotFound} />
         </Switch>
       </Suspense>

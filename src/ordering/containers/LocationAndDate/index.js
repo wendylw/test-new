@@ -212,12 +212,14 @@ class LocationAndDate extends Component {
 
   showLocationSearch = () => {
     const { history, business, allBusinessInfo } = this.props;
-    const { search } = window.location;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    let { search } = window.location;
 
     const callbackUrl = encodeURIComponent(
       `${enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION}${search}`
     );
+    // next page don't need current page's callbackUrl.
+    search = search.replace(/&?callbackUrl=[^&]*/, '');
 
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
