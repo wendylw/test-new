@@ -170,6 +170,7 @@ export class Home extends Component {
       this.setState({
         viewAside: null,
       });
+      this.toggleBodyScroll(false);
     } else {
       this.setState({
         viewAside: asideName,
