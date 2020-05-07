@@ -376,7 +376,7 @@
       bottom: 0;
     }
     .item-padding {
-      padding: 2.8vw 2.8vw 4vw 2.5vw;
+      padding: 2.4vw;
     }
   }
 
@@ -517,6 +517,8 @@
 
   &__thanks {
     @extend .main-section;
+
+    background-color: $gray-10;
 
     .header__title + button {
       width: 180px;
@@ -1156,13 +1158,13 @@
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
-    &-productName {
-      display: block;
-      line-height: 22px;
-      max-height: 44px;
-      overflow: hidden;
-      font-weight: 600;
-    }
+  }
+
+  &__title-productName {
+    display: block;
+    max-height: 44px;
+    overflow: hidden;
+    font-weight: 600;
   }
 
   &__detail-content > * ~ * {
@@ -1187,6 +1189,7 @@
     &.price {
       color: $gray-7;
       margin-top: 15px;
+      font-size: inherit;
     }
   }
 
@@ -2589,7 +2592,7 @@
 }
 
 .thanks {
-  padding: 3vh 4vw 9vh;
+  padding: 5.4vh 4vw;
   width: 100%;
 
   .input,
@@ -2607,10 +2610,11 @@
 
   &__status-title,
   &__status-description {
-    margin: 8px 0;
+    margin: 15px 0;
 
     .link {
       text-decoration: none;
+      letter-spacing: 1.25px;
     }
   }
 
@@ -2699,8 +2703,8 @@
   }
 
   &__delivery-status-container {
-    padding: 4vw 3.8vw;
-    margin-top: 8vw;
+    padding: 3.8vw;
+    margin-top: 16px;
   }
 
   &__delivery-status-list {
@@ -2796,7 +2800,7 @@
   }
 
   &__link {
-    padding: 4vh 0;
+    padding: 2.4vh 0;
   }
 
   &__pin-icon {
@@ -2811,6 +2815,7 @@
     ~ span {
       padding-left: 20px;
       line-height: 1.5em;
+      color: $gray-9;
       word-break: break-word;
       -webkit-hyphens: auto;
       -ms-hyphens: auto;
@@ -3892,8 +3897,7 @@ body.loading {
   }
 
   .thanks__delivery-status-container {
-    padding: 20px 16px;
-    margin-top: 34px;
+    padding: 15px;
   }
 
   .tag__card {
@@ -3909,7 +3913,7 @@ body.loading {
   }
 
   .thanks {
-    padding: 3vh 16px 9vh;
+    padding: 5.4vh 16px;
 
     &__title {
       margin: 16px 0;
