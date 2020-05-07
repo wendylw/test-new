@@ -8,5 +8,6 @@
   "MinMaximumChoicesDescription": "Select minimum of {{minSelectionAmount}} and maximum of {{maxSelectionAmount}} choices",
   "StoreOffline": "STORE OFFLINE",
   "PreOrderConfirmModalTitle": "We’re closed for now, but you can still order!",
-  "PreOrderConfirmModalDescription": "Our opening hours are from {{validTimeFrom}} to {{validTimeTo}}. But you can browse the menu & pre-order instead!"
+  "PreOrderConfirmModalDescription": "Our opening hours are from {{validTimeFrom}} to {{validTimeTo}}. But you can browse the menu & pre-order instead!",
+  "I18NWorkflowTestKeyOrderingHome": "I18N Workflow Test - Ordering Home"
 }
