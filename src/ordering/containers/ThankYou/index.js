@@ -212,7 +212,7 @@ export class ThankYou extends PureComponent {
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
       >
-        {t('ViewDetails')}
+        {t('SeeDetails')}
       </button>
     );
   }
@@ -403,7 +403,7 @@ export class ThankYou extends PureComponent {
               money={cashback || 0}
             />
             <h3>
-              <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
+              <span className="text-size-big">{t('EarnedCashBackTitle')}</span>{' '}
               <span role="img" aria-label="Celebration">
                 🎉
               </span>
@@ -451,12 +451,12 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        <h4 className="thanks__delivering-title">{t('DeliveringTo')}</h4>
+        <h4 className="thanks__delivering-title font-weight-bold">{t('DeliveringTo')}</h4>
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
-          <span className="gray-font-opacity">{isPickUpType ? storeAddress : deliveryAddress}</span>
+          <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
         <div className="thanks__total-container text-center">
           <span className="thanks__total-text">{t('Total')}</span>
@@ -655,8 +655,8 @@ export class ThankYou extends PureComponent {
             }
           >
             {isTakeaway ? (
-              <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
-                <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
+              <button className="link" onClick={this.handleNeedHelp}>
+                <span data-testid="thanks__self-pickup">{`${t('ContactUs')}`}</span>
               </button>
             ) : (
               <span className="gray-font-opacity">
@@ -692,7 +692,7 @@ export class ThankYou extends PureComponent {
               {isDeliveryType ? null : this.renderPickupInfo()}
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin history={history} />
+              {isDeliveryType ? null : <PhoneLogin isDeliveryType={isDeliveryType} history={history} />}
             </div>
           </div>
         </React.Fragment>

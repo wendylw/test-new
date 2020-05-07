@@ -65,7 +65,7 @@
   "NoBusinessTitle": "Store Not Found",
   "NoBusinessDescription": "This store does not exist, please check your store name and try again.",
   "QROrderingDisabledDescription": "Oops, seems like this store no longer supports Online Ordering.",
-  "ViewDetails": "View Details",
+  "SeeDetails": "See Details",
   "SelectStoreDescription": "Please select a store to continue…",
   "SelectStoreErrorMessage": "Something wrong, please try again later.",
   "FoodDelivery": "Food Delivery",
