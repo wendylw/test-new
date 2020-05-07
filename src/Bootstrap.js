@@ -17,6 +17,8 @@ const AsyncQRScanner = lazy(() => import('./qrscan'));
 
 const AsyncSite = lazy(() => import('./site'));
 
+const AsyncVoucher = lazy(() => import('./voucher'));
+
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
@@ -60,6 +62,7 @@ class Bootstrap extends Component {
           <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
           <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
           <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
+          <Route path={ROUTER_PATHS.VOUCHER_HOME} component={AsyncVoucher} />
           <Route path={ROUTER_PATHS.DINE} component={AsyncStoresApp} />
           <Route path={'*'} component={NotFound} />
         </Switch>
