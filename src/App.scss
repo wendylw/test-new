@@ -3827,7 +3827,6 @@ body.loading {
     padding: 13px;
   }
 
-  .category-nav__vertical .category-nav__item,
   .category-nav__horizontal .category-nav__item,
   .footer-operation,
   .top-message__close-button,
@@ -3840,6 +3839,10 @@ body.loading {
   .thanks-pickup__id-container,
   .thanks__delivery-info {
     padding: 16px;
+  }
+
+  .category-nav__vertical .category-nav__item {
+    padding: 16px 10px;
   }
 
   .modal__detail,
