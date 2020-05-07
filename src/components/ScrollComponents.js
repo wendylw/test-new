@@ -81,9 +81,11 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
     containerScrolledDistance.w = container.offsetWidth || container.clientWidth;
   }
 
-  let topBarHeight = TOP_BAR_HEIGHT;
+  let topBarHeight = document.querySelector('.header')
+    ? document.querySelector('.header').clientHeight
+    : TOP_BAR_HEIGHT;
 
-  if (document.querySelector('.location-page__entry')) {
+  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
     topBarHeight =
       document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
   }
@@ -170,9 +172,11 @@ export function getCurrentScrollId(isVerticalMenu) {
   const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
   const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
   const elObjList = Object.values(observableContainer);
-  let topBarHeight = TOP_BAR_HEIGHT;
+  let topBarHeight = document.querySelector('.header')
+    ? document.querySelector('.header').clientHeight
+    : TOP_BAR_HEIGHT;
 
-  if (document.querySelector('.location-page__entry')) {
+  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
     topBarHeight =
       document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
   }
