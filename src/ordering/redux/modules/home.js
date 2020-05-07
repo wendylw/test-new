@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
+import * as VoucherUtils from '../../../voucher/utils';
 
 import { combineReducers } from 'redux';
 // import { computeDeliveryDistance } from '../../containers/Location/utils';
@@ -63,6 +64,12 @@ export const actions = {
   // load shopping cart
   loadShoppingCart: () => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
+    const isDigital = Utils.isDigitalType();
+    if (isDigital) {
+      await dispatch(generatorShoppingCartForVoucherOrdering());
+      return;
+    }
+
     let deliveryCoords;
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
@@ -144,6 +151,17 @@ const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
       //...Url.API_URLS.GET_CART,
       ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords),
     },
+  };
+};
+
+// generator a virtual shopping cart for Customer place a Voucher Order
+const generatorShoppingCartForVoucherOrdering = () => {
+  const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
+  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
+
+  return {
+    type: types.FETCH_SHOPPINGCART_SUCCESS,
+    response: shoppingCart,
   };
 };
 
@@ -286,11 +304,13 @@ export default combineReducers({
 });
 
 // selectors
-export const getDeliveryInfo = createSelector([getBusiness, getAllBusinesses], (business, allBusinessInfo) => {
+export const getDeliveryInfo = state => {
+  const business = getBusiness(state);
+  const allBusinessInfo = getAllBusinesses(state);
   // ignore for now since home page needs address from it.
   // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
   return Utils.getDeliveryInfo({ business, allBusinessInfo });
-});
+};
 
 export const isFetched = state => state.home.shoppingCart.isFetched;
 

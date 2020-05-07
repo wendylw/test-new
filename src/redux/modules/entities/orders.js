@@ -1,5 +1,4 @@
-const initialState = {
-};
+const initialState = {};
 
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
@@ -12,17 +11,21 @@ const reducer = (state = initialState, action) => {
       return { ...state, [order.orderId]: order };
     }
   }
+  if (action.response) {
+    const order = action.response;
+    return { ...state, [order.orderId]: order };
+  }
   return state;
-}
+};
 
 export default reducer;
 
 // selectors
 
-export const getAllOrders = (state) => {
+export const getAllOrders = state => {
   return state.entities.orders;
-}
+};
 
 export const getOrderByOrderId = (state, orderId) => {
   return getAllOrders(state)[orderId];
-}
+};

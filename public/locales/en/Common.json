@@ -68,6 +68,7 @@
   "SelectStoreDescription": "Please select a store to continue…",
   "SelectStoreErrorMessage": "Something wrong, please try again later.",
   "FoodDelivery": "Food Delivery",
+  "Delivery": "Delivery",
   "SelfPickup": "Self Pickup",
   "SelectYourPreference": "Select Your Preference",
   "DeliverTo": "Deliver To",
@@ -94,9 +95,10 @@
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
   "SearchRestaurantPlaceholder": "Search for a restaurant",
-  "NearbyRestaurants": "Nearby Restaurants",
+  "NearbyRestaurants": "Restaurants Delivering Nearby",
   "DistanceText": "{{distance}} km",
   "SearchNotFoundStoreDescription": "Couldn't Find Results for “{{keyword}}” Let's try a different restaurant.",
+  "StartSearchDescription": "Let's start a search for your favorite restaurant.",
   "ClosedForNow": "Closed\nFor Now",
   "MvpDocumentTitle": "Beep | Food Delivery & Takeaway | Order Food Online Now",
   "MvpDocumentDescription": "The best restaurants near you now deliver! Get breakfast, lunch, dinner and treats delivered from your favorite local restaurants today.",
@@ -122,5 +124,12 @@
   "Voucher": "Voucher",
   "ConnectionIssue": "Sorry there was some issue with the connection, please try again",
   "Immediate": "Immediate",
-  "PreOrderTag": "Pre Order"
+  "PreOrderTag": "Pre Order",
+  "SelectTableNumber": "Select Table Number",
+  "PleasePickOne": "Please Pick One",
+  "Table": "Table",
+  "DineIn": "Dine-In",
+  "TakeAway": "Takeaway",
+  "CustomerDetails": "Customer Details",
+  "TAKE_AWAY": "TAKE AWAY"
 }

@@ -52,6 +52,10 @@ const API_URLS = {
     url: `/api/ordering/stores/${storeId}?a=redirectTo`,
     method: 'get',
   }),
+  POST_STORE_HASH_DATA: storeId => ({
+    url: `/api/ordering/stores/${storeId}`,
+    method: 'post',
+  }),
   GET_RECEIPTS_LIST: {
     url: '/api/transactions',
     method: 'get',
@@ -107,6 +111,10 @@ const API_URLS = {
   },
   DISMISS_PROMOTION_CODE: {
     url: '/api/cart/unApplyVoucher',
+    method: 'post',
+  },
+  CREATE_VOUCHER_ORDER: {
+    url: '/api/transactions',
     method: 'post',
   },
 };

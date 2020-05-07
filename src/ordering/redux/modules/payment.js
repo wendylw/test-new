@@ -16,6 +16,11 @@ import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList } from '../../containers/Payment/utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
+
+const { DELIVERY_METHOD } = Constants;
+
+const ALLOW_USE_ONLINE_BANKING_ORDER_TYPES = [DELIVERY_METHOD.TAKE_AWAY, DELIVERY_METHOD.DINE_IN];
 
 const initialState = {
   currentPayment: '',
@@ -58,6 +63,29 @@ export const types = {
 // action creators
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
+    const isDigital = Utils.isDigitalType();
+    if (isDigital) {
+      const business = getBusiness(getState());
+      const { total } = getCartSummary(getState());
+      const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
+      const payload = {
+        businessName: business,
+        amount: total,
+        email: voucherOrderingInfo.contactEmail,
+      };
+      const result = await dispatch(createVoucherOrder(payload));
+
+      if (result.type === types.CREATEORDER_FAILURE) {
+        const message = i18next.t('OrderingPayment:PlaceOrderFailedDescription');
+        dispatch(
+          appActions.showError({
+            message,
+          })
+        );
+      }
+      return;
+    }
+
     const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
       const fromHour = hour1.split(':')[0];
       const fromMinute = hour1.split(':')[1];
@@ -119,7 +147,7 @@ export const actions = {
     }
     // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
 
-    if (shippingType === 'delivery') {
+    if (shippingType === DELIVERY_METHOD.DELIVERY) {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
       const {
         addressDetails,
@@ -143,11 +171,16 @@ export const actions = {
         },
         deliveryComments,
       };
-    } else if (shippingType === 'pickup') {
+    } else if (shippingType === DELIVERY_METHOD.PICKUP) {
       variables = {
         ...variables,
         contactDetail,
         ...expectDeliveryDateInfo,
+      };
+    } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
+      variables = {
+        ...variables,
+        contactDetail,
       };
     }
 
@@ -243,6 +276,15 @@ const fetchOrder = variables => {
   };
 };
 
+const createVoucherOrder = payload => {
+  return {
+    [API_REQUEST]: {
+      types: [types.CREATEORDER_REQUEST, types.CREATEORDER_SUCCESS, types.CREATEORDER_FAILURE],
+      payload,
+      ...Url.API_URLS.CREATE_VOUCHER_ORDER,
+    },
+  };
+};
 // reducers
 const reducer = (state = initialState, action) => {
   const { response, responseGql } = action;
@@ -252,12 +294,19 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_PAYMENT:
       return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
-      const { orders, redirectUrl } = data || {};
-      const [order] = orders;
+      if (responseGql) {
+        const { orders, redirectUrl } = data || {};
+        const [order] = orders;
 
-      if (order) {
-        return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        if (order) {
+          return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        }
       }
+
+      if (response) {
+        return { ...state, orderId: response.orderId };
+      }
+
       return state;
     }
     case types.FETCH_ORDER_SUCCESS: {
@@ -323,10 +372,20 @@ export const getPayments = createSelector(
       })
       .filter(payment => {
         const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
+        const orderType = Utils.getOrderTypeFromUrl();
 
         if (payment.label === Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY) {
+          // dine-in and takeaway order can use onlineBanking
+          if (ALLOW_USE_ONLINE_BANKING_ORDER_TYPES.includes(orderType)) {
+            return true;
+          }
+
           const onlineBankingForAllMerchants = onlineBankingMerchantList.length === 0;
-          return onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business);
+          if (onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business)) {
+            return true;
+          }
+
+          return false;
         }
 
         return true;

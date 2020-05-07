@@ -18,7 +18,9 @@ import {
   getBusinessInfo,
   getPromotion,
 } from '../../redux/modules/thankYou';
+import Utils from '../../../utils/utils';
 
+const { DELIVERY_METHOD } = Constants;
 export class ReceiptDetail extends Component {
   componentWillMount() {
     const { history, thankYouActions } = this.props;
@@ -41,13 +43,29 @@ export class ReceiptDetail extends Component {
     return totalSpendCashback;
   }
 
-  backToThankYou() {
-    const { history, order } = this.props;
-    const h = config.h();
-    const { orderId } = order || {};
+  goBack = () => {
+    this.props.history.go(-1);
+  };
 
-    history.replace(`${Constants.ROUTER_PATHS.THANK_YOU}?h=${h}&receiptNumber=${orderId}`, history.location.state);
-  }
+  getHeaderContent = () => {
+    const { order, t } = this.props;
+
+    const type = Utils.getOrderTypeFromUrl();
+
+    switch (type) {
+      case DELIVERY_METHOD.DINE_IN:
+        const { tableId } = order || {};
+        return t('TableIdText', { tableId });
+      case DELIVERY_METHOD.TAKE_AWAY:
+        return t('TAKE_AWAY');
+      case DELIVERY_METHOD.PICKUP:
+        return t('SelfPickup');
+      case DELIVERY_METHOD.DELIVERY:
+        return '';
+      default:
+        return '';
+    }
+  };
 
   renderProductItem() {
     const { order } = this.props;
@@ -85,16 +103,12 @@ export class ReceiptDetail extends Component {
 
   render() {
     const { t, order, businessInfo, promotion } = this.props;
-    const { orderId, tax, serviceCharge, subtotal, total, tableId, additionalComments } = order || {};
+    const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
 
     return (
       <section className="table-ordering__receipt">
-        <Header
-          className="border__bottom-divider gray flex-middle"
-          title={t('ViewReceipt')}
-          navFunc={this.backToThankYou.bind(this)}
-        >
-          <span className="gray-font-opacity">{tableId ? t('TableIdText', { tableId }) : t('SelfPickup')}</span>
+        <Header className="border__bottom-divider gray flex-middle" title={t('ViewReceipt')} navFunc={this.goBack}>
+          <span className="gray-font-opacity">{this.getHeaderContent()}</span>
         </Header>
         <div className="receipt__content text-center">
           <label className="receipt__label gray-font-opacity font-weight-bolder text-uppercase">
