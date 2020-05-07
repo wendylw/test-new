@@ -221,7 +221,11 @@ export class Home extends Component {
                 {Utils.isPickUpType() && t('PickUpOn')}
               </summary>
               {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+                <p className="location-page__entry-address">
+                  {' '}
+                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+                  {deliveryToAddress}
+                </p>
               ) : null}
               {this.renderDeliveryDate()}
             </div>
@@ -266,7 +270,7 @@ export class Home extends Component {
     return (
       <div className="location-page__entry-address pick-up flex flex-middle">
         {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
-        <p className="gray-font-opacity">{deliveryTimeText}</p>
+        <p>{deliveryTimeText}</p>
       </div>
     );
   };
@@ -412,7 +416,10 @@ export class Home extends Component {
       <section className={classList.join(' ')}>
         {this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        {enableConditionalFreeShipping &&
+        freeShippingMinAmount &&
+        Utils.isDeliveryType() &&
+        this.state.dScrollY < adBarHeight ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
@@ -421,6 +428,7 @@ export class Home extends Component {
             </Trans>
           </div>
         ) : null}
+
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}

@@ -88,7 +88,7 @@ export class ReceiptDetail extends Component {
               variation={(variationTexts || []).join(', ')}
               detail={
                 <CurrencyNumber
-                  className="price item__text font-weight-bolder gray-font-opacity"
+                  className="price item__text font-weight-bolder"
                   money={displayPrice || unitPrice || 0}
                 />
               }

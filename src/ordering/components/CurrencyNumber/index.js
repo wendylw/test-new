@@ -13,7 +13,14 @@ class CurrencyNumber extends React.Component {
       return money;
     }
 
-    const price = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
+    const price = !showCurrency
+      ? Intl.NumberFormat(locale, {
+          style: 'decimal',
+          currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(parseFloat(money))
+      : Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
 
     if (country === 'MY' && isSafari) {
       return price.replace(/^(\D+)/, '$1 ');
