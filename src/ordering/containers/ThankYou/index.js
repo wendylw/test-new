@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import qs from 'qs';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
 import Constants from '../../../utils/constants';
@@ -10,16 +10,27 @@ import { IconPin, IconAccessTime } from '../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as thankYouActionCreators, getOrder, getStoreHashCode } from '../../redux/modules/thankYou';
+import {
+  actions as thankYouActionCreators,
+  getOrder,
+  getStoreHashCode,
+  getCashbackInfo,
+  getBusinessInfo,
+} from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
-import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
-import beepOnTheWay from '../../../images/beep-on-the-way.svg';
-import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
-import beepOrderPending from '../../../images/beep-order-pending.svg';
-import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+// import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
+// import beepOnTheWay from '../../../images/beep-on-the-way.svg';
+// import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
+// import beepOrderPending from '../../../images/beep-order-pending.svg';
+// import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
+import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
+import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
+import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
+import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -218,7 +229,18 @@ export class ThankYou extends PureComponent {
     return targetInfo;
   };
 
-  renderConsumerStatusFlow({ country, logs, createdTime, t, CONSUMERFLOW_STATUS, useStorehubLogistics }) {
+  /* eslint-disable jsx-a11y/anchor-is-valid */
+  renderConsumerStatusFlow({
+    logs,
+    createdTime,
+    t,
+    CONSUMERFLOW_STATUS,
+    cashbackInfo,
+    businessInfo,
+    trackingUrl,
+    cancelOperator,
+    order,
+  }) {
     if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -227,7 +249,16 @@ export class ThankYou extends PureComponent {
     const logisticConfirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, LOGISTIC_CONFIRMED);
     const confirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CONFIMRMED);
     const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
-    const cancelleStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
+    const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
+    const { cashback } = cashbackInfo || {};
+    const { enableCashback } = businessInfo || {};
+    const { total, storeInfo } = order || {};
+    const { name } = storeInfo || {};
+    const cancelledDescriptionKey = {
+      ist: 'ISTCancelledDescription',
+      auto_cancelled: 'AutoCancelledDescription',
+      merchant: 'MerchantCancelledDescription',
+    };
 
     const getTimeFromStatusObj = statusObj => {
       return new Date((statusObj && statusObj.time) || createdTime || '');
@@ -237,12 +268,16 @@ export class ThankYou extends PureComponent {
     if (paidStatusObj && acceptedStatusObj === undefined) {
       currentStatusObj = {
         statusObj: paidStatusObj,
+        status: 'paid',
+        style: {
+          width: '25%',
+        },
         firstNote: t('OrderReceived'),
-        firstLiClassName: 'active',
-        secondNote: t('PendingMerchant'),
-        secondLiClassName: 'normal',
+        // firstLiClassName: 'active',
+        secondNote: t('OrderReceivedDescription'),
+        // secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
-        bannerImage: beepDeliverySuccessImage,
+        bannerImage: beepOrderStatusPaid,
       };
     }
     /** accepted status */
@@ -250,12 +285,16 @@ export class ThankYou extends PureComponent {
     if (acceptedStatusObj && logisticConfirmedStatusObj === undefined) {
       currentStatusObj = {
         statusObj: acceptedStatusObj,
+        status: 'accepted',
+        style: {
+          width: '50%',
+        },
         firstNote: t('MerchantAccepted'),
-        firstLiClassName: 'active',
+        // firstLiClassName: 'active',
         secondNote: t('FindingRider'),
-        secondLiClassName: 'normal',
+        // secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(acceptedStatusObj),
-        bannerImage: beepOrderPending,
+        bannerImage: beepOrderStatusAccepted,
       };
     }
     /** logistic confirmed and confirmed */
@@ -263,12 +302,16 @@ export class ThankYou extends PureComponent {
     if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined) {
       currentStatusObj = {
         statusObj: logisticConfirmedStatusObj && confirmedStatusObj,
+        status: 'confirmed',
+        style: {
+          width: '75%',
+        },
         firstNote: t('RiderAssigned'),
-        firstLiClassName: 'active',
-        secondNote: t('RiderOnTheWay'),
-        secondLiClassName: 'normal',
+        // firstLiClassName: 'active',
+        secondNote: t('TrackYourOrder'),
+        // secondLiClassName: 'normal',
         timeToShow: getTimeFromStatusObj(logisticConfirmedStatusObj && confirmedStatusObj),
-        bannerImage: beepOrderPickedUp,
+        bannerImage: beepOrderStatusConfirmed,
       };
     }
 
@@ -277,72 +320,101 @@ export class ThankYou extends PureComponent {
     if (pickupStatusObj) {
       currentStatusObj = {
         statusObj: pickupStatusObj,
+        status: 'riderPickUp',
+        style: {
+          width: '100%',
+        },
         firstNote: t('RiderPickUp'),
-        firstLiClassName: 'active finished',
-        secondNote: t('OrderOnTheWay'),
-        secondLiClassName: 'active',
+        // firstLiClassName: 'active finished',
+        secondNote: t('TrackYourOrder'),
+        // secondLiClassName: 'active',
         timeToShow: getTimeFromStatusObj(pickupStatusObj),
-        bannerImage: beepOnTheWay,
+        bannerImage: beepOrderStatusPickedUp,
       };
     }
-    if (paidStatusObj && cancelleStatusObj) {
+    if (paidStatusObj && cancelledStatusObj) {
       currentStatusObj = {
-        statusObj: cancelleStatusObj,
-        firstNote: t('OrderPaid'),
-        firstLiClassName: 'active',
-        secondNote: t('OrderCancelled'),
-        secondLiClassName: 'error',
+        statusObj: cancelledStatusObj,
+        status: 'cancelled',
+        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        // firstNote: t('OrderCancelledDescription'),
+        // firstLiClassName: 'active',
+        // secondNote: t('OrderCancelled'),
+        // secondLiClassName: 'error',
         timeToShow: getTimeFromStatusObj(paidStatusObj),
-        bannerImage: beepOrderCancelled,
-        secondTimeToShow: getTimeFromStatusObj(cancelleStatusObj),
+        bannerImage: beepOrderStatusCancelled,
+        secondTimeToShow: getTimeFromStatusObj(cancelledStatusObj),
       };
     }
+
     return (
       <React.Fragment>
         <img className="thanks__image" src={currentStatusObj.bannerImage} alt="Beep Success" />
         <div className="thanks__delivery-status-container">
-          <ul className="thanks__delivery-status-list text-left">
-            <li className={`thanks__delivery-status-item ${currentStatusObj.firstLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.firstNote}</label>
-              <div className="thanks__delivery-status-time">
-                <IconAccessTime className="access-time-icon text-middle" />
-                <time className="text-middle gray-font-opacity">
-                  {`${
-                    currentStatusObj.timeToShow
-                      ? toLocaleTimeString(currentStatusObj.timeToShow, country, TIME_OPTIONS)
-                      : ''
-                  }, ${
-                    currentStatusObj.timeToShow
-                      ? toLocaleDateString(currentStatusObj.timeToShow, country, DATE_OPTIONS)
-                      : ''
-                  }`}
-                </time>
-              </div>
-            </li>
-            <li className={`thanks__delivery-status-item ${currentStatusObj.secondLiClassName}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{currentStatusObj.secondNote}</label>
-              {currentStatusObj.secondTimeToShow ? (
-                <div className="thanks__delivery-status-time">
-                  <IconAccessTime className="access-time-icon text-middle" />
-                  <time className="text-middle gray-font-opacity">
-                    {`${
-                      currentStatusObj.secondTimeToShow
-                        ? toLocaleTimeString(currentStatusObj.secondTimeToShow, country, TIME_OPTIONS)
-                        : ''
-                    }, ${
-                      currentStatusObj.secondTimeToShow
-                        ? toLocaleDateString(currentStatusObj.secondTimeToShow, country, DATE_OPTIONS)
-                        : ''
-                    }`}
-                  </time>
-                </div>
-              ) : null}
-            </li>
-          </ul>
+          {currentStatusObj.status !== 'cancelled' ? (
+            <div className="progress-bar__container">
+              <i
+                className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}
+                style={currentStatusObj.style}
+              ></i>
+            </div>
+          ) : null}
+
+          {currentStatusObj.status === 'cancelled' ? (
+            <Trans i18nKey={currentStatusObj.descriptionKey} storeName={name}>
+              <h4 className="thanks__status-title text-size-big font-weight-bolder">
+                <CurrencyNumber className="font-weight-bolder" money={total || 0} />
+              </h4>
+            </Trans>
+          ) : (
+            <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
+          )}
+
+          {currentStatusObj.status === 'paid' ? (
+            <div className="thanks__status-description flex flex-middle">
+              <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
+              <span role="img" aria-label="Goofy">
+                😋
+              </span>
+            </div>
+          ) : null}
+          {currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp' ? (
+            <div className="thanks__status-description">
+              <a
+                href={trackingUrl && trackingUrl[0] ? trackingUrl[0] : ''}
+                target="__blank"
+                className="link text-uppercase font-weight-bolder"
+              >
+                {currentStatusObj.secondNote}
+              </a>
+            </div>
+          ) : null}
+          {currentStatusObj.status === 'accepted' ? (
+            <div className="thanks__status-description flex flex-middle">
+              <IconAccessTime />
+              <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
+            </div>
+          ) : null}
         </div>
+        {enableCashback ? (
+          <div className="thanks__delivery-status-container">
+            <CurrencyNumber
+              className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+              money={cashback || 0}
+            />
+            <h3>
+              <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
+              <span role="img" aria-label="Celebration">
+                🎉
+              </span>
+            </h3>
+            <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
+          </div>
+        ) : null}
       </React.Fragment>
     );
   }
+  /* eslint-enable jsx-a11y/anchor-is-valid */
 
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
@@ -372,18 +444,24 @@ export class ThankYou extends PureComponent {
 
         <div className="flex flex-middle flex-space-between">
           <label className="thanks__text font-weight-bolder">{name}</label>
-          <div>
-            <span className="thanks__text">{t('Total')}</span>
-            <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
-          </div>
+          {isPickUpType ? (
+            <div>
+              <span className="thanks__text">{t('Total')}</span>
+              <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
+            </div>
+          ) : null}
         </div>
-        {isPickUpType ? null : <p className="thanks__address-details gray-font-opacity">{storeAddress}</p>}
+        <h4 className="thanks__delivering-title">{t('DeliveringTo')}</h4>
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
           <span className="gray-font-opacity">{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
+        <div className="thanks__total-container text-center">
+          <span className="thanks__total-text">{t('Total')}</span>
+          <CurrencyNumber className="thanks__total-text font-weight-bolder" money={total || 0} />
+        </div>
       </div>
     );
   };
@@ -499,10 +577,9 @@ export class ThankYou extends PureComponent {
   };
 
   renderDeliveryImageAndTimeLine() {
-    const { t, order, onlineStoreInfo } = this.props;
-    const { createdTime, logs, deliveryInformation, status } = order || {};
-    const { country } = onlineStoreInfo || {};
-    const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
+    const { t, order, cashbackInfo, businessInfo } = this.props;
+    const { createdTime, logs, status, deliveryInformation, cancelOperator } = order || {};
+    const { trackingUrl } = deliveryInformation || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -510,17 +587,20 @@ export class ThankYou extends PureComponent {
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${status === 'shipped' ? beepOnTheWay : beepDeliverySuccessImage}`}
+            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepOrderStatusPaid}`}
             alt="Beep Success"
           />
         ) : (
           this.renderConsumerStatusFlow({
-            country,
             logs,
             createdTime,
             t,
             CONSUMERFLOW_STATUS,
-            useStorehubLogistics,
+            cashbackInfo,
+            businessInfo,
+            trackingUrl,
+            cancelOperator,
+            order,
           })
         )}
       </React.Fragment>
@@ -605,6 +685,9 @@ export class ThankYou extends PureComponent {
               </p>
             )}
 
+            <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
+              {t('OrderDetails')}
+            </h4>
             <div className="thanks__info-container">
               {isDeliveryType ? null : this.renderPickupInfo()}
               {orderInfo}
@@ -635,6 +718,8 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
+      cashbackInfo: getCashbackInfo(state),
+      businessInfo: getBusinessInfo(state),
       user: getUser(state),
     }),
     dispatch => ({

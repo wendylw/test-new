@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import Constants from '../../../utils/constants';
 
 import { actions as homeActionCreators, getCurrentStoreId } from '../../redux/modules/home';

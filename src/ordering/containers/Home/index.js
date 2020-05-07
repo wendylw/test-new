@@ -32,6 +32,7 @@ import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
+import locationIcon from '../../../images/Pin.svg';
 
 const localState = {
   blockScrollTop: 0,
@@ -41,6 +42,13 @@ const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
   state = {
     viewAside: null,
+    dScrollY: 0,
+  };
+  handleScroll = () => {
+    const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+    this.setState({
+      dScrollY: documentScrollY,
+    });
   };
 
   get navBackUrl() {
@@ -68,7 +76,13 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     homeActions.loadProductList();
+
+    window.addEventListener('scroll', this.handleScroll);
   };
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
 
   // Remove user previously selected delivery/pickup time from session
   // Just in case the previous one they select is delivery and the new one is pickup
@@ -165,9 +179,16 @@ export class Home extends Component {
       this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
-    this.setState({
-      viewAside: asideName,
-    });
+    if (asideName === Constants.ASIDE_NAMES.CART && this.state.viewAside === Constants.ASIDE_NAMES.CART) {
+      this.setState({
+        viewAside: null,
+      });
+      this.toggleBodyScroll(false);
+    } else {
+      this.setState({
+        viewAside: asideName,
+      });
+    }
   }
 
   renderDeliverToBar() {
@@ -403,6 +424,7 @@ export class Home extends Component {
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
+    const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -411,7 +433,6 @@ export class Home extends Component {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
-
     return (
       <section className={classList.join(' ')}>
         {this.renderDeliverToBar()}

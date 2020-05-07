@@ -8,7 +8,6 @@ import Header from '../../../components/Header';
 import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
-import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';

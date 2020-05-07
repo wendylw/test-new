@@ -37,6 +37,7 @@ const mapBrandToStandard = (brand, vendor) => {
   return brand;
 };
 
+/* eslint-disable jsx-a11y/alt-text */
 const PaymentCardBrands = ({ country, brand: originalBrand, iconClassName, vendor = '' }) => {
   const brandsSupported = getSupportCreditCardBrands(country);
   const brand = mapBrandToStandard(originalBrand, vendor);
@@ -67,6 +68,7 @@ const PaymentCardBrands = ({ country, brand: originalBrand, iconClassName, vendo
     </React.Fragment>
   );
 };
+/* eslint-enable jsx-a11y/alt-text */
 
 PaymentCardBrands.VENDOR_STRIPE = 'Stripe';
 
