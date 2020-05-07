@@ -6,15 +6,20 @@ import Utils from '../../../utils/utils';
 
 class CurrencyNumber extends React.Component {
   formatChildrenAsMoney() {
-    const { locale, currency, money, country, showCurrency } = this.props;
+    const { locale, currency, money, country, numberOnly } = this.props;
     const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
 
     if (!(locale && currency)) {
       return money;
     }
 
-    const price = !showCurrency
-      ? Intl.NumberFormat(locale).format(parseFloat(money))
+    const price = numberOnly
+      ? Intl.NumberFormat(locale, {
+          style: 'decimal',
+          currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(parseFloat(money))
       : Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
 
     if (country === 'MY' && isSafari) {
@@ -39,12 +44,12 @@ CurrencyNumber.propTypes = {
   className: PropTypes.string,
   addonBefore: PropTypes.string,
   money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  showCurrency: PropTypes.bool,
+  numberOnly: PropTypes.bool,
 };
 
 CurrencyNumber.defaultProps = {
   money: 0,
-  showCurrency: true,
+  numberOnly: false,
 };
 
 export default connect(state => {

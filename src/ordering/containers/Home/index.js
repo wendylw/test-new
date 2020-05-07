@@ -242,7 +242,7 @@ export class Home extends Component {
                 {Utils.isPickUpType() && t('PickUpOn')}
               </summary>
               {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address gray-font-opacity">
+                <p className="location-page__entry-address">
                   {' '}
                   <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
                   {deliveryToAddress}
@@ -291,7 +291,7 @@ export class Home extends Component {
     return (
       <div className="location-page__entry-address pick-up flex flex-middle">
         {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
-        <p className="gray-font-opacity">{deliveryTimeText}</p>
+        <p>{deliveryTimeText}</p>
       </div>
     );
   };

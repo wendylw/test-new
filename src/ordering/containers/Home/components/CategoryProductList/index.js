@@ -133,7 +133,7 @@ class CategoryProductList extends Component {
                 <h2 className="category__header flex flex-middle flex-space-between">
                   <label>{category.name}</label>
                   {category.cartQuantity ? (
-                    <span className="gray-font-opacity">
+                    <span className="gray-font-opacity flex__shrink-fixed">
                       {t('CartItemsInCategory', { cartQuantity: category.cartQuantity })}
                     </span>
                   ) : null}

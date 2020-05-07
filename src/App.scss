@@ -208,7 +208,7 @@
   width: 8px;
   border-radius: 50%;
   top: 0;
-  background-color: #ff9419;
+  background-color: $theme-color;
   position: absolute;
   -webkit-animation: vertical-movement 1.2s infinite ease-in-out;
   -moz-animation: vertical-movement 1.2s infinite ease-in-out;
@@ -431,8 +431,8 @@
     }
 
     .promotion__item {
-      border-top: 1px solid #dededf;
-      border-bottom: 1px solid #dededf;
+      border-top: 1px solid $gray-8;
+      border-bottom: 1px solid $gray-8;
       margin-top: 10px;
       padding-left: 5px;
 
@@ -1033,7 +1033,7 @@
 
   &__vertical &__item {
     padding: 3.8vw 1.8vw;
-    border-left: 6px solid transparent;
+    border-left: 3px solid transparent;
   }
 
   &__horizontal {
@@ -1081,6 +1081,8 @@
     background-color: $gray-5;
 
     label {
+      width: 80%;
+      word-break: break-all;
       font-size: inherit;
     }
 
@@ -1183,6 +1185,7 @@
     font-size: 0.9rem;
 
     &.price {
+      color: $gray-7;
       margin-top: 15px;
     }
   }
@@ -1499,7 +1502,7 @@
   }
 
   &__amount-label {
-    @extend .font-weight-bolder;
+    color: $gray-9;
   }
 }
 
@@ -2549,6 +2552,7 @@
     font-size: 0.85rem;
     max-height: 16px;
     max-width: 100%;
+    color: $gray-9;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2925,7 +2929,7 @@
   margin-top: 2rem;
 
   &:disabled {
-    background-color: #fff;
+    background-color: $white;
     color: $gray-2;
   }
 }
@@ -3082,7 +3086,7 @@
   margin-top: 2rem;
 
   &:disabled {
-    background-color: #fff;
+    background-color: $white;
     color: $gray-2;
   }
 }
@@ -3313,7 +3317,7 @@
       @extend .border-radius-base;
       background-color: $white;
       color: $main-color;
-      border: solid 1px #dededf;
+      border: solid 1px $gray-8;
       padding: 5px 28px;
       margin-right: 16px;
       align-items: center;
@@ -3334,8 +3338,8 @@
 
       &.disabled {
         background-color: $white;
-        color: #dededf;
-        border: solid 1px #dededf;
+        color: $gray-8;
+        border: solid 1px $gray-8;
       }
     }
   }
@@ -3354,7 +3358,7 @@
     overflow-y: scroll;
 
     &-item {
-      color: #8f9092;
+      color: $gray-9;
       font-size: 16px;
       height: 50px;
       line-height: 50px;
@@ -3365,11 +3369,11 @@
 
       &.selected {
         color: $main-color;
-        background-color: #eff2f3;
+        background-color: $gray-4;
       }
 
       &.disabled {
-        color: #dededf;
+        color: $gray-8;
       }
     }
   }
@@ -3487,7 +3491,7 @@ body.loading {
   margin: 8px 0;
 
   .react-phone-number-input__row {
-    border: 1px solid #dededf;
+    border: 1px solid $gray-8;
     border-radius: 4px;
     padding: 0 12px;
   }
@@ -3818,7 +3822,8 @@ body.loading {
   .cart__note,
   .location-page__search-box-search-icon,
   .delivery__next-icon,
-  .prompt-page__button-container {
+  .prompt-page__button-container,
+  .table-ordering__home .item-padding {
     padding: 13px;
   }
 
