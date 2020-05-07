@@ -371,7 +371,7 @@ export class ThankYou extends PureComponent {
           )}
 
           {currentStatusObj.status === 'paid' ? (
-            <div className="thanks__status-description flex flex-middle">
+            <div className="thanks__status-description flex flex-middle text-center">
               <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
               <span role="img" aria-label="Goofy">
                 😋
@@ -390,7 +390,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
           {currentStatusObj.status === 'accepted' ? (
-            <div className="thanks__status-description flex flex-middle">
+            <div className="thanks__status-description flex flex-middle text-center">
               <IconAccessTime />
               <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
             </div>
