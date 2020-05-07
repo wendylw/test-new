@@ -28,6 +28,7 @@ describe('utils/utils', () => {
     getQueryObject,
     initSmoothAnimation,
     getUserAgentInfo,
+    checkEmailIsValid,
   } = Utils;
 
   it('getQueryString', () => {
@@ -223,5 +224,29 @@ describe('utils/utils', () => {
   it('getUserAgentInfo: only test isMobile', () => {
     const userAgentInfo = getUserAgentInfo();
     expect(userAgentInfo.isMobile).toBeFalsy();
+  });
+
+  describe('Utils.checkEmailIsValid', () => {
+    it('check valid email', () => {
+      expect(checkEmailIsValid('myemail@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my-email@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email+beep@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email+beep@123.com')).toBeTruthy();
+      expect(checkEmailIsValid('my-email+123@beep.com.cn')).toBeTruthy();
+    });
+
+    it('check invalid email', () => {
+      expect(checkEmailIsValid('invalid@email')).toBeFalsy();
+      expect(checkEmailIsValid('@email.com')).toBeFalsy();
+      expect(checkEmailIsValid('invalid@')).toBeFalsy();
+      expect(checkEmailIsValid('email@.com')).toBeFalsy();
+    });
+
+    it('check email is empty', () => {
+      expect(checkEmailIsValid(null)).toBeFalsy();
+      expect(checkEmailIsValid('')).toBeFalsy();
+      expect(checkEmailIsValid()).toBeFalsy();
+    });
   });
 });
