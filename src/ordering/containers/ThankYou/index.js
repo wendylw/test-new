@@ -380,11 +380,7 @@ export class ThankYou extends PureComponent {
           ) : null}
           {currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp' ? (
             <div className="thanks__status-description">
-              <a
-                href={trackingUrl && trackingUrl[0] ? trackingUrl[0] : ''}
-                target="__blank"
-                className="link text-uppercase font-weight-bolder"
-              >
+              <a href={trackingUrl || ''} target="__blank" className="link text-uppercase font-weight-bolder">
                 {currentStatusObj.secondNote}
               </a>
             </div>
@@ -579,7 +575,7 @@ export class ThankYou extends PureComponent {
   renderDeliveryImageAndTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
     const { createdTime, logs, status, deliveryInformation, cancelOperator } = order || {};
-    const { trackingUrl } = deliveryInformation || {};
+    const { trackingUrl } = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
