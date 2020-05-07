@@ -10,7 +10,7 @@ let currentCategoryId = null;
 let isScrolling = null;
 
 const TOP_BAR_HEIGHT = 50;
-const CATEGORY_BAR_HEIGHT = 50;
+const CATEGORY_BAR_HEIGHT = 36;
 const SCROLL_SPEED = {
   x: 30,
   y: 80,
@@ -81,9 +81,18 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
     containerScrolledDistance.w = container.offsetWidth || container.clientWidth;
   }
 
+  let topBarHeight = document.querySelector('.header')
+    ? document.querySelector('.header').clientHeight
+    : TOP_BAR_HEIGHT;
+
+  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
+    topBarHeight =
+      document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
+  }
+
   const otherDistance = {
     x: 0,
-    y: TOP_BAR_HEIGHT + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
+    y: topBarHeight + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
   };
   const elOffset = {
     x: containerScrolledDistance.x + el.getBoundingClientRect().left,
@@ -163,12 +172,20 @@ export function getCurrentScrollId(isVerticalMenu) {
   const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
   const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
   const elObjList = Object.values(observableContainer);
+  let topBarHeight = document.querySelector('.header')
+    ? document.querySelector('.header').clientHeight
+    : TOP_BAR_HEIGHT;
+
+  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
+    topBarHeight =
+      document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
+  }
   const [, elObj] =
     elObjList
       .map(elObj => [
         Utils.elementPartialOffsetTop(
           elObj,
-          TOP_BAR_HEIGHT + (isVerticalMenu ? 0 : CATEGORY_BAR_HEIGHT * 2),
+          topBarHeight + (isVerticalMenu ? 0 : CATEGORY_BAR_HEIGHT * 2),
           windowScrolledTop
         ),
         elObj,
