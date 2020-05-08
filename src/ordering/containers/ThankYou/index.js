@@ -447,7 +447,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4>
+        {isDeliveryType ? <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4> : null}
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
