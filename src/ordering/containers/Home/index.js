@@ -27,7 +27,6 @@ import {
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import PopUpMessage from './components/PopUpMessage';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
@@ -369,33 +368,6 @@ export class Home extends Component {
     );
   }
 
-  renderProOrderConfirmModal = () => {
-    const { popUpModal, t, deliveryInfo } = this.props;
-    const { validTimeFrom, validTimeTo } = deliveryInfo;
-
-    if (this.isPreOrderEnabled() && !this.isValidTimeToOrder() && !popUpModal.userConfirmed) {
-      return (
-        <PopUpMessage
-          title={t('PreOrderConfirmModalTitle')}
-          description={t('PreOrderConfirmModalDescription', {
-            validTimeFrom: Utils.formatTimeWithColon(validTimeFrom),
-            validTimeTo: Utils.formatTimeWithColon(validTimeTo),
-          })}
-          containerClass="pre-order__modal"
-          button={
-            <button
-              className="button button__fill button__block font-weight-bolder border-radius-base text-uppercase"
-              onClick={this.props.homeActions.userConfirmPreOrder}
-            >
-              {t('Okay')}
-            </button>
-          }
-        />
-      );
-    }
-    return null;
-  };
-
   render() {
     const {
       categories,
@@ -499,7 +471,6 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-        {this.renderProOrderConfirmModal()}
       </section>
     );
   }
