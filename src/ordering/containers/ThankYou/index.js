@@ -371,7 +371,7 @@ export class ThankYou extends PureComponent {
           )}
 
           {currentStatusObj.status === 'paid' ? (
-            <div className="thanks__status-description flex flex-middle">
+            <div className="thanks__status-description flex flex-middle flex-center">
               <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
               <span role="img" aria-label="Goofy">
                 😋
@@ -447,7 +447,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        <h4 className="thanks__delivering-title">{t('DeliveringTo')}</h4>
+        <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4>
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
