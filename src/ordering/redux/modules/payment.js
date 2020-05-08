@@ -16,6 +16,7 @@ import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList } from '../../containers/Payment/utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
 
 const { DELIVERY_METHOD } = Constants;
 
@@ -62,6 +63,29 @@ export const types = {
 // action creators
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
+    const isDigital = Utils.isDigitalType();
+    if (isDigital) {
+      const business = getBusiness(getState());
+      const { total } = getCartSummary(getState());
+      const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
+      const payload = {
+        businessName: business,
+        amount: total,
+        email: voucherOrderingInfo.contactEmail,
+      };
+      const result = await dispatch(createVoucherOrder(payload));
+
+      if (result.type === types.CREATEORDER_FAILURE) {
+        const message = i18next.t('OrderingPayment:PlaceOrderFailedDescription');
+        dispatch(
+          appActions.showError({
+            message,
+          })
+        );
+      }
+      return;
+    }
+
     const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
       const fromHour = hour1.split(':')[0];
       const fromMinute = hour1.split(':')[1];
@@ -252,6 +276,15 @@ const fetchOrder = variables => {
   };
 };
 
+const createVoucherOrder = payload => {
+  return {
+    [API_REQUEST]: {
+      types: [types.CREATEORDER_REQUEST, types.CREATEORDER_SUCCESS, types.CREATEORDER_FAILURE],
+      payload,
+      ...Url.API_URLS.CREATE_VOUCHER_ORDER,
+    },
+  };
+};
 // reducers
 const reducer = (state = initialState, action) => {
   const { response, responseGql } = action;
@@ -261,12 +294,19 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_PAYMENT:
       return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
-      const { orders, redirectUrl } = data || {};
-      const [order] = orders;
+      if (responseGql) {
+        const { orders, redirectUrl } = data || {};
+        const [order] = orders;
 
-      if (order) {
-        return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        if (order) {
+          return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        }
       }
+
+      if (response) {
+        return { ...state, orderId: response.orderId };
+      }
+
       return state;
     }
     case types.FETCH_ORDER_SUCCESS: {
