@@ -17,17 +17,17 @@ import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import {
   getAllCurrentStores,
   getPaginationInfo,
-  getStoreLinkInfo,
   getSearchInfo,
   getSearchingStores,
   getSearchResult,
   getStoreCollections,
+  getStoreLinkInfo,
   homeActionCreators,
   loadedSearchingStores,
 } from '../redux/modules/home';
-import Campaign from './components/Campaign';
 import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
+import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 
@@ -306,13 +306,14 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {isCampaignActive && countryCode.toUpperCase() === 'MY' ? (
-            <Campaign
+          {isCampaignActive && (
+            <CampaignBar
+              countryCode={countryCode}
               onToggle={() => {
                 this.setState({ campaignShown: !this.state.campaignShown });
               }}
             />
-          ) : null}
+          )}
 
           <Suspense fallback={null}>
             <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
