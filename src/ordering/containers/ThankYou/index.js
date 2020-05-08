@@ -440,7 +440,7 @@ export class ThankYou extends PureComponent {
         ) : null}
 
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bolder">{name}</label>
+          <label className="font-weight-bolder text-size-big">{name}</label>
           {isPickUpType ? (
             <div>
               <span className="thanks__text">{t('Total')}</span>
