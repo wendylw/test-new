@@ -447,7 +447,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        <h4 className="thanks__delivering-title font-weight-bold">{t('DeliveringTo')}</h4>
+        <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4>
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
@@ -651,8 +651,8 @@ export class ThankYou extends PureComponent {
             }
           >
             {isTakeaway ? (
-              <button className="link" onClick={this.handleNeedHelp}>
-                <span data-testid="thanks__self-pickup">{`${t('ContactUs')}`}</span>
+              <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+                <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
               </button>
             ) : (
               <span className="gray-font-opacity">
