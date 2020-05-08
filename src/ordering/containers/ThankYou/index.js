@@ -368,12 +368,20 @@ export class ThankYou extends PureComponent {
               </h4>
             </Trans>
           ) : (
-            <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
+            <h4
+              className={`thanks__status-title text-size-big font-weight-bolder ${
+                currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid'
+                  ? ` ${currentStatusObj.status}`
+                  : ''
+              }`}
+            >
+              {currentStatusObj.firstNote}
+            </h4>
           )}
 
           {currentStatusObj.status === 'paid' ? (
             <div className="thanks__status-description flex flex-middle flex-center">
-              <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
+              <p className="text-size-big">{currentStatusObj.secondNote}</p>
               <span role="img" aria-label="Goofy">
                 😋
               </span>
@@ -399,8 +407,10 @@ export class ThankYou extends PureComponent {
               className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
               money={cashback || 0}
             />
-            <h3>
-              <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
+            <h3 className="flex flex-middle flex-center">
+              <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+                {t('EarnedCashBackTitle')}
+              </span>
               <img src={IconCelebration} alt="Beep Celebration" />
             </h3>
             <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
