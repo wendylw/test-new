@@ -8,7 +8,7 @@
   "RiderPendingTips": "Pending Rider Confirm",
   "RiderOnTheWay": "Rider is on the way to pick up order",
   "OrderCancelledNoRide": "Order Cancelled. No rider available",
-  "OrderReceived": "Waiting for store to confirm your order.....",
+  "OrderReceived": "Waiting for store to confirm your order",
   "PendingMerchant": "Pending merchant to accept order",
   "OrderReceivedDescription": "Please wait a few minutes",
   "MerchantAccepted": "Looking for rider",

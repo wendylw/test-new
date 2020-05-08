@@ -2562,19 +2562,38 @@
 @keyframes dots {
   0%,
   20% {
-    color: rgba(0, 0, 0, 0);
-    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+    content: ".";
   }
   40% {
-    color: $main-color;
-    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+    content: "..";
   }
   60% {
-    text-shadow: 0.25em 0 0 $main-color, 0.5em 0 0 rgba(0, 0, 0, 0);
+    content: "...";
   }
   80%,
   100% {
-    text-shadow: 0.25em 0 0 $main-color, 0.5em 0 0 $main-color;
+    content: "";
+  }
+}
+
+@keyframes dotsMore {
+  0% {
+    content: ".";
+  }
+  20% {
+    content: "..";
+  }
+  40% {
+    content: "...";
+  }
+  60% {
+    content: "....";
+  }
+  80% {
+    content: ".....";
+  }
+  100% {
+    content: "";
   }
 }
 
@@ -2609,9 +2628,22 @@
     }
   }
 
+  &__status-title.accepted::after,
+  &__status-title.paid::after {
+    content: "";
+    text-align: left;
+    display: inline-block;
+    margin-left: 5px;
+  }
+
   &__status-title.accepted::after {
-    content: " .";
-    animation: dots 2s steps(5, end) infinite;
+    width: 15px;
+    animation: dots 2s linear infinite;
+  }
+
+  &__status-title.paid::after {
+    width: 20px;
+    animation: dotsMore 2s linear infinite;
   }
 
   &__earned-cashback-total {

@@ -370,7 +370,9 @@ export class ThankYou extends PureComponent {
           ) : (
             <h4
               className={`thanks__status-title text-size-big font-weight-bolder ${
-                currentStatusObj.status === 'accepted' ? ' accepted' : ''
+                currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid'
+                  ? ` ${currentStatusObj.status}`
+                  : ''
               }`}
             >
               {currentStatusObj.firstNote}
@@ -379,7 +381,7 @@ export class ThankYou extends PureComponent {
 
           {currentStatusObj.status === 'paid' ? (
             <div className="thanks__status-description flex flex-middle flex-center">
-              <p className="gray-font-opacity">{currentStatusObj.secondNote}</p>
+              <p className="text-size-big">{currentStatusObj.secondNote}</p>
               <span role="img" aria-label="Goofy">
                 😋
               </span>
