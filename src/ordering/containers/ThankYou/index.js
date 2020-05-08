@@ -651,8 +651,8 @@ export class ThankYou extends PureComponent {
             }
           >
             {isTakeaway ? (
-              <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
-                <span data-testid="thanks__self-pickup text-uppercase">{t('ContactUs')}</span>
+              <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+                <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
               </button>
             ) : (
               <span className="gray-font-opacity">
