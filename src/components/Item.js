@@ -42,7 +42,7 @@ export class Item extends Component {
                 </div>
               ) : null}
               <summary className="item__title font-weight-bolder">
-                <span className="item__title-productName omit-text">{title}</span>
+                <span className="item__title-productName">{title}</span>
               </summary>
               {variation ? <p className="item__description">{variation}</p> : null}
             </div>
