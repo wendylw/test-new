@@ -386,7 +386,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
           {currentStatusObj.status === 'accepted' ? (
-            <div className="thanks__status-description flex flex-middle text-center">
+            <div className="thanks__status-description flex flex-middle flex-center">
               <IconAccessTime />
               <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
             </div>
