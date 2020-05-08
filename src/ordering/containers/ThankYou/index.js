@@ -399,8 +399,10 @@ export class ThankYou extends PureComponent {
               className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
               money={cashback || 0}
             />
-            <h3>
-              <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
+            <h3 className="flex flex-middle flex-center">
+              <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+                {t('EarnedCashBackTitle')}
+              </span>
               <img src={IconCelebration} alt="Beep Celebration" />
             </h3>
             <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
