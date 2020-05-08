@@ -414,6 +414,7 @@ export class ThankYou extends PureComponent {
 
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
+    const isDeliveryType = Utils.isDeliveryType();
     const { t, order, onlineStoreInfo = {} } = this.props;
     const { isPreOrder } = order || {};
 
