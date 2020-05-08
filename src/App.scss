@@ -2609,7 +2609,11 @@
 
   &__status-title,
   &__status-description {
-    margin: 15px 0;
+    margin: 14px 0;
+
+    p {
+      margin-right: 5px;
+    }
 
     .link {
       text-decoration: none;
@@ -2702,7 +2706,7 @@
   }
 
   &__delivery-status-container {
-    padding: 3.8vw;
+    padding: 2.4vw 3.8vw;
     margin-top: 16px;
   }
 
@@ -3896,7 +3900,7 @@ body.loading {
   }
 
   .thanks__delivery-status-container {
-    padding: 15px;
+    padding: 10px 15px;
   }
 
   .tag__card {

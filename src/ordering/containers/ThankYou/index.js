@@ -31,6 +31,7 @@ import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
+import IconCelebration from '../../../images/icon-celebration.svg';
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -400,9 +401,7 @@ export class ThankYou extends PureComponent {
             />
             <h3>
               <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
-              <span role="img" aria-label="Celebration">
-                🎉
-              </span>
+              <img src={IconCelebration} alt="Beep Celebration" />
             </h3>
             <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
           </div>
@@ -440,7 +439,7 @@ export class ThankYou extends PureComponent {
         ) : null}
 
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bolder">{name}</label>
+          <label className="font-weight-bolder text-size-big">{name}</label>
           {isPickUpType ? (
             <div>
               <span className="thanks__text">{t('Total')}</span>
