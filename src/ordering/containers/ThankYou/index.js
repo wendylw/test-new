@@ -362,7 +362,7 @@ export class ThankYou extends PureComponent {
           ) : null}
 
           {currentStatusObj.status === 'cancelled' ? (
-            <Trans i18nKey={currentStatusObj.descriptionKey} storeName={name}>
+            <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
               <h4 className="thanks__status-title text-size-big font-weight-bolder">
                 <CurrencyNumber className="font-weight-bolder" money={total || 0} />
               </h4>
