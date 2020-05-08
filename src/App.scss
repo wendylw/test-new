@@ -1026,7 +1026,7 @@
   }
 
   &__vertical &__item {
-    padding: 3.8vw;
+    padding: 2.4vw 3.8vw;
     border-left: 6px solid transparent;
   }
 
@@ -2578,7 +2578,11 @@
 
   &__status-title,
   &__status-description {
-    margin: 8px 0;
+    margin: 14px 0;
+
+    p {
+      margin-right: 5px;
+    }
 
     .link {
       text-decoration: none;

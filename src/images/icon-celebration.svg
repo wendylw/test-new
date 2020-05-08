@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="23px" viewBox="0 0 24 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>celebration</title>
+    <g id="Beep-Delivery-V3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="Roboto-Medium, Roboto" font-size="16" font-weight="400">
+        <g id="12---Payment---Pre-Order---Pickup" transform="translate(-286.000000, -603.000000)">
+            <g id="Screen" transform="translate(0.000000, 60.000000)">
+                <g id="Group" transform="translate(16.000000, 364.000000)">
+                    <g id="Cashback" transform="translate(0.000000, 112.000000)">
+                        <g id="Group-2" transform="translate(16.000000, 61.000000)">
+                            <text id="You’ve-earned-cash-b">
+                                <tspan x="73.6992188" y="15" fill="#303030">You’ve earned cash back </tspan>
+                                <tspan x="255.300781" y="15" font-family="AppleColorEmoji, Apple Color Emoji" font-weight="normal" fill="#FFFFFF">🎉</tspan>
+                            </text>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
