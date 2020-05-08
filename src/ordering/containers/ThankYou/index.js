@@ -399,7 +399,7 @@ export class ThankYou extends PureComponent {
               money={cashback || 0}
             />
             <h3>
-              <span className="text-size-big">{t('EarnedCashBackTitle')}</span>{' '}
+              <span className="text-size-big font-weight-bolder">{t('EarnedCashBackTitle')}</span>{' '}
               <span role="img" aria-label="Celebration">
                 🎉
               </span>
