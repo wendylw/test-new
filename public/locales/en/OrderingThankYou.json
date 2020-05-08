@@ -11,7 +11,7 @@
   "OrderReceived": "Waiting for store to confirm your order.....",
   "PendingMerchant": "Pending merchant to accept order",
   "OrderReceivedDescription": "Please wait a few minutes",
-  "MerchantAccepted": "Looking for rider ...",
+  "MerchantAccepted": "Looking for rider",
   "FindingRider": "10-20 mins",
   "RiderAssigned": "Rider is on the way to the store",
   "TrackYourOrder": "Track your order here",

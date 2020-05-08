@@ -368,7 +368,13 @@ export class ThankYou extends PureComponent {
               </h4>
             </Trans>
           ) : (
-            <h4 className="thanks__status-title text-size-big font-weight-bolder">{currentStatusObj.firstNote}</h4>
+            <h4
+              className={`thanks__status-title text-size-big font-weight-bolder ${
+                currentStatusObj.status === 'accepted' ? ' accepted' : ''
+              }`}
+            >
+              {currentStatusObj.firstNote}
+            </h4>
           )}
 
           {currentStatusObj.status === 'paid' ? (
