@@ -89,7 +89,9 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
     "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
-    "i18n-sync": "i18n-sync"
+    "i18n-sync": "i18n-sync",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -101,6 +103,11 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@storybook/addon-actions": "^5.3.18",
+    "@storybook/addon-links": "^5.3.18",
+    "@storybook/addons": "^5.3.18",
+    "@storybook/preset-create-react-app": "^2.1.1",
+    "@storybook/react": "^5.3.18",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "debug": "^4.1.1",
