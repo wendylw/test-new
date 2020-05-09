@@ -376,6 +376,9 @@ export class ThankYou extends PureComponent {
               }`}
             >
               {currentStatusObj.firstNote}
+              {currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid' ? (
+                <span className="thanks__status-title-dots text-size-big font-weight-bolder"></span>
+              ) : null}
             </h4>
           )}
 
