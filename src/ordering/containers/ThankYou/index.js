@@ -373,7 +373,7 @@ export class ThankYou extends PureComponent {
           ) : (
             <h4
               className={`thanks__status-title text-size-big font-weight-bolder ${
-                useStorehubLogistics && (currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid')
+                (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'
                   ? ` ${currentStatusObj.status}`
                   : ''
               }`}
