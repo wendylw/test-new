@@ -505,9 +505,11 @@ class ProductDetail extends Component {
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
     let swipeHeight = '80vw';
+    let productDescriptionHeight = '17vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
       className.push('hide');
@@ -521,10 +523,12 @@ class ProductDetail extends Component {
       const productHeight = this.productEl.clientHeight;
       const asideHeight = this.asideEl.clientHeight;
       const buttonElHeight = this.buttonEl.clientHeight;
+      const footerHeight = document.querySelector('.footer-operation').clientHeight;
 
       imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
       swipeHeight = `${(asideHeight * 0.9 - productHeight).toFixed(2)}px`;
+      productDescriptionHeight = `${windowHeight - asideHeight * 0.9 + buttonElHeight - footerHeight}px`;
     }
 
     return (
@@ -610,7 +614,10 @@ class ProductDetail extends Component {
           </div>
           <article
             className="aside__section-container bottom"
-            style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
+            style={{
+              maxHeight: productDescriptionHeight,
+              overflowY: 'auto',
+            }}
           >
             {Boolean(descriptionStr) ? (
               <p className="product-description__text gray-font-opacity" dangerouslySetInnerHTML={descriptionStr} />
