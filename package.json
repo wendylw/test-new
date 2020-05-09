@@ -88,7 +88,7 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
     "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
-    "i18n-sync": "i18n-sync --poeditor-token=bd608c0b2debdc1205e03ee20e2f46e6 --tolerate-sync-error"
+    "i18n-sync": "i18n-sync"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -112,6 +112,7 @@
     "jest-fetch-mock": "^2.1.2",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
+    "prop-types": "^15.7.2",
     "react-test-renderer": "^16.12.0",
     "workbox-build": "^4.3.0"
   }
