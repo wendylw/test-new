@@ -238,7 +238,7 @@ export class ThankYou extends PureComponent {
     CONSUMERFLOW_STATUS,
     cashbackInfo,
     businessInfo,
-    trackingUrl,
+    deliveryInformation,
     cancelOperator,
     order,
   }) {
@@ -255,6 +255,8 @@ export class ThankYou extends PureComponent {
     const { enableCashback } = businessInfo || {};
     const { total, storeInfo } = order || {};
     const { name } = storeInfo || {};
+    const { trackingUrl, useStorehubLogistics } =
+      deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
       auto_cancelled: 'AutoCancelledDescription',
@@ -370,13 +372,16 @@ export class ThankYou extends PureComponent {
           ) : (
             <h4
               className={`thanks__status-title text-size-big font-weight-bolder ${
-                currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid'
+                useStorehubLogistics && (currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid')
                   ? ` ${currentStatusObj.status}`
                   : ''
               }`}
             >
-              {currentStatusObj.firstNote}
-              {currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid' ? (
+              {!useStorehubLogistics && currentStatusObj.status !== 'paid'
+                ? t('SelfDeliveryTitle', { storeName: name })
+                : currentStatusObj.firstNote}
+              {useStorehubLogistics &&
+              (currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid') ? (
                 <span className="thanks__status-title-dots text-size-big font-weight-bolder"></span>
               ) : null}
             </h4>
@@ -390,17 +395,24 @@ export class ThankYou extends PureComponent {
               </span>
             </div>
           ) : null}
-          {currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp' ? (
+          {useStorehubLogistics &&
+          (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
             <div className="thanks__status-description">
               <a href={trackingUrl || ''} target="__blank" className="link text-uppercase font-weight-bolder">
                 {currentStatusObj.secondNote}
               </a>
             </div>
           ) : null}
-          {currentStatusObj.status === 'accepted' ? (
+          {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
             <div className="thanks__status-description flex flex-middle flex-center">
               <IconAccessTime className="icon" />
               <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
+            </div>
+          ) : null}
+
+          {!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (
+            <div className="thanks__status-description flex flex-middle flex-center">
+              <p className="text-size-big">{t('SelfDeliveryDescription')}</p>
             </div>
           ) : null}
         </div>
@@ -588,7 +600,6 @@ export class ThankYou extends PureComponent {
   renderDeliveryImageAndTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
     const { createdTime, logs, status, deliveryInformation, cancelOperator } = order || {};
-    const { trackingUrl } = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -607,7 +618,7 @@ export class ThankYou extends PureComponent {
             CONSUMERFLOW_STATUS,
             cashbackInfo,
             businessInfo,
-            trackingUrl,
+            deliveryInformation,
             cancelOperator,
             order,
           })

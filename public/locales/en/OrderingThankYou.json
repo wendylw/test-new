@@ -28,5 +28,7 @@
   "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food",
   "EarnedCashBackTitle": "You’ve earned cash back",
   "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",
-  "DeliveringTo": "Delivering to"
+  "DeliveringTo": "Delivering to",
+  "SelfDeliveryTitle": "Delivered by {{storeName}}",
+  "SelfDeliveryDescription": "This restaurant uses its own delivery riders. You won’t be able to track your order, if you need please contact the merchant."
 }
