@@ -367,7 +367,7 @@ export class ThankYou extends PureComponent {
             <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
               <h4 className="thanks__status-title text-size-big font-weight-bolder">
                 {{ storeName: name }}
-                <CurrencyNumber className="font-weight-bolder" money={total || 0} />
+                <CurrencyNumber className="text-size-big font-weight-bolder" money={total || 0} />
               </h4>
             </Trans>
           ) : (
@@ -381,8 +381,8 @@ export class ThankYou extends PureComponent {
               {!useStorehubLogistics && currentStatusObj.status !== 'paid'
                 ? t('SelfDeliveryTitle', { storeName: name })
                 : currentStatusObj.firstNote}
-              {useStorehubLogistics &&
-              (currentStatusObj.status === 'accepted' || currentStatusObj.status === 'paid') ? (
+              {(useStorehubLogistics && currentStatusObj.status === 'accepted') ||
+              currentStatusObj.status === 'paid' ? (
                 <span className="thanks__status-title-dots text-size-big font-weight-bolder"></span>
               ) : null}
             </h4>
