@@ -506,9 +506,10 @@ class ProductDetail extends Component {
     const resizeImageStyles = this.resizeImage();
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    const windowWidth = document.documentElement.clientWidth || document.body.clientWidth;
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
-    let swipeHeight = '80vw';
+    // let swipeHeight = '80vw';
     let productDescriptionHeight = '17vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
@@ -525,10 +526,9 @@ class ProductDetail extends Component {
       const buttonElHeight = this.buttonEl.clientHeight;
       const footerHeight = document.querySelector('.footer-operation').clientHeight;
 
-      imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
+      imageContainerHeight = `${windowWidth + productHeight - buttonElHeight}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
-      swipeHeight = `${(asideHeight * 0.9 - productHeight).toFixed(2)}px`;
-      productDescriptionHeight = `${windowHeight - asideHeight * 0.9 + buttonElHeight - footerHeight}px`;
+      productDescriptionHeight = `${windowHeight - windowWidth - productHeight + buttonElHeight - footerHeight}px`;
     }
 
     return (
@@ -548,7 +548,6 @@ class ProductDetail extends Component {
               ref={ref => (this.swipeEl = ref)}
               continuous={images.length > 2 ? true : false}
               callback={this.handleSwipeProductImage.bind(this)}
-              style={{ height: swipeHeight }}
             >
               {images.map((imageItemUrl, key) => {
                 return (
@@ -560,7 +559,6 @@ class ProductDetail extends Component {
             </Swipe>
           ) : (
             <Image
-              style={{ height: swipeHeight }}
               src={images && images.length ? images[0] : null}
               scalingRatioIndex={1}
               alt={`${storeName} ${title}`}
