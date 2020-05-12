@@ -14,13 +14,11 @@ import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils'
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
-import { getPaymentList } from '../../containers/Payment/utils';
+import { getPaymentList, getUnavailablePaymentList } from '../../containers/Payment/utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
 
 const { DELIVERY_METHOD } = Constants;
-
-const ALLOW_USE_ONLINE_BANKING_ORDER_TYPES = [DELIVERY_METHOD.TAKE_AWAY, DELIVERY_METHOD.DINE_IN];
 
 const initialState = {
   currentPayment: '',
@@ -28,7 +26,6 @@ const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
-  unavailablePaymentList: [],
 };
 
 export const types = {
@@ -349,7 +346,16 @@ export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
 
-export const getUnavailablePaymentList = state => state.payment.unavailablePaymentList;
+export const getUnavailablePayments = state => {
+  const { total } = getCartSummary(state);
+  const unavailablePayments = getUnavailablePaymentList();
+
+  if (total < process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL && !unavailablePayments.includes('onlineBanking')) {
+    return [...unavailablePayments, 'onlineBanking'];
+  }
+
+  return unavailablePayments;
+};
 
 export const getPayments = createSelector(
   [getBusiness, getMerchantCountry, getAllPaymentOptions, getCartSummary],
@@ -374,27 +380,6 @@ export const getPayments = createSelector(
         return paymentOptions[paymentKey];
       })
       .filter(payment => {
-        const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
-        const orderType = Utils.getOrderTypeFromUrl();
-        const onlineBankingLimitation = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) >= 10;
-
-        if (payment.label === Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY) {
-          // dine-in and takeaway order can use onlineBanking
-          if (ALLOW_USE_ONLINE_BANKING_ORDER_TYPES.includes(orderType) && onlineBankingLimitation) {
-            return true;
-          }
-
-          const onlineBankingForAllMerchants = onlineBankingMerchantList.length === 0;
-          if (
-            onlineBankingLimitation &&
-            (onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business))
-          ) {
-            return true;
-          }
-
-          return false;
-        }
-
         return true;
       });
   }

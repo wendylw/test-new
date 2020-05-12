@@ -37,6 +37,11 @@ export function getPaymentList(country) {
   return payments ? payments.split(',') : [];
 }
 
+export function getUnavailablePaymentList() {
+  const unavailablePayments = process.env.REACT_APP_PAYMENT_UNAVAILABLE_LIST;
+  return unavailablePayments ? unavailablePayments.split(',') : [];
+}
+
 // support credit card brands country map
 const CREDIT_CARD_BRANDS_COUNTRY_MAP = {
   MY: [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD],

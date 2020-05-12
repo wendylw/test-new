@@ -22,5 +22,6 @@
   "PayViaOnlineBanking": "Pay via Online Banking",
   "SelectABank": "Select a bank",
   "PleaseSelectABankToContinue": "Please select a bank to continue",
-  "PlaceOrderFailedDescription": "Sorry there was some issue with the connection, please try again"
+  "PlaceOrderFailedDescription": "Sorry there was some issue with the connection, please try again",
+  "TemporarilyUnavailable": "Temporarily Unavailable"
 }

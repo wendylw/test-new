@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
@@ -19,12 +19,13 @@ import {
   getPayments,
   getDefaultPayment,
   getCurrentPaymentInfo,
-  getUnavailablePaymentList,
+  getUnavailablePayments,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import { getPaymentName, getSupportCreditCardBrands } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
+import CurrencyNumber from '../../components/CurrencyNumber';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -141,10 +142,25 @@ class Payment extends Component {
   };
 
   render() {
-    const { t, currentPayment, payments, unavailablePaymentList } = this.props;
+    const { t, currentPayment, payments, unavailablePaymentList, cartSummary } = this.props;
+    const { total } = cartSummary || {};
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
+    const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
+    const promptDom =
+      total >= minimumFpxTotal ? (
+        <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>
+      ) : (
+        <span className="payment__prompt">
+          ({' '}
+          <Trans i18nKey="MinimumConsumption">
+            <span>Min</span>
+            <CurrencyNumber money={minimumFpxTotal} />
+          </Trans>{' '}
+          )
+        </span>
+      );
 
     return (
       <section className={className.join(' ')}>
@@ -159,12 +175,13 @@ class Payment extends Component {
           <ul className="payment__list">
             {payments.map(payment => {
               const classList = ['payment__item border__bottom-divider flex flex-middle flex-space-between'];
+              const disabledPayment = unavailablePaymentList.find(p => p === payment.key);
 
               if (!payment) {
                 return null;
               }
 
-              if (unavailablePaymentList.find(payment => payment === payment.label)) {
+              if (disabledPayment) {
                 classList.push('disabled');
               }
 
@@ -179,7 +196,7 @@ class Payment extends Component {
                   </figure>
                   <div className="payment__name">
                     <label className="font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
-                    {payment.disabled ? <span className="payment__prompt">Temporarily Unavailable</span> : null}
+                    {disabledPayment ? promptDom : null}
                   </div>
                   <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
@@ -238,7 +255,7 @@ export default compose(
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        unavailablePaymentList: getUnavailablePaymentList(state),
+        unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),
       };
     },
