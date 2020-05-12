@@ -364,7 +364,7 @@ export const getPayments = createSelector(
         // for Malaysia
         if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
           return paymentOptions[
-            total <= parseFloat(process.env.REACT_APP_PAYMENT_SPRITE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
           ];
         }
 
@@ -373,15 +373,19 @@ export const getPayments = createSelector(
       .filter(payment => {
         const onlineBankingMerchantList = (process.env.REACT_APP_ONLINE_BANKING_MERCHANT_LIST || '').trim();
         const orderType = Utils.getOrderTypeFromUrl();
+        const onlineBankingLimitation = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) >= 10;
 
         if (payment.label === Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY) {
           // dine-in and takeaway order can use onlineBanking
-          if (ALLOW_USE_ONLINE_BANKING_ORDER_TYPES.includes(orderType)) {
+          if (ALLOW_USE_ONLINE_BANKING_ORDER_TYPES.includes(orderType) && onlineBankingLimitation) {
             return true;
           }
 
           const onlineBankingForAllMerchants = onlineBankingMerchantList.length === 0;
-          if (onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business)) {
+          if (
+            onlineBankingLimitation &&
+            (onlineBankingForAllMerchants || onlineBankingMerchantList.split(',').includes(business))
+          ) {
             return true;
           }
 
