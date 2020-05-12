@@ -506,7 +506,6 @@ class ProductDetail extends Component {
     const resizeImageStyles = this.resizeImage();
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    const windowWidth = document.documentElement.clientWidth || document.body.clientWidth;
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
     // let swipeHeight = '80vw';
@@ -522,13 +521,13 @@ class ProductDetail extends Component {
 
     if (this.asideEl && this.buttonEl && this.productEl) {
       const productHeight = this.productEl.clientHeight;
-      const asideHeight = this.asideEl.clientHeight;
+      const asideWidth = this.asideEl.clientWidth;
       const buttonElHeight = this.buttonEl.clientHeight;
       const footerHeight = document.querySelector('.footer-operation').clientHeight;
 
-      imageContainerHeight = `${windowWidth + productHeight - buttonElHeight}px`;
+      imageContainerHeight = `${asideWidth * 0.8}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
-      productDescriptionHeight = `${windowHeight - windowWidth - productHeight + buttonElHeight - footerHeight}px`;
+      productDescriptionHeight = `${windowHeight - asideWidth * 0.8 - productHeight + buttonElHeight - footerHeight}px`;
     }
 
     return (
@@ -538,7 +537,6 @@ class ProductDetail extends Component {
           className="product-description__image-container"
           style={{
             height: imageContainerHeight,
-            marginBottom: `-${imageContainerMarginBottom}`,
             ...resizeImageStyles,
           }}
         >
@@ -630,7 +628,8 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
-    const { product, show } = this.props;
+    const { product, viewAside, show } = this.props;
+    const { resizeImage } = this.state;
 
     if (show && product && product.id && !product._needMore) {
       className.push('active');
@@ -642,7 +641,12 @@ class ProductDetail extends Component {
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
       >
-        <div className="product-detail">
+        <div
+          className="product-detail"
+          style={{
+            opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
+          }}
+        >
           {this.renderVariations()}
 
           {this.renderProductOperator()}
