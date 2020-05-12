@@ -1,0 +1,25 @@
+@import "../site/Variables.scss";
+
+/* Deliver To */
+.deliver-to-entry {
+  padding: 8px;
+  width: 100%;
+  background-color: $white;
+  z-index: $z-index-base;
+
+  &__content {
+    max-width: 90%;
+  }
+
+  &__label {
+    display: inline-block;
+    margin: 4px 10px;
+  }
+
+  &__address {
+    max-width: 90%;
+    max-height: 16px;
+    -webkit-line-clamp: 1;
+  }
+}
+/* end of Deliver To */

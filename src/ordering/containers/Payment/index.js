@@ -11,46 +11,24 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
 import {
   actions as paymentActionCreators,
   getCurrentPayment,
   getCurrentOrderId,
-  getPaymentList,
+  getPayments,
+  getDefaultPayment,
+  getCurrentPaymentInfo,
   getUnavailablePaymentList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import paymentBankingImage from '../../../images/payment-banking.png';
-import paymentCreditImage from '../../../images/payment-credit.png';
-import paymentBoostImage from '../../../images/payment-boost.png';
-import paymenbGrabImage from '../../../images/payment-grab.png';
+import { getPaymentName, getSupportCreditCardBrands } from './utils';
+import Loader from './components/Loader';
+import PaymentLogo from './components/PaymentLogo';
 
-const { PAYMENT_METHODS, ROUTER_PATHS } = Constants;
-const dataSource = {
-  onlineBanking: {
-    name: PAYMENT_METHODS.ONLINE_BANKING_PAY,
-    logo: paymentBankingImage,
-    labelKey: 'OnlineBanking',
-    pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-  },
-  creditCard: {
-    name: PAYMENT_METHODS.CREDIT_CARD_PAY,
-    logo: paymentCreditImage,
-    labelKey: 'CreditCard',
-    pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
-  },
-  boost: {
-    name: PAYMENT_METHODS.BOOST_PAY,
-    logo: paymentBoostImage,
-    labelKey: 'Boost',
-  },
-  grabPay: {
-    name: PAYMENT_METHODS.GRAB_PAY,
-    logo: paymenbGrabImage,
-    labelKey: 'GrabPay',
-  },
-};
-const EXCLUDED_PAYMENTS = [PAYMENT_METHODS.ONLINE_BANKING_PAY, PAYMENT_METHODS.CREDIT_CARD_PAY];
+const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
+
+const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];
 
 class Payment extends Component {
   state = {
@@ -58,24 +36,13 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { homeActions, paymentActions } = this.props;
-    await paymentActions.fetchPaymentList();
-    /* set default payment by dynamic setting*/
-    const { paymentList } = this.props;
-    this.setDefaultPayment(paymentList);
-
-    await homeActions.loadShoppingCart();
-  };
-
-  setDefaultPayment = paymentList => {
-    if (paymentList && paymentList.length > 0) {
-      const payment = dataSource[paymentList[0]];
-      this.setCurrentPayment(payment.name);
-    }
+    const { currentPayment } = this.props;
+    this.props.paymentActions.setCurrentPayment(currentPayment);
+    await this.props.homeActions.loadShoppingCart();
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
     const h = config.h();
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
@@ -96,26 +63,51 @@ class Payment extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
     };
   };
 
   handleClickBack = () => {
     const { history } = this.props;
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = Utils.getOrderTypeFromUrl();
 
-    history.push({
-      pathname: type ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : ROUTER_PATHS.ORDERING_CART,
-      search: window.location.search,
-    });
+    switch (type) {
+      case DELIVERY_METHOD.DIGITAL:
+        window.location.href = ROUTER_PATHS.VOUCHER_CONTACT;
+        break;
+      case DELIVERY_METHOD.DINE_IN:
+      case DELIVERY_METHOD.TAKE_AWAY:
+      case DELIVERY_METHOD.DELIVERY:
+      case DELIVERY_METHOD.PICKUP:
+      default:
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+          search: window.location.search,
+        });
+        break;
+    }
   };
 
-  setCurrentPayment = paymentName => {
-    this.props.paymentActions.setCurrentPayment(paymentName);
+  setCurrentPayment = paymentLabel => {
+    this.props.paymentActions.setCurrentPayment(paymentLabel);
   };
+
+  getPaymentShowLabel(payment) {
+    const { t, merchantCountry } = this.props;
+    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
+      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
+      return supportCreditCardBrands
+        .map(brand => {
+          return t(brand);
+        })
+        .join(' / ');
+    } else {
+      return t(payment.label);
+    }
+  }
 
   handleClickPayNow = async () => {
-    const { history, currentPayment, cartSummary } = this.props;
+    const { history, currentPaymentInfo, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -123,11 +115,10 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (EXCLUDED_PAYMENTS.includes(currentPayment)) {
-      const { pathname } = Object.values(dataSource).find(payment => payment.name === currentPayment) || {};
-
+    // redirect to customized payment page when the payment contains pathname of page router
+    if (currentPaymentInfo.pathname) {
       history.push({
-        pathname,
+        pathname: currentPaymentInfo.pathname,
         search: window.location.search,
       });
 
@@ -145,12 +136,12 @@ class Payment extends Component {
     }
 
     this.setState({
-      payNowLoading: orderId,
+      payNowLoading: !!orderId,
     });
   };
 
   render() {
-    const { t, currentPayment, paymentList, unavailablePaymentList } = this.props;
+    const { t, currentPayment, payments, unavailablePaymentList } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -166,32 +157,31 @@ class Payment extends Component {
 
         <div>
           <ul className="payment__list">
-            {paymentList.map(paymentKey => {
-              const payment = dataSource[paymentKey];
+            {payments.map(payment => {
               const classList = ['payment__item border__bottom-divider flex flex-middle flex-space-between'];
 
               if (!payment) {
                 return null;
               }
 
-              if (unavailablePaymentList.find(payment => payment === paymentKey)) {
+              if (unavailablePaymentList.find(payment => payment === payment.label)) {
                 classList.push('disabled');
               }
 
               return (
                 <li
-                  key={payment.name}
+                  key={payment.label}
                   className={classList.join(' ')}
-                  onClick={() => this.setCurrentPayment(payment.name)}
+                  onClick={() => this.setCurrentPayment(payment.label)}
                 >
                   <figure className="payment__image-container">
-                    <img src={payment.logo} alt={payment.labelKey}></img>
+                    <PaymentLogo payment={payment} />
                   </figure>
                   <div className="payment__name">
-                    <label className="font-weight-bold">{t(payment.labelKey)}</label>
+                    <label className="font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
                     {payment.disabled ? <span className="payment__prompt">Temporarily Unavailable</span> : null}
                   </div>
-                  <div className={`radio ${currentPayment === payment.name ? 'active' : ''}`}>
+                  <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
                   </div>
@@ -203,7 +193,7 @@ class Payment extends Component {
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             disabled={payNowLoading}
             onClick={this.handleClickPayNow}
           >
@@ -224,6 +214,15 @@ class Payment extends Component {
   }
 }
 
+// to use container to make Payment initialization based on payments from a country
+const PaymentContainer = props => {
+  if (!props.merchantCountry) {
+    return <Loader />;
+  }
+
+  return <Payment {...props} />;
+};
+
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
@@ -231,20 +230,21 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        payments: getPayments(state),
+        currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
+        currentPaymentInfo: getCurrentPaymentInfo(state),
         user: getUser(state),
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        paymentList: getPaymentList(state),
         unavailablePaymentList: getUnavailablePaymentList(state),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(Payment);
+)(PaymentContainer);

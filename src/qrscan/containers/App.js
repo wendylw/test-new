@@ -6,17 +6,16 @@ import Error from './components/Error';
 import Routes from '../Routes.js';
 import DocumentFavicon from '../../components/DocumentFavicon';
 import faviconImage from '../../images/favicon.ico';
-import '../styles.scss';
 
 class App extends Component {
   render() {
     return (
-      <div className="qr-scanner-app">
+      <React.Fragment>
         {/* Routes */}
         <Routes />
         <DocumentFavicon icon={faviconImage} />
         {this.renderError()}
-      </div>
+      </React.Fragment>
     );
   }
 

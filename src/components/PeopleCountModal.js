@@ -25,7 +25,7 @@ class PeopleCountModal extends Component {
         onHide={() => history.replace(Constants.ROUTER_PATHS.ORDERING_HOME)}
       >
         <Modal.Header>
-          <h4 className="font-weight-bold">{t('PeopleCountModalTitle')}</h4>
+          <h4 className="font-weight-bolder">{t('PeopleCountModalTitle')}</h4>
         </Modal.Header>
         <Modal.Body>
           <ul className="customer-numbers grid">

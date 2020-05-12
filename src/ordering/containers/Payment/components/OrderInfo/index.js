@@ -4,22 +4,14 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class OrderInfo extends Component {
   render() {
-    const {
-      logo,
-      money,
-    } = this.props;
+    const { logo, money } = this.props;
 
     return (
       <div className="payment__info">
-        <figure
-          className="logo-default__image-container"
-        >
+        <figure className="logo-default__image-container">
           <img src={logo} alt="" />
         </figure>
-        <CurrencyNumber
-          className="payment-bank__money font-weight-bold text-center"
-          money={money}
-        />
+        <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={money} />
       </div>
     );
   }
@@ -27,10 +19,7 @@ class OrderInfo extends Component {
 
 OrderInfo.propTypes = {
   logo: PropTypes.string,
-  money: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
+  money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 OrderInfo.defaultProps = {

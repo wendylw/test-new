@@ -4,14 +4,18 @@ import Message from './Message';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../Constants';
-import shapeImage from '../../../images/Shape.png';
+import shapeImage from '../../../images/shape.png';
 
 const processQR = qrData =>
   new Promise((resolve, reject) => {
     let data = qrData.trim();
+    const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
+    const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
+
     if (/^https?:/.test(data)) {
-      if (data.includes('beepit.co') || data.includes('beepit.com')) {
-        const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
+      if (data.includes('tableId=DEMO')) {
+        data = data.match(domainRegex)[0];
+      } else if (data.includes('beepit.co') || data.includes('beepit.com')) {
         data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
       }
       window.location.href = data;

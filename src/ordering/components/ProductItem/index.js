@@ -39,12 +39,12 @@ export class ProductItem extends Component {
         image={image}
         title={title}
         variation={variation}
-        detail={<CurrencyNumber className="price item__text font-weight-bold gray-font-opacity" money={price || 0} />}
+        detail={<CurrencyNumber className="price item__text font-weight-bolder" money={price || 0} numberOnly={true} />}
         operateItemDetail={showProductDetail}
         hasTag={isFeaturedProduct}
       >
         {soldOut ? (
-          <Tag text={t('SoldOut')} className="tag__card sold-out" style={{ minWidth: '70px' }} />
+          <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
         ) : (
           <ItemOperator
             className="flex-middle"

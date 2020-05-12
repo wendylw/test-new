@@ -2,15 +2,6 @@ import Utils from './utils/utils';
 
 let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
 
-// To mock data
-// if (process.env.NODE_ENV === 'development') {
-//   business = 'wenjingzhang';
-//   document.cookie = 'business=wenjingzhang; path=/';
-//   document.cookie = '__h=U2FsdGVkX19E06YfYWSWU%2F1Lr%2BNATl54FUnzTtUAy134QzwP2wykxjWMEuUjd5aS; path=/';
-//   document.cookie = '__s=5e5dd6c7407cf700063ba869; path=/';
-//   document.cookie = '__t=; path=/';
-// }
-
 /* eslint-disable */
 function guid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -39,10 +30,12 @@ const getClientSID = () => {
 
 const getTableId = () => {
   try {
-    return document.cookie
-      .split(';')
-      .find(s => s.includes('__t='))
-      .split('=')[1];
+    return decodeURIComponent(
+      document.cookie
+        .split(';')
+        .find(s => s.includes('__t='))
+        .split('=')[1]
+    );
   } catch (e) {
     return null;
   }
@@ -75,6 +68,7 @@ const config = {
     terms: process.env.REACT_APP_TERMS_URL,
     privacy: process.env.REACT_APP_PRIVACY_URL,
   },
+  beepOnlineStoreUrl: business => (process.env.REACT_APP_MERCHANT_STORE_URL || '').replace('%business%', business),
   storeHubPaymentEntryURL: process.env.REACT_APP_STOREHUB_PAYMENT_ENTRY,
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,
@@ -85,7 +79,9 @@ const config = {
   paymentList: (process.env.REACT_APP_PAYMENT_LIST || '').split(','),
   unavailablePaymentList: (process.env.REACT_APP_PAYMENT_UNAVAILABLE_LIST || '').split(','),
   verticalMenuBusinesses: (process.env.REACT_APP_VERTICAL_MENU_BUSINESSES || '').split(','),
+  beepitComUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}`,
   qrScanPageUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}/qrscan`,
+  removePickupMerchantList: (process.env.REACT_APP_REMOVE_PICKUP_MERCHANT_LIST || '').split(','),
   h() {
     try {
       return document.cookie

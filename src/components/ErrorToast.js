@@ -15,24 +15,23 @@ class ErrorToast extends Component {
   }
 
   render() {
-    const { message } = this.props;
+    const { className, message } = this.props;
 
     return (
-      <div className="top-message error fixed">
-        <div className="top-message__text">
-          {message}
-        </div>
+      <div className={`top-message error fixed${className ? ` ${className}` : ''}`}>
+        <div className="top-message__text">{message}</div>
       </div>
     );
   }
 }
 
 ErrorToast.propTypes = {
+  className: PropTypes.string,
   clearError: PropTypes.func,
 };
 
 ErrorToast.defaultProps = {
-  clearError: () => { },
+  clearError: () => {},
 };
 
 export default ErrorToast;

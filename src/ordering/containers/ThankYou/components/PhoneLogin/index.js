@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Link } from 'react-router-dom';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import PhoneView from '../../../../../components/PhoneView';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
@@ -140,6 +140,11 @@ class PhoneLogin extends React.Component {
     if (isCashbackZero && CASHBACK_ZERO_CLAIMED.includes(key)) {
       return '';
     }
+
+    if (isLogin) {
+      return this.MESSAGES['Claimed_NotFirstTime'];
+    }
+
     return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
@@ -206,7 +211,7 @@ class PhoneLogin extends React.Component {
       return null;
     }
 
-    return <CurrencyNumber className="font-weight-bold" money={Math.abs(cashback || 0)} />;
+    return <CurrencyNumber className="font-weight-bolder" money={Math.abs(cashback || 0)} />;
   }
 
   renderPhoneView() {
@@ -214,6 +219,10 @@ class PhoneLogin extends React.Component {
     const { phone } = this.state;
     const { isFetching, isWebview, isLogin, customerId } = user || {};
     const { country } = onlineStoreInfo || {};
+
+    if (isLogin) {
+      return null;
+    }
 
     if (!isLogin) {
       return (
@@ -236,7 +245,7 @@ class PhoneLogin extends React.Component {
       return (
         <BrowserRouter basename="/">
           <Link
-            className="button__fill link__non-underline link__block border-radius-base font-weight-bold text-uppercase"
+            className="button__fill link__non-underline link__block border-radius-base font-weight-bolder text-uppercase"
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             target="_blank"
           >
@@ -248,7 +257,7 @@ class PhoneLogin extends React.Component {
 
     return (
       <button
-        className="button__fill button__block border-radius-base font-weight-bold text-uppercase"
+        className="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
         onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
       >
         {t('CheckMyBalance')}
@@ -257,13 +266,14 @@ class PhoneLogin extends React.Component {
   }
 
   render() {
-    const { user, businessInfo, onlineStoreInfo } = this.props;
+    const { user, businessInfo, onlineStoreInfo, cashbackInfo, isDeliveryType } = this.props;
     const { claimedAnimationGifSrc, showCelebration } = this.state;
     const { customerId } = user || {};
     const { country } = onlineStoreInfo || {};
     const { enableCashback } = businessInfo || {};
+    const { defaultLoyaltyRatio } = cashbackInfo || {};
 
-    if (!country || !enableCashback) {
+    if (!country || !enableCashback || defaultLoyaltyRatio === 0 || isDeliveryType) {
       return null;
     }
 
@@ -272,22 +282,22 @@ class PhoneLogin extends React.Component {
         <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
 
-        <p className="terms-privacy text-center gray-font-opacity">
+        {/* <p className="terms-privacy text-center gray-font-opacity">
           <Trans i18nKey="TermsAndPrivacyDescription">
             By tapping to continue, you agree to our
             <br />
             <BrowserRouter basename="/">
-              <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+              <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
                 Terms of Service
               </Link>
               , and{' '}
-              <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+              <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
                 Privacy Policy
               </Link>
               .
             </BrowserRouter>
           </Trans>
-        </p>
+        </p> */}
         <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>

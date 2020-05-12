@@ -14,6 +14,7 @@ const initialState = {
   currentStoreId: null,
   enableDelivery: false,
   storeIds: [],
+  currentOrderMethod: '',
 };
 
 export const types = {
@@ -35,6 +36,9 @@ export const types = {
   FETCH_COREBUSINESS_REQUEST: 'ORDERING/APP/FETCH_COREBUSINESS_REQUEST',
   FETCH_COREBUSINESS_SUCCESS: 'ORDERING/APP/FETCH_COREBUSINESS_SUCCESS',
   FETCH_COREBUSINESS_FAILURE: 'ORDERING/APP/FETCH_COREBUSINESS_FAILURE',
+
+  // set order method
+  SET_ORDER_METHOD: 'STORES/HOME/SET_ORDER_METHOD',
 };
 
 export const actions = {
@@ -67,6 +71,11 @@ export const actions = {
     const { storeId, business } = config;
     return dispatch(fetchCoreBusiness({ business, storeId }));
   },
+
+  setOrderMethod: method => ({
+    type: types.SET_ORDER_METHOD,
+    method,
+  }),
 };
 
 const fetchCoreBusiness = variables => ({
@@ -97,7 +106,6 @@ const reducer = (state = initialState, action) => {
     case types.SET_CURRENT_STORE:
     case types.CLEAR_CURRENT_STORE: {
       const { storeId } = action;
-
       return { ...state, currentStoreId: storeId };
     }
     case types.FETCH_CORESTORES_SUCCESS: {
@@ -105,12 +113,17 @@ const reducer = (state = initialState, action) => {
       const { qrOrderingSettings, stores } = business || {};
       const { enableDelivery } = qrOrderingSettings || {};
       const validStores = (stores || []).filter(s => s.isOnline && !s.isDeleted);
-      const currentStoreId = validStores && validStores.length === 1 ? validStores[0].id : null;
 
-      return { ...state, isFetching: false, enableDelivery, storeIds: validStores.map(s => s.id), currentStoreId };
+      return { ...state, isFetching: false, enableDelivery, storeIds: validStores.map(s => s.id) };
     }
     case types.FETCH_CORESTORES_FAILURE: {
       return { ...state, isFetching: false };
+    }
+    case types.SET_ORDER_METHOD: {
+      return {
+        ...state,
+        currentOrderMethod: action.method,
+      };
     }
     default:
       return state;
@@ -135,8 +148,6 @@ export const showStores = state => !state.home.isFetching;
 export const isStoreClosed = state => {
   try {
     const businessInfo = getBusinessByName(state, getBusiness(state));
-    console.log('businessInfo', businessInfo);
-
     const { validDays, validTimeFrom, validTimeTo } = businessInfo.qrOrderingSettings;
     return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }); // get negative status
   } catch (e) {
@@ -144,3 +155,5 @@ export const isStoreClosed = state => {
     return false;
   }
 };
+
+export const getCurrentOrderMethod = state => state.home.currentOrderMethod;

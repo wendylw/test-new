@@ -1,0 +1,137 @@
+// @import "../site/Common.scss";
+@import "../site/Variables.scss";
+
+.location-picker {
+  &__search-box {
+    padding: 22px 3.8vw;
+    background-color: $white;
+
+    &-inner {
+      // @extend .border-radius-base;
+      border-radius: $border-radius-base;
+      border: 1px solid $gray-3;
+      background-color: $white;
+    }
+    &-input {
+      padding: 16px 0;
+      border: 0;
+      line-height: 26px;
+      height: 56px;
+      width: 100%;
+      background-color: $white;
+      outline: none;
+      box-shadow: none;
+      caret-color: $gray-2;
+    }
+    &-magnifier-icon {
+      padding: 8px;
+      fill: $gray-2;
+      svg {
+        vertical-align: top;
+      }
+    }
+    &-close-icon {
+      padding: 18px 8px;
+      fill: $gray-2;
+      svg {
+        width: 18px;
+        height: 18px;
+        vertical-align: top;
+      }
+    }
+  }
+
+  &__detected-position {
+    overflow: hidden;
+    border-bottom: 1px solid $gray-3;
+    padding: 8px 16px 16px 0;
+    .location-picker__address-item {
+      padding: 0;
+      border: none;
+    }
+
+    .location-picker__detected-position-address {
+      margin-top: 8px;
+    }
+  }
+
+  &__detected-position-status {
+    margin: 8px 0;
+    font-weight: bold;
+  }
+
+  &__detected-position-icon {
+    svg {
+      fill: $theme-color;
+      width: 14px;
+      height: 14px;
+    }
+
+    padding: 16px;
+    float: left;
+  }
+
+  &__detected-position-address {
+    overflow: hidden;
+  }
+
+  &__historical-address {
+    border-bottom: 1px solid $gray-3;
+    overflow: hidden;
+  }
+
+  &__historical-address-icon {
+    display: block;
+    margin-top: 8px;
+    padding: 16px;
+    float: left;
+
+    svg {
+      fill: $theme-color-translucent;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__historical-address-content {
+    overflow: hidden;
+    .location-picker__address-item {
+      padding: 16px 16px 16px 0;
+      border: none;
+    }
+  }
+
+  &__address-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid $gray-3;
+  }
+
+  &__address-title {
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__address-detail {
+    margin-top: 4px;
+    color: $gray-1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__address-distance {
+    margin-right: 8px;
+    font-weight: bold;
+  }
+}
+
+@media (min-width: 768px) {
+  .location-picker {
+    &__search-box {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+}

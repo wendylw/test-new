@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import GetPermission from './components/GetPermission';
+import '../styles.scss';
 
 class Permission extends Component {
   render() {

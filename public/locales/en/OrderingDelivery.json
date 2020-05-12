@@ -1,9 +1,7 @@
 {
-  "ContactUs": "CONTACT US",
   "StoreName": "Store Name",
   "ContactInfo": "Contact Information",
   "StoreAddress": "Store Address",
-  "OrderDetails": "Order Details",
   "YourOrder": "Your Order",
   "Total": "Total",
   "Subtotal": "Subtotal",
@@ -15,5 +13,7 @@
   "OutOfDeliveryRangeWrongDistance": "Sorry, this location is out of delivery range ({{distance}} KM).",
   "SearchYourAddress": "Search your address",
   "DetectingLocation": "Detecting location...",
-  "LocationSharingIsOff": "Location sharing is off."
+  "LocationSharingIsOff": "Location sharing is off.",
+  "DeliveryTimeAndAddressTitle": "Delivery Time & Address",
+  "PickUpTimeAndAddressTitle": "Pickup Time & Address"
 }

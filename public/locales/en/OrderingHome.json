@@ -1,5 +1,6 @@
 {
   "OrderNow": "Order now",
+  "PreOrderNow": "PRE-ORDER NOW",
   "CartItemsInCategory": "{{cartQuantity}} Items",
   "NoProductDescription": "No product description",
   "MinimumChoicesDescription": "Select minimum of {{minSelectionAmount}} choices",

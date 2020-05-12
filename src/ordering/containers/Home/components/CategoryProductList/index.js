@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionsCreator, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
 
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+
 class CategoryProductList extends Component {
   prevCategory = null;
 
@@ -35,24 +37,60 @@ class CategoryProductList extends Component {
       await this.props.homeActions.loadShoppingCart();
 
       if (product.variations && product.variations.length) {
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
+
         onToggle('PRODUCT_DETAIL');
+      } else {
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
       }
     } catch (e) {
       console.error(e);
     }
   };
 
+  handleGtmEventTracking = (eventName, data) => {
+    let gtmTrackingData = {};
+    if (eventName === GTM_TRACKING_EVENTS.VIEW_PRODUCT) {
+      gtmTrackingData = {
+        product_name: data.title,
+        product_id: data.id,
+        price_local: data.displayPrice,
+        product_type: data.inventoryType,
+        Inventory: !!data.markedSoldOut ? 'In stock' : 'Out of stock',
+        image_count: (data.images && data.images.length) || 0,
+        product_description: data.description,
+      };
+    }
+
+    if (eventName === GTM_TRACKING_EVENTS.ADD_TO_CART) {
+      gtmTrackingData = {
+        product_name: data.title,
+        product_id: data.id,
+        price_local: data.displayPrice,
+        variant: data.variations,
+        quantity: data.quantityOnHand,
+        product_type: data.inventoryType,
+        Inventory: !!data.soldOut ? 'In stock' : 'Out of stock',
+        image_count: (data.images && data.images.length) || 0,
+      };
+    }
+
+    return gtmEventTracking(eventName, gtmTrackingData);
+  };
+
   handleShowProductDetail = async product => {
     const { onToggle } = this.props;
 
-    await this.props.homeActions.loadProductDetail(product);
+    const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
+    const { data: productDetail = {} } = responseGql;
+    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
+
     onToggle('PRODUCT_DESCRIPTION');
   };
 
   render() {
-    const { t, categories, isVerticalMenu } = this.props;
-
+    const { categories, isVerticalMenu } = this.props;
     return (
       <div id="product-list" className="list__container">
         <ScrollObserver
@@ -79,11 +117,11 @@ class CategoryProductList extends Component {
             return (
               <h2 className="category__header fixed flex flex-middle flex-space-between">
                 <label>{target.name || ''}</label>
-                {target.cartQuantity ? (
+                {/* {target.cartQuantity ? (
                   <span className="gray-font-opacity">
                     {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
                   </span>
-                ) : null}
+                ) : null} */}
               </h2>
             );
           }}
@@ -94,11 +132,6 @@ class CategoryProductList extends Component {
               <ScrollObservable targetId={category.id} key={category.id}>
                 <h2 className="category__header flex flex-middle flex-space-between">
                   <label>{category.name}</label>
-                  {category.cartQuantity ? (
-                    <span className="gray-font-opacity">
-                      {t('CartItemsInCategory', { cartQuantity: category.cartQuantity })}
-                    </span>
-                  ) : null}
                 </h2>
                 <ul className="list">
                   {(category.products || []).map(product => (

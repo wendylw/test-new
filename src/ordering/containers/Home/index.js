@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -12,39 +12,120 @@ import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
+import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
-import { getBusiness, getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
-import { getAllBusinesses, getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
+import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
   getCategoryProductList,
+  getDeliveryInfo,
+  getPopUpModal,
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+import config from '../../../config';
+import { BackPosition, showBackButton } from '../../../utils/backHelper';
+import locationIcon from '../../../images/Pin.svg';
 
 const localState = {
   blockScrollTop: 0,
 };
 
+const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
   state = {
     viewAside: null,
+    dScrollY: 0,
+  };
+  handleScroll = () => {
+    const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+    this.setState({
+      dScrollY: documentScrollY,
+    });
   };
 
-  componentDidMount() {
+  get navBackUrl() {
+    const source = Utils.getQueryString('source');
+    if (source) {
+      return source;
+    }
+    return config.beepitComUrl;
+  }
+
+  componentDidMount = async () => {
     const { history, homeActions, requestInfo } = this.props;
-    const { storeId } = requestInfo;
+    const { tableId, storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (!storeId && !h) {
+    if (!h || !storeId || tableId === 'DEMO') {
       window.location.href = '/';
     }
 
+    if (isSourceBeepitCom()) {
+      // sync deliveryAddress from beepit.com
+      await this.setupDeliveryAddressByRedirectState();
+    }
+
+    this.handleDeliveryTimeInSession();
+
     homeActions.loadProductList();
+
+    window.addEventListener('scroll', this.handleScroll);
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
   }
+
+  // Remove user previously selected delivery/pickup time from session
+  // Just in case the previous one they select is delivery and the new one is pickup
+  // which will cause delivery/pickup time displayed in header incorrect
+  handleDeliveryTimeInSession = () => {
+    const { hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    let previousDeliveryMethod = '';
+
+    if (hour.from && hour.to) {
+      previousDeliveryMethod = Constants.DELIVERY_METHOD.DELIVERY;
+    } else if (hour.from && !hour.to) {
+      previousDeliveryMethod = Constants.DELIVERY_METHOD.PICKUP;
+    }
+
+    if (
+      (Utils.isPickUpType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.DELIVERY) ||
+      (Utils.isDeliveryType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.PICKUP)
+    ) {
+      Utils.removeExpectedDeliveryTime();
+    }
+  };
+
+  getBusinessCountry = () => {
+    try {
+      const { businessInfo } = this.props;
+      return businessInfo.country;
+    } catch (e) {
+      // this could happen when allBusinessInfo is not loaded.
+      return undefined;
+    }
+  };
+
+  // get deliveryTo info from cookie and set into localStorage
+  setupDeliveryAddressByRedirectState = async () => {
+    const state = await fetchRedirectPageState();
+
+    try {
+      if (state.deliveryAddress) {
+        sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
@@ -84,6 +165,10 @@ export class Home extends Component {
     }
   }
 
+  handleNavBack = () => {
+    window.location.href = this.navBackUrl;
+  };
+
   handleToggleAside(asideName) {
     const stopBodyScroll =
       this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
@@ -93,98 +178,172 @@ export class Home extends Component {
       this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
-    this.setState({
-      viewAside: asideName,
-    });
+    if (asideName === Constants.ASIDE_NAMES.CART && this.state.viewAside === Constants.ASIDE_NAMES.CART) {
+      this.setState({
+        viewAside: null,
+      });
+      this.toggleBodyScroll(false);
+    } else {
+      this.setState({
+        viewAside: asideName,
+      });
+    }
   }
 
   renderDeliverToBar() {
-    if (!this.isValidTimeToOrder()) {
+    const { t, history, deliveryInfo } = this.props;
+
+    if (!deliveryInfo) {
       return null;
     }
 
-    const { t, history } = this.props;
-    const { deliveryToAddress } = this.getDeliveryInfo();
+    // table ordering situation
+    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
+      return null;
+    }
+
     const isValidTimeToOrder = this.isValidTimeToOrder();
+    const { enablePreOrder, deliveryToAddress } = deliveryInfo;
+
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
-
-      Utils.setSessionVariable('deliveryCallbackUrl', `/${search}`);
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-        search,
+        pathname: enablePreOrder
+          ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
+          : Constants.ROUTER_PATHS.ORDERING_LOCATION,
+        search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };
 
-    return (
-      <div className="location-page__entry item" onClick={isValidTimeToOrder ? fillInDeliverToAddress : () => {}}>
-        <div className="item__detail-content flex flex-middle flex-space-between">
-          <div className="location-page__base-info">
-            <summary className="item__title">{t('DeliverTo')}</summary>
-            <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+    if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
+      return (
+        <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
+          <div className="item__detail-content flex flex-top flex-space-between">
+            {showBackButton({
+              isValidTimeToOrder,
+              enablePreOrder,
+              backPosition: BackPosition.DELIVERY_TO,
+            }) ? (
+              <IconLeftArrow
+                className="header__icon"
+                onClick={event => {
+                  event.preventDefault();
+                  window.location.href = this.navBackUrl;
+                  event.stopPropagation();
+                }}
+              />
+            ) : null}
+            <div className="location-page__base-info">
+              <summary className="item__title text-uppercase font-weight-bolder">
+                {Utils.isDeliveryType() && t('DeliverTo')}
+                {Utils.isPickUpType() && t('PickUpOn')}
+              </summary>
+              {Utils.isDeliveryType() ? (
+                <p className="location-page__entry-address">
+                  {' '}
+                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+                  {deliveryToAddress}
+                </p>
+              ) : null}
+              {this.renderDeliveryDate()}
+            </div>
+            {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
           </div>
-          <i className="location-page__edit">{isValidTimeToOrder ? <IconEdit /> : null}</i>
         </div>
-      </div>
-    );
+      );
+    }
+    return null;
   }
 
+  getExpectedDeliveryTime = () => {
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+    const locale = this.getBusinessCountry();
+
+    if (date && hour && locale) {
+      return formatToDeliveryTime({
+        date: date,
+        hour: hour,
+        locale,
+      });
+    }
+
+    return '';
+  };
+
+  renderDeliveryDate = () => {
+    const { t, deliveryInfo } = this.props;
+
+    if (!deliveryInfo) {
+      return null;
+    }
+
+    const { enablePreOrder } = deliveryInfo;
+    let deliveryTimeText = t('DeliverNow');
+    const isPickUpType = Utils.isPickUpType();
+
+    if (enablePreOrder) {
+      deliveryTimeText = this.getExpectedDeliveryTime();
+    }
+
+    return (
+      <div className="location-page__entry-address pick-up flex flex-middle">
+        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
+        <p>{deliveryTimeText}</p>
+      </div>
+    );
+  };
+
+  isPreOrderEnabled = () => {
+    const { enablePreOrder } = this.props.deliveryInfo;
+    return !!enablePreOrder;
+  };
+
   isValidTimeToOrder = () => {
-    // if (!Utils.isDeliveryType()) {
-    //   return true;
-    // }
-    // let { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
-    // const weekInfo = new Date().getDay() + 1;
-    // const hourInfo = new Date().getHours();
-    // const minutesInfo = new Date().getMinutes();
-    // const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
-    // const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
-
-    // const isClosed =
-    //   hourInfo < Number(timeFrom[0]) ||
-    //   hourInfo > Number(timeTo[0]) ||
-    //   (hourInfo === Number(timeFrom[0]) &&
-    //     (minutesInfo < Number(timeFrom[1]) || minutesInfo === Number(timeFrom[1]))) ||
-    //   (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
-
-    // if (validDays && validDays.includes(weekInfo) && !isClosed) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+    const { deliveryInfo } = this.props;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    const { validDays, validTimeFrom, validTimeTo } = this.getDeliveryInfo();
+    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
 
     return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
-  getDeliveryInfo = () => {
-    const { allBusinessInfo, business } = this.props;
-    return Utils.getDeliveryInfo({ business, allBusinessInfo });
-  };
+  renderHeaderChildren() {
+    const { requestInfo, t } = this.props;
+    const type = Utils.getOrderTypeFromUrl();
+    switch (type) {
+      case DELIVERY_METHOD.DINE_IN:
+        const { tableId } = requestInfo || {};
+        return <span className="gray-font-opacity">{t('TableIdText', { tableId })}</span>;
+      case DELIVERY_METHOD.TAKE_AWAY:
+        return <span className="gray-font-opacity">{t('TAKE_AWAY')}</span>;
+      case DELIVERY_METHOD.DELIVERY:
+      case DELIVERY_METHOD.PICKUP:
+        return <IconInfoOutline className="header__info-icon" />;
+      default:
+        return null;
+    }
+  }
 
   renderHeader() {
-    const { t, onlineStoreInfo, businessInfo, requestInfo } = this.props;
-    const { stores, multipleStores } = businessInfo || {};
-    const { tableId } = requestInfo || {};
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo } = this.props;
+    const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryFee, minOrder } = this.getDeliveryInfo();
+    const isPickUpType = Utils.isPickUpType();
+    // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
+    const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
+    const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
-    if (!tableId && !isDeliveryType) {
-      classList.push('has-right');
-    }
-
-    if (!isDeliveryType) {
-      classList.push('border__bottom-divider gray flex-top');
+    if (isDeliveryType || isPickUpType) {
+      classList.push('flex-top');
     } else {
-      classList.push('flex-middle');
+      classList.push('border__bottom-divider gray flex-middle');
     }
 
     return (
@@ -197,36 +356,33 @@ export class Home extends Component {
         onClickHandler={this.handleToggleAside.bind(this)}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
-        minOrder={minOrder}
+        enableCashback={enableCashback}
+        defaultLoyaltyRatio={defaultLoyaltyRatio}
+        navFunc={this.handleNavBack}
         isValidTimeToOrder={this.isValidTimeToOrder()}
+        enablePreOrder={this.isPreOrderEnabled()}
+        storeAddress={storeAddress}
       >
-        {tableId ? <span className="gray-font-opacity text-uppercase">{t('TableIdText', { tableId })}</span> : null}
-        {isDeliveryType ? (
-          <i className="header__info-icon">
-            <IconInfoOutline />
-          </i>
-        ) : null}
+        {this.renderHeaderChildren()}
       </Header>
     );
   }
 
   render() {
     const {
-      business,
       categories,
       onlineStoreInfo,
       businessInfo,
       businessLoaded,
       requestInfo,
       isVerticalMenu,
-      allBusinessInfo,
       history,
       freeDeliveryFee,
+      cartSummary,
+      deliveryInfo,
       ...otherProps
     } = this.props;
     const {
-      deliveryFee,
-      minOrder,
       storeAddress,
       telephone,
       validDays,
@@ -235,25 +391,28 @@ export class Home extends Component {
       freeShippingMinAmount,
       enableConditionalFreeShipping,
       enableLiveOnline,
-    } = this.getDeliveryInfo();
+    } = deliveryInfo;
 
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
+    const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
     }
 
-    if (Utils.isDeliveryType()) {
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
-
     return (
       <section className={classList.join(' ')}>
-        {Utils.isDeliveryType() ? this.renderDeliverToBar() : null}
+        {this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        {enableConditionalFreeShipping &&
+        freeShippingMinAmount &&
+        Utils.isDeliveryType() &&
+        this.state.dScrollY < adBarHeight ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
@@ -262,12 +421,13 @@ export class Home extends Component {
             </Trans>
           </div>
         ) : null}
+
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}
           onToggle={this.handleToggleAside.bind(this)}
           onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-          isValidTimeToOrder={this.isValidTimeToOrder()}
+          isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
         />
         <ProductDetail
           onlineStoreInfo={onlineStoreInfo}
@@ -283,24 +443,22 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        {!Utils.isDeliveryType() ? null : (
+        {!Utils.isDeliveryType() && !Utils.isPickUpType() ? null : (
           <DeliveryDetailModal
             onlineStoreInfo={onlineStoreInfo}
             businessInfo={businessInfo}
             businessLoaded={businessLoaded}
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
-            deliveryFee={deliveryFee}
-            minOrder={minOrder}
             storeAddress={storeAddress}
             telephone={telephone}
             validDays={validDays}
             validTimeFrom={validTimeFrom}
             validTimeTo={validTimeTo}
-            isValidTimeToOrder={this.isValidTimeToOrder()}
+            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
         )}
-        {!this.isValidTimeToOrder() ? (
+        {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
         ) : null}
         <Footer
@@ -311,6 +469,7 @@ export class Home extends Component {
           isValidTimeToOrder={this.isValidTimeToOrder()}
           history={history}
           isLiveOnline={enableLiveOnline}
+          enablePreOrder={this.isPreOrderEnabled()}
         />
       </section>
     );
@@ -322,14 +481,15 @@ export default compose(
   connect(
     state => {
       return {
-        business: getBusiness(state),
+        deliveryInfo: getDeliveryInfo(state),
         businessInfo: getBusinessInfo(state),
         isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
-        allBusinessInfo: getAllBusinesses(state),
         businessLoaded: getBusinessIsLoaded(state),
+        popUpModal: getPopUpModal(state),
+        cartSummary: getCartSummary(state),
       };
     },
     dispatch => ({
