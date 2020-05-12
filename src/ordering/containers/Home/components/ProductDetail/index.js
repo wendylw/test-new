@@ -504,10 +504,12 @@ class ProductDetail extends Component {
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
-    const descriptionStr = Utils.removeHtmlTag(description || '');
+    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
-    let swipeHeight = '80vw';
+    // let swipeHeight = '80vw';
+    let productDescriptionHeight = '17vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
       className.push('hide');
@@ -519,12 +521,13 @@ class ProductDetail extends Component {
 
     if (this.asideEl && this.buttonEl && this.productEl) {
       const productHeight = this.productEl.clientHeight;
-      const asideHeight = this.asideEl.clientHeight;
+      const asideWidth = this.asideEl.clientWidth;
       const buttonElHeight = this.buttonEl.clientHeight;
+      const footerHeight = document.querySelector('.footer-operation').clientHeight;
 
-      imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
+      imageContainerHeight = `${asideWidth * 0.8}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
-      swipeHeight = `${(asideHeight * 0.9 - productHeight).toFixed(2)}px`;
+      productDescriptionHeight = `${windowHeight - asideWidth * 0.8 - productHeight + buttonElHeight - footerHeight}px`;
     }
 
     return (
@@ -534,7 +537,6 @@ class ProductDetail extends Component {
           className="product-description__image-container"
           style={{
             height: imageContainerHeight,
-            marginBottom: `-${imageContainerMarginBottom}`,
             ...resizeImageStyles,
           }}
         >
@@ -544,7 +546,6 @@ class ProductDetail extends Component {
               ref={ref => (this.swipeEl = ref)}
               continuous={images.length > 2 ? true : false}
               callback={this.handleSwipeProductImage.bind(this)}
-              style={{ height: swipeHeight }}
             >
               {images.map((imageItemUrl, key) => {
                 return (
@@ -556,19 +557,13 @@ class ProductDetail extends Component {
             </Swipe>
           ) : (
             <Image
-              style={{ height: swipeHeight }}
               src={images && images.length ? images[0] : null}
               scalingRatioIndex={1}
               alt={`${storeName} ${title}`}
             />
           )}
           {images && images.length > 1 ? (
-            <ul
-              className="product-description__dot-list text-center"
-              style={{
-                bottom: imageContainerMarginBottom,
-              }}
-            >
+            <ul className="product-description__dot-list text-center">
               {images.map((imageItemUrl, key) => {
                 const dotClassList = ['product-description__dot'];
 
@@ -610,11 +605,16 @@ class ProductDetail extends Component {
           </div>
           <article
             className="aside__section-container bottom"
-            style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
+            style={{
+              maxHeight: productDescriptionHeight,
+              overflowY: 'auto',
+            }}
           >
-            <p className="product-description__text gray-font-opacity">
-              {Boolean(descriptionStr) ? descriptionStr : t('NoProductDescription')}
-            </p>
+            {Boolean(descriptionStr) ? (
+              <p className="product-description__text gray-font-opacity" dangerouslySetInnerHTML={descriptionStr} />
+            ) : (
+              <p className="product-description__text gray-font-opacity">{t('NoProductDescription')}</p>
+            )}
           </article>
         </div>
       </div>
@@ -623,7 +623,8 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
-    const { product, show } = this.props;
+    const { product, viewAside, show } = this.props;
+    const { resizeImage } = this.state;
 
     if (show && product && product.id && !product._needMore) {
       className.push('active');
@@ -635,7 +636,12 @@ class ProductDetail extends Component {
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
       >
-        <div className="product-detail">
+        <div
+          className="product-detail"
+          style={{
+            opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
+          }}
+        >
           {this.renderVariations()}
 
           {this.renderProductOperator()}

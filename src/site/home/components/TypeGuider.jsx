@@ -13,6 +13,7 @@ class TypeGuider extends Component {
 
   redirectForm = React.createRef();
 
+  /* eslint-disable react/no-direct-mutation-state */
   componentDidUpdate(prevProps, prevState, snapshot) {
     // make auto redirect once store is closed
     if (this.props.deliveryUrl && !this.state.url && !this.props.isOpen) {
@@ -28,6 +29,7 @@ class TypeGuider extends Component {
       );
     }
   }
+  /* eslint-enable react/no-direct-mutation-state */
 
   handleHideTypeGuider(e) {
     const { onToggle } = this.props;
@@ -39,6 +41,7 @@ class TypeGuider extends Component {
     return onToggle();
   }
 
+  /* eslint-disable react/no-direct-mutation-state */
   handleGotoOrderingPage(url, action) {
     if (action) {
       this.setState({ url }, () => {
@@ -48,6 +51,7 @@ class TypeGuider extends Component {
       });
     }
   }
+  /* eslint-enable react/no-direct-mutation-state */
 
   renderLoading = () => {
     return (

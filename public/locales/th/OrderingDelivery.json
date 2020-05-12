@@ -2,7 +2,6 @@
   "StoreName": "ชื่อร้าน",
   "ContactInfo": "รายละเอียดการติดต่อ",
   "StoreAddress": "ที่อยู่ร้าน",
-  "OrderDetails": "รายละเอียดออร์เดอร์",
   "YourOrder": "ออร์เดอร์ของคุณ",
   "Total": "จำนวนเงินทั้งหมด",
   "Subtotal": "จำนวนเงิน",
@@ -14,7 +13,5 @@
   "OutOfDeliveryRangeWrongDistance": "ขออภัย พื้นที่อยู่นอกพื้นที่จัดส่ง ({{distance}} กิโลเมตร)",
   "SearchYourAddress": "ค้นหาที่อยู่ของคุณ",
   "DetectingLocation": "กำลังค้นหาพื้นที่...",
-  "LocationSharingIsOff": "ปิดการใช้งานแชร์พื้นที่",
-  "DeliveryTimeAndAddressTitle": "Delivery Time & Address",
-  "PickUpTimeAndAddressTitle": "Pickup Time & Address"
+  "LocationSharingIsOff": "ปิดการใช้งานแชร์พื้นที่"
 }

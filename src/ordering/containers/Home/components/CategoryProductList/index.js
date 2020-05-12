@@ -90,8 +90,7 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { t, categories, isVerticalMenu } = this.props;
-
+    const { categories, isVerticalMenu } = this.props;
     return (
       <div id="product-list" className="list__container">
         <ScrollObserver
@@ -118,11 +117,11 @@ class CategoryProductList extends Component {
             return (
               <h2 className="category__header fixed flex flex-middle flex-space-between">
                 <label>{target.name || ''}</label>
-                {target.cartQuantity ? (
+                {/* {target.cartQuantity ? (
                   <span className="gray-font-opacity">
                     {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
                   </span>
-                ) : null}
+                ) : null} */}
               </h2>
             );
           }}
@@ -133,11 +132,6 @@ class CategoryProductList extends Component {
               <ScrollObservable targetId={category.id} key={category.id}>
                 <h2 className="category__header flex flex-middle flex-space-between">
                   <label>{category.name}</label>
-                  {category.cartQuantity ? (
-                    <span className="gray-font-opacity">
-                      {t('CartItemsInCategory', { cartQuantity: category.cartQuantity })}
-                    </span>
-                  ) : null}
                 </h2>
                 <ul className="list">
                   {(category.products || []).map(product => (

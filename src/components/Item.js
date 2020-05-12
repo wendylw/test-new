@@ -19,7 +19,7 @@ export class Item extends Component {
       productDetailImageRef,
       hasTag,
     } = this.props;
-    const classList = ['item border__bottom-divider'];
+    const classList = ['item border__bottom-divider item-padding'];
     const contentClassList = ['item__content flex'];
 
     if (className) {
@@ -41,7 +41,9 @@ export class Item extends Component {
                   <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
                 </div>
               ) : null}
-              <summary className="item__title font-weight-bolder">{title}</summary>
+              <summary className="item__title font-weight-bolder">
+                <span className="item__title-productName">{title}</span>
+              </summary>
               {variation ? <p className="item__description">{variation}</p> : null}
             </div>
             {detail}
