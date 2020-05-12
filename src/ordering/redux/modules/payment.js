@@ -28,6 +28,7 @@ const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
+  unavailablePaymentList: [],
 };
 
 export const types = {
@@ -347,6 +348,8 @@ export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
+
+export const getUnavailablePaymentList = state => state.payment.unavailablePaymentList;
 
 export const getPayments = createSelector(
   [getBusiness, getMerchantCountry, getAllPaymentOptions, getCartSummary],

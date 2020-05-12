@@ -19,6 +19,7 @@ import {
   getPayments,
   getDefaultPayment,
   getCurrentPaymentInfo,
+  getUnavailablePaymentList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import { getPaymentName, getSupportCreditCardBrands } from './utils';
@@ -140,7 +141,7 @@ class Payment extends Component {
   };
 
   render() {
-    const { t, currentPayment, payments } = this.props;
+    const { t, currentPayment, payments, unavailablePaymentList } = this.props;
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -157,20 +158,29 @@ class Payment extends Component {
         <div>
           <ul className="payment__list">
             {payments.map(payment => {
+              const classList = ['payment__item border__bottom-divider flex flex-middle flex-space-between'];
+
               if (!payment) {
                 return null;
+              }
+
+              if (unavailablePaymentList.find(payment => payment === payment.label)) {
+                classList.push('disabled');
               }
 
               return (
                 <li
                   key={payment.label}
-                  className="payment__item border__bottom-divider flex flex-middle flex-space-between"
+                  className={classList.join(' ')}
                   onClick={() => this.setCurrentPayment(payment.label)}
                 >
                   <figure className="payment__image-container">
                     <PaymentLogo payment={payment} />
                   </figure>
-                  <label className="payment__name font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
+                  <div className="payment__name">
+                    <label className="font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
+                    {payment.disabled ? <span className="payment__prompt">Temporarily Unavailable</span> : null}
+                  </div>
                   <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
                     <input type="radio"></input>
@@ -228,6 +238,7 @@ export default compose(
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        unavailablePaymentList: getUnavailablePaymentList(state),
         merchantCountry: getMerchantCountry(state),
       };
     },
