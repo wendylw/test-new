@@ -71,7 +71,7 @@ export class OrderDetails extends Component {
     return (
       <li className="item flex flex-space-between flex-middle">
         <span className="gray-font-opacity">
-          {t('Voucher')} ({promotion.promoCode})
+          {t(promotion.promoType)} ({promotion.promoCode})
         </span>
         <CurrencyNumber className="gray-font-opacity" money={-promotion.discount} />
       </li>

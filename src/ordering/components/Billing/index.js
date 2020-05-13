@@ -35,7 +35,7 @@ export class Billing extends Component {
       <li className="billing__item flex flex-middle flex-space-between">
         <label className="flex flex-middle">
           <span className="font-weight-bolder">
-            {t('Voucher')} ({promotion.promoCode})
+            {t(promotion.promoType)} ({promotion.promoCode})
           </span>
         </label>
         <span className="text-nowrap">

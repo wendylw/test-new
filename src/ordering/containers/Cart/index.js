@@ -242,7 +242,7 @@ class Cart extends Component {
               <div className="promotion-info__container">
                 <div className="promotion-code__container flex flex-middle text-nowrap">
                   <span className="promotion-code font-weight-bolder">
-                    {t('Voucher')} ({this.showShortPromoCode()})
+                    {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button onClick={this.handleDismissPromotion} className="dismiss__button">
                     <IconClose className="icon" />
