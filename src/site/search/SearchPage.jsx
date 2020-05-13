@@ -17,10 +17,9 @@ import {
   getShippingType,
   getPageInfo,
   getSearchInfo,
-  getCoords,
   loadedSearchingStores,
 } from '../redux/modules/search';
-import { getPlaceInfo, readPlaceInfo, submitStoreMenu } from '../home/utils';
+import { submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { rootActionCreators } from '../redux/modules';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
@@ -39,8 +38,6 @@ class SearchPage extends React.Component {
   }
 
   componentDidMount = async () => {
-    const placeInfoFromStorage = readPlaceInfo();
-    this.props.searchActions.setCoords(placeInfoFromStorage.coords);
     if (!(this.isRestoreFromStorage && SearchPage.isFirstRender)) {
       this.props.searchActions.setShippingType('delivery');
       this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
@@ -169,7 +166,6 @@ export default compose(
   withTranslation(),
   connect(
     state => ({
-      coords: getCoords(state),
       pageInfo: getPageInfo(state),
       stores: getStoreList(state),
       shippingType: getShippingType(state),

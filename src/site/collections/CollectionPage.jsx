@@ -12,7 +12,7 @@ import {
   getStoreList,
   getShippingType,
 } from '../redux/modules/collections';
-import { readPlaceInfo, submitStoreMenu } from '../home/utils';
+import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
@@ -35,14 +35,12 @@ class CollectionPage extends React.Component {
   componentDidMount = async () => {
     const { currentCollection } = this.props;
 
-    const placeInfoFromStorage = readPlaceInfo();
     if (!(this.isRestoreFromStorage && CollectionPage.isFirstRender)) {
       const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
       this.props.collectionsActions.setShippingType(shippingType);
       this.props.collectionsActions.resetPageInfo(shippingType);
     }
     CollectionPage.isFirstRender = false;
-    this.props.collectionsActions.setCoords(placeInfoFromStorage.coords);
     this.props.collectionsActions.getStoreList(currentCollection.tags);
   };
 
