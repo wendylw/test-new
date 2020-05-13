@@ -563,12 +563,7 @@ class ProductDetail extends Component {
             />
           )}
           {images && images.length > 1 ? (
-            <ul
-              className="product-description__dot-list text-center"
-              style={{
-                bottom: imageContainerMarginBottom,
-              }}
-            >
+            <ul className="product-description__dot-list text-center">
               {images.map((imageItemUrl, key) => {
                 const dotClassList = ['product-description__dot'];
 
