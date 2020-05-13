@@ -57,7 +57,7 @@ class Home extends React.Component {
 
   componentDidMount = async () => {
     const { history, location } = this.props;
-    const { placeInfo, source } = await getPlaceInfo(this.props);
+    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 
     // if no placeInfo at all
     if (!placeInfo) {

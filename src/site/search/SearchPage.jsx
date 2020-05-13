@@ -24,6 +24,7 @@ import { getPlaceInfo, readPlaceInfo, submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { rootActionCreators } from '../redux/modules';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
+import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 
 class SearchPage extends React.Component {
   static isFirstRender = true;
@@ -38,18 +39,7 @@ class SearchPage extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { currentPlaceInfo } = this.props;
-    if (!currentPlaceInfo) {
-      const { placeInfo } = await getPlaceInfo(this.props);
-      // if no placeInfo at all
-      if (!placeInfo) {
-        return this.gotoLocationPage();
-      }
-      // placeInfo ok
-      this.props.appActions.setCurrentPlaceInfo(placeInfo);
-    }
-
-    const placeInfoFromStorage = await readPlaceInfo();
+    const placeInfoFromStorage = readPlaceInfo();
     this.props.searchActions.setCoords(placeInfoFromStorage.coords);
     if (!(this.isRestoreFromStorage && SearchPage.isFirstRender)) {
       this.props.searchActions.setShippingType('delivery');
@@ -175,6 +165,7 @@ class SearchPage extends React.Component {
 }
 
 export default compose(
+  withPlaceInfo(),
   withTranslation(),
   connect(
     state => ({

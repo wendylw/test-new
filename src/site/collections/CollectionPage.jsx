@@ -12,12 +12,13 @@ import {
   getStoreList,
   getShippingType,
 } from '../redux/modules/collections';
-import { getPlaceInfo, readPlaceInfo, submitStoreMenu } from '../home/utils';
+import { readPlaceInfo, submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import '../home/index.scss';
 import './CollectionPage.scss';
+import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 
 class CollectionPage extends React.Component {
   static isFirstRender = true;
@@ -32,23 +33,9 @@ class CollectionPage extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { currentPlaceInfo, currentCollection } = this.props;
+    const { currentCollection } = this.props;
 
-    if (!currentPlaceInfo) {
-      const { placeInfo } = await getPlaceInfo(this.props);
-      // if no placeInfo at all
-      if (!placeInfo) {
-        return this.gotoLocationPage();
-      }
-      // placeInfo ok
-      this.props.appActions.setCurrentPlaceInfo(placeInfo);
-    }
-    const placeInfoFromStorage = await readPlaceInfo();
-    if (!placeInfoFromStorage) {
-      console.error('[CollectionPage] no coords found. Back to home.');
-      this.goBackHome();
-      return;
-    }
+    const placeInfoFromStorage = readPlaceInfo();
     if (!(this.isRestoreFromStorage && CollectionPage.isFirstRender)) {
       const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
       this.props.collectionsActions.setShippingType(shippingType);
@@ -160,6 +147,7 @@ class CollectionPage extends React.Component {
 }
 
 export default compose(
+  withPlaceInfo(),
   withTranslation('SiteHome'),
   connect(
     (state, ownProps) => ({
