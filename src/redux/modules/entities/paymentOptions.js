@@ -42,6 +42,11 @@ const initialState = {
       logo: 'paymentGcashImage',
       label: PAYMENT_METHOD_LABELS.GCASH_PAY,
     },
+    Line: {
+      key: 'Line',
+      logo: 'paymentLineImage',
+      label: PAYMENT_METHOD_LABELS.LINE_PAY,
+    },
   },
 };
 
