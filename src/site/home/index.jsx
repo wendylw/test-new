@@ -315,11 +315,9 @@ class Home extends React.Component {
             />
           )}
 
-          {countryCode.toUpperCase() === 'MY' && (
-            <Suspense fallback={null}>
-              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
-            </Suspense>
-          )}
+          <Suspense fallback={null}>
+            <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
+          </Suspense>
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
