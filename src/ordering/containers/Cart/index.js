@@ -272,8 +272,9 @@ class Cart extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
-    const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
-    const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
+    const isInvalidTotal =
+      (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
+    const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
 
     const buttonText = !isInvalidTotal ? (
       t('Pay')

@@ -61,7 +61,6 @@ class StoreList extends Component {
             searchingTags,
             locale,
             currency,
-            isOutOfDeliveryRange,
             enableFreeShipping,
             enableCashback,
             enablePreOrder,

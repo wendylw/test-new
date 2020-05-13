@@ -1,0 +1,17 @@
+{
+  "StoreName": "ชื่อร้าน",
+  "ContactInfo": "รายละเอียดการติดต่อ",
+  "StoreAddress": "ที่อยู่ร้าน",
+  "YourOrder": "ออร์เดอร์ของคุณ",
+  "Total": "จำนวนเงินทั้งหมด",
+  "Subtotal": "จำนวนเงิน",
+  "Tax": "ภาษี",
+  "DeliveryCharge": "ค่าบริการจัดส่ง",
+  "FailToLoadStoreInfo": "การโหลดข้อมูลร้านล้มเหลว กรุณาลองใหม่อีกครั้ง",
+  "FailToGetPlaceInfo": "การโหลดข้อมูลร้านล้มเหลว กรุณาลองใหม่อีกครั้ง",
+  "OutOfDeliveryRange": "ขออภัย พื้นที่ที่คุณเลือกอยู่นอกพื้นที่จัดส่ง ({{distance}} กิโลเมตร)",
+  "OutOfDeliveryRangeWrongDistance": "ขออภัย พื้นที่อยู่นอกพื้นที่จัดส่ง ({{distance}} กิโลเมตร)",
+  "SearchYourAddress": "ค้นหาที่อยู่ของคุณ",
+  "DetectingLocation": "กำลังค้นหาพื้นที่...",
+  "LocationSharingIsOff": "ปิดการใช้งานแชร์พื้นที่"
+}

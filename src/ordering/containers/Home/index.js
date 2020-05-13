@@ -27,11 +27,11 @@ import {
   isVerticalMenuBusiness,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import PopUpMessage from './components/PopUpMessage';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
+import locationIcon from '../../../images/Pin.svg';
 
 const localState = {
   blockScrollTop: 0,
@@ -41,6 +41,13 @@ const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
   state = {
     viewAside: null,
+    dScrollY: 0,
+  };
+  handleScroll = () => {
+    const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+    this.setState({
+      dScrollY: documentScrollY,
+    });
   };
 
   get navBackUrl() {
@@ -68,7 +75,13 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     homeActions.loadProductList();
+
+    window.addEventListener('scroll', this.handleScroll);
   };
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
 
   // Remove user previously selected delivery/pickup time from session
   // Just in case the previous one they select is delivery and the new one is pickup
@@ -165,9 +178,16 @@ export class Home extends Component {
       this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
     }
 
-    this.setState({
-      viewAside: asideName,
-    });
+    if (asideName === Constants.ASIDE_NAMES.CART && this.state.viewAside === Constants.ASIDE_NAMES.CART) {
+      this.setState({
+        viewAside: null,
+      });
+      this.toggleBodyScroll(false);
+    } else {
+      this.setState({
+        viewAside: asideName,
+      });
+    }
   }
 
   renderDeliverToBar() {
@@ -221,7 +241,11 @@ export class Home extends Component {
                 {Utils.isPickUpType() && t('PickUpOn')}
               </summary>
               {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address gray-font-opacity">{deliveryToAddress}</p>
+                <p className="location-page__entry-address">
+                  {' '}
+                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+                  {deliveryToAddress}
+                </p>
               ) : null}
               {this.renderDeliveryDate()}
             </div>
@@ -266,7 +290,7 @@ export class Home extends Component {
     return (
       <div className="location-page__entry-address pick-up flex flex-middle">
         {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
-        <p className="gray-font-opacity">{deliveryTimeText}</p>
+        <p>{deliveryTimeText}</p>
       </div>
     );
   };
@@ -344,33 +368,6 @@ export class Home extends Component {
     );
   }
 
-  renderProOrderConfirmModal = () => {
-    const { popUpModal, t, deliveryInfo } = this.props;
-    const { validTimeFrom, validTimeTo } = deliveryInfo;
-
-    if (this.isPreOrderEnabled() && !this.isValidTimeToOrder() && !popUpModal.userConfirmed) {
-      return (
-        <PopUpMessage
-          title={t('PreOrderConfirmModalTitle')}
-          description={t('PreOrderConfirmModalDescription', {
-            validTimeFrom: Utils.formatTimeWithColon(validTimeFrom),
-            validTimeTo: Utils.formatTimeWithColon(validTimeTo),
-          })}
-          containerClass="pre-order__modal"
-          button={
-            <button
-              className="button button__fill button__block font-weight-bolder border-radius-base text-uppercase"
-              onClick={this.props.homeActions.userConfirmPreOrder}
-            >
-              {t('Okay')}
-            </button>
-          }
-        />
-      );
-    }
-    return null;
-  };
-
   render() {
     const {
       categories,
@@ -399,6 +396,7 @@ export class Home extends Component {
     const { viewAside } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
+    const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -407,12 +405,14 @@ export class Home extends Component {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
-
     return (
       <section className={classList.join(' ')}>
         {this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        {enableConditionalFreeShipping &&
+        freeShippingMinAmount &&
+        Utils.isDeliveryType() &&
+        this.state.dScrollY < adBarHeight ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
@@ -421,6 +421,7 @@ export class Home extends Component {
             </Trans>
           </div>
         ) : null}
+
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
           isVerticalMenu={isVerticalMenu}
@@ -470,7 +471,6 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-        {this.renderProOrderConfirmModal()}
       </section>
     );
   }

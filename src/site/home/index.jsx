@@ -251,7 +251,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, searchInfo, storeCollections, storeLinkInfo } = this.props;
+    const { t, currentPlaceInfo, searchInfo, storeCollections } = this.props;
     const { keyword } = searchInfo;
 
     if (!currentPlaceInfo) {
