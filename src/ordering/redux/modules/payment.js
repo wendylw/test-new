@@ -350,7 +350,10 @@ export const getUnavailablePayments = state => {
   const { total } = getCartSummary(state);
   const unavailablePayments = getUnavailablePaymentList();
 
-  if (total < process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL && !unavailablePayments.includes('onlineBanking')) {
+  if (
+    total < parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) &&
+    !unavailablePayments.includes('onlineBanking')
+  ) {
     return [...unavailablePayments, 'onlineBanking'];
   }
 
