@@ -18,9 +18,9 @@ import {
   getBusinessInfo,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
-
 import beepSuccessImage from '../../../images/beep-success.png';
-import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+// import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+import beepPickupSuccessImage from '../../../images/beep-pickup-1.png';
 // import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
 // import beepOnTheWay from '../../../images/beep-on-the-way.svg';
 // import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
@@ -32,6 +32,7 @@ import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
+
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -157,10 +158,29 @@ export class ThankYou extends PureComponent {
       search: window.location.search,
     });
   };
-
+  renderCashbackUI = cashback => {
+    const { t } = this.props;
+    return (
+      <div className="thanks__delivery-status-container">
+        <CurrencyNumber
+          className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+          money={cashback || 0}
+        />
+        <h3 className="flex flex-middle flex-center">
+          <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+            {t('EarnedCashBackTitle')}
+          </span>
+          <img src={IconCelebration} alt="Beep Celebration" />
+        </h3>
+        <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
+      </div>
+    );
+  };
   renderPickupInfo() {
-    const { t, order } = this.props;
+    const { t, order, businessInfo, cashbackInfo } = this.props;
     const { tableId, pickUpId } = order || {};
+    const { enableCashback } = businessInfo || {};
+    const { cashback } = cashbackInfo || {};
 
     if (tableId) {
       return null;
@@ -174,8 +194,16 @@ export class ThankYou extends PureComponent {
             {pickUpId}
           </span>
         </div>
+        {enableCashback ? this.renderCashbackUI(cashback) : null}
       </div>
     );
+  }
+
+  renderPreOrderDeliveryInfo() {
+    const { businessInfo, cashbackInfo } = this.props;
+    const { enableCashback } = businessInfo || {};
+    const { cashback } = cashbackInfo || {};
+    return enableCashback ? this.renderCashbackUI(cashback) : null;
   }
 
   renderNeedReceipt() {
@@ -417,21 +445,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback ? (
-          <div className="thanks__delivery-status-container">
-            <CurrencyNumber
-              className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
-              money={cashback || 0}
-            />
-            <h3 className="flex flex-middle flex-center">
-              <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
-                {t('EarnedCashBackTitle')}
-              </span>
-              <img src={IconCelebration} alt="Beep Celebration" />
-            </h3>
-            <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
-          </div>
-        ) : null}
+        {enableCashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
@@ -457,29 +471,41 @@ export class ThankYou extends PureComponent {
 
     return (
       <div className="thanks__delivery-info text-left">
-        {isPickUpType && isPreOrder ? (
-          <div className="thanks__pickup">
-            <label className="thanks__text font-weight-bolder">{t('PickupAt')}</label>
-            <p className="thanks__pickup-time gray-font-opacity">{pickupTime}</p>
-          </div>
-        ) : null}
-
         <div className="flex flex-middle flex-space-between">
           <label className="font-weight-bolder text-size-big">{name}</label>
-          {isPickUpType ? (
+          {isPickUpType && !isPreOrder ? (
             <div>
               <span className="thanks__text">{t('Total')}</span>
               <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
             </div>
           ) : null}
         </div>
+
+        {isPickUpType && isPreOrder ? (
+          <div className="thanks__pickup margin-bottom-zero ">
+            <h4 className="thanks__delivering-title font-weight-bolder">{t('PickUpOn')}</h4>
+            <p className="thanks__address-pin flex flex-middle">
+              <i className="thanks__pin-icon">
+                <IconAccessTime />
+              </i>
+              <span>{pickupTime}</span>
+            </p>
+          </div>
+        ) : null}
+
         {isDeliveryType ? <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4> : null}
+
+        {isPickUpType && isPreOrder ? (
+          <h4 className="thanks__delivering-title font-weight-bolder margin-top-zero">{t('PickupAt')}</h4>
+        ) : null}
+
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
           <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
+
         <div className="thanks__total-container text-center">
           <span className="thanks__total-text">{t('Total')}</span>
           <CurrencyNumber className="thanks__total-text font-weight-bolder" money={total || 0} />
@@ -608,7 +634,7 @@ export class ThankYou extends PureComponent {
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepOrderStatusPaid}`}
+            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPickupSuccessImage}`}
             alt="Beep Success"
           />
         ) : (
@@ -633,6 +659,15 @@ export class ThankYou extends PureComponent {
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
+  renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType }) {
+    if (isPreOrder && isDeliveryType) return null;
+    const { t } = this.props;
+    return (
+      <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
+        {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
+      </h4>
+    );
+  }
   render() {
     const { t, history, match, order, storeHashCode } = this.props;
     const date = new Date();
@@ -643,6 +678,7 @@ export class ThankYou extends PureComponent {
     const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
+    const { isPreOrder } = order || {};
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
@@ -705,12 +741,12 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
+            {isDeliveryType ? null : this.renderPickupInfo()}
+            {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
-            <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
-              {t('OrderDetails')}
-            </h4>
+            {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
+
             <div className="thanks__info-container">
-              {isDeliveryType ? null : this.renderPickupInfo()}
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
               <PhoneLogin isDeliveryType={isDeliveryType} history={history} />
