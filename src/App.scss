@@ -3610,7 +3610,7 @@ body.loading {
 .alcohol-modal {
   .modal__content {
     margin-top: 10px;
-    max-width: 86%;
+    max-width: 88%;
   }
   footer {
     margin-bottom: 20px;
@@ -3621,6 +3621,7 @@ body.loading {
   }
   &__title {
     font-size: 20px;
+    font-weight: bold;
     line-height: 28px;
     color: #25272c;
     margin-bottom: 10px;
