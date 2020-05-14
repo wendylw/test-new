@@ -1,4 +1,7 @@
 import { APP_TYPES, HOME_TYPES } from '../../../ordering/redux/types';
+import Constants from '../../../utils/constants';
+
+const { PROMO_TYPE } = Constants;
 
 const initialState = {
   summary: {
@@ -19,7 +22,7 @@ const commonReducer = (state = initialState, action) => {
       return state;
     }
 
-    const { items, unavailableItems, voucher, ...summary } = action.response;
+    const { items, unavailableItems, voucher, displayPromotions, ...summary } = action.response;
 
     // promotion & voucher
     let promotion = null;
@@ -29,6 +32,15 @@ const commonReducer = (state = initialState, action) => {
         status: voucher.status,
         discount: voucher.value,
         validFrom: new Date(voucher.validFrom),
+        promoType: PROMO_TYPE.VOUCHER,
+      };
+    } else if (displayPromotions && displayPromotions.length) {
+      const displayPromotion = displayPromotions[0];
+      promotion = {
+        promoCode: displayPromotion.promotionCode,
+        discount: displayPromotion.displayDiscount,
+        promoType: PROMO_TYPE.PROMOTION,
+        status: displayPromotion.status,
       };
     }
     // Only deal with response.data.shoppingCart

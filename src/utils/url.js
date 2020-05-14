@@ -105,11 +105,19 @@ const API_URLS = {
     url: '/api/stores/search',
     method: 'get',
   },
-  APPLY_PROMOTION_CODE: {
+  APPLY_VOUCHER_CODE: {
     url: '/api/cart/applyVoucher',
     method: 'post',
   },
+  APPLY_PROMOTION_CODE: {
+    url: '/api/cart/applyPromoCode',
+    method: 'post',
+  },
   DISMISS_PROMOTION_CODE: {
+    url: '/api/cart/removePromoCode',
+    method: 'post',
+  },
+  DISMISS_VOUCHER_CODE: {
     url: '/api/cart/unApplyVoucher',
     method: 'post',
   },

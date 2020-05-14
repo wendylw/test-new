@@ -80,9 +80,11 @@ class Cart extends Component {
   }
 
   handleClickBack = () => {
+    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: window.location.search,
+      // search: window.location.search,
+      search: newSearchParams,
     });
   };
 
@@ -242,7 +244,7 @@ class Cart extends Component {
               <div className="promotion-info__container">
                 <div className="promotion-code__container flex flex-middle text-nowrap">
                   <span className="promotion-code font-weight-bolder">
-                    {t('Voucher')} ({this.showShortPromoCode()})
+                    {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button onClick={this.handleDismissPromotion} className="dismiss__button">
                     <IconClose className="icon" />

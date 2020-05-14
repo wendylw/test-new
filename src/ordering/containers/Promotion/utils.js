@@ -16,6 +16,13 @@ export function getErrorMessageByPromoStatus({ status, validFrom }) {
       return i18next.t('OrderingPromotion:Expired');
     case PROMOTION_APPLIED_STATUS.NOT_START:
       return i18next.t('OrderingPromotion:NotStart', { date: toISODateString(validFrom) });
+    case PROMOTION_APPLIED_STATUS.NOT_AVAILABLE:
+      return i18next.t('OrderingPromotion:NotAvailable');
+    case PROMOTION_APPLIED_STATUS.NOT_VALID:
+      return i18next.t('OrderingPromotion:NotValid');
+    case PROMOTION_APPLIED_STATUS.NOT_EXISTED:
+    case PROMOTION_APPLIED_STATUS.UNKNOWN_DISCOUNT_TYPE:
+      return i18next.t('OrderingPromotion:NotExisted');
     case PROMOTION_APPLIED_STATUS.INVALID:
     default:
       return i18next.t('OrderingPromotion:Invalid');
