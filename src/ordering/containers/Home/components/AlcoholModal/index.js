@@ -45,10 +45,10 @@ export class AlcoholModal extends PureComponent {
             </button>
           </div>
           <div className="alcohol-modal__policy">
-            <Trans i18nKey="TermsAndPrivacyDescription">
-              By tapping to continue, you agree to our
-              <br />
-              <BrowserRouter basename="/">
+            <BrowserRouter basename="/">
+              <Trans i18nKey="TermsAndPrivacyDescription">
+                By tapping to continue, you agree to our
+                <br />
                 <Link
                   className="font-weight-bolder link__non-underline"
                   target="_blank"
@@ -65,8 +65,8 @@ export class AlcoholModal extends PureComponent {
                   Privacy Policy
                 </Link>
                 .
-              </BrowserRouter>
-            </Trans>
+              </Trans>
+            </BrowserRouter>
           </div>
         </Modal.Footer>
       </Modal>
