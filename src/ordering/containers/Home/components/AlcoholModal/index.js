@@ -49,11 +49,19 @@ export class AlcoholModal extends PureComponent {
               By tapping to continue, you agree to our
               <br />
               <BrowserRouter basename="/">
-                <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+                <Link
+                  className="font-weight-bolder link__non-underline"
+                  target="_blank"
+                  to={Constants.ROUTER_PATHS.TERMS_OF_USE}
+                >
                   Terms of Service
                 </Link>
                 , and{' '}
-                <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+                <Link
+                  className="font-weight-bolder link__non-underline"
+                  target="_blank"
+                  to={Constants.ROUTER_PATHS.PRIVACY}
+                >
                   Privacy Policy
                 </Link>
                 .

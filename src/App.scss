@@ -3609,28 +3609,25 @@ body.loading {
 
 .alcohol-modal {
   .modal__content {
+    margin-top: 10px;
     max-width: 86%;
   }
   footer {
     margin-bottom: 20px;
   }
   &__image {
-    width: 40%;
+    max-width: 40vw;
     margin: 0 auto;
   }
   &__title {
-    font-size: 16px;
+    font-size: 20px;
     line-height: 28px;
     color: #25272c;
-    font-family: "Roboto";
-    font-weight: bolder;
     margin-bottom: 10px;
   }
   &__content {
     line-height: 20px;
     color: #303030;
-    font-size: 14px;
-    line-height: 22px;
     font-family: inherit;
   }
   &__buttons {
@@ -3642,7 +3639,6 @@ body.loading {
       border-radius: 5px;
       margin: 0 10px;
       font-size: 14px;
-      font-family: "Roboto";
       font-weight: bolder;
     }
     .active {
@@ -3652,12 +3648,9 @@ body.loading {
     }
   }
   &__policy {
-    margin: 10px 50px 0 50px;
+    margin: 10px auto;
     text-align: center;
     color: #8f9092;
-    font-family: Roboto;
-    font-size: 12px;
-    font-weight: 500;
     line-height: 22px;
   }
 
