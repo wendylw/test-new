@@ -8,5 +8,12 @@
   "MinMaximumChoicesDescription": "Select minimum of {{minSelectionAmount}} and maximum of {{maxSelectionAmount}} choices",
   "StoreOffline": "STORE OFFLINE",
   "PreOrderConfirmModalTitle": "We’re closed for now, but you can still order!",
-  "PreOrderConfirmModalDescription": "Our opening hours are from {{validTimeFrom}} to {{validTimeTo}}. But you can browse the menu & pre-order instead!"
+  "PreOrderConfirmModalDescription": "Our opening hours are from {{validTimeFrom}} to {{validTimeTo}}. But you can browse the menu & pre-order instead!",
+  "CheckIfDrinkingAge": "Are you of legal drinking age?",
+  "AlcoholLimitationsMY": "Our alcohol products can only be purchased by non-Muslims aged 21 years old and above.",
+  "AlcoholLimitationsPH": "Our alcohol products can only be purchased by persons aged 18 years old and above.",
+  "AlcoholNo": "NO, I AM NOT",
+  "AlcoholYes": "YES, I AM",
+  "AlcoholDenied": "Access Denied",
+  "AlcoholNotAllowed": "You are not allowed to browse the content of this site"
 }

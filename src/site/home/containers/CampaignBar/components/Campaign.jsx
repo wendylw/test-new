@@ -69,6 +69,8 @@ class Campaign extends Component {
                       </ol>
                     </div>
                   );
+                } else {
+                  return null;
                 }
               })}
             </article>

@@ -251,7 +251,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, searchInfo, storeCollections, storeLinkInfo } = this.props;
+    const { t, currentPlaceInfo, searchInfo, storeCollections } = this.props;
     const { keyword } = searchInfo;
 
     if (!currentPlaceInfo) {
@@ -315,9 +315,11 @@ class Home extends React.Component {
             />
           )}
 
-          <Suspense fallback={null}>
-            <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
-          </Suspense>
+          {countryCode.toUpperCase() === 'MY' && (
+            <Suspense fallback={null}>
+              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
+            </Suspense>
+          )}
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}

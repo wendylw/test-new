@@ -13,6 +13,11 @@ $gray-2: #909090;
 $gray-3: #dededf;
 $gray-4: #efefef;
 $gray-5: #fafafa;
+$gray-6: #f4f4f4;
+$gray-7: #707070;
+$gray-8: #dededf;
+$gray-9: #8f9092;
+$gray-10: #eff2f3;
 $blue: #31728d;
 $link-blue: #2196f3;
 $theme-color: #ff9419;
@@ -87,6 +92,30 @@ button {
 
 img {
   max-width: 100%;
+}
+
+.text-size-huge {
+  font-size: 2.1428rem;
+}
+
+.text-size-biggest {
+  font-size: 1.4285rem;
+}
+
+.text-size-bigger {
+  font-size: 1.2857rem;
+}
+
+.text-size-big {
+  font-size: 1.1428rem;
+}
+
+.text-size-small {
+  font-size: 0.8571rem;
+}
+
+.text-size-smaller {
+  font-size: 0.7142rem;
 }
 
 .hide {
@@ -178,6 +207,23 @@ form {
     &__container {
       margin: 10px 0;
     }
+  }
+}
+
+.progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: $theme-color;
+
+  &.not-on-way {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &__container {
+    width: 100%;
+    height: 8px;
+    background-color: $gray-4;
   }
 }
 

@@ -71,7 +71,7 @@ export class OrderDetails extends Component {
     return (
       <li className="item flex flex-space-between flex-middle">
         <span className="gray-font-opacity">
-          {t('Voucher')} ({promotion.promoCode})
+          {t(promotion.promoType)} ({promotion.promoCode})
         </span>
         <CurrencyNumber className="gray-font-opacity" money={-promotion.discount} />
       </li>
@@ -97,8 +97,8 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <button className="gray-font-opacity" onClick={this.handleNeedHelp}>
-            <span data-testid="thanks__self-pickup">{`${t('ContactUs')}?`}</span>
+          <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+            <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
           </button>
         </Header>
         <div className="order-detail__info-container">

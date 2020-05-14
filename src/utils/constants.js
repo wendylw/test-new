@@ -73,6 +73,7 @@ const PAYMENT_METHOD_LABELS = {
   BOOST_PAY: 'Boost',
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
+  LINE_PAY: 'Line',
 };
 
 const CREDIT_CARD_BRANDS = {
@@ -173,16 +174,27 @@ const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const PROMOTION_APPLIED_STATUS = {
   VALID: 'valid',
+  // Voucher status
   REDEEMED: 'redeemed',
   NOT_MATCH_MINIMUM_PURCHASE: 'lessThanMinSpeed',
   EXPIRED: 'expired',
   NOT_START: 'beforeValid',
   INVALID: 'invalid',
+  // Promotion status
+  NOT_AVAILABLE: 'not_available',
+  NOT_VALID: 'not_valid',
+  NOT_EXISTED: 'not_existed',
+  UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
 };
 
 const PREORDER_IMMEDIATE_TAG = {
   from: 'now',
   to: 'now',
+};
+
+const PROMO_TYPE = {
+  PROMOTION: 'Promotion',
+  VOUCHER: 'Voucher',
 };
 
 export default {
@@ -213,4 +225,5 @@ export default {
   WEEK_DAYS_I18N_KEYS,
   PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
+  PROMO_TYPE,
 };

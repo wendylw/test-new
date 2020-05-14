@@ -8,6 +8,8 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
 
+const { PROMO_TYPE } = Constants;
+
 const initialState = {
   orderId: null,
   cashbackInfo: null /* included: customerId, consumerId, status */,
@@ -139,6 +141,14 @@ export const getPromotion = state => {
     return {
       promoCode: order.appliedVoucher.voucherCode,
       discount: order.appliedVoucher.value,
+      promoType: PROMO_TYPE.VOUCHER,
+    };
+  } else if (order && order.displayPromotions && order.displayPromotions.length) {
+    const appliedPromo = order.displayPromotions[0];
+    return {
+      promoCode: appliedPromo.promotionCode,
+      discount: appliedPromo.displayDiscount,
+      promoType: PROMO_TYPE.PROMOTION,
     };
   } else {
     return null;

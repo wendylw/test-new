@@ -39,18 +39,20 @@ export class Footer extends Component {
         (Utils.isPickUpType() && (!date.date || !hour.from))
       ) {
         const { search } = window.location;
+        const newSearch = Utils.removeParam('pageRefer', search);
 
-        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${search}`);
+        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${newSearch}`);
 
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-          search: `${search}&callbackUrl=${callbackUrl}`,
+          search: `${newSearch}&callbackUrl=${callbackUrl}`,
         });
         return;
       }
     }
+    const newSearchParams = Utils.removeParam('pageRefer', window.location.search);
 
-    return history && history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: window.location.search });
+    return history && history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: newSearchParams });
   };
 
   render() {
@@ -68,7 +70,6 @@ export class Footer extends Component {
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
-
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
         <div className="cart-bar has-products flex flex-middle flex-space-between">
@@ -80,7 +81,7 @@ export class Footer extends Component {
 
             <div className="cart-bar__money text-middle text-left">
               <CurrencyNumber className="font-weight-bolder" money={this.getDisplayPrice() || 0} />
-              {this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
+              {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="cart-bar__money-minimum">
                   {count ? (
                     <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
@@ -107,7 +108,8 @@ export class Footer extends Component {
             <button
               className="cart-bar__order-button"
               disabled={
-                this.getDisplayPrice() < Number(minimumConsumption || 0) ||
+                (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
+                (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||
                 (!isValidTimeToOrder && !enablePreOrder) ||
                 !isLiveOnline
               }

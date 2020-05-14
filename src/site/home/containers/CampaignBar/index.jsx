@@ -7,7 +7,7 @@ import dataSource from './dataSource';
 const CampaignBar = ({ countryCode, onToggle = () => {} }) => {
   // for further from redux state
   const defaultCampaign = dataSource[0];
-  const [currentCampaign, setCurrentCampaign] = useState(defaultCampaign);
+  const [currentCampaign] = useState(defaultCampaign);
 
   if (countryCode.toUpperCase() === 'MY') {
     return <Campaign campaign={currentCampaign} onToggle={onToggle} />;

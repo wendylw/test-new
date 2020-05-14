@@ -6,13 +6,14 @@ import { getPromotion } from '../../../redux/modules/entities/carts';
 import { actions as appActions } from './app';
 import i18next from 'i18next';
 
-const { PROMOTION_APPLIED_STATUS } = Constants;
+const { PROMOTION_APPLIED_STATUS, PROMO_TYPE } = Constants;
 
 const initialState = {
   promoCode: '',
   status: '',
   validFrom: '',
   inProcess: false,
+  promoType: '',
 };
 
 export const actions = {
@@ -29,12 +30,57 @@ export const actions = {
         ],
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
-          voucherCode: promoCode,
+          promoCode,
         },
       },
     });
 
     if (result.type === PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE) {
+      await dispatch(actions.applyVoucher(promoCode));
+    }
+
+    if (result.type === PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS) {
+      const { response: applyPromoResult = {} } = result;
+      // If success is false, then this promo exists but not valid for some reason
+      if (applyPromoResult.success === true) {
+        await dispatch({
+          type: PROMOTION_TYPES.APPLY_PROMO_SUCCESS,
+          response: result.response,
+        });
+      } else if (
+        applyPromoResult.success === false &&
+        applyPromoResult.status !== PROMOTION_APPLIED_STATUS.NOT_EXISTED
+      ) {
+        await dispatch({
+          type: PROMOTION_TYPES.APPLY_PROMO_FAILED,
+          response: result.response,
+        });
+      } else {
+        await dispatch(actions.applyVoucher(promoCode));
+      }
+    }
+
+    return result;
+  },
+  applyVoucher: () => async (dispatch, getState) => {
+    const state = getState();
+    const promoCode = state.promotion.promoCode;
+
+    const result = await dispatch({
+      [API_REQUEST]: {
+        types: [
+          PROMOTION_TYPES.APPLY_VOUCHER_REQUEST,
+          PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS,
+          PROMOTION_TYPES.APPLY_VOUCHER_FAILURE,
+        ],
+        ...Url.API_URLS.APPLY_VOUCHER_CODE,
+        payload: {
+          voucherCode: promoCode,
+        },
+      },
+    });
+
+    if (result.type === PROMOTION_TYPES.APPLY_VOUCHER_FAILURE) {
       dispatch(
         appActions.showError({
           message: i18next.t('ConnectionIssue'),
@@ -48,6 +94,13 @@ export const actions = {
     const state = getState();
     const promotion = getPromotion(state);
     const promoCode = promotion ? promotion.promoCode : '';
+    const promoType = promotion ? promotion.promoType : '';
+    const dismissType =
+      promoType === PROMO_TYPE.PROMOTION
+        ? 'DISMISS_PROMOTION_CODE'
+        : promoType === PROMO_TYPE.VOUCHER
+        ? 'DISMISS_VOUCHER_CODE'
+        : '';
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -56,7 +109,7 @@ export const actions = {
           PROMOTION_TYPES.DISMISS_PROMOTION_CODE_SUCCESS,
           PROMOTION_TYPES.DISMISS_PROMOTION_CODE_FAILURE,
         ],
-        ...Url.API_URLS.DISMISS_PROMOTION_CODE,
+        ...Url.API_URLS[dismissType],
         payload: {
           voucherCode: promoCode,
         },
@@ -92,11 +145,36 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS:
       return {
         ...state,
-        status: action.response.status,
-        validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
+      return {
+        ...state,
+        inProcess: false,
+      };
+    case PROMOTION_TYPES.APPLY_VOUCHER_REQUEST:
+      return {
+        ...state,
+        inProcess: true,
+      };
+    case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
+      return {
+        ...state,
+        status: action.response.status,
+        promoType: PROMO_TYPE.VOUCHER,
+        validFrom: new Date(action.response.validFrom),
+        inProcess: false,
+      };
+    case PROMOTION_TYPES.APPLY_PROMO_SUCCESS:
+    case PROMOTION_TYPES.APPLY_PROMO_FAILED:
+      return {
+        ...state,
+        status: action.response.status,
+        promoType: PROMO_TYPE.PROMOTION,
+        validFrom: new Date(action.response.validFrom),
+        inProcess: false,
+      };
+    case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
       return {
         ...state,
         inProcess: false,

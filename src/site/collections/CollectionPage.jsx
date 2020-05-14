@@ -99,7 +99,7 @@ class CollectionPage extends React.Component {
   };
 
   renderStoreList = () => {
-    const { stores, pageInfo, storeLinkInfo, currentCollection, currentPlaceInfo } = this.props;
+    const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
     const { tags } = currentCollection;
 
