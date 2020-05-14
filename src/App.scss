@@ -3607,6 +3607,65 @@ body.loading {
   }
 }
 
+.alcohol-modal {
+  .modal__content {
+    max-width: 86%;
+  }
+  footer {
+    margin-bottom: 20px;
+  }
+  &__image {
+    width: 40%;
+    margin: 0 auto;
+  }
+  &__title {
+    font-size: 16px;
+    line-height: 28px;
+    color: #25272c;
+    font-family: "Roboto";
+    font-weight: bolder;
+    margin-bottom: 10px;
+  }
+  &__content {
+    line-height: 20px;
+    color: #303030;
+    font-size: 14px;
+    line-height: 22px;
+    font-family: inherit;
+  }
+  &__buttons {
+    margin-top: 30px;
+    .btn {
+      border: solid 1px black;
+      width: 40%;
+      height: 56px;
+      border-radius: 5px;
+      margin: 0 10px;
+      font-size: 14px;
+      font-family: "Roboto";
+      font-weight: bolder;
+    }
+    .active {
+      background-color: $theme-color;
+      border: none;
+      color: white;
+    }
+  }
+  &__policy {
+    margin: 10px 50px 0 50px;
+    text-align: center;
+    color: #8f9092;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  a.font-weight-bolder {
+    color: $gray-1;
+  }
+}
+
 @media (max-width: 413px) {
   .header {
     &__icon ~ &__title-container &__one-line-title.has-tag {

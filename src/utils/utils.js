@@ -341,6 +341,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     validTimeTo,
     enableLiveOnline,
     enablePreOrder,
+    sellAlcohol,
     disableTodayPreOrder,
   } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
@@ -365,6 +366,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enableConditionalFreeShipping,
     enableLiveOnline,
     enablePreOrder,
+    sellAlcohol,
     disableTodayPreOrder,
   };
 };
@@ -480,6 +482,35 @@ if (process.env.NODE_ENV !== 'production') {
   window.Utils = Utils;
 }
 
+Utils.addParamToSearch = (key, value) => {
+  const searchStr = window.location.search;
+  var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
+  var separator = searchStr.indexOf('?') !== -1 ? '&' : '?';
+  if (searchStr.match(re)) {
+    return searchStr.replace(re, '$1' + key + '=' + value + '$2');
+  } else {
+    return searchStr + separator + key + '=' + value;
+  }
+};
+
+Utils.removeParam = (key, sourceURL) => {
+  let rtn = sourceURL.split('?')[0];
+  let param;
+  let params_arr = [];
+  const queryString = sourceURL.indexOf('?') !== -1 ? sourceURL.split('?')[1] : '';
+
+  if (queryString !== '') {
+    params_arr = queryString.split('&');
+    for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+      param = params_arr[i].split('=')[0];
+      if (param === key) {
+        params_arr.splice(i, 1);
+      }
+    }
+    rtn = rtn + '?' + params_arr.join('&');
+  }
+  return rtn;
+};
 Utils.checkEmailIsValid = email => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return emailRegex.test(email);

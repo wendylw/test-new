@@ -80,9 +80,11 @@ class Cart extends Component {
   }
 
   handleClickBack = () => {
+    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: window.location.search,
+      // search: window.location.search,
+      search: newSearchParams,
     });
   };
 

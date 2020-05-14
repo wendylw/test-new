@@ -10,6 +10,7 @@ import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
+import AlcoholModal from './components/AlcoholModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
@@ -41,6 +42,7 @@ const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
   state = {
     viewAside: null,
+    alcoholModal: false,
     dScrollY: 0,
   };
   handleScroll = () => {
@@ -59,7 +61,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { history, homeActions, requestInfo } = this.props;
+    const { history, homeActions, requestInfo, deliveryInfo } = this.props;
     const { tableId, storeId } = requestInfo;
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -75,8 +77,38 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     homeActions.loadProductList();
-
     window.addEventListener('scroll', this.handleScroll);
+
+    const pageRf = this.getPageRf();
+    if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
+      this.setAlcoholModalState(deliveryInfo.sellAlcohol);
+    }
+  };
+  setAlcoholModalState = val => {
+    this.setState({
+      alcoholModal: val,
+    });
+    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry())) {
+      this.toggleBodyScroll(true);
+    } else {
+      this.toggleBodyScroll(false);
+    }
+  };
+
+  componentDidUpdate(prevProps) {
+    const { deliveryInfo: prevDeliveryInfo } = prevProps;
+    const { deliveryInfo } = this.props;
+    const pageRf = this.getPageRf();
+    if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
+      const { sellAlcohol } = deliveryInfo;
+      if (sellAlcohol) {
+        this.setAlcoholModalState(sellAlcohol);
+      }
+    }
+  }
+
+  getPageRf = () => {
+    return Utils.getQueryString('pageRefer');
   };
 
   componentWillUnmount() {
@@ -368,6 +400,17 @@ export class Home extends Component {
     );
   }
 
+  handleLegalAge = isAgeLegal => {
+    // this.setState({
+    //   alcoholModal: !isAgeLegal,
+    // });
+    this.setAlcoholModalState(!isAgeLegal);
+  };
+  isCountryNeedAlcoholPop = country => {
+    if (country === 'TH' || country === 'SG') return false;
+    return true;
+  };
+
   render() {
     const {
       categories,
@@ -393,7 +436,7 @@ export class Home extends Component {
       enableLiveOnline,
     } = deliveryInfo;
 
-    const { viewAside } = this.state;
+    const { viewAside, alcoholModal } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
     const adBarHeight = 30;
@@ -407,6 +450,9 @@ export class Home extends Component {
     }
     return (
       <section className={classList.join(' ')}>
+        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
+          <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
+        ) : null}
         {this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping &&
