@@ -4,13 +4,11 @@
 .container {
   position: relative;
   margin: auto;
-  height: 100%;
   min-height: 100%;
 }
 
 .voucher-ordering {
   padding-top: 50px;
-  height: 100%;
 }
 
 .footer-operation {
@@ -242,7 +240,7 @@
   }
 
   .gift-card__page {
-    margin-bottom: 90px;
+    padding-bottom: 90px;
   }
 
   .header {
