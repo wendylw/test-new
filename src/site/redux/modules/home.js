@@ -7,15 +7,6 @@ import { getAllStoreCollections } from './entities/storeCollections';
 import { getStoreById, storesActionCreators } from './entities/stores';
 
 const initialState = {
-  typePicker: {
-    show: false,
-    isOpen: false,
-    business: '',
-    deliveryUrl: '',
-    pickupUrl: '',
-    isOutOfDeliveryRange: true,
-    loading: false,
-  },
   storeLinkInfo: {
     business: '',
     deliveryUrl: '',
@@ -29,11 +20,6 @@ const initialState = {
     loading: false,
     scrollTop: 0,
   },
-  searchInfo: {
-    keyword: '',
-    scrollTop: 0,
-  },
-  loadedSearchingStoreList: false,
   storeIds: [],
   storeIdsSearchResult: [],
   searchingStoreList: [], // Notice: not used, since dropdown search result is removed from design
@@ -43,12 +29,7 @@ const types = {
   // set pagination info
   SET_PAGINATION_INFO: 'SITE/HOME/SET_PAGINATION_INFO',
 
-  // set searchInfo
-  SET_SEARCH_INFO: 'SITE/HOME/SET_SEARCH_INFO',
-
   // query store url
-  SHOW_TYPE_PICKER: 'SITE/HOME/SHOW_TYPE_PICKER',
-  HIDE_TYPE_PICKER: 'SITE/HOME/HIDE_TYPE_PICKER',
   FETCH_STORE_HASHCODE_REQUEST: 'SITE/HOME/FETCH_STORE_HASHCODE_REQUEST',
   FETCH_STORE_HASHCODE_SUCCESS: 'SITE/HOME/FETCH_STORE_HASHCODE_SUCCESS',
   FETCH_STORE_HASHCODE_FAILURE: 'SITE/HOME/FETCH_STORE_HASHCODE_FAILURE',
@@ -58,14 +39,6 @@ const types = {
   GET_STORE_LIST_SUCCESS: 'SITE/HOME/GET_STORE_LIST_SUCCESS',
   GET_STORE_LIST_FAILURE: 'SITE/HOME/GET_STORE_LIST_FAILURE',
   GET_STORE_LIST_CANCEL: 'SITE/HOME/GET_STORE_LIST_CANCEL',
-
-  // fetch searching store list
-  GET_SEARCHING_STORE_LIST_REQUEST: 'SITE/HOME/GET_SEARCHING_STORE_LIST_REQUEST',
-  GET_SEARCHING_STORE_LIST_SUCCESS: 'SITE/HOME/GET_SEARCHING_STORE_LIST_SUCCESS',
-  GET_SEARCHING_STORE_LIST_FAILURE: 'SITE/HOME/GET_SEARCHING_STORE_LIST_FAILURE',
-
-  // set searching store list status
-  SET_SEARCHING_STORES_STATUS: 'SITE/HOME/SET_SEARCHING_STORES_STATUS',
 };
 
 let fetchStoreListAbortController;
@@ -79,38 +52,14 @@ const refreshFetchStoreListAbortController = () => {
 
 // @actions
 const actions = {
-  setSearchInfo: searchInfo => ({
-    type: types.SET_SEARCH_INFO,
-    searchInfo,
-  }),
-
   setPaginationInfo: paginationInfo => ({
     type: types.SET_PAGINATION_INFO,
     paginationInfo,
   }),
 
-  hideTypePicker: () => ({
-    type: types.HIDE_TYPE_PICKER,
-  }),
-
   jumpToStore: ({ business, storeId, source = 'beepit.com', shippingType = 'delivery' }) => (dispatch, getState) => {
     const context = { storeId, business, source, shippingType };
     return dispatch(fetchStoreUrlHash(storeId, context));
-  },
-
-  showTypePicker: ({ business, storeId, source = 'beepit.com', isOutOfDeliveryRange, isOpen, isPreOrder }) => (
-    dispatch,
-    getState
-  ) => {
-    const context = { storeId, business, source, isOutOfDeliveryRange, isOpen, isPreOrder };
-    return dispatch(fetchStoreUrlHash(storeId, context));
-  },
-
-  setSearchingStoresStatus: status => (dispatch, getState) => {
-    return dispatch({
-      type: types.SET_SEARCHING_STORES_STATUS,
-      loadedSearchingStoreList: status,
-    });
   },
 
   getStoreListNextPage: () => (dispatch, getState) => {
@@ -131,11 +80,6 @@ const actions = {
       fetchStoreListAbortController.abort();
     }
     dispatch(actions.getStoreListNextPage());
-  },
-
-  getSearchingStoreList: ({ coords }) => async (dispatch, getState) => {
-    const { keyword } = getSearchInfo(getState());
-    return dispatch(fetchSearchingStoreList({ coords, keyword, page: 0, pageSize: 25 }));
   },
 };
 
@@ -170,26 +114,6 @@ const fetchStoreList = () => (dispatch, getState) => {
   });
 };
 
-const fetchSearchingStoreList = ({ coords, keyword, page, pageSize }) => (dispatch, getState) => {
-  return dispatch({
-    types: [
-      types.GET_SEARCHING_STORE_LIST_REQUEST,
-      types.GET_SEARCHING_STORE_LIST_SUCCESS,
-      types.GET_SEARCHING_STORE_LIST_FAILURE,
-    ],
-    requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}`
-    ).then(async response => {
-      if (response && Array.isArray(response.stores)) {
-        await dispatch(storesActionCreators.saveStores(response.stores));
-        return response;
-      }
-
-      return response;
-    }),
-  });
-};
-
 // @reducers
 const storeIdsReducer = (state = initialState.storeIds, action) => {
   if (action.type === types.GET_STORE_LIST_REQUEST) {
@@ -199,18 +123,6 @@ const storeIdsReducer = (state = initialState.storeIds, action) => {
     if (!response.stores || !response.stores.length) return state;
     const storeIds = response.stores.map(store => store.id);
     return [...state, ...storeIds];
-  }
-
-  return state;
-};
-
-const storeIdsSearchResultReducer = (state = initialState.storeIdsSearchResult, action) => {
-  if (action.type === types.GET_SEARCHING_STORE_LIST_SUCCESS) {
-    const { response } = action;
-
-    if (response) {
-      return (response.stores || []).map(store => store.id);
-    }
   }
 
   return state;
@@ -245,13 +157,6 @@ const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
   }
 };
 
-const searchInfo = (state = initialState.searchInfo, action) => {
-  if (action.type === types.SET_SEARCH_INFO) {
-    return { ...state, ...action.searchInfo };
-  }
-  return state;
-};
-
 const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
@@ -280,64 +185,9 @@ const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
   return state;
 };
 
-// const typePickerReducer = (state = initialState.typePicker, action) => {
-//   const { type, context } = action;
-//   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
-//     return { ...state, loading: true, show: context.isOpen || context.isPreOrder };
-//   } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
-//     const { redirectTo } = action.response || {};
-//     const storeUrlParams = {
-//       business: context.business,
-//       hash: redirectTo,
-//       source: context.source,
-//     };
-
-//     return {
-//       ...state,
-//       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
-//       pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
-//       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
-//       isOpen: context.isOpen || context.isPreOrder,
-//       business: context.business,
-//       loading: false,
-//     };
-//   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
-//     return { ...initialState.typePicker };
-//   }
-
-//   return state;
-// };
-
-const loadedSearchingStoreList = (state = initialState.loadedSearchingStoreList, action) => {
-  switch (action.type) {
-    case types.SET_SEARCHING_STORES_STATUS:
-    case types.GET_SEARCHING_STORE_LIST_REQUEST:
-      return false;
-    case types.GET_SEARCHING_STORE_LIST_SUCCESS:
-    case types.GET_SEARCHING_STORE_LIST_FAILURE:
-      return true;
-    default:
-      return state;
-  }
-};
-
-const searchingStoreList = (state = initialState.searchingStoreList, action) => {
-  if (types.GET_SEARCHING_STORE_LIST_SUCCESS) {
-    const { stores: searchingStoreList } = action.response || {};
-    return { ...state, ...searchingStoreList };
-  }
-
-  return state;
-};
-
 const reducer = combineReducers({
-  // typePicker: typePickerReducer,
   storeIds: storeIdsReducer,
   paginationInfo: paginationInfoReducer,
-  searchInfo,
-  loadedSearchingStoreList,
-  searchingStoreList,
-  storeIdsSearchResult: storeIdsSearchResultReducer,
   storeLinkInfo,
 });
 
@@ -345,13 +195,8 @@ export const homeActionCreators = actions;
 export default reducer;
 
 // @selectors
-// export const getTypePicker = state => state.home.typePicker;
-export const getSearchInfo = state => state.home.searchInfo;
 export const getPaginationInfo = state => state.home.paginationInfo;
-export const getSearchingStores = state => state.home.searchingStoreList;
-export const loadedSearchingStores = state => state.home.loadedSearchingStoreList;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
-export const getSearchResult = state => state.home.storeIdsSearchResult.map(storeId => getStoreById(state, storeId));
 export const getStoreLinkInfo = state => state.home.storeLinkInfo;
 export const getStoreCollections = state => {
   // todo

@@ -1,12 +1,10 @@
-import { debounce } from 'lodash';
 import React, { Suspense } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DeliverToBar from '../../components/DeliverToBar';
-import { IconClose, IconSearch } from '../../components/Icons';
+import { IconSearch } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
-import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
@@ -16,13 +14,9 @@ import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../re
 import {
   getAllCurrentStores,
   getPaginationInfo,
-  getSearchInfo,
-  getSearchingStores,
-  getSearchResult,
   getStoreCollections,
   getStoreLinkInfo,
   homeActionCreators,
-  loadedSearchingStores,
 } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
@@ -44,12 +38,10 @@ class Home extends React.Component {
 
     this.restoreState();
 
-    const { paginationInfo, searchInfo } = this.props;
+    const { paginationInfo } = this.props;
     const { scrollTop } = paginationInfo;
-    const { scrollTop: scrollTopOfSearch } = searchInfo;
 
     this.scrollTop = scrollTop || 0;
-    this.scrollTopOfSearch = scrollTopOfSearch || 0;
 
     this.renderId = `${Date.now()}`;
     this.sectionRef = React.createRef();
@@ -106,12 +98,6 @@ class Home extends React.Component {
     this.props.rootActions.restore();
   };
 
-  debounceSearchStores = debounce(() => {
-    const { currentPlaceInfo } = this.props;
-
-    this.props.homeActions.getSearchingStoreList(currentPlaceInfo);
-  }, 700);
-
   gotoLocationPage = () => {
     const { history, location, currentPlaceInfo } = this.props;
     const coords = currentPlaceInfo && currentPlaceInfo.coords;
@@ -125,51 +111,29 @@ class Home extends React.Component {
     });
   };
 
-  handleSearchTextChange = event => {
-    const keyword = event.currentTarget.value;
-
-    this.props.homeActions.setSearchingStoresStatus(false);
-    this.props.homeActions.setPaginationInfo({ scrollTop: 0 });
-    this.props.homeActions.setSearchInfo({ keyword, scrollTop: 0 });
-    this.debounceSearchStores();
-  };
-
   handleLoadSearchPage = () => {
-    this.backLeftPosition('stores')();
+    this.backLeftPosition();
     this.props.history.push({ pathname: '/search' });
-  };
-
-  handleClearSearchText = () => {
-    this.props.homeActions.setSearchInfo({ keyword: '', scrollTop: 0 });
   };
 
   handleLoadMoreStores = () => {
     return this.props.homeActions.getStoreListNextPage();
   };
 
-  handleStoreSelected = mode => async store => {
+  handleStoreSelected = async store => {
     const { homeActions, currentPlaceInfo } = this.props;
 
-    if (mode === 'search') {
-      homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
-    } else if (mode === 'stores') {
-      homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
-    }
+    homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
 
     // to backup whole redux state when click store item
     this.backupState();
     await submitStoreMenu({ deliveryAddress: currentPlaceInfo, store: store, source: document.location.href });
   };
 
-  backLeftPosition = mode => () => {
+  backLeftPosition = () => {
     const { homeActions } = this.props;
 
-    // user can click scanner in two modes, 'search'（using search bar） and 'stores'(nearby stores)
-    if (mode === 'search') {
-      homeActions.setSearchInfo({ scrollTop: this.scrollTopOfSearch });
-    } else if (mode === 'stores') {
-      homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
-    }
+    homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
   };
 
   renderStoreList = () => {
@@ -198,7 +162,7 @@ class Home extends React.Component {
             stores={stores}
             hasMore={hasMore}
             loadMoreStores={this.handleLoadMoreStores}
-            onStoreClicked={this.handleStoreSelected('stores')}
+            onStoreClicked={this.handleStoreSelected}
             getScrollParent={() => this.sectionRef.current}
             withInfiniteScroll
           />
@@ -207,50 +171,8 @@ class Home extends React.Component {
     );
   };
 
-  renderSearchResult = () => {
-    const {
-      t,
-      searchInfo,
-      searchResult,
-      currentPlaceInfo: { coords },
-      loadedSearchingStores,
-    } = this.props;
-    const { keyword, scrollTop } = searchInfo;
-
-    if (Boolean(keyword) && !loadedSearchingStores) {
-      return <div className="entry-home__huge-loader loader theme text-size-huge" />;
-    }
-
-    return (
-      <React.Fragment>
-        {searchResult.length && loadedSearchingStores ? null : (
-          <div className="text-center">
-            <img className="entry-home__hero-image" src={MvpNotFoundImage} alt="store not found" />
-            <p className="entry-home__prompt-text text-size-big text-opacity">
-              {t('SearchNotFoundStoreDescription', { keyword })}
-            </p>
-          </div>
-        )}
-        {searchResult.length && this.sectionRef.current ? (
-          <StoreListAutoScroll
-            getScrollParent={() => this.sectionRef.current}
-            defaultScrollTop={scrollTop}
-            onScroll={scrollTop => (this.scrollTopOfSearch = scrollTop)}
-          >
-            <StoreList
-              key={`research-result-${coords.lng}-${coords.lat}`}
-              stores={searchResult}
-              onStoreClicked={this.handleStoreSelected('search')}
-            />
-          </StoreListAutoScroll>
-        ) : null}
-      </React.Fragment>
-    );
-  };
-
   render() {
-    const { t, currentPlaceInfo, searchInfo, storeCollections } = this.props;
-    const { keyword } = searchInfo;
+    const { t, currentPlaceInfo, storeCollections } = this.props;
 
     if (!currentPlaceInfo) {
       return <i className="loader theme full-page text-size-huge" />;
@@ -267,7 +189,7 @@ class Home extends React.Component {
           }`}
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
-          backLeftPosition={Boolean(keyword) ? this.backLeftPosition('search') : this.backLeftPosition('stores')}
+          backLeftPosition={this.backLeftPosition}
         />
 
         <section
@@ -291,14 +213,7 @@ class Home extends React.Component {
                   className="form__input entry-home__input"
                   type="type"
                   placeholder={t('SearchRestaurantPlaceholder')}
-                  value={keyword}
-                  onChange={this.handleSearchTextChange}
                   onClick={this.handleLoadSearchPage}
-                />
-                <IconClose
-                  className="form__search-icon icon icon__small icon__gray"
-                  onClick={this.handleClearSearchText}
-                  style={{ visibility: keyword ? 'visible' : 'hidden' }}
                 />
               </div>
             </div>
@@ -315,12 +230,12 @@ class Home extends React.Component {
 
           {countryCode.toUpperCase() === 'MY' && (
             <Suspense fallback={null}>
-              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition('stores')} />
+              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
             </Suspense>
           )}
 
           <div className="store-card-list__container padding-normal">
-            {currentPlaceInfo.coords ? (Boolean(keyword) ? this.renderSearchResult() : this.renderStoreList()) : null}
+            {currentPlaceInfo.coords ? this.renderStoreList() : null}
           </div>
         </section>
       </main>
@@ -332,15 +247,10 @@ export default compose(
   withTranslation(),
   connect(
     state => ({
-      // typePicker: getTypePicker(state),
       currentPlaceId: getCurrentPlaceId(state),
       currentPlaceInfo: getCurrentPlaceInfo(state),
-      searchInfo: getSearchInfo(state),
       paginationInfo: getPaginationInfo(state),
       stores: getAllCurrentStores(state),
-      searchingStores: getSearchingStores(state),
-      searchResult: getSearchResult(state),
-      loadedSearchingStores: loadedSearchingStores(state),
       storeLinkInfo: getStoreLinkInfo(state),
       storeCollections: getStoreCollections(state),
     }),
