@@ -23,31 +23,37 @@ import StoreList from './components/StoreList';
 import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
+import { isInitStateRestored } from '../redux/modules/index';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 const isCampaignActive = false; // feature switch
 
 class Home extends React.Component {
   static lastUsedPlaceId = null;
+  static isFirstRender = true;
+
+  sectionRef = React.createRef();
+  scrollTop = 0;
+
+  state = {
+    campaignShown: false,
+  };
+
   constructor(props) {
     super(props);
 
-    this.state = {
-      campaignShown: false,
-    };
-
-    this.restoreState();
-
-    const { paginationInfo } = this.props;
-    const { scrollTop } = paginationInfo;
-
+    const {
+      paginationInfo: { scrollTop },
+    } = this.props;
     this.scrollTop = scrollTop || 0;
-
-    this.renderId = `${Date.now()}`;
-    this.sectionRef = React.createRef();
   }
 
   componentDidMount = async () => {
+    if (Home.isFirstRender && isInitStateRestored()) {
+      Home.isFirstRender = false;
+      return;
+    }
+    Home.isFirstRender = false;
     const { location } = this.props;
     const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 
@@ -94,10 +100,6 @@ class Home extends React.Component {
     this.props.rootActions.backup();
   };
 
-  restoreState = () => {
-    this.props.rootActions.restore();
-  };
-
   gotoLocationPage = () => {
     const { history, location, currentPlaceInfo } = this.props;
     const coords = currentPlaceInfo && currentPlaceInfo.coords;
@@ -140,6 +142,7 @@ class Home extends React.Component {
     const {
       t,
       stores,
+      currentPlaceId,
       paginationInfo: { hasMore, scrollTop },
     } = this.props;
 
@@ -158,7 +161,7 @@ class Home extends React.Component {
           onScroll={scrollTop => (this.scrollTop = scrollTop)}
         >
           <StoreList
-            key={`store-list-${this.renderId}`}
+            key={`store-list-${currentPlaceId}`}
             stores={stores}
             hasMore={hasMore}
             loadMoreStores={this.handleLoadMoreStores}

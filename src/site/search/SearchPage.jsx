@@ -23,6 +23,7 @@ import { submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { rootActionCreators } from '../redux/modules';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
+import { isInitStateRestored } from '../redux/modules/index';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 
 class SearchPage extends React.Component {
@@ -32,13 +33,8 @@ class SearchPage extends React.Component {
   sectionRef = React.createRef();
   isRestoreFromStorage = false;
 
-  constructor(props) {
-    super(props);
-    this.isRestoreFromStorage = props.rootActions.restore();
-  }
-
   componentDidMount = async () => {
-    if (!(this.isRestoreFromStorage && SearchPage.isFirstRender)) {
+    if (!(isInitStateRestored() && SearchPage.isFirstRender)) {
       this.props.searchActions.setShippingType('delivery');
       this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
     }

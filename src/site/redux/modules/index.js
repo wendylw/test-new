@@ -5,32 +5,52 @@ import collections from './collections';
 import entities from './entities';
 import search from './search';
 
-// @actions
-const types = {
-  ROOT_BACKUP: 'SITE/ROOT/ROOT_BACKUP',
-  ROOT_RESTORE: 'SITE/ROOT/ROOT_RESTORE',
+const STORAGE_KEY_ROOT_BACKUP = 'ROOT_STATE_BACKUP';
+
+let restoredFromStorage = false;
+export const isInitStateRestored = () => {
+  return restoredFromStorage;
 };
 
+// @actions
 const actions = {
-  backup: () => ({ type: types.ROOT_BACKUP }),
-  restore: () => dispatch => {
-    const STORAGE_KEY_ROOT_BACKUP = 'STORAGE_KEY_ROOT_BACKUP';
-    const backString = sessionStorage.getItem(STORAGE_KEY_ROOT_BACKUP);
-    sessionStorage.removeItem(STORAGE_KEY_ROOT_BACKUP);
-    let backup = null;
-    if (backString) {
-      try {
-        backup = JSON.parse(backString);
-      } catch {
-        backup = null;
-      }
-    }
-    if (backup) {
-      dispatch({ type: types.ROOT_RESTORE, payload: backup });
-      return true;
-    }
-    return false;
+  // we won't dispatch real action. This is implemented as thunk action only to make it easier to get state.
+  backup: () => (dispatch, getState) => {
+    const state = getState();
+    sessionStorage.setItem(
+      STORAGE_KEY_ROOT_BACKUP,
+      JSON.stringify({
+        url: document.location.href,
+        state: state,
+      })
+    );
   },
+};
+
+// only call restore for the first time for better performance
+let restoreCalled = false;
+const restore = () => {
+  if (restoreCalled) {
+    return null;
+  }
+  restoreCalled = true;
+  const backString = sessionStorage.getItem(STORAGE_KEY_ROOT_BACKUP);
+  // will remove storage even if the url doesn't match. Imagine a situation:
+  // user go to store page and close the window, then open a new window for main site.
+  // we won't restore for this case and will not restore in further access.
+  sessionStorage.removeItem(STORAGE_KEY_ROOT_BACKUP);
+  let backup = null;
+  if (backString) {
+    try {
+      const data = JSON.parse(backString);
+      if (data && data.url === document.location.href) {
+        backup = data.state;
+      }
+    } catch {
+      backup = null;
+    }
+  }
+  return backup;
 };
 
 const appReducer = combineReducers({
@@ -42,15 +62,11 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  const STORAGE_KEY_ROOT_BACKUP = 'STORAGE_KEY_ROOT_BACKUP';
-
-  if (action.type === types.ROOT_BACKUP) {
-    sessionStorage.setItem(STORAGE_KEY_ROOT_BACKUP, JSON.stringify(state));
-    return state;
-  } else if (action.type === types.ROOT_RESTORE) {
-    return action.payload;
+  const restoredState = restore();
+  if (restoredState) {
+    restoredFromStorage = true;
+    return appReducer(restoredState, action);
   }
-
   return appReducer(state, action);
 };
 

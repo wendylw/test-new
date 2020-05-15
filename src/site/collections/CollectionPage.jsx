@@ -19,6 +19,7 @@ import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import '../home/index.scss';
 import './CollectionPage.scss';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
+import { isInitStateRestored } from '../redux/modules/index';
 
 class CollectionPage extends React.Component {
   static isFirstRender = true;
@@ -27,15 +28,10 @@ class CollectionPage extends React.Component {
   sectionRef = React.createRef();
   isRestoreFromStorage = false;
 
-  constructor(props) {
-    super(props);
-    this.isRestoreFromStorage = props.rootActions.restore();
-  }
-
   componentDidMount = async () => {
     const { currentCollection } = this.props;
 
-    if (!(this.isRestoreFromStorage && CollectionPage.isFirstRender)) {
+    if (!(isInitStateRestored() && CollectionPage.isFirstRender)) {
       const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
       this.props.collectionsActions.setShippingType(shippingType);
       this.props.collectionsActions.resetPageInfo(shippingType);
