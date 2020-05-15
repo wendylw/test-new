@@ -57,6 +57,7 @@ const types = {
   GET_STORE_LIST_REQUEST: 'SITE/HOME/GET_STORE_LIST_REQUEST',
   GET_STORE_LIST_SUCCESS: 'SITE/HOME/GET_STORE_LIST_SUCCESS',
   GET_STORE_LIST_FAILURE: 'SITE/HOME/GET_STORE_LIST_FAILURE',
+  GET_STORE_LIST_CANCEL: 'SITE/HOME/GET_STORE_LIST_CANCEL',
 
   // fetch searching store list
   GET_SEARCHING_STORE_LIST_REQUEST: 'SITE/HOME/GET_SEARCHING_STORE_LIST_REQUEST',
@@ -65,6 +66,15 @@ const types = {
 
   // set searching store list status
   SET_SEARCHING_STORES_STATUS: 'SITE/HOME/SET_SEARCHING_STORES_STATUS',
+};
+
+let fetchStoreListAbortController;
+const refreshFetchStoreListAbortController = () => {
+  if (window.AbortController) {
+    fetchStoreListAbortController = new AbortController();
+    return fetchStoreListAbortController.signal;
+  }
+  return undefined;
 };
 
 // @actions
@@ -103,10 +113,24 @@ const actions = {
     });
   },
 
-  getStoreList: () => (dispatch, getState) => {
-    const { loading, page, hasMore } = getPaginationInfo(getState());
+  getStoreListNextPage: () => (dispatch, getState) => {
+    const { loading, hasMore } = getPaginationInfo(getState());
     if (loading || !hasMore) return;
-    return dispatch(fetchStoreList(page));
+    return dispatch(fetchStoreList());
+  },
+
+  reloadStoreList: () => (dispatch, getState) => {
+    dispatch(
+      actions.setPaginationInfo({
+        page: 0,
+        hasMore: true,
+        loading: false,
+      })
+    );
+    if (fetchStoreListAbortController) {
+      fetchStoreListAbortController.abort();
+    }
+    dispatch(actions.getStoreListNextPage());
   },
 
   getSearchingStoreList: ({ coords }) => async (dispatch, getState) => {
@@ -126,10 +150,16 @@ const fetchStoreList = () => (dispatch, getState) => {
   const { page, pageSize } = getPaginationInfo(getState());
 
   return dispatch({
-    types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
+    types: [
+      types.GET_STORE_LIST_REQUEST,
+      types.GET_STORE_LIST_SUCCESS,
+      types.GET_STORE_LIST_FAILURE,
+      types.GET_STORE_LIST_CANCEL,
+    ],
     context: { page },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=delivery`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=delivery`,
+      { signal: refreshFetchStoreListAbortController() }
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
@@ -167,7 +197,8 @@ const storeIdsReducer = (state = initialState.storeIds, action) => {
   } else if (action.type === types.GET_STORE_LIST_SUCCESS) {
     const { response } = action;
     if (!response.stores || !response.stores.length) return state;
-    return [...state.concat((response.stores || []).map(store => store.id))];
+    const storeIds = response.stores.map(store => store.id);
+    return [...state, ...storeIds];
   }
 
   return state;
@@ -186,29 +217,29 @@ const storeIdsSearchResultReducer = (state = initialState.storeIdsSearchResult, 
 };
 
 const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
+  let nextState;
   switch (action.type) {
     case types.SET_PAGINATION_INFO:
       return { ...state, ...action.paginationInfo };
     case types.GET_STORE_LIST_REQUEST:
-      const newState = { ...state, page: state.page + 1 };
+      nextState = { ...state };
       if (action.context.page === 0) {
-        Object.assign(newState, { hasMore: true, loading: false });
+        Object.assign(nextState, { hasMore: true, loading: false });
       }
-      return { ...newState, loading: true };
+      return { ...nextState, loading: true };
     case types.GET_STORE_LIST_SUCCESS:
       const { stores } = action.response || {};
-
-      if (!stores || !stores.length) {
-        return { ...state, hasMore: false, loading: false };
+      const page = action.context.page + 1;
+      nextState = { ...state, page, loading: false };
+      if (!stores || !stores.length || state.pageSize > stores.length) {
+        nextState.hasMore = false;
       }
-
-      if (state.pageSize > stores.length) {
-        return { ...state, hasMore: false, loading: false };
-      }
-
-      return { ...state, loading: false };
+      return nextState;
     case types.GET_STORE_LIST_FAILURE:
       return { ...state, hasMore: false, loading: false };
+    case types.GET_STORE_LIST_CANCEL:
+      console.log('request cancelled');
+      return { ...state, loading: false };
     default:
       return state;
   }

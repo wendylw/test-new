@@ -9,11 +9,10 @@ import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import MvpNotFoundImage from '../../images/mvp-not-found.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
-import Utils from '../../utils/utils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
-import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
+import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import {
   getAllCurrentStores,
   getPaginationInfo,
@@ -35,6 +34,7 @@ const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 const isCampaignActive = false; // feature switch
 
 class Home extends React.Component {
+  static lastUsedPlaceId = null;
   constructor(props) {
     super(props);
 
@@ -56,7 +56,7 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { history, location } = this.props;
+    const { location } = this.props;
     const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 
     // if no placeInfo at all
@@ -65,37 +65,36 @@ class Home extends React.Component {
     }
 
     // placeInfo ok
-    this.props.appActions.setCurrentPlaceInfo(placeInfo);
+    this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
 
-    // todo: need to reset store list instead of refresh the whole page
-    if (source === 'location-page') {
-      history.replace(location.pathname, {});
-      window.location.reload();
-      return;
-    }
+    this.reloadStoreListIfNecessary();
 
-    // when source is from ip, we have to ask for high accuracy location
     if (source === 'ip') {
-      try {
-        const placeInfo = await getPlaceInfoByDeviceByAskPermission();
-        if (placeInfo) {
-          // this.props.appActions.setCurrentPlaceInfo(placeInfo);
-          // info: refresh because appActions.setCurrentPlaceInfo won't trigger store list rerender because of InfiniteScroll bug
-          window.location.reload();
-          return;
-        }
-      } catch (e) {
-        console.error('[Home] [didMount] error=%s', e);
-      }
+      this.getPlaceInfoByDevice();
     }
+  };
 
-    this.props.homeActions.getStoreList();
+  componentDidUpdate(prevProps) {
+    if (this.props.currentPlaceId !== prevProps.currentPlaceId) {
+      this.reloadStoreListIfNecessary();
+    }
+  }
 
-    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
+  async getPlaceInfoByDevice() {
+    try {
+      const placeInfo = await getPlaceInfoByDeviceByAskPermission();
+      if (placeInfo) {
+        this.props.appActions.setCurrentPlaceInfo(placeInfo, 'device');
+      }
+    } catch (e) {
+      console.error('[Home] [didMount] error=%s', e);
+    }
+  }
+
+  reloadStoreListIfNecessary = () => {
+    if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
+      this.props.homeActions.reloadStoreList();
+      Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
   };
 
@@ -145,7 +144,7 @@ class Home extends React.Component {
   };
 
   handleLoadMoreStores = () => {
-    return this.props.homeActions.getStoreList();
+    return this.props.homeActions.getStoreListNextPage();
   };
 
   handleStoreSelected = mode => async store => {
@@ -181,9 +180,8 @@ class Home extends React.Component {
     } = this.props;
 
     // Caution:
-    // 1. scroll restore will not work if you remove !this.sectionRef.current
-    // 2. <StoreList /> pagination will not good if you remove !stores.length
-    if (!stores.length || !this.sectionRef.current) {
+    // scroll restore will not work if you remove !this.sectionRef.current
+    if (!this.sectionRef.current) {
       return null;
     }
 
@@ -335,6 +333,7 @@ export default compose(
   connect(
     state => ({
       // typePicker: getTypePicker(state),
+      currentPlaceId: getCurrentPlaceId(state),
       currentPlaceInfo: getCurrentPlaceInfo(state),
       searchInfo: getSearchInfo(state),
       paginationInfo: getPaginationInfo(state),

@@ -7,7 +7,9 @@ import { appActionCreators } from '../../../redux/modules/app';
 
 const { ROUTER_PATHS } = Constants;
 
-export default (source = {}) => InnerComponent => {
+// alwayUpdate means each time we enter the page, we will try to update currentPlaceInfo again, no matter
+// whether currentPlaceInfo already exist. This is used in pages that has location bar.
+export default (source = {}, alwaysUpdate = false) => InnerComponent => {
   const getPlaceInfoOptions = {
     fromLocationPage: true,
     fromCache: true,
@@ -16,20 +18,25 @@ export default (source = {}) => InnerComponent => {
     ...source,
   };
   class withPlaceInfo extends React.Component {
+    state = {
+      placeInfoUpdated: false,
+    };
     async componentDidMount() {
       const { location, setCurrentPlaceInfo } = this.props;
 
-      if (!this.hasPlaceInfo) {
-        const { placeInfo } = await getPlaceInfo({
+      if (!this.hasPlaceInfo || alwaysUpdate) {
+        const { placeInfo, source } = await getPlaceInfo({
           ...getPlaceInfoOptions,
           location,
         });
         if (placeInfo) {
-          setCurrentPlaceInfo(placeInfo);
+          setCurrentPlaceInfo(placeInfo, source);
         } else {
           this.gotoLocationPage();
+          return;
         }
       }
+      this.setState({ placeInfoUpdated: true });
     }
 
     get hasPlaceInfo() {
@@ -46,7 +53,9 @@ export default (source = {}) => InnerComponent => {
     };
 
     render() {
-      return <>{this.hasPlaceInfo && <InnerComponent {...this.props} />}</>;
+      return (
+        <>{this.hasPlaceInfo && (!alwaysUpdate || this.state.placeInfoUpdated) && <InnerComponent {...this.props} />}</>
+      );
     }
   }
   return connect(

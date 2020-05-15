@@ -53,7 +53,6 @@ export const getPlaceInfo = async ({
   // first to use place from location picker
   let placeInfo = null;
   let source = '';
-  console.log(fromLocationPage, fromCache, fromDevice, fromIp);
   if (!placeInfo && fromLocationPage) {
     if (location) {
       placeInfo = getPlaceInfoFromLocation({ location });
