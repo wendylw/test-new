@@ -2,6 +2,8 @@ import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import { combineReducers } from 'redux';
+import { getCurrentPlaceInfo } from './app';
+import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
 const defaultPageInfo = {
   page: 0,
@@ -75,13 +77,15 @@ const actions = {
 };
 
 const fetchStoreList = (page, pageSize, shippingType) => (dispatch, getState) => {
-  const coords = getCoords(getState());
+  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
+  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+  const { coords } = currentPlaceInfo;
   const { keyword } = getSearchInfo(getState());
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
     context: { page, pageSize, shippingType },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&countryCode=${countryCode}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
