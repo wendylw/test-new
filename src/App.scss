@@ -4176,3 +4176,125 @@ body.loading {
     }
   }
 }
+
+.table-ordering__report-bad-driver {
+  width: 100%;
+  background-color: $gray-10;
+
+  .report-bad-driver__title {
+    font-size: 1.2rem;
+    font-weight: $font-weight-bolder;
+    margin-top: 4vh;
+    margin-left: 2vw;
+    color: $main-color;
+  }
+
+  .report-bad-driver__main {
+    background-color: white;
+    margin: 2vh 4vw;
+    padding: 2vh 4vw;
+    border-radius: $border-radius-base;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .report-bad-driver__note {
+    position: relative;
+    display: flex;
+
+    &-textarea {
+      resize: none;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid $gray-3;
+      background-color: white;
+      padding: 8px;
+      font-size: 1rem;
+      line-height: $line-height-base;
+    }
+
+    &-char-length {
+      position: absolute;
+      right: 4vw;
+      bottom: 1vh;
+      font-size: 0.8rem;
+      color: $gray-7;
+    }
+  }
+
+  .report-bad-driver__common-issues {
+    margin-top: 4vh;
+
+    &-title {
+      font-family: Roboto;
+      color: $gray-9;
+      font-size: $font-size-base;
+    }
+
+    &-list {
+      margin-top: 1vh;
+    }
+
+    &-list-item {
+      display: inline-block;
+    }
+
+    &-button {
+      font-family: Roboto;
+      font-size: $font-size-base;
+      color: $main-color;
+      letter-spacing: 0.13px;
+      line-height: 22px;
+      text-align: center;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+      padding: 8px 10px;
+      margin: 2vw;
+    }
+
+    &-button.active {
+      background-color: $theme-color;
+      color: white;
+      box-shadow: none;
+    }
+  }
+
+  .report-bad-driver__submit {
+    &-button {
+      font-family: Roboto;
+      height: 9vh;
+      background-color: $theme-color;
+      width: 100%;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      font-size: $font-size-base;
+      margin-top: 5vh;
+      border-radius: $border-radius-base;
+    }
+
+    &-button:disabled {
+      background-color: $gray-1;
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  .table-ordering__report-bad-driver {
+    .report-bad-driver__title {
+    }
+
+    .report-bad-driver__note-char-length {
+      right: 17px;
+    }
+
+    .report-bad-driver__main {
+      margin: 2vh 17px;
+      padding: 2vh 17px;
+    }
+
+    .report-bad-driver__common-issues-button {
+      margin: 8px;
+    }
+  }
+}

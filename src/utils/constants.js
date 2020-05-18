@@ -12,6 +12,7 @@ const ROUTER_PATHS = {
   PRIVACY: '/privacy',
   ERROR: '/error',
   SORRY: '/sorry',
+  REPORT_BAD_DRIVER: '/report-bad-driver',
   STORES_HOME: '/',
   // ordering App basename
   ORDERING_BASE: '/ordering',

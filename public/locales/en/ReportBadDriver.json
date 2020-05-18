@@ -1,0 +1,8 @@
+{
+    "ReportDriver": "Report Driver",
+    "ReportYourDriver": "Report your driver",
+    "NoteFieldPlaceholder": "What went wrong? Leave comment tell us about it.",
+    "LimitCharacters": "{{inputLength}}/{{maxLength}} characters",
+    "CommonIssues": "Common Issues",
+    "Submit": "Submit"
+}
