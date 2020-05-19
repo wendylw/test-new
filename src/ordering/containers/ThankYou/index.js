@@ -16,6 +16,7 @@ import {
   getStoreHashCode,
   getCashbackInfo,
   getBusinessInfo,
+  getReceiptNumber,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
 
@@ -57,13 +58,13 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    const { thankYouActions, order } = this.props;
+    const { thankYouActions, order, receiptNumber } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
     }
-    thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
+    thankYouActions.loadOrder(receiptNumber).then(({ responseGql = {} }) => {
       const { data = {} } = responseGql;
       const tySourceCookie = this.getThankYouSource();
       const { onlineStoreInfo, user } = this.props;
@@ -121,13 +122,6 @@ export class ThankYou extends PureComponent {
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     // immidiately remove __ty_source cookie after send the request.
     Utils.removeCookieVariable('__ty_source', '');
-  };
-
-  getReceiptNumber = () => {
-    const { history } = this.props;
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    return receiptNumber;
   };
 
   handleClickViewReceipt = () => {
@@ -742,6 +736,7 @@ export default compose(
       cashbackInfo: getCashbackInfo(state),
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
+      receiptNumber: getReceiptNumber(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

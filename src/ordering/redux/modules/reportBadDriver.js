@@ -2,11 +2,9 @@ import { REPORT_BAD_DRIVER_TYPES } from '../types';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Constants from '../../../utils/constants';
 import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
-import { createSelector } from 'reselect';
 
-import { getOrder } from './thankYou';
+import { getReceiptNumber } from './thankYou';
 
 const { ORDER_STATUS } = Constants;
 const COMMON_ISSUES_CODES = ['foodWasDamaged', 'riderNeverContactedMe', 'driverWasRude', 'driverAskedMoreMoney'];
@@ -151,10 +149,6 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-export const getReceiptNumber = state => {
-  return Utils.getQueryString('receiptNumber');
-};
-
 export const getInputNotes = state => {
   return _get(state.reportBadDriver, 'inputNotes', initialState.inputNotes);
 };
@@ -170,11 +164,3 @@ export const getSubmitStatus = state => {
 export const getCommonIssuesCodes = state => {
   return COMMON_ISSUES_CODES;
 };
-
-export const getOrderStatus = createSelector([getOrder], order => {
-  return _get(order, 'status', '');
-});
-
-export const getIsUseStorehubLogistics = createSelector([getOrder], order => {
-  return _get(order, 'deliveryInformation.0.useStorehubLogistics', false);
-});

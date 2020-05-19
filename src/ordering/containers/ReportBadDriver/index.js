@@ -12,14 +12,16 @@ import {
   getCommonIssuesCodes,
   getInputNotes,
   getSelectedCommonIssues,
-  getIsUseStorehubLogistics,
-  getOrderStatus,
-  getReceiptNumber,
   getSubmitStatus,
   SUBMIT_STATUS,
   CAN_REPORT_STATUS_LIST,
 } from '../../redux/modules/reportBadDriver';
-import { actions as thankyouActionCreators } from '../../redux/modules/thankYou';
+import {
+  actions as thankyouActionCreators,
+  getIsUseStorehubLogistics,
+  getOrderStatus,
+  getReceiptNumber,
+} from '../../redux/modules/thankYou';
 
 const NOTE_MAX_LENGTH = 140;
 
