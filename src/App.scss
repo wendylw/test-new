@@ -3555,7 +3555,6 @@
   &__report-unsafe-driver {
     margin-top: 4vh;
     &-button {
-      font-family: Roboto;
       font-size: $font-size-base;
       font-weight: bold;
       letter-spacing: 1.25px;
@@ -4244,7 +4243,6 @@ body.loading {
     margin-top: 4vh;
 
     &-title {
-      font-family: Roboto;
       color: $gray-9;
       font-size: $font-size-base;
     }
@@ -4259,7 +4257,6 @@ body.loading {
     }
 
     &-button {
-      font-family: Roboto;
       font-size: $font-size-base;
       color: $main-color;
       letter-spacing: 0.13px;
@@ -4281,7 +4278,6 @@ body.loading {
 
   .report-bad-driver__submit {
     &-button {
-      font-family: Roboto;
       height: 9vh;
       max-height: 60px;
       background-color: $theme-color;
