@@ -4236,6 +4236,7 @@ body.loading {
 
     &-list-item {
       display: inline-block;
+      margin: 1.5vw;
     }
 
     &-button {
@@ -4247,13 +4248,15 @@ body.loading {
       text-align: center;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
       padding: 8px 1em;
-      margin: 2vw;
+      border-radius: $border-radius-base;
     }
 
-    &-button.active {
-      background-color: $theme-color;
-      color: white;
-      box-shadow: none;
+    &-list-item.active {
+      .report-bad-driver__common-issues-button {
+        background-color: $theme-color;
+        color: white;
+        box-shadow: none;
+      }
     }
   }
 
@@ -4291,7 +4294,7 @@ body.loading {
       padding: 2vh 17px;
     }
 
-    .report-bad-driver__common-issues-button {
+    .report-bad-driver__common-issues-list-item {
       margin: 8px;
     }
   }

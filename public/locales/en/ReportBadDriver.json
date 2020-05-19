@@ -4,5 +4,9 @@
     "NoteFieldPlaceholder": "What went wrong? Leave comment tell us about it.",
     "LimitCharacters": "{{inputLength}}/{{maxLength}} characters",
     "CommonIssues": "Common Issues",
-    "Submit": "Submit"
+    "Submit": "Submit",
+    "CommonIssues_foodWasDamaged": "Food was damaged",
+    "CommonIssues_riderNeverContactedMe": "Rider never contacted me",
+    "CommonIssues_driverWasRude": "Rider was rude",
+    "CommonIssues_driverAskedMoreMoney": "Rider asked for more money on delivery"
 }
