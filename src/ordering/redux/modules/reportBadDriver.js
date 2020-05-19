@@ -1,16 +1,24 @@
-import { combineReducers } from 'redux';
 import { REPORT_BAD_DRIVER_TYPES } from '../types';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
+import { createSelector } from 'reselect';
+
+import { getOrder } from './thankYou';
 
 const COMMON_ISSUES_CODES = ['foodWasDamaged', 'riderNeverContactedMe', 'driverWasRude', 'driverAskedMoreMoney'];
+
+export const SUBMIT_STATUS = {
+  NOT_SUBMIT: 'NOT_SUBMIT',
+  IN_PROGRESS: 'IN_PROGRESS',
+  SUBMITTED: 'SUBMITTED',
+};
 
 const initialState = {
   inputNotes: '',
   selectedCommonIssues: new Set(),
-  order: null,
+  submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
 };
 
 export const actions = {
@@ -38,6 +46,12 @@ export const actions = {
       commonIssue,
     };
   },
+  submitReport: () => (dispatch, getState) => {
+    const state = getState();
+    const inputNotes = getInputNotes(state);
+    const selectedCommonIssues = getSelectedCommonIssues(state);
+    dispatch({});
+  },
   loadOrder: () => async (dispatch, getState) => {
     const receiptNumber = getReceiptNumber(getState());
     const result = await dispatch({
@@ -58,44 +72,36 @@ export const actions = {
   },
 };
 
-const inputNotesReducer = (state = initialState.inputNotes, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case REPORT_BAD_DRIVER_TYPES.UPDATE_INPUT_NOTES:
-      return action.notes;
-    default:
-      return state;
-  }
-};
-
-const selectedCommonIssuesReducer = (state = initialState.selectedCommonIssues, action) => {
-  switch (action.type) {
+      return {
+        ...state,
+        inputNotes: action.notes,
+      };
     case REPORT_BAD_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES:
-      return new Set(action.commonIssues);
+      return {
+        ...state,
+        commonIssues: action.commonIssues,
+      };
     case REPORT_BAD_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES:
-      state.add(action.commonIssue);
-      return new Set(state);
+      state.selectedCommonIssues.add(action.commonIssue);
+      return {
+        ...state,
+        selectedCommonIssues: new Set(state.selectedCommonIssues),
+      };
     case REPORT_BAD_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES:
-      state.delete(action.commonIssue);
-      return new Set(state);
+      state.selectedCommonIssues.delete(action.commonIssue);
+      return {
+        ...state,
+        selectedCommonIssues: new Set(state.selectedCommonIssues),
+      };
     default:
       return state;
   }
 };
 
-const orderReducer = (state = initialState.order, action) => {
-  switch (action.type) {
-    case REPORT_BAD_DRIVER_TYPES.FETCH_ORDER_SUCCESS:
-      return action.responseGql.data.order;
-    default:
-      return state;
-  }
-};
-
-export default combineReducers({
-  inputNotes: inputNotesReducer,
-  selectedCommonIssues: selectedCommonIssuesReducer,
-  order: orderReducer,
-});
+export default reducer;
 
 export const getReceiptNumber = state => {
   return Utils.getQueryString('receiptNumber');
@@ -113,10 +119,10 @@ export const getCommonIssuesCodes = state => {
   return COMMON_ISSUES_CODES;
 };
 
-export const getOrderStatus = state => {
-  return _get(state.reportBadDriver, 'order.status', '');
-};
+export const getOrderStatus = createSelector([getOrder], order => {
+  return _get(order, 'status', '');
+});
 
-export const getIsUseStorehubLogistics = state => {
-  return _get(state.reportBadDriver, 'order.deliveryInformation.0.useStorehubLogistics', false);
-};
+export const getIsUseStorehubLogistics = createSelector([getOrder], order => {
+  return _get(order, 'deliveryInformation.0.useStorehubLogistics', false);
+});

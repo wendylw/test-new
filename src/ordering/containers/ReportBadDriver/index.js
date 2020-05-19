@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 
+import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
 import {
   actions as reportBadDriverActionCreators,
@@ -12,15 +14,38 @@ import {
   getSelectedCommonIssues,
   getIsUseStorehubLogistics,
   getOrderStatus,
+  getReceiptNumber,
 } from '../../redux/modules/reportBadDriver';
+import { actions as thankyouActionCreators } from '../../redux/modules/thankYou';
+
+const { ORDER_STATUS } = Constants;
+
 const NOTE_MAX_LENGTH = 140;
 
+const CAN_REPORT_STATUS_LIST = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 class ReportBadDriver extends Component {
   componentDidMount() {
-    // this.props.reportBadDriverActions.loadOrder();
+    const { receiptNumber, thankyouActions } = this.props;
+
+    thankyouActions.loadOrder(receiptNumber);
   }
 
-  handleGoBack = () => {};
+  handleGoBack = () => {
+    this.gotoThankYourPage();
+  };
+
+  gotoThankYourPage = () => {
+    const { receiptNumber, history } = this.props;
+    const searchParams = {
+      receiptNumber,
+      type: Constants.DELIVERY_METHOD.DELIVERY,
+    };
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.THANK_YOU,
+      search: qs.stringify(searchParams, { addQueryPrefix: true }),
+    });
+  };
 
   handleNotesChange = e => {
     const notes = e.target.value;
@@ -37,6 +62,28 @@ class ReportBadDriver extends Component {
       reportBadDriverActions.addSelectedCommonIssues(CommonIssueCode);
     }
   };
+
+  isOrderCanReportDriver = () => {
+    const { orderStatus, isUseStorehubLogistics } = this.props;
+
+    return CAN_REPORT_STATUS_LIST.includes(orderStatus) && isUseStorehubLogistics;
+  };
+
+  isSubmitButtonDisable = () => {
+    const { inputNotes, selectedCommonIssues } = this.props;
+
+    if (!this.isOrderCanReportDriver()) {
+      return true;
+    }
+
+    if (inputNotes.length === 0) {
+      return true;
+    }
+
+    return false;
+  };
+
+  handleSubmit = () => {};
 
   render() {
     const { t, inputNotes, selectedCommonIssues, commonIssuesCodes } = this.props;
@@ -83,7 +130,13 @@ class ReportBadDriver extends Component {
               })}
             </ul>
             <div className="report-bad-driver__submit">
-              <button className="report-bad-driver__submit-button">{t('Submit')}</button>
+              <button
+                className="report-bad-driver__submit-button"
+                disabled={this.isSubmitButtonDisable()}
+                onClick={this.handleSubmit}
+              >
+                {t('Submit')}
+              </button>
             </div>
           </div>
         </main>
@@ -99,9 +152,13 @@ export default compose(
       commonIssuesCodes: getCommonIssuesCodes(state),
       inputNotes: getInputNotes(state),
       selectedCommonIssues: getSelectedCommonIssues(state),
+      orderStatus: getOrderStatus(state),
+      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      receiptNumber: getReceiptNumber(state),
     }),
     dispatch => ({
       reportBadDriverActions: bindActionCreators(reportBadDriverActionCreators, dispatch),
+      thankyouActions: bindActionCreators(thankyouActionCreators, dispatch),
     })
   )
 )(ReportBadDriver);

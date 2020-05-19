@@ -198,6 +198,24 @@ const PROMO_TYPE = {
   VOUCHER: 'Voucher',
 };
 
+const ORDER_STATUS = {
+  CREATED: 'created',
+  PENDING_PAYMENT: 'pendingPayment',
+  PENDING_VERIFICATION: 'pendingVerification',
+  PAID: 'paid',
+  PAYMENT_CANCELLED: 'paymentCancelled',
+  READY_FOR_DELIVERY: 'readyForDelivery',
+  READY_FOR_PICKUP: 'readyForPickup',
+  SHIPPED: 'shipped',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+  ACCEPTED: 'accepted',
+  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
+  CONFIRMED: 'confirmed',
+  DELIVERED: 'delivered',
+  PICKED_UP: 'pickedUp',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -227,4 +245,5 @@ export default {
   PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
+  ORDER_STATUS,
 };
