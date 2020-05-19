@@ -4261,6 +4261,7 @@ body.loading {
     &-button {
       font-family: Roboto;
       height: 9vh;
+      max-height: 60px;
       background-color: $theme-color;
       width: 100%;
       color: white;
