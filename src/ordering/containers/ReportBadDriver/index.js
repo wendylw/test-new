@@ -15,6 +15,8 @@ import {
   getIsUseStorehubLogistics,
   getOrderStatus,
   getReceiptNumber,
+  getSubmitStatus,
+  SUBMIT_STATUS,
 } from '../../redux/modules/reportBadDriver';
 import { actions as thankyouActionCreators } from '../../redux/modules/thankYou';
 
@@ -25,9 +27,10 @@ const NOTE_MAX_LENGTH = 140;
 const CAN_REPORT_STATUS_LIST = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 class ReportBadDriver extends Component {
   componentDidMount() {
-    const { receiptNumber, thankyouActions } = this.props;
+    const { receiptNumber, thankyouActions, reportBadDriverActions } = this.props;
 
     thankyouActions.loadOrder(receiptNumber);
+    reportBadDriverActions.fetchReport();
   }
 
   handleGoBack = () => {
@@ -70,23 +73,46 @@ class ReportBadDriver extends Component {
   };
 
   isSubmitButtonDisable = () => {
-    const { inputNotes, selectedCommonIssues } = this.props;
+    const { inputNotes, selectedCommonIssues, submitStatus } = this.props;
 
     if (!this.isOrderCanReportDriver()) {
       return true;
     }
 
-    if (inputNotes.length === 0) {
+    if (inputNotes.length === 0 && selectedCommonIssues.size === 0) {
+      return true;
+    }
+
+    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
       return true;
     }
 
     return false;
   };
 
-  handleSubmit = () => {};
+  handleSubmit = async () => {
+    await this.props.reportBadDriverActions.submitReport();
+    this.gotoThankYourPage();
+  };
+
+  renderSubmitButtonContent = () => {
+    const { t, submitStatus } = this.props;
+    switch (submitStatus) {
+      case SUBMIT_STATUS.NOT_SUBMIT:
+        return t('Submit');
+      case SUBMIT_STATUS.IN_PROGRESS:
+        return <div className="loader"></div>;
+      case SUBMIT_STATUS.SUBMITTED:
+        return t('Submitted');
+      default:
+        return t('Submit');
+    }
+  };
 
   render() {
-    const { t, inputNotes, selectedCommonIssues, commonIssuesCodes } = this.props;
+    const { t, inputNotes, selectedCommonIssues, commonIssuesCodes, submitStatus } = this.props;
+    const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
+
     return (
       <section className="table-ordering__report-bad-driver">
         <Header
@@ -100,11 +126,12 @@ class ReportBadDriver extends Component {
           <div className="report-bad-driver__note">
             <textarea
               className="report-bad-driver__note-textarea"
-              placeholder={t('NoteFieldPlaceholder')}
+              placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
               rows="5"
               maxLength={NOTE_MAX_LENGTH}
               value={inputNotes}
               onChange={this.handleNotesChange}
+              disabled={disabled}
             ></textarea>
             <div className="report-bad-driver__note-char-length">
               {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
@@ -118,6 +145,7 @@ class ReportBadDriver extends Component {
                 return (
                   <li key={code} className={`report-bad-driver__common-issues-list-item ${active}`}>
                     <button
+                      disabled={disabled}
                       onClick={() => {
                         this.toggleCommonIssue(code);
                       }}
@@ -135,7 +163,7 @@ class ReportBadDriver extends Component {
                 disabled={this.isSubmitButtonDisable()}
                 onClick={this.handleSubmit}
               >
-                {t('Submit')}
+                {this.renderSubmitButtonContent()}
               </button>
             </div>
           </div>
@@ -155,6 +183,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
+      submitStatus: getSubmitStatus(state),
     }),
     dispatch => ({
       reportBadDriverActions: bindActionCreators(reportBadDriverActionCreators, dispatch),

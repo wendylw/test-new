@@ -50,11 +50,42 @@ export const actions = {
     const state = getState();
     const inputNotes = getInputNotes(state);
     const selectedCommonIssues = getSelectedCommonIssues(state);
-    dispatch({});
+    const receiptNumber = getReceiptNumber(state);
+
+    return dispatch({
+      [FETCH_GRAPHQL]: {
+        types: [
+          REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_REQUEST,
+          REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS,
+          REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_FAILURE,
+        ],
+        endpoint: Url.apiGql('CreateFeedBack'),
+        variables: {
+          reasonCode: Array.from(selectedCommonIssues),
+          notes: inputNotes,
+          reporterType: 'consumer',
+          receiptNumber,
+        },
+      },
+    });
   },
   fetchReport: () => (dispatch, getState) => {
     const state = getState();
     const receiptNumber = getReceiptNumber(state);
+
+    return dispatch({
+      [FETCH_GRAPHQL]: {
+        types: [
+          REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_REQUEST,
+          REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_SUCCESS,
+          REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_FAILURE,
+        ],
+        endpoint: Url.apiGql('QueryFeedBack'),
+        variables: {
+          receiptNumber,
+        },
+      },
+    });
   },
 };
 
@@ -82,6 +113,33 @@ const reducer = (state = initialState, action) => {
         ...state,
         selectedCommonIssues: new Set(state.selectedCommonIssues),
       };
+    case REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_REQUEST:
+      return {
+        ...state,
+        submitStatus: SUBMIT_STATUS.IN_PROGRESS,
+      };
+    case REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS:
+      return {
+        ...state,
+        submitStatus: SUBMIT_STATUS.SUBMITTED,
+      };
+    case REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_FAILURE:
+      return {
+        ...state,
+        submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
+      };
+    case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_SUCCESS:
+      const reportData = _get(action.responseGql, 'data.queryFeedBack', null);
+      if (reportData) {
+        return {
+          ...state,
+          inputNotes: reportData.notes,
+          selectedCommonIssues: new Set(reportData.reasonCode),
+          submitStatus: SUBMIT_STATUS.SUBMITTED,
+        };
+      } else {
+        return state;
+      }
     default:
       return state;
   }
@@ -99,6 +157,10 @@ export const getInputNotes = state => {
 
 export const getSelectedCommonIssues = state => {
   return _get(state.reportBadDriver, 'selectedCommonIssues', initialState.selectedCommonIssues);
+};
+
+export const getSubmitStatus = state => {
+  return _get(state.reportBadDriver, 'submitStatus', initialState.submitStatus);
 };
 
 export const getCommonIssuesCodes = state => {
