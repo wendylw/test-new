@@ -1,5 +1,6 @@
 import { REPORT_BAD_DRIVER_TYPES } from '../types';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import Constants from '../../../utils/constants';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
@@ -7,6 +8,7 @@ import { createSelector } from 'reselect';
 
 import { getOrder } from './thankYou';
 
+const { ORDER_STATUS } = Constants;
 const COMMON_ISSUES_CODES = ['foodWasDamaged', 'riderNeverContactedMe', 'driverWasRude', 'driverAskedMoreMoney'];
 
 export const SUBMIT_STATUS = {
@@ -14,6 +16,8 @@ export const SUBMIT_STATUS = {
   IN_PROGRESS: 'IN_PROGRESS',
   SUBMITTED: 'SUBMITTED',
 };
+
+export const CAN_REPORT_STATUS_LIST = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 
 const initialState = {
   inputNotes: '',

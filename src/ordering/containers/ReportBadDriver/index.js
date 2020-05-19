@@ -17,14 +17,12 @@ import {
   getReceiptNumber,
   getSubmitStatus,
   SUBMIT_STATUS,
+  CAN_REPORT_STATUS_LIST,
 } from '../../redux/modules/reportBadDriver';
 import { actions as thankyouActionCreators } from '../../redux/modules/thankYou';
 
-const { ORDER_STATUS } = Constants;
-
 const NOTE_MAX_LENGTH = 140;
 
-const CAN_REPORT_STATUS_LIST = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 class ReportBadDriver extends Component {
   componentDidMount() {
     const { receiptNumber, thankyouActions, reportBadDriverActions } = this.props;
