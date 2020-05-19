@@ -140,7 +140,10 @@ const reducer = (state = initialState, action) => {
           submitStatus: SUBMIT_STATUS.SUBMITTED,
         };
       } else {
-        return state;
+        return {
+          ...state,
+          submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
+        };
       }
     default:
       return state;
