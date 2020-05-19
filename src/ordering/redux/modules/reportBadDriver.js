@@ -52,23 +52,9 @@ export const actions = {
     const selectedCommonIssues = getSelectedCommonIssues(state);
     dispatch({});
   },
-  loadOrder: () => async (dispatch, getState) => {
-    const receiptNumber = getReceiptNumber(getState());
-    const result = await dispatch({
-      [FETCH_GRAPHQL]: {
-        types: [
-          REPORT_BAD_DRIVER_TYPES.FETCH_ORDER_REQUEST,
-          REPORT_BAD_DRIVER_TYPES.FETCH_ORDER_SUCCESS,
-          REPORT_BAD_DRIVER_TYPES.FETCH_ORDER_FAILURE,
-        ],
-        endpoint: Url.apiGql('Order'),
-        variables: {
-          orderId: receiptNumber,
-        },
-      },
-    });
-
-    return result;
+  fetchReport: () => (dispatch, getState) => {
+    const state = getState();
+    const receiptNumber = getReceiptNumber(state);
   },
 };
 
