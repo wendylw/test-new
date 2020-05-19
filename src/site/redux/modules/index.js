@@ -7,9 +7,12 @@ import search from './search';
 
 const STORAGE_KEY_ROOT_BACKUP = 'ROOT_STATE_BACKUP';
 
-let restoredFromStorage = false;
-export const isInitStateRestored = () => {
-  return restoredFromStorage;
+let restoreToken = false;
+// return true at most once, because only one component should skip init because of state restoring
+export const checkStateRestoreStatus = () => {
+  const ret = restoreToken;
+  restoreToken = false;
+  return ret;
 };
 
 // @actions
@@ -64,7 +67,7 @@ const appReducer = combineReducers({
 const rootReducer = (state, action) => {
   const restoredState = restore();
   if (restoredState) {
-    restoredFromStorage = true;
+    restoreToken = true;
     return appReducer(restoredState, action);
   }
   return appReducer(state, action);

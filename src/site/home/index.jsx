@@ -23,7 +23,7 @@ import StoreList from './components/StoreList';
 import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
-import { isInitStateRestored } from '../redux/modules/index';
+import { checkStateRestoreStatus } from '../redux/modules/index';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
 const isCampaignActive = false; // feature switch
@@ -49,7 +49,7 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    if (Home.isFirstRender && isInitStateRestored()) {
+    if (Home.isFirstRender && checkStateRestoreStatus()) {
       Home.isFirstRender = false;
       return;
     }
