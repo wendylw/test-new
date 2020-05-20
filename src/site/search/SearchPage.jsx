@@ -27,18 +27,15 @@ import { checkStateRestoreStatus } from '../redux/modules/index';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 
 class SearchPage extends React.Component {
-  static isFirstRender = true;
   renderId = `${Date.now()}`;
   scrollTop = 0;
   sectionRef = React.createRef();
-  isRestoreFromStorage = false;
 
   componentDidMount = async () => {
-    if (!(checkStateRestoreStatus() && SearchPage.isFirstRender)) {
+    if (!checkStateRestoreStatus()) {
       this.props.searchActions.setShippingType('delivery');
       this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
     }
-    SearchPage.isFirstRender = false;
   };
 
   onGoBack = () => {

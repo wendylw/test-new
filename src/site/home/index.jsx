@@ -30,7 +30,6 @@ const isCampaignActive = false; // feature switch
 
 class Home extends React.Component {
   static lastUsedPlaceId = null;
-  static isFirstRender = true;
 
   sectionRef = React.createRef();
   scrollTop = 0;
@@ -49,11 +48,9 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    if (Home.isFirstRender && checkStateRestoreStatus()) {
-      Home.isFirstRender = false;
+    if (checkStateRestoreStatus()) {
       return;
     }
-    Home.isFirstRender = false;
     const { location } = this.props;
     const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 

@@ -22,21 +22,18 @@ import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 
 class CollectionPage extends React.Component {
-  static isFirstRender = true;
   renderId = `${Date.now()}`;
   scrollTop = 0;
   sectionRef = React.createRef();
-  isRestoreFromStorage = false;
 
   componentDidMount = async () => {
     const { currentCollection } = this.props;
 
-    if (!(checkStateRestoreStatus() && CollectionPage.isFirstRender)) {
+    if (!checkStateRestoreStatus()) {
       const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
       this.props.collectionsActions.setShippingType(shippingType);
       this.props.collectionsActions.resetPageInfo(shippingType);
     }
-    CollectionPage.isFirstRender = false;
     this.props.collectionsActions.getStoreList(currentCollection.tags);
   };
 
@@ -128,7 +125,9 @@ class CollectionPage extends React.Component {
 
   render() {
     const { t, currentCollection } = this.props;
-    if (!currentCollection) return null;
+    if (!currentCollection) {
+      return null;
+    }
     return (
       <ModalPageLayout title={t(currentCollection.label)} onGoBack={this.handleBackClicked}>
         {currentCollection.slug === 'self-pickup' ? null : this.renderSwitchBar()}
