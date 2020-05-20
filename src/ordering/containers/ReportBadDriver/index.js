@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 
 import Constants from '../../../utils/constants';
+import Loader from '../../../components/Loader';
+import feefBackThankyou from '../../../images/feedback-thankyou.png';
 import Header from '../../../components/Header';
 import {
   actions as reportBadDriverActionCreators,
@@ -13,6 +15,7 @@ import {
   getInputNotes,
   getSelectedCommonIssues,
   getSubmitStatus,
+  getShowLoading,
   SUBMIT_STATUS,
   CAN_REPORT_STATUS_LIST,
 } from '../../redux/modules/reportBadDriver';
@@ -26,14 +29,18 @@ import {
 const NOTE_MAX_LENGTH = 140;
 
 class ReportBadDriver extends Component {
-  componentDidMount() {
+  componentDidMount = async () => {
     const { receiptNumber, thankyouActions, reportBadDriverActions } = this.props;
 
     thankyouActions.loadOrder(receiptNumber);
-    reportBadDriverActions.fetchReport();
-  }
+    await reportBadDriverActions.fetchReport();
+  };
 
   handleGoBack = () => {
+    this.gotoThankYourPage();
+  };
+
+  handleDone = () => {
     this.gotoThankYourPage();
   };
 
@@ -90,7 +97,6 @@ class ReportBadDriver extends Component {
 
   handleSubmit = async () => {
     await this.props.reportBadDriverActions.submitReport();
-    this.gotoThankYourPage();
   };
 
   renderSubmitButtonContent = () => {
@@ -107,9 +113,39 @@ class ReportBadDriver extends Component {
     }
   };
 
+  renderThankYou() {
+    const { t } = this.props;
+    return (
+      <section className="table-ordering__report-bad-driver-thankyou">
+        <Header
+          className="report-bad-driver__header flex-middle"
+          isPage={false}
+          title={t('ReportDriver')}
+          navFunc={this.handleGoBack}
+        ></Header>
+        <div className="report-bad-driver-thankyou__image">
+          <img alt="Thank your feedback" src={feefBackThankyou} />
+        </div>
+        <h3 className="report-bad-driver-thankyou__title">{t('Thankyou')}</h3>
+        <main className="report-bad-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
+        <div className="report-bad-driver-thankyou__done-button">
+          <button onClick={this.handleDone}>{t('Done')}</button>
+        </div>
+      </section>
+    );
+  }
+
   render() {
-    const { t, inputNotes, selectedCommonIssues, commonIssuesCodes, submitStatus } = this.props;
+    const { t, inputNotes, selectedCommonIssues, commonIssuesCodes, submitStatus, showLoading } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
+
+    if (showLoading) {
+      return <Loader />;
+    }
+
+    if (submitStatus === SUBMIT_STATUS.SUBMITTED) {
+      return this.renderThankYou();
+    }
 
     return (
       <section className="table-ordering__report-bad-driver">
@@ -182,6 +218,7 @@ export default compose(
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
       submitStatus: getSubmitStatus(state),
+      showLoading: getShowLoading(state),
     }),
     dispatch => ({
       reportBadDriverActions: bindActionCreators(reportBadDriverActionCreators, dispatch),

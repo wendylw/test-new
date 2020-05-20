@@ -21,6 +21,7 @@ const initialState = {
   inputNotes: '',
   selectedCommonIssues: new Set(),
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
+  showLoading: false,
 };
 
 export const actions = {
@@ -130,6 +131,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
       };
+    case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_REQUEST:
+      return {
+        ...state,
+        showLoading: true,
+      };
     case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_SUCCESS:
       const reportData = _get(action.responseGql, 'data.queryFeedBack', null);
       if (reportData) {
@@ -138,13 +144,20 @@ const reducer = (state = initialState, action) => {
           inputNotes: reportData.notes,
           selectedCommonIssues: new Set(reportData.reasonCode),
           submitStatus: SUBMIT_STATUS.SUBMITTED,
+          showLoading: false,
         };
       } else {
         return {
           ...state,
           submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
+          showLoading: false,
         };
       }
+    case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_FAILURE:
+      return {
+        ...state,
+        showLoading: false,
+      };
     default:
       return state;
   }
@@ -166,4 +179,8 @@ export const getSubmitStatus = state => {
 
 export const getCommonIssuesCodes = state => {
   return COMMON_ISSUES_CODES;
+};
+
+export const getShowLoading = state => {
+  return _get(state.reportBadDriver, 'showLoading', initialState.showLoading);
 };
