@@ -2124,6 +2124,10 @@
 
   &__image-container {
     width: 15vw;
+
+    > img {
+      width: 100%;
+    }
   }
 
   &__name {
@@ -2131,6 +2135,47 @@
     font-size: 1.3rem;
     width: 60vw;
     white-space: nowrap;
+
+    label {
+      display: block;
+      margin: 2px 0;
+      font-size: inherit;
+    }
+  }
+
+  &__item.disabled {
+    &::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 60px;
+    }
+
+    .payment__image-container {
+      filter: grayscale(100%) contrast(100%) brightness(100%);
+      -webkit-filter: grayscale(100%) contrast(100%) brightness(100%);
+      -moz-filter: grayscale(100%) contrast(100%) brightness(100%);
+      -ms-filter: grayscale(100%) contrast(100%) brightness(100%);
+      -o-filter: grayscale(100%) contrast(100%) brightness(100%);
+      transition: filter 0.4s;
+      -webkit-transition: -webkit-filter 0.4s;
+      -moz-transition: -moz-filter 0.4s;
+      -ms-transition: -ms-filter 0.4s;
+      -o-transition: -o-filter 0.4s;
+    }
+
+    .payment__name {
+      color: $gray-2;
+    }
+
+    .radio {
+      display: none;
+    }
+  }
+
+  &__prompt {
+    display: block;
+    padding: 5px 0;
   }
 }
 
@@ -3609,28 +3654,26 @@ body.loading {
 
 .alcohol-modal {
   .modal__content {
-    max-width: 86%;
+    margin-top: 10px;
+    max-width: 88%;
   }
   footer {
     margin-bottom: 20px;
   }
   &__image {
-    width: 40%;
+    max-width: 40vw;
     margin: 0 auto;
   }
   &__title {
-    font-size: 16px;
+    font-size: 20px;
+    font-weight: bold;
     line-height: 28px;
     color: #25272c;
-    font-family: "Roboto";
-    font-weight: bolder;
     margin-bottom: 10px;
   }
   &__content {
     line-height: 20px;
     color: #303030;
-    font-size: 14px;
-    line-height: 22px;
     font-family: inherit;
   }
   &__buttons {
@@ -3642,7 +3685,6 @@ body.loading {
       border-radius: 5px;
       margin: 0 10px;
       font-size: 14px;
-      font-family: "Roboto";
       font-weight: bolder;
     }
     .active {
@@ -3652,12 +3694,9 @@ body.loading {
     }
   }
   &__policy {
-    margin: 10px 50px 0 50px;
+    margin: 10px auto;
     text-align: center;
     color: #8f9092;
-    font-family: Roboto;
-    font-size: 12px;
-    font-weight: 500;
     line-height: 22px;
   }
 

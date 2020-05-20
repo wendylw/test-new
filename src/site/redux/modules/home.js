@@ -5,6 +5,7 @@ import Utils from '../../../utils/utils';
 import { getCurrentPlaceInfo } from './app';
 import { getAllStoreCollections } from './entities/storeCollections';
 import { getStoreById, storesActionCreators } from './entities/stores';
+import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
 const initialState = {
   storeLinkInfo: {
@@ -21,8 +22,6 @@ const initialState = {
     scrollTop: 0,
   },
   storeIds: [],
-  storeIdsSearchResult: [],
-  searchingStoreList: [], // Notice: not used, since dropdown search result is removed from design
 };
 
 const types = {
@@ -90,9 +89,10 @@ const fetchStoreUrlHash = (storeId, context) => ({
 });
 
 const fetchStoreList = () => (dispatch, getState) => {
-  const { coords } = getCurrentPlaceInfo(getState()) || {};
+  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
+  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+  const { coords } = currentPlaceInfo;
   const { page, pageSize } = getPaginationInfo(getState());
-
   return dispatch({
     types: [
       types.GET_STORE_LIST_REQUEST,
@@ -102,7 +102,7 @@ const fetchStoreList = () => (dispatch, getState) => {
     ],
     context: { page },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=delivery`,
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=delivery&countryCode=${countryCode}`,
       { signal: refreshFetchStoreListAbortController() }
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
