@@ -7,7 +7,7 @@ import { compose, bindActionCreators } from 'redux';
 
 import Constants from '../../../utils/constants';
 import Loader from '../../../components/Loader';
-import feefBackThankyou from '../../../images/feedback-thankyou.png';
+import feedBackThankyou from '../../../images/feedback-thankyou.png';
 import Header from '../../../components/Header';
 import {
   actions as reportBadDriverActionCreators,
@@ -124,7 +124,7 @@ class ReportBadDriver extends Component {
           navFunc={this.handleGoBack}
         ></Header>
         <div className="report-bad-driver-thankyou__image">
-          <img alt="Thank your feedback" src={feefBackThankyou} />
+          <img alt="Thank your feedback" src={feedBackThankyou} />
         </div>
         <h3 className="report-bad-driver-thankyou__title">{t('Thankyou')}</h3>
         <main className="report-bad-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
