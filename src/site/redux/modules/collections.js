@@ -4,6 +4,8 @@ import { getCollectionBySlug } from './entities/storeCollections';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';
+import { getCurrentPlaceInfo } from './app';
+import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
 const defaultPageInfo = {
   page: 0,
@@ -75,7 +77,9 @@ const actions = {
 };
 
 const fetchStoreList = (page, pageSize, shippingType, tags) => (dispatch, getState) => {
-  const coords = getCoords(getState());
+  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
+  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+  const { coords } = currentPlaceInfo;
   const tagsParam =
     !tags || tags.length === 0
       ? []
@@ -85,7 +89,7 @@ const fetchStoreList = (page, pageSize, shippingType, tags) => (dispatch, getSta
     types: [types.FETCH_STORE_LIST_REQUEST, types.FETCH_STORE_LIST_SUCCESS, types.FETCH_STORE_LIST_FAILURE],
     context: { page, pageSize, shippingType },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&tags=${tagsParam}`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&tags=${tagsParam}&countryCode=${countryCode}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));

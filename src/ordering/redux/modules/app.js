@@ -193,10 +193,12 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.GET_OTP_REQUEST:
     case types.CREATE_OTP_REQUEST:
+    case types.CREATE_LOGIN_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
+    case types.CREATE_LOGIN_FAILURE:
       return { ...state, isFetching: false };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
