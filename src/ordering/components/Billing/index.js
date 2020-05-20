@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
+import Constants from '../../../utils/constants';
 export class Billing extends Component {
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo } = this.props;
@@ -45,6 +46,14 @@ export class Billing extends Component {
     );
   }
 
+  handleLogin = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+    });
+  };
+
   render() {
     const {
       t,
@@ -56,6 +65,7 @@ export class Billing extends Component {
       businessInfo,
       isDeliveryType,
       shippingFee,
+      isLogin,
       children,
     } = this.props;
     const { stores = [] } = businessInfo || {};
@@ -78,7 +88,6 @@ export class Billing extends Component {
             <CurrencyNumber money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
-
           {isDeliveryType ? (
             <li className="billing__item flex flex-middle flex-space-between">
               <label>{t('DeliveryFee')}</label>
@@ -89,20 +98,24 @@ export class Billing extends Component {
               )}
             </li>
           ) : null}
-
-          {creditsBalance ? (
-            <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
-              <label className="font-weight-bolder">{t('BeepCashback')}</label>
+          <li
+            className={`billing__item show border-radius-base flex flex-middle flex-space-between ${
+              isLogin ? 'primary' : ''
+            }`}
+          >
+            <label className="font-weight-bolder">{t('BeepCashback')}</label>
+            {isLogin ? (
               <span className="font-weight-bolder">
                 - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
               </span>
-            </li>
-          ) : null}
-
+            ) : (
+              <button onClick={this.handleLogin} className="billing__login">
+                {t('Login')}
+              </button>
+            )}
+          </li>
           {this.renderPromotion()}
-
           {children}
-
           <li className="billing__item show flex flex-middle flex-space-between">
             <label className="font-weight-bolder">{t('Total')}</label>
             <CurrencyNumber className="font-weight-bolder" money={total || 0} />
@@ -126,6 +139,7 @@ Billing.propTypes = {
     promoCode: PropTypes.string,
     discount: PropTypes.number,
   }),
+  isLogin: PropTypes.bool,
 };
 
 Billing.defaultProps = {
@@ -138,6 +152,7 @@ Billing.defaultProps = {
   creditsBalance: 0,
   shippingFee: 0,
   promotion: null,
+  isLogin: false,
 };
 
 export default withTranslation()(Billing);

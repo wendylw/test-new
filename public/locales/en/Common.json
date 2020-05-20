@@ -133,5 +133,7 @@
   "DineIn": "Dine-In",
   "TakeAway": "Takeaway",
   "CustomerDetails": "Customer Details",
-  "TAKE_AWAY": "TAKE AWAY"
+  "TAKE_AWAY": "TAKE AWAY",
+  "Login": "LOGIN",
+  "LoginTip": "Login with your mobile number to view all your promos & vouchers"
 }
