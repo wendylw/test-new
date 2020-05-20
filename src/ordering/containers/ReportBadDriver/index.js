@@ -73,13 +73,13 @@ class ReportBadDriver extends Component {
   };
 
   isSubmitButtonDisable = () => {
-    const { inputNotes, selectedCommonIssues, submitStatus } = this.props;
+    const { inputNotes, submitStatus } = this.props;
 
     if (!this.isOrderCanReportDriver()) {
       return true;
     }
 
-    if (inputNotes.length === 0 && selectedCommonIssues.size === 0) {
+    if (inputNotes.length === 0) {
       return true;
     }
 
