@@ -106,7 +106,7 @@ class SearchPage extends React.Component {
             </p>
           </div>
         )}
-        {stores.length && keyword && this.sectionRef.current ? (
+        {stores.length && keyword ? (
           <div className="store-card-list__container padding-normal">
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}

@@ -96,9 +96,6 @@ class CollectionPage extends React.Component {
     const { scrollTop } = pageInfo;
     const { tags } = currentCollection;
 
-    if (!this.sectionRef.current) {
-      return null;
-    }
     return (
       <div className="store-card-list__container padding-normal">
         <StoreListAutoScroll

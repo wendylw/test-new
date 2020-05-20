@@ -143,12 +143,6 @@ class Home extends React.Component {
       paginationInfo: { hasMore, scrollTop },
     } = this.props;
 
-    // Caution:
-    // scroll restore will not work if you remove !this.sectionRef.current
-    if (!this.sectionRef.current) {
-      return null;
-    }
-
     return (
       <React.Fragment>
         <h2 className="text-size-biggest text-weight-bolder">{t('NearbyRestaurants')}</h2>
