@@ -50,7 +50,7 @@ export const actions = {
   },
   submitReport: () => (dispatch, getState) => {
     const state = getState();
-    const inputNotes = getInputNotes(state);
+    const inputNotes = getInputNotes(state).trim();
     const selectedCommonIssues = getSelectedCommonIssues(state);
     const receiptNumber = getReceiptNumber(state);
 

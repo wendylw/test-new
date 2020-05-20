@@ -55,8 +55,6 @@ class ReportBadDriver extends Component {
     this.props.reportBadDriverActions.updateInputNodes(notes);
   };
 
-  handleCommonIssuesClick = e => {};
-
   toggleCommonIssue = CommonIssueCode => {
     const { reportBadDriverActions, selectedCommonIssues } = this.props;
     if (selectedCommonIssues.has(CommonIssueCode)) {
@@ -79,7 +77,7 @@ class ReportBadDriver extends Component {
       return true;
     }
 
-    if (inputNotes.length === 0) {
+    if (inputNotes.trim().length === 0) {
       return true;
     }
 
