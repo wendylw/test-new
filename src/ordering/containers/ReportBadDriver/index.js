@@ -29,12 +29,12 @@ import {
 const NOTE_MAX_LENGTH = 140;
 
 class ReportBadDriver extends Component {
-  componentDidMount = async () => {
+  componentDidMount() {
     const { receiptNumber, thankyouActions, reportBadDriverActions } = this.props;
 
     thankyouActions.loadOrder(receiptNumber);
-    await reportBadDriverActions.fetchReport();
-  };
+    reportBadDriverActions.fetchReport();
+  }
 
   handleGoBack = () => {
     this.gotoThankYourPage();
