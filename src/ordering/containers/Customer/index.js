@@ -105,8 +105,6 @@ class Customer extends Component {
       return;
     }
 
-    await Utils.setLocalStorageVariable('user.p', phone);
-
     if (!isLogin) {
       await appActions.getOtp({ phone });
       this.setState({ sentOtp: true });
@@ -409,6 +407,8 @@ class Customer extends Component {
                 metadata={metadataMobile}
                 onChange={phone => {
                   const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+                  Utils.setLocalStorageVariable('user.p', phone);
 
                   this.props.customerActions.patchDeliveryDetails({
                     phone:
