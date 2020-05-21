@@ -20,6 +20,7 @@ const ErrorPage = lazy(() => import('./Error'));
 const LocationAndDate = lazy(() => import('./LocationAndDate'));
 const Promotion = lazy(() => import('./Promotion'));
 const ReportBadDriver = lazy(() => import('./ReportBadDriver'));
+const Login = lazy(() => import('./Login'));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -47,6 +48,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
             <Route exact path={ROUTER_PATHS.REPORT_BAD_DRIVER} component={ReportBadDriver} />
+            <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={Login} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
