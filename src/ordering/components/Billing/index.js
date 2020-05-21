@@ -68,7 +68,7 @@ export class Billing extends Component {
       isLogin,
       children,
     } = this.props;
-    const { stores = [] } = businessInfo || {};
+    const { stores = [], enableCashback } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
     const classList = ['billing'];
 
@@ -98,22 +98,24 @@ export class Billing extends Component {
               )}
             </li>
           ) : null}
-          <li
-            className={`billing__item show border-radius-base flex flex-middle flex-space-between ${
-              isLogin ? 'primary' : ''
-            }`}
-          >
-            <label className="font-weight-bolder">{t('BeepCashback')}</label>
-            {isLogin ? (
-              <span className="font-weight-bolder">
-                - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
-              </span>
-            ) : (
-              <button onClick={this.handleLogin} className="billing__login">
-                {t('Login')}
-              </button>
-            )}
-          </li>
+          {enableCashback ? (
+            <li
+              className={`billing__item show border-radius-base flex flex-middle flex-space-between ${
+                isLogin ? 'primary' : ''
+              }`}
+            >
+              <label className="font-weight-bolder">{t('BeepCashback')}</label>
+              {isLogin ? (
+                <span className="font-weight-bolder">
+                  - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
+                </span>
+              ) : (
+                <button onClick={this.handleLogin} className="billing__login">
+                  {t('Login')}
+                </button>
+              )}
+            </li>
+          ) : null}
           {this.renderPromotion()}
           {children}
           <li className="billing__item show flex flex-middle flex-space-between">

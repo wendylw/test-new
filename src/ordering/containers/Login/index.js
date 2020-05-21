@@ -24,7 +24,6 @@ class Login extends React.Component {
     const { user } = prevProps;
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
-    console.log(sendOtp, isLogin, this.props.user.isLogin);
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitCartPage();
     }
@@ -32,7 +31,6 @@ class Login extends React.Component {
 
   visitCartPage = () => {
     const { history } = this.props;
-    console.log('visit cart page');
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
       search: window.location.search,
