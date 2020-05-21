@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 
 import Constants from '../../../utils/constants';
-import Loader from '../../../components/Loader';
+import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
 import Header from '../../../components/Header';
 import {
@@ -140,7 +140,7 @@ class ReportBadDriver extends Component {
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
     if (showLoading) {
-      return <Loader />;
+      return <PageLoader />;
     }
 
     if (submitStatus === SUBMIT_STATUS.SUBMITTED) {
