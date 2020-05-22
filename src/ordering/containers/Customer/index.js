@@ -403,7 +403,7 @@ class Customer extends Component {
             <div className="form__group">
               <PhoneInput
                 smartCaret={false}
-                placeholder=""
+                placeholder={t('EnterPhoneNumber')}
                 value={formatPhoneNumberIntl(deliveryDetails.phone)}
                 country={country}
                 metadata={metadataMobile}

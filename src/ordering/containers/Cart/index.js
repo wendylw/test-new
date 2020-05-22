@@ -80,9 +80,11 @@ class Cart extends Component {
   }
 
   handleClickBack = () => {
+    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: window.location.search,
+      // search: window.location.search,
+      search: newSearchParams,
     });
   };
 
@@ -242,7 +244,7 @@ class Cart extends Component {
               <div className="promotion-info__container">
                 <div className="promotion-code__container flex flex-middle text-nowrap">
                   <span className="promotion-code font-weight-bolder">
-                    {t('Voucher')} ({this.showShortPromoCode()})
+                    {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button onClick={this.handleDismissPromotion} className="dismiss__button">
                     <IconClose className="icon" />
@@ -266,14 +268,16 @@ class Cart extends Component {
   }
 
   render() {
-    const { t, cartSummary, shoppingCart, businessInfo } = this.props;
+    const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
     const { isCreatingOrder } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
-    const isInvalidTotal = this.getDisplayPrice() < Number(minimumConsumption || 0) || (total && total < 1);
-    const minTotal = Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
+    const { isLogin } = user || {};
+    const isInvalidTotal =
+      (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
+    const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
 
     const buttonText = !isInvalidTotal ? (
       t('Pay')
@@ -315,6 +319,8 @@ class Cart extends Component {
             creditsBalance={cashback}
             isDeliveryType={Utils.isDeliveryType()}
             shippingFee={shippingFee}
+            isLogin={isLogin}
+            history={history}
           >
             {this.renderPromotionItem()}
           </Billing>

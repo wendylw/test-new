@@ -80,14 +80,6 @@ class LocationAndDate extends Component {
 
   componentDidMount = () => {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
-
-    if (this.timeListRef.current) {
-      const listOffset = Utils.elementPartialOffsetTop(this.timeListRef.current);
-
-      this.timeListRef.current.style.maxHeight = `${windowHeight - footerHeight - listOffset}px`;
-    }
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
@@ -531,15 +523,23 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     const { selectedDate } = this.state;
 
-    if (!selectedDate || !selectedDate.date) return null;
+    if (!selectedDate || !selectedDate.date) {
+      return null;
+    }
 
     const timeList = this.getHoursList(selectedDate);
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
       <div className="form__group location-display__date-container">
         {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
         {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
-        <ul ref={this.timeListRef} className="location-display__hour">
+        <ul
+          ref={this.timeListRef}
+          className="location-display__hour"
+          style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
+        >
           {this.renderHoursList(timeList)}
         </ul>
       </div>

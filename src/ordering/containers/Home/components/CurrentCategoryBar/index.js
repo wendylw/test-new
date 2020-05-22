@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { ScrollObserver, getCurrentScrollId } from '../../../../../components/ScrollComponents';
 
-class CurrentCategoryBar extends Component {
+class CurrentCategoryBar extends PureComponent {
   getCurrentCategoryByScrollname = scrollname => {
     return (this.props.categories || []).find(category => category.name === scrollname);
   };
@@ -61,6 +61,7 @@ class CurrentCategoryBar extends Component {
                             direction: 'y',
                             targetId: c.id,
                             isVerticalMenu,
+                            categoryId: c.id,
                           })
                         }
                       >

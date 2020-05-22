@@ -5,6 +5,7 @@ import Utils from '../../../utils/utils';
 import { getCurrentPlaceInfo } from './app';
 import { getAllStoreCollections } from './entities/storeCollections';
 import { getStoreById, storesActionCreators } from './entities/stores';
+import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
 const initialState = {
   typePicker: {
@@ -122,14 +123,15 @@ const fetchStoreUrlHash = (storeId, context) => ({
 });
 
 const fetchStoreList = () => (dispatch, getState) => {
-  const { coords } = getCurrentPlaceInfo(getState()) || {};
+  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
+  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+  const { coords } = currentPlaceInfo;
   const { page, pageSize } = getPaginationInfo(getState());
-
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],
     context: { page },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=delivery`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=delivery&countryCode=${countryCode}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
@@ -248,34 +250,6 @@ const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
 
   return state;
 };
-
-// const typePickerReducer = (state = initialState.typePicker, action) => {
-//   const { type, context } = action;
-//   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
-//     return { ...state, loading: true, show: context.isOpen || context.isPreOrder };
-//   } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
-//     const { redirectTo } = action.response || {};
-//     const storeUrlParams = {
-//       business: context.business,
-//       hash: redirectTo,
-//       source: context.source,
-//     };
-
-//     return {
-//       ...state,
-//       deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
-//       pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
-//       isOutOfDeliveryRange: context.isOutOfDeliveryRange,
-//       isOpen: context.isOpen || context.isPreOrder,
-//       business: context.business,
-//       loading: false,
-//     };
-//   } else if (type === types.FETCH_STORE_HASHCODE_FAILURE || type === types.HIDE_TYPE_PICKER) {
-//     return { ...initialState.typePicker };
-//   }
-
-//   return state;
-// };
 
 const loadedSearchingStoreList = (state = initialState.loadedSearchingStoreList, action) => {
   switch (action.type) {

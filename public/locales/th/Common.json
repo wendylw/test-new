@@ -11,6 +11,7 @@
   "Save": "บันทึก",
   "Free": "ฟรี",
   "ContactUs": "ติดต่อเรา",
+  "OrderDetails": "รายละเอียดออร์เดอร์",
   "TermsAndPrivacyDescription": "เมื่อเลือกดำเนินการต่อ แสดงว่าคุณได้ยอมรับ<1></1><2><3>เงื่อนไข</3>และ<3>ข้อตกลง</3>.</2>ของเราเป็นที่เรียบร้อยแล้ว",
   "DefaultMessage": "ขออภัยค่ะ กรุณาสแกน QR Code อีกครั้ง",
   "InvalidMessage": "หลังจากคุณซื้อสินค้า คุณแค่สแกนใบเสร็จของคุณ และกรอกหมายเลขโทรศัพท์ก็รับเงินคืนไว้ใช้ในครั้งต่อไปได้แล้ว ง่ายสุด ๆ ไปเลย!",
@@ -110,5 +111,17 @@
   "Sun": "อาทิตย์",
   "Now": "ตอนนี้",
   "Okay": "โอเค",
-  "DeliveryHours": "เวลาให้บริการจัดส่ง"
+  "DeliveryHours": "เวลาให้บริการจัดส่ง",
+  "AddPromoCode": "Add a promo code/voucher",
+  "Voucher": "Voucher",
+  "ConnectionIssue": "Sorry there was some issue with the connection, please try again",
+  "Immediate": "Immediate",
+  "PreOrderTag": "Pre Order",
+  "SelectTableNumber": "Select Table Number",
+  "PleasePickOne": "Please Pick One",
+  "Table": "Table",
+  "DineIn": "Dine-In",
+  "TakeAway": "Takeaway",
+  "CustomerDetails": "Customer Details",
+  "TAKE_AWAY": "TAKE AWAY"
 }

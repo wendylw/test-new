@@ -53,7 +53,7 @@ class MiniCartListModal extends Component {
           <div className="cart-pane__operation border__bottom-divider flex flex-middle flex-space-between">
             <h3 className="cart-pane__amount-container">
               <IconCartII />
-              <span className="cart-pane__amount-label text-middle gray-font-opacity">
+              <span className="cart-pane__amount-label text-middle font-weight-bolder">
                 {t('CartItemsInCategory', { cartQuantity: count })}
               </span>
             </h3>

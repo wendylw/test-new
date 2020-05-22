@@ -8,7 +8,6 @@ import Header from '../../../components/Header';
 import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
-import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -88,7 +87,7 @@ export class ReceiptDetail extends Component {
               variation={(variationTexts || []).join(', ')}
               detail={
                 <CurrencyNumber
-                  className="price item__text font-weight-bolder gray-font-opacity"
+                  className="price item__text font-weight-bolder"
                   money={displayPrice || unitPrice || 0}
                 />
               }

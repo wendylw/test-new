@@ -6,7 +6,6 @@ import Url from '../../../utils/url';
 import config from '../../../config';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../utils';
 
-import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const DEFAULT_SELECTED_VOUCHER = 50;

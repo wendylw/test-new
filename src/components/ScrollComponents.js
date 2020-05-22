@@ -5,13 +5,51 @@ import PropTypes from 'prop-types';
 import Utils from '../utils/utils';
 
 let observableContainer = {};
+let causeByNavClick = false;
+let currentCategoryId = null;
+let isScrolling = null;
+
 const TOP_BAR_HEIGHT = 50;
-const CATEGORY_BAR_HEIGHT = 50;
+const CATEGORY_BAR_HEIGHT = 36;
 const SCROLL_SPEED = {
   x: 30,
   y: 80,
   faster_y: 120,
 };
+
+/** calculate container's scrollTo height
+ * 1.find all children within container
+ * 2.find all children above target element(not including target), calculate their total height
+ * 3.this total height is what container need to scrollTo to show the targetElement.(so we don't need to worry about whatever other DOM is around container)
+ */
+
+function getScrollToHeight(container, targetId, categoryList) {
+  if (!container || !targetId) return 0;
+  let targetHeight = 0;
+  let hasFoundTarget = false;
+  let liIndex = 0;
+  while (liIndex < categoryList.length && !hasFoundTarget) {
+    let el = categoryList[liIndex];
+    let rectInfo = el.getBoundingClientRect();
+    if (el.id === targetId) {
+      hasFoundTarget = true;
+    } else {
+      targetHeight += rectInfo.height;
+    }
+    liIndex++;
+  }
+  return targetHeight;
+}
+
+function getScrollToHeightInContainer(container, targetId) {
+  let categoryList = container.querySelectorAll('li');
+  return getScrollToHeight(container, targetId, categoryList);
+}
+
+function getScrollToHeightInWindow(container, targetId) {
+  let categoryList = container.childNodes;
+  return getScrollToHeight(container, targetId, categoryList);
+}
 
 function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
   const userAgentInfo = Utils.getUserAgentInfo();
@@ -22,7 +60,6 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
     w: document.documentElement.clientWidth || document.body.clientWidth,
     h: document.documentElement.clientHeight || document.body.clientHeight,
   };
-
   if (
     !el ||
     document
@@ -32,7 +69,6 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
   ) {
     return;
   }
-
   const containerScrolledDistance = {
     x: document.body.scrollLeft || document.documentElement.scrollLeft || window.pageXOffset,
     y: document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset,
@@ -45,9 +81,18 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
     containerScrolledDistance.w = container.offsetWidth || container.clientWidth;
   }
 
+  let topBarHeight = document.querySelector('.header')
+    ? document.querySelector('.header').clientHeight
+    : TOP_BAR_HEIGHT;
+
+  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
+    topBarHeight =
+      document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
+  }
+
   const otherDistance = {
     x: 0,
-    y: TOP_BAR_HEIGHT + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
+    y: topBarHeight + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
   };
   const elOffset = {
     x: containerScrolledDistance.x + el.getBoundingClientRect().left,
@@ -98,8 +143,20 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
       containerScrolledDistance[direction] = scrollPosition;
     }
 
-    (container || window).scrollTo(containerScrolledDistance.x, containerScrolledDistance.y);
-
+    /** Side menu shouldn't scroll when user taps on it
+     * when user tabs on menu, data condition:causeByNavClick is true and container point to  'id=CategoryNavContent' element
+     * causeByNavClick && container equal true shows user taps on menu. otherwise,follow the previous scroll logic.
+     */
+    if (!(causeByNavClick && container)) {
+      /** fix the calculation for side menu scroll height */
+      if (container && targetId) {
+        const targetHeight = getScrollToHeightInContainer(container, targetId);
+        container.scrollTo(containerScrolledDistance.x, targetHeight);
+      } else {
+        const targetHeight = getScrollToHeightInWindow(el.parentNode, targetId);
+        window.scrollTo(containerScrolledDistance.x, targetHeight);
+      }
+    }
     if (containerScrolledDistance[direction] !== scrollPosition) {
       requestAnimationFrame(_run);
     } else if (typeof afterScroll === 'function') {
@@ -115,12 +172,20 @@ export function getCurrentScrollId(isVerticalMenu) {
   const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
   const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
   const elObjList = Object.values(observableContainer);
+  let topBarHeight = document.querySelector('.header')
+    ? document.querySelector('.header').clientHeight
+    : TOP_BAR_HEIGHT;
+
+  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
+    topBarHeight =
+      document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
+  }
   const [, elObj] =
     elObjList
       .map(elObj => [
         Utils.elementPartialOffsetTop(
           elObj,
-          TOP_BAR_HEIGHT + (isVerticalMenu ? 0 : CATEGORY_BAR_HEIGHT * 2),
+          topBarHeight + (isVerticalMenu ? 0 : CATEGORY_BAR_HEIGHT * 2),
           windowScrolledTop
         ),
         elObj,
@@ -186,12 +251,20 @@ export class ScrollObserver extends React.Component {
   }
 
   handleScroll = () => {
-    const scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
-
+    window.clearTimeout(isScrolling);
+    isScrolling = setTimeout(function() {
+      causeByNavClick = false;
+      currentCategoryId = null;
+    }, 50);
+    let scrollid;
+    if (currentCategoryId) {
+      scrollid = currentCategoryId;
+    } else {
+      scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
+    }
     if (!scrollid) {
       return;
     }
-
     const { isVerticalMenu, containerId, targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
 
@@ -221,8 +294,9 @@ export class ScrollObserver extends React.Component {
   };
 
   handleSelectedTarget = async options => {
-    const { targetId } = options;
-
+    const { targetId, categoryId } = options;
+    causeByNavClick = true;
+    currentCategoryId = categoryId;
     this.setState({ drivenToScroll: true, scrollid: targetId });
 
     await scrollToSmoothly({
