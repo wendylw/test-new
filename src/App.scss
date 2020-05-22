@@ -4312,7 +4312,8 @@ body.loading {
   background-color: $gray-10;
 
   .report-bad-driver-thankyou__image {
-    width: 240px;
+    max-width: 360px;
+    width: 33vh;
     margin: 4vh auto;
     img {
       width: 100%;
