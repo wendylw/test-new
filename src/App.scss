@@ -4312,12 +4312,13 @@ body.loading {
   background-color: $gray-10;
 
   .report-bad-driver-thankyou__image {
-    max-width: 360px;
-    width: 33vh;
+    max-height: 360px;
+    height: 33vh;
     margin: 4vh auto;
+    text-align: center;
     img {
-      width: 100%;
-      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
     }
   }
 
