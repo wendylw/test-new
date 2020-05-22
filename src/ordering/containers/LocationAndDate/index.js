@@ -331,6 +331,7 @@ class LocationAndDate extends Component {
                 className={`location-display__date-item flex flex-space-between flex-column text-center ${
                   deliverableTime.isOpen ? '' : 'disabled'
                 } ${isSelected ? 'selected' : ''}`}
+                data-testid="preOrderDate"
                 onClick={() => {
                   this.handleSelectDate(deliverableTime);
                 }}
@@ -366,6 +367,7 @@ class LocationAndDate extends Component {
             className={`location-display__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
             }`}
+            data-testid="preOrderHour"
             onClick={() => {
               this.handleSelectHour({ ...item });
             }}
@@ -392,6 +394,7 @@ class LocationAndDate extends Component {
       return (
         <li
           className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
+          data-testid="preOrderHour"
           onClick={() => {
             this.handleSelectHour({ from, to });
           }}
@@ -594,6 +597,7 @@ class LocationAndDate extends Component {
         <div className="footer-operation__item width-1-1">
           <button
             className="billing__link button button__fill button__block font-weight-bolder"
+            data-testid="continue"
             disabled={this.checkIfCanContinue()}
             onClick={this.goToNext}
           >

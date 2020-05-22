@@ -42,7 +42,11 @@ export class Item extends Component {
                 </div>
               ) : null}
               <summary className="item__title font-weight-bolder">{title}</summary>
-              {variation ? <p className="item__description">{variation}</p> : null}
+              {variation ? (
+                <p className="item__description" data-testid="itemDetailSummary">
+                  {variation}
+                </p>
+              ) : null}
             </div>
             {detail}
           </div>

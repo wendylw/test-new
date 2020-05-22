@@ -13,7 +13,12 @@ export class ItemOperator extends Component {
     return (
       <div className={classList.join(' ')}>
         {onDecrease ? (
-          <button className="cart__ctrl-container" disabled={decreaseDisabled} onClick={onDecrease}>
+          <button
+            className="cart__ctrl-container"
+            disabled={decreaseDisabled}
+            onClick={onDecrease}
+            data-testid="itemDecrease"
+          >
             <i className="cart__ctrl cart__minus">
               <span className="cart__icon"></span>
             </i>
@@ -23,7 +28,12 @@ export class ItemOperator extends Component {
         {quantity > 0 ? <span className="font-weight-bolder">{quantity}</span> : null}
 
         {onIncrease ? (
-          <button className="cart__ctrl-container" onClick={onIncrease} disabled={increaseDisabled}>
+          <button
+            className="cart__ctrl-container"
+            onClick={onIncrease}
+            disabled={increaseDisabled}
+            data-testid="itemIncrease"
+          >
             <i className="cart__ctrl cart__add">
               <span className="cart__icon"></span>
             </i>

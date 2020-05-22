@@ -121,7 +121,9 @@ class Header extends Component {
             {isPickUpType ? <p className="header__pickup-address gray-font-opacity omit-text">{storeAddress}</p> : null}
           </div>
         ) : (
-          <h2 className="header__title font-weight-bolder text-middle">{title}</h2>
+          <h2 className="header__title font-weight-bolder text-middle" data-testid="headerTitle">
+            {title}
+          </h2>
         )}
         {children}
       </header>
