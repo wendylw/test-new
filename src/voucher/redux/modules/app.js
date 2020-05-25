@@ -8,12 +8,15 @@ import { getVoucherOrderingInfoFromSessionStorage } from '../../utils';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
-const DEFAULT_SELECTED_VOUCHER = 50;
 const VOUCHER_VALIDITY_PERIOD_DAYS = 60;
-const VOUCHER_LIST = [5, 10, 20, 50];
+const VOUCHER_LIST_COUNTRY_MAP = {
+  MY: [5, 10, 20, 50],
+  TH: [50, 100, 200, 300],
+  PH: [50, 100, 200, 300],
+};
 
 const initialState = {
-  selectedVoucher: DEFAULT_SELECTED_VOUCHER,
+  selectedVoucher: null,
   contactInfo: {
     email: '',
   },
@@ -159,6 +162,10 @@ export function getOnlineStoreInfo(state) {
   return state.app.onlineStoreInfo;
 }
 
+export function getOnlineStoreCountry(state) {
+  return _get(state.app, 'onlineStoreInfo.country', '');
+}
+
 export function getOnlineStoreInfoFavicon(state) {
   return _get(state.app, 'onlineStoreInfo.favicon', '');
 }
@@ -184,7 +191,7 @@ export function getCurrencySymbol(state) {
 }
 
 export const getSelectedVoucher = state => {
-  return _get(state.app, 'selectedVoucher', DEFAULT_SELECTED_VOUCHER);
+  return _get(state.app, 'selectedVoucher', null);
 };
 
 export const getBeepSiteUrl = createSelector([getBusinessName], business => {
@@ -195,9 +202,9 @@ export const getContactEmail = state => {
   return _get(state.app, 'contactInfo.email', '');
 };
 
-export const getVoucherList = state => {
-  return VOUCHER_LIST;
-};
+export const getVoucherList = createSelector([getOnlineStoreCountry], country => {
+  return _get(VOUCHER_LIST_COUNTRY_MAP, country, []);
+});
 
 export const getVoucherValidityPeriodDays = state => {
   return VOUCHER_VALIDITY_PERIOD_DAYS;

@@ -7,17 +7,40 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
+  state = {
+    loadingBaseData: true,
+  };
+
   componentDidMount() {
-    this.props.appActions.loadOnlineStoreInfo();
-    this.props.appActions.loadBusinessInfo();
+    this.loadBaseData();
+  }
+
+  loadBaseData = () => {
+    const { appActions } = this.props;
+    this.setState({
+      loadingBaseData: true,
+    });
+
+    return Promise.all([appActions.loadOnlineStoreInfo(), appActions.loadBusinessInfo()]).finally(() => {
+      this.setState({
+        loadingBaseData: false,
+      });
+    });
+  };
+
+  renderPageLoader() {
+    return <div className="loader theme page-loader"></div>;
   }
 
   render() {
-    const { favicon } = this.props;
+    if (this.state.loadingBaseData) {
+      return this.renderPageLoader();
+    }
+
     return (
       <main className="voucher-ordering">
         <Routes />
-        <DocumentFavicon icon={favicon || faviconImage} />
+        <DocumentFavicon icon={this.props.favicon || faviconImage} />
       </main>
     );
   }

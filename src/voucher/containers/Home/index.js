@@ -21,6 +21,7 @@ import VoucherAboutContent from '../../components/VoucherAboutContent';
 class Home extends Component {
   componentDidMount() {
     this.props.appActions.initialVoucherOrderingInfo();
+    this.defaultSelectMaxVoucher();
   }
 
   handleContinue = () => {
@@ -32,6 +33,15 @@ class Home extends Component {
       pathname: Constants.ROUTER_PATHS.VOUCHER_CONTACT,
       search: window.location.search,
     });
+  };
+
+  defaultSelectMaxVoucher = () => {
+    const { voucherList } = this.props;
+
+    if (voucherList.length > 0) {
+      const defaultVoucher = Math.max(...voucherList);
+      this.handleSelectVoucher(defaultVoucher);
+    }
   };
 
   handleSelectVoucher = voucher => {
