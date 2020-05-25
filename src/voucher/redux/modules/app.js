@@ -13,6 +13,7 @@ const VOUCHER_LIST_COUNTRY_MAP = {
   MY: [5, 10, 20, 50],
   TH: [50, 100, 200, 300],
   PH: [50, 100, 200, 300],
+  SG: [5, 10, 20, 50],
 };
 
 const initialState = {
