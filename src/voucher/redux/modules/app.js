@@ -27,14 +27,24 @@ const initialState = {
 };
 
 export const actions = {
-  initialVoucherOrderingInfo: () => dispatch => {
+  initialVoucherOrderingInfo: () => (dispatch, getState) => {
     const orderingInfo = getVoucherOrderingInfoFromSessionStorage();
+    const state = getState();
+
     if (Object.prototype.hasOwnProperty.call(orderingInfo, 'selectedVoucher')) {
       dispatch({
         type: TYPES.SELECT_VOUCHER,
         voucher: orderingInfo.selectedVoucher,
       });
+    } else {
+      // default select max voucher amount
+      const maxVoucher = getMaxVoucherFromVoucherList(state);
+      dispatch({
+        type: TYPES.SELECT_VOUCHER,
+        voucher: maxVoucher,
+      });
     }
+
     if (Object.prototype.hasOwnProperty.call(orderingInfo, 'contactEmail')) {
       dispatch({
         type: TYPES.UPDATE_CONTACT_EMAIL,
@@ -205,6 +215,14 @@ export const getContactEmail = state => {
 
 export const getVoucherList = createSelector([getOnlineStoreCountry], country => {
   return _get(VOUCHER_LIST_COUNTRY_MAP, country, []);
+});
+
+export const getMaxVoucherFromVoucherList = createSelector([getVoucherList], voucherList => {
+  if (voucherList.length > 0) {
+    return Math.max(...voucherList);
+  } else {
+    return null;
+  }
 });
 
 export const getVoucherValidityPeriodDays = state => {
