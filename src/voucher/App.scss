@@ -218,39 +218,6 @@
   }
 }
 
-@media (min-width: 600px) {
-  .container {
-    position: relative;
-    max-width: 414px;
-    margin: auto;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-  }
-
-  .footer-operation {
-    max-width: 414px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  .continue__button {
-    max-height: 50px;
-    line-height: 50px;
-  }
-
-  .gift-card__page {
-    padding-bottom: 90px;
-  }
-
-  .header {
-    max-width: 414px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-  }
-}
-
 .thankyou-page {
   background-color: $gray-4;
 
@@ -467,5 +434,82 @@
     bottom: 0;
     font-size: 40px;
     z-index: 300;
+  }
+}
+
+.prompt-page {
+  padding: 10vh 0;
+  background-color: white;
+  width: 100%;
+
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
+  }
+
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__title {
+    margin: 3vh 0;
+    font-size: 2.2rem;
+    color: $gray-2;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    font-size: 1.2rem;
+    width: 80%;
+    max-width: 280px;
+
+    p {
+      font-size: inherit;
+      line-height: $line-height-base;
+    }
+  }
+
+  &__button-container {
+    position: fixed;
+    bottom: 0;
+    padding: 3.8vw;
+    width: 100%;
+  }
+
+  &__self-pickup {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 600px) {
+  .container {
+    position: relative;
+    max-width: 414px;
+    margin: auto;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .footer-operation {
+    max-width: 414px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .continue__button {
+    max-height: 50px;
+    line-height: 50px;
+  }
+
+  .gift-card__page {
+    padding-bottom: 90px;
+  }
+
+  .header {
+    max-width: 414px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
   }
 }

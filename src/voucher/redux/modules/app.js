@@ -8,6 +8,11 @@ import { getVoucherOrderingInfoFromSessionStorage } from '../../utils';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
+export const PAGE_ERROR_CODE_LIST = {
+  BUSINESS_NOT_FOUND: '40005',
+  REQUEST_ERROR: '500',
+};
+
 const VOUCHER_VALIDITY_PERIOD_DAYS = 60;
 const VOUCHER_LIST_COUNTRY_MAP = {
   MY: [5, 10, 20, 50],
@@ -17,6 +22,8 @@ const VOUCHER_LIST_COUNTRY_MAP = {
 };
 
 const initialState = {
+  showPageLoader: true,
+  pageErrorCode: null,
   selectedVoucher: null,
   contactInfo: {
     email: '',
@@ -58,6 +65,36 @@ export const actions = {
         email: voucherInfo.contactEmail,
       });
     }
+  },
+  showPageError: errorCode => ({
+    type: TYPES.SET_PAGE_ERROR_CODE,
+    code: errorCode,
+  }),
+  loadAppBaseData: () => async (dispatch, getState) => {
+    dispatch(actions.togglePageLoader(true));
+
+    const baseDataActionList = [dispatch(actions.loadOnlineStoreInfo()), dispatch(actions.loadBusinessInfo())];
+
+    const [onlineStoreInfoResult, businessInfoResult] = await Promise.all(baseDataActionList);
+
+    if (onlineStoreInfoResult.type === TYPES.FETCH_ONLINESTOREINFO_FAILURE) {
+      dispatch(actions.showPageError(onlineStoreInfoResult.code || PAGE_ERROR_CODE_LIST.REQUEST_ERROR));
+    } else if (businessInfoResult.type === TYPES.FETCH_COREBUSINESS_FAILURE) {
+      dispatch(actions.showPageError(businessInfoResult.code || PAGE_ERROR_CODE_LIST.REQUEST_ERROR));
+    } else if (!getOnlineStoreInfo(getState())) {
+      dispatch(actions.showPageError(PAGE_ERROR_CODE_LIST.BUSINESS_NOT_FOUND));
+    }
+
+    dispatch(actions.togglePageLoader(false));
+  },
+  togglePageLoader: visible => dispatch => {
+    return visible
+      ? dispatch({
+          type: TYPES.SHOW_PAGE_LOADER,
+        })
+      : dispatch({
+          type: TYPES.HIDE_PAGE_LOADER,
+        });
   },
   loadOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
@@ -168,12 +205,34 @@ const orderReducer = (state = initialState.order, action) => {
   return state;
 };
 
+const showPageLoaderReducer = (state = initialState.showPageLoader, action) => {
+  switch (action.type) {
+    case TYPES.SHOW_PAGE_LOADER:
+      return true;
+    case TYPES.HIDE_PAGE_LOADER:
+      return false;
+    default:
+      return state;
+  }
+};
+
+const pageErrorCodeReducer = (state = initialState.pageErrorCode, action) => {
+  switch (action.type) {
+    case TYPES.SET_PAGE_ERROR_CODE:
+      return action.code;
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   onlineStoreInfo: onlineStoreInfoReducer,
   businessInfo: businessInfoReducer,
   selectedVoucher: selectedVoucherReducer,
   contactInfo: contactInfoReducer,
   order: orderReducer,
+  showPageLoader: showPageLoaderReducer,
+  pageErrorCode: pageErrorCodeReducer,
 });
 
 export function getOnlineStoreInfo(state) {
@@ -246,4 +305,12 @@ export const getOrderVoucherCode = state => {
 
 export const getOrderContactEmail = state => {
   return _get(state.app, 'order.contactDetail.email', '');
+};
+
+export const getShowPageLoader = state => {
+  return _get(state.app, 'showPageLoader', false);
+};
+
+export const getPageErrorCode = state => {
+  return _get(state.app, 'pageErrorCode', null);
 };
