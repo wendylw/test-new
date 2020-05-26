@@ -276,7 +276,13 @@ class LocationAndDate extends Component {
           <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-              <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
+              <input
+                className="input input__block"
+                data-testid="deliverTo"
+                type="text"
+                defaultValue={deliveryToAddress}
+                readOnly
+              />
               <IconNext className="delivery__next-icon" />
             </div>
           </div>
