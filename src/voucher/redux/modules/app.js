@@ -27,28 +27,35 @@ const initialState = {
 };
 
 export const actions = {
-  initialVoucherOrderingInfo: () => (dispatch, getState) => {
-    const orderingInfo = getVoucherOrderingInfoFromSessionStorage();
+  initialVoucherOrderingInfo: () => dispatch => {
+    dispatch(actions.initialSelectedVoucher());
+    dispatch(actions.initialContactInfo());
+  },
+  initialSelectedVoucher: () => (dispatch, getState) => {
+    const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
     const state = getState();
 
-    if (Object.prototype.hasOwnProperty.call(orderingInfo, 'selectedVoucher')) {
+    if (Object.prototype.hasOwnProperty.call(voucherInfo, 'selectedVoucher')) {
       dispatch({
         type: TYPES.SELECT_VOUCHER,
-        voucher: orderingInfo.selectedVoucher,
+        voucher: voucherInfo.selectedVoucher,
       });
     } else {
-      // default select max voucher amount
+      // select max voucher amount
       const maxVoucher = getMaxVoucherFromVoucherList(state);
       dispatch({
         type: TYPES.SELECT_VOUCHER,
         voucher: maxVoucher,
       });
     }
+  },
+  initialContactInfo: () => (dispatch, getState) => {
+    const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
 
-    if (Object.prototype.hasOwnProperty.call(orderingInfo, 'contactEmail')) {
+    if (Object.prototype.hasOwnProperty.call(voucherInfo, 'contactEmail')) {
       dispatch({
         type: TYPES.UPDATE_CONTACT_EMAIL,
-        email: orderingInfo.contactEmail,
+        email: voucherInfo.contactEmail,
       });
     }
   },
