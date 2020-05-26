@@ -20,8 +20,9 @@ class App extends Component {
     this.setState({
       loadingBaseData: true,
     });
+    const baseDataRequestList = [appActions.loadOnlineStoreInfo(), appActions.loadBusinessInfo()];
 
-    return Promise.all([appActions.loadOnlineStoreInfo(), appActions.loadBusinessInfo()]).finally(() => {
+    return Promise.all(baseDataRequestList).finally(() => {
       this.setState({
         loadingBaseData: false,
       });
