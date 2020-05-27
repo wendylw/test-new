@@ -202,6 +202,7 @@ class OnlineBanking extends Component {
         <div className="footer-operation">
           <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
+            data-testid="payMoney"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
           >
