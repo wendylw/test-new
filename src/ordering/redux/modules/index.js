@@ -7,7 +7,7 @@ import promotion from './promotion';
 import payment from './payment';
 import thankYou from './thankYou';
 import customer from './customer';
-import reportBadDriver from './reportBadDriver';
+import reportDriver from './reportDriver';
 
 const rootReducer = combineReducers({
   entities,
@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
   payment,
   thankYou,
   promotion,
-  reportBadDriver,
+  reportDriver,
 });
 
 export default rootReducer;

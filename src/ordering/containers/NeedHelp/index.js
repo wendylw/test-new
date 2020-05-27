@@ -13,7 +13,7 @@ import {
   getIsUseStorehubLogistics,
 } from '../../redux/modules/thankYou';
 
-import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportBadDriver';
+import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 
 export class NeedHelp extends Component {
   componentDidMount() {
@@ -28,7 +28,7 @@ export class NeedHelp extends Component {
     };
 
     this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.REPORT_BAD_DRIVER,
+      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
   };

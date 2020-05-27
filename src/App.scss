@@ -4204,11 +4204,11 @@ body.loading {
   }
 }
 
-.table-ordering__report-bad-driver {
+.table-ordering__report-driver {
   width: 100%;
   background-color: $gray-10;
 
-  .report-bad-driver__title {
+  .report-driver__title {
     font-size: 1.2rem;
     font-weight: $font-weight-bolder;
     margin-top: 4vh;
@@ -4216,7 +4216,7 @@ body.loading {
     color: $main-color;
   }
 
-  .report-bad-driver__main {
+  .report-driver__main {
     background-color: white;
     margin: 2vh 4vw;
     padding: 2vh 4vw;
@@ -4224,7 +4224,7 @@ body.loading {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
-  .report-bad-driver__note {
+  .report-driver__note {
     position: relative;
     display: flex;
 
@@ -4248,7 +4248,7 @@ body.loading {
     }
   }
 
-  .report-bad-driver__common-issues {
+  .report-driver__common-issues {
     margin-top: 4vh;
 
     &-title {
@@ -4277,7 +4277,7 @@ body.loading {
     }
 
     &-list-item.active {
-      .report-bad-driver__common-issues-button {
+      .report-driver__common-issues-button {
         background-color: $theme-color;
         color: white;
         box-shadow: none;
@@ -4285,7 +4285,7 @@ body.loading {
     }
   }
 
-  .report-bad-driver__submit {
+  .report-driver__submit {
     &-button {
       height: 9vh;
       max-height: 60px;
@@ -4307,11 +4307,11 @@ body.loading {
   }
 }
 
-.table-ordering__report-bad-driver-thankyou {
+.table-ordering__report-driver-thankyou {
   width: 100%;
   background-color: $gray-10;
 
-  .report-bad-driver-thankyou__image {
+  .report-driver-thankyou__image {
     max-height: 360px;
     height: 33vh;
     margin: 4vh auto;
@@ -4322,7 +4322,7 @@ body.loading {
     }
   }
 
-  .report-bad-driver-thankyou__title {
+  .report-driver-thankyou__title {
     width: 100%;
     text-align: center;
     font-size: 3rem;
@@ -4330,7 +4330,7 @@ body.loading {
     font-weight: $font-weight-light;
   }
 
-  .report-bad-driver-thankyou__content {
+  .report-driver-thankyou__content {
     font-size: 1.3rem;
     color: $main-color;
     text-align: center;
@@ -4339,7 +4339,7 @@ body.loading {
     padding: 0 10px;
   }
 
-  .report-bad-driver-thankyou__done-button {
+  .report-driver-thankyou__done-button {
     margin: 5vh 6vw;
     button {
       height: 9vh;
@@ -4358,23 +4358,23 @@ body.loading {
 }
 
 @media (min-width: 600px) {
-  .table-ordering__report-bad-driver {
-    .report-bad-driver__note-char-length {
+  .table-ordering__report-driver {
+    .report-driver__note-char-length {
       right: 17px;
     }
 
-    .report-bad-driver__main {
+    .report-driver__main {
       margin: 2vh 17px;
       padding: 2vh 17px;
     }
 
-    .report-bad-driver__common-issues-list-item {
+    .report-driver__common-issues-list-item {
       margin: 8px;
     }
   }
 
-  .table-ordering__report-bad-driver-thankyou {
-    .report-bad-driver-thankyou__done-button {
+  .table-ordering__report-driver-thankyou {
+    .report-driver-thankyou__done-button {
       margin: 5vh 25px;
     }
   }

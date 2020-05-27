@@ -1,4 +1,4 @@
-import { REPORT_BAD_DRIVER_TYPES } from '../types';
+import { REPORT_DRIVER_TYPES } from '../types';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Constants from '../../../utils/constants';
 import Url from '../../../utils/url';
@@ -27,25 +27,25 @@ const initialState = {
 export const actions = {
   updateInputNodes: notes => {
     return {
-      type: REPORT_BAD_DRIVER_TYPES.UPDATE_INPUT_NOTES,
+      type: REPORT_DRIVER_TYPES.UPDATE_INPUT_NOTES,
       notes,
     };
   },
   setSelectedCommonIssues: commonIssues => {
     return {
-      type: REPORT_BAD_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES,
+      type: REPORT_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES,
       commonIssues,
     };
   },
   addSelectedCommonIssues: commonIssue => {
     return {
-      type: REPORT_BAD_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES,
+      type: REPORT_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES,
       commonIssue,
     };
   },
   removeSelectedCommonIssues: commonIssue => {
     return {
-      type: REPORT_BAD_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES,
+      type: REPORT_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES,
       commonIssue,
     };
   },
@@ -58,9 +58,9 @@ export const actions = {
     return dispatch({
       [FETCH_GRAPHQL]: {
         types: [
-          REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_REQUEST,
-          REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS,
-          REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_FAILURE,
+          REPORT_DRIVER_TYPES.SUBMIT_REPORT_REQUEST,
+          REPORT_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS,
+          REPORT_DRIVER_TYPES.SUBMIT_REPORT_FAILURE,
         ],
         endpoint: Url.apiGql('CreateFeedBack'),
         variables: {
@@ -79,9 +79,9 @@ export const actions = {
     return dispatch({
       [FETCH_GRAPHQL]: {
         types: [
-          REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_REQUEST,
-          REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_SUCCESS,
-          REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_FAILURE,
+          REPORT_DRIVER_TYPES.FETCH_REPORT_REQUEST,
+          REPORT_DRIVER_TYPES.FETCH_REPORT_SUCCESS,
+          REPORT_DRIVER_TYPES.FETCH_REPORT_FAILURE,
         ],
         endpoint: Url.apiGql('QueryFeedBack'),
         variables: {
@@ -94,49 +94,49 @@ export const actions = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case REPORT_BAD_DRIVER_TYPES.UPDATE_INPUT_NOTES:
+    case REPORT_DRIVER_TYPES.UPDATE_INPUT_NOTES:
       return {
         ...state,
         inputNotes: action.notes,
       };
-    case REPORT_BAD_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES:
+    case REPORT_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES:
       return {
         ...state,
         commonIssues: action.commonIssues,
       };
-    case REPORT_BAD_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES:
+    case REPORT_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES:
       state.selectedCommonIssues.add(action.commonIssue);
       return {
         ...state,
         selectedCommonIssues: new Set(state.selectedCommonIssues),
       };
-    case REPORT_BAD_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES:
+    case REPORT_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES:
       state.selectedCommonIssues.delete(action.commonIssue);
       return {
         ...state,
         selectedCommonIssues: new Set(state.selectedCommonIssues),
       };
-    case REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_REQUEST:
+    case REPORT_DRIVER_TYPES.SUBMIT_REPORT_REQUEST:
       return {
         ...state,
         submitStatus: SUBMIT_STATUS.IN_PROGRESS,
       };
-    case REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS:
+    case REPORT_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS:
       return {
         ...state,
         submitStatus: SUBMIT_STATUS.SUBMITTED,
       };
-    case REPORT_BAD_DRIVER_TYPES.SUBMIT_REPORT_FAILURE:
+    case REPORT_DRIVER_TYPES.SUBMIT_REPORT_FAILURE:
       return {
         ...state,
         submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
       };
-    case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_REQUEST:
+    case REPORT_DRIVER_TYPES.FETCH_REPORT_REQUEST:
       return {
         ...state,
         showLoading: true,
       };
-    case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_SUCCESS:
+    case REPORT_DRIVER_TYPES.FETCH_REPORT_SUCCESS:
       const reportData = _get(action.responseGql, 'data.queryFeedBack', null);
       if (reportData) {
         return {
@@ -153,7 +153,7 @@ const reducer = (state = initialState, action) => {
           showLoading: false,
         };
       }
-    case REPORT_BAD_DRIVER_TYPES.FETCH_REPORT_FAILURE:
+    case REPORT_DRIVER_TYPES.FETCH_REPORT_FAILURE:
       return {
         ...state,
         showLoading: false,
@@ -166,15 +166,15 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 
 export const getInputNotes = state => {
-  return _get(state.reportBadDriver, 'inputNotes', initialState.inputNotes);
+  return _get(state.reportDriver, 'inputNotes', initialState.inputNotes);
 };
 
 export const getSelectedCommonIssues = state => {
-  return _get(state.reportBadDriver, 'selectedCommonIssues', initialState.selectedCommonIssues);
+  return _get(state.reportDriver, 'selectedCommonIssues', initialState.selectedCommonIssues);
 };
 
 export const getSubmitStatus = state => {
-  return _get(state.reportBadDriver, 'submitStatus', initialState.submitStatus);
+  return _get(state.reportDriver, 'submitStatus', initialState.submitStatus);
 };
 
 export const getCommonIssuesCodes = state => {
@@ -182,5 +182,5 @@ export const getCommonIssuesCodes = state => {
 };
 
 export const getShowLoading = state => {
-  return _get(state.reportBadDriver, 'showLoading', initialState.showLoading);
+  return _get(state.reportDriver, 'showLoading', initialState.showLoading);
 };

@@ -10,7 +10,7 @@ import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
 import Header from '../../../components/Header';
 import {
-  actions as reportBadDriverActionCreators,
+  actions as reportDriverActionCreators,
   getCommonIssuesCodes,
   getInputNotes,
   getSelectedCommonIssues,
@@ -18,7 +18,7 @@ import {
   getShowLoading,
   SUBMIT_STATUS,
   CAN_REPORT_STATUS_LIST,
-} from '../../redux/modules/reportBadDriver';
+} from '../../redux/modules/reportDriver';
 import {
   actions as thankyouActionCreators,
   getIsUseStorehubLogistics,
@@ -28,12 +28,12 @@ import {
 
 const NOTE_MAX_LENGTH = 140;
 
-class ReportBadDriver extends Component {
+class ReportDriver extends Component {
   componentDidMount() {
-    const { receiptNumber, thankyouActions, reportBadDriverActions } = this.props;
+    const { receiptNumber, thankyouActions, reportDriverActions } = this.props;
 
     thankyouActions.loadOrder(receiptNumber);
-    reportBadDriverActions.fetchReport();
+    reportDriverActions.fetchReport();
   }
 
   handleGoBack = () => {
@@ -59,15 +59,15 @@ class ReportBadDriver extends Component {
 
   handleNotesChange = e => {
     const notes = e.target.value;
-    this.props.reportBadDriverActions.updateInputNodes(notes);
+    this.props.reportDriverActions.updateInputNodes(notes);
   };
 
   toggleCommonIssue = CommonIssueCode => {
-    const { reportBadDriverActions, selectedCommonIssues } = this.props;
+    const { reportDriverActions, selectedCommonIssues } = this.props;
     if (selectedCommonIssues.has(CommonIssueCode)) {
-      reportBadDriverActions.removeSelectedCommonIssues(CommonIssueCode);
+      reportDriverActions.removeSelectedCommonIssues(CommonIssueCode);
     } else {
-      reportBadDriverActions.addSelectedCommonIssues(CommonIssueCode);
+      reportDriverActions.addSelectedCommonIssues(CommonIssueCode);
     }
   };
 
@@ -96,7 +96,7 @@ class ReportBadDriver extends Component {
   };
 
   handleSubmit = async () => {
-    await this.props.reportBadDriverActions.submitReport();
+    await this.props.reportDriverActions.submitReport();
   };
 
   renderSubmitButtonContent = () => {
@@ -116,19 +116,19 @@ class ReportBadDriver extends Component {
   renderThankYou() {
     const { t } = this.props;
     return (
-      <section className="table-ordering__report-bad-driver-thankyou">
+      <section className="table-ordering__report-driver-thankyou">
         <Header
-          className="report-bad-driver__header flex-middle"
+          className="report-driver__header flex-middle"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></Header>
-        <div className="report-bad-driver-thankyou__image">
+        <div className="report-driver-thankyou__image">
           <img alt="Thank your feedback" src={feedBackThankyou} />
         </div>
-        <h3 className="report-bad-driver-thankyou__title">{t('Thankyou')}</h3>
-        <main className="report-bad-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
-        <div className="report-bad-driver-thankyou__done-button">
+        <h3 className="report-driver-thankyou__title">{t('Thankyou')}</h3>
+        <main className="report-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
+        <div className="report-driver-thankyou__done-button">
           <button onClick={this.handleDone}>{t('Done')}</button>
         </div>
       </section>
@@ -148,18 +148,18 @@ class ReportBadDriver extends Component {
     }
 
     return (
-      <section className="table-ordering__report-bad-driver">
+      <section className="table-ordering__report-driver">
         <Header
-          className="report-bad-driver__header flex-middle"
+          className="report-driver__header flex-middle"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></Header>
-        <h2 className="report-bad-driver__title">{t('ReportYourDriver')}</h2>
-        <main className="report-bad-driver__main">
-          <div className="report-bad-driver__note">
+        <h2 className="report-driver__title">{t('ReportYourDriver')}</h2>
+        <main className="report-driver__main">
+          <div className="report-driver__note">
             <textarea
-              className="report-bad-driver__note-textarea"
+              className="report-driver__note-textarea"
               placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
               rows="5"
               maxLength={NOTE_MAX_LENGTH}
@@ -167,23 +167,23 @@ class ReportBadDriver extends Component {
               onChange={this.handleNotesChange}
               disabled={disabled}
             ></textarea>
-            <div className="report-bad-driver__note-char-length">
+            <div className="report-driver__note-char-length">
               {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
             </div>
           </div>
-          <div className="report-bad-driver__common-issues">
-            <h3 className="report-bad-driver__common-issues-title">{t('CommonIssues')}</h3>
-            <ul className="report-bad-driver__common-issues-list">
+          <div className="report-driver__common-issues">
+            <h3 className="report-driver__common-issues-title">{t('CommonIssues')}</h3>
+            <ul className="report-driver__common-issues-list">
               {commonIssuesCodes.map(code => {
                 const active = selectedCommonIssues.has(code) ? 'active' : '';
                 return (
-                  <li key={code} className={`report-bad-driver__common-issues-list-item ${active}`}>
+                  <li key={code} className={`report-driver__common-issues-list-item ${active}`}>
                     <button
                       disabled={disabled}
                       onClick={() => {
                         this.toggleCommonIssue(code);
                       }}
-                      className="report-bad-driver__common-issues-button"
+                      className="report-driver__common-issues-button"
                     >
                       {t(`CommonIssues_${code}`)}
                     </button>
@@ -191,9 +191,9 @@ class ReportBadDriver extends Component {
                 );
               })}
             </ul>
-            <div className="report-bad-driver__submit">
+            <div className="report-driver__submit">
               <button
-                className="report-bad-driver__submit-button"
+                className="report-driver__submit-button"
                 disabled={this.isSubmitButtonDisable()}
                 onClick={this.handleSubmit}
               >
@@ -208,7 +208,7 @@ class ReportBadDriver extends Component {
 }
 
 export default compose(
-  withTranslation(['ReportBadDriver']),
+  withTranslation(['ReportDriver']),
   connect(
     state => ({
       commonIssuesCodes: getCommonIssuesCodes(state),
@@ -221,8 +221,8 @@ export default compose(
       showLoading: getShowLoading(state),
     }),
     dispatch => ({
-      reportBadDriverActions: bindActionCreators(reportBadDriverActionCreators, dispatch),
+      reportDriverActions: bindActionCreators(reportDriverActionCreators, dispatch),
       thankyouActions: bindActionCreators(thankyouActionCreators, dispatch),
     })
   )
-)(ReportBadDriver);
+)(ReportDriver);
