@@ -8,6 +8,7 @@ import { compose, bindActionCreators } from 'redux';
 import Constants from '../../../utils/constants';
 import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
+import uploadImage from '../../../images/upload-image.svg';
 import Header from '../../../components/Header';
 import {
   actions as reportDriverActionCreators,
@@ -155,9 +156,34 @@ class ReportDriver extends Component {
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></Header>
-        <h2 className="report-driver__title">{t('ReportYourDriver')}</h2>
         <main className="report-driver__main">
+          <div className="report-driver__select-reason">
+            <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>
+            <ul className="report-driver__select-reason-list">
+              <li className="report-driver__select-reason-item">
+                <input name="reason" type="radio" />
+                <label>Food was damaged</label>
+              </li>
+              <li className="report-driver__select-reason-item">
+                <input name="reason" type="radio" />
+                <label>Driver was late</label>
+              </li>
+              <li className="report-driver__select-reason-item">
+                <input name="reason" type="radio" />
+                <label>Driver was rude</label>
+              </li>
+              <li className="report-driver__select-reason-item">
+                <input name="reason" type="radio" />
+                <label>Driver asked for more money on delivery</label>
+              </li>
+              <li className="report-driver__select-reason-item">
+                <input name="reason" type="radio" />
+                <label>Others</label>
+              </li>
+            </ul>
+          </div>
           <div className="report-driver__note">
+            <h3 className="report-driver__note-title">{t('Notes')}</h3>
             <textarea
               className="report-driver__note-textarea"
               placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
@@ -171,35 +197,26 @@ class ReportDriver extends Component {
               {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
             </div>
           </div>
-          <div className="report-driver__common-issues">
-            <h3 className="report-driver__common-issues-title">{t('CommonIssues')}</h3>
-            <ul className="report-driver__common-issues-list">
-              {commonIssuesCodes.map(code => {
-                const active = selectedCommonIssues.has(code) ? 'active' : '';
-                return (
-                  <li key={code} className={`report-driver__common-issues-list-item ${active}`}>
-                    <button
-                      disabled={disabled}
-                      onClick={() => {
-                        this.toggleCommonIssue(code);
-                      }}
-                      className="report-driver__common-issues-button"
-                    >
-                      {t(`CommonIssues_${code}`)}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="report-driver__submit">
-              <button
-                className="report-driver__submit-button"
-                disabled={this.isSubmitButtonDisable()}
-                onClick={this.handleSubmit}
-              >
-                {this.renderSubmitButtonContent()}
-              </button>
+          <div className="report-driver__upload-photo">
+            <h3 className="report-driver__upload-photo-title">
+              {t('UploadPhoto')} ({t('Common:Required')})
+            </h3>
+            <div className="report-driver__upload-photo-uploader">
+              <input type="file" />
+              <div className="report-driver__upload-photo-reminder">
+                <img alt="upload" src={uploadImage} />
+                <p>{t('UploadFileHere')}</p>
+              </div>
             </div>
+          </div>
+          <div className="report-driver__submit">
+            <button
+              className="report-driver__submit-button"
+              disabled={this.isSubmitButtonDisable()}
+              onClick={this.handleSubmit}
+            >
+              {this.renderSubmitButtonContent()}
+            </button>
           </div>
         </main>
       </section>
