@@ -41,30 +41,15 @@ export const actions = {
   initialSelectedVoucher: () => (dispatch, getState) => {
     const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
     const state = getState();
+    const voucher = _get(voucherInfo, 'selectedVoucher', getMaxVoucherFromVoucherList(state));
 
-    if (Object.prototype.hasOwnProperty.call(voucherInfo, 'selectedVoucher')) {
-      dispatch({
-        type: TYPES.SELECT_VOUCHER,
-        voucher: voucherInfo.selectedVoucher,
-      });
-    } else {
-      // select max voucher amount
-      const maxVoucher = getMaxVoucherFromVoucherList(state);
-      dispatch({
-        type: TYPES.SELECT_VOUCHER,
-        voucher: maxVoucher,
-      });
-    }
+    dispatch(actions.selectVoucher(voucher));
   },
   initialContactInfo: () => (dispatch, getState) => {
     const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
+    const email = _get(voucherInfo, 'contactEmail', '');
 
-    if (Object.prototype.hasOwnProperty.call(voucherInfo, 'contactEmail')) {
-      dispatch({
-        type: TYPES.UPDATE_CONTACT_EMAIL,
-        email: voucherInfo.contactEmail,
-      });
-    }
+    dispatch(actions.updateContactEmail(email));
   },
   showPageError: errorCode => ({
     type: TYPES.SET_PAGE_ERROR_CODE,
