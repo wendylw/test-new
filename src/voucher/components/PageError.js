@@ -20,7 +20,7 @@ class Error extends React.PureComponent {
         {button ? (
           <div className="prompt-page__button-container">
             <button
-              className="button button__block button__fill font-weight-bolder text-center text-uppercase border-radius-base"
+              className="button button__block font-weight-bolder text-center text-uppercase border-radius-base"
               onClick={button.onClick}
             >
               {button.text}
