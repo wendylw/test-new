@@ -105,7 +105,7 @@ class Customer extends Component {
       return;
     }
 
-    Utils.setLocalStorageVariable('user.p', phone);
+    await Utils.setLocalStorageVariable('user.p', phone);
 
     if (!isLogin) {
       await appActions.getOtp({ phone });
