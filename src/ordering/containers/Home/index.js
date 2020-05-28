@@ -3,7 +3,6 @@ import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
-import Modal from '../../../components/Modal';
 
 import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
@@ -12,6 +11,7 @@ import DeliveryDetailModal from './components/DeliveryDetailModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import AlcoholModal from './components/AlcoholModal';
+import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
@@ -44,6 +44,7 @@ export class Home extends Component {
   state = {
     viewAside: null,
     alcoholModal: false,
+    offlineStoreModal: false,
     dScrollY: 0,
   };
   handleScroll = () => {
@@ -306,26 +307,12 @@ export class Home extends Component {
   };
 
   renderOfflineModal = enableLiveOnline => {
-    const { t, onlineStoreInfo, businessInfo } = this.props;
+    const { onlineStoreInfo, businessInfo } = this.props;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
 
-    return (
-      <Modal show={enableLiveOnline} className="align-middle">
-        <Modal.Body className="modal__content text-center">
-          <h2 className="modal__subtitle text-size-biggest font-weight-bolder">
-            {t('OfflinePromptTitle', { storeName: currentStoreName })}
-          </h2>
-          <p className="text-size-big">{t('OfflinePromptDescription')}</p>
-        </Modal.Body>
-        <Modal.Footer className="modal__footer">
-          <button className="button__fill button__block border-radius-base text-uppercase font-weight-bolder">
-            {t('Dismiss')}
-          </button>
-        </Modal.Footer>
-      </Modal>
-    );
+    return <OfflineStoreModal currentStoreName={currentStoreName} enableLiveOnline={enableLiveOnline} />;
   };
 
   renderDeliveryDate = () => {
