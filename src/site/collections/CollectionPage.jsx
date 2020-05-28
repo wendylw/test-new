@@ -77,6 +77,7 @@ class CollectionPage extends React.Component {
       <ul className="header flex flex-space-around text-uppercase border__bottom-divider sticky-wrapper">
         <li
           className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
+          data-testid="switchBar"
           onClick={() => this.handleSwitchTab('delivery')}
         >
           {t('Delivery')}

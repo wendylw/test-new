@@ -337,6 +337,7 @@ class Cart extends Component {
           <div className="footer-operation__item width-2-3">
             <button
               className="billing__link button button__fill button__block font-weight-bolder"
+              data-testid="pay"
               onClick={this.handleCheckPaymentStatus.bind(this)}
               disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
             >

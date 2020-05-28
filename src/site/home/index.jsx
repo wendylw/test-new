@@ -205,6 +205,7 @@ class Home extends React.Component {
                 <IconSearch className="entry-home__search-icon icon icon__small icon__gray" />
                 <input
                   className="form__input entry-home__input"
+                  data-testid="searchStore"
                   type="type"
                   placeholder={t('SearchRestaurantPlaceholder')}
                   onClick={this.handleLoadSearchPage}
