@@ -12,13 +12,17 @@ import uploadImage from '../../../images/upload-image.svg';
 import Header from '../../../components/Header';
 import {
   actions as reportDriverActionCreators,
-  getCommonIssuesCodes,
   getInputNotes,
-  getSelectedCommonIssues,
+  getSelectedReasonCode,
+  getSelectedReasonFields,
   getSubmitStatus,
   getShowLoading,
+  getUploadPhotoUrl,
+  getUploadPhotoFile,
   SUBMIT_STATUS,
   CAN_REPORT_STATUS_LIST,
+  REPORT_DRIVER_FIELDS,
+  REPORT_DRIVER_REASONS,
 } from '../../redux/modules/reportDriver';
 import {
   actions as thankyouActionCreators,
@@ -61,16 +65,7 @@ class ReportDriver extends Component {
 
   handleNotesChange = e => {
     const notes = e.target.value;
-    this.props.reportDriverActions.updateInputNodes(notes);
-  };
-
-  toggleCommonIssue = CommonIssueCode => {
-    const { reportDriverActions, selectedCommonIssues } = this.props;
-    if (selectedCommonIssues.has(CommonIssueCode)) {
-      reportDriverActions.removeSelectedCommonIssues(CommonIssueCode);
-    } else {
-      reportDriverActions.addSelectedCommonIssues(CommonIssueCode);
-    }
+    this.props.reportDriverActions.updateInputNotes(notes);
   };
 
   isOrderCanReportDriver = () => {
@@ -97,8 +92,22 @@ class ReportDriver extends Component {
     return false;
   };
 
+  handleUploadPhoto = e => {
+    const file = e.target.files[0];
+
+    this.props.reportDriverActions.setUploadPhotoFile(file);
+  };
+
+  handleRemoveUploadPhoto = () => {
+    this.props.reportDriverActions.removeUploadPhotoFile();
+  };
+
   handleSubmit = async () => {
     await this.props.reportDriverActions.submitReport();
+  };
+
+  handleSelectReason = reasonCode => {
+    this.props.reportDriverActions.selectReasonCode(reasonCode);
   };
 
   renderSubmitButtonContent = () => {
@@ -137,8 +146,65 @@ class ReportDriver extends Component {
     );
   }
 
+  renderNotesField({ t, inputNotes, disabled }) {
+    return (
+      <div className="report-driver__note">
+        <h3 className="report-driver__note-title">{t('Notes')}</h3>
+        <textarea
+          className="report-driver__note-textarea"
+          placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
+          rows="5"
+          maxLength={NOTE_MAX_LENGTH}
+          value={inputNotes}
+          onChange={this.handleNotesChange}
+          disabled={disabled}
+        ></textarea>
+        <div className="report-driver__note-char-length">
+          {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
+        </div>
+      </div>
+    );
+  }
+
+  renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled }) {
+    return (
+      <div className="report-driver__upload-photo">
+        <h3 className="report-driver__upload-photo-title">
+          {t('UploadPhoto')} ({t('Common:Required')})
+        </h3>
+        {uploadPhotoFile ? (
+          <div className="report-driver__upload-photo-viewer">
+            <img alt="upload file" src={uploadPhotoUrl} />
+            {disabled ? null : (
+              <button onClick={this.handleRemoveUploadPhoto} className="report-driver__upload-photo-remove-button">
+                <IconClose />
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="report-driver__upload-photo-uploader">
+            <input onChange={this.handleUploadPhoto} type="file" accept="image/*" />
+            <div className="report-driver__upload-photo-reminder">
+              <img alt="upload" src={uploadImage} />
+              <p>{t('UploadFileHere')}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   render() {
-    const { t, inputNotes, selectedCommonIssues, commonIssuesCodes, submitStatus, showLoading } = this.props;
+    const {
+      t,
+      inputNotes,
+      submitStatus,
+      showLoading,
+      selectedReasonCode,
+      selectedReasonFields,
+      uploadPhotoFile,
+      uploadPhotoUrl,
+    } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
     if (showLoading) {
@@ -161,64 +227,33 @@ class ReportDriver extends Component {
           <div className="report-driver__select-reason">
             <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>
             <ul className="report-driver__select-reason-list">
-              <li className="report-driver__select-reason-item">
-                <input name="reason" type="radio" />
-                <label>Food was damaged</label>
-              </li>
-              <li className="report-driver__select-reason-item">
-                <input name="reason" type="radio" />
-                <label>Driver was late</label>
-              </li>
-              <li className="report-driver__select-reason-item">
-                <input name="reason" type="radio" />
-                <label>Driver was rude</label>
-              </li>
-              <li className="report-driver__select-reason-item">
-                <input name="reason" type="radio" />
-                <label>Driver asked for more money on delivery</label>
-              </li>
-              <li className="report-driver__select-reason-item">
-                <input name="reason" type="radio" />
-                <label>Others</label>
-              </li>
+              {REPORT_DRIVER_REASONS.map(({ code, i18n_key }) => {
+                return (
+                  <li key={code} className="report-driver__select-reason-item">
+                    <input
+                      onChange={() => {
+                        this.handleSelectReason(code);
+                      }}
+                      checked={selectedReasonCode === code}
+                      id={`reason_${code}`}
+                      name="reason"
+                      type="radio"
+                    />
+                    <label htmlFor={`reason_${code}`}>{t(i18n_key)}</label>
+                  </li>
+                );
+              })}
             </ul>
           </div>
-          <div className="report-driver__note">
-            <h3 className="report-driver__note-title">{t('Notes')}</h3>
-            <textarea
-              className="report-driver__note-textarea"
-              placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
-              rows="5"
-              maxLength={NOTE_MAX_LENGTH}
-              value={inputNotes}
-              onChange={this.handleNotesChange}
-              disabled={disabled}
-            ></textarea>
-            <div className="report-driver__note-char-length">
-              {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
-            </div>
-          </div>
-          <div className="report-driver__upload-photo">
-            <h3 className="report-driver__upload-photo-title">
-              {t('UploadPhoto')} ({t('Common:Required')})
-            </h3>
-            <div className="report-driver__upload-photo-uploader">
-              <input type="file" />
-              <div className="report-driver__upload-photo-reminder">
-                <img alt="upload" src={uploadImage} />
-                <p>{t('UploadFileHere')}</p>
-              </div>
-            </div>
-            <div className="report-driver__upload-photo-viewer">
-              <img
-                alt="upload file"
-                src="https://d2ncjxd2rk2vpl.cloudfront.net/7/product/5e3bd795a527f80ea97e9878/0b02eac2-e692-4ba4-f73b-ab02a7edbf7d"
-              />
-              <button className="report-driver__upload-photo-remove-button">
-                <IconClose />
-              </button>
-            </div>
-          </div>
+
+          {selectedReasonFields.includes(REPORT_DRIVER_FIELDS.NOTES)
+            ? this.renderNotesField({ t, inputNotes, disabled })
+            : null}
+
+          {selectedReasonFields.includes(REPORT_DRIVER_FIELDS.PHOTO)
+            ? this.renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled })
+            : null}
+
           <div className="report-driver__submit">
             <button
               className="report-driver__submit-button"
@@ -238,14 +273,16 @@ export default compose(
   withTranslation(['ReportDriver']),
   connect(
     state => ({
-      commonIssuesCodes: getCommonIssuesCodes(state),
       inputNotes: getInputNotes(state),
-      selectedCommonIssues: getSelectedCommonIssues(state),
+      selectedReasonCode: getSelectedReasonCode(state),
+      selectedReasonFields: getSelectedReasonFields(state),
       orderStatus: getOrderStatus(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
       submitStatus: getSubmitStatus(state),
       showLoading: getShowLoading(state),
+      uploadPhotoFile: getUploadPhotoFile(state),
+      uploadPhotoUrl: getUploadPhotoUrl(state),
     }),
     dispatch => ({
       reportDriverActions: bindActionCreators(reportDriverActionCreators, dispatch),

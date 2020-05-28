@@ -4351,7 +4351,7 @@ body.loading {
           border-radius: 50%;
           background-color: $red;
           padding: 3px;
-          box-shadow: 0 0 4px 4px white;
+          border: 2px solid white;
           svg {
             width: 100%;
             height: 100%;

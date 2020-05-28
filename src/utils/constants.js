@@ -199,6 +199,14 @@ const PROMO_TYPE = {
   VOUCHER: 'Voucher',
 };
 
+const REPORT_DRIVER_REASON_CODE = {
+  FOOD_WAS_DAMAGED: 'foodWasDamaged',
+  DRIVER_WAS_LATE: 'driverWasLate',
+  DRIVER_WAS_RUDE: 'driverWasRude',
+  DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
+  OTHERS: 'others',
+};
+
 const ORDER_STATUS = {
   CREATED: 'created',
   PENDING_PAYMENT: 'pendingPayment',
@@ -247,4 +255,5 @@ export default {
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
   ORDER_STATUS,
+  REPORT_DRIVER_REASON_CODE,
 };

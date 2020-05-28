@@ -1,3 +1,4 @@
+import { createSelector } from 'reselect';
 import { REPORT_DRIVER_TYPES } from '../types';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Constants from '../../../utils/constants';
@@ -6,8 +7,40 @@ import _get from 'lodash/get';
 
 import { getReceiptNumber } from './thankYou';
 
-const { ORDER_STATUS } = Constants;
-const COMMON_ISSUES_CODES = ['foodWasDamaged', 'riderNeverContactedMe', 'driverWasRude', 'driverAskedMoreMoney'];
+const { ORDER_STATUS, REPORT_DRIVER_REASON_CODE } = Constants;
+
+export const REPORT_DRIVER_FIELDS = {
+  NOTES: 'notes',
+  PHOTO: 'photo',
+};
+
+export const REPORT_DRIVER_REASONS = [
+  {
+    code: REPORT_DRIVER_REASON_CODE.FOOD_WAS_DAMAGED,
+    fields: [REPORT_DRIVER_FIELDS.NOTES, REPORT_DRIVER_FIELDS.PHOTO],
+    i18n_key: 'Reasons_foodWasDamaged',
+  },
+  {
+    code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_LATE,
+    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    i18n_key: 'Reasons_driverWasLate',
+  },
+  {
+    code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_RUDE,
+    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    i18n_key: 'Reasons_driverWasRude',
+  },
+  {
+    code: REPORT_DRIVER_REASON_CODE.DRIVER_ASKED_MORE_MONEY,
+    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    i18n_key: 'Reasons_driverAskedMoreMoney',
+  },
+  {
+    code: REPORT_DRIVER_REASON_CODE.OTHERS,
+    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    i18n_key: 'Reasons_others',
+  },
+];
 
 export const SUBMIT_STATUS = {
   NOT_SUBMIT: 'NOT_SUBMIT',
@@ -19,40 +52,47 @@ export const CAN_REPORT_STATUS_LIST = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICK
 
 const initialState = {
   inputNotes: '',
-  selectedCommonIssues: new Set(),
+  selectedReasonCode: null,
+  uploadPhoto: {
+    url: '',
+    file: null, // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
+    isUploaded: false,
+  },
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
   showLoading: false,
 };
 
 export const actions = {
-  updateInputNodes: notes => {
+  updateInputNotes: notes => ({
+    type: REPORT_DRIVER_TYPES.UPDATE_INPUT_NOTES,
+    notes,
+  }),
+  setUploadPhotoFile: file => {
     return {
-      type: REPORT_DRIVER_TYPES.UPDATE_INPUT_NOTES,
-      notes,
+      type: REPORT_DRIVER_TYPES.SET_UPLOAD_PHOTO_FILE,
+      file,
+      url: window.URL.createObjectURL(file),
     };
   },
-  setSelectedCommonIssues: commonIssues => {
-    return {
-      type: REPORT_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES,
-      commonIssues,
-    };
+  removeUploadPhotoFile: () => (dispatch, getState) => {
+    const url = getUploadPhotoUrl(getState());
+
+    window.URL.revokeObjectURL(url);
+
+    return dispatch({
+      type: REPORT_DRIVER_TYPES.REMOVE_UPLOAD_PHOTO_FILE,
+    });
   },
-  addSelectedCommonIssues: commonIssue => {
+  selectReasonCode: reasonCode => {
     return {
-      type: REPORT_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES,
-      commonIssue,
-    };
-  },
-  removeSelectedCommonIssues: commonIssue => {
-    return {
-      type: REPORT_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES,
-      commonIssue,
+      type: REPORT_DRIVER_TYPES.SELECT_REASON_CODE,
+      reasonCode,
     };
   },
   submitReport: () => (dispatch, getState) => {
     const state = getState();
     const inputNotes = getInputNotes(state).trim();
-    const selectedCommonIssues = getSelectedCommonIssues(state);
+    const selectedCommonIssues = [];
     const receiptNumber = getReceiptNumber(state);
 
     return dispatch({
@@ -99,22 +139,30 @@ const reducer = (state = initialState, action) => {
         ...state,
         inputNotes: action.notes,
       };
-    case REPORT_DRIVER_TYPES.SET_SELECTED_COMMON_ISSUES:
+    case REPORT_DRIVER_TYPES.SET_UPLOAD_PHOTO_FILE:
       return {
         ...state,
-        commonIssues: action.commonIssues,
+        uploadPhoto: {
+          ...state.uploadPhoto,
+          file: action.file,
+          url: action.url,
+          isUploaded: false,
+        },
       };
-    case REPORT_DRIVER_TYPES.ADD_SELECTED_COMMON_ISSUES:
-      state.selectedCommonIssues.add(action.commonIssue);
+    case REPORT_DRIVER_TYPES.REMOVE_UPLOAD_PHOTO_FILE:
       return {
         ...state,
-        selectedCommonIssues: new Set(state.selectedCommonIssues),
+        uploadPhoto: {
+          ...state.uploadPhoto,
+          file: null,
+          url: '',
+          isUploaded: false,
+        },
       };
-    case REPORT_DRIVER_TYPES.REMOVE_SELECTED_COMMON_ISSUES:
-      state.selectedCommonIssues.delete(action.commonIssue);
+    case REPORT_DRIVER_TYPES.SELECT_REASON_CODE:
       return {
         ...state,
-        selectedCommonIssues: new Set(state.selectedCommonIssues),
+        selectedReasonCode: action.reasonCode,
       };
     case REPORT_DRIVER_TYPES.SUBMIT_REPORT_REQUEST:
       return {
@@ -169,18 +217,29 @@ export const getInputNotes = state => {
   return _get(state.reportDriver, 'inputNotes', initialState.inputNotes);
 };
 
-export const getSelectedCommonIssues = state => {
-  return _get(state.reportDriver, 'selectedCommonIssues', initialState.selectedCommonIssues);
+export const getSelectedReasonCode = state => {
+  return _get(state.reportDriver, 'selectedReasonCode', initialState.selectedReasonCode);
 };
+
+export const getSelectedReasonFields = createSelector([getSelectedReasonCode], reasonCode => {
+  const reason = REPORT_DRIVER_REASONS.find(reason => {
+    return reason.code === reasonCode;
+  });
+  return _get(reason, 'fields', []);
+});
 
 export const getSubmitStatus = state => {
   return _get(state.reportDriver, 'submitStatus', initialState.submitStatus);
 };
 
-export const getCommonIssuesCodes = state => {
-  return COMMON_ISSUES_CODES;
-};
-
 export const getShowLoading = state => {
   return _get(state.reportDriver, 'showLoading', initialState.showLoading);
+};
+
+export const getUploadPhotoFile = state => {
+  return _get(state.reportDriver, 'uploadPhoto.file', null);
+};
+
+export const getUploadPhotoUrl = state => {
+  return _get(state.reportDriver, 'uploadPhoto.url', '');
 };
