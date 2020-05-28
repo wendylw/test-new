@@ -3,6 +3,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
+import Modal from '../../../components/Modal';
 
 import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
@@ -304,6 +305,29 @@ export class Home extends Component {
     return '';
   };
 
+  renderOfflineModal = enableLiveOnline => {
+    const { t, onlineStoreInfo, businessInfo } = this.props;
+    const { stores, multipleStores } = businessInfo || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+    const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
+
+    return (
+      <Modal show={enableLiveOnline} className="align-middle">
+        <Modal.Body className="modal__content text-center">
+          <h2 className="modal__subtitle text-size-biggest font-weight-bolder">
+            {t('OfflinePromptTitle', { storeName: currentStoreName })}
+          </h2>
+          <p className="text-size-big">{t('OfflinePromptDescription')}</p>
+        </Modal.Body>
+        <Modal.Footer className="modal__footer">
+          <button className="button__fill button__block border-radius-base text-uppercase font-weight-bolder">
+            {t('Dismiss')}
+          </button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
   renderDeliveryDate = () => {
     const { t, deliveryInfo } = this.props;
 
@@ -517,6 +541,8 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
+
+        {this.renderOfflineModal(enableLiveOnline)}
       </section>
     );
   }
