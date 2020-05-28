@@ -30,15 +30,11 @@ const initialState = {
     pickupUrl: '',
     loading: false,
   },
-  coords: null, // { lat: float, lng: float }
   shippingType: 'delivery', // delivery || pickup, same to the above 2 states
 };
 
 // @types
 const types = {
-  // setCoords
-  SET_COORDS: 'SITE/COLLECTIONS/SET_COORDS',
-
   FETCH_STORE_LIST_REQUEST: 'SITE/COLLECTIONS/FETCH_STORE_LIST_REQUEST',
   FETCH_STORE_LIST_SUCCESS: 'SITE/COLLECTIONS/FETCH_STORE_LIST_SUCCESS',
   FETCH_STORE_LIST_FAILURE: 'SITE/COLLECTIONS/FETCH_STORE_LIST_FAILURE',
@@ -50,10 +46,6 @@ const types = {
 
 // @actions
 const actions = {
-  setCoords: coords => ({
-    type: types.SET_COORDS,
-    coords,
-  }),
   setShippingType: shippingType => ({
     type: types.SET_SHIPPING_TYPE,
     shippingType,
@@ -182,13 +174,6 @@ const pickup = (state = initialState.pickup, action) => {
   return state;
 };
 
-const coords = (state = initialState.coords, action) => {
-  if (action.type === types.SET_COORDS) {
-    return action.coords;
-  }
-  return state;
-};
-
 const shippingType = (state = initialState.shippingType, action) => {
   if (action.type === types.SET_SHIPPING_TYPE) {
     return action.shippingType;
@@ -200,12 +185,10 @@ export const collectionsActions = actions;
 export default combineReducers({
   delivery,
   pickup,
-  coords,
   shippingType,
 });
 
 // @selector
-export const getCoords = state => state.collections.coords;
 export const getShippingType = state => state.collections.shippingType;
 export const getPageInfo = state => {
   const shippingType = getShippingType(state);

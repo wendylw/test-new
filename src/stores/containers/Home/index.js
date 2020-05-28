@@ -101,7 +101,9 @@ class App extends Component {
           logo={logo}
           title={storeName}
         />
-        <h2 className="text-center">{t('SelectStoreDescription')}</h2>
+        <h2 className="text-center" data-testid="selectStoreDescription">
+          {t('SelectStoreDescription')}
+        </h2>
 
         <div className="list__container">
           {!stores || !stores.length ? (

@@ -1,7 +1,7 @@
+import { combineReducers } from 'redux';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getStoreById, storesActionCreators } from './entities/stores';
-import { combineReducers } from 'redux';
 import { getCurrentPlaceInfo } from './app';
 import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
@@ -22,13 +22,11 @@ const initialState = {
   },
   storeIdsSearchResult: [],
   loadedSearchingStoreList: false,
-  coords: null, // { lat: float, lng: float }
   shippingType: 'delivery', // delivery || pickup, same to the above 2 states
 };
 
 // @types
 const types = {
-  SET_COORDS: 'SITE/SEARCH/SET_COORDS',
   GET_STORE_LIST: '/SITE/SEARCH/GET_STORE_LIST',
   SET_SHIPPING_TYPE: 'SITE/SEARCH/SET_SHIPPING_TYPE',
   SET_SEARCH_INFO: 'SITE/SEARCH/SET_SEARCH_INFO',
@@ -44,10 +42,6 @@ const types = {
 
 // @actions
 const actions = {
-  setCoords: coords => ({
-    type: types.SET_COORDS,
-    coords,
-  }),
   getStoreList: () => (dispatch, getState) => {
     const shippingType = getShippingType(getState());
     const { loading, page, pageSize, hasMore } = getPageInfo(getState());
@@ -97,13 +91,6 @@ const fetchStoreList = (page, pageSize, shippingType) => (dispatch, getState) =>
 };
 
 // @reducers
-const coords = (state = initialState.coords, action) => {
-  if (action.type === types.SET_COORDS) {
-    return action.coords;
-  }
-  return state;
-};
-
 const shippingType = (state = initialState.shippingType, action) => {
   if (action.type === types.SET_SHIPPING_TYPE) {
     return action.shippingType;
@@ -194,7 +181,6 @@ const loadedSearchingStoreList = (state = initialState.loadedSearchingStoreList,
 export default combineReducers({
   storeIds,
   paginationInfo,
-  coords,
   shippingType,
   searchInfo,
   loadedSearchingStoreList,
@@ -204,7 +190,6 @@ export const searchActions = actions;
 
 // @selectors
 export const getSearchInfo = state => state.search.searchInfo;
-export const getCoords = state => state.search.coords;
 export const getPageInfo = state => state.search.paginationInfo;
 export const getShippingType = state => state.search.shippingType;
 export const loadedSearchingStores = state => state.search.loadedSearchingStoreList;

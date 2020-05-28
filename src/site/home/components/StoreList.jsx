@@ -73,6 +73,7 @@ class StoreList extends Component {
             <li
               key={id}
               className="store-card-list__item flex flex-top padding-top-bottom-normal border__bottom-divider"
+              data-testid="deliverStore"
               onClick={() => {
                 this.handleStoreClicked(store);
               }}

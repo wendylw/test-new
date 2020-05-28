@@ -34,7 +34,7 @@ export class Item extends Component {
       <li className={classList.join(' ')}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
           <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
-          <div className="item__detail flex flex-column flex-space-between">
+          <div className="item__detail flex flex-column flex-space-between" data-testid="itemDetail">
             <div className="item__detail-content">
               {hasTag ? (
                 <div className="tag__card-container">
@@ -44,7 +44,11 @@ export class Item extends Component {
               <summary className="item__title font-weight-bolder">
                 <span className="item__title-productName">{title}</span>
               </summary>
-              {variation ? <p className="item__description">{variation}</p> : null}
+              {variation ? (
+                <p className="item__description" data-testid="itemDetailSummary">
+                  {variation}
+                </p>
+              ) : null}
             </div>
             {detail}
           </div>

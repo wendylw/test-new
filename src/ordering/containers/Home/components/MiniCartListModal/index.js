@@ -57,7 +57,7 @@ class MiniCartListModal extends Component {
                 {t('CartItemsInCategory', { cartQuantity: count })}
               </span>
             </h3>
-            <button className="warning__button" onClick={this.handleClearAll.bind(this)}>
+            <button className="warning__button" onClick={this.handleClearAll.bind(this)} data-testid="clearAll">
               <IconDelete />
               <span className="warning__label text-middle">{t('ClearAll')}</span>
             </button>
