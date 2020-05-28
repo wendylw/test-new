@@ -25,7 +25,6 @@ class CollectionCard extends React.Component {
           <li
             key={collection.label}
             className="store-collections__item text-center"
-            data-testid="collection"
             onClick={() => {
               // concern to use location.href if icons fixed to the top
               backLeftPosition();

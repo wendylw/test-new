@@ -23,7 +23,6 @@ class DeliverToBar extends PureComponent {
       <section className={classList.join(' ')}>
         <div
           className="deliver-to-entry__content"
-          data-testid="DeliverToBar"
           onClick={() => {
             this.handleScannerClicked();
             gotoLocationPage();

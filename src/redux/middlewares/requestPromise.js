@@ -18,7 +18,7 @@ export default store => next => action => {
 
   console.debug('[redux/middleware/request] types =', types);
 
-  const [requestType, successType, failureType, cancelType] = types;
+  const [requestType, successType, failureType] = types;
   next({ ...other, type: requestType });
   return requestPromise
     .then(response => {
@@ -35,9 +35,6 @@ export default store => next => action => {
     })
     .catch(error => {
       console.error(error);
-      if (error.name === 'AbortError') {
-        return next({ ...other, type: cancelType || failureType, error });
-      }
-      return next({ ...other, type: failureType, error });
+      return next({ ...other, type: failureType, error: error.message || error });
     });
 };

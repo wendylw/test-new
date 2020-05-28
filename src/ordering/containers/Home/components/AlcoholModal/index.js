@@ -37,10 +37,10 @@ export class AlcoholModal extends PureComponent {
 
         <Modal.Footer>
           <div className="alcohol-modal__buttons text-center">
-            <button className="btn" data-testid="noIamNot" onClick={this.handleClick.bind(null, false)}>
+            <button className="btn" onClick={this.handleClick.bind(null, false)}>
               {t('AlcoholNo')}
             </button>
-            <button className="btn active" data-testid="yesIam" onClick={this.handleClick.bind(null, true)}>
+            <button className="btn active" onClick={this.handleClick.bind(null, true)}>
               {t('AlcoholYes')}
             </button>
           </div>

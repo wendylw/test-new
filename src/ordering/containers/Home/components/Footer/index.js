@@ -107,7 +107,6 @@ export class Footer extends Component {
           {tableId !== 'DEMO' ? (
             <button
               className="cart-bar__order-button"
-              data-testid="orderNow"
               disabled={
                 (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
                 (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||

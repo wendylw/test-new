@@ -189,7 +189,6 @@ class Payment extends Component {
                 <li
                   key={payment.label}
                   className={classList.join(' ')}
-                  data-testid="paymentSelector"
                   onClick={() => this.setCurrentPayment(payment.label)}
                 >
                   <figure className="payment__image-container">
@@ -213,7 +212,6 @@ class Payment extends Component {
           <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             disabled={payNowLoading}
-            data-testid="payNow"
             onClick={this.handleClickPayNow}
           >
             {payNowLoading ? <div className="loader"></div> : t('PayNow')}

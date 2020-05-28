@@ -17,7 +17,6 @@ class StoreList extends Component {
             <li
               key={id}
               className="item border__bottom-divider border-radius-base flex flex-top"
-              data-testid="store"
               onClick={() => {
                 onSelect(id);
               }}

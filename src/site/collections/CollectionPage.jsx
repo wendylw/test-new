@@ -12,28 +12,50 @@ import {
   getStoreList,
   getShippingType,
 } from '../redux/modules/collections';
-import { submitStoreMenu } from '../home/utils';
+import { getPlaceInfo, readPlaceInfo, submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import '../home/index.scss';
 import './CollectionPage.scss';
-import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
-import { checkStateRestoreStatus } from '../redux/modules/index';
 
 class CollectionPage extends React.Component {
+  static isFirstRender = true;
   renderId = `${Date.now()}`;
   scrollTop = 0;
   sectionRef = React.createRef();
+  isRestoreFromStorage = false;
+
+  constructor(props) {
+    super(props);
+    this.isRestoreFromStorage = props.rootActions.restore();
+  }
 
   componentDidMount = async () => {
-    const { currentCollection } = this.props;
+    const { currentPlaceInfo, currentCollection } = this.props;
 
-    if (!checkStateRestoreStatus()) {
+    if (!currentPlaceInfo) {
+      const { placeInfo } = await getPlaceInfo(this.props);
+      // if no placeInfo at all
+      if (!placeInfo) {
+        return this.gotoLocationPage();
+      }
+      // placeInfo ok
+      this.props.appActions.setCurrentPlaceInfo(placeInfo);
+    }
+    const placeInfoFromStorage = await readPlaceInfo();
+    if (!placeInfoFromStorage) {
+      console.error('[CollectionPage] no coords found. Back to home.');
+      this.goBackHome();
+      return;
+    }
+    if (!(this.isRestoreFromStorage && CollectionPage.isFirstRender)) {
       const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
       this.props.collectionsActions.setShippingType(shippingType);
       this.props.collectionsActions.resetPageInfo(shippingType);
     }
+    CollectionPage.isFirstRender = false;
+    this.props.collectionsActions.setCoords(placeInfoFromStorage.coords);
     this.props.collectionsActions.getStoreList(currentCollection.tags);
   };
 
@@ -77,7 +99,6 @@ class CollectionPage extends React.Component {
       <ul className="header flex flex-space-around text-uppercase border__bottom-divider sticky-wrapper">
         <li
           className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
-          data-testid="switchBar"
           onClick={() => this.handleSwitchTab('delivery')}
         >
           {t('Delivery')}
@@ -97,6 +118,9 @@ class CollectionPage extends React.Component {
     const { scrollTop } = pageInfo;
     const { tags } = currentCollection;
 
+    if (!this.sectionRef.current) {
+      return null;
+    }
     return (
       <div className="store-card-list__container padding-normal">
         <StoreListAutoScroll
@@ -123,9 +147,7 @@ class CollectionPage extends React.Component {
 
   render() {
     const { t, currentCollection } = this.props;
-    if (!currentCollection) {
-      return null;
-    }
+    if (!currentCollection) return null;
     return (
       <ModalPageLayout title={t(currentCollection.label)} onGoBack={this.handleBackClicked}>
         {currentCollection.slug === 'self-pickup' ? null : this.renderSwitchBar()}
@@ -138,7 +160,6 @@ class CollectionPage extends React.Component {
 }
 
 export default compose(
-  withPlaceInfo(),
   withTranslation('SiteHome'),
   connect(
     (state, ownProps) => ({

@@ -17,25 +17,45 @@ import {
   getShippingType,
   getPageInfo,
   getSearchInfo,
+  getCoords,
   loadedSearchingStores,
 } from '../redux/modules/search';
-import { submitStoreMenu } from '../home/utils';
+import { getPlaceInfo, readPlaceInfo, submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { rootActionCreators } from '../redux/modules';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
-import { checkStateRestoreStatus } from '../redux/modules/index';
-import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 
 class SearchPage extends React.Component {
+  static isFirstRender = true;
   renderId = `${Date.now()}`;
   scrollTop = 0;
   sectionRef = React.createRef();
+  isRestoreFromStorage = false;
+
+  constructor(props) {
+    super(props);
+    this.isRestoreFromStorage = props.rootActions.restore();
+  }
 
   componentDidMount = async () => {
-    if (!checkStateRestoreStatus()) {
+    const { currentPlaceInfo } = this.props;
+    if (!currentPlaceInfo) {
+      const { placeInfo } = await getPlaceInfo(this.props);
+      // if no placeInfo at all
+      if (!placeInfo) {
+        return this.gotoLocationPage();
+      }
+      // placeInfo ok
+      this.props.appActions.setCurrentPlaceInfo(placeInfo);
+    }
+
+    const placeInfoFromStorage = await readPlaceInfo();
+    this.props.searchActions.setCoords(placeInfoFromStorage.coords);
+    if (!(this.isRestoreFromStorage && SearchPage.isFirstRender)) {
       this.props.searchActions.setShippingType('delivery');
       this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
     }
+    SearchPage.isFirstRender = false;
   };
 
   onGoBack = () => {
@@ -106,7 +126,7 @@ class SearchPage extends React.Component {
             </p>
           </div>
         )}
-        {stores.length && keyword ? (
+        {stores.length && keyword && this.sectionRef.current ? (
           <div className="store-card-list__container padding-normal">
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
@@ -155,10 +175,10 @@ class SearchPage extends React.Component {
 }
 
 export default compose(
-  withPlaceInfo(),
   withTranslation(),
   connect(
     state => ({
+      coords: getCoords(state),
       pageInfo: getPageInfo(state),
       stores: getStoreList(state),
       shippingType: getShippingType(state),

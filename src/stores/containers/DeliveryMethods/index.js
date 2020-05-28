@@ -108,7 +108,6 @@ class DeliveryMethods extends Component {
               <li
                 key={method.name}
                 className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
-                data-testid="selectPrefrence"
                 onClick={() => this.handleVisitStore(method.name)}
               >
                 <figure className="delivery__image-container">

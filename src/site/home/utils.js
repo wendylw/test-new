@@ -7,7 +7,7 @@ import Utils from '../../utils/utils';
 
 const { ROUTER_PATHS } = Constants;
 
-const getPlaceInfoFromLocation = ({ location }) => {
+const getPlaceInfoFromHistory = ({ history, location }) => {
   const { state = {} } = location || {};
 
   if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
@@ -17,15 +17,11 @@ const getPlaceInfoFromLocation = ({ location }) => {
   return null;
 };
 
-export const savePlaceInfo = placeInfo => {
+export const savePlaceInfo = async placeInfo => {
   return localStorage.setItem('user.placeInfo', JSON.stringify(placeInfo));
 };
 
-export const removePlaceInfo = () => {
-  return localStorage.removeItem('user.placeInfo');
-};
-
-export const readPlaceInfo = () => {
+export const readPlaceInfo = async () => {
   try {
     return JSON.parse(localStorage.getItem('user.placeInfo'));
   } catch (e) {
@@ -43,57 +39,41 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
   }
 };
 
-export const getPlaceInfo = async ({
-  fromLocationPage = true,
-  fromCache = true,
-  fromDevice = true,
-  fromIp = true,
-  location,
-} = {}) => {
+export const getPlaceInfo = async ({ history, location }, withCache = true) => {
   // first to use place from location picker
-  let placeInfo = null;
-  let source = '';
-  if (!placeInfo && fromLocationPage) {
-    if (location) {
-      placeInfo = getPlaceInfoFromLocation({ location });
-    }
-    if (placeInfo) {
-      source = 'location-page';
-    }
-  }
-  if (!placeInfo && fromCache) {
+  let placeInfo = getPlaceInfoFromHistory({ history, location });
+  let source = 'location-page';
+
+  // second to use last time
+  if (withCache && !placeInfo) {
     try {
-      placeInfo = readPlaceInfo();
+      placeInfo = JSON.parse(localStorage.getItem('user.placeInfo'));
 
       // --Begin-- last version of cache doesn't have addressComponents field, we need it now
       if (placeInfo && !placeInfo.addressComponents) {
-        removePlaceInfo();
+        localStorage.removeItem('user.placeInfo');
         placeInfo = null;
       }
       // ---End--- last version of cache doesn't have addressComponents field, we need it now
 
-      if (placeInfo) {
-        source = 'cache';
-      }
+      if (placeInfo) source = 'cache';
     } catch (e) {
       console.warn(e);
     }
   }
 
   // third to use device location when there is already have permission
-  if (!placeInfo && fromDevice) {
-    try {
-      placeInfo = await getPositionInfoBySource('device', true);
-      if (placeInfo) {
-        source = 'device';
-      }
-    } catch (e) {
-      console.warn(e);
-    }
-  }
+  // todo next phase: need a modal to ask for permission and rest currentPlaceInfo on home page
+  // if (!placeInfo && !(await isDeviceGeolocationDenied())) {
+  //   try {
+  //     placeInfo = await getPositionInfoBySource('device');
+  //   } catch (e) {
+  //     console.warn(e);
+  //   }
+  // }
 
   // if not have exact location, try from IP
-  if (!placeInfo && fromIp) {
+  if (!placeInfo) {
     try {
       // tried device with cache already, so try ip without cache now
       placeInfo = await getPositionInfoBySource('ip', false);
@@ -103,7 +83,7 @@ export const getPlaceInfo = async ({
     }
   }
 
-  savePlaceInfo(placeInfo); // now save into localStorage
+  await savePlaceInfo(placeInfo); // now save into localStorage
 
   return { placeInfo, source };
 };

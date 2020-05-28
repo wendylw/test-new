@@ -115,7 +115,7 @@ class CategoryProductList extends Component {
             }
 
             return (
-              <h2 className="category__header fixed flex flex-middle flex-space-between" data-testid="categoryRight">
+              <h2 className="category__header fixed flex flex-middle flex-space-between">
                 <label>{target.name || ''}</label>
                 {/* {target.cartQuantity ? (
                   <span className="gray-font-opacity">

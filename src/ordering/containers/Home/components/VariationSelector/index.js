@@ -134,12 +134,7 @@ export class VariationSelector extends Component {
             }
 
             return (
-              <li
-                key={id}
-                className={className.join(' ')}
-                data-testid="itemDetailSimpleSelection"
-                onClick={selectedOptionFunc}
-              >
+              <li key={id} className={className.join(' ')} onClick={selectedOptionFunc}>
                 {value}
               </li>
             );

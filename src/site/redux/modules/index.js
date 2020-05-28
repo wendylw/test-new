@@ -5,55 +5,32 @@ import collections from './collections';
 import entities from './entities';
 import search from './search';
 
-const STORAGE_KEY_ROOT_BACKUP = 'ROOT_STATE_BACKUP';
-
-let restoreToken = false;
-// return true at most once, because only one component should skip init because of state restoring
-export const checkStateRestoreStatus = () => {
-  const ret = restoreToken;
-  restoreToken = false;
-  return ret;
-};
-
 // @actions
-const actions = {
-  // we won't dispatch real action. This is implemented as thunk action only to make it easier to get state.
-  backup: () => (dispatch, getState) => {
-    const state = getState();
-    sessionStorage.setItem(
-      STORAGE_KEY_ROOT_BACKUP,
-      JSON.stringify({
-        url: document.location.href,
-        state: state,
-      })
-    );
-  },
+const types = {
+  ROOT_BACKUP: 'SITE/ROOT/ROOT_BACKUP',
+  ROOT_RESTORE: 'SITE/ROOT/ROOT_RESTORE',
 };
 
-// only call restore for the first time for better performance
-let restoreCalled = false;
-const restore = () => {
-  if (restoreCalled) {
-    return null;
-  }
-  restoreCalled = true;
-  const backString = sessionStorage.getItem(STORAGE_KEY_ROOT_BACKUP);
-  // will remove storage even if the url doesn't match. Imagine a situation:
-  // user go to store page and close the window, then open a new window for main site.
-  // we won't restore for this case and will not restore in further access.
-  sessionStorage.removeItem(STORAGE_KEY_ROOT_BACKUP);
-  let backup = null;
-  if (backString) {
-    try {
-      const data = JSON.parse(backString);
-      if (data && data.url === document.location.href) {
-        backup = data.state;
+const actions = {
+  backup: () => ({ type: types.ROOT_BACKUP }),
+  restore: () => dispatch => {
+    const STORAGE_KEY_ROOT_BACKUP = 'STORAGE_KEY_ROOT_BACKUP';
+    const backString = sessionStorage.getItem(STORAGE_KEY_ROOT_BACKUP);
+    sessionStorage.removeItem(STORAGE_KEY_ROOT_BACKUP);
+    let backup = null;
+    if (backString) {
+      try {
+        backup = JSON.parse(backString);
+      } catch {
+        backup = null;
       }
-    } catch {
-      backup = null;
     }
-  }
-  return backup;
+    if (backup) {
+      dispatch({ type: types.ROOT_RESTORE, payload: backup });
+      return true;
+    }
+    return false;
+  },
 };
 
 const appReducer = combineReducers({
@@ -65,11 +42,15 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  const restoredState = restore();
-  if (restoredState) {
-    restoreToken = true;
-    return appReducer(restoredState, action);
+  const STORAGE_KEY_ROOT_BACKUP = 'STORAGE_KEY_ROOT_BACKUP';
+
+  if (action.type === types.ROOT_BACKUP) {
+    sessionStorage.setItem(STORAGE_KEY_ROOT_BACKUP, JSON.stringify(state));
+    return state;
+  } else if (action.type === types.ROOT_RESTORE) {
+    return action.payload;
   }
+
   return appReducer(state, action);
 };
 
