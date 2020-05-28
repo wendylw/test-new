@@ -4324,6 +4324,40 @@ body.loading {
           color: $gray-9;
         }
       }
+
+      &-viewer {
+        position: relative;
+
+        img {
+          border-radius: 8px;
+        }
+      }
+
+      &-remove-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: none;
+        width: 32px;
+        height: 32px;
+        padding: 4px;
+        z-index: 2;
+        transform: translate(30%, -30%);
+        i {
+          display: inline-block;
+          fill: white;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: $red;
+          padding: 3px;
+          box-shadow: 0 0 4px 4px white;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
     }
 
     &__submit {

@@ -26,6 +26,7 @@ import {
   getOrderStatus,
   getReceiptNumber,
 } from '../../redux/modules/thankYou';
+import { IconClose } from '../../../components/Icons';
 
 const NOTE_MAX_LENGTH = 140;
 
@@ -207,6 +208,15 @@ class ReportDriver extends Component {
                 <img alt="upload" src={uploadImage} />
                 <p>{t('UploadFileHere')}</p>
               </div>
+            </div>
+            <div className="report-driver__upload-photo-viewer">
+              <img
+                alt="upload file"
+                src="https://d2ncjxd2rk2vpl.cloudfront.net/7/product/5e3bd795a527f80ea97e9878/0b02eac2-e692-4ba4-f73b-ab02a7edbf7d"
+              />
+              <button className="report-driver__upload-photo-remove-button">
+                <IconClose />
+              </button>
             </div>
           </div>
           <div className="report-driver__submit">
