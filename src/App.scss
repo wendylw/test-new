@@ -4248,6 +4248,22 @@ body.loading {
         .radio {
           padding: 0;
           flex-shrink: 0;
+          .radio__check-icon {
+            border-color: $gray-3;
+            width: 24px;
+            height: 24px;
+
+            &::before {
+              width: 10px;
+              height: 10px;
+            }
+          }
+
+          &.active {
+            .radio__check-icon {
+              border-color: $theme-color;
+            }
+          }
         }
 
         label {
