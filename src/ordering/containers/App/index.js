@@ -76,6 +76,8 @@ class App extends Component {
       pageError && pageError.code && pageError.code !== '40011' ? '' : Constants.ROUTER_PATHS.ERROR
     }`;
 
+    console.log(pageError);
+
     if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
       return (window.location.href = errorPageUrl);
     }
