@@ -4245,15 +4245,14 @@ body.loading {
           margin-bottom: 0;
         }
 
+        .radio {
+          padding: 0;
+          flex-shrink: 0;
+        }
+
         label {
           margin-left: 1em;
           font-size: inherit;
-        }
-
-        input[type="radio"] {
-          height: 21px;
-          width: 21px;
-          flex-shrink: 0;
         }
       }
     }
@@ -4283,7 +4282,7 @@ body.loading {
         position: absolute;
         right: 4vw;
         bottom: 1vh;
-        font-size: 0.8em;
+        font-size: 0.9em;
         color: $gray-7;
       }
     }

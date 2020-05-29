@@ -10,6 +10,7 @@ import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
 import uploadImage from '../../../images/upload-image.svg';
 import Header from '../../../components/Header';
+import Radio from '../../../components/Radio';
 import {
   actions as reportDriverActionCreators,
   getInputNotes,
@@ -265,14 +266,13 @@ class ReportDriver extends Component {
               {REPORT_DRIVER_REASONS.map(({ code, i18n_key }) => {
                 return (
                   <li key={code} className="report-driver__select-reason-item">
-                    <input
+                    <Radio
                       onChange={() => {
                         this.handleSelectReason(code);
                       }}
                       checked={selectedReasonCode === code}
-                      id={`reason_${code}`}
+                      inputId={`reason_${code}`}
                       name="reason"
-                      type="radio"
                     />
                     <label htmlFor={`reason_${code}`}>{t(i18n_key)}</label>
                   </li>
