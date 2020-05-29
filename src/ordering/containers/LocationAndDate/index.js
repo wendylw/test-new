@@ -276,7 +276,13 @@ class LocationAndDate extends Component {
           <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-              <input className="input input__block" type="text" defaultValue={deliveryToAddress} readOnly />
+              <input
+                className="input input__block"
+                data-testid="deliverTo"
+                type="text"
+                defaultValue={deliveryToAddress}
+                readOnly
+              />
               <IconNext className="delivery__next-icon" />
             </div>
           </div>
@@ -323,6 +329,7 @@ class LocationAndDate extends Component {
                 className={`location-display__date-item flex flex-space-between flex-column text-center ${
                   deliverableTime.isOpen ? '' : 'disabled'
                 } ${isSelected ? 'selected' : ''}`}
+                data-testid="preOrderDate"
                 onClick={() => {
                   this.handleSelectDate(deliverableTime);
                 }}
@@ -358,6 +365,7 @@ class LocationAndDate extends Component {
             className={`location-display__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
             }`}
+            data-testid="preOrderHour"
             onClick={() => {
               this.handleSelectHour({ ...item });
             }}
@@ -384,6 +392,7 @@ class LocationAndDate extends Component {
       return (
         <li
           className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
+          data-testid="preOrderHour"
           onClick={() => {
             this.handleSelectHour({ from, to });
           }}
@@ -594,6 +603,7 @@ class LocationAndDate extends Component {
         <div className="footer-operation__item width-1-1">
           <button
             className="billing__link button button__fill button__block font-weight-bolder"
+            data-testid="continue"
             disabled={this.checkIfCanContinue()}
             onClick={this.goToNext}
           >

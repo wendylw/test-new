@@ -459,6 +459,7 @@ class ProductDetail extends Component {
           <button
             className="button__fill button__block font-weight-bolder"
             type="button"
+            data-testid="OK"
             disabled={
               !this.isSubmitable() ||
               Utils.isProductSoldOut(product || {}) ||

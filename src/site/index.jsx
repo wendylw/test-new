@@ -8,8 +8,18 @@ import SiteApp from './containers/App';
 import DocumentFavicon from '../components/DocumentFavicon';
 import DocumentHeadInfo from '../components/DocumentHeadInfo';
 import favicon from '../images/favicon.ico';
+import Utils from '../utils/utils';
 
 class Site extends Component {
+  constructor(props) {
+    super(props);
+    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
+  }
   render() {
     const { t } = this.props;
 
