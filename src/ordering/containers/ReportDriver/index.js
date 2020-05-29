@@ -30,9 +30,11 @@ import {
   getOrderStatus,
   getReceiptNumber,
 } from '../../redux/modules/thankYou';
+import { actions as appActionCreators } from '../../redux/modules/app';
 import { IconClose } from '../../../components/Icons';
 
 const NOTE_MAX_LENGTH = 140;
+const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
 
 class ReportDriver extends Component {
   componentDidMount() {
@@ -40,6 +42,11 @@ class ReportDriver extends Component {
 
     thankyouActions.loadOrder(receiptNumber);
     reportDriverActions.fetchReport();
+  }
+
+  componentWillUnmount() {
+    // release the file reference
+    this.props.reportDriverActions.removeUploadPhotoFile();
   }
 
   handleGoBack = () => {
@@ -74,14 +81,32 @@ class ReportDriver extends Component {
     return CAN_REPORT_STATUS_LIST.includes(orderStatus) && isUseStorehubLogistics;
   };
 
+  isInputNotesCanSubmit() {
+    const { inputNotes } = this.props;
+    return inputNotes.trim().length > 0;
+  }
+
+  isUploadPhotoCanSubmit() {
+    const { uploadPhotoFile } = this.props;
+    return uploadPhotoFile && uploadPhotoFile.size <= UPLOAD_FILE_MAX_SIZE;
+  }
+
   isSubmitButtonDisable = () => {
-    const { inputNotes, submitStatus } = this.props;
+    const { submitStatus, selectedReasonFields, selectedReasonCode } = this.props;
 
     if (!this.isOrderCanReportDriver()) {
       return true;
     }
 
-    if (inputNotes.trim().length === 0) {
+    if (!selectedReasonCode) {
+      return true;
+    }
+
+    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.NOTES) && !this.isInputNotesCanSubmit()) {
+      return true;
+    }
+
+    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.PHOTO) && !this.isUploadPhotoCanSubmit()) {
       return true;
     }
 
@@ -93,7 +118,17 @@ class ReportDriver extends Component {
   };
 
   handleUploadPhoto = e => {
+    // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
     const file = e.target.files[0];
+
+    if (file.size > UPLOAD_FILE_MAX_SIZE) {
+      this.props.appActions.showError({
+        message: 'too big file size',
+      });
+      // clear the select file
+      e.target.value = '';
+      return;
+    }
 
     this.props.reportDriverActions.setUploadPhotoFile(file);
   };
@@ -287,6 +322,7 @@ export default compose(
     dispatch => ({
       reportDriverActions: bindActionCreators(reportDriverActionCreators, dispatch),
       thankyouActions: bindActionCreators(thankyouActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(ReportDriver);

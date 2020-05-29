@@ -190,7 +190,6 @@ const reducer = (state = initialState, action) => {
         return {
           ...state,
           inputNotes: reportData.notes,
-          selectedCommonIssues: new Set(reportData.reasonCode),
           submitStatus: SUBMIT_STATUS.SUBMITTED,
           showLoading: false,
         };
