@@ -4232,7 +4232,7 @@ body.loading {
       }
 
       &-item {
-        margin: 3vh 0;
+        padding: 1vh;
         color: $main-color;
         font-size: $font-size-base;
         display: flex;
@@ -4268,6 +4268,7 @@ body.loading {
 
         label {
           margin-left: 1em;
+          line-height: 1.5em;
           font-size: inherit;
         }
       }
