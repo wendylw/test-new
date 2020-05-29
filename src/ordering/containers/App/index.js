@@ -73,7 +73,9 @@ class App extends Component {
   visitErrorPage() {
     const { pageError } = this.props;
     const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${
-      pageError && pageError.code && pageError.code !== '40011' ? Constants.ROUTER_PATHS.ERROR : ''
+      pageError && pageError.code && pageError.code !== '40011'
+        ? Constants.ROUTER_PATHS.ERROR
+        : `/${window.location.search}`
     }`;
 
     console.log(errorPageUrl);
