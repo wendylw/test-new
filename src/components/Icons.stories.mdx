@@ -1,0 +1,39 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import {
+ IconPending,
+ IconEarned,
+ IconChecked,
+ IconTicket,
+ IconCart,
+} from './Icons';
+
+<Meta title="Document/Icons" />
+
+## Icons
+
+Some of small icons are located in a module `src/components/Icons.js` file.
+
+### Cashback Icons
+
+List icons of cashback icons, first place to use in Cashback Home page.
+
+<Preview>
+  <Story name="all icons">
+    <div style={{ display:'flex', alignItems:'center' }}>
+        <IconPending /> IconPending
+        <IconEarned /> IconEarned
+        <IconChecked /> IconChecked
+    </div>
+  </Story>
+</Preview>
+
+### Other Icons
+
+<Preview>
+    <Story name="other icons">
+        <div style={{ display:'flex', alignItems:'center' }}>
+            <IconTicket /> IconTicket
+            <span style={{ backgroundColor:'Tomato'}}><IconCart /></span> IconCart
+        </div>
+    </Story>
+</Preview>
