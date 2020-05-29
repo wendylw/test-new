@@ -78,8 +78,6 @@ class App extends Component {
         : `/${window.location.search}`
     }`;
 
-    console.log(errorPageUrl);
-
     if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
       return (window.location.href = errorPageUrl);
     }
