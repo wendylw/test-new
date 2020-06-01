@@ -21,11 +21,6 @@ import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
-// import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
-// import beepOnTheWay from '../../../images/beep-on-the-way.svg';
-// import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
-// import beepOrderPending from '../../../images/beep-order-pending.svg';
-// import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
@@ -246,7 +241,7 @@ export class ThankYou extends PureComponent {
     const { enableCashback } = businessInfo || {};
     const { total, storeInfo, status } = order || {};
     const { name } = storeInfo || {};
-    const { trackingUrl, useStorehubLogistics } =
+    const { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -255,6 +250,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
+
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -267,6 +263,7 @@ export class ThankYou extends PureComponent {
         bannerImage: beepOrderStatusPaid,
       };
     }
+
     /** accepted status */
     if (status === ACCEPTED) {
       currentStatusObj = {
@@ -279,6 +276,7 @@ export class ThankYou extends PureComponent {
         bannerImage: beepOrderStatusAccepted,
       };
     }
+
     /** logistic confirmed and confirmed */
     if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
@@ -304,6 +302,7 @@ export class ThankYou extends PureComponent {
         bannerImage: beepOrderStatusPickedUp,
       };
     }
+
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
@@ -360,10 +359,14 @@ export class ThankYou extends PureComponent {
           ) : null}
           {useStorehubLogistics &&
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-            <div className="thanks__status-description">
-              <a href={trackingUrl || ''} target="__blank" className="link text-uppercase font-weight-bolder">
-                {currentStatusObj.secondNote}
-              </a>
+            <div className="thanks__status-description flex flex-middle flex-center">
+              {trackingUrl ? (
+                <a href={trackingUrl} target="__blank" className="link text-uppercase font-weight-bolder">
+                  {currentStatusObj.secondNote}
+                </a>
+              ) : (
+                <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>
+              )}
             </div>
           ) : null}
           {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
