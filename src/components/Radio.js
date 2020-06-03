@@ -9,12 +9,12 @@ class Radio extends PureComponent {
   };
 
   render() {
-    const { checked = false, name = '', inputId = '' } = this.props;
+    const { checked = false, name = '', inputId = '', disabled = false } = this.props;
     const active = checked ? 'active' : '';
     return (
       <div className={`radio ${active}`}>
         <i className="radio__check-icon"></i>
-        <input onChange={this.handleOnChange} name={name} id={inputId} type="radio"></input>
+        <input disabled={disabled} onChange={this.handleOnChange} name={name} id={inputId} type="radio"></input>
       </div>
     );
   }

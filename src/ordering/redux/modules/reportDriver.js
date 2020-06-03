@@ -4,6 +4,10 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import Constants from '../../../utils/constants';
 import Url from '../../../utils/url';
 import _get from 'lodash/get';
+import i18next from 'i18next';
+
+import { uploadReportDriverPhoto } from '../../../utils/aws-s3';
+import { actions as appActions } from './app';
 
 import { getReceiptNumber } from './thankYou';
 
@@ -56,7 +60,7 @@ const initialState = {
   uploadPhoto: {
     url: '',
     file: null, // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
-    isUploaded: false,
+    location: '', // uploaded aws s3 location
   },
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
   showLoading: false,
@@ -83,19 +87,62 @@ export const actions = {
       type: REPORT_DRIVER_TYPES.REMOVE_UPLOAD_PHOTO_FILE,
     });
   },
+  setUploadPhotoFileLocation: location => ({
+    type: REPORT_DRIVER_TYPES.SET_UPLOAD_PHOTO_LOCATION,
+    location,
+  }),
   selectReasonCode: reasonCode => {
     return {
       type: REPORT_DRIVER_TYPES.SELECT_REASON_CODE,
       reasonCode,
     };
   },
-  submitReport: () => (dispatch, getState) => {
+  updateSubmitStatus: submitStatus => ({
+    type: REPORT_DRIVER_TYPES.UPDATE_SUBMIT_STATUS,
+    submitStatus,
+  }),
+  submitReport: () => async (dispatch, getState) => {
     const state = getState();
-    const inputNotes = getInputNotes(state).trim();
-    const selectedCommonIssues = [];
+    const selectedReasonFields = getSelectedReasonFields(state);
+    const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
+    const variables = {
+      reasonCode: [selectedReasonCode],
+      reporterType: 'consumer',
+      receiptNumber,
+    };
 
-    return dispatch({
+    dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
+
+    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.NOTES)) {
+      variables.notes = getInputNotes(state).trim();
+    }
+
+    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.PHOTO)) {
+      const file = getUploadPhotoFile(state);
+      let location = getUploadPhotoLocation(getState());
+
+      if (!location) {
+        try {
+          const result = await uploadReportDriverPhoto(file);
+          dispatch(actions.setUploadPhotoFileLocation(result.location));
+          location = result.location;
+        } catch (e) {
+          console.error(e);
+          dispatch(
+            appActions.showError({
+              message: i18next.t('ConnectionIssue'),
+            })
+          );
+          dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
+          return false;
+        }
+      }
+
+      variables.image = location;
+    }
+
+    const result = await dispatch({
       [FETCH_GRAPHQL]: {
         types: [
           REPORT_DRIVER_TYPES.SUBMIT_REPORT_REQUEST,
@@ -103,14 +150,20 @@ export const actions = {
           REPORT_DRIVER_TYPES.SUBMIT_REPORT_FAILURE,
         ],
         endpoint: Url.apiGql('CreateFeedBack'),
-        variables: {
-          reasonCode: Array.from(selectedCommonIssues),
-          notes: inputNotes,
-          reporterType: 'consumer',
-          receiptNumber,
-        },
+        variables,
       },
     });
+
+    if (result.type === REPORT_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS) {
+      dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
+    } else if (result.type === REPORT_DRIVER_TYPES.SUBMIT_REPORT_FAILURE) {
+      dispatch(
+        appActions.showError({
+          message: i18next.t('ConnectionIssue'),
+        })
+      );
+      dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
+    }
   },
   fetchReport: () => (dispatch, getState) => {
     const state = getState();
@@ -146,7 +199,7 @@ const reducer = (state = initialState, action) => {
           ...state.uploadPhoto,
           file: action.file,
           url: action.url,
-          isUploaded: false,
+          location: false,
         },
       };
     case REPORT_DRIVER_TYPES.REMOVE_UPLOAD_PHOTO_FILE:
@@ -156,7 +209,15 @@ const reducer = (state = initialState, action) => {
           ...state.uploadPhoto,
           file: null,
           url: '',
-          isUploaded: false,
+          location: '',
+        },
+      };
+    case REPORT_DRIVER_TYPES.SET_UPLOAD_PHOTO_LOCATION:
+      return {
+        ...state,
+        uploadPhoto: {
+          ...state.uploadPhoto,
+          location: action.location,
         },
       };
     case REPORT_DRIVER_TYPES.SELECT_REASON_CODE:
@@ -164,25 +225,15 @@ const reducer = (state = initialState, action) => {
         ...state,
         selectedReasonCode: action.reasonCode,
       };
-    case REPORT_DRIVER_TYPES.SUBMIT_REPORT_REQUEST:
-      return {
-        ...state,
-        submitStatus: SUBMIT_STATUS.IN_PROGRESS,
-      };
-    case REPORT_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS:
-      return {
-        ...state,
-        submitStatus: SUBMIT_STATUS.SUBMITTED,
-      };
-    case REPORT_DRIVER_TYPES.SUBMIT_REPORT_FAILURE:
-      return {
-        ...state,
-        submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
-      };
     case REPORT_DRIVER_TYPES.FETCH_REPORT_REQUEST:
       return {
         ...state,
         showLoading: true,
+      };
+    case REPORT_DRIVER_TYPES.UPDATE_SUBMIT_STATUS:
+      return {
+        ...state,
+        submitStatus: action.submitStatus,
       };
     case REPORT_DRIVER_TYPES.FETCH_REPORT_SUCCESS:
       const reportData = _get(action.responseGql, 'data.queryFeedBack', null);
@@ -241,4 +292,8 @@ export const getUploadPhotoFile = state => {
 
 export const getUploadPhotoUrl = state => {
   return _get(state.reportDriver, 'uploadPhoto.url', '');
+};
+
+export const getUploadPhotoLocation = state => {
+  return _get(state.reportDriver, 'uploadPhoto.location', '');
 };

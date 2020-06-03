@@ -273,6 +273,7 @@ class ReportDriver extends Component {
                       checked={selectedReasonCode === code}
                       inputId={`reason_${code}`}
                       name="reason"
+                      disabled={disabled}
                     />
                     <label htmlFor={`reason_${code}`}>{t(i18n_key)}</label>
                   </li>
