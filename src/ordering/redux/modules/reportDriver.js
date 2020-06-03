@@ -63,7 +63,7 @@ const initialState = {
     location: '', // uploaded aws s3 location
   },
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
-  showLoading: false,
+  showPageLoader: true,
 };
 
 export const actions = {
@@ -228,7 +228,7 @@ const reducer = (state = initialState, action) => {
     case REPORT_DRIVER_TYPES.FETCH_REPORT_REQUEST:
       return {
         ...state,
-        showLoading: true,
+        showPageLoader: true,
       };
     case REPORT_DRIVER_TYPES.UPDATE_SUBMIT_STATUS:
       return {
@@ -240,21 +240,20 @@ const reducer = (state = initialState, action) => {
       if (reportData) {
         return {
           ...state,
-          inputNotes: reportData.notes,
           submitStatus: SUBMIT_STATUS.SUBMITTED,
-          showLoading: false,
+          showPageLoader: false,
         };
       } else {
         return {
           ...state,
           submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
-          showLoading: false,
+          showPageLoader: false,
         };
       }
     case REPORT_DRIVER_TYPES.FETCH_REPORT_FAILURE:
       return {
         ...state,
-        showLoading: false,
+        showPageLoader: false,
       };
     default:
       return state;
@@ -282,8 +281,8 @@ export const getSubmitStatus = state => {
   return _get(state.reportDriver, 'submitStatus', initialState.submitStatus);
 };
 
-export const getShowLoading = state => {
-  return _get(state.reportDriver, 'showLoading', initialState.showLoading);
+export const getShowPageLoader = state => {
+  return _get(state.reportDriver, 'showPageLoader', initialState.showPageLoader);
 };
 
 export const getUploadPhotoFile = state => {

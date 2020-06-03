@@ -17,7 +17,7 @@ import {
   getSelectedReasonCode,
   getSelectedReasonFields,
   getSubmitStatus,
-  getShowLoading,
+  getShowPageLoader,
   getUploadPhotoUrl,
   getUploadPhotoFile,
   SUBMIT_STATUS,
@@ -235,7 +235,7 @@ class ReportDriver extends Component {
       t,
       inputNotes,
       submitStatus,
-      showLoading,
+      showPageLoader,
       selectedReasonCode,
       selectedReasonFields,
       uploadPhotoFile,
@@ -243,7 +243,7 @@ class ReportDriver extends Component {
     } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
-    if (showLoading) {
+    if (showPageLoader) {
       return <PageLoader />;
     }
 
@@ -316,7 +316,7 @@ export default compose(
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
       submitStatus: getSubmitStatus(state),
-      showLoading: getShowLoading(state),
+      showPageLoader: getShowPageLoader(state),
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
     }),
