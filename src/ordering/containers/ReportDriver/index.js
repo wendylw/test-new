@@ -124,7 +124,7 @@ class ReportDriver extends Component {
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
       this.props.appActions.showError({
-        message: 'too big file size',
+        message: this.props.t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }),
       });
       // clear the select file
       e.target.value = '';

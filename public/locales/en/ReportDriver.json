@@ -11,6 +11,7 @@
     "Done": "Done",
     "UploadPhoto": "Upload photo",
     "UploadFileHere": "Upload file here",
+    "UploadPhotoTooLarge": "The photo you have selected is too large. The maximum size is {{maxFileSize}}MB.",
     "Reasons_foodWasDamaged": "Food was damaged",
     "Reasons_driverWasLate": "Driver was late",
     "Reasons_driverWasRude": "Driver was rude",
