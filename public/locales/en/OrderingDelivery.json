@@ -16,5 +16,5 @@
   "LocationSharingIsOff": "Location sharing is off.",
   "DeliveryTimeAndAddressTitle": "Delivery Time & Address",
   "PickUpTimeAndAddressTitle": "Pickup Time & Address",
-  "ReportAnUnsafeDriver": "Report an unsafe driver"
+  "ReportDriver": "Report Driver"
 }

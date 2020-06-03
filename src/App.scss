@@ -3561,21 +3561,27 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
-  &__report-unsafe-driver {
+  &__report-driver {
     margin-top: 4vh;
     &-button {
-      font-size: $font-size-base;
-      font-weight: bold;
-      letter-spacing: 1.25px;
-      line-height: 16px;
-      text-align: center;
-      background-color: $theme-color;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+      font-size: 16px;
+      text-align: left;
       max-height: 60px;
       height: 10vh;
-      color: white;
+      border: none;
+      background-color: white;
       width: 100%;
-      text-transform: uppercase;
       border-radius: $border-radius-base;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+      &-text {
+        font-size: inherit;
+        color: $main-color;
+        font-weight: bold;
+      }
     }
   }
 }

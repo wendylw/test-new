@@ -5,6 +5,7 @@ import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { IconNext } from '../../../components/Icons';
 import {
   actions as thankYouActionCreators,
   getBusinessInfo,
@@ -80,13 +81,14 @@ export class NeedHelp extends Component {
           </ul>
         </div>
         {isUseStorehubLogistics ? (
-          <div className="need-help__report-unsafe-driver">
+          <div className="need-help__report-driver">
             <button
               disabled={this.isReportUnsafeDriverButtonDisabled()}
               onClick={this.handleReportUnsafeDriver}
-              className="need-help__report-unsafe-driver-button"
+              className="need-help__report-driver-button"
             >
-              {t('ReportAnUnsafeDriver')}
+              <span className="need-help__report-driver-button-text">{t('ReportDriver')}</span>
+              <IconNext className="need-help__report-driver-button-icon" />
             </button>
           </div>
         ) : null}
