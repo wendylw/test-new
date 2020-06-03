@@ -199,7 +199,7 @@ const reducer = (state = initialState, action) => {
           ...state.uploadPhoto,
           file: action.file,
           url: action.url,
-          location: false,
+          location: '',
         },
       };
     case REPORT_DRIVER_TYPES.REMOVE_UPLOAD_PHOTO_FILE:
