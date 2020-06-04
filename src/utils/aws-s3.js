@@ -1,5 +1,6 @@
 import { get } from './request';
 import Url from './url';
+import utils from './utils';
 
 const FETCH_POLICY_ACTION = {
   UPLOAD_REPORT_DRIVER_PHOTO: 'upload-report-driver-photo',
@@ -13,7 +14,10 @@ export const fetchPolicyData = action => {
 export const postToS3 = (endPoint, formData) => {
   return fetch(endPoint, { method: 'post', body: formData }).then(response => {
     if (response.ok) {
-      return response;
+      return {
+        status: response.status,
+        location: `${endPoint}/${formData.get('key')}`,
+      };
     } else {
       return Promise.reject(response);
     }
@@ -22,8 +26,8 @@ export const postToS3 = (endPoint, formData) => {
 
 export const uploadReportDriverPhoto = async file => {
   const policyData = await fetchPolicyData(FETCH_POLICY_ACTION.UPLOAD_REPORT_DRIVER_PHOTO);
-  const fileName = '123123.jpg';
-  const key = `${policyData.uploadPath}/${fileName}`;
+  const fileExtension = utils.getFileExtension(file);
+  const key = `${policyData.prefixKey}.${fileExtension}`;
 
   const fd = new FormData();
   fd.append('key', key);
@@ -37,9 +41,5 @@ export const uploadReportDriverPhoto = async file => {
   fd.append('X-Amz-Signature', policyData.signature);
   fd.append('file', file);
 
-  await postToS3(policyData.endPoint, fd);
-
-  return {
-    location: `${policyData.endPoint}/${key}`,
-  };
+  return postToS3(policyData.endPoint, fd);
 };
