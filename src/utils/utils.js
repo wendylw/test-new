@@ -517,7 +517,7 @@ Utils.checkEmailIsValid = email => {
 };
 
 Utils.getFileExtension = file => {
-  const fileNames = file.name.split('.').length;
+  const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
   if (fileNameExtension) {
