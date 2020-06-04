@@ -127,12 +127,13 @@ class Cart extends Component {
 
     if (isLogin && !total && !type) {
       const { paymentActions } = this.props;
+      const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
       this.setState({
         isCreatingOrder: true,
       });
 
-      await paymentActions.createOrder({ cashback: totalCashback });
+      await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
       const { currentOrder } = this.props;
       const { orderId } = currentOrder || {};
@@ -144,7 +145,7 @@ class Cart extends Component {
       const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
-        window.location = thankYouPageUrl;
+        window.location = `${thankYouPageUrl}${window.location.search}`;
       }
 
       return;

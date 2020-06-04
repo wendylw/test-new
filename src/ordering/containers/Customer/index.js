@@ -13,7 +13,8 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators } from '../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentOrderId, getThankYouPageUrl } from '../../redux/modules/payment';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -36,8 +37,12 @@ class Customer extends Component {
   };
 
   componentDidMount = async () => {
+    const { homeActions, customerActions } = this.props;
+
+    await homeActions.loadShoppingCart();
+
     // init username, phone, deliveryToAddress, deliveryDetails
-    await this.props.customerActions.initDeliveryDetails(this.getShippingType());
+    await customerActions.initDeliveryDetails(this.getShippingType());
   };
 
   componentDidUpdate(prevProps) {
@@ -91,7 +96,8 @@ class Customer extends Component {
   };
 
   async handleCreateOrder() {
-    const { appActions, user, deliveryDetails } = this.props;
+    const { history, appActions, paymentActions, user, deliveryDetails, cartSummary } = this.props;
+    const { total, totalCashback } = cartSummary || {};
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
 
@@ -110,6 +116,25 @@ class Customer extends Component {
     if (!isLogin) {
       await appActions.getOtp({ phone });
       this.setState({ sentOtp: true });
+    } else if (isLogin && !total) {
+      const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+      await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+
+      const { currentOrder } = this.props;
+      const { orderId } = currentOrder || {};
+
+      if (orderId) {
+        Utils.removeSessionVariable('additionalComments');
+      }
+
+      const { thankYouPageUrl } = this.props;
+
+      if (thankYouPageUrl) {
+        window.location = `${thankYouPageUrl}${window.location.search}`;
+      }
+
+      return;
     } else {
       this.visitPaymentPage();
     }
@@ -467,9 +492,13 @@ export default compose(
   withTranslation('OrderingDelivery'),
   connect(
     state => {
+      const currentOrderId = getCurrentOrderId(state);
+
       return {
         user: getUser(state),
         cartSummary: getCartSummary(state),
+        currentOrder: getOrderByOrderId(state, currentOrderId),
+        thankYouPageUrl: getThankYouPageUrl(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         business: getBusiness(state),
