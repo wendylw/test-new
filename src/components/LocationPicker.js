@@ -6,7 +6,7 @@ import {
   getDevicePositionInfo,
   getHistoricalDeliveryAddresses,
   getPlaceAutocompleteList,
-  getPlaceDetailsFromPlaceId,
+  getPlaceInfoFromPlaceId,
   computeStraightDistance,
 } from '../utils/geoUtils';
 import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
@@ -75,7 +75,7 @@ class LocationPicker extends Component {
   }
 
   async getPlaceDetailsFromSearchResult(searchResult) {
-    const placeDetail = await getPlaceDetailsFromPlaceId(searchResult.place_id, {
+    const placeDetail = await getPlaceInfoFromPlaceId(searchResult.place_id, {
       fields: ['geometry', 'address_components'],
     });
     const { main_text, secondary_text } = searchResult.structured_formatting;
