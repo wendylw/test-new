@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://qr.beep.test12.shub.us",
+  "proxy": "https://wenjingzhang.beep.test15.shub.us",
   "engines": {
     "node": ">=8.17.0"
   },
