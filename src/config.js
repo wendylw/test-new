@@ -96,12 +96,6 @@ const config = {
   clientSID: getClientSID(),
   consumerId: getConsumerId(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
-  AWS_S3: {
-    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY || '',
-    region: process.env.REACT_APP_AWS_S3_REGION || '',
-    Bucket: process.env.REACT_APP_AWS_S3_BUCKET || '',
-  },
 };
 
 Object.defineProperty(config, 'peopleCount', {
