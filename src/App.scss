@@ -4244,13 +4244,6 @@ body.loading {
         display: flex;
         align-items: center;
 
-        &:first-child {
-          margin-top: 0;
-        }
-        &:last-child {
-          margin-bottom: 0;
-        }
-
         .radio {
           padding: 0;
           flex-shrink: 0;
@@ -4383,6 +4376,7 @@ body.loading {
     }
 
     &__submit {
+      margin-top: 5vh;
       &-button {
         height: 9vh;
         max-height: 60px;
@@ -4394,7 +4388,6 @@ body.loading {
         letter-spacing: 1.25px;
         text-transform: uppercase;
         font-size: $font-size-base;
-        margin-top: 5vh;
         border-radius: $border-radius-base;
       }
 
