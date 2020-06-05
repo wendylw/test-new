@@ -520,11 +520,7 @@ Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
-  if (fileNameExtension) {
-    return fileNameExtension;
-  }
-
-  return file.type.split('/')[1];
+  return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
 };
 
 export default Utils;
