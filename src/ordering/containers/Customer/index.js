@@ -388,7 +388,7 @@ class Customer extends Component {
         ></Header>
         <div className="customer__content">
           <form className="customer__form">
-            <div className="form__group">
+            <div className="form__group" data-testid="customerName">
               <input
                 className="input input__block"
                 type="text"
@@ -400,7 +400,7 @@ class Customer extends Component {
               />
             </div>
 
-            <div className="form__group">
+            <div className="form__group" data-testid="customerPhoneNumber">
               <PhoneInput
                 smartCaret={false}
                 placeholder={t('EnterPhoneNumber')}
@@ -449,6 +449,7 @@ class Customer extends Component {
           <div className="footer-operation__item width-2-3">
             <button
               className="billing__link button button__fill button__block font-weight-bolder"
+              data-testid="customerContinue"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={!this.getCanContinue()}
             >

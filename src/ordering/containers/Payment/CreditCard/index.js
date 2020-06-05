@@ -503,6 +503,7 @@ class CreditCard extends Component {
           <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
+            data-testid="payMoney"
             disabled={payNowLoading}
           >
             {payNowLoading ? (

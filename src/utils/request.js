@@ -15,11 +15,12 @@ class RequestError extends Error {
   }
 }
 
-function get(url) {
+function get(url, options = {}) {
   return fetch(url, {
-    method: 'GET',
     headers,
     credentials: 'include',
+    ...options,
+    method: 'GET',
   })
     .then(response => {
       return handleResponse(url, response);

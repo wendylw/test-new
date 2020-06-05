@@ -185,6 +185,7 @@ class LocationPicker extends Component {
           <IconSearch className="location-picker__search-box-magnifier-icon" onClick={this.tryGeolocation} />
           <input
             className="location-picker__search-box-input"
+            data-testid="searchAddress"
             type="text"
             placeholder={t('SearchYourAddress')}
             onChange={this.onSearchBoxChange}
@@ -202,7 +203,7 @@ class LocationPicker extends Component {
 
   renderAddressItem(summary, detail, distance) {
     return (
-      <div className="location-picker__address-item">
+      <div className="location-picker__address-item" data-testid="searchedAddressResult">
         <div className="location-picker__address-title">{summary}</div>
         <div className="location-picker__address-detail">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
