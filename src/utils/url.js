@@ -56,6 +56,10 @@ const API_URLS = {
     url: `/api/ordering/stores/${storeId}`,
     method: 'post',
   }),
+  GET_S3_POST_POLICY: action => ({
+    url: `/api/s3-post-policy/${action}`,
+    method: 'get',
+  }),
   GET_RECEIPTS_LIST: {
     url: '/api/transactions',
     method: 'get',
