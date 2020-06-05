@@ -25,21 +25,26 @@ export const postToS3 = (endPoint, formData) => {
 };
 
 export const uploadReportDriverPhoto = async file => {
-  const policyData = await fetchPolicyData(FETCH_POLICY_ACTION.UPLOAD_REPORT_DRIVER_PHOTO);
-  const fileExtension = utils.getFileExtension(file);
-  const key = `${policyData.prefixKey}.${fileExtension}`;
+  try {
+    const policyData = await fetchPolicyData(FETCH_POLICY_ACTION.UPLOAD_REPORT_DRIVER_PHOTO);
+    const fileExtension = utils.getFileExtension(file);
+    const key = `${policyData.prefixKey}.${fileExtension}`;
 
-  const fd = new FormData();
-  fd.append('key', key);
-  fd.append('acl', policyData.acl);
-  fd.append('Content-Type', file.type);
-  fd.append('X-Amz-Credential', policyData.credential);
-  fd.append('X-Amz-Algorithm', policyData.algorithm);
-  fd.append('X-Amz-Date', policyData.date);
-  fd.append('X-Amz-Meta-Tag', '');
-  fd.append('Policy', policyData.policy);
-  fd.append('X-Amz-Signature', policyData.signature);
-  fd.append('file', file);
+    const fd = new FormData();
+    fd.append('key', key);
+    fd.append('acl', policyData.acl);
+    fd.append('Content-Type', file.type);
+    fd.append('X-Amz-Credential', policyData.credential);
+    fd.append('X-Amz-Algorithm', policyData.algorithm);
+    fd.append('X-Amz-Date', policyData.date);
+    fd.append('X-Amz-Meta-Tag', '');
+    fd.append('Policy', policyData.policy);
+    fd.append('X-Amz-Signature', policyData.signature);
+    fd.append('file', file);
 
-  return postToS3(policyData.endPoint, fd);
+    return postToS3(policyData.endPoint, fd);
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
 };
