@@ -229,7 +229,6 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
-
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     logs,
@@ -417,7 +416,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback ? (
+        {enableCashback && cashback ? (
           <div className="thanks__delivery-status-container">
             <CurrencyNumber
               className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
