@@ -72,7 +72,8 @@ class ReportDriver extends Component {
   };
 
   handleNotesChange = e => {
-    const notes = e.target.value;
+    const notes = e.target.value.slice(0, NOTE_MAX_LENGTH);
+
     this.props.reportDriverActions.updateInputNotes(notes);
   };
 
