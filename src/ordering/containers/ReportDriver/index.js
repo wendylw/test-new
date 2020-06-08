@@ -189,7 +189,7 @@ class ReportDriver extends Component {
         <textarea
           className="report-driver__note-textarea"
           placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
-          rows="5"
+          rows="6"
           maxLength={NOTE_MAX_LENGTH}
           value={inputNotes}
           onChange={this.handleNotesChange}
