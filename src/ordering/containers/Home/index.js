@@ -11,6 +11,7 @@ import DeliveryDetailModal from './components/DeliveryDetailModal';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import AlcoholModal from './components/AlcoholModal';
+import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
@@ -43,6 +44,7 @@ export class Home extends Component {
   state = {
     viewAside: null,
     alcoholModal: false,
+    offlineStoreModal: false,
     dScrollY: 0,
   };
   handleScroll = () => {
@@ -304,6 +306,15 @@ export class Home extends Component {
     return '';
   };
 
+  renderOfflineModal = enableLiveOnline => {
+    const { onlineStoreInfo, businessInfo } = this.props;
+    const { stores, multipleStores } = businessInfo || {};
+    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+    const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
+
+    return <OfflineStoreModal currentStoreName={currentStoreName} enableLiveOnline={enableLiveOnline} />;
+  };
+
   renderDeliveryDate = () => {
     const { t, deliveryInfo } = this.props;
 
@@ -517,6 +528,8 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
+
+        {this.renderOfflineModal(enableLiveOnline)}
       </section>
     );
   }
