@@ -133,6 +133,8 @@ export const actions = {
   submitReport: () => async (dispatch, getState) => {
     const state = getState();
     const selectedReasonFields = getSelectedReasonFields(state);
+    const selectedReasonNotesField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
+    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
     const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
     const variables = {
@@ -143,11 +145,11 @@ export const actions = {
 
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
 
-    if (selectedReasonFields.includes(REPORT_DRIVER_FIELD_NAMES.NOTES)) {
+    if (selectedReasonNotesField) {
       variables.notes = getInputNotes(state).trim();
     }
 
-    if (selectedReasonFields.includes(REPORT_DRIVER_FIELD_NAMES.PHOTO)) {
+    if (selectedReasonPhotoField) {
       const file = getUploadPhotoFile(state);
       let location = getUploadPhotoLocation(getState());
 
