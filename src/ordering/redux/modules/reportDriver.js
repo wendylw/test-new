@@ -13,7 +13,7 @@ import { getReceiptNumber } from './thankYou';
 
 const { ORDER_STATUS, REPORT_DRIVER_REASON_CODE } = Constants;
 
-export const REPORT_DRIVER_FIELDS = {
+export const REPORT_DRIVER_FIELD_NAMES = {
   NOTES: 'notes',
   PHOTO: 'photo',
 };
@@ -21,27 +21,56 @@ export const REPORT_DRIVER_FIELDS = {
 export const REPORT_DRIVER_REASONS = [
   {
     code: REPORT_DRIVER_REASON_CODE.FOOD_WAS_DAMAGED,
-    fields: [REPORT_DRIVER_FIELDS.NOTES, REPORT_DRIVER_FIELDS.PHOTO],
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: false,
+      },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.PHOTO,
+        required: true,
+      },
+    ],
     i18n_key: 'Reasons_foodWasDamaged',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_LATE,
-    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+    ],
     i18n_key: 'Reasons_driverWasLate',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_RUDE,
-    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+    ],
     i18n_key: 'Reasons_driverWasRude',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DRIVER_ASKED_MORE_MONEY,
-    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+    ],
     i18n_key: 'Reasons_driverAskedMoreMoney',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.OTHERS,
-    fields: [REPORT_DRIVER_FIELDS.NOTES],
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+    ],
     i18n_key: 'Reasons_others',
   },
 ];
@@ -114,11 +143,11 @@ export const actions = {
 
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
 
-    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.NOTES)) {
+    if (selectedReasonFields.includes(REPORT_DRIVER_FIELD_NAMES.NOTES)) {
       variables.notes = getInputNotes(state).trim();
     }
 
-    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.PHOTO)) {
+    if (selectedReasonFields.includes(REPORT_DRIVER_FIELD_NAMES.PHOTO)) {
       const file = getUploadPhotoFile(state);
       let location = getUploadPhotoLocation(getState());
 

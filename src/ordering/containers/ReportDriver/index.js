@@ -22,7 +22,7 @@ import {
   getUploadPhotoFile,
   SUBMIT_STATUS,
   CAN_REPORT_STATUS_LIST,
-  REPORT_DRIVER_FIELDS,
+  REPORT_DRIVER_FIELD_NAMES,
   REPORT_DRIVER_REASONS,
 } from '../../redux/modules/reportDriver';
 import {
@@ -83,18 +83,21 @@ class ReportDriver extends Component {
     return CAN_REPORT_STATUS_LIST.includes(orderStatus) && isUseStorehubLogistics;
   };
 
-  isInputNotesCanSubmit() {
+  isInputNotesEmpty() {
     const { inputNotes } = this.props;
-    return inputNotes.trim().length > 0;
+    return inputNotes.trim().length === 0;
   }
 
-  isUploadPhotoCanSubmit() {
+  isUploadPhotoEmpty() {
     const { uploadPhotoFile } = this.props;
-    return uploadPhotoFile && uploadPhotoFile.size <= UPLOAD_FILE_MAX_SIZE;
+    return !uploadPhotoFile;
   }
 
   isSubmitButtonDisable = () => {
     const { submitStatus, selectedReasonFields, selectedReasonCode } = this.props;
+
+    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
+    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
 
     if (!this.isOrderCanReportDriver()) {
       return true;
@@ -104,11 +107,11 @@ class ReportDriver extends Component {
       return true;
     }
 
-    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.NOTES) && !this.isInputNotesCanSubmit()) {
+    if (selectedReasonNoteField && selectedReasonNoteField.required && this.isInputNotesEmpty()) {
       return true;
     }
 
-    if (selectedReasonFields.includes(REPORT_DRIVER_FIELDS.PHOTO) && !this.isUploadPhotoCanSubmit()) {
+    if (selectedReasonPhotoField && selectedReasonPhotoField.required && this.isUploadPhotoEmpty()) {
       return true;
     }
 
@@ -183,10 +186,12 @@ class ReportDriver extends Component {
     );
   }
 
-  renderNotesField({ t, inputNotes, disabled }) {
+  renderNotesField({ t, inputNotes, disabled, required }) {
     return (
       <div className="report-driver__note">
-        <h3 className="report-driver__note-title">{t('Notes')}</h3>
+        <h3 className="report-driver__note-title">
+          {t('Notes')} {required ? `(${t('Common:Required')})` : null}
+        </h3>
         <textarea
           className="report-driver__note-textarea"
           placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
@@ -203,11 +208,11 @@ class ReportDriver extends Component {
     );
   }
 
-  renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled }) {
+  renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled, required }) {
     return (
       <div className="report-driver__upload-photo">
         <h3 className="report-driver__upload-photo-title">
-          {t('UploadPhoto')} ({t('Common:Required')})
+          {t('UploadPhoto')} {required ? `(${t('Common:Required')})` : null}
         </h3>
         {uploadPhotoFile ? (
           <div className="report-driver__upload-photo-viewer">
@@ -252,6 +257,9 @@ class ReportDriver extends Component {
       return this.renderThankYou();
     }
 
+    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
+    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+
     return (
       <section className="table-ordering__report-driver">
         <Header
@@ -283,12 +291,18 @@ class ReportDriver extends Component {
             </ul>
           </div>
 
-          {selectedReasonFields.includes(REPORT_DRIVER_FIELDS.NOTES)
-            ? this.renderNotesField({ t, inputNotes, disabled })
+          {selectedReasonNoteField
+            ? this.renderNotesField({ t, inputNotes, disabled, required: selectedReasonNoteField.required })
             : null}
 
-          {selectedReasonFields.includes(REPORT_DRIVER_FIELDS.PHOTO)
-            ? this.renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled })
+          {selectedReasonPhotoField
+            ? this.renderPhotoField({
+                t,
+                uploadPhotoFile,
+                uploadPhotoUrl,
+                disabled,
+                required: selectedReasonPhotoField.required,
+              })
             : null}
 
           <div className="report-driver__submit">

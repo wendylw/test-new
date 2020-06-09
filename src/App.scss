@@ -4345,6 +4345,7 @@ body.loading {
 
     &__upload-photo-viewer {
       position: relative;
+      max-width: 120px;
 
       img {
         border-radius: 8px;
@@ -4380,7 +4381,7 @@ body.loading {
     }
 
     &__submit {
-      margin-top: 5vh;
+      margin-top: 3vh;
     }
 
     &__submit-button {
