@@ -38,18 +38,20 @@ class CreateOrderButton extends React.Component {
     const { buttonType, buttonText, addonBefore, disabled, cartSummary } = this.props;
     const { total } = cartSummary || {};
 
-    <button
-      className="billing__link button button__fill button__block font-weight-bolder"
-      type={buttonType}
-      data-testid="pay"
-      disabled={disabled}
-    >
-      {addonBefore ? (
-        <CurrencyNumber className="font-weight-bolder text-center" addonBefore={addonBefore} money={total || 0} />
-      ) : (
-        buttonText
-      )}
-    </button>;
+    return (
+      <button
+        className="billing__link button button__fill button__block font-weight-bolder"
+        type={buttonType}
+        data-testid="pay"
+        disabled={disabled}
+      >
+        {addonBefore ? (
+          <CurrencyNumber className="font-weight-bolder text-center" addonBefore={addonBefore} money={total || 0} />
+        ) : (
+          buttonText
+        )}
+      </button>
+    );
   }
 }
 
