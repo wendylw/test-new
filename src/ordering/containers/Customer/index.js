@@ -12,6 +12,7 @@ import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
+import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId, getThankYouPageUrl } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -507,6 +508,7 @@ export default compose(
       };
     },
     dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
