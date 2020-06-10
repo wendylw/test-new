@@ -40,7 +40,6 @@ export const actions = {
       if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
         newDeliveryDetails.addressDetails = '';
       }
-      console.log(getState(), 'getState()', newDeliveryDetails);
 
       const { customer } = getState();
       const { deliveryDetails } = customer;
