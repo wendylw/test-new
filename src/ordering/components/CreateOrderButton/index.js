@@ -2,14 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actions as paymentActionCreators } from '../../../redux/modules/payment';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 
 class CreateOrderButton extends React.Component {
   handleCreateOrder = async () => {
-    const { history, paymentActions, cartSummary } = this.props;
+    const { history, paymentActions, cartSummary, visitNextPage } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    if (!validCreateOrder) {
+      return;
+    }
 
     await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
@@ -24,10 +26,12 @@ class CreateOrderButton extends React.Component {
     const { thankYouPageUrl } = this.props;
 
     if (thankYouPageUrl) {
-      window.location = thankYouPageUrl;
+      window.location = `${thankYouPageUrl}${window.location.search}`;
+
+      return;
     }
 
-    return;
+    visitNextPage();
   };
 
   render() {
@@ -50,32 +54,32 @@ class CreateOrderButton extends React.Component {
 }
 
 CreateOrderButton.propTypes = {
+  user: PropTypes.object,
   history: PropTypes.object,
+  cartSummary: PropTypes.object,
+  currentOrder: PropTypes.object,
   className: PropTypes.string,
   buttonType: PropTypes.string,
   buttonText: PropTypes.string,
   addonBefore: PropTypes.bool,
-  cartSummary: PropTypes.object,
+  validCreateOrder: PropTypes.bool,
   isPromotionValid: PropTypes.bool,
   disabled: PropTypes.bool,
+  visitNextPage: PropTypes.func,
 };
 
 CreateOrderButton.defaultProps = {
   buttonType: 'button',
   buttonText: '',
+  validCreateOrder: false,
   isPromotionValid: true,
   disabled: true,
+  visitNextPage: () => {},
 };
 
 export default compose(
   connect(
-    state => {
-      const currentOrderId = getCurrentOrderId(state);
-
-      return {
-        currentOrder: getOrderByOrderId(state, currentOrderId),
-      };
-    },
+    state => {},
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })
