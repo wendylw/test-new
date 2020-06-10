@@ -229,6 +229,7 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
+
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     logs,
