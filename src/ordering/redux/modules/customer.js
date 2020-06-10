@@ -5,6 +5,7 @@ import {
   patchDeliveryDetails,
   updateDeliveryDetails,
 } from '../../containers/Customer/utils';
+import _get from 'lodash/get';
 
 // actions
 
@@ -15,10 +16,11 @@ export const types = {
 export const actions = {
   initDeliveryDetails: shippingType => async (dispatch, getState) => {
     const deliveryDetails = await fetchDeliveryDetails();
-    const phone = localStorage.getItem('user.p') || '';
+    const localStoragePhone = localStorage.getItem('user.p') || '';
+
     const newDeliveryDetails = {
       ...deliveryDetails,
-      phone,
+      phone: _get(deliveryDetails, 'phone', localStoragePhone),
     };
 
     if (shippingType === 'delivery') {
