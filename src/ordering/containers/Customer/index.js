@@ -21,8 +21,10 @@ import { getBusinessInfo } from '../../redux/modules/cart';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
+import { getDeliveryDetails, getAddressChange, actions as customerActionCreators } from '../../redux/modules/customer';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import AddressChangeModal from './components/AddressChangeModal';
+import { actions as homeActionCreators, getShoppingCart } from '../../redux/modules/home';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -38,6 +40,8 @@ class Customer extends Component {
   componentDidMount = async () => {
     // init username, phone, deliveryToAddress, deliveryDetails
     await this.props.customerActions.initDeliveryDetails(this.getShippingType());
+
+    this.props.addressChange && this.props.homeActions.loadShoppingCart();
   };
 
   componentDidUpdate(prevProps) {
@@ -355,10 +359,11 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
+    const { shippingFee } = shoppingCart.summary;
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -458,6 +463,7 @@ class Customer extends Component {
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        <AddressChangeModal deliveryFee={shippingFee} addressChange={addressChange} />
       </section>
     );
   }
@@ -475,12 +481,15 @@ export default compose(
         business: getBusiness(state),
         allBusinessInfo: getAllBusinesses(state),
         businessInfo: getBusinessInfo(state),
+        addressChange: getAddressChange(state),
+        shoppingCart: getShoppingCart(state),
       };
     },
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(Customer);
