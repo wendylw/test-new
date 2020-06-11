@@ -190,7 +190,8 @@ class ReportDriver extends Component {
     return (
       <div className="report-driver__note">
         <h3 className="report-driver__note-title">
-          {t('Notes')} {required ? `(${t('Common:Required')})` : null}
+          {t('Notes')}
+          {required ? <span className="report-driver__required-mark">{t('Common:Required')}</span> : null}
         </h3>
         <textarea
           className="report-driver__note-textarea"
@@ -212,7 +213,8 @@ class ReportDriver extends Component {
     return (
       <div className="report-driver__upload-photo">
         <h3 className="report-driver__upload-photo-title">
-          {t('UploadPhoto')} {required ? `(${t('Common:Required')})` : null}
+          {t('UploadPhoto')}
+          {required ? <span className="report-driver__required-mark">{t('Common:Required')}</span> : null}
         </h3>
         {uploadPhotoFile ? (
           <div className="report-driver__upload-photo-viewer">

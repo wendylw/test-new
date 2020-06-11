@@ -4231,6 +4231,23 @@ body.loading {
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
     }
 
+    &__required-mark {
+      position: relative;
+      font-size: inherit;
+      color: #fa4133;
+      font-weight: $font-weight-bold;
+      text-transform: lowercase;
+      padding-left: 1em;
+      margin-left: 3px;
+
+      &::before {
+        content: "*";
+        position: absolute;
+        font-size: 1.3em;
+        left: 0.25em;
+      }
+    }
+
     &__select-reason {
       margin-bottom: 3vh;
     }
