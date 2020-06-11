@@ -284,6 +284,7 @@ class Customer extends Component {
           <input
             className="input input__block"
             type="text"
+            maxLength="140"
             placeholder={t('AddressDetailsPlaceholder')}
             value={addressDetails}
             name="addressDetails"
@@ -294,6 +295,7 @@ class Customer extends Component {
           <input
             className="input input__block"
             type="text"
+            maxLength="140"
             value={deliveryComments}
             name="deliveryComments"
             onChange={this.handleInputChange}
