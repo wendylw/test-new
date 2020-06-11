@@ -47,16 +47,10 @@ export const actions = {
       const { longitude, latitude } = deliveryDetails.deliveryToLocation;
       if (!deliveryToAddress && !longitude && !latitude) {
       } else {
-        let addressChange;
-        if (
+        const addressChange =
           deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
           longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
-          latitude !== newDeliveryDetails.deliveryToLocation.latitude
-        ) {
-          addressChange = true;
-        } else {
-          addressChange = false;
-        }
+          latitude !== newDeliveryDetails.deliveryToLocation.latitude;
         dispatch({
           type: types.PUT_ADDRESS_CHANGE,
           addressChange,
