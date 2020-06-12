@@ -11,7 +11,6 @@ import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { withRouter } from 'react-router-dom';
-import { gtmSetUserProperties } from '../../../utils/gtm';
 
 import {
   actions as homeActionCreators,
@@ -77,11 +76,6 @@ class App extends Component {
 
   selectStore = storeId => {
     const { enableDelivery } = this.props;
-    gtmSetUserProperties({
-      store: {
-        id: storeId,
-      },
-    });
 
     if (enableDelivery) {
       this.gotoDelivery(storeId);
