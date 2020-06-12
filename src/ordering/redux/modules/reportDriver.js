@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { REPORT_DRIVER_TYPES } from '../types';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import Constants from '../../../utils/constants';
 import Url from '../../../utils/url';
 import _get from 'lodash/get';
@@ -137,7 +137,7 @@ export const actions = {
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
     const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
-    const variables = {
+    const payload = {
       reasonCode: [selectedReasonCode],
       reporterType: 'consumer',
       receiptNumber,
@@ -146,7 +146,7 @@ export const actions = {
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
 
     if (selectedReasonNotesField) {
-      variables.notes = getInputNotes(state).trim();
+      payload.notes = getInputNotes(state).trim();
     }
 
     if (selectedReasonPhotoField) {
@@ -170,18 +170,18 @@ export const actions = {
         }
       }
 
-      variables.image = location;
+      payload.image = location;
     }
 
     const result = await dispatch({
-      [FETCH_GRAPHQL]: {
+      [API_REQUEST]: {
+        ...Url.API_URLS.CREATE_FEED_BACK,
+        payload,
         types: [
           REPORT_DRIVER_TYPES.SUBMIT_REPORT_REQUEST,
           REPORT_DRIVER_TYPES.SUBMIT_REPORT_SUCCESS,
           REPORT_DRIVER_TYPES.SUBMIT_REPORT_FAILURE,
         ],
-        endpoint: Url.apiGql('CreateFeedBack'),
-        variables,
       },
     });
 
@@ -201,16 +201,16 @@ export const actions = {
     const receiptNumber = getReceiptNumber(state);
 
     return dispatch({
-      [FETCH_GRAPHQL]: {
+      [API_REQUEST]: {
+        ...Url.API_URLS.QUERY_FEED_BACK,
+        params: {
+          receiptNumber,
+        },
         types: [
           REPORT_DRIVER_TYPES.FETCH_REPORT_REQUEST,
           REPORT_DRIVER_TYPES.FETCH_REPORT_SUCCESS,
           REPORT_DRIVER_TYPES.FETCH_REPORT_FAILURE,
         ],
-        endpoint: Url.apiGql('QueryFeedBack'),
-        variables: {
-          receiptNumber,
-        },
       },
     });
   },
@@ -267,7 +267,7 @@ const reducer = (state = initialState, action) => {
         submitStatus: action.submitStatus,
       };
     case REPORT_DRIVER_TYPES.FETCH_REPORT_SUCCESS:
-      const reportData = _get(action.responseGql, 'data.queryFeedBack', null);
+      const reportData = _get(action.response, 'data.feedBack', null);
       if (reportData) {
         return {
           ...state,

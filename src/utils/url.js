@@ -129,6 +129,14 @@ const API_URLS = {
     url: '/api/transactions',
     method: 'post',
   },
+  QUERY_FEED_BACK: {
+    url: `/api/feedback`,
+    method: 'get',
+  },
+  CREATE_FEED_BACK: {
+    url: '/api/feedback',
+    method: 'post',
+  },
 };
 
 export default {
