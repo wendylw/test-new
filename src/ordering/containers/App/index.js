@@ -8,6 +8,7 @@ import {
   getError,
   getUser,
 } from '../../redux/modules/app';
+import { getBusinessInfo } from '../../redux/modules/cart';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import Routes from '../Routes';
@@ -29,14 +30,14 @@ class App extends Component {
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
 
-    const { user } = this.props;
+    const { user, businessInfo } = this.props;
     const { isLogin } = user || {};
     const { onlineStoreInfo } = responseGql.data || {};
 
     if (isLogin) {
       appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
         const { data = {} } = responseGql;
-        gtmSetUserProperties(null, data.user);
+        gtmSetUserProperties({ userInfo: data.user, store: { id: businessInfo.stores[0].id } });
       });
     }
 
@@ -45,12 +46,12 @@ class App extends Component {
     const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
     if (window.location.pathname !== thankYouPageUrl) {
-      gtmSetUserProperties(onlineStoreInfo, user);
+      gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: businessInfo.stores[0].id } });
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError } = this.props;
+    const { appActions, user, pageError, businessInfo } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
 
@@ -62,10 +63,10 @@ class App extends Component {
       // this.postAppMessage(user);
     }
 
-    if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin) {
+    if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin && businessInfo) {
       appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
         const { data = {} } = responseGql;
-        gtmSetUserProperties(null, data.user);
+        gtmSetUserProperties({ userInfo: data.user, store: { id: businessInfo.stores[0].id } });
       });
     }
   }
@@ -145,6 +146,7 @@ class App extends Component {
 export default connect(
   state => ({
     onlineStoreInfo: getOnlineStoreInfo(state),
+    businessInfo: getBusinessInfo(state),
     user: getUser(state),
     error: getError(state),
     pageError: getPageError(state),
