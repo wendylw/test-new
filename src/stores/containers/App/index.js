@@ -20,7 +20,7 @@ import Utils from '../../../utils/utils';
 
 class App extends Component {
   componentDidMount() {
-    const { appActions, currentStoreId } = this.props;
+    const { appActions } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
     if (this.isDinePath()) {
@@ -31,7 +31,7 @@ class App extends Component {
     fetchOnlineStoreInfo().then(({ responseGql }) => {
       const { data } = responseGql;
       const { onlineStoreInfo } = data;
-      gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
+      gtmSetUserProperties(onlineStoreInfo);
     });
   }
 
