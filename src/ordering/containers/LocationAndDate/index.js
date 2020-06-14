@@ -354,12 +354,14 @@ class LocationAndDate extends Component {
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
-    const { t } = this.props;
+    const { t, business, allBusinessInfo } = this.props;
     const { selectedHour = {} } = this.state;
     const country = this.getBusinessCountry();
 
+    const { qrOrderingSettings } = allBusinessInfo[business];
+    const { disableOnDemandPreOrder } = qrOrderingSettings;
     return timeList.map(item => {
-      if (item.from === PREORDER_IMMEDIATE_TAG.from) {
+      if (item.from === PREORDER_IMMEDIATE_TAG.from && !disableOnDemandPreOrder) {
         return (
           <li
             className={`location-display__hour-item text-center ${
