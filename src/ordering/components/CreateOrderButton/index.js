@@ -1,11 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { actions as paymentActionCreators } from '../../../redux/modules/payment';
+import { bindActionCreators, compose } from 'redux';
+import qs from 'qs';
+import Utils from '../../../utils/utils';
+import { getUser } from '../../redux/modules/app';
+import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 
 class CreateOrderButton extends React.Component {
   handleCreateOrder = async () => {
-    const { history, paymentActions, cartSummary, visitNextPage } = this.props;
+    const {
+      history,
+      paymentActions,
+      user,
+      cartSummary,
+      afterCreateOrder,
+      beforeCreateOrder,
+      validCreateOrder,
+    } = this.props;
+    const { isLogin } = user || {};
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -13,43 +28,48 @@ class CreateOrderButton extends React.Component {
       return;
     }
 
-    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+    await beforeCreateOrder();
 
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
+    if (isLogin) {
+      await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
+      const { currentOrder } = this.props;
+      const { orderId } = currentOrder || {};
+
+      if (orderId) {
+        Utils.removeSessionVariable('additionalComments');
+        Utils.removeSessionVariable('deliveryComments');
+      }
+
+      const { thankYouPageUrl } = this.props;
+
+      if (thankYouPageUrl) {
+        window.location = `${thankYouPageUrl}${window.location.search}`;
+
+        return;
+      }
     }
 
-    const { thankYouPageUrl } = this.props;
-
-    if (thankYouPageUrl) {
-      window.location = `${thankYouPageUrl}${window.location.search}`;
-
-      return;
-    }
-
-    visitNextPage();
+    afterCreateOrder();
   };
 
   render() {
-    const { buttonType, buttonText, addonBefore, disabled, cartSummary } = this.props;
-    const { total } = cartSummary || {};
+    const { children, className, buttonType, disabled } = this.props;
+    const classList = ['billing__link button button__fill button__block font-weight-bolder'];
+
+    if (className) {
+      classList.push(className);
+    }
 
     return (
       <button
-        className="billing__link button button__fill button__block font-weight-bolder"
+        className={classList.join(' ')}
         type={buttonType}
         data-testid="pay"
         disabled={disabled}
+        onClick={this.handleCreateOrder.bind(this)}
       >
-        {addonBefore ? (
-          <CurrencyNumber className="font-weight-bolder text-center" addonBefore={addonBefore} money={total || 0} />
-        ) : (
-          buttonText
-        )}
+        {children}
       </button>
     );
   }
@@ -58,30 +78,35 @@ class CreateOrderButton extends React.Component {
 CreateOrderButton.propTypes = {
   user: PropTypes.object,
   history: PropTypes.object,
-  cartSummary: PropTypes.object,
-  currentOrder: PropTypes.object,
   className: PropTypes.string,
   buttonType: PropTypes.string,
-  buttonText: PropTypes.string,
-  addonBefore: PropTypes.bool,
   validCreateOrder: PropTypes.bool,
-  isPromotionValid: PropTypes.bool,
   disabled: PropTypes.bool,
-  visitNextPage: PropTypes.func,
+  beforeCreateOrder: PropTypes.func,
+  afterCreateOrder: PropTypes.func,
 };
 
 CreateOrderButton.defaultProps = {
   buttonType: 'button',
-  buttonText: '',
-  validCreateOrder: false,
+  validCreateOrder: true,
   isPromotionValid: true,
   disabled: true,
-  visitNextPage: () => {},
+  beforeCreateOrder: () => {},
+  afterCreateOrder: () => {},
 };
 
 export default compose(
   connect(
-    state => {},
+    state => {
+      const currentOrderId = getCurrentOrderId(state);
+
+      return {
+        user: getUser(state),
+        cartSummary: getCartSummary(state),
+        thankYouPageUrl: getThankYouPageUrl(state),
+        currentOrder: getOrderByOrderId(state, currentOrderId),
+      };
+    },
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })
