@@ -16,8 +16,10 @@ import {
   getStoreHashCode,
   getCashbackInfo,
   getBusinessInfo,
+  getReceiptNumber,
 } from '../../redux/modules/thankYou';
-import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
+import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
+
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
@@ -52,29 +54,23 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    const { thankYouActions, order } = this.props;
+    const { thankYouActions, order, onlineStoreInfo, user, receiptNumber } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
     }
-    thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
-      const { data = {} } = responseGql;
-      const tySourceCookie = this.getThankYouSource();
-      const { onlineStoreInfo, user } = this.props;
-      if (this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        gtmSetUserProperties(onlineStoreInfo, user);
-        this.handleGtmEventTracking(data);
-      }
-      if (!this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        gtmSetUserProperties(onlineStoreInfo, user);
-      }
-    });
+
+    if (onlineStoreInfo && onlineStoreInfo.id) {
+      gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
+    }
+
+    thankYouActions.loadOrder(receiptNumber);
   }
 
   componentDidUpdate(prevProps) {
-    const { order, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
-    const { storeId: prevStoreId } = order || {};
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
+    const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
     const { onlineStoreInfo, user } = this.props;
 
@@ -82,14 +78,12 @@ export class ThankYou extends PureComponent {
       this.props.thankYouActions.getStoreHashData(storeId);
     }
     const tySourceCookie = this.getThankYouSource();
-    if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo) {
-      if (this.isSourceFromPayment(tySourceCookie)) {
-        const orderInfo = this.props.order;
-        gtmSetUserProperties(onlineStoreInfo, user);
-        this.handleGtmEventTracking({ order: orderInfo });
-      } else {
-        gtmSetUserProperties(onlineStoreInfo, user);
-      }
+    if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
+      gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
+    }
+    if (this.isSourceFromPayment(tySourceCookie) && this.props.order && onlineStoreInfo) {
+      const orderInfo = this.props.order;
+      this.handleGtmEventTracking({ order: orderInfo });
     }
   }
 
@@ -100,6 +94,7 @@ export class ThankYou extends PureComponent {
     return source === 'payment';
   };
   handleGtmEventTracking = ({ order = {} }) => {
+    const { onlineStoreInfo } = this.props;
     const productsInOrder = order.items || [];
     const gtmEventData = {
       product_name: productsInOrder.map(item => item.title) || [],
@@ -113,16 +108,38 @@ export class ThankYou extends PureComponent {
       order_value_local: order.total,
       revenue_local: order.total,
     };
+
+    const productsDetails = [];
+    order.items.forEach(item => {
+      productsDetails.push({
+        id: item.productId,
+        price: item.displayPrice,
+        brand: '',
+        category: '',
+        variant: item.variationTexts,
+        quantity: item.quantity,
+      });
+    });
+    const pageViewData = {
+      ecommerce: {
+        purchase: {
+          actionField: {
+            id: order.orderId,
+            affiliation: onlineStoreInfo.storeName,
+            revenue: order.total,
+            tax: order.tax,
+            shipping: order.shippingFee,
+            coupon: '',
+          },
+          products: productsDetails,
+        },
+      },
+    };
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
+    gtmSetPageViewData(pageViewData);
+
     // immidiately remove __ty_source cookie after send the request.
     Utils.removeCookieVariable('__ty_source', '');
-  };
-
-  getReceiptNumber = () => {
-    const { history } = this.props;
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    return receiptNumber;
   };
 
   handleClickViewReceipt = () => {
@@ -741,6 +758,7 @@ export default compose(
       cashbackInfo: getCashbackInfo(state),
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
+      receiptNumber: getReceiptNumber(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

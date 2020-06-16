@@ -12,6 +12,7 @@ const ROUTER_PATHS = {
   PRIVACY: '/privacy',
   ERROR: '/error',
   SORRY: '/sorry',
+  REPORT_DRIVER: '/report-driver',
   STORES_HOME: '/',
   // ordering App basename
   ORDERING_BASE: '/ordering',
@@ -198,6 +199,32 @@ const PROMO_TYPE = {
   VOUCHER: 'Voucher',
 };
 
+const REPORT_DRIVER_REASON_CODE = {
+  FOOD_WAS_DAMAGED: 'foodWasDamaged',
+  DRIVER_WAS_LATE: 'driverWasLate',
+  DRIVER_WAS_RUDE: 'driverWasRude',
+  DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
+  OTHERS: 'others',
+};
+
+const ORDER_STATUS = {
+  CREATED: 'created',
+  PENDING_PAYMENT: 'pendingPayment',
+  PENDING_VERIFICATION: 'pendingVerification',
+  PAID: 'paid',
+  PAYMENT_CANCELLED: 'paymentCancelled',
+  READY_FOR_DELIVERY: 'readyForDelivery',
+  READY_FOR_PICKUP: 'readyForPickup',
+  SHIPPED: 'shipped',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+  ACCEPTED: 'accepted',
+  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
+  CONFIRMED: 'confirmed',
+  DELIVERED: 'delivered',
+  PICKED_UP: 'pickedUp',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -227,4 +254,6 @@ export default {
   PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
+  ORDER_STATUS,
+  REPORT_DRIVER_REASON_CODE,
 };
