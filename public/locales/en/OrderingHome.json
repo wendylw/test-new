@@ -12,8 +12,10 @@
   "CheckIfDrinkingAge": "Are you of legal drinking age?",
   "AlcoholLimitationsMY": "Our alcohol products can only be purchased by non-Muslims aged 21 years old and above.",
   "AlcoholLimitationsPH": "Our alcohol products can only be purchased by persons aged 18 years old and above.",
-  "AlcoholNo": "NO, I AM NOT",
+  "AlcoholNo": "NO, I'M NOT",
   "AlcoholYes": "YES, I AM",
   "AlcoholDenied": "Access Denied",
-  "AlcoholNotAllowed": "You are not allowed to browse the content of this site"
+  "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42",
+  "OfflinePromptTitle": "{{storeName}} is currently offline",
+  "OfflinePromptDescription": "Apologies, our store is not ready to go online yet, but we will be back soon! Please try again later."
 }

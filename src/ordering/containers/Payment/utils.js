@@ -5,8 +5,8 @@ const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
 
 const PAYMENT_NAME_COUNTRY_MAP = {
   MY: {
-    [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'CCPP',
-    [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPCreditCard',
+    [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'StripeFPX',
+    [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPMYCreditCard',
     [PAYMENT_METHOD_LABELS.GRAB_PAY]: 'GrabPay',
     [PAYMENT_METHOD_LABELS.TNG_PAY]: 'CCPPTnGPay',
     [PAYMENT_METHOD_LABELS.BOOST_PAY]: 'Boost',
@@ -36,6 +36,11 @@ const PAYMENT_LIST_COUNTRY_MAP = {
 export function getPaymentList(country) {
   const payments = _get(PAYMENT_LIST_COUNTRY_MAP, country, null);
   return payments ? payments.split(',') : [];
+}
+
+export function getUnavailablePaymentList() {
+  const unavailablePayments = process.env.REACT_APP_PAYMENT_UNAVAILABLE_LIST;
+  return unavailablePayments ? unavailablePayments.split(',') : [];
 }
 
 // support credit card brands country map

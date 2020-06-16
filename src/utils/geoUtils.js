@@ -249,7 +249,28 @@ export const computeDirectionDistanceMatrix = async (fromCoordsList, toCoordsLis
   });
 };
 
-export const getPlaceDetailsFromPlaceId = async (
+export const getPlaceInfoFromPlaceId = placeId => {
+  const geocoder = new googleMaps.Geocoder();
+  return new Promise((resolve, reject) => {
+    geocoder.geocode({ placeId }, (resp, status) => {
+      if (status === googleMaps.GeocoderStatus.OK && resp.length) {
+        const place = resp[0];
+        const result = {
+          coords: place.geometry.location.toJSON(),
+          address: place.formatted_address,
+          addressComponents: standardizeGeoAddress(place.address_components),
+          placeId: place.place_id,
+        };
+        resolve(result);
+      } else {
+        reject(`Failed to get location from coordinates: ${status}`);
+      }
+    });
+  });
+};
+
+// @deprecated: This api is too expensive, hence we don't use it for now.
+export const getPlaceDetails = async (
   placeId,
   { fields = ['geometry', 'formatted_address', 'address_components'] } = {}
 ) => {
@@ -344,7 +365,7 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
 
   const pickPreferredGeoCodeResult = locationList => {
     const preferredLocation = locationList.find(location => {
-      return !!intersection(location.types, ['neighborhood', 'premise', 'subpremise']);
+      return !!intersection(location.types, ['neighborhood', 'premise', 'subpremise']).length;
     });
     if (preferredLocation) {
       return preferredLocation;

@@ -5,15 +5,36 @@ import { BrowserRouter, Link } from 'react-router-dom';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
+import Header from '../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
+import beepLoginImage from './images/login.svg';
+import './index.scss';
 
 class Login extends React.Component {
   state = {
+    sendOtp: false,
     phone: Utils.getLocalStorageVariable('user.p'),
+  };
+
+  componentDidUpdate(prevProps) {
+    const { user } = prevProps;
+    const { isLogin } = user || {};
+    const { sendOtp } = this.state;
+    if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
+      this.visitCartPage();
+    }
+  }
+
+  visitCartPage = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      search: window.location.search,
+    });
   };
 
   handleCloseOtpModal() {
@@ -31,6 +52,7 @@ class Login extends React.Component {
     const { phone } = this.state;
 
     appActions.getOtp({ phone: phoneNumber || phone });
+    this.setState({ sendOtp: true });
   }
 
   async handleWebLogin(otp) {
@@ -71,11 +93,11 @@ class Login extends React.Component {
   }
 
   render() {
-    const { t, user, title, className, onlineStoreInfo } = this.props;
+    const { t, user, title, className, onlineStoreInfo, history } = this.props;
     const { isLogin, showLoginPage, hasOtp, isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['login'];
+    const classList = ['login page-login'];
 
     if (isLogin) {
       return null;
@@ -91,7 +113,24 @@ class Login extends React.Component {
 
     return (
       <section className={classList.join(' ')}>
-        {showLoginPage ? (
+        <Header
+          className="border__bottom-divider flex-middle"
+          title="Account"
+          isPage={true}
+          navFunc={() => {
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+              search: window.location.search,
+            });
+          }}
+        />
+        <section className="page-login__content text-center">
+          <figure className="page-login__image-container">
+            <img src={beepLoginImage} alt="otp" />
+          </figure>
+        </section>
+        <section className="page-login__container">
+          <h2 className="page-login__tip">{t('LoginTip')}</h2>
           <PhoneViewContainer
             className="aside-bottom not-full"
             title={title}
@@ -104,31 +143,23 @@ class Login extends React.Component {
             onSubmit={this.handleSubmitPhoneNumber.bind(this)}
           >
             <p className="terms-privacy text-center gray-font-opacity">
-              <BrowserRouter basename="/">
-                <Trans i18nKey="TermsAndPrivacyDescription">
-                  By tapping to continue, you agree to our
-                  <br />
-                  <Link
-                    className="font-weight-bolder link__non-underline"
-                    target="_blank"
-                    to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                  >
+              <Trans i18nKey="TermsAndPrivacyDescription">
+                By tapping to continue, you agree to our
+                <br />
+                <BrowserRouter basename="/">
+                  <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
                     Terms of Service
                   </Link>
                   , and{' '}
-                  <Link
-                    className="font-weight-bolder link__non-underline"
-                    target="_blank"
-                    to={Constants.ROUTER_PATHS.PRIVACY}
-                  >
+                  <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
                     Privacy Policy
                   </Link>
                   .
-                </Trans>
-              </BrowserRouter>
+                </BrowserRouter>
+              </Trans>
             </p>
           </PhoneViewContainer>
-        ) : null}
+        </section>
         {this.renderOtpModal()}
       </section>
     );

@@ -15,7 +15,6 @@ class OtpModal extends React.Component {
   state = {
     otp: null,
     currentOtpTime: this.props.ResendOtpTime,
-    isSendingOtp: this.props.isLoading,
     isNewInput: true,
   };
 
@@ -67,17 +66,27 @@ class OtpModal extends React.Component {
     return scrollHeight;
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { isLoading } = nextProps;
-
-    if (isLoading !== this.props.isLoading) {
-      this.setState({ isSendingOtp: isLoading });
-    }
-  }
-
   componentWillUnmount() {
     clearTimeout(this.countDownSetTimeoutObj);
   }
+
+  updateAndValidateOtp = otp => {
+    const { sendOtp } = this.props;
+    this.setState(
+      {
+        otp,
+      },
+      () => {
+        const { otp: newOtp } = this.state;
+        if (newOtp.length === Constants.OTP_CODE_SIZE) {
+          // Unfocus the OTP input to prevent users from changing OTP
+          // And at the same time do auto validation
+          document.getElementById('newOtpInput').blur();
+          sendOtp(newOtp);
+        }
+      }
+    );
+  };
 
   countDown(currentOtpTime) {
     clearTimeout(this.countDownSetTimeoutObj);
@@ -93,18 +102,9 @@ class OtpModal extends React.Component {
     this.countDownSetTimeoutObj = setTimeout(() => this.countDown(currentOtpTime - 1), 1000);
   }
 
-  handleChromeInputOtp(e) {
-    this.setState({ otp: e.target.value });
-  }
-
   render() {
-    const { t, buttonText, onClose, getOtp, sendOtp, phone, ResendOtpTime } = this.props;
-    const { otp, currentOtpTime, isSendingOtp, isNewInput } = this.state;
-    let buttonContent = buttonText;
-
-    if (isSendingOtp) {
-      buttonContent = <div className="loader"></div>;
-    }
+    const { t, onClose, getOtp, isLoading, phone, ResendOtpTime } = this.props;
+    const { currentOtpTime, isNewInput } = this.state;
 
     return (
       <div className="full-aside">
@@ -122,7 +122,7 @@ class OtpModal extends React.Component {
                   id="newOtpInput"
                   ref={this.inputRef}
                   className="otp-input__single-input"
-                  onChange={this.handleChromeInputOtp.bind(this)}
+                  onChange={e => this.updateAndValidateOtp(e.target.value)}
                   maxLength={Constants.OTP_CODE_SIZE}
                   type="tel"
                   placeholder="00000"
@@ -131,7 +131,7 @@ class OtpModal extends React.Component {
             ) : (
               <OtpInput
                 key="otp-input"
-                onChange={otp => this.setState({ otp })}
+                onChange={otp => this.updateAndValidateOtp(otp)}
                 numInputs={Constants.OTP_CODE_SIZE}
                 inputStyle={{
                   width: '16vw',
@@ -152,17 +152,8 @@ class OtpModal extends React.Component {
           >
             {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
           </button>
+          {isLoading && <div className="loader theme page-loader"></div>}
         </section>
-
-        <footer className="footer-operation opt">
-          <button
-            className="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
-            disabled={isSendingOtp || !otp || otp.length !== Constants.OTP_CODE_SIZE}
-            onClick={() => sendOtp(otp)}
-          >
-            {buttonContent}
-          </button>
-        </footer>
       </div>
     );
   }

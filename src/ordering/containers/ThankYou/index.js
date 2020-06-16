@@ -19,13 +19,7 @@ import {
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
 import beepSuccessImage from '../../../images/beep-success.png';
-// import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
-import beepPickupSuccessImage from '../../../images/beep-pickup-1.png';
-// import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
-// import beepOnTheWay from '../../../images/beep-on-the-way.svg';
-// import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
-// import beepOrderPending from '../../../images/beep-order-pending.svg';
-// import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
@@ -260,7 +254,6 @@ export class ThankYou extends PureComponent {
 
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
-    logs,
     createdTime,
     t,
     CONSUMERFLOW_STATUS,
@@ -270,20 +263,12 @@ export class ThankYou extends PureComponent {
     cancelOperator,
     order,
   }) {
-    if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
-    const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
-    const paidStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PAID);
-    const acceptedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, ACCEPTED);
-    const logisticConfirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, LOGISTIC_CONFIRMED);
-    const confirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CONFIMRMED);
-    const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
-    const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    const { total, storeInfo } = order || {};
+    const { total, storeInfo, status } = order || {};
     const { name } = storeInfo || {};
-    const { trackingUrl, useStorehubLogistics } =
+    const { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -291,90 +276,65 @@ export class ThankYou extends PureComponent {
       merchant: 'MerchantCancelledDescription',
     };
 
-    const getTimeFromStatusObj = statusObj => {
-      return new Date((statusObj && statusObj.time) || createdTime || '');
-    };
     let currentStatusObj = {};
+
     /** paid status */
-    if (paidStatusObj && acceptedStatusObj === undefined) {
+    if (status === PAID) {
       currentStatusObj = {
-        statusObj: paidStatusObj,
         status: 'paid',
         style: {
           width: '25%',
         },
         firstNote: t('OrderReceived'),
-        // firstLiClassName: 'active',
         secondNote: t('OrderReceivedDescription'),
-        // secondLiClassName: 'normal',
-        timeToShow: getTimeFromStatusObj(paidStatusObj),
         bannerImage: beepOrderStatusPaid,
       };
     }
+
     /** accepted status */
-    //if (acceptedStatusObj && logisticConfirmedStatusObj === undefined && useStorehubLogistics) {
-    if (acceptedStatusObj && logisticConfirmedStatusObj === undefined) {
+    if (status === ACCEPTED) {
       currentStatusObj = {
-        statusObj: acceptedStatusObj,
         status: 'accepted',
         style: {
           width: '50%',
         },
         firstNote: t('MerchantAccepted'),
-        // firstLiClassName: 'active',
         secondNote: t('FindingRider'),
-        // secondLiClassName: 'normal',
-        timeToShow: getTimeFromStatusObj(acceptedStatusObj),
         bannerImage: beepOrderStatusAccepted,
       };
     }
+
     /** logistic confirmed and confirmed */
-    // if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined && useStorehubLogistics) {
-    if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined) {
+    if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
-        statusObj: logisticConfirmedStatusObj && confirmedStatusObj,
         status: 'confirmed',
         style: {
           width: '75%',
         },
         firstNote: t('RiderAssigned'),
-        // firstLiClassName: 'active',
         secondNote: t('TrackYourOrder'),
-        // secondLiClassName: 'normal',
-        timeToShow: getTimeFromStatusObj(logisticConfirmedStatusObj && confirmedStatusObj),
         bannerImage: beepOrderStatusConfirmed,
       };
     }
 
     /** pickup status */
-    //if (pickupStatusObj && useStorehubLogistics) {
-    if (pickupStatusObj) {
+    if (status === PICKUP) {
       currentStatusObj = {
-        statusObj: pickupStatusObj,
         status: 'riderPickUp',
         style: {
           width: '100%',
         },
         firstNote: t('RiderPickUp'),
-        // firstLiClassName: 'active finished',
         secondNote: t('TrackYourOrder'),
-        // secondLiClassName: 'active',
-        timeToShow: getTimeFromStatusObj(pickupStatusObj),
         bannerImage: beepOrderStatusPickedUp,
       };
     }
-    if (paidStatusObj && cancelledStatusObj) {
+
+    if (status === CANCELLED) {
       currentStatusObj = {
-        statusObj: cancelledStatusObj,
         status: 'cancelled',
         descriptionKey: cancelledDescriptionKey[cancelOperator],
-        // firstNote: t('OrderCancelledDescription'),
-        // firstLiClassName: 'active',
-        // secondNote: t('OrderCancelled'),
-        // secondLiClassName: 'error',
-        timeToShow: getTimeFromStatusObj(paidStatusObj),
         bannerImage: beepOrderStatusCancelled,
-        secondTimeToShow: getTimeFromStatusObj(cancelledStatusObj),
       };
     }
 
@@ -426,10 +386,14 @@ export class ThankYou extends PureComponent {
           ) : null}
           {useStorehubLogistics &&
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-            <div className="thanks__status-description">
-              <a href={trackingUrl || ''} target="__blank" className="link text-uppercase font-weight-bolder">
-                {currentStatusObj.secondNote}
-              </a>
+            <div className="thanks__status-description flex flex-middle flex-center">
+              {trackingUrl ? (
+                <a href={trackingUrl} target="__blank" className="link text-uppercase font-weight-bolder">
+                  {currentStatusObj.secondNote}
+                </a>
+              ) : (
+                <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>
+              )}
             </div>
           ) : null}
           {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
@@ -626,7 +590,7 @@ export class ThankYou extends PureComponent {
 
   renderDeliveryImageAndTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
-    const { createdTime, logs, status, deliveryInformation, cancelOperator } = order || {};
+    const { createdTime, status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -639,7 +603,6 @@ export class ThankYou extends PureComponent {
           />
         ) : (
           this.renderConsumerStatusFlow({
-            logs,
             createdTime,
             t,
             CONSUMERFLOW_STATUS,

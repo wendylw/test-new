@@ -25,7 +25,6 @@ is now so popular for quick started and production friendly.
 1. [I18N JSON File Style Guide](#i18n-json-style-guide)
 1. [Analyzing bundle size](#analyzing-bundle-size)
 
-
 <a name="get-started"></a>
 ## Get started
 

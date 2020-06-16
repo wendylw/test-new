@@ -4,6 +4,8 @@ import { getCollectionBySlug } from './entities/storeCollections';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';
+import { getCurrentPlaceInfo } from './app';
+import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
 const defaultPageInfo = {
   page: 0,
@@ -28,15 +30,11 @@ const initialState = {
     pickupUrl: '',
     loading: false,
   },
-  coords: null, // { lat: float, lng: float }
   shippingType: 'delivery', // delivery || pickup, same to the above 2 states
 };
 
 // @types
 const types = {
-  // setCoords
-  SET_COORDS: 'SITE/COLLECTIONS/SET_COORDS',
-
   FETCH_STORE_LIST_REQUEST: 'SITE/COLLECTIONS/FETCH_STORE_LIST_REQUEST',
   FETCH_STORE_LIST_SUCCESS: 'SITE/COLLECTIONS/FETCH_STORE_LIST_SUCCESS',
   FETCH_STORE_LIST_FAILURE: 'SITE/COLLECTIONS/FETCH_STORE_LIST_FAILURE',
@@ -48,10 +46,6 @@ const types = {
 
 // @actions
 const actions = {
-  setCoords: coords => ({
-    type: types.SET_COORDS,
-    coords,
-  }),
   setShippingType: shippingType => ({
     type: types.SET_SHIPPING_TYPE,
     shippingType,
@@ -75,7 +69,9 @@ const actions = {
 };
 
 const fetchStoreList = (page, pageSize, shippingType, tags) => (dispatch, getState) => {
-  const coords = getCoords(getState());
+  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
+  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+  const { coords } = currentPlaceInfo;
   const tagsParam =
     !tags || tags.length === 0
       ? []
@@ -85,7 +81,7 @@ const fetchStoreList = (page, pageSize, shippingType, tags) => (dispatch, getSta
     types: [types.FETCH_STORE_LIST_REQUEST, types.FETCH_STORE_LIST_SUCCESS, types.FETCH_STORE_LIST_FAILURE],
     context: { page, pageSize, shippingType },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&tags=${tagsParam}`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&tags=${tagsParam}&countryCode=${countryCode}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
@@ -178,13 +174,6 @@ const pickup = (state = initialState.pickup, action) => {
   return state;
 };
 
-const coords = (state = initialState.coords, action) => {
-  if (action.type === types.SET_COORDS) {
-    return action.coords;
-  }
-  return state;
-};
-
 const shippingType = (state = initialState.shippingType, action) => {
   if (action.type === types.SET_SHIPPING_TYPE) {
     return action.shippingType;
@@ -196,12 +185,10 @@ export const collectionsActions = actions;
 export default combineReducers({
   delivery,
   pickup,
-  coords,
   shippingType,
 });
 
 // @selector
-export const getCoords = state => state.collections.coords;
 export const getShippingType = state => state.collections.shippingType;
 export const getPageInfo = state => {
   const shippingType = getShippingType(state);
