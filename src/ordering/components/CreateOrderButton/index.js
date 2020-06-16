@@ -24,13 +24,9 @@ class CreateOrderButton extends React.Component {
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (!validCreateOrder) {
-      return;
-    }
-
     await beforeCreateOrder();
 
-    if (isLogin) {
+    if (isLogin && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
       const { currentOrder } = this.props;
@@ -54,7 +50,7 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const { children, className, buttonType, disabled } = this.props;
+    const { children, className, buttonType, dataTestId, disabled } = this.props;
     const classList = ['billing__link button button__fill button__block font-weight-bolder'];
 
     if (className) {
@@ -65,7 +61,7 @@ class CreateOrderButton extends React.Component {
       <button
         className={classList.join(' ')}
         type={buttonType}
-        data-testid="pay"
+        data-testid={dataTestId}
         disabled={disabled}
         onClick={this.handleCreateOrder.bind(this)}
       >
@@ -80,6 +76,7 @@ CreateOrderButton.propTypes = {
   history: PropTypes.object,
   className: PropTypes.string,
   buttonType: PropTypes.string,
+  dataTestId: PropTypes.string,
   validCreateOrder: PropTypes.bool,
   disabled: PropTypes.bool,
   beforeCreateOrder: PropTypes.func,

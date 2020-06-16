@@ -8,6 +8,7 @@ import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
+import CreateOrderButton from '../../components/CreateOrderButton';
 import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
@@ -96,9 +97,8 @@ class Customer extends Component {
     return null;
   };
 
-  async handleCreateOrder() {
-    const { history, appActions, paymentActions, user, deliveryDetails, cartSummary } = this.props;
-    const { total, totalCashback } = cartSummary || {};
+  async handleBeforeCreateOrder() {
+    const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
 
@@ -117,27 +117,6 @@ class Customer extends Component {
     if (!isLogin) {
       await appActions.getOtp({ phone });
       this.setState({ sentOtp: true });
-    } else if (isLogin && !total) {
-      const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-      await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-      const { currentOrder } = this.props;
-      const { orderId } = currentOrder || {};
-
-      if (orderId) {
-        Utils.removeSessionVariable('additionalComments');
-      }
-
-      const { thankYouPageUrl } = this.props;
-
-      if (thankYouPageUrl) {
-        window.location = `${thankYouPageUrl}${window.location.search}`;
-      }
-
-      return;
-    } else {
-      this.visitPaymentPage();
     }
   }
 
@@ -381,10 +360,11 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
+    const { total } = cartSummary || {};
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -473,14 +453,24 @@ class Customer extends Component {
             </button>
           </div>
           <div className="footer-operation__item width-2-3">
-            <button
+            <CreateOrderButton
+              history={history}
+              dataTestId="customerContinue"
+              disabled={!this.getCanContinue()}
+              validCreateOrder={!total}
+              beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+              afterCreateOrder={this.visitPaymentPage()}
+            >
+              {isFetching ? <div className="loader"></div> : t('Continue')}
+            </CreateOrderButton>
+            {/* <button
               className="billing__link button button__fill button__block font-weight-bolder"
               data-testid="customerContinue"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={!this.getCanContinue()}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
-            </button>
+            </button> */}
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
