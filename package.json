@@ -6,20 +6,10 @@
   "engines": {
     "node": ">=8.17.0"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 50,
-        "functions": 50,
-        "lines": 50,
-        "statements": 50
-      }
-    }
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push": "yarn test:coverage; echo \"coverage always true for now\""
+      "pre-push": "yarn run test:coverage"
     }
   },
   "lint-staged": {
@@ -76,18 +66,18 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
+    "start": "react-app-rewired start",
     "build-sw": "node ./src/sw-build.js",
     "build-i18n": "node ./build-i18n-files.js",
     "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
-    "build": "react-scripts build && npm run build-sw && npm run clean-cra-sw && npm run build-i18n && npm run move-to-backend",
+    "build": "react-app-rewired build && npm run build-sw && npm run clean-cra-sw && npm run move-to-backend",
     "prepush": "sh ../git_hooks/copy",
     "move-to-backend": "mkdir -p ../backend/client/build && cp -pr build/* ../backend/client/build/",
-    "test": "react-scripts test",
-    "test:watch": "react-scripts test --watchAll",
-    "test:coverage": "react-scripts test --coverage",
-    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
-    "eject": "react-scripts eject",
+    "test": "react-app-rewired test",
+    "test:watch": "react-app-rewired test --watchAll",
+    "test:coverage": "react-app-rewired test --coverage",
+    "test:debug": "react-app-rewired --inspect-brk test --runInBand --no-cache",
+    "eject": "react-app-rewired eject",
     "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
     "i18n-sync": "i18n-sync"
   },
@@ -105,16 +95,19 @@
     "@testing-library/react": "^9.3.2",
     "debug": "^4.1.1",
     "deploy-aws-s3-cloudfront": "https://github.com/storehubnet/deploy-aws-s3-cloudfront.git",
+    "customize-cra": "^0.9.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "fs-extra": "^8.1.0",
     "husky": "^3.1.0",
     "i18n-sync": "^1.2.1",
-    "jest-fetch-mock": "^2.1.2",
+    "jest-fetch-mock": "^3.0.1",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
     "prop-types": "^15.7.2",
+    "react-app-rewired": "^2.1.5",
     "react-test-renderer": "^16.12.0",
+    "redux-mock-store": "^1.5.4",
     "workbox-build": "^4.3.0"
   }
 }
