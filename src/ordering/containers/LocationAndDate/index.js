@@ -361,8 +361,8 @@ class LocationAndDate extends Component {
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandPreOrder } = qrOrderingSettings;
     return timeList.map(item => {
-      if (item.from === PREORDER_IMMEDIATE_TAG.from && !disableOnDemandPreOrder) {
-        return (
+      if (item.from === PREORDER_IMMEDIATE_TAG.from) {
+        return !disableOnDemandPreOrder ? (
           <li
             className={`location-display__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
@@ -375,7 +375,7 @@ class LocationAndDate extends Component {
           >
             {t('Immediate')}
           </li>
-        );
+        ) : null;
       }
 
       let timeToDisplay;
