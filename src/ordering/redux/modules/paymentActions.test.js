@@ -23,7 +23,7 @@ describe('src/ordering/redux/modules/payment.js: actions', () => {
     it('setCurrentPayment', () => {
       const expectedAction = {
         type: types.SET_CURRENT_PAYMENT,
-        paymentName: 'mockPaymentName',
+        paymentLabel: 'mockPaymentName',
       };
       return expect(actions.setCurrentPayment('mockPaymentName')).toEqual(expectedAction);
     });

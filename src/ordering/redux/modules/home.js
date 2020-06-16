@@ -144,7 +144,7 @@ export const actions = {
   }),
 };
 
-export const fetchShoppingCart = () => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],

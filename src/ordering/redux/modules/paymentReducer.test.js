@@ -11,7 +11,7 @@ import rootReducer from './index';
 
 describe('src/ordering/redux/modules/payment.js: reducers', () => {
   const paymentActionInfo = {
-    paymentName: 'mockPaymentName',
+    paymentLabel: 'mockPaymentName',
     response: {
       token: 'mockToken',
       bankingList: [],

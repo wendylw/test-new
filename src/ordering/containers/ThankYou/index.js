@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';

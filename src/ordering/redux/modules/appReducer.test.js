@@ -236,6 +236,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
     const messageModalActionInfo = {
       message: 'mockMessage',
       description: 'mockDescription',
+      buttonText: 'mockButtonText',
     };
     it('SET_MESSAGE_INFO', () => {
       const action = {
@@ -247,6 +248,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         show: true,
         message: 'mockMessage',
         description: 'mockDescription',
+        buttonText: 'mockButtonText',
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
