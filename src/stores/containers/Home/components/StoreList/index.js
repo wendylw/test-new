@@ -5,41 +5,32 @@ import Constants from '../../../../../utils/constants';
 
 class StoreList extends Component {
   render() {
-    const {
-      storeList,
-      onSelect,
-    } = this.props;
+    const { storeList, onSelect } = this.props;
 
     return (
       <ul className="list">
-        {
-          storeList.map(store => {
-            const {
-              id,
-              name,
-            } = store;
-            const { ADDRESS_RANGE } = Constants;
+        {storeList.map(store => {
+          const { id, name } = store;
+          const { ADDRESS_RANGE } = Constants;
 
-            return (
-              <li
-                key={id}
-                className="item border__bottom-divider border-radius-base flex flex-top"
-                onClick={() => {
-                  onSelect(id);
-                }}
-              >
-                <div className="item__content flex flex-middle flex-space-between">
-                  <div className="item__detail">
-                    <summary className="item__title font-weight-bold">{name}</summary>
-                    <span className="gray-font-opacity">
-                      {Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}
-                    </span>
-                  </div>
+          return (
+            <li
+              key={id}
+              className="item border__bottom-divider border-radius-base flex flex-top"
+              data-testid="store"
+              onClick={() => {
+                onSelect(id);
+              }}
+            >
+              <div className="item__content flex flex-middle flex-space-between">
+                <div className="item__detail">
+                  <summary className="item__title font-weight-bolder">{name}</summary>
+                  <span className="gray-font-opacity">{Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}</span>
                 </div>
-              </li>
-            );
-          })
-        }
+              </div>
+            </li>
+          );
+        })}
       </ul>
     );
   }
@@ -52,7 +43,7 @@ StoreList.propTypes = {
 
 StoreList.defaultProps = {
   storeList: [],
-  onSelect: () => { },
+  onSelect: () => {},
 };
 
 export default StoreList;

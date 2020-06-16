@@ -13,7 +13,7 @@ const { AUTH_INFO } = Constants;
 
 export const initialState = {
   user: {
-    isWebview: Utils.isWebview(),
+    // isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,
@@ -227,7 +227,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (code && code === 401) {
+      if (code && code === 401 && code < 40000) {
         return { ...state, isExpired: true, isFetching: false };
       }
 

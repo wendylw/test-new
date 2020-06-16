@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -41,6 +42,7 @@ class ProductDetail extends Component {
     resizedImage: false,
     currentProductDescriptionImageIndex: 0,
     productElHeight: 0,
+    minimumVariations: [],
   };
 
   setProductElHeight() {
@@ -61,6 +63,7 @@ class ProductDetail extends Component {
     }
 
     this.setProductElHeight();
+    this.initMinimumVariationList();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -73,10 +76,14 @@ class ProductDetail extends Component {
 
     if ((!prevProps.product && id) || id !== prevProps.product.id || (show && prevProps.show !== show)) {
       this.initVariationsByIdMap(product);
+      this.initMinimumVariationList();
     }
 
     if (!show && prevProps.show !== show) {
-      this.setState({ resizedImage: false });
+      this.setState({
+        resizedImage: false,
+        minimumVariations: [],
+      });
     }
 
     if (prevState.productElHeight !== this.productEl.clientHeight) {
@@ -134,6 +141,16 @@ class ProductDetail extends Component {
     });
   }
 
+  initMinimumVariationList() {
+    const { product } = this.props;
+    const { variations } = product || {};
+    var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
+
+    if (minimumVariations && minimumVariations.length) {
+      this.setState({ minimumVariations });
+    }
+  }
+
   displayPrice() {
     const { product } = this.props;
     const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
@@ -188,6 +205,31 @@ class ProductDetail extends Component {
     });
 
     return variationTexts.join(', ');
+  }
+
+  isInvalidMinimumVariations() {
+    const { variationsByIdMap, minimumVariations } = this.state;
+
+    if (!minimumVariations || !minimumVariations.length) {
+      return false;
+    }
+
+    if (!variationsByIdMap) {
+      return true;
+    }
+
+    for (let i = 0; i < minimumVariations.length; i++) {
+      const { id, minSelectionAmount } = minimumVariations[i];
+
+      if (
+        !variationsByIdMap[id] ||
+        (variationsByIdMap[id] && Object.keys(variationsByIdMap[id]).length - 1 < minSelectionAmount)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   isSubmitable() {
@@ -257,6 +299,11 @@ class ProductDetail extends Component {
 
     onToggle();
 
+    if (this.swipeEl) {
+      this.swipeEl.slide(0, 100);
+      this.swipeEl.stop();
+    }
+
     this.setState({
       cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
       resizedImage: false,
@@ -272,8 +319,32 @@ class ProductDetail extends Component {
     this.closeModal();
   }
 
+  handleGtmEventTracking = variables => {
+    const { product } = this.props;
+    let selectedProduct = product.childrenMap.find(child => child.childId === variables.productId);
+
+    if (!selectedProduct) {
+      selectedProduct = product;
+    }
+
+    const gtmEventData = {
+      product_name: product.title,
+      product_id: variables.productId,
+      price_local: selectedProduct.displayPrice,
+      variant: variables.variations,
+      quantity: selectedProduct.quantityOnHand,
+      product_type: product.inventoryType,
+      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: (product.images && product.images.length) || 0,
+    };
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
+  };
+
   handleAddOrUpdateShoppingCartItem = async variables => {
     const { homeActions } = this.props;
+
+    this.handleGtmEventTracking(variables);
 
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
@@ -348,6 +419,7 @@ class ProductDetail extends Component {
               key={variation.id}
               variation={variation}
               initVariation={show}
+              isInvalidMinimum={this.isInvalidMinimumVariations()}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
           ))}
@@ -358,9 +430,10 @@ class ProductDetail extends Component {
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity } = this.state;
+    const { cartQuantity, minimumVariations } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
+    const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     if (!product) {
       return null;
@@ -369,6 +442,7 @@ class ProductDetail extends Component {
     return (
       <div ref={ref => (this.productEl = ref)} className="aside__fix-bottom">
         <ProductItem
+          isList={false}
           productDetailImageRef={ref => (this.productDetailImage = ref)}
           className="aside__section-container border__top-divider"
           image={imageUrl}
@@ -381,11 +455,16 @@ class ProductDetail extends Component {
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />
 
-        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container">
+        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container bottom">
           <button
-            className="button__fill button__block font-weight-bold"
+            className="button__fill button__block font-weight-bolder"
             type="button"
-            disabled={!this.isSubmitable() || Utils.isProductSoldOut(product || {})}
+            data-testid="OK"
+            disabled={
+              !this.isSubmitable() ||
+              Utils.isProductSoldOut(product || {}) ||
+              (hasMinimumVariations && this.isInvalidMinimumVariations())
+            }
             onClick={async () => {
               const { variationsByIdMap } = this.state;
               let variations = [];
@@ -426,10 +505,12 @@ class ProductDetail extends Component {
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description'];
     const resizeImageStyles = this.resizeImage();
-    const descriptionStr = Utils.removeHtmlTag(description || '');
+    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     let imageContainerHeight = '100vw';
     let imageContainerMarginBottom = '-25vw';
-    let swipeHeight = '80vw';
+    // let swipeHeight = '80vw';
+    let productDescriptionHeight = '17vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
       className.push('hide');
@@ -441,12 +522,13 @@ class ProductDetail extends Component {
 
     if (this.asideEl && this.buttonEl && this.productEl) {
       const productHeight = this.productEl.clientHeight;
-      const asideHeight = this.asideEl.clientHeight;
+      const asideWidth = this.asideEl.clientWidth;
       const buttonElHeight = this.buttonEl.clientHeight;
+      const footerHeight = document.querySelector('.footer-operation').clientHeight;
 
-      imageContainerHeight = `${asideHeight * 0.9 - buttonElHeight}px`;
+      imageContainerHeight = `${asideWidth * 0.8}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
-      swipeHeight = `${(asideHeight * 0.9 - productHeight).toFixed(2)}px`;
+      productDescriptionHeight = `${windowHeight - asideWidth * 0.8 - productHeight + buttonElHeight - footerHeight}px`;
     }
 
     return (
@@ -456,19 +538,15 @@ class ProductDetail extends Component {
           className="product-description__image-container"
           style={{
             height: imageContainerHeight,
-            marginBottom: `-${imageContainerMarginBottom}`,
             ...resizeImageStyles,
           }}
         >
-          <i className="product-description__back-icon" onClick={() => onToggle()}>
-            <IconLeftArrow />
-          </i>
+          <IconLeftArrow className="product-description__back-icon" onClick={() => onToggle()} />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}
               continuous={images.length > 2 ? true : false}
               callback={this.handleSwipeProductImage.bind(this)}
-              style={{ height: swipeHeight }}
             >
               {images.map((imageItemUrl, key) => {
                 return (
@@ -480,19 +558,13 @@ class ProductDetail extends Component {
             </Swipe>
           ) : (
             <Image
-              style={{ height: swipeHeight }}
               src={images && images.length ? images[0] : null}
               scalingRatioIndex={1}
               alt={`${storeName} ${title}`}
             />
           )}
           {images && images.length > 1 ? (
-            <ul
-              className="product-description__dot-list text-center"
-              style={{
-                bottom: imageContainerMarginBottom,
-              }}
-            >
+            <ul className="product-description__dot-list text-center">
               {images.map((imageItemUrl, key) => {
                 const dotClassList = ['product-description__dot'];
 
@@ -507,18 +579,23 @@ class ProductDetail extends Component {
         </div>
         <div className="aside__fix-bottom">
           <div
-            className="item border__bottom-divider flex flex-space-between aside__section-container flex-middle"
+            className="item border__bottom-divider flex flex-space-between flex-top"
             style={{ height: imageContainerMarginBottom }}
           >
-            <div className="item__content flex flex-middle">
-              <div className="item__detail">
-                <summary className="item__title font-weight-bold">{title}</summary>
-                <CurrencyNumber className="gray-font-opacity" money={Number(this.displayPrice()) || 0} />
+            <div className="item__content flex flex-top">
+              <div className="item__detail flex flex-column flex-space-between">
+                <div className="item__detail-content">
+                  <summary className="item__title font-weight-bolder">{title}</summary>
+                </div>
+                <CurrencyNumber
+                  className="gray-font-opacity font-weight-bolder"
+                  money={Number(this.displayPrice()) || 0}
+                />
               </div>
             </div>
 
             {Utils.isProductSoldOut(product || {}) ? (
-              <Tag text="Sold Out" className="tag__card sold-out" style={{ minWidth: '70px' }} />
+              <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
             ) : (
               <ItemOperator
                 className="flex-middle"
@@ -528,12 +605,17 @@ class ProductDetail extends Component {
             )}
           </div>
           <article
-            className="aside__section-container"
-            style={{ height: this.buttonEl ? `${this.buttonEl.clientHeight}px` : '17vw' }}
+            className="aside__section-container bottom"
+            style={{
+              maxHeight: productDescriptionHeight,
+              overflowY: 'auto',
+            }}
           >
-            <p className="product-description__text gray-font-opacity">
-              {Boolean(descriptionStr) ? descriptionStr : t('NoProductDescription')}
-            </p>
+            {Boolean(descriptionStr) ? (
+              <p className="product-description__text gray-font-opacity" dangerouslySetInnerHTML={descriptionStr} />
+            ) : (
+              <p className="product-description__text gray-font-opacity">{t('NoProductDescription')}</p>
+            )}
           </article>
         </div>
       </div>
@@ -542,7 +624,8 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
-    const { product, show } = this.props;
+    const { product, viewAside, show } = this.props;
+    const { resizeImage } = this.state;
 
     if (show && product && product.id && !product._needMore) {
       className.push('active');
@@ -554,7 +637,12 @@ class ProductDetail extends Component {
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
       >
-        <div className="product-detail">
+        <div
+          className="product-detail"
+          style={{
+            opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
+          }}
+        >
           {this.renderVariations()}
 
           {this.renderProductOperator()}

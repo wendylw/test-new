@@ -10,7 +10,9 @@ import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
 import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
-
+import { getBusiness } from '../../../../redux/modules/app';
+import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
+import Utils from '../../../../../utils/utils';
 export class Footer extends Component {
   getDisplayPrice() {
     const { shoppingCart } = this.props;
@@ -24,24 +26,62 @@ export class Footer extends Component {
     return totalPrice;
   }
 
+  handleRedirect = () => {
+    const { history, business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (enablePreOrder) {
+      const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+      const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+
+      if (
+        (Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour)) ||
+        (Utils.isPickUpType() && (!date.date || !hour.from))
+      ) {
+        const { search } = window.location;
+        const newSearch = Utils.removeParam('pageRefer', search);
+
+        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${newSearch}`);
+
+        history.push({
+          pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+          search: `${newSearch}&callbackUrl=${callbackUrl}`,
+        });
+        return;
+      }
+    }
+    const newSearchParams = Utils.removeParam('pageRefer', window.location.search);
+
+    return history && history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: newSearchParams });
+  };
+
   render() {
-    const { history, onClickCart, cartSummary, businessInfo, tableId, onToggle, t } = this.props;
+    const {
+      onClickCart,
+      cartSummary,
+      businessInfo,
+      tableId,
+      onToggle,
+      t,
+      isValidTimeToOrder,
+      isLiveOnline,
+      enablePreOrder,
+    } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
-
     return (
       <footer className="footer-operation flex flex-middle flex-space-between">
         <div className="cart-bar has-products flex flex-middle flex-space-between">
-          <button onClick={onClickCart}>
+          <button className="flex__shrink-fixed" onClick={onClickCart}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
               <IconCart />
               <span className="tag__number">{count || 0}</span>
             </div>
 
             <div className="cart-bar__money text-middle text-left">
-              <CurrencyNumber className="font-weight-bold" money={this.getDisplayPrice() || 0} />
-              {this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
+              <CurrencyNumber className="font-weight-bolder" money={this.getDisplayPrice() || 0} />
+              {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="cart-bar__money-minimum">
                   {count ? (
                     <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
@@ -67,13 +107,23 @@ export class Footer extends Component {
           {tableId !== 'DEMO' ? (
             <button
               className="cart-bar__order-button"
-              disabled={this.getDisplayPrice() < Number(minimumConsumption || 0)}
+              data-testid="orderNow"
+              disabled={
+                (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
+                (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||
+                (!isValidTimeToOrder && !enablePreOrder) ||
+                !isLiveOnline
+              }
               onClick={() => {
                 onToggle();
-                history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART });
+                this.handleRedirect();
               }}
             >
-              {t('OrderNow')}
+              {isLiveOnline
+                ? !isValidTimeToOrder && enablePreOrder
+                  ? t('PreOrderNow')
+                  : t('OrderNow')
+                : t('StoreOffline')}
             </button>
           ) : null}
         </div>
@@ -86,11 +136,15 @@ Footer.propTypes = {
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
   onClickCart: PropTypes.func,
+  isValidTimeToOrder: PropTypes.bool,
+  enablePreOrder: PropTypes.bool,
 };
 
 Footer.defaultProps = {
   onToggle: () => {},
   onClickCart: () => {},
+  isValidTimeToOrder: true,
+  enablePreOrder: false,
 };
 
 export default compose(
@@ -102,6 +156,8 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
+        business: getBusiness(state),
+        allBusinessInfo: getAllBusinesses(state),
       };
     },
     dispatch => ({

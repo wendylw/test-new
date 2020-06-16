@@ -25,10 +25,11 @@ describe('utils/utils', () => {
     getFormatPhoneNumber,
     DateFormatter,
     getValidAddress,
-    creditCardDetector,
     getQueryObject,
     initSmoothAnimation,
     getUserAgentInfo,
+    checkEmailIsValid,
+    getFileExtension,
   } = Utils;
 
   it('getQueryString', () => {
@@ -57,21 +58,21 @@ describe('utils/utils', () => {
     expect(window.location.search).not.toBe('?utm_source=infoq_web&utm_medium=menu');
   });
 
-  describe('utils.isWebview', () => {
-    it('isWebview:should return false', () => {
-      expect(isWebview()).toBeFalsy();
-    });
+  // describe('utils.isWebview', () => {
+  //   it('isWebview:should return false', () => {
+  //     expect(isWebview()).toBeFalsy();
+  //   });
 
-    it('isWebView:should return true', () => {
-      const oldReactNativeWebView = window.ReactNativeWebView;
-      delete window.ReactNativeWebView;
-      window.ReactNativeWebView = {
-        postMessage: jest.fn(),
-      };
-      expect(isWebview()).toBeTruthy();
-      window.ReactNativeWebView = oldReactNativeWebView;
-    });
-  });
+  //   it('isWebView:should return true', () => {
+  //     const oldReactNativeWebView = window.ReactNativeWebView;
+  //     delete window.ReactNativeWebView;
+  //     window.ReactNativeWebView = {
+  //       postMessage: jest.fn(),
+  //     };
+  //     expect(isWebview()).toBeTruthy();
+  //     window.ReactNativeWebView = oldReactNativeWebView;
+  //   });
+  // });
 
   it('debounce', () => {
     const mockFn = jest.fn();
@@ -207,27 +208,6 @@ describe('utils/utils', () => {
     expect(DateFormatter('13/993')).toBe('12 / 99');
   });
 
-  describe('utils.creditCardDetector', () => {
-    it('creditCardDetector: not digital', () => {
-      const card = creditCardDetector('hello');
-      expect(card.formattedCardNumber).toBe('');
-    });
-
-    it('creditCardDetector: visa', () => {
-      const cardNumberString = '4111 1111 1111 1111';
-      const card = creditCardDetector(cardNumberString);
-      expect(card.formattedCardNumber).toBe(cardNumberString);
-      expect(card.type).toBe('visa');
-    });
-
-    it('creditCardDetector: mastercard', () => {
-      const cardNumberString = '5155 1111 1111 1111';
-      const card = creditCardDetector(cardNumberString);
-      expect(card.formattedCardNumber).toBe(cardNumberString);
-      expect(card.type).toBe('mastercard');
-    });
-  });
-
   it('getQueryObject', () => {
     const search = '?utm_source=infoq_web&utm_medium=menu';
     const history = {
@@ -245,5 +225,56 @@ describe('utils/utils', () => {
   it('getUserAgentInfo: only test isMobile', () => {
     const userAgentInfo = getUserAgentInfo();
     expect(userAgentInfo.isMobile).toBeFalsy();
+  });
+
+  describe('Utils.checkEmailIsValid', () => {
+    it('check valid email', () => {
+      expect(checkEmailIsValid('myemail@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my-email@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email+beep@beep.com')).toBeTruthy();
+      expect(checkEmailIsValid('my.email+beep@123.com')).toBeTruthy();
+      expect(checkEmailIsValid('my-email+123@beep.com.cn')).toBeTruthy();
+    });
+
+    it('check invalid email', () => {
+      expect(checkEmailIsValid('invalid@email')).toBeFalsy();
+      expect(checkEmailIsValid('@email.com')).toBeFalsy();
+      expect(checkEmailIsValid('invalid@')).toBeFalsy();
+      expect(checkEmailIsValid('email@.com')).toBeFalsy();
+    });
+
+    it('check email is empty', () => {
+      expect(checkEmailIsValid(null)).toBeFalsy();
+      expect(checkEmailIsValid('')).toBeFalsy();
+      expect(checkEmailIsValid()).toBeFalsy();
+    });
+  });
+
+  describe('Utils.getFileExtension', () => {
+    it('check get extension from file name first', () => {
+      expect(
+        getFileExtension({
+          name: 'test.jpg',
+          type: 'image/jpeg',
+        })
+      ).toBe('jpg');
+
+      expect(
+        getFileExtension({
+          name: 'test-1-2-3.1.2.3.jpg',
+          type: 'image/jpeg',
+        })
+      ).toBe('jpg');
+    });
+
+    it('check get extension from file type if file name not exist extension', () => {
+      expect(
+        getFileExtension({
+          name: 'test',
+          type: 'image/jpeg',
+        })
+      ).toBe('jpeg');
+    });
   });
 });

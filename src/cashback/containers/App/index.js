@@ -8,17 +8,21 @@ import {
   getError,
   getUser,
 } from '../../redux/modules/app';
+import { getPageError } from '../../../redux/modules/entities/error';
+import Constants from '../../../utils/constants';
 import Routes from '../Routes';
 import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
+import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
   async componentDidMount() {
     const { appActions } = this.props;
 
+    this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.fetchBusiness();
@@ -31,19 +35,32 @@ class App extends Component {
     }
 
     this.getTokens(isLogin);
-    this.postAppMessage(user);
+    // this.postAppMessage(user);
   }
 
   componentDidUpdate(prevProps) {
-    const { appActions, user } = this.props;
+    const { appActions, user, pageError } = this.props;
     const { isExpired, isWebview, isLogin } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+      // this.postAppMessage(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
       appActions.loadCustomerProfile();
+    }
+  }
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+
+    if (pageError && pageError.code) {
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
   }
 
@@ -70,15 +87,15 @@ class App extends Component {
     );
   }
 
-  postAppMessage(user) {
-    const { isWebview, isExpired } = user || {};
+  // postAppMessage(user) {
+  //   const { isWebview, isExpired } = user || {};
 
-    if (isWebview && isExpired) {
-      window.ReactNativeWebView.postMessage('tokenExpired');
-    } else if (isWebview && !isExpired) {
-      window.ReactNativeWebView.postMessage('getToken');
-    }
-  }
+  //   if (isWebview && isExpired) {
+  //     window.ReactNativeWebView.postMessage('tokenExpired');
+  //   } else if (isWebview && !isExpired) {
+  //     window.ReactNativeWebView.postMessage('getToken');
+  //   }
+  // }
 
   handleClearError = () => {
     this.props.appActions.clearError();
@@ -100,7 +117,7 @@ class App extends Component {
         <Message />
         {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
         <Routes />
-        <DocumentFavicon icon={favicon || `${process.env.PUBLIC_URL}/favicon.ico`} />
+        <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
   }
@@ -112,6 +129,7 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
     messageInfo: getMessageInfo(state),
     error: getError(state),
+    pageError: getPageError(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),

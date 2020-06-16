@@ -104,20 +104,28 @@ class Login extends React.Component {
             onSubmit={this.handleSubmitPhoneNumber.bind(this)}
           >
             <p className="terms-privacy text-center gray-font-opacity">
-              <Trans i18nKey="TermsAndPrivacyDescription">
-                By tapping to continue, you agree to our
-                <br />
-                <BrowserRouter basename="/">
-                  <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+              <BrowserRouter basename="/">
+                <Trans i18nKey="TermsAndPrivacyDescription">
+                  By tapping to continue, you agree to our
+                  <br />
+                  <Link
+                    className="font-weight-bolder link__non-underline"
+                    target="_blank"
+                    to={Constants.ROUTER_PATHS.TERMS_OF_USE}
+                  >
                     Terms of Service
                   </Link>
                   , and{' '}
-                  <Link className="font-weight-bold" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+                  <Link
+                    className="font-weight-bolder link__non-underline"
+                    target="_blank"
+                    to={Constants.ROUTER_PATHS.PRIVACY}
+                  >
                     Privacy Policy
                   </Link>
                   .
-                </BrowserRouter>
-              </Trans>
+                </Trans>
+              </BrowserRouter>
             </p>
           </PhoneViewContainer>
         ) : null}

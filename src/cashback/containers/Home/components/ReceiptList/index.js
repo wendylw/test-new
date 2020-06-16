@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
+import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import {
   actions as homeActionCreators,
   getCashbackHistory,
@@ -15,11 +16,6 @@ import {
   getFetchState,
 } from '../../../../redux/modules/home';
 
-const LANGUAGES = {
-  MY: 'EN',
-  TH: 'EN',
-  PH: 'EN',
-};
 const DATE_OPTIONS = {
   weekday: 'short',
   year: 'numeric',
@@ -103,9 +99,7 @@ class RecentActivities extends React.Component {
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>
-                  <time className="receipt-list__time">
-                    {receiptTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
-                  </time>
+                  <time className="receipt-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
                 </summary>
               </div>
             );
@@ -129,7 +123,7 @@ class RecentActivities extends React.Component {
           {!this.state.fullScreen ? (
             <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
           ) : (
-            <Header navFunc={this.toggleFullScreen.bind(this)} />
+            <Header className="flex-middle" navFunc={this.toggleFullScreen.bind(this)} />
           )}
           <h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>
             {t('Receipts')}

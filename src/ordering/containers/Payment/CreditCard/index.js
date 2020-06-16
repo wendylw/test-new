@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
@@ -14,13 +15,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentPayment, getCurrentOrderId } from '../../../redux/modules/payment';
-
-import paymentVisaImage from '../../../../images/payment-visa.svg';
-import paymentMasterImage from '../../../../images/payment-mastercard.svg';
-
+import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
+import PaymentCardBrands from '../components/PaymentCardBrands';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -62,10 +61,12 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const h = config.h();
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
@@ -74,7 +75,9 @@ class CreditCard extends Component {
 
     const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
+      type ? '&type=' + type : ''
+    }`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -85,7 +88,7 @@ class CreditCard extends Component {
       redirectURL,
       webhookURL,
       payActionWay: 1,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
       cardholderName,
       encryptedCardInfo,
       expYearCardInfo,
@@ -95,7 +98,9 @@ class CreditCard extends Component {
   };
 
   getCardInfoValidationOpts(id, inValidFixedlengthFiedls = []) {
-    const { t } = this.props;
+    const { t, merchantCountry } = this.props;
+    const { card } = this.state;
+
     const nameList = {
       cardNumber: 'number',
       validDate: 'expiration',
@@ -124,7 +129,7 @@ class CreditCard extends Component {
       },
       fixedLength: {
         message: t('CardNumberIncompleteMessage', { nameString, verb }),
-        length: 19,
+        length: card.ruler ? card.ruler.length + card.ruler.blocks.length - 1 : 19,
       },
       validCardNumber: {
         message: t('CardNumberInvalidMessage'),
@@ -147,9 +152,9 @@ class CreditCard extends Component {
     return {
       rules,
       validCardNumber: () => {
-        const { card } = this.state;
+        const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
 
-        return Boolean(card.type);
+        return supportCreditCardBrands.includes(card.brand);
       },
     };
   }
@@ -299,20 +304,22 @@ class CreditCard extends Component {
       return;
     }
 
-    const { paymentActions, cartSummary } = this.props;
+    const { history, paymentActions, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await paymentActions.createOrder({ cashback: totalCashback });
+    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
     const { currentOrder } = this.props;
     const { orderId } = currentOrder || {};
 
     if (orderId) {
       Utils.removeSessionVariable('additionalComments');
+      Utils.removeSessionVariable('deliveryComments');
     }
 
     this.setState({
-      payNowLoading: true,
+      payNowLoading: !!orderId,
     });
   }
 
@@ -325,7 +332,7 @@ class CreditCard extends Component {
 
     this.setState(
       {
-        card: Utils.creditCardDetector(e.target.value),
+        card: creditCardDetector(e.target.value),
       },
       () => {
         if (this.cardNumberEl !== null) {
@@ -355,6 +362,20 @@ class CreditCard extends Component {
     });
   }
 
+  renderCreditBrands() {
+    const { card } = this.state;
+
+    return (
+      <div className="payment-bank__card-type-container flex flex-middle">
+        <PaymentCardBrands
+          iconClassName={'payment-bank__card-type-icon'}
+          country={this.props.merchantCountry}
+          brand={card.brand}
+        />
+      </div>
+    );
+  }
+
   renderForm() {
     const { t } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
@@ -365,9 +386,9 @@ class CreditCard extends Component {
       <form id="bank-2c2p-form" className="form">
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bold">{t('CardInformation')}</label>
+            <label className="payment-bank__label font-weight-bolder">{t('CardInformation')}</label>
             {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
-              <span className="error-message font-weight-bold text-uppercase">{cardInfoError.messages.required}</span>
+              <span className="error-message font-weight-bolder text-uppercase">{cardInfoError.messages.required}</span>
             ) : null}
           </div>
           <div className="payment-bank__card-container">
@@ -382,22 +403,11 @@ class CreditCard extends Component {
                 className="input input__block"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
-                value={card.formattedCardNumber || ''}
+                value={cardNumber || ''}
                 onChange={this.handleChangeCardNumber.bind(this)}
                 onBlur={this.validCardInfo.bind(this)}
               />
-              <div className="payment-bank__card-type-container flex flex-middle">
-                <i className={`payment-bank__card-type-icon visa text-middle ${card.type === 'visa' ? 'active' : ''}`}>
-                  <img src={paymentVisaImage} />
-                </i>
-                <i
-                  className={`payment-bank__card-type-icon mastercard text-middle ${
-                    card.type === 'mastercard' ? 'active' : ''
-                  }`}
-                >
-                  <img src={paymentMasterImage} />
-                </i>
-              </div>
+              {this.renderCreditBrands()}
             </div>
             <div className="input__list-bottom flex flex-middle flex-space-between">
               <input
@@ -437,9 +447,9 @@ class CreditCard extends Component {
         </div>
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bold">{t('NameOnCard')}</label>
+            <label className="payment-bank__label font-weight-bolder">{t('NameOnCard')}</label>
             {cardHolderNameError.key === FormValidate.errorNames.required ? (
-              <span className="error-message font-weight-bold text-uppercase">{cardHolderNameError.message}</span>
+              <span className="error-message font-weight-bolder text-uppercase">{cardHolderNameError.message}</span>
             ) : null}
           </div>
           <input
@@ -465,8 +475,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary, onlineStoreInfo } = this.props;
-    const { logo } = onlineStoreInfo || {};
+    const { t, match, history, cartSummary } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
@@ -474,17 +483,17 @@ class CreditCard extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right"
+          className="border__bottom-divider gray has-right flex-middle"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
-            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
+              search: window.location.search,
+            });
           }}
         />
         <div className="payment-bank">
-          <figure className="logo-default__image-container">
-            <img src={logo} alt="" />
-          </figure>
           <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
 
           {this.renderForm()}
@@ -492,14 +501,15 @@ class CreditCard extends Component {
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
+            data-testid="payMoney"
             disabled={payNowLoading}
           >
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </button>
         </div>
@@ -528,9 +538,9 @@ export default compose(
       return {
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({

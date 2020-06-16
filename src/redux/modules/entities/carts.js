@@ -1,4 +1,7 @@
 import { APP_TYPES, HOME_TYPES } from '../../../ordering/redux/types';
+import Constants from '../../../utils/constants';
+
+const { PROMO_TYPE } = Constants;
 
 export const initialState = {
   summary: {
@@ -9,6 +12,7 @@ export const initialState = {
     tax: 0,
     storeCreditsBalance: 0,
   },
+  promotion: null, // { promoCode: '', discount: 0.0, status: '', validFrom: '' }
   data: {},
 };
 
@@ -18,8 +22,27 @@ const commonReducer = (state = initialState, action) => {
       return state;
     }
 
-    const { items, unavailableItems, ...summary } = action.response;
+    const { items, unavailableItems, voucher, displayPromotions, ...summary } = action.response;
 
+    // promotion & voucher
+    let promotion = null;
+    if (voucher) {
+      promotion = {
+        promoCode: voucher.voucherCode,
+        status: voucher.status,
+        discount: voucher.value,
+        validFrom: new Date(voucher.validFrom),
+        promoType: PROMO_TYPE.VOUCHER,
+      };
+    } else if (displayPromotions && displayPromotions.length) {
+      const displayPromotion = displayPromotions[0];
+      promotion = {
+        promoCode: displayPromotion.promotionCode,
+        discount: displayPromotion.displayDiscount,
+        promoType: PROMO_TYPE.PROMOTION,
+        status: displayPromotion.status,
+      };
+    }
     // Only deal with response.data.shoppingCart
     const kvData = {};
     items.forEach(item => {
@@ -38,6 +61,7 @@ const commonReducer = (state = initialState, action) => {
     return {
       ...state,
       summary,
+      promotion,
       data: kvData,
     };
   }
@@ -83,4 +107,8 @@ export const getCartItemById = (state, id) => {
 
 export const getCartSummary = state => {
   return state.entities.carts.summary;
+};
+
+export const getPromotion = state => {
+  return state.entities.carts.promotion;
 };

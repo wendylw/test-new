@@ -1,0 +1,258 @@
+import React, { Suspense } from 'react';
+import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import DeliverToBar from '../../components/DeliverToBar';
+import { IconSearch } from '../../components/Icons';
+import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
+import Constants from '../../utils/constants';
+import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
+import Banner from '../components/Banner';
+import StoreListAutoScroll from '../components/StoreListAutoScroll';
+import { rootActionCreators } from '../redux/modules';
+import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
+import {
+  getAllCurrentStores,
+  getPaginationInfo,
+  getStoreCollections,
+  getStoreLinkInfo,
+  homeActionCreators,
+} from '../redux/modules/home';
+import CollectionCard from './components/CollectionCard';
+import StoreList from './components/StoreList';
+import CampaignBar from './containers/CampaignBar';
+import './index.scss';
+import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
+import { checkStateRestoreStatus } from '../redux/modules/index';
+
+const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
+const isCampaignActive = false; // feature switch
+
+class Home extends React.Component {
+  static lastUsedPlaceId = null;
+
+  sectionRef = React.createRef();
+  scrollTop = 0;
+
+  state = {
+    campaignShown: false,
+  };
+
+  constructor(props) {
+    super(props);
+
+    const {
+      paginationInfo: { scrollTop },
+    } = this.props;
+    this.scrollTop = scrollTop || 0;
+  }
+
+  componentDidMount = async () => {
+    if (checkStateRestoreStatus()) {
+      return;
+    }
+    const { location } = this.props;
+    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
+
+    // if no placeInfo at all
+    if (!placeInfo) {
+      return this.gotoLocationPage();
+    }
+
+    // placeInfo ok
+    this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
+
+    this.reloadStoreListIfNecessary();
+
+    if (source === 'ip') {
+      this.getPlaceInfoByDevice();
+    }
+  };
+
+  componentDidUpdate(prevProps) {
+    if (this.props.currentPlaceId !== prevProps.currentPlaceId) {
+      this.reloadStoreListIfNecessary();
+    }
+  }
+
+  async getPlaceInfoByDevice() {
+    try {
+      const placeInfo = await getPlaceInfoByDeviceByAskPermission();
+      if (placeInfo) {
+        this.props.appActions.setCurrentPlaceInfo(placeInfo, 'device');
+      }
+    } catch (e) {
+      console.error('[Home] [didMount] error=%s', e);
+    }
+  }
+
+  reloadStoreListIfNecessary = () => {
+    if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
+      this.props.homeActions.reloadStoreList();
+      Home.lastUsedPlaceId = this.props.currentPlaceId;
+    }
+  };
+
+  backupState = () => {
+    this.props.rootActions.backup();
+  };
+
+  gotoLocationPage = () => {
+    const { history, location, currentPlaceInfo } = this.props;
+    const coords = currentPlaceInfo && currentPlaceInfo.coords;
+
+    history.push({
+      pathname: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`,
+      state: {
+        from: location,
+        coords,
+      },
+    });
+  };
+
+  handleLoadSearchPage = () => {
+    this.backLeftPosition();
+    this.props.history.push({ pathname: '/search' });
+  };
+
+  handleLoadMoreStores = () => {
+    return this.props.homeActions.getStoreListNextPage();
+  };
+
+  handleStoreSelected = async store => {
+    const { homeActions, currentPlaceInfo } = this.props;
+
+    homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
+
+    // to backup whole redux state when click store item
+    this.backupState();
+    await submitStoreMenu({ deliveryAddress: currentPlaceInfo, store: store, source: document.location.href });
+  };
+
+  backLeftPosition = () => {
+    const { homeActions } = this.props;
+
+    homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
+  };
+
+  renderStoreList = () => {
+    const {
+      t,
+      stores,
+      currentPlaceId,
+      paginationInfo: { hasMore, scrollTop },
+    } = this.props;
+
+    return (
+      <React.Fragment>
+        <h2 className="text-size-biggest text-weight-bolder">{t('NearbyRestaurants')}</h2>
+        <StoreListAutoScroll
+          getScrollParent={() => this.sectionRef.current}
+          defaultScrollTop={scrollTop}
+          onScroll={scrollTop => (this.scrollTop = scrollTop)}
+        >
+          <StoreList
+            key={`store-list-${currentPlaceId}`}
+            stores={stores}
+            hasMore={hasMore}
+            loadMoreStores={this.handleLoadMoreStores}
+            onStoreClicked={this.handleStoreSelected}
+            getScrollParent={() => this.sectionRef.current}
+            withInfiniteScroll
+          />
+        </StoreListAutoScroll>
+      </React.Fragment>
+    );
+  };
+
+  render() {
+    const { t, currentPlaceInfo, storeCollections } = this.props;
+
+    if (!currentPlaceInfo) {
+      return <i className="loader theme full-page text-size-huge" />;
+    }
+
+    const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+
+    return (
+      <main className="entry fixed-wrapper fixed-wrapper__main">
+        <DeliverToBar
+          title={t('DeliverTo')}
+          className={`entry__deliver-to base-box-shadow ${
+            this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
+          }`}
+          address={currentPlaceInfo ? currentPlaceInfo.address : ''}
+          gotoLocationPage={this.gotoLocationPage}
+          backLeftPosition={this.backLeftPosition}
+        />
+
+        <section
+          ref={this.sectionRef}
+          className="entry-home fixed-wrapper__container wrapper"
+          style={{
+            // quick fix to style: modal close bar is covered by "DELIVER TO" bar
+            // Remove this and browse with Safari, open the campaign bar, you will see.
+            zIndex: this.state.campaignShown ? 100 : 'auto',
+          }}
+        >
+          <Banner className="entry-home__banner">
+            <figure className="entry-home__banner-image">
+              <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
+            </figure>
+
+            <div className="entry-home__search">
+              <div className="form__group flex flex-middle">
+                <IconSearch className="entry-home__search-icon icon icon__small icon__gray" />
+                <input
+                  className="form__input entry-home__input"
+                  data-testid="searchStore"
+                  type="type"
+                  placeholder={t('SearchRestaurantPlaceholder')}
+                  onClick={this.handleLoadSearchPage}
+                />
+              </div>
+            </div>
+          </Banner>
+
+          {isCampaignActive && (
+            <CampaignBar
+              countryCode={countryCode}
+              onToggle={() => {
+                this.setState({ campaignShown: !this.state.campaignShown });
+              }}
+            />
+          )}
+
+          {countryCode.toUpperCase() === 'MY' && (
+            <Suspense fallback={null}>
+              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
+            </Suspense>
+          )}
+
+          <div className="store-card-list__container padding-normal">
+            {currentPlaceInfo.coords ? this.renderStoreList() : null}
+          </div>
+        </section>
+      </main>
+    );
+  }
+}
+
+export default compose(
+  withTranslation(),
+  connect(
+    state => ({
+      currentPlaceId: getCurrentPlaceId(state),
+      currentPlaceInfo: getCurrentPlaceInfo(state),
+      paginationInfo: getPaginationInfo(state),
+      stores: getAllCurrentStores(state),
+      storeLinkInfo: getStoreLinkInfo(state),
+      storeCollections: getStoreCollections(state),
+    }),
+    dispatch => ({
+      rootActions: bindActionCreators(rootActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
+)(Home);

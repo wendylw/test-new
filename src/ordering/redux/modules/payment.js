@@ -1,15 +1,27 @@
+import { createSelector } from 'reselect';
+
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getRequestInfo } from './app';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getMerchantCountry } from './app';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
+import { fetchDeliveryDetails } from '../../containers/Customer/utils';
+import i18next from 'i18next';
+import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
+import { getPaymentList, getUnavailablePaymentList } from '../../containers/Payment/utils';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
 
-export const initialState = {
-  currentPayment: Constants.PAYMENT_METHODS.ONLINE_BANKING_PAY,
+const { DELIVERY_METHOD } = Constants;
+
+const initialState = {
+  currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
   braintreeToken: '',
@@ -41,16 +53,69 @@ export const types = {
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
   FETCH_BANKLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_BANKLIST_FAILURE',
+
+  // get online banking merchant list
+  FETCH_ONLINE_BANKING_MERCHANT_LIST: 'ORDERING/PAYMENT/FETCH_ONLINE_BANKING_MERCHANT_LIST',
 };
 
 // action creators
 export const actions = {
-  createOrder: ({ cashback }) => (dispatch, getState) => {
+  createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
+    const isDigital = Utils.isDigitalType();
+    if (isDigital) {
+      const business = getBusiness(getState());
+      const { total } = getCartSummary(getState());
+      const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
+      const payload = {
+        businessName: business,
+        amount: total,
+        email: voucherOrderingInfo.contactEmail,
+      };
+      const result = await dispatch(createVoucherOrder(payload));
+
+      if (result.type === types.CREATEORDER_FAILURE) {
+        const message = i18next.t('OrderingPayment:PlaceOrderFailedDescription');
+        dispatch(
+          appActions.showError({
+            message,
+          })
+        );
+      }
+      return;
+    }
+
+    const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
+      const fromHour = hour1.split(':')[0];
+      const fromMinute = hour1.split(':')[1];
+      const d1 = new Date(dateValue);
+      let d2, toHour, toMinute;
+
+      if (hour2) {
+        d2 = new Date(dateValue);
+        toHour = hour2.split(':')[0];
+        toMinute = hour2.split(':')[1];
+        d2.setHours(Number(toHour), Number(toMinute), 0, 0);
+      }
+      d1.setHours(Number(fromHour), Number(fromMinute), 0, 0);
+      return {
+        expectDeliveryDateFrom: d1.toISOString(),
+        expectDeliveryDateTo: d2 && d2.toISOString(),
+      };
+    };
+
+    // expectedDeliveryHour & expectedDeliveryDate will always be there if
+    // there is preOrder in url
     const business = getBusiness(getState());
+    const businessInfo = getBusinessByName(getState(), business);
+    const { qrOrderingSettings = {} } = businessInfo;
+    const { enablePreOrder } = qrOrderingSettings;
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
-    const variables = {
+    const deliveryDetails = await fetchDeliveryDetails();
+    const { phone, username: name } = deliveryDetails || {};
+    const contactDetail = { phone, name };
+    let variables = {
       business,
       storeId,
       shoppingCartIds,
@@ -58,7 +123,66 @@ export const actions = {
       cashback,
     };
 
-    return dispatch(
+    // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+    let expectDeliveryDateInfo = null;
+    try {
+      if (enablePreOrder) {
+        const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
+        // => {"from":2,"to":3}
+        const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
+        // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
+
+        if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
+          expectDeliveryDateInfo = getExpectDeliveryDateInfo(
+            expectedDeliveryDate.date,
+            expectedDeliveryHour.from,
+            expectedDeliveryHour.to
+          );
+        }
+      }
+    } catch (e) {
+      console.error('failed to create expectDeliveryDateInfo');
+    }
+    // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
+
+    if (shippingType === DELIVERY_METHOD.DELIVERY) {
+      const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
+      const {
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress: deliveryTo,
+        deliveryToLocation: location,
+        /*routerDistance,*/
+      } = deliveryDetails || {};
+
+      variables = {
+        ...variables,
+        shippingType,
+        ...expectDeliveryDateInfo,
+        deliveryAddressInfo: {
+          ...contactDetail,
+          addressDetails,
+          address: addressDetails ? `${addressDetails}, ${deliveryTo}` : deliveryTo,
+          country,
+          deliveryTo,
+          location,
+        },
+        deliveryComments,
+      };
+    } else if (shippingType === DELIVERY_METHOD.PICKUP) {
+      variables = {
+        ...variables,
+        contactDetail,
+        ...expectDeliveryDateInfo,
+      };
+    } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
+      variables = {
+        ...variables,
+        contactDetail,
+      };
+    }
+
+    const result = await dispatch(
       createOrder(
         !additionalComments
           ? variables
@@ -68,15 +192,36 @@ export const actions = {
             }
       )
     );
+
+    if (result.type === types.CREATEORDER_FAILURE) {
+      dispatch(
+        appActions.showError({
+          message: i18next.t('PlaceOrderFailedDescription', {
+            ns: 'OrderingPayment',
+          }),
+        })
+      );
+    }
+
+    if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
+      try {
+        await setHistoricalDeliveryAddresses(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    return result;
   },
 
   fetchOrder: orderId => dispatch => {
     return dispatch(fetchOrder({ orderId }));
   },
 
-  setCurrentPayment: paymentName => ({
+  setCurrentPayment: paymentLabel => ({
     type: types.SET_CURRENT_PAYMENT,
     paymentName,
+    paymentLabel,
   }),
 
   fetchBraintreeToken: paymentName => ({
@@ -97,10 +242,11 @@ export const actions = {
     type: types.CLEAR_BRAINTREE_TOKEN,
   }),
 
-  fetchBankList: () => ({
+  fetchBankList: country => ({
     [API_REQUEST]: {
       types: [types.FETCH_BANKLIST_REQUEST, types.FETCH_BANKLIST_SUCCESS, types.FETCH_BANKLIST_FAILURE],
       ...Url.API_URLS.GET_BANKING_LIST,
+      params: { country },
     },
   }),
 };
@@ -129,6 +275,15 @@ const fetchOrder = variables => {
   };
 };
 
+const createVoucherOrder = payload => {
+  return {
+    [API_REQUEST]: {
+      types: [types.CREATEORDER_REQUEST, types.CREATEORDER_SUCCESS, types.CREATEORDER_FAILURE],
+      payload,
+      ...Url.API_URLS.CREATE_VOUCHER_ORDER,
+    },
+  };
+};
 // reducers
 const reducer = (state = initialState, action) => {
   const { response, responseGql } = action;
@@ -136,14 +291,21 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case types.SET_CURRENT_PAYMENT:
-      return { ...state, currentPayment: action.paymentName };
+      return { ...state, currentPayment: action.paymentLabel };
     case types.CREATEORDER_SUCCESS: {
-      const { orders, redirectUrl } = data || {};
-      const [order] = orders;
+      if (responseGql) {
+        const { orders, redirectUrl } = data || {};
+        const [order] = orders;
 
-      if (order) {
-        return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        if (order) {
+          return { ...state, orderId: order.orderId, thankYouPageUrl: redirectUrl };
+        }
       }
+
+      if (response) {
+        return { ...state, orderId: response.orderId };
+      }
+
       return state;
     }
     case types.FETCH_ORDER_SUCCESS: {
@@ -184,3 +346,57 @@ export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
+
+export const getUnavailablePayments = state => {
+  const { total } = getCartSummary(state);
+  const unavailablePayments = getUnavailablePaymentList();
+
+  if (
+    total < parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) &&
+    !unavailablePayments.includes('onlineBanking')
+  ) {
+    return [...unavailablePayments, 'onlineBanking'];
+  }
+
+  return unavailablePayments;
+};
+
+export const getPayments = createSelector(
+  [getBusiness, getMerchantCountry, getAllPaymentOptions, getCartSummary],
+  (business, merchantCountry, paymentOptions, cartSummary) => {
+    if (!merchantCountry) {
+      return [];
+    }
+
+    const paymentList = getPaymentList(merchantCountry);
+
+    return paymentList
+      .map(paymentKey => {
+        const { total } = cartSummary;
+
+        // for Malaysia
+        if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
+          return paymentOptions[
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
+          ];
+        }
+
+        return paymentOptions[paymentKey];
+      })
+      .filter(payment => {
+        return true;
+      });
+  }
+);
+
+export const getDefaultPayment = state => {
+  try {
+    return getPayments(state)[0].label;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
+  return payments.find(payment => payment.label === currentPayment);
+});

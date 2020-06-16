@@ -1,11 +1,19 @@
 {
   "SelectPayment": "Select Payment",
   "OnlineBanking": "Online Banking",
-  "CreditCard": "Visa / MasterCard",
+  "Visa": "Visa",
+  "MasterCard": "MasterCard",
+  "JCB": "JCB",
   "Boost": "Boost",
   "GrabPay": "GrabPay",
+  "TouchNGo": "Touch 'n Go eWallet",
+  "GCash": "GCash",
+  "Line": "LINE Pay",
   "RequiredMessage": "Required",
   "CardNumberIncompleteMessage": "Your card's {{nameString}} {{verb}} incomplete.",
+  "CardNumberStringIncompleteMessage": "Your card’s number is incomplete.",
+  "CardExpiryIncompleteMessage": "Your card’s expiration date is incomplete.",
+  "CardCVCIncompleteMessage": "Your card’s security code is incomplete.",
   "CardNumberInvalidMessage": "Your card number is invalid",
   "CardExpirationInvalidMessage": "Your card's expiration date is invalid",
   "CardCVVInvalidMessage": "Your card's CVV is invalid",
@@ -14,5 +22,7 @@
   "PayViaCard": "Pay via Card",
   "PayViaOnlineBanking": "Pay via Online Banking",
   "SelectABank": "Select a bank",
-  "PleaseSelectABankToContinue": "Please select a bank to continue"
+  "PleaseSelectABankToContinue": "Please select a bank to continue",
+  "PlaceOrderFailedDescription": "Sorry there was some issue with the connection, please try again",
+  "TemporarilyUnavailable": "Temporarily Unavailable"
 }

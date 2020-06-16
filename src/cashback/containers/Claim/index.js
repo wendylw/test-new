@@ -1,7 +1,7 @@
 import React from 'react';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { IconPin } from '../../../components/Icons';
+import { IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
 
 import Utils from '../../../utils/utils';
@@ -104,7 +104,7 @@ class PageClaim extends React.Component {
       const { customerId } = cashbackInfo || {};
 
       if (isWebview) {
-        this.handlePostLoyaltyPageMessage();
+        // this.handlePostLoyaltyPageMessage();
       } else {
         history.push({
           pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
@@ -114,16 +114,16 @@ class PageClaim extends React.Component {
     }
   }
 
-  handlePostLoyaltyPageMessage() {
-    const { user } = this.props;
-    const { isWebview } = user || {};
+  // handlePostLoyaltyPageMessage() {
+  //   const { user } = this.props;
+  //   const { isWebview } = user || {};
 
-    if (isWebview) {
-      window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-    }
+  //   if (isWebview) {
+  //     window.ReactNativeWebView.postMessage('goToLoyaltyPage');
+  //   }
 
-    return;
-  }
+  //   return;
+  // }
 
   renderCashback() {
     const { cashbackInfo, t } = this.props;
@@ -151,7 +151,7 @@ class PageClaim extends React.Component {
 
     return (
       <div className="location">
-        <IconPin />
+        <IconLocation />
         <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
       </div>
     );

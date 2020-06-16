@@ -5,17 +5,17 @@ import { actions as appActionCreators, getError } from '../redux/modules/app';
 import Error from './components/Error';
 import Routes from '../Routes.js';
 import DocumentFavicon from '../../components/DocumentFavicon';
-import '../styles.scss';
+import faviconImage from '../../images/favicon.ico';
 
 class App extends Component {
   render() {
     return (
-      <div className="qr-scanner-app">
+      <React.Fragment>
         {/* Routes */}
         <Routes />
-        <DocumentFavicon icon={`${process.env.PUBLIC_URL}/favicon.ico`} />
+        <DocumentFavicon icon={faviconImage} />
         {this.renderError()}
-      </div>
+      </React.Fragment>
     );
   }
 

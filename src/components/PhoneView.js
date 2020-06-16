@@ -31,6 +31,7 @@ class PhoneView extends React.Component {
     }
 
     await Utils.setLocalStorageVariable('user.p', phone);
+
     this.setState({ isLoading: true });
 
     submitPhoneNumber();
@@ -64,7 +65,7 @@ class PhoneView extends React.Component {
         {errorMessage.phone ? <span className="error">{errorMessage.phone}</span> : null}
 
         <button
-          className="phone-view-form__button button__fill button__block border-radius-base font-weight-bold text-uppercase"
+          className="phone-view-form__button button__fill button__block border-radius-base font-weight-bolder text-uppercase"
           onClick={this.savePhoneNumber.bind(this)}
           disabled={!phone || isLoading || !isValidPhoneNumber(phone)}
         >
@@ -87,6 +88,7 @@ PhoneView.propTypes = {
 
 PhoneView.defaultProps = {
   isLoading: false,
+  submitPhoneNumber: () => {},
 };
 
 export default withTranslation()(PhoneView);

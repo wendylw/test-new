@@ -2,8 +2,10 @@ import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
+import * as VoucherUtils from '../../../voucher/utils';
 
 import { combineReducers } from 'redux';
+// import { computeDeliveryDistance } from '../../containers/Location/utils';
 import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../redux/modules/entities/products';
@@ -11,10 +13,17 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness } from './app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+// import { getBusinessInfo } from './cart';
 
 export const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
+    // 33.8% equal (item padding + item image + item cart controller button height) / window width
+    productItemMinHeight:
+      ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
+        ? document.body.clientWidth || window.innerWidth
+        : 414) * 0.26,
   },
   currentProduct: {
     id: '',
@@ -30,6 +39,9 @@ export const initialState = {
     isFetching: false,
     categoryIds: [],
   },
+  popUpModal: {
+    userConfirmed: false,
+  },
 };
 
 export const types = HOME_TYPES;
@@ -38,17 +50,31 @@ export const types = HOME_TYPES;
 export const actions = {
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
-    if (getState().home.onlineCategory.categoryIds.length) {
-      return;
+    const isDelivery = Utils.isDeliveryType();
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
     }
-
-    dispatch(fetchOnlineCategory());
-    dispatch(fetchShoppingCart());
+    dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    if (!getState().home.onlineCategory.categoryIds.length) {
+      dispatch(fetchOnlineCategory());
+    }
   },
 
   // load shopping cart
-  loadShoppingCart: () => dispatch => {
-    dispatch(fetchShoppingCart());
+  loadShoppingCart: () => async (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    const isDigital = Utils.isDigitalType();
+    if (isDigital) {
+      await dispatch(generatorShoppingCartForVoucherOrdering());
+      return;
+    }
+
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -112,14 +138,30 @@ export const actions = {
   loadProductDetail: prod => dispatch => {
     return dispatch(fetchProductDetail({ productId: prod.id }));
   },
+
+  userConfirmPreOrder: () => ({
+    type: types.SET_PRE_ORDER_MODAL_CONFIRM,
+  }),
 };
 
 export const fetchShoppingCart = () => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART,
+      //...Url.API_URLS.GET_CART,
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords),
     },
+  };
+};
+
+// generator a virtual shopping cart for Customer place a Voucher Order
+export const generatorShoppingCartForVoucherOrdering = () => {
+  const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
+  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
+
+  return {
+    type: types.FETCH_SHOPPINGCART_SUCCESS,
+    response: shoppingCart,
   };
 };
 
@@ -246,14 +288,30 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
   }
 };
 
+const popUpModal = (state = initialState.popUpModal, action) => {
+  if (action.type === types.SET_PRE_ORDER_MODAL_CONFIRM) {
+    return { ...state, userConfirmed: true };
+  }
+  return state;
+};
+
 export default combineReducers({
   domProperties,
   currentProduct,
   shoppingCart,
   onlineCategory,
+  popUpModal,
 });
 
 // selectors
+export const getDeliveryInfo = state => {
+  const business = getBusiness(state);
+  const allBusinessInfo = getAllBusinesses(state);
+  // ignore for now since home page needs address from it.
+  // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
+  return Utils.getDeliveryInfo({ business, allBusinessInfo });
+};
+
 export const isFetched = state => state.home.shoppingCart.isFetched;
 
 export const getCartItemIds = state => state.home.shoppingCart.itemIds;
@@ -377,6 +435,8 @@ export const getCategoryProductList = createSelector(
   }
 );
 
+export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
+
 export const isVerticalMenuBusiness = state => {
   const { verticalMenuBusinesses } = state.home.domProperties;
 
@@ -386,3 +446,5 @@ export const isVerticalMenuBusiness = state => {
     return verticalMenuBusinesses.includes(getBusiness(state));
   }
 };
+
+export const getPopUpModal = state => state.home.popUpModal;

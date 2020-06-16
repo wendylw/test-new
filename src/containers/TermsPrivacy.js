@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 
 import config from '../config';
-import DocumentTitle from '../components/DocumentTitle';
+import DocumentHeadInfo from '../components/DocumentHeadInfo';
 
 import '../Common.scss';
 
@@ -11,7 +12,7 @@ import '../Common.scss';
 export class TermsPrivacy extends Component {
   state = {
     termsPrivacyData: null,
-  }
+  };
 
   async componentWillMount() {
     const { pageName } = this.props;
@@ -20,8 +21,8 @@ export class TermsPrivacy extends Component {
       method: 'GET',
       mode: 'cors',
       headers: new Headers({
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       }),
     })
       .then(response => response.text())
@@ -37,15 +38,16 @@ export class TermsPrivacy extends Component {
   }
 
   render() {
+    const { t } = this.props;
     const { termsPrivacyData } = this.state;
     const content = { __html: termsPrivacyData };
 
     return (
-      <DocumentTitle title={''}>
+      <DocumentHeadInfo title={t('StoreHubBeep')}>
         <div dangerouslySetInnerHTML={content} />
-      </DocumentTitle>
-    )
+      </DocumentHeadInfo>
+    );
   }
 }
 
-export default TermsPrivacy;
+export default withTranslation()(TermsPrivacy);

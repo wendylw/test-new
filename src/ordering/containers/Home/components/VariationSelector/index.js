@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import { variationOnProductType } from '../../../../../utils/propTypes';
 
 export class VariationSelector extends Component {
   static propTypes = {
     variation: variationOnProductType,
     onChange: PropTypes.func,
-  };
-
-  static defaultProps = {
-    onChange: () => {},
   };
 
   state = {
@@ -63,6 +60,15 @@ export class VariationSelector extends Component {
     return variation && variation.variationType === 'MultipleChoice';
   }
 
+  isInvalidMaximumVariations() {
+    const { variation } = this.props;
+    const { selected } = this.state;
+    const { maxSelectionAmount } = variation || {};
+    const selectedOptions = Object.keys(selected).filter(id => selected[id]);
+
+    return selected && maxSelectionAmount && (selectedOptions || []).length >= maxSelectionAmount;
+  }
+
   getAllVariationAndOptionById() {
     const { variation } = this.props;
     const { selected } = this.state;
@@ -92,7 +98,16 @@ export class VariationSelector extends Component {
   }
 
   render() {
-    const { variation } = this.props;
+    const { t, variation } = this.props;
+    const { selected } = this.state;
+    const { enableSelectionAmountLimit, minSelectionAmount, maxSelectionAmount } = variation || {};
+    let AmountLimitDescription = minSelectionAmount
+      ? t('MinimumChoicesDescription', { minSelectionAmount })
+      : t('MaximumChoicesDescription', { maxSelectionAmount });
+
+    if (enableSelectionAmountLimit && minSelectionAmount && maxSelectionAmount) {
+      AmountLimitDescription = t('MinMaximumChoicesDescription', { minSelectionAmount, maxSelectionAmount });
+    }
 
     if (!variation) {
       return null;
@@ -100,20 +115,31 @@ export class VariationSelector extends Component {
 
     return (
       <li className="product-detail__options" key={variation.id}>
-        <h4 className="product-detail__options-title gray-font-opacity">{variation.name}</h4>
+        <h4 className="product-detail__options-title gray-font-opacity text-uppercase">{variation.name}</h4>
+        {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
+          <span className={`product-detail__max-minimum-text text-error`}>{AmountLimitDescription}</span>
+        ) : null}
         <ul className="tag__cards">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
-            const className = ['tag__card'];
+            const className = ['tag__card variation'];
+            const isDisabled = markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id]);
+            let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
-            if (markedSoldOut) {
+            if (isDisabled) {
               className.push('disabled');
-            } else if (this.state.selected[id]) {
+              selectedOptionFunc = () => {};
+            } else if (selected[id]) {
               className.push('active');
             }
 
             return (
-              <li key={id} className={className.join(' ')} onClick={this.handleSelectedOption.bind(this, option)}>
+              <li
+                key={id}
+                className={className.join(' ')}
+                data-testid="itemDetailSimpleSelection"
+                onClick={selectedOptionFunc}
+              >
                 {value}
               </li>
             );
@@ -127,13 +153,15 @@ export class VariationSelector extends Component {
 VariationSelector.propTypes = {
   variation: PropTypes.object,
   initVariation: PropTypes.bool,
+  isInvalidMinimum: PropTypes.bool,
   onChange: PropTypes.func,
 };
 
 VariationSelector.defaultProps = {
   variation: {},
   initVariation: false,
+  isInvalidMinimum: true,
   onChange: () => {},
 };
 
-export default VariationSelector;
+export default withTranslation(['OrderingHome'])(VariationSelector);

@@ -7,6 +7,21 @@
     <meta name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0" />
     <meta name="theme-color" content="#000000" />
+    <title>__TITLE__</title>
+    <meta name="description" content="__DESCRIPTION__">
+    <meta name="keywords" content="__KEYWORDS__">
+    <meta property="og:title" content="__OG_TITLE__" />
+    <meta property="og:description" content="__OG_DESCRIPTION__" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="__OG_IMAGE__" />
+    <meta property="og:url" content="__OG_URL__" />
+    <meta property="og:site_name" content="__SITE_NAME__" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="__OG_TITLE__" />
+    <meta name="twitter:turl" content="__OG_URL__" />
+    <meta name="twitter:image" content="__TWIITER_IMAGE__" />
+    <meta name="twitter:description" content="__TWIITER_DESCRIPTION__" />
 
     <% if (process.env.REACT_APP_NEW_RELIC_LICENSE_KEY && process.env.REACT_APP_NEW_RELIC_APP_ID) { %>
     <script type="text/javascript">
@@ -29,8 +44,6 @@
     work correctly both with client-side routing and a non-root public URL.
     Learn how to configure a non-root public URL by running `npm run build`.
   -->
-
-    <title></title>
 
     <!-- Google Tag Manager -->
     <script>(function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.crossorigin=""; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER_ID%');</script>
@@ -88,7 +101,18 @@
       (function loadPolyfill() {
         var polyfillUrl = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
         var LANGUAGES = ['en', 'th'];
-        var POLYFILL_FEATURES = ['Object.values', 'Object.assign', 'Object.keys', 'Object.defineProperty', 'Map', 'Intl', 'Promise', 'Array.prototype.includes', 'localStorage'];
+        var POLYFILL_FEATURES = [
+          'Object.values',
+          'Object.assign',
+          'Object.keys',
+          'Object.defineProperty',
+          'Map',
+          'Intl',
+          'Promise',
+          'Array.prototype.includes',
+          'localStorage',
+          'navigator.geolocation'
+        ];
         var featureArr = [];
 
         try {
@@ -109,6 +133,9 @@
         }
       })();
     </script>
+
+    <!-- keep this code, since always get error "maps of undefined" -->
+    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places&key=AIzaSyAA4ChLITkR7pIWrK38dLqmQH9EYaSjz7c&ver=3.exp"></script>
   </body>
 
 </html>

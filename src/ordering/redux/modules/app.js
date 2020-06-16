@@ -13,7 +13,7 @@ const { AUTH_INFO } = Constants;
 export const initialState = {
   user: {
     showLoginPage: false,
-    isWebview: Utils.isWebview(),
+    // isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,
@@ -26,6 +26,7 @@ export const initialState = {
     show: false,
     message: '',
     description: '',
+    buttonText: '',
   }, // message modal
   business: config.business,
   onlineStoreInfo: {
@@ -107,14 +108,26 @@ export const actions = {
     },
   }),
 
+  setLoginPrompt: prompt => ({
+    type: types.SET_LOGIN_PROMPT,
+    prompt,
+  }),
+
+  showError: ({ message, code = 500 }) => ({
+    type: types.SHOW_ERROR,
+    message,
+    code,
+  }),
+
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),
 
-  showMessageModal: ({ message, description }) => ({
+  showMessageModal: ({ message, description, buttonText = '' }) => ({
     type: types.SET_MESSAGE_INFO,
     message,
     description,
+    buttonText,
   }),
 
   hideMessageModal: () => ({
@@ -180,6 +193,7 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.GET_OTP_REQUEST:
     case types.CREATE_OTP_REQUEST:
+    case types.CREATE_LOGIN_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
@@ -243,7 +257,7 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401) {
+  } else if (code && code !== 401 && code < 40000) {
     let errorMessage = message;
 
     if (type === types.CREATE_OTP_FAILURE) {
@@ -284,11 +298,11 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
     case types.SET_MESSAGE_INFO: {
-      const { message, description } = action;
-      return { ...state, show: true, message, description };
+      const { message, description, buttonText } = action;
+      return { ...state, show: true, message, description, buttonText };
     }
     case types.HIDE_MESSAGE_MODAL: {
-      return { ...state, show: false, message: '', description: '' };
+      return { ...state, show: false, message: '', description: '', buttonText: '' };
     }
     default:
       return state;
@@ -315,3 +329,9 @@ export const getOnlineStoreInfo = state => {
 };
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageModal = state => state.app.messageModal;
+export const getMerchantCountry = state => {
+  if (state.entities.businesses[state.app.business]) {
+    return state.entities.businesses[state.app.business].country;
+  }
+  return null;
+};

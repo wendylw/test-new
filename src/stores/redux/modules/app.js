@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import config from '../../../config';
 import Url from '../../../utils/url';
+import Constants from '../../../utils/constants';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
@@ -20,6 +21,7 @@ export const initialState = {
     tableId: config.table,
     storeId: config.storeId,
   },
+  removePickUpMerchantList: config.removePickupMerchantList,
 };
 
 export const types = {
@@ -64,18 +66,29 @@ export const actions = {
 };
 
 const error = (state = initialState.error, action) => {
-  const { type, error } = action;
+  const { type, code, message } = action;
 
-  if (type === types.CLEAR_ERROR) {
+  if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (error) {
-    return error;
+  } else if (code && code !== 401 && code < 40000) {
+    let errorMessage = message;
+
+    if (type === types.CREATE_OTP_FAILURE) {
+      errorMessage = Constants.LOGIN_PROMPT[code];
+    }
+
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
   }
 
   return state;
 };
 
 const business = (state = initialState.business, action) => state;
+const removePickUpMerchantList = (state = initialState.removePickUpMerchantList, action) => state;
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
@@ -116,12 +129,14 @@ export default combineReducers({
   error,
   messageModal,
   business,
+  removePickUpMerchantList,
   onlineStoreInfo,
   requestInfo,
 });
 
 // selectors
 export const getBusiness = state => state.app.business;
+export const getRemovedPickUpMerchantList = state => state.app.removePickUpMerchantList;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];

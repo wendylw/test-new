@@ -1,0 +1,30 @@
+@import "../Variables.scss";
+
+/* Prompt page */
+.prompt-page {
+  padding: 14vh 0;
+
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
+  }
+
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    width: 90%;
+
+    p {
+      line-height: $line-height-base;
+    }
+  }
+
+  &__title {
+    margin: 2vh 0;
+    color: $gray-2;
+  }
+}
+/* end of Prompt page */

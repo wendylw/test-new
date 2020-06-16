@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProductItem from '../../../../components/ProductItem';
@@ -6,6 +7,7 @@ import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/home';
 import Constants from '../../../../../utils/constants';
 import constants from '../../../../../utils/constants';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;
@@ -36,7 +38,24 @@ class CartList extends Component {
     });
   };
 
+  handleGtmEventTracking = product => {
+    // In cart page, image count is always either 1 or 0
+    const gtmEventDate = {
+      product_name: product.title,
+      product_id: product.productId,
+      price_local: product.displayPrice,
+      variant: product.variations,
+      quantity: product.quantityOnHand,
+      product_type: product.inventoryType,
+      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: product.image || 0,
+    };
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
+  };
+
   generateProductItemView = cartItem => {
+    const { isList } = this.props;
     const {
       id,
       title,
@@ -57,6 +76,7 @@ class CartList extends Component {
         variation={(variationTexts || []).join(', ')}
         price={displayPrice}
         cartQuantity={quantity}
+        isList={isList}
         soldOut={isCartItemSoldOut(cartItem)}
         decreaseDisabled={!Boolean(quantity)}
         onDecrease={async () => {
@@ -75,6 +95,7 @@ class CartList extends Component {
           }
         }}
         onIncrease={() => {
+          this.handleGtmEventTracking(cartItem);
           this.handleAddOrUpdateShoppingCartItem({
             action: 'edit',
             productId,
@@ -115,6 +136,14 @@ class CartList extends Component {
     return <ul className="list">{generateCartItemUI()}</ul>;
   }
 }
+
+CartList.propTypes = {
+  isList: PropTypes.bool,
+};
+
+CartList.defaultProps = {
+  isList: false,
+};
 
 export default connect(
   state => {

@@ -3,6 +3,23 @@ const API_URLS = {
     url: '/api/cart',
     method: 'get',
   },
+  GET_CART_TYPE: (isDeliveryType, deliveryCoords) => {
+    let CartObj = API_URLS.GET_CART;
+    const params = {};
+    if (isDeliveryType) {
+      params.shippingType = 'delivery';
+      if (deliveryCoords) {
+        params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
+      }
+    }
+    const queryString = Object.keys(params)
+      .map(key => `${key}=${params[key]}`)
+      .join('&');
+    if (isDeliveryType) {
+      CartObj.url = `/api/cart?${queryString}`;
+    }
+    return CartObj;
+  },
   GET_BRAINTREE_TOKEN: {
     url: '/payment/initToken',
     method: 'get',
@@ -33,6 +50,14 @@ const API_URLS = {
   },
   GET_STORE_HASH_DATA: storeId => ({
     url: `/api/ordering/stores/${storeId}?a=redirectTo`,
+    method: 'get',
+  }),
+  POST_STORE_HASH_DATA: storeId => ({
+    url: `/api/ordering/stores/${storeId}`,
+    method: 'post',
+  }),
+  GET_S3_POST_POLICY: action => ({
+    url: `/api/s3-post-policy/${action}`,
     method: 'get',
   }),
   GET_RECEIPTS_LIST: {
@@ -75,6 +100,42 @@ const API_URLS = {
   DELETE_CARTITEMS_BY_PRODUCTS: {
     url: '/api/cart/items',
     method: 'del',
+  },
+  GET_STORE_LIST: {
+    url: '/api/stores',
+    method: 'get',
+  },
+  GET_SEARCHING_STORE_LIST: {
+    url: '/api/stores/search',
+    method: 'get',
+  },
+  APPLY_VOUCHER_CODE: {
+    url: '/api/cart/applyVoucher',
+    method: 'post',
+  },
+  APPLY_PROMOTION_CODE: {
+    url: '/api/cart/applyPromoCode',
+    method: 'post',
+  },
+  DISMISS_PROMOTION_CODE: {
+    url: '/api/cart/removePromoCode',
+    method: 'post',
+  },
+  DISMISS_VOUCHER_CODE: {
+    url: '/api/cart/unApplyVoucher',
+    method: 'post',
+  },
+  CREATE_VOUCHER_ORDER: {
+    url: '/api/transactions',
+    method: 'post',
+  },
+  QUERY_FEED_BACK: {
+    url: `/api/feedback`,
+    method: 'get',
+  },
+  CREATE_FEED_BACK: {
+    url: '/api/feedback',
+    method: 'post',
   },
 };
 

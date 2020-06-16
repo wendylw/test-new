@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import qs from 'qs';
+import _find from 'lodash/find';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
@@ -14,15 +16,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import {
-  actions as paymentActionCreators,
-  getCurrentPayment,
-  getCurrentOrderId,
-  getBankList,
-} from '../../../redux/modules/payment';
-
+import { actions as paymentActionCreators, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
+import { getPaymentName } from '../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -34,16 +31,20 @@ class OnlineBanking extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business } = this.props;
+    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
     const h = config.h();
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !agentCode) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
+      type ? '&type=' + type : ''
+    }`;
     const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
@@ -53,36 +54,43 @@ class OnlineBanking extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: currentPayment,
+      paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
     };
   };
 
-  async componentWillMount() {
-    const { homeActions, paymentActions } = this.props;
-
-    paymentActions.fetchBankList();
-    await homeActions.loadShoppingCart();
-  }
-
   componentDidMount() {
-    const { bankingList } = this.props;
-
-    this.initAgentCode(bankingList);
+    this.updateBankList();
+    this.props.homeActions.loadShoppingCart();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { bankingList } = nextProps;
+  updateBankList = async () => {
+    const { paymentActions, merchantCountry } = this.props;
 
-    if (bankingList && bankingList.length !== (this.props.bankingList || []).length) {
-      this.initAgentCode(bankingList);
+    if (merchantCountry) {
+      await paymentActions.fetchBankList(merchantCountry);
+
+      const findBank = _find(this.props.bankingList, { agentCode: this.state.agentCode });
+      if (!findBank) {
+        this.initAgentCode(this.props.bankingList);
+      }
     }
-  }
+  };
+
+  componentDidUpdate = async preProps => {
+    if (preProps.merchantCountry !== this.props.merchantCountry) {
+      this.updateBankList();
+    }
+  };
 
   initAgentCode(bankingList) {
     if (bankingList && bankingList.length) {
       this.setState({
         agentCode: bankingList[0].agentCode,
+      });
+    } else {
+      this.setState({
+        agentCode: null,
       });
     }
   }
@@ -93,20 +101,22 @@ class OnlineBanking extends Component {
         payNowLoading: true,
       },
       async () => {
-        const { paymentActions, cartSummary } = this.props;
+        const { history, paymentActions, cartSummary } = this.props;
         const { totalCashback } = cartSummary || {};
-        const { agentCode } = this.state;
+        const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-        await paymentActions.createOrder({ cashback: totalCashback });
-
+        await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
         const { currentOrder } = this.props;
         const { orderId } = currentOrder || {};
 
         if (orderId) {
           Utils.removeSessionVariable('additionalComments');
+          Utils.removeSessionVariable('deliveryComments');
         }
 
-        this.setState({ payNowLoading: !!agentCode });
+        this.setState({
+          payNowLoading: !!orderId,
+        });
       }
     );
   }
@@ -151,22 +161,25 @@ class OnlineBanking extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right"
+          className="border__bottom-divider gray has-right flex-middle"
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
-            history.replace(Constants.ROUTER_PATHS.ORDERING_PAYMENT, history.location.state);
+            history.replace({
+              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
+              search: window.location.search,
+            });
           }}
         />
 
         <div className="payment-bank">
           <Image className="logo-default__image-container" src={logo} />
-          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
 
           <form id="bank-2c2p-form" className="form">
             <div className="payment-bank__form-item">
               <div className="flex flex-middle flex-space-between">
-                <label className="payment-bank__label font-weight-bold">{t('SelectABank')}</label>
+                <label className="payment-bank__label font-weight-bolder">{t('SelectABank')}</label>
               </div>
               <div className="payment-bank__card-container">
                 <div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
@@ -188,14 +201,15 @@ class OnlineBanking extends Component {
 
         <div className="footer-operation">
           <button
-            className="button button__fill button__block font-weight-bold text-uppercase border-radius-base"
+            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
+            data-testid="payMoney"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
           >
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bold text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </button>
         </div>
@@ -225,9 +239,9 @@ export default compose(
         bankingList: getBankList(state),
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
-        currentPayment: getCurrentPayment(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({

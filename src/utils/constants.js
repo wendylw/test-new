@@ -12,20 +12,40 @@ const ROUTER_PATHS = {
   PRIVACY: '/privacy',
   ERROR: '/error',
   SORRY: '/sorry',
+  REPORT_DRIVER: '/report-driver',
   STORES_HOME: '/',
   // ordering App basename
   ORDERING_BASE: '/ordering',
   ORDERING_HOME: '/',
+  ORDERING_LOGIN: '/login',
+  ORDERING_LOCATION_AND_DATE: '/location-date',
+  ORDERING_LOCATION: '/location',
+  ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
+  ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
+  ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
-  // Qrscan App basename
+  // site
+  SITE_HOME: '/home',
   QRSCAN: '/qrscan',
+  SCAN: '/scan',
+  SCAN_NOT_SUPPORT: '/scanNotSupport',
+  ORDER_DETAILS: '/orderdetails',
+  // voucher
+  VOUCHER_HOME: '/voucher',
+  VOUCHER_CONTACT: '/voucher/contact',
+  VOUCHER_THANK_YOU: '/voucher/thank-you',
+  VOUCHER_SORRY: '/voucher/sorry',
+  VOUCHER_PAYMENT: '/ordering/payment',
+  // dine
+  DINE: '/dine',
 };
 
 const CASHBACK_SOURCE = {
@@ -47,11 +67,26 @@ const DOCUMENT_TITLE = {
   PRIVACY: 'Privacy',
 };
 
-const PAYMENT_METHODS = {
-  ONLINE_BANKING_PAY: 'CCPP',
-  CREDIT_CARD_PAY: 'CCPPCreditCard',
+const PAYMENT_METHOD_LABELS = {
+  STRIPE: 'stripe',
+  ONLINE_BANKING_PAY: 'OnlineBanking',
+  CREDIT_CARD_PAY: 'CreditCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
+  TNG_PAY: 'TouchNGo',
+  GCASH_PAY: 'GCash',
+  LINE_PAY: 'Line',
+};
+
+const CREDIT_CARD_BRANDS = {
+  VISA: 'Visa',
+  MASTER_CARD: 'MasterCard',
+  JCB: 'JCB',
+  AMEX: 'American Express',
+  DISCOVER: 'Discover',
+  DINERS: 'Diners Club',
+  UNION_PAY: 'UnionPay',
+  UNKNOWN: 'Unknown',
 };
 
 const HOME_ASIDE_NAMES = {
@@ -96,11 +131,17 @@ const REQUEST_ERROR_KEYS = {
   404: 'Not Found',
   401: 'Token Expired',
   500: 'Server Error',
+  40004: 'QROrdering Disabled',
+  40005: 'No Business',
 };
 
 const LOGIN_PROMPT = {
   400: 'Your One Time Passcode is invalid.',
 };
+
+const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
+const LANGUAGES = ['en', 'th'];
+const POLYFILL_FEATURES = ['Object.values', 'Intl'];
 
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
@@ -109,6 +150,79 @@ const ASIDE_NAMES = {
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
   CARTMODAL_HIDE: 'CARTMODAL_HIDE',
+  DELIVERY_DETAIL: 'DELIVERY_DETAIL',
+  ADD_ADDRESS_DETAIL: 'ADD_ADDRESS_DETAIL',
+  ADD_DRIVER_NOTE: 'ADD_DRIVER_NOTE',
+  ADD_MERCHANT_NOTE: 'ADD_MERCHANT_NOTE',
+};
+
+const DELIVERY_METHOD = {
+  DELIVERY: 'delivery',
+  PICKUP: 'pickup',
+  DINE_IN: 'dine-in',
+  TAKE_AWAY: 'takeaway',
+  DIGITAL: 'digital',
+};
+
+const CONSUMERFLOW_STATUS = {
+  PAID: 'paid',
+  ACCEPTED: 'accepted',
+  LOGISTIC_CONFIRMED: 'logisticsConfirmed',
+  CONFIMRMED: 'confirmed',
+  PICKUP: 'pickedUp',
+  CANCELLED: 'cancelled',
+};
+const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const PROMOTION_APPLIED_STATUS = {
+  VALID: 'valid',
+  // Voucher status
+  REDEEMED: 'redeemed',
+  NOT_MATCH_MINIMUM_PURCHASE: 'lessThanMinSpeed',
+  EXPIRED: 'expired',
+  NOT_START: 'beforeValid',
+  INVALID: 'invalid',
+  // Promotion status
+  NOT_AVAILABLE: 'not_available',
+  NOT_VALID: 'not_valid',
+  NOT_EXISTED: 'not_existed',
+  UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
+};
+
+const PREORDER_IMMEDIATE_TAG = {
+  from: 'now',
+  to: 'now',
+};
+
+const PROMO_TYPE = {
+  PROMOTION: 'Promotion',
+  VOUCHER: 'Voucher',
+};
+
+const REPORT_DRIVER_REASON_CODE = {
+  FOOD_WAS_DAMAGED: 'foodWasDamaged',
+  DRIVER_WAS_LATE: 'driverWasLate',
+  DRIVER_WAS_RUDE: 'driverWasRude',
+  DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
+  OTHERS: 'others',
+};
+
+const ORDER_STATUS = {
+  CREATED: 'created',
+  PENDING_PAYMENT: 'pendingPayment',
+  PENDING_VERIFICATION: 'pendingVerification',
+  PAID: 'paid',
+  PAYMENT_CANCELLED: 'paymentCancelled',
+  READY_FOR_DELIVERY: 'readyForDelivery',
+  READY_FOR_PICKUP: 'readyForPickup',
+  SHIPPED: 'shipped',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+  ACCEPTED: 'accepted',
+  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
+  CONFIRMED: 'confirmed',
+  DELIVERED: 'delivered',
+  PICKED_UP: 'pickedUp',
 };
 
 export default {
@@ -118,7 +232,8 @@ export default {
   MANIFEST,
   ROUTER_PATHS,
   CASHBACK_SOURCE,
-  PAYMENT_METHODS,
+  PAYMENT_METHOD_LABELS,
+  CREDIT_CARD_BRANDS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
   CHANNEL_TYPE,
@@ -129,5 +244,16 @@ export default {
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
   LOGIN_PROMPT,
+  POLYFILL_FEATURES_URL,
+  POLYFILL_FEATURES,
+  LANGUAGES,
   ASIDE_NAMES,
+  DELIVERY_METHOD,
+  CONSUMERFLOW_STATUS,
+  WEEK_DAYS_I18N_KEYS,
+  PROMOTION_APPLIED_STATUS,
+  PREORDER_IMMEDIATE_TAG,
+  PROMO_TYPE,
+  ORDER_STATUS,
+  REPORT_DRIVER_REASON_CODE,
 };

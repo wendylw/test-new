@@ -1,0 +1,20 @@
+{
+  "StoreName": "Store Name",
+  "ContactInfo": "Contact Information",
+  "StoreAddress": "Store Address",
+  "YourOrder": "Your Order",
+  "Total": "Total",
+  "Subtotal": "Subtotal",
+  "Tax": "Tax",
+  "DeliveryCharge": "Delivery Charge",
+  "FailToLoadStoreInfo": "Failed to load store info. Please try again later.",
+  "FailToGetPlaceInfo": "Failed to get detailed place info. Please try again later.",
+  "OutOfDeliveryRange": "Sorry, the selected location is out of delivery range ({{distance}} KM).",
+  "OutOfDeliveryRangeWrongDistance": "Sorry, this location is out of delivery range ({{distance}} KM).",
+  "SearchYourAddress": "Search your address",
+  "DetectingLocation": "Detecting location...",
+  "LocationSharingIsOff": "Location sharing is off.",
+  "DeliveryTimeAndAddressTitle": "Delivery Time & Address",
+  "PickUpTimeAndAddressTitle": "Pickup Time & Address",
+  "ReportDriver": "Report Driver"
+}

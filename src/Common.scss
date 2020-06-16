@@ -13,6 +13,11 @@ $gray-2: #909090;
 $gray-3: #dededf;
 $gray-4: #efefef;
 $gray-5: #fafafa;
+$gray-6: #f4f4f4;
+$gray-7: #707070;
+$gray-8: #dededf;
+$gray-9: #8f9092;
+$gray-10: #eff2f3;
 $blue: #31728d;
 $link-blue: #2196f3;
 $theme-color: #ff9419;
@@ -20,7 +25,8 @@ $theme-color-translucent: rgba(255, 148, 25, 0.5);
 $gray-1-active: #4f515f;
 $theme-color-active: #de8115;
 $font-weight-light: 300;
-$font-weight-bold: 600;
+$font-weight-bold: 500;
+$font-weight-bolder: 600;
 $border-radius-base: 4px;
 $line-height-base: 1.4em;
 
@@ -40,7 +46,7 @@ html {
   background: $white;
   font-size: $font-size-base;
   color: $main-color;
-  font-weight: $font-weight-bold;
+  font-weight: $font-weight-bolder;
 
   font-family: system-ui, -apple-system, Roboto, Ubuntu, Helvetica, Arial, sans-serif;
   touch-action: manipulation;
@@ -88,6 +94,30 @@ img {
   max-width: 100%;
 }
 
+.text-size-huge {
+  font-size: 2.1428rem;
+}
+
+.text-size-biggest {
+  font-size: 1.4285rem;
+}
+
+.text-size-bigger {
+  font-size: 1.2857rem;
+}
+
+.text-size-big {
+  font-size: 1.1428rem;
+}
+
+.text-size-small {
+  font-size: 0.8571rem;
+}
+
+.text-size-smaller {
+  font-size: 0.7142rem;
+}
+
 .hide {
   display: none;
 }
@@ -119,6 +149,18 @@ img {
 
     svg ~ .warning__label {
       margin-left: 5px;
+    }
+  }
+}
+
+.input-group {
+  background-color: $white;
+
+  &.outline {
+    border: 1px solid $gray-3;
+
+    .input {
+      border: 0;
     }
   }
 }
@@ -168,12 +210,93 @@ form {
   }
 }
 
+.progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: $theme-color;
+
+  &.not-on-way {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &__container {
+    width: 100%;
+    height: 8px;
+    background-color: $gray-4;
+  }
+}
+
+.icon {
+  @extend .reset-font-size;
+
+  display: inline-block;
+
+  &__privacy {
+    fill: $theme-color;
+  }
+
+  &__gray {
+    fill: $gray-2;
+  }
+
+  &__white {
+    fill: $white;
+  }
+
+  &__big {
+    padding: 12px;
+  }
+
+  &__normal {
+    padding: 8px;
+  }
+
+  &__small {
+    padding: 4px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__smaller {
+    padding: 4px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__item.active {
+    .icon__gray {
+      fill: $theme-color;
+    }
+  }
+}
+
 .form {
   &__error-message {
     display: inline-block;
     margin: 10px 0;
     color: $red;
     font-size: 0.8rem;
+  }
+
+  &__group {
+    padding: 15px 0;
+  }
+
+  &__label {
+    display: block;
+    margin: 5px 0;
+    font-size: 1.2rem;
+  }
+
+  &__textarea {
+    min-height: 60px;
   }
 }
 
@@ -188,6 +311,7 @@ form {
   outline: none;
   box-shadow: none;
   -webkit-appearance: none;
+  resize: none;
 
   select + svg {
     position: absolute;
@@ -213,6 +337,10 @@ form {
     display: block;
     margin: 10px 0;
     text-align: left;
+  }
+
+  &__textarea {
+    height: auto;
   }
 
   &__list-top {
@@ -338,6 +466,12 @@ form {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
+
+  &__shrink-fixed {
+    -ms-flex-shrink: 0;
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+  }
 }
 
 .flex-middle {
@@ -380,12 +514,24 @@ form {
   font-weight: $font-weight-light;
 }
 
+.font-weight-bolder {
+  font-weight: $font-weight-bolder;
+}
+
 .font-weight-bold {
   font-weight: $font-weight-bold;
 }
 
 .text-uppercase {
   text-transform: uppercase;
+}
+
+.text-error {
+  color: $red;
+}
+
+.text-nowrap {
+  white-space: nowrap;
 }
 
 .border-radius-base {
@@ -402,6 +548,10 @@ form {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.width-1-1 {
+  width: 100%;
 }
 
 .width-1-3 {
@@ -455,5 +605,11 @@ form {
     width: 100%;
     height: 100%;
     overflow: hidden;
+  }
+}
+
+@media (min-width: 770px) {
+  .radio {
+    padding: 16px;
   }
 }

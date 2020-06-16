@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
-
+import Constants from '../../../utils/constants';
 export class Billing extends Component {
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo } = this.props;
@@ -26,9 +26,49 @@ export class Billing extends Component {
     );
   }
 
+  renderPromotion() {
+    const { promotion, t } = this.props;
+    if (!promotion) {
+      return null;
+    }
+
+    return (
+      <li className="billing__item flex flex-middle flex-space-between">
+        <label className="flex flex-middle">
+          <span className="font-weight-bolder">
+            {t(promotion.promoType)} ({promotion.promoCode})
+          </span>
+        </label>
+        <span className="text-nowrap">
+          {'-'} <CurrencyNumber className="font-weight-bolder" money={promotion.discount} />
+        </span>
+      </li>
+    );
+  }
+
+  handleLogin = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+    });
+  };
+
   render() {
-    const { t, className, subtotal, total, tax, creditsBalance, businessInfo } = this.props;
-    const { stores = [] } = businessInfo || {};
+    const {
+      t,
+      className,
+      subtotal,
+      total,
+      tax,
+      creditsBalance,
+      businessInfo,
+      isDeliveryType,
+      shippingFee,
+      isLogin,
+      children,
+    } = this.props;
+    const { stores = [], enableCashback } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
     const classList = ['billing'];
 
@@ -43,22 +83,44 @@ export class Billing extends Component {
             <label>{t('Subtotal')}</label>
             <CurrencyNumber money={subtotal || 0} />
           </li>
-          {creditsBalance ? (
-            <li className="billing__item show primary border-radius-base flex flex-middle flex-space-between">
-              <label className="font-weight-bold">{t('BeepCashback')}</label>
-              <span className="font-weight-bold">
-                - <CurrencyNumber className="font-weight-bold" money={creditsBalance || 0} />
-              </span>
-            </li>
-          ) : null}
           <li className="billing__item flex flex-middle flex-space-between">
             <label>{(receiptTemplateData || {}).taxName || t('Tax')}</label>
             <CurrencyNumber money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
+          {isDeliveryType ? (
+            <li className="billing__item flex flex-middle flex-space-between">
+              <label>{t('DeliveryFee')}</label>
+              {shippingFee ? (
+                <CurrencyNumber money={shippingFee || 0} />
+              ) : (
+                <span className="text-uppercase">{t('Free')}</span>
+              )}
+            </li>
+          ) : null}
+          {enableCashback ? (
+            <li
+              className={`billing__item show border-radius-base flex flex-middle flex-space-between ${
+                isLogin ? 'primary' : ''
+              }`}
+            >
+              <label className="font-weight-bolder">{t('BeepCashback')}</label>
+              {isLogin ? (
+                <span className="font-weight-bolder">
+                  - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
+                </span>
+              ) : (
+                <button onClick={this.handleLogin} className="billing__login">
+                  {t('Login')}
+                </button>
+              )}
+            </li>
+          ) : null}
+          {this.renderPromotion()}
+          {children}
           <li className="billing__item show flex flex-middle flex-space-between">
-            <label className="font-weight-bold">{t('Total')}</label>
-            <CurrencyNumber className="font-weight-bold" money={total || 0} />
+            <label className="font-weight-bolder">{t('Total')}</label>
+            <CurrencyNumber className="font-weight-bolder" money={total || 0} />
           </li>
         </ul>
       </section>
@@ -74,6 +136,12 @@ Billing.propTypes = {
   subtotal: PropTypes.number,
   total: PropTypes.number,
   creditsBalance: PropTypes.number,
+  shippingFee: PropTypes.number,
+  promotion: PropTypes.shape({
+    promoCode: PropTypes.string,
+    discount: PropTypes.number,
+  }),
+  isLogin: PropTypes.bool,
 };
 
 Billing.defaultProps = {
@@ -84,6 +152,9 @@ Billing.defaultProps = {
   subtotal: 0,
   total: 0,
   creditsBalance: 0,
+  shippingFee: 0,
+  promotion: null,
+  isLogin: false,
 };
 
 export default withTranslation()(Billing);

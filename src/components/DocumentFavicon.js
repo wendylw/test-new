@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import faviconImage from '../images/favicon.ico';
 
 class DocumentFavicon extends React.Component {
   static icon = '';
@@ -9,7 +10,7 @@ class DocumentFavicon extends React.Component {
   }
 
   static setIcon(icon) {
-    icon = icon || `${process.env.PUBLIC_URL}/favicon.ico`;
+    icon = icon || faviconImage;
 
     if (icon !== DocumentFavicon.icon) {
       let link1 = document.querySelector('link[rel=apple-touch-icon-precomposed]');

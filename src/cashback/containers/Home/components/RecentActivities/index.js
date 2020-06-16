@@ -9,12 +9,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
+import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 
-const LANGUAGES = {
-  MY: 'EN',
-  TH: 'EN',
-  PH: 'EN',
-};
 const DATE_OPTIONS = {
   weekday: 'short',
   year: 'numeric',
@@ -101,9 +97,7 @@ class RecentActivities extends React.Component {
                   <label>{type.text}&nbsp;</label>
                   {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
                 </h4>
-                <time className="activity__time">
-                  {eventDateTime.toLocaleDateString(LANGUAGES[country || 'MY'], DATE_OPTIONS)}
-                </time>
+                <time className="activity__time">{toLocaleDateString(eventDateTime, country, DATE_OPTIONS)}</time>
               </summary>
             </li>
           );
@@ -125,7 +119,7 @@ class RecentActivities extends React.Component {
         }
       >
         <Header
-          className="transparent text-center"
+          className="flex-middle transparent text-center"
           title={t('CashbackHistory')}
           isPage={true}
           navFunc={() => {

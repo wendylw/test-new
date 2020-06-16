@@ -1,5 +1,8 @@
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
+import _get from 'lodash/get';
+import { createSelector } from 'reselect';
 
 import { THANK_YOU_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -8,9 +11,12 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
 
-export const initialState = {
+const { PROMO_TYPE } = Constants;
+
+const initialState = {
   orderId: null,
   cashbackInfo: null /* included: customerId, consumerId, status */,
+  storeHashCode: null,
 };
 
 export const types = THANK_YOU_TYPES;
@@ -40,6 +46,17 @@ export const actions = {
         phone,
         source,
       },
+    },
+  }),
+
+  getStoreHashData: storeId => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_REQUEST,
+        types.FETCH_STORE_HASHCODE_SUCCESS,
+        types.FETCH_STORE_HASHCODE_FAILURE,
+      ],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
     },
   }),
 };
@@ -103,6 +120,12 @@ const reducer = (state = initialState, action) => {
         },
       };
     }
+    case types.FETCH_STORE_HASHCODE_SUCCESS: {
+      const { response } = action;
+      const { redirectTo } = response || {};
+
+      return { ...state, storeHashCode: redirectTo };
+    }
     default:
       return state;
   }
@@ -115,9 +138,42 @@ export const getOrder = state => {
   return getOrderByOrderId(state, state.thankYou.orderId);
 };
 
+export const getPromotion = state => {
+  const order = getOrder(state);
+  if (order && order.appliedVoucher) {
+    return {
+      promoCode: order.appliedVoucher.voucherCode,
+      discount: order.appliedVoucher.value,
+      promoType: PROMO_TYPE.VOUCHER,
+    };
+  } else if (order && order.displayPromotions && order.displayPromotions.length) {
+    const appliedPromo = order.displayPromotions[0];
+    return {
+      promoCode: appliedPromo.promotionCode,
+      discount: appliedPromo.displayDiscount,
+      promoType: PROMO_TYPE.PROMOTION,
+    };
+  } else {
+    return null;
+  }
+};
+
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
   return getBusinessByName(state, business);
 };
 
+export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;
+
+export const getOrderStatus = createSelector([getOrder], order => {
+  return _get(order, 'status', '');
+});
+
+export const getIsUseStorehubLogistics = createSelector([getOrder], order => {
+  return _get(order, 'deliveryInformation.0.useStorehubLogistics', false);
+});
+
+export const getReceiptNumber = state => {
+  return Utils.getQueryString('receiptNumber');
+};
