@@ -24,7 +24,9 @@ class CreateOrderButton extends React.Component {
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await beforeCreateOrder();
+    if (beforeCreateOrder) {
+      await beforeCreateOrder();
+    }
 
     if (isLogin && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
@@ -46,7 +48,9 @@ class CreateOrderButton extends React.Component {
       }
     }
 
-    afterCreateOrder();
+    if (afterCreateOrder) {
+      afterCreateOrder();
+    }
   };
 
   render() {
