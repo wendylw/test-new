@@ -60,7 +60,7 @@ const clearShopcartItemByProducts = products => {
     },
   };
 };
-const emptyShoppingCart = () => {
+export const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
   return {
     [FETCH_GRAPHQL]: {
