@@ -1,5 +1,8 @@
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
+import _get from 'lodash/get';
+import { createSelector } from 'reselect';
 
 import { THANK_YOU_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -162,3 +165,15 @@ export const getBusinessInfo = state => {
 
 export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;
+
+export const getOrderStatus = createSelector([getOrder], order => {
+  return _get(order, 'status', '');
+});
+
+export const getIsUseStorehubLogistics = createSelector([getOrder], order => {
+  return _get(order, 'deliveryInformation.0.useStorehubLogistics', false);
+});
+
+export const getReceiptNumber = state => {
+  return Utils.getQueryString('receiptNumber');
+};

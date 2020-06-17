@@ -15,5 +15,6 @@
   "DetectingLocation": "Detecting location...",
   "LocationSharingIsOff": "Location sharing is off.",
   "DeliveryTimeAndAddressTitle": "Delivery Time & Address",
-  "PickUpTimeAndAddressTitle": "Pickup Time & Address"
+  "PickUpTimeAndAddressTitle": "Pickup Time & Address",
+  "ReportDriver": "Report Driver"
 }
