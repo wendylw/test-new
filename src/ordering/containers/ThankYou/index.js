@@ -729,7 +729,7 @@ export class ThankYou extends PureComponent {
             <div className="thanks__info-container">
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin isDeliveryType={isDeliveryType} history={history} />
+              <PhoneLogin showMessage={!isDeliveryType || !isPickUpType} history={history} />
             </div>
           </div>
         </React.Fragment>
