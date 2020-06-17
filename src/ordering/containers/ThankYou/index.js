@@ -21,6 +21,7 @@ import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPage
 
 import beepSuccessImage from '../../../images/beep-success.png';
 import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
@@ -270,7 +271,6 @@ export class ThankYou extends PureComponent {
 
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
-    createdTime,
     t,
     CONSUMERFLOW_STATUS,
     cashbackInfo,
@@ -282,7 +282,7 @@ export class ThankYou extends PureComponent {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    const { total, storeInfo, status } = order || {};
+    const { total, storeInfo, status, isPreOrder } = order || {};
     const { name } = storeInfo || {};
     const { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
@@ -303,7 +303,7 @@ export class ThankYou extends PureComponent {
         },
         firstNote: t('OrderReceived'),
         secondNote: t('OrderReceivedDescription'),
-        bannerImage: beepOrderStatusPaid,
+        bannerImage: isPreOrder ? beepPreOrderSuccessImage : beepOrderStatusPaid,
       };
     }
 
@@ -606,7 +606,7 @@ export class ThankYou extends PureComponent {
 
   renderDeliveryImageAndTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
-    const { createdTime, status, deliveryInformation, cancelOperator } = order || {};
+    const { status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -614,12 +614,11 @@ export class ThankYou extends PureComponent {
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPickupSuccessImage}`}
+            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
             alt="Beep Success"
           />
         ) : (
           this.renderConsumerStatusFlow({
-            createdTime,
             t,
             CONSUMERFLOW_STATUS,
             cashbackInfo,
@@ -707,7 +706,7 @@ export class ThankYou extends PureComponent {
             ) : (
               <img
                 className="thanks__image"
-                src={isPickUpType ? beepPickupSuccessImage : beepSuccessImage}
+                src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
                 alt="Beep Success"
               />
             )}
@@ -728,7 +727,7 @@ export class ThankYou extends PureComponent {
             <div className="thanks__info-container">
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin isDeliveryType={isDeliveryType} history={history} />
+              <PhoneLogin showMessage={!isDeliveryType || !isPickUpType} history={history} />
             </div>
           </div>
         </React.Fragment>
