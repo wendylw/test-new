@@ -8,12 +8,15 @@ import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
+import CreateOrderButton from '../../components/CreateOrderButton';
 import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
+import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators } from '../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentOrderId, getThankYouPageUrl } from '../../redux/modules/payment';
+import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -36,8 +39,12 @@ class Customer extends Component {
   };
 
   componentDidMount = async () => {
+    const { homeActions, customerActions } = this.props;
+
+    await homeActions.loadShoppingCart();
+
     // init username, phone, deliveryToAddress, deliveryDetails
-    await this.props.customerActions.initDeliveryDetails(this.getShippingType());
+    await customerActions.initDeliveryDetails(this.getShippingType());
   };
 
   componentDidUpdate(prevProps) {
@@ -90,7 +97,7 @@ class Customer extends Component {
     return null;
   };
 
-  async handleCreateOrder() {
+  async handleBeforeCreateOrder() {
     const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
@@ -110,8 +117,6 @@ class Customer extends Component {
     if (!isLogin) {
       await appActions.getOtp({ phone });
       this.setState({ sentOtp: true });
-    } else {
-      this.visitPaymentPage();
     }
   }
 
@@ -355,10 +360,11 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
+    const { total } = cartSummary || {};
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -447,14 +453,24 @@ class Customer extends Component {
             </button>
           </div>
           <div className="footer-operation__item width-2-3">
-            <button
+            <CreateOrderButton
+              history={history}
+              dataTestId="customerContinue"
+              disabled={!this.getCanContinue()}
+              validCreateOrder={!total}
+              beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+              afterCreateOrder={this.visitPaymentPage()}
+            >
+              {isFetching ? <div className="loader"></div> : t('Continue')}
+            </CreateOrderButton>
+            {/* <button
               className="billing__link button button__fill button__block font-weight-bolder"
               data-testid="customerContinue"
               onClick={this.handleCreateOrder.bind(this)}
               disabled={!this.getCanContinue()}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
-            </button>
+            </button> */}
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
@@ -467,9 +483,13 @@ export default compose(
   withTranslation('OrderingDelivery'),
   connect(
     state => {
+      const currentOrderId = getCurrentOrderId(state);
+
       return {
         user: getUser(state),
         cartSummary: getCartSummary(state),
+        currentOrder: getOrderByOrderId(state, currentOrderId),
+        thankYouPageUrl: getThankYouPageUrl(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         business: getBusiness(state),
@@ -478,6 +498,7 @@ export default compose(
       };
     },
     dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),

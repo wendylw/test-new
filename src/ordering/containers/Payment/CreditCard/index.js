@@ -7,6 +7,7 @@ import Header from '../../../../components/Header';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import FormValidate from '../../../../utils/form-validate';
 import RedirectForm from '../components/RedirectForm';
+import CreateOrderButton from '../../../components/CreateOrderButton';
 import Constants from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import config from '../../../../config';
@@ -244,7 +245,7 @@ class CreditCard extends Component {
     });
   }
 
-  async payNow() {
+  async handleBeforeCreateOrder() {
     await this.validateForm();
 
     const { t } = this.props;
@@ -303,24 +304,6 @@ class CreditCard extends Component {
 
       return;
     }
-
-    const { history, paymentActions, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
-
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
-    }
-
-    this.setState({
-      payNowLoading: !!orderId,
-    });
   }
 
   handleChangeCardNumber(e) {
@@ -475,8 +458,9 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary } = this.props;
+    const { t, match, history, cartSummary, currentOrder } = this.props;
     const { payNowLoading, domLoaded } = this.state;
+    const { orderId } = currentOrder || {};
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
 
@@ -500,7 +484,24 @@ class CreditCard extends Component {
         </div>
 
         <div className="footer-operation">
-          <button
+          <CreateOrderButton
+            className="border-radius-base"
+            dataTestId="payMoney"
+            disabled={payNowLoading}
+            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            afterCreateOrder={() => {
+              this.setState({
+                payNowLoading: !!orderId,
+              });
+            }}
+          >
+            {payNowLoading ? (
+              <div className="loader"></div>
+            ) : (
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+            )}
+          </CreateOrderButton>
+          {/* <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             data-testid="payMoney"
@@ -509,9 +510,9 @@ class CreditCard extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-            )}
-          </button>
+                <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              )}
+          </button> */}
         </div>
 
         {paymentData ? (

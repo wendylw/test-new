@@ -15,6 +15,7 @@ import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
 import CurrencyNumber from '../../../components/CurrencyNumber';
+import CreateOrderButton from '../../../components/CreateOrderButton';
 import RedirectForm from '../components/RedirectForm';
 import config from '../../../../config';
 
@@ -76,19 +77,6 @@ const ErrorMessage = ({ children }) => (
   </div>
 );
 
-const SubmitButton = ({ processing, error, children, disabled, onClick }) => (
-  <div className="footer-operation">
-    <button
-      className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
-      type="submit"
-      onClick={onClick}
-      disabled={processing || disabled}
-    >
-      {processing ? <div className="loader"></div> : children}
-    </button>
-  </div>
-);
-
 const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country }) => {
   const { total } = cartSummary || {};
   const stripe = useStripe();
@@ -131,22 +119,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
 
     if (cardComplete) {
       setProcessing(true);
-    }
-
-    await onPreSubmit();
-
-    const payload = await stripe.createPaymentMethod({
-      type: 'card',
-      card: elements.getElement(CardNumberElement),
-      billing_details: billingDetails,
-    });
-
-    setProcessing(false);
-
-    if (payload.error) {
-      setError(payload.error);
-    } else {
-      setPaymentMethod(payload.paymentMethod);
     }
   };
 
@@ -343,9 +315,33 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
           setBillingDetails({ ...billingDetails, name: e.target.value });
         }}
       />
-      <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
+      <div className="footer-operation">
+        <CreateOrderButton
+          buttonType="submit"
+          disabled={processing || !stripe}
+          beforeCreateOrder={() => setIsFormTouched(true)}
+          afterCreateOrder={async () => {
+            const payload = await stripe.createPaymentMethod({
+              type: 'card',
+              card: elements.getElement(CardNumberElement),
+              billing_details: billingDetails,
+            });
+
+            setProcessing(false);
+
+            if (payload.error) {
+              setError(payload.error);
+            } else {
+              setPaymentMethod(payload.paymentMethod);
+            }
+          }}
+        >
+          <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+        </CreateOrderButton>
+      </div>
+      {/* <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
         <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-      </SubmitButton>
+      </SubmitButton> */}
 
       {paymentMethod ? renderRedirectForm(paymentMethod) : null}
 
