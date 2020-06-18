@@ -459,7 +459,7 @@ class Customer extends Component {
               disabled={!this.getCanContinue()}
               validCreateOrder={!total}
               beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-              afterCreateOrder={this.visitPaymentPage()}
+              afterCreateOrder={this.visitPaymentPage.bind(this)}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
             </CreateOrderButton>
