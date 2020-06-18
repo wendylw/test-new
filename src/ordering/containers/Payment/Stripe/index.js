@@ -77,7 +77,7 @@ const ErrorMessage = ({ children }) => (
   </div>
 );
 
-const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country }) => {
+const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) => {
   const { total } = cartSummary || {};
   const stripe = useStripe();
   const elements = useElements();
@@ -317,6 +317,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
       />
       <div className="footer-operation">
         <CreateOrderButton
+          history={history}
           buttonType="submit"
           disabled={processing || !stripe}
           beforeCreateOrder={() => setIsFormTouched(true)}
@@ -428,6 +429,7 @@ class Stripe extends Component {
           <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm
               t={t}
+              history={history}
               country={merchantCountry}
               cartSummary={cartSummary}
               onPreSubmit={this.createOrder}
