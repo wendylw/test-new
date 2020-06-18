@@ -290,6 +290,16 @@ class Cart extends Component {
               className="billing__link button button__fill button__block font-weight-bolder"
               data-testid="pay"
               onClick={() => {
+                if (!this.isPromotionValid()) {
+                  this.props.appActions.showMessageModal({
+                    message: t('InvalidPromoCode'),
+                    description: this.getPromotionErrorMessage(),
+                    buttonText: t('Dismiss'),
+                  });
+
+                  return;
+                }
+
                 history.push({
                   pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
                   search: window.location.search,
