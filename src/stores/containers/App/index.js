@@ -7,7 +7,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/modules/home';
+import {
+  getDeliveryStatus,
+  getCurrentStoreId,
+  getAllStores,
+  actions as homeActionCreators,
+} from '../../redux/modules/home';
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
 import Home from '../Home';
@@ -17,6 +22,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import qs from 'qs';
 
 class App extends Component {
   componentDidMount() {
@@ -33,6 +39,11 @@ class App extends Component {
       const { onlineStoreInfo } = data;
       gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
+
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+    if (queries.s && queries.from === 'home') {
+      this.props.homeActions.setCurrentStore(queries.s);
+    }
   }
 
   isDinePath() {
@@ -102,5 +113,6 @@ export default connect(
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   })
 )(withRouter(App));
