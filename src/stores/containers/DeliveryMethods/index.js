@@ -50,6 +50,7 @@ class DeliveryMethods extends Component {
     homeActions.clearCurrentStore();
 
     const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
     if (queries.s && queries.from === 'home') {
       this.props.history.replace('/');
     }
