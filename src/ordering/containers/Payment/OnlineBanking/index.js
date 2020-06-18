@@ -176,6 +176,7 @@ class OnlineBanking extends Component {
 
         <div className="footer-operation">
           <CreateOrderButton
+            history={history}
             className="border-radius-base"
             dataTestId="payMoney"
             disabled={payNowLoading}

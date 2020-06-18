@@ -127,7 +127,7 @@ class Payment extends Component {
   };
 
   render() {
-    const { t, currentPayment, payments, unavailablePaymentList, cartSummary, currentOrder } = this.props;
+    const { history, t, currentPayment, payments, unavailablePaymentList, cartSummary, currentOrder } = this.props;
     const { total } = cartSummary || {};
     const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
@@ -197,6 +197,7 @@ class Payment extends Component {
 
         <div className="footer-operation">
           <CreateOrderButton
+            history={history}
             className="border-radius-base"
             dataTestId="payNow"
             disabled={payNowLoading}
