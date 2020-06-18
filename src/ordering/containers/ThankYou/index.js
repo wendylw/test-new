@@ -20,7 +20,7 @@ import {
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
-import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+// import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
 import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
@@ -727,7 +727,7 @@ export class ThankYou extends PureComponent {
             <div className="thanks__info-container">
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin showMessage={!isDeliveryType || !isPickUpType} history={history} />
+              <PhoneLogin hideMessage={isTakeaway} history={history} />
             </div>
           </div>
         </React.Fragment>
