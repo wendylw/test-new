@@ -250,7 +250,13 @@ class Customer extends Component {
       </div>
     );
   };
-
+  handleInputChange = e => {
+    const inputValue = e.target.value;
+    e.target.name === 'addressDetails' &&
+      this.props.customerActions.patchDeliveryDetails({ addressDetails: inputValue });
+    e.target.name === 'deliveryComments' &&
+      this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
+  };
   renderDeliveryAddress() {
     const { t, history } = this.props;
 
@@ -284,22 +290,27 @@ class Customer extends Component {
           </p>
           <IconNext className="flex__shrink-fixed" />
         </div>
-        <div
-          className="form__group border-radius-base"
-          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}
-        >
-          <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
-            {addressDetails || t('AddressDetailsPlaceholder')}
-          </p>
+        <div className="form__group border-radius-base  form-field">
+          <input
+            className="input input__block"
+            type="text"
+            maxLength="140"
+            placeholder={t('AddressDetailsPlaceholder')}
+            value={addressDetails}
+            name="addressDetails"
+            onChange={this.handleInputChange}
+          />
         </div>
-        <div
-          className="form__group border-radius-base"
-          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
-        >
-          <p className={`form__textarea ${deliveryComments ? '' : 'gray-font-opacity'}`}>
-            {deliveryComments ||
-              `${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          </p>
+        <div className="form__group border-radius-base form-field">
+          <input
+            className="input input__block"
+            type="text"
+            maxLength="140"
+            value={deliveryComments}
+            name="deliveryComments"
+            onChange={this.handleInputChange}
+            placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          />
         </div>
       </React.Fragment>
     );

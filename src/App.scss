@@ -503,7 +503,14 @@
       padding: 16px;
       border: 1px solid $gray-3;
     }
-
+    .form__label ~ .form-field {
+      margin-bottom: 16px;
+      padding: 0;
+      border: 0;
+      input {
+        font-size: 14px;
+      }
+    }
     .form__textarea {
       min-height: 0;
       word-break: break-word;
