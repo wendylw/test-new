@@ -25,7 +25,6 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import Utils from '../../../../utils/utils';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 // import '../styles/2-Card-Detailed.css';
 
