@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+/**
+ * `<Tag />` is used on the product items and store items.
+ *
+ * A very simple example is by `className="tag__card active"` is used with component
+ */
 class Tag extends Component {
   render() {
     const { text, className, style } = this.props;

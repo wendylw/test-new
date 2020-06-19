@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import Header from '../../../components/Header';
 import PhoneLogin from './components/PhoneLogin';
@@ -16,22 +15,20 @@ import {
   getStoreHashCode,
   getCashbackInfo,
   getBusinessInfo,
+  getReceiptNumber,
 } from '../../redux/modules/thankYou';
-import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties } from '../../../utils/gtm';
+import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
-import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
-// import beepDeliverySuccessImage from '../../../images/beep-delivery-success.png';
-// import beepOnTheWay from '../../../images/beep-on-the-way.svg';
-// import beepOrderCancelled from '../../../images/beep-order-cancelled.svg';
-// import beepOrderPending from '../../../images/beep-order-pending.svg';
-// import beepOrderPickedUp from '../../../images/beep-order-pickedup.svg';
+// import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
+
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -57,29 +54,23 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    const { thankYouActions, order } = this.props;
+    const { thankYouActions, order, onlineStoreInfo, user, receiptNumber } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
     }
-    thankYouActions.loadOrder(this.getReceiptNumber()).then(({ responseGql = {} }) => {
-      const { data = {} } = responseGql;
-      const tySourceCookie = this.getThankYouSource();
-      const { onlineStoreInfo, user } = this.props;
-      if (this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        gtmSetUserProperties(onlineStoreInfo, user);
-        this.handleGtmEventTracking(data);
-      }
-      if (!this.isSourceFromPayment(tySourceCookie) && onlineStoreInfo) {
-        gtmSetUserProperties(onlineStoreInfo, user);
-      }
-    });
+
+    if (onlineStoreInfo && onlineStoreInfo.id) {
+      gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
+    }
+
+    thankYouActions.loadOrder(receiptNumber);
   }
 
   componentDidUpdate(prevProps) {
-    const { order, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
-    const { storeId: prevStoreId } = order || {};
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
+    const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
     const { onlineStoreInfo, user } = this.props;
 
@@ -87,14 +78,12 @@ export class ThankYou extends PureComponent {
       this.props.thankYouActions.getStoreHashData(storeId);
     }
     const tySourceCookie = this.getThankYouSource();
-    if (onlineStoreInfo && prevOnlineStoreInfo !== onlineStoreInfo) {
-      if (this.isSourceFromPayment(tySourceCookie)) {
-        const orderInfo = this.props.order;
-        gtmSetUserProperties(onlineStoreInfo, user);
-        this.handleGtmEventTracking({ order: orderInfo });
-      } else {
-        gtmSetUserProperties(onlineStoreInfo, user);
-      }
+    if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
+      gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
+    }
+    if (this.isSourceFromPayment(tySourceCookie) && this.props.order && onlineStoreInfo) {
+      const orderInfo = this.props.order;
+      this.handleGtmEventTracking({ order: orderInfo });
     }
   }
 
@@ -105,6 +94,7 @@ export class ThankYou extends PureComponent {
     return source === 'payment';
   };
   handleGtmEventTracking = ({ order = {} }) => {
+    const { onlineStoreInfo } = this.props;
     const productsInOrder = order.items || [];
     const gtmEventData = {
       product_name: productsInOrder.map(item => item.title) || [],
@@ -118,16 +108,38 @@ export class ThankYou extends PureComponent {
       order_value_local: order.total,
       revenue_local: order.total,
     };
+
+    const productsDetails = [];
+    order.items.forEach(item => {
+      productsDetails.push({
+        id: item.productId,
+        price: item.displayPrice,
+        brand: '',
+        category: '',
+        variant: item.variationTexts,
+        quantity: item.quantity,
+      });
+    });
+    const pageViewData = {
+      ecommerce: {
+        purchase: {
+          actionField: {
+            id: order.orderId,
+            affiliation: onlineStoreInfo.storeName,
+            revenue: order.total,
+            tax: order.tax,
+            shipping: order.shippingFee,
+            coupon: '',
+          },
+          products: productsDetails,
+        },
+      },
+    };
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
+    gtmSetPageViewData(pageViewData);
+
     // immidiately remove __ty_source cookie after send the request.
     Utils.removeCookieVariable('__ty_source', '');
-  };
-
-  getReceiptNumber = () => {
-    const { history } = this.props;
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    return receiptNumber;
   };
 
   handleClickViewReceipt = () => {
@@ -157,10 +169,29 @@ export class ThankYou extends PureComponent {
       search: window.location.search,
     });
   };
-
+  renderCashbackUI = cashback => {
+    const { t } = this.props;
+    return (
+      <div className="thanks__delivery-status-container">
+        <CurrencyNumber
+          className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+          money={cashback || 0}
+        />
+        <h3 className="flex flex-middle flex-center">
+          <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+            {t('EarnedCashBackTitle')}
+          </span>
+          <img src={IconCelebration} alt="Beep Celebration" />
+        </h3>
+        <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
+      </div>
+    );
+  };
   renderPickupInfo() {
-    const { t, order } = this.props;
+    const { t, order, businessInfo, cashbackInfo } = this.props;
     const { tableId, pickUpId } = order || {};
+    const { enableCashback } = businessInfo || {};
+    const { cashback } = cashbackInfo || {};
 
     if (tableId) {
       return null;
@@ -174,8 +205,16 @@ export class ThankYou extends PureComponent {
             {pickUpId}
           </span>
         </div>
+        {enableCashback ? this.renderCashbackUI(cashback) : null}
       </div>
     );
+  }
+
+  renderPreOrderDeliveryInfo() {
+    const { businessInfo, cashbackInfo } = this.props;
+    const { enableCashback } = businessInfo || {};
+    const { cashback } = cashbackInfo || {};
+    return enableCashback ? this.renderCashbackUI(cashback) : null;
   }
 
   renderNeedReceipt() {
@@ -232,8 +271,6 @@ export class ThankYou extends PureComponent {
 
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
-    logs,
-    createdTime,
     t,
     CONSUMERFLOW_STATUS,
     cashbackInfo,
@@ -242,20 +279,12 @@ export class ThankYou extends PureComponent {
     cancelOperator,
     order,
   }) {
-    if (!logs) return null;
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
-    const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
-    const paidStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PAID);
-    const acceptedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, ACCEPTED);
-    const logisticConfirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, LOGISTIC_CONFIRMED);
-    const confirmedStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CONFIMRMED);
-    const pickupStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, PICKUP);
-    const cancelledStatusObj = this.getLogsInfoByStatus(statusUpdateLogs, CANCELLED);
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    const { total, storeInfo } = order || {};
+    const { total, storeInfo, status, isPreOrder } = order || {};
     const { name } = storeInfo || {};
-    const { trackingUrl, useStorehubLogistics } =
+    const { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -263,90 +292,65 @@ export class ThankYou extends PureComponent {
       merchant: 'MerchantCancelledDescription',
     };
 
-    const getTimeFromStatusObj = statusObj => {
-      return new Date((statusObj && statusObj.time) || createdTime || '');
-    };
     let currentStatusObj = {};
+
     /** paid status */
-    if (paidStatusObj && acceptedStatusObj === undefined) {
+    if (status === PAID) {
       currentStatusObj = {
-        statusObj: paidStatusObj,
         status: 'paid',
         style: {
           width: '25%',
         },
         firstNote: t('OrderReceived'),
-        // firstLiClassName: 'active',
         secondNote: t('OrderReceivedDescription'),
-        // secondLiClassName: 'normal',
-        timeToShow: getTimeFromStatusObj(paidStatusObj),
-        bannerImage: beepOrderStatusPaid,
+        bannerImage: isPreOrder ? beepPreOrderSuccessImage : beepOrderStatusPaid,
       };
     }
+
     /** accepted status */
-    //if (acceptedStatusObj && logisticConfirmedStatusObj === undefined && useStorehubLogistics) {
-    if (acceptedStatusObj && logisticConfirmedStatusObj === undefined) {
+    if (status === ACCEPTED) {
       currentStatusObj = {
-        statusObj: acceptedStatusObj,
         status: 'accepted',
         style: {
           width: '50%',
         },
         firstNote: t('MerchantAccepted'),
-        // firstLiClassName: 'active',
         secondNote: t('FindingRider'),
-        // secondLiClassName: 'normal',
-        timeToShow: getTimeFromStatusObj(acceptedStatusObj),
         bannerImage: beepOrderStatusAccepted,
       };
     }
+
     /** logistic confirmed and confirmed */
-    // if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined && useStorehubLogistics) {
-    if ((logisticConfirmedStatusObj || confirmedStatusObj) && pickupStatusObj === undefined) {
+    if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
-        statusObj: logisticConfirmedStatusObj && confirmedStatusObj,
         status: 'confirmed',
         style: {
           width: '75%',
         },
         firstNote: t('RiderAssigned'),
-        // firstLiClassName: 'active',
         secondNote: t('TrackYourOrder'),
-        // secondLiClassName: 'normal',
-        timeToShow: getTimeFromStatusObj(logisticConfirmedStatusObj && confirmedStatusObj),
         bannerImage: beepOrderStatusConfirmed,
       };
     }
 
     /** pickup status */
-    //if (pickupStatusObj && useStorehubLogistics) {
-    if (pickupStatusObj) {
+    if (status === PICKUP) {
       currentStatusObj = {
-        statusObj: pickupStatusObj,
         status: 'riderPickUp',
         style: {
           width: '100%',
         },
         firstNote: t('RiderPickUp'),
-        // firstLiClassName: 'active finished',
         secondNote: t('TrackYourOrder'),
-        // secondLiClassName: 'active',
-        timeToShow: getTimeFromStatusObj(pickupStatusObj),
         bannerImage: beepOrderStatusPickedUp,
       };
     }
-    if (paidStatusObj && cancelledStatusObj) {
+
+    if (status === CANCELLED) {
       currentStatusObj = {
-        statusObj: cancelledStatusObj,
         status: 'cancelled',
         descriptionKey: cancelledDescriptionKey[cancelOperator],
-        // firstNote: t('OrderCancelledDescription'),
-        // firstLiClassName: 'active',
-        // secondNote: t('OrderCancelled'),
-        // secondLiClassName: 'error',
-        timeToShow: getTimeFromStatusObj(paidStatusObj),
         bannerImage: beepOrderStatusCancelled,
-        secondTimeToShow: getTimeFromStatusObj(cancelledStatusObj),
       };
     }
 
@@ -398,10 +402,14 @@ export class ThankYou extends PureComponent {
           ) : null}
           {useStorehubLogistics &&
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-            <div className="thanks__status-description">
-              <a href={trackingUrl || ''} target="__blank" className="link text-uppercase font-weight-bolder">
-                {currentStatusObj.secondNote}
-              </a>
+            <div className="thanks__status-description flex flex-middle flex-center">
+              {trackingUrl ? (
+                <a href={trackingUrl} target="__blank" className="link text-uppercase font-weight-bolder">
+                  {currentStatusObj.secondNote}
+                </a>
+              ) : (
+                <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>
+              )}
             </div>
           ) : null}
           {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
@@ -417,21 +425,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback && cashback ? (
-          <div className="thanks__delivery-status-container">
-            <CurrencyNumber
-              className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
-              money={cashback || 0}
-            />
-            <h3 className="flex flex-middle flex-center">
-              <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
-                {t('EarnedCashBackTitle')}
-              </span>
-              <img src={IconCelebration} alt="Beep Celebration" />
-            </h3>
-            <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
-          </div>
-        ) : null}
+        {enableCashback && !this.isNowPaidPreOrder() && cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
@@ -457,29 +451,41 @@ export class ThankYou extends PureComponent {
 
     return (
       <div className="thanks__delivery-info text-left">
-        {isPickUpType && isPreOrder ? (
-          <div className="thanks__pickup">
-            <label className="thanks__text font-weight-bolder">{t('PickupAt')}</label>
-            <p className="thanks__pickup-time gray-font-opacity">{pickupTime}</p>
-          </div>
-        ) : null}
-
         <div className="flex flex-middle flex-space-between">
           <label className="font-weight-bolder text-size-big">{name}</label>
-          {isPickUpType ? (
+          {isPickUpType && !isPreOrder ? (
             <div>
               <span className="thanks__text">{t('Total')}</span>
               <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
             </div>
           ) : null}
         </div>
+
+        {isPickUpType && isPreOrder ? (
+          <div className="thanks__pickup margin-bottom-zero ">
+            <h4 className="thanks__delivering-title font-weight-bolder">{t('PickUpOn')}</h4>
+            <p className="thanks__address-pin flex flex-middle">
+              <i className="thanks__pin-icon">
+                <IconAccessTime />
+              </i>
+              <span>{pickupTime}</span>
+            </p>
+          </div>
+        ) : null}
+
         {isDeliveryType ? <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4> : null}
+
+        {isPickUpType && isPreOrder ? (
+          <h4 className="thanks__delivering-title font-weight-bolder margin-top-zero">{t('PickupAt')}</h4>
+        ) : null}
+
         <p className="thanks__address-pin flex flex-middle">
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
           <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
+
         <div className="thanks__total-container text-center">
           <span className="thanks__total-text">{t('Total')}</span>
           <CurrencyNumber className="thanks__total-text font-weight-bolder" money={total || 0} />
@@ -600,7 +606,7 @@ export class ThankYou extends PureComponent {
 
   renderDeliveryImageAndTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
-    const { createdTime, logs, status, deliveryInformation, cancelOperator } = order || {};
+    const { status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -608,13 +614,11 @@ export class ThankYou extends PureComponent {
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepOrderStatusPaid}`}
+            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
             alt="Beep Success"
           />
         ) : (
           this.renderConsumerStatusFlow({
-            logs,
-            createdTime,
             t,
             CONSUMERFLOW_STATUS,
             cashbackInfo,
@@ -633,6 +637,15 @@ export class ThankYou extends PureComponent {
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
+  renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType }) {
+    if (isPreOrder && isDeliveryType) return null;
+    const { t } = this.props;
+    return (
+      <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
+        {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
+      </h4>
+    );
+  }
   render() {
     const { t, history, match, order, storeHashCode } = this.props;
     const date = new Date();
@@ -643,6 +656,7 @@ export class ThankYou extends PureComponent {
     const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
+    const { isPreOrder } = order || {};
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
@@ -692,7 +706,7 @@ export class ThankYou extends PureComponent {
             ) : (
               <img
                 className="thanks__image"
-                src={isPickUpType ? beepPickupSuccessImage : beepSuccessImage}
+                src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
                 alt="Beep Success"
               />
             )}
@@ -705,15 +719,15 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
+            {isDeliveryType ? null : this.renderPickupInfo()}
+            {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
-            <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
-              {t('OrderDetails')}
-            </h4>
+            {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
+
             <div className="thanks__info-container">
-              {isDeliveryType ? null : this.renderPickupInfo()}
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin isDeliveryType={isDeliveryType} history={history} />
+              <PhoneLogin hideMessage={isTakeaway} history={history} />
             </div>
           </div>
         </React.Fragment>
@@ -742,6 +756,7 @@ export default compose(
       cashbackInfo: getCashbackInfo(state),
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
+      receiptNumber: getReceiptNumber(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
