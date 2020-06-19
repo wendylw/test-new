@@ -15,7 +15,7 @@ import Constants from '../../../utils/constants';
 
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId, getThankYouPageUrl } from '../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getBusiness } from '../../../ordering/redux/modules/app';
@@ -50,9 +50,11 @@ class Customer extends Component {
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isLogin } = user || {};
+    const { cartSummary } = this.props;
     const { sentOtp } = this.state;
+    const { total } = cartSummary || {};
 
-    if (sentOtp && isLogin !== this.props.user.isLogin) {
+    if (sentOtp && total && isLogin && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
@@ -492,7 +494,6 @@ export default compose(
         user: getUser(state),
         cartSummary: getCartSummary(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        thankYouPageUrl: getThankYouPageUrl(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         business: getBusiness(state),

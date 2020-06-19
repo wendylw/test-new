@@ -361,22 +361,6 @@ class Stripe extends Component {
     this.props.homeActions.loadShoppingCart();
   }
 
-  createOrder = async () => {
-    const { history, paymentActions, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
-
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
-    }
-  };
-
   getPaymentEntryRequestData = () => {
     const { history, onlineStoreInfo, currentOrder, business } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
@@ -432,7 +416,6 @@ class Stripe extends Component {
               history={history}
               country={merchantCountry}
               cartSummary={cartSummary}
-              onPreSubmit={this.createOrder}
               renderRedirectForm={paymentMethod => {
                 if (!paymentMethod) return null;
 
