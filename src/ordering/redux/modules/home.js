@@ -56,9 +56,9 @@ export const actions = {
       deliveryCoords = Utils.getDeliveryCoords();
     }
     dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
-    if (!getState().home.onlineCategory.categoryIds.length) {
-      dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
-    }
+    // if (!getState().home.onlineCategory.categoryIds.length) {
+    dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
+    // }
   },
 
   // load shopping cart
