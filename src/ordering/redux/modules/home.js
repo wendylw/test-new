@@ -57,7 +57,7 @@ export const actions = {
     }
     dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
     if (!getState().home.onlineCategory.categoryIds.length) {
-      dispatch(fetchOnlineCategory());
+      dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
     }
   },
 
@@ -165,7 +165,7 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-const fetchOnlineCategory = () => {
+const fetchOnlineCategory = variables => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
@@ -175,6 +175,7 @@ const fetchOnlineCategory = () => {
         types.FETCH_ONLINECATEGORY_FAILURE,
       ],
       endpoint,
+      variables,
     },
   };
 };
