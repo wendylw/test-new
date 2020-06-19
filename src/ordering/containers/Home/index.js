@@ -345,7 +345,7 @@ export class Home extends Component {
 
   isValidTimeToOrder = () => {
     const { deliveryInfo } = this.props;
-
+    console.log(deliveryInfo, 'deliveryInfo');
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }

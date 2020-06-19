@@ -8,7 +8,7 @@ import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as homeActionCreators, getDeliveryInfo } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
@@ -107,7 +107,19 @@ class Payment extends Component {
     }
   }
 
+  isValidTimeToOrder = () => {
+    const { deliveryInfo } = this.props;
+    console.log(deliveryInfo, 'deliveryInfo');
+    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
+      return true;
+    }
+
+    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
+
+    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+  };
   handleClickPayNow = async () => {
+    this.isValidTimeToOrder();
     const { history, currentPaymentInfo, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -249,6 +261,7 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        deliveryInfo: getDeliveryInfo(state),
         payments: getPayments(state),
         currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
         currentPaymentInfo: getCurrentPaymentInfo(state),
