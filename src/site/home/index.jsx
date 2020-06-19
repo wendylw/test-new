@@ -26,7 +26,7 @@ import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } fr
 import { checkStateRestoreStatus } from '../redux/modules/index';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
-const isCampaignActive = false; // feature switch
+const isCampaignActive = true; // feature switch
 
 class Home extends React.Component {
   static lastUsedPlaceId = null;

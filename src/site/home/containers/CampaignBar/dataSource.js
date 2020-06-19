@@ -1,5 +1,7 @@
 import bannerImage from './components/images/Banner.jpg';
 import promoBanner from './components/images/PromoBanner.jpg';
+import rhbBanner from './components/images/RHBbanner@2x.jpg';
+import rhbBoard from './components/images/RHBboard@2x.jpg';
 
 // ordered by id DESC
 const dataSource = [
@@ -54,6 +56,37 @@ const dataSource = [
             '10% cashback to be capped at RM5',
             'Each eligible customer may only receive maximum of two (2) cashback transactions under this campaign',
             'This offer is limited to the first 1,000 transactions',
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'campaign-2',
+    barImage: rhbBanner,
+    bannerImage: rhbBoard,
+    subject: 'Beep x RHB Credit Card/-i Cashback Offer',
+    description:
+      'Spend at least RM30 from any store on Beepit.com and earn RM5 cashback when you pay with your RHB Credit Card/-i account!',
+    sections: [
+      {
+        type: 'campaign_period',
+        subject: 'Campaign Period',
+        fields: {
+          activeDateRange: '15th June 2020 - 14th September 2020',
+        },
+      },
+      {
+        type: 'terms_and_conditions',
+        subject: 'Terms & conditions',
+        fields: {
+          conditions: [
+            'Applicable to payments made using RHB Credit Card/-i only.',
+            'To qualify, a minimum spend of RM30 on total net purchase price in a single receipt (exclusive of delivery charges) is required to earn the RM5 cashback (Promotion).',
+            'The cashback under this Promotion will be credited into the RHB Credit Card/-i account within four (4) to six (6) weeks after each month during the Promotion Period and will be reflected in the next monthly statement.',
+            'The Promotion is limited to two thousand (2,000) cashback claims per month to eligible cardholders on a first-come-first-serve basis during the Promotion Period.',
+            'Promotion terms and conditions apply.',
+            'RHB general terms and conditions apply.',
           ],
         },
       },
