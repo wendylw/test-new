@@ -52,7 +52,7 @@ class Customer extends Component {
     const { isLogin } = user || {};
     const { sentOtp } = this.state;
 
-    if (sentOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
+    if (sentOtp && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
@@ -68,12 +68,15 @@ class Customer extends Component {
   };
 
   visitPaymentPage() {
-    const { history } = this.props;
+    const { history, user } = this.props;
+    const { isLogin } = user || {};
 
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-      search: window.location.search,
-    });
+    if (isLogin) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
   }
 
   checkDistanceError = () => {
