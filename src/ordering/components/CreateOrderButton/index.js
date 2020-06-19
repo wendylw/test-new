@@ -10,6 +10,17 @@ import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 
 class CreateOrderButton extends React.Component {
+  componentDidUpdate(prevProps) {
+    const { user } = prevProps;
+    const { isLogin } = user || {};
+    const { sentOtp, cartSummary } = this.props;
+    const { total } = cartSummary || {};
+
+    if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
+      this.handleCreateOrder();
+    }
+  }
+
   handleCreateOrder = async () => {
     const {
       history,
@@ -82,6 +93,7 @@ CreateOrderButton.propTypes = {
   buttonType: PropTypes.string,
   dataTestId: PropTypes.string,
   validCreateOrder: PropTypes.bool,
+  sentOtp: PropTypes.bool,
   disabled: PropTypes.bool,
   beforeCreateOrder: PropTypes.func,
   afterCreateOrder: PropTypes.func,
@@ -92,6 +104,7 @@ CreateOrderButton.defaultProps = {
   validCreateOrder: true,
   isPromotionValid: true,
   disabled: true,
+  sentOtp: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
