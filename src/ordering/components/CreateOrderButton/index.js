@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser } from '../../redux/modules/app';
+import { getUser, getRequestInfo } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
@@ -26,12 +26,14 @@ class CreateOrderButton extends React.Component {
       history,
       paymentActions,
       user,
+      requestInfo,
       cartSummary,
       afterCreateOrder,
       beforeCreateOrder,
       validCreateOrder,
     } = this.props;
     const { isLogin } = user || {};
+    const { tableId } = requestInfo;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -53,7 +55,7 @@ class CreateOrderButton extends React.Component {
       const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
-        window.location = `${thankYouPageUrl}${type ? `&type=${type}` : ''}`;
+        window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 
         return;
       }
@@ -116,6 +118,7 @@ export default compose(
 
       return {
         user: getUser(state),
+        requestInfo: getRequestInfo(state),
         cartSummary: getCartSummary(state),
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
