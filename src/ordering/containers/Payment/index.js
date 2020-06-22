@@ -8,7 +8,9 @@ import config from '../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators, getDeliveryInfo } from '../../redux/modules/home';
+import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as appActionCreators } from '../../redux/modules/app';
+import { getDeliveryInfo } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
@@ -109,17 +111,19 @@ class Payment extends Component {
 
   isValidTimeToOrder = () => {
     const { deliveryInfo } = this.props;
-    console.log(deliveryInfo, 'deliveryInfo');
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
+    const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = deliveryInfo;
 
-    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    return enablePreOrder && Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
   handleClickPayNow = async () => {
-    this.isValidTimeToOrder();
+    await this.props.appActions.loadCoreBusiness();
+    const isAbleToCreateOrder = this.isValidTimeToOrder();
+    console.log(isAbleToCreateOrder);
+    !isAbleToCreateOrder && this.props.history.replace('/');
     const { history, currentPaymentInfo, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -277,6 +281,7 @@ export default compose(
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(PaymentContainer);
