@@ -1,11 +1,9 @@
 const emptyShoppingCartData = {
-    data: {
-        emptyShoppingCart: {
-            success: true
-        }
-    }
+  data: {
+    emptyShoppingCart: {
+      success: true,
+    },
+  },
 };
 
-export {
-    emptyShoppingCartData
-}
+export { emptyShoppingCartData };
