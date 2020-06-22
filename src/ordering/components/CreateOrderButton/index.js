@@ -53,7 +53,7 @@ class CreateOrderButton extends React.Component {
       const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
-        window.location = `${thankYouPageUrl}${window.location.search}`;
+        window.location = `${thankYouPageUrl}${type ? `&type=${type}` : ''}`;
 
         return;
       }
