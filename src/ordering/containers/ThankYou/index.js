@@ -425,7 +425,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback && !this.isNowPaidPreOrder() && cashback ? this.renderCashbackUI(cashback) : null}
+        {enableCashback && !this.isNowPaidPreOrder() && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
