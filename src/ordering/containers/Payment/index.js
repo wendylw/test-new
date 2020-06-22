@@ -112,12 +112,12 @@ class Payment extends Component {
 
   isValidTimeToOrder = () => {
     const { deliveryInfo } = this.props;
+
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
-
     const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = deliveryInfo;
-    console.log(enablePreOrder, Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }));
+
     return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
   handleClickPayNow = async () => {
