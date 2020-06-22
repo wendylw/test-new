@@ -10,6 +10,7 @@ const { ERROR, SCAN_NOT_SUPPORT } = Constants.ROUTER_PATHS;
 
 // --Begin-- Hack MediaStream
 // hacking codes, without this codes we are not able to close the camera
+/* eslint-disable no-unused-vars */
 let MediaStream = window.MediaStream;
 
 if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefined') {
@@ -24,6 +25,7 @@ if (typeof MediaStream !== 'undefined' && !('stop' in MediaStream.prototype)) {
     });
   };
 }
+/* eslint-enable no-unused-vars */
 // ---End--- Hack MediaStream
 
 const processQR = qrData =>
