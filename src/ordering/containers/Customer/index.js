@@ -461,7 +461,7 @@ class Customer extends Component {
             <CreateOrderButton
               history={history}
               dataTestId="customerContinue"
-              disabled={!this.getCanContinue()}
+              disabled={!this.getCanContinue() || isFetching}
               validCreateOrder={!total}
               beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
               afterCreateOrder={this.visitPaymentPage.bind(this)}
