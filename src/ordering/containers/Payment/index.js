@@ -127,7 +127,16 @@ class Payment extends Component {
   };
 
   render() {
-    const { history, t, currentPayment, payments, unavailablePaymentList, cartSummary, currentOrder } = this.props;
+    const {
+      history,
+      t,
+      currentPayment,
+      payments,
+      unavailablePaymentList,
+      cartSummary,
+      currentOrder,
+      currentPaymentInfo,
+    } = this.props;
     const { total } = cartSummary || {};
     const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
@@ -201,6 +210,7 @@ class Payment extends Component {
             className="border-radius-base"
             dataTestId="payNow"
             disabled={payNowLoading}
+            validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             afterCreateOrder={() => {
               this.setState({
