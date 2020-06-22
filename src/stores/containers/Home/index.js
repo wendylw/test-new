@@ -25,7 +25,7 @@ import OfflineStoreModal from '../../../ordering/containers/Home/components/Offl
 const { ROUTER_PATHS } = Constants;
 class App extends Component {
   state = {
-    creatOfflineStoreOrder: '',
+    creatOfflineStoreOrderName: '',
   };
 
   componentDidMount = async () => {
@@ -35,9 +35,14 @@ class App extends Component {
       this.selectStore(defaultSelectStore.id);
     }
 
-    this.setState({
-      creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
-    });
+    this.setState(
+      {
+        creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
+      },
+      () => {
+        console.log(this.state, 'state');
+      }
+    );
   };
 
   async visitStore(storeId) {
@@ -96,9 +101,9 @@ class App extends Component {
       this.gotoDine(storeId);
     }
   };
-  renderOfflineModal = enableLiveOnline => {
-    console.log(this.state.creatOfflineStoreOrder, 'this.state.creatOfflineStoreOrder');
-    return <OfflineStoreModal currentStoreName={this.state.creatOfflineStoreOrder} enableLiveOnline={false} />;
+  renderOfflineModal = () => {
+    Utils.removeSessionVariable('creatOfflineStoreOrderName');
+    return <OfflineStoreModal currentStoreName={this.state.creatOfflineStoreOrderName} enableLiveOnline={false} />;
   };
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
@@ -128,7 +133,7 @@ class App extends Component {
             <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
           )}
         </div>
-        {this.state.creatOfflineStoreOrder && this.renderOfflineModal()}
+        {this.state.creatOfflineStoreOrderName && this.renderOfflineModal()}
       </section>
     );
   }
