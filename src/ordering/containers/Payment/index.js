@@ -28,6 +28,7 @@ import { getPaymentName, getSupportCreditCardBrands } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { getBusinessInfo } from '../../redux/modules/cart';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -116,14 +117,24 @@ class Payment extends Component {
     }
 
     const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = deliveryInfo;
-
-    return enablePreOrder && Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    console.log(enablePreOrder, Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }));
+    return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
   handleClickPayNow = async () => {
     await this.props.appActions.loadCoreBusiness();
     const isAbleToCreateOrder = this.isValidTimeToOrder();
-    console.log(isAbleToCreateOrder);
-    !isAbleToCreateOrder && this.props.history.replace('/');
+    console.log(isAbleToCreateOrder, 'isAbleToCreateOrder');
+    if (!isAbleToCreateOrder) {
+      const { onlineStoreInfo, businessInfo } = this.props;
+      const { stores, multipleStores } = businessInfo || {};
+      const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+      const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
+      console.log(currentStoreName, 'currentStoreName', name);
+      Utils.setSessionVariable('creatOfflineStoreOrderName', currentStoreName);
+      console.log('123123123');
+
+      this.props.history.replace('/');
+    }
     const { history, currentPaymentInfo, cartSummary } = this.props;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -273,6 +284,7 @@ export default compose(
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
+        businessInfo: getBusinessInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),

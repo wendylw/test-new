@@ -20,10 +20,13 @@ import {
   getAllStores,
   showStores,
 } from '../../redux/modules/home';
+import OfflineStoreModal from '../../../ordering/containers/Home/components/OfflineStoreModal';
 
 const { ROUTER_PATHS } = Constants;
 class App extends Component {
-  state = {};
+  state = {
+    creatOfflineStoreOrder: '',
+  };
 
   componentDidMount = async () => {
     await this.props.homeActions.loadCoreStores();
@@ -31,6 +34,10 @@ class App extends Component {
       const defaultSelectStore = this.props.stores[0];
       this.selectStore(defaultSelectStore.id);
     }
+
+    this.setState({
+      creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
+    });
   };
 
   async visitStore(storeId) {
@@ -89,7 +96,10 @@ class App extends Component {
       this.gotoDine(storeId);
     }
   };
-
+  renderOfflineModal = enableLiveOnline => {
+    console.log(this.state.creatOfflineStoreOrder, 'this.state.creatOfflineStoreOrder');
+    return <OfflineStoreModal currentStoreName={this.state.creatOfflineStoreOrder} enableLiveOnline={false} />;
+  };
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
@@ -118,6 +128,7 @@ class App extends Component {
             <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
           )}
         </div>
+        {this.state.creatOfflineStoreOrder && this.renderOfflineModal()}
       </section>
     );
   }
