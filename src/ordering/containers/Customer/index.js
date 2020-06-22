@@ -472,21 +472,13 @@ class Customer extends Component {
             <CreateOrderButton
               history={history}
               dataTestId="customerContinue"
-              disabled={!this.getCanContinue()}
+              disabled={!this.getCanContinue() || isFetching}
               validCreateOrder={!total}
               beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
               afterCreateOrder={this.visitPaymentPage.bind(this)}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
             </CreateOrderButton>
-            {/* <button
-              className="billing__link button button__fill button__block font-weight-bolder"
-              data-testid="customerContinue"
-              onClick={this.handleCreateOrder.bind(this)}
-              disabled={!this.getCanContinue()}
-            >
-              {isFetching ? <div className="loader"></div> : t('Continue')}
-            </button> */}
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
