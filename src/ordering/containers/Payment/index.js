@@ -123,16 +123,14 @@ class Payment extends Component {
   handleClickPayNow = async () => {
     await this.props.appActions.loadCoreBusiness();
     const isAbleToCreateOrder = this.isValidTimeToOrder();
-    console.log(isAbleToCreateOrder, 'isAbleToCreateOrder');
+
     if (!isAbleToCreateOrder) {
       const { onlineStoreInfo, businessInfo } = this.props;
       const { stores, multipleStores } = businessInfo || {};
       const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
       const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
-      console.log(currentStoreName, 'currentStoreName', name);
-      Utils.setSessionVariable('creatOfflineStoreOrderName', currentStoreName);
-      console.log('123123123');
 
+      Utils.setSessionVariable('creatOfflineStoreOrderName', currentStoreName);
       this.props.history.replace('/');
     }
     const { history, currentPaymentInfo, cartSummary } = this.props;

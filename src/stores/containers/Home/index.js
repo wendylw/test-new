@@ -35,14 +35,9 @@ class App extends Component {
       this.selectStore(defaultSelectStore.id);
     }
 
-    this.setState(
-      {
-        creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
-      },
-      () => {
-        console.log(this.state, 'state');
-      }
-    );
+    this.setState({
+      creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
+    });
   };
 
   async visitStore(storeId) {
