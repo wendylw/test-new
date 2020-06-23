@@ -38,8 +38,10 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { currentPayment } = this.props;
-    this.props.paymentActions.setCurrentPayment(currentPayment);
+    const { payments, unavailablePaymentList } = this.props;
+    const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
+
+    this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
     await this.props.homeActions.loadShoppingCart();
   };
 
@@ -90,8 +92,13 @@ class Payment extends Component {
     }
   };
 
-  setCurrentPayment = paymentLabel => {
-    this.props.paymentActions.setCurrentPayment(paymentLabel);
+  setCurrentPayment = ({ label, key }) => {
+    const { unavailablePaymentList } = this.props;
+    const disabledPayment = unavailablePaymentList.find(p => p === key);
+
+    if (!disabledPayment) {
+      this.props.paymentActions.setCurrentPayment(label);
+    }
   };
 
   getPaymentShowLabel(payment) {
@@ -116,7 +123,7 @@ class Payment extends Component {
     });
 
     // redirect to customized payment page when the payment contains pathname of page router
-    if (currentPaymentInfo.pathname) {
+    if (currentPaymentInfo && currentPaymentInfo.pathname) {
       history.push({
         pathname: currentPaymentInfo.pathname,
         search: window.location.search,
@@ -185,7 +192,7 @@ class Payment extends Component {
                   key={payment.label}
                   className={classList.join(' ')}
                   data-testid="paymentSelector"
-                  onClick={() => this.setCurrentPayment(payment.label)}
+                  onClick={() => this.setCurrentPayment(payment)}
                 >
                   <figure className="payment__image-container">
                     <PaymentLogo payment={payment} />
@@ -220,14 +227,6 @@ class Payment extends Component {
           >
             {payNowLoading ? <div className="loader"></div> : t('PayNow')}
           </CreateOrderButton>
-          {/* <button
-            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
-            disabled={payNowLoading}
-            data-testid="payNow"
-            onClick={this.handleClickPayNow}
-          >
-            {payNowLoading ? <div className="loader"></div> : t('PayNow')}
-          </button> */}
         </div>
 
         {paymentData ? (
