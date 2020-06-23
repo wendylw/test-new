@@ -302,16 +302,16 @@ Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
-Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
+Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }, merchantTime) => {
   // ValidDays received from api side, sunday is 1, monday is two
   // convert it to browser weekday format first, for which sunday is 0, monday is 1
   if (!(Array.isArray(validDays) && validDays.length)) {
     return false;
   }
   const localValidDays = Array.from(validDays, v => v - 1);
-  const weekInfo = new Date().getDay() % 7;
-  const hourInfo = new Date().getHours();
-  const minutesInfo = new Date().getMinutes();
+  const weekInfo = new Date(merchantTime).getDay() % 7;
+  const hourInfo = new Date(merchantTime).getHours();
+  const minutesInfo = new Date(merchantTime).getMinutes();
   const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
   const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
 
@@ -475,6 +475,26 @@ Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   if (type) storeUrl += `&type=${type}`;
   if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
   return storeUrl;
+};
+Utils.getMerchantLocalTime = country => {
+  const offsetList = {
+    MY: 8, // 马来西亚
+    TH: 7, // 泰国
+    PH: 8, // 菲律宾
+    SG: 8, // 新加坡
+    TE: 16,
+  };
+  const merchantOffset = offsetList[country];
+
+  if (!merchantOffset) {
+    return new Date();
+  }
+  const currentOffset = new Date().getTimezoneOffset();
+  console.log(currentOffset, currentOffset, 'business');
+  const UTC = new Date().getTime() + currentOffset * 60 * 1000;
+  const merchantTime = UTC + merchantOffset * 60 * 60 * 1000;
+
+  return new Date(merchantTime);
 };
 
 if (process.env.NODE_ENV !== 'production') {

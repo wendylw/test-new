@@ -37,14 +37,6 @@ const getHourAndMinuteFromString = time => {
   return { hour, minute };
 };
 
-// Create time with time string like '01:20', 01 is hour and 20 is minute
-const createTimeWithTimeString = timeString => {
-  const { hour, minute } = getHourAndMinuteFromString(timeString);
-  const currentTime = new Date();
-
-  return currentTime.setHours(hour || 0, minute || 0, 0, 0);
-};
-
 const getHourAndMinuteFromTime = time => {
   const timeDate = new Date(time);
   const hour = padZero(timeDate.getHours());
@@ -87,6 +79,14 @@ class LocationAndDate extends Component {
     });
   };
 
+  // Create time with time string like '01:20', 01 is hour and 20 is minute
+  createTimeWithTimeString = timeString => {
+    const { hour, minute } = getHourAndMinuteFromString(timeString);
+    const currentTime = new Date(this.getMerchantLocalTime());
+
+    return currentTime.setHours(hour || 0, minute || 0, 0, 0);
+  };
+
   getExpectedTimeFromSession = () => {
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
@@ -117,7 +117,7 @@ class LocationAndDate extends Component {
     }
 
     if (Utils.isPickUpType()) {
-      const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
+      const tempStartBaseTime = this.createTimeWithTimeString(validTimeFrom);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
       this.validPreOrderTimeFrom = getHourAndMinuteFromTime(validStartBaseTime);
@@ -169,13 +169,20 @@ class LocationAndDate extends Component {
     });
   };
 
+  getMerchantLocalTime = () => {
+    const { business, allBusinessInfo } = this.props;
+    const { country } = allBusinessInfo[business];
+
+    return Utils.getMerchantLocalTime(country);
+  };
+
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
     const { business, allBusinessInfo } = this.props;
     const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     for (let i = 0; i < 5; i++) {
-      const currentTime = new Date();
+      const currentTime = this.getMerchantLocalTime();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
       let isOpen = validDays.includes(weekday);
@@ -183,7 +190,7 @@ class LocationAndDate extends Component {
 
       if (!i) {
         // Today option is open when user visits delivery time page before store is closed
-        const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
+        const isBeforeStoreClose = isNoLaterThan(currentTime, this.createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
       }
@@ -413,7 +420,7 @@ class LocationAndDate extends Component {
     }
 
     if (Utils.isPickUpType()) {
-      const tempStartBaseTime = createTimeWithTimeString(baseTimeString);
+      const tempStartBaseTime = this.createTimeWithTimeString(baseTimeString);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
       validStartingTime = getHourAndMinuteFromTime(validStartBaseTime);
@@ -424,9 +431,9 @@ class LocationAndDate extends Component {
 
   getHoursListForToday = (selectedDate = {}) => {
     if (!selectedDate.isToday) return;
-    const currentTime = new Date();
-    const storeOpenTime = createTimeWithTimeString(this.validTimeFrom);
-    const storeCloseTime = createTimeWithTimeString(this.validTimeTo);
+    const currentTime = this.getMerchantLocalTime();
+    const storeOpenTime = this.createTimeWithTimeString(this.validTimeFrom);
+    const storeCloseTime = this.createTimeWithTimeString(this.validTimeTo);
     const validStartingTimeString = this.getValidStartingTimeString(getHourAndMinuteFromTime(currentTime));
     const fullTimeList = this.getHoursList();
 
@@ -440,12 +447,12 @@ class LocationAndDate extends Component {
       // If calculated first item display is after store close
       // Check here use isAfterTime because there is a case if what needs to display after 'immediate'
       // is 6:30, and close time is 6: 30, should show 6:30
-      if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
+      if (isAfterTime(storeCloseTime, this.createTimeWithTimeString(validStartingTimeString))) {
         return [PREORDER_IMMEDIATE_TAG];
       }
       const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
       const startTimeInList = fullTimeList.findIndex(item =>
-        isSameTime(item.from, createTimeWithTimeString(validStartingTimeString), timeUnitToCompare)
+        isSameTime(item.from, this.createTimeWithTimeString(validStartingTimeString), timeUnitToCompare)
       );
 
       const timeListToDisplay = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
