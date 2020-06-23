@@ -205,7 +205,7 @@ export class ThankYou extends PureComponent {
             {pickUpId}
           </span>
         </div>
-        {enableCashback ? this.renderCashbackUI(cashback) : null}
+        {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
       </div>
     );
   }
@@ -214,7 +214,7 @@ export class ThankYou extends PureComponent {
     const { businessInfo, cashbackInfo } = this.props;
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
-    return enableCashback ? this.renderCashbackUI(cashback) : null;
+    return enableCashback && +cashback ? this.renderCashbackUI(cashback) : null;
   }
 
   renderNeedReceipt() {
@@ -425,7 +425,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback ? this.renderCashbackUI(cashback) : null}
+        {enableCashback && !this.isNowPaidPreOrder() && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }

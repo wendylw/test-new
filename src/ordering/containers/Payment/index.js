@@ -3,6 +3,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
+import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 
@@ -107,10 +108,8 @@ class Payment extends Component {
     }
   }
 
-  handleClickPayNow = async () => {
-    const { history, currentPaymentInfo, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+  handleBeforeCreateOrder = () => {
+    const { history, currentPaymentInfo } = this.props;
 
     this.setState({
       payNowLoading: true,
@@ -125,25 +124,21 @@ class Payment extends Component {
 
       return;
     }
-
-    await this.props.paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
-
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
-    }
-
-    this.setState({
-      payNowLoading: !!orderId,
-    });
   };
 
   render() {
-    const { t, currentPayment, payments, unavailablePaymentList, cartSummary } = this.props;
+    const {
+      history,
+      t,
+      currentPayment,
+      payments,
+      unavailablePaymentList,
+      cartSummary,
+      currentOrder,
+      currentPaymentInfo,
+    } = this.props;
     const { total } = cartSummary || {};
+    const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -210,14 +205,29 @@ class Payment extends Component {
         </div>
 
         <div className="footer-operation">
-          <button
+          <CreateOrderButton
+            history={history}
+            className="border-radius-base"
+            dataTestId="payNow"
+            disabled={payNowLoading}
+            validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
+            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            afterCreateOrder={() => {
+              this.setState({
+                payNowLoading: !!orderId,
+              });
+            }}
+          >
+            {payNowLoading ? <div className="loader"></div> : t('PayNow')}
+          </CreateOrderButton>
+          {/* <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             disabled={payNowLoading}
             data-testid="payNow"
             onClick={this.handleClickPayNow}
           >
             {payNowLoading ? <div className="loader"></div> : t('PayNow')}
-          </button>
+          </button> */}
         </div>
 
         {paymentData ? (
