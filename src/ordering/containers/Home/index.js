@@ -349,7 +349,6 @@ export class Home extends Component {
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
-
     const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
 
     return Utils.isValidTimeToOrder(
