@@ -484,17 +484,22 @@ Utils.getMerchantLocalTime = country => {
     SG: 8, // 新加坡
     TE: 16,
   };
-  const merchantOffset = offsetList[country];
+  const timeZoneList = {
+    MY: 'Asia/Kuala_Lumpur', // 马来西亚
+    TH: 'Asia/Bangkok', // 泰国
+    PH: 'Asia/Manila', // 菲律宾
+    SG: 'Asia/Singapore', // 新加坡
+    TE: 'America/New_York',
+  };
+  const merchantTimeZone = timeZoneList[country];
 
-  if (!merchantOffset) {
+  if (!merchantTimeZone) {
     return new Date();
   }
-  const currentOffset = new Date().getTimezoneOffset();
-  console.log(currentOffset, currentOffset, 'business');
-  const UTC = new Date().getTime() + currentOffset * 60 * 1000;
-  const merchantTime = UTC + merchantOffset * 60 * 60 * 1000;
-
-  return new Date(merchantTime);
+  const merchantTime = new Date().toLocaleString('en-US', { timeZone: merchantTimeZone });
+  const d = new Date(merchantTime);
+  console.log(d, merchantTime, merchantTimeZone, 'ddd');
+  return d;
 };
 
 if (process.env.NODE_ENV !== 'production') {
