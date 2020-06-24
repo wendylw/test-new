@@ -478,26 +478,21 @@ Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   return storeUrl;
 };
 Utils.getMerchantLocalTime = (businessInfo = {}) => {
-  const offsetList = {
-    MY: 8, // 马来西亚
-    TH: 7, // 泰国
-    PH: 8, // 菲律宾
-    SG: 8, // 新加坡
-    TE: 16,
-  };
   const timeZoneList = {
     MY: 'Asia/Kuala_Lumpur', // 马来西亚
     TH: 'Asia/Bangkok', // 泰国
     PH: 'Asia/Manila', // 菲律宾
     SG: 'Asia/Singapore', // 新加坡
-    TE: 'America/New_York',
+    // TE: 'America/New_York',
   };
   const { timezoneOffset, country } = businessInfo;
   const merchantTimeZone = timeZoneList[country];
+
   if (timezoneOffset !== undefined) {
     const currentOffset = dayjs().utcOffset();
     const UTCTime = new Date().getTime() - currentOffset * 60 * 1000;
     const merchantTime = UTCTime + timezoneOffset * 60 * 1000;
+
     return new Date(merchantTime);
   }
 
