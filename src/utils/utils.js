@@ -485,13 +485,19 @@ Utils.getMerchantLocalTime = (businessInfo = {}) => {
     SG: 'Asia/Singapore', // 新加坡
     // TE: 'America/New_York',
   };
-  const { timezoneOffset, country } = businessInfo;
+  const { timezoneOffset, country, timezone } = businessInfo;
   const merchantTimeZone = timeZoneList[country];
 
   if (timezoneOffset !== undefined) {
     const currentOffset = dayjs().utcOffset();
     const UTCTime = new Date().getTime() - currentOffset * 60 * 1000;
     const merchantTime = UTCTime + timezoneOffset * 60 * 1000;
+
+    return new Date(merchantTime);
+  }
+
+  if (timezone !== undefined) {
+    const merchantTime = new Date().toLocaleString('en-US', { timeZone: timezone });
 
     return new Date(merchantTime);
   }
