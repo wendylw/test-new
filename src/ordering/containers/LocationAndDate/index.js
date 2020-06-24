@@ -173,7 +173,7 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const { country } = allBusinessInfo[business];
 
-    return Utils.getMerchantLocalTime(country);
+    return Utils.getMerchantLocalTime(allBusinessInfo[business]);
   };
 
   setDeliveryDays = (validDays = []) => {

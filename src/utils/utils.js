@@ -1,6 +1,7 @@
 import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
+import dayjs from 'dayjs';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -476,7 +477,7 @@ Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
   return storeUrl;
 };
-Utils.getMerchantLocalTime = country => {
+Utils.getMerchantLocalTime = (businessInfo = {}) => {
   const offsetList = {
     MY: 8, // 马来西亚
     TH: 7, // 泰国
@@ -491,15 +492,22 @@ Utils.getMerchantLocalTime = country => {
     SG: 'Asia/Singapore', // 新加坡
     TE: 'America/New_York',
   };
+  const { timezoneOffset, country } = businessInfo;
   const merchantTimeZone = timeZoneList[country];
+  if (timezoneOffset !== undefined) {
+    const currentOffset = dayjs().utcOffset();
+    const UTCTime = new Date().getTime() - currentOffset * 60 * 1000;
+    const merchantTime = UTCTime + timezoneOffset * 60 * 1000;
+    return new Date(merchantTime);
+  }
 
   if (!merchantTimeZone) {
     return new Date();
   }
+
   const merchantTime = new Date().toLocaleString('en-US', { timeZone: merchantTimeZone });
-  const d = new Date(merchantTime);
-  console.log(d, merchantTime, merchantTimeZone, 'ddd');
-  return d;
+
+  return new Date(merchantTime);
 };
 
 if (process.env.NODE_ENV !== 'production') {

@@ -353,7 +353,7 @@ export class Home extends Component {
 
     return Utils.isValidTimeToOrder(
       { validDays, validTimeFrom, validTimeTo },
-      Utils.getMerchantLocalTime((businessInfo || {}).country)
+      Utils.getMerchantLocalTime(businessInfo)
     );
   };
 
