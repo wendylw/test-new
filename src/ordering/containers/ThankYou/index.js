@@ -214,6 +214,7 @@ export class ThankYou extends PureComponent {
     const { businessInfo, cashbackInfo } = this.props;
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
+
     return enableCashback && +cashback ? this.renderCashbackUI(cashback) : null;
   }
 
@@ -425,7 +426,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback && !this.isNowPaidPreOrder() && +cashback ? this.renderCashbackUI(cashback) : null}
+        {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
