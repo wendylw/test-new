@@ -21,13 +21,14 @@ import {
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
 import beepSuccessImage from '../../../images/beep-success.png';
-import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+// import beepPickupSuccessImage from '../../../images/beep-pickup-success.png';
+import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
 import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
-import IconCelebration from '../../../images/icon-celebration.svg';
+// import IconCelebration from '../../../images/icon-celebration.svg';
 import {
   toDayDateMonth,
   toNumericTimeRange,
