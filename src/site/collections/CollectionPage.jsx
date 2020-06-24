@@ -20,7 +20,6 @@ import '../home/index.scss';
 import './CollectionPage.scss';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
-import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -28,15 +27,14 @@ class CollectionPage extends React.Component {
   sectionRef = React.createRef();
 
   componentDidMount = async () => {
-    await this.props.collectionCardActions.getCollections();
     const { currentCollection } = this.props;
-    const { shippingType, beepCollectionId: id } = currentCollection;
+
     if (!checkStateRestoreStatus()) {
-      const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
-      this.props.collectionsActions.setShippingType(type);
-      this.props.collectionsActions.resetPageInfo(type);
+      const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
+      this.props.collectionsActions.setShippingType(shippingType);
+      this.props.collectionsActions.resetPageInfo(shippingType);
     }
-    this.props.collectionsActions.getStoreList(id);
+    this.props.collectionsActions.getStoreList(currentCollection.tags);
   };
 
   handleBackClicked = () => {
@@ -66,10 +64,10 @@ class CollectionPage extends React.Component {
   };
 
   handleSwitchTab = shippingType => {
-    const { beepCollectionId } = this.props.currentCollection || {};
+    const { tags } = this.props.currentCollection || {};
     this.props.collectionsActions.setShippingType(shippingType);
     this.props.collectionsActions.resetPageInfo(shippingType);
-    this.props.collectionsActions.getStoreList(beepCollectionId);
+    this.props.collectionsActions.getStoreList(tags);
   };
 
   renderSwitchBar = () => {
@@ -97,7 +95,7 @@ class CollectionPage extends React.Component {
   renderStoreList = () => {
     const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
-    const { beepCollectionId } = currentCollection;
+    const { tags } = currentCollection;
 
     return (
       <div className="store-card-list__container padding-normal">
@@ -111,8 +109,9 @@ class CollectionPage extends React.Component {
             stores={stores}
             hasMore={pageInfo.hasMore}
             getScrollParent={() => this.sectionRef.current}
-            loadMoreStores={() => {
-              this.props.collectionsActions.getStoreList(beepCollectionId);
+            loadMoreStores={page => {
+              console.log('page =', page);
+              this.props.collectionsActions.getStoreList(tags);
             }}
             onStoreClicked={store => this.backLeftPosition(store)}
             withInfiniteScroll
@@ -123,13 +122,13 @@ class CollectionPage extends React.Component {
   };
 
   render() {
-    const { currentCollection } = this.props;
+    const { t, currentCollection } = this.props;
     if (!currentCollection) {
       return null;
     }
     return (
-      <ModalPageLayout title={currentCollection.name} onGoBack={this.handleBackClicked}>
-        {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
+      <ModalPageLayout title={t(currentCollection.label)} onGoBack={this.handleBackClicked}>
+        {currentCollection.slug === 'self-pickup' ? null : this.renderSwitchBar()}
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           {this.renderStoreList()}
         </section>
@@ -154,7 +153,6 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       collectionsActions: bindActionCreators(collectionsActions, dispatch),
-      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )

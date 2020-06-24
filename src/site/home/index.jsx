@@ -10,7 +10,6 @@ import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
-import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import {
   getAllCurrentStores,
@@ -62,9 +61,6 @@ class Home extends React.Component {
 
     // placeInfo ok
     this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
-
-    // collection card ok
-    this.props.collectionCardActions.getCollections();
 
     this.reloadStoreListIfNecessary();
 
@@ -227,9 +223,11 @@ class Home extends React.Component {
             />
           )}
 
-          <Suspense fallback={null}>
-            <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
-          </Suspense>
+          {countryCode.toUpperCase() === 'MY' && (
+            <Suspense fallback={null}>
+              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
+            </Suspense>
+          )}
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}
@@ -255,7 +253,6 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
     })
   )
 )(Home);
