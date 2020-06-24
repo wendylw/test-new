@@ -478,15 +478,7 @@ Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   return storeUrl;
 };
 Utils.getMerchantLocalTime = (businessInfo = {}) => {
-  const timeZoneList = {
-    MY: 'Asia/Kuala_Lumpur', // 马来西亚
-    TH: 'Asia/Bangkok', // 泰国
-    PH: 'Asia/Manila', // 菲律宾
-    SG: 'Asia/Singapore', // 新加坡
-    // TE: 'America/New_York',
-  };
-  const { timezoneOffset, country, timezone } = businessInfo;
-  const merchantTimeZone = timeZoneList[country];
+  const { timezoneOffset } = businessInfo;
 
   if (timezoneOffset !== undefined) {
     const currentOffset = dayjs().utcOffset();
@@ -495,20 +487,7 @@ Utils.getMerchantLocalTime = (businessInfo = {}) => {
 
     return new Date(merchantTime);
   }
-
-  if (timezone !== undefined) {
-    const merchantTime = new Date().toLocaleString('en-US', { timeZone: timezone });
-
-    return new Date(merchantTime);
-  }
-
-  if (!merchantTimeZone) {
-    return new Date();
-  }
-
-  const merchantTime = new Date().toLocaleString('en-US', { timeZone: merchantTimeZone });
-
-  return new Date(merchantTime);
+  return new Date();
 };
 
 if (process.env.NODE_ENV !== 'production') {
