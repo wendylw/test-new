@@ -189,6 +189,14 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  renderPreOrderDeliveryInfo() {
+    const { businessInfo, cashbackInfo } = this.props;
+    const { enableCashback } = businessInfo || {};
+    const { cashback } = cashbackInfo || {};
+
+    return enableCashback && +cashback ? this.renderCashbackUI(cashback) : null;
+  }
+
   renderNeedReceipt() {
     const { t, order } = this.props;
     const { orderId } = order || {};
@@ -255,7 +263,7 @@ export class ThankYou extends PureComponent {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    const { total, storeInfo, status } = order || {};
+    const { total, storeInfo, status, isPreOrder } = order || {};
     const { name } = storeInfo || {};
     const { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
@@ -398,21 +406,7 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
         </div>
-        {enableCashback ? (
-          <div className="thanks__delivery-status-container">
-            <CurrencyNumber
-              className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
-              money={cashback || 0}
-            />
-            <h3 className="flex flex-middle flex-center">
-              <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
-                {t('EarnedCashBackTitle')}
-              </span>
-              <img src={IconCelebration} alt="Beep Celebration" />
-            </h3>
-            <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
-          </div>
-        ) : null}
+        {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
@@ -594,7 +588,6 @@ export class ThankYou extends PureComponent {
           />
         ) : (
           this.renderConsumerStatusFlow({
-            createdTime,
             t,
             CONSUMERFLOW_STATUS,
             cashbackInfo,
@@ -672,7 +665,7 @@ export class ThankYou extends PureComponent {
             ) : (
               <img
                 className="thanks__image"
-                src={isPickUpType ? beepPickupSuccessImage : beepSuccessImage}
+                src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
                 alt="Beep Success"
               />
             )}
