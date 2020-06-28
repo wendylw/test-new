@@ -89,7 +89,8 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
     "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
-    "i18n-sync": "i18n-sync"
+    "i18n-sync": "i18n-sync",
+    "serve:sourcemap": "node scripts/serve-sourcemap"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -103,10 +104,12 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
+    "aws-sdk": "^2.706.0",
     "debug": "^4.1.1",
     "deploy-aws-s3-cloudfront": "https://github.com/storehubnet/deploy-aws-s3-cloudfront.git",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
+    "express": "^4.17.1",
     "fs-extra": "^8.1.0",
     "husky": "^3.1.0",
     "i18n-sync": "^1.2.1",
@@ -114,7 +117,9 @@
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
     "prop-types": "^15.7.2",
+    "proxy-agent": "^3.1.1",
     "react-test-renderer": "^16.12.0",
-    "workbox-build": "^4.3.0"
+    "workbox-build": "^4.3.0",
+    "yargs": "^15.3.1"
   }
 }
