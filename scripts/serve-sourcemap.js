@@ -3,9 +3,12 @@
  * since this file is called by package.json, so usage below.
  *
  * Usage:
- *  > yarn serve:sourcemap --bucket beep-v2-web [--region ap-southeast-1 --port 3000 --proxy http://localhost:7890]
+ *  > yarn serve:sourcemap --bucket beep-v2-web [--region ap-southeast-1 --port 8080 --proxy http://localhost:7890]
  *
- * @type {createApplication}
+ * @string bucket (required)
+ * @string region (optional, default: '')
+ * @number port (optional, default: 8080)
+ * @string proxy (optional, default: null)
  */
 const express = require('express')
 const options = require('yargs').argv
@@ -17,7 +20,7 @@ const serve = async (logger, s3, options) => {
   logger.debug('options = %j', options);
 
   const app = express()
-  const port = options.port || 3000
+  const port = options.port || 8080
 
   app.get('/', (req, res) => res.json(options))
 
