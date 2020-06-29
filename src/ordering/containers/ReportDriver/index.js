@@ -279,15 +279,13 @@ class ReportDriver extends Component {
                 ...reason,
                 label: t(reason.i18n_key),
               }))
-                // sort by alphabetic asc order
+                // sort by localeCompare of reason.label, for English is alphabetic ascendings
                 .sort((reason1, reason2) => {
                   // put the others of reason at the end
                   if (reason1.code === REPORT_DRIVER_REASON_CODE.OTHERS) return 1;
                   if (reason2.code === REPORT_DRIVER_REASON_CODE.OTHERS) return -1;
 
-                  if (reason1.label < reason2.label) return -1;
-                  if (reason1.label > reason2.label) return 1;
-                  return 0;
+                  return reason1.label.localeCompare(reason2.label);
                 })
                 .map(({ code, label }) => {
                   return (
