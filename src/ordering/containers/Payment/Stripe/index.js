@@ -319,7 +319,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, currentOrde
         <CreateOrderButton
           history={history}
           buttonType="submit"
-          disabled={processing || !stripe}
+          disabled={processing || !stripe || orderId}
           beforeCreateOrder={() => setIsFormTouched(true)}
           afterCreateOrder={async () => {
             const payload = await stripe.createPaymentMethod({
