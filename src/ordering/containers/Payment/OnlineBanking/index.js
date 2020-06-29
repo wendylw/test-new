@@ -179,7 +179,7 @@ class OnlineBanking extends Component {
             history={history}
             className="border-radius-base"
             dataTestId="payMoney"
-            disabled={payNowLoading}
+            disabled={payNowLoading || orderId}
             beforeCreateOrder={() => {
               this.setState({
                 payNowLoading: true,
