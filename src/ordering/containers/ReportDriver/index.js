@@ -36,6 +36,7 @@ import { IconClose } from '../../../components/Icons';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
+const { REPORT_DRIVER_REASON_CODE } = Constants;
 
 class ReportDriver extends Component {
   componentDidMount() {
@@ -274,22 +275,36 @@ class ReportDriver extends Component {
           <div className="report-driver__select-reason">
             <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>
             <ul className="report-driver__select-reason-list">
-              {REPORT_DRIVER_REASONS.map(({ code, i18n_key }) => {
-                return (
-                  <li key={code} className="report-driver__select-reason-item">
-                    <Radio
-                      onChange={() => {
-                        this.handleSelectReason(code);
-                      }}
-                      checked={selectedReasonCode === code}
-                      inputId={`reason_${code}`}
-                      name="reason"
-                      disabled={disabled}
-                    />
-                    <label htmlFor={`reason_${code}`}>{t(i18n_key)}</label>
-                  </li>
-                );
-              })}
+              {REPORT_DRIVER_REASONS.map(reason => ({
+                ...reason,
+                label: t(reason.i18n_key),
+              }))
+                // sort by alphabetic asc order
+                .sort((reason1, reason2) => {
+                  // put the others of reason at the end
+                  if (reason1.code === REPORT_DRIVER_REASON_CODE.OTHERS) return 1;
+                  if (reason2.code === REPORT_DRIVER_REASON_CODE.OTHERS) return -1;
+
+                  if (reason1.label < reason2.label) return -1;
+                  if (reason1.label > reason2.label) return 1;
+                  return 0;
+                })
+                .map(({ code, label }) => {
+                  return (
+                    <li key={code} className="report-driver__select-reason-item">
+                      <Radio
+                        onChange={() => {
+                          this.handleSelectReason(code);
+                        }}
+                        checked={selectedReasonCode === code}
+                        inputId={`reason_${code}`}
+                        name="reason"
+                        disabled={disabled}
+                      />
+                      <label htmlFor={`reason_${code}`}>{label}</label>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
 
