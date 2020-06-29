@@ -11,7 +11,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const { AUTH_INFO } = Constants;
 
-export const initialState = {
+const initialState = {
   user: {
     // isWebview: Utils.isWebview(),
     isLogin: false,

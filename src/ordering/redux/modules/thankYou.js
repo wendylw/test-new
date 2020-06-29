@@ -13,7 +13,7 @@ import { getBusiness } from './app';
 
 const { PROMO_TYPE } = Constants;
 
-export const initialState = {
+const initialState = {
   orderId: null,
   cashbackInfo: null /* included: customerId, consumerId, status */,
   storeHashCode: null,

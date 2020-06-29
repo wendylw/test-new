@@ -5,7 +5,7 @@ import Constants from '../../../utils/constants';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
-export const initialState = {
+const initialState = {
   error: null, // network error
   messageModal: {
     show: false,
