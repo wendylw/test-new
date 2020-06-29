@@ -76,9 +76,8 @@ const ErrorMessage = ({ children }) => (
   </div>
 );
 
-const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, currentOrder, country }) => {
+const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) => {
   const { total } = cartSummary || {};
-  const { orderId } = currentOrder || {};
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -319,7 +318,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, currentOrde
         <CreateOrderButton
           history={history}
           buttonType="submit"
-          disabled={processing || !stripe || orderId}
+          disabled={processing || !stripe}
           beforeCreateOrder={() => setIsFormTouched(true)}
           afterCreateOrder={async () => {
             const payload = await stripe.createPaymentMethod({
@@ -390,7 +389,7 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry, currentOrder } = this.props;
+    const { t, match, history, cartSummary, merchantCountry } = this.props;
     const { total } = cartSummary || {};
 
     return (
@@ -416,7 +415,6 @@ class Stripe extends Component {
               history={history}
               country={merchantCountry}
               cartSummary={cartSummary}
-              currentOrder={currentOrder}
               renderRedirectForm={paymentMethod => {
                 if (!paymentMethod) return null;
 

@@ -216,7 +216,7 @@ class Payment extends Component {
             history={history}
             className="border-radius-base"
             dataTestId="payNow"
-            disabled={payNowLoading || !!(currentOrder && currentOrder.orderId)}
+            disabled={payNowLoading}
             validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             afterCreateOrder={() => {
