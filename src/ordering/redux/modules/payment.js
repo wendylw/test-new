@@ -20,7 +20,7 @@ import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils
 
 const { DELIVERY_METHOD } = Constants;
 
-export const initialState = {
+const initialState = {
   currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
@@ -107,7 +107,7 @@ export const actions = {
     // there is preOrder in url
     const business = getBusiness(getState());
     const businessInfo = getBusinessByName(getState(), business);
-    const { qrOrderingSettings = {} } = businessInfo || {};
+    const { qrOrderingSettings = {} } = businessInfo;
     const { enablePreOrder } = qrOrderingSettings;
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
@@ -147,8 +147,13 @@ export const actions = {
 
     if (shippingType === DELIVERY_METHOD.DELIVERY) {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
-      const { addressDetails, deliveryComments, deliveryToAddress: deliveryTo, deliveryToLocation: location } =
-        deliveryDetails || {};
+      const {
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress: deliveryTo,
+        deliveryToLocation: location,
+        /*routerDistance,*/
+      } = deliveryDetails || {};
 
       variables = {
         ...variables,

@@ -8,8 +8,8 @@ import Image from '../../../../components/Image';
 import Header from '../../../../components/Header';
 import RedirectForm from '../components/RedirectForm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import CreateOrderButton from '../../../components/CreateOrderButton';
 import Constants from '../../../../utils/constants';
+import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
@@ -95,6 +95,32 @@ class OnlineBanking extends Component {
     }
   }
 
+  async payNow() {
+    this.setState(
+      {
+        payNowLoading: true,
+      },
+      async () => {
+        const { history, paymentActions, cartSummary } = this.props;
+        const { totalCashback } = cartSummary || {};
+        const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+        await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+        const { currentOrder } = this.props;
+        const { orderId } = currentOrder || {};
+
+        if (orderId) {
+          Utils.removeSessionVariable('additionalComments');
+          Utils.removeSessionVariable('deliveryComments');
+        }
+
+        this.setState({
+          payNowLoading: !!orderId,
+        });
+      }
+    );
+  }
+
   handleSelectBank(e) {
     this.setState({
       agentCode: e.target.value,
@@ -126,8 +152,7 @@ class OnlineBanking extends Component {
   }
 
   render() {
-    const { t, match, history, bankingList, cartSummary, onlineStoreInfo, currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
+    const { t, match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const { agentCode, payNowLoading } = this.state;
@@ -175,29 +200,7 @@ class OnlineBanking extends Component {
         </div>
 
         <div className="footer-operation">
-          <CreateOrderButton
-            history={history}
-            className="border-radius-base"
-            dataTestId="payMoney"
-            disabled={payNowLoading}
-            beforeCreateOrder={() => {
-              this.setState({
-                payNowLoading: true,
-              });
-            }}
-            afterCreateOrder={() => {
-              this.setState({
-                payNowLoading: !!orderId,
-              });
-            }}
-          >
-            {payNowLoading ? (
-              <div className="loader"></div>
-            ) : (
-              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-            )}
-          </CreateOrderButton>
-          {/* <button
+          <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             data-testid="payMoney"
             onClick={this.payNow.bind(this)}
@@ -206,9 +209,9 @@ class OnlineBanking extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-                <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-              )}
-          </button> */}
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+            )}
+          </button>
         </div>
 
         {payNowLoading && paymentData ? (

@@ -8,15 +8,12 @@ import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
-import CreateOrderButton from '../../components/CreateOrderButton';
 import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
-import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { actions as paymentActionCreators } from '../../redux/modules/payment';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -39,22 +36,16 @@ class Customer extends Component {
   };
 
   componentDidMount = async () => {
-    const { homeActions, customerActions } = this.props;
-
-    await homeActions.loadShoppingCart();
-
     // init username, phone, deliveryToAddress, deliveryDetails
-    await customerActions.initDeliveryDetails(this.getShippingType());
+    await this.props.customerActions.initDeliveryDetails(this.getShippingType());
   };
 
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isLogin } = user || {};
-    const { cartSummary } = this.props;
     const { sentOtp } = this.state;
-    const { total } = cartSummary || {};
 
-    if (sentOtp && total && isLogin && isLogin !== this.props.user.isLogin) {
+    if (sentOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
@@ -70,15 +61,12 @@ class Customer extends Component {
   };
 
   visitPaymentPage() {
-    const { history, user } = this.props;
-    const { isLogin } = user || {};
+    const { history } = this.props;
 
-    if (isLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
-    }
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+      search: window.location.search,
+    });
   }
 
   checkDistanceError = () => {
@@ -102,7 +90,7 @@ class Customer extends Component {
     return null;
   };
 
-  async handleBeforeCreateOrder() {
+  async handleCreateOrder() {
     const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
@@ -122,6 +110,8 @@ class Customer extends Component {
     if (!isLogin) {
       await appActions.getOtp({ phone });
       this.setState({ sentOtp: true });
+    } else {
+      this.visitPaymentPage();
     }
   }
 
@@ -250,13 +240,7 @@ class Customer extends Component {
       </div>
     );
   };
-  handleInputChange = e => {
-    const inputValue = e.target.value;
-    e.target.name === 'addressDetails' &&
-      this.props.customerActions.patchDeliveryDetails({ addressDetails: inputValue });
-    e.target.name === 'deliveryComments' &&
-      this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
-  };
+
   renderDeliveryAddress() {
     const { t, history } = this.props;
 
@@ -290,27 +274,22 @@ class Customer extends Component {
           </p>
           <IconNext className="flex__shrink-fixed" />
         </div>
-        <div className="form__group border-radius-base  form-field">
-          <input
-            className="input input__block"
-            type="text"
-            maxLength="140"
-            placeholder={t('AddressDetailsPlaceholder')}
-            value={addressDetails}
-            name="addressDetails"
-            onChange={this.handleInputChange}
-          />
+        <div
+          className="form__group border-radius-base"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_ADDRESS_DETAIL)}
+        >
+          <p className={`form__textarea ${addressDetails ? '' : 'gray-font-opacity'}`}>
+            {addressDetails || t('AddressDetailsPlaceholder')}
+          </p>
         </div>
-        <div className="form__group border-radius-base form-field">
-          <input
-            className="input input__block"
-            type="text"
-            maxLength="140"
-            value={deliveryComments}
-            name="deliveryComments"
-            onChange={this.handleInputChange}
-            placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          />
+        <div
+          className="form__group border-radius-base"
+          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_DRIVER_NOTE)}
+        >
+          <p className={`form__textarea ${deliveryComments ? '' : 'gray-font-opacity'}`}>
+            {deliveryComments ||
+              `${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          </p>
         </div>
       </React.Fragment>
     );
@@ -376,11 +355,10 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
-    const { total } = cartSummary || {};
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -469,16 +447,14 @@ class Customer extends Component {
             </button>
           </div>
           <div className="footer-operation__item width-2-3">
-            <CreateOrderButton
-              history={history}
-              dataTestId="customerContinue"
-              disabled={!this.getCanContinue() || isFetching}
-              validCreateOrder={!total}
-              beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-              afterCreateOrder={this.visitPaymentPage.bind(this)}
+            <button
+              className="billing__link button button__fill button__block font-weight-bolder"
+              data-testid="customerContinue"
+              onClick={this.handleCreateOrder.bind(this)}
+              disabled={!this.getCanContinue()}
             >
               {isFetching ? <div className="loader"></div> : t('Continue')}
-            </CreateOrderButton>
+            </button>
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
@@ -491,12 +467,9 @@ export default compose(
   withTranslation('OrderingDelivery'),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         user: getUser(state),
         cartSummary: getCartSummary(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         business: getBusiness(state),
@@ -505,7 +478,6 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
