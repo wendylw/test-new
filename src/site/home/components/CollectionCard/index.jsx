@@ -1,45 +1,37 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import IconPickup from './images/Beepcateg-pickup.svg';
-import IconHalal from './images/Beepcateg-halal.svg';
-import IconDessert from './images/Beepcateg-dessert.svg';
-import IconWestern from './images/Beepcateg-western.svg';
 import './index.scss';
 import { compose } from 'redux';
-
-const icons = {
-  IconPickup: IconPickup,
-  IconHalal: IconHalal,
-  IconDessert: IconDessert,
-  IconWestern: IconWestern,
-};
+import Image from '../../../../components/Image';
 
 class CollectionCard extends React.Component {
   render() {
-    const { t, collections, backLeftPosition } = this.props;
+    const { collections, backLeftPosition } = this.props;
 
     return (
-      <ul className="flex flex-space-between flex-middle padding-top-bottom-normal">
-        {collections.map(collection => (
-          <li
-            key={collection.label}
-            className="store-collections__item text-center"
-            data-testid="collection"
-            onClick={() => {
-              // concern to use location.href if icons fixed to the top
-              backLeftPosition();
-              this.props.history.push({
-                pathname: `/collections/${collection.slug}`,
-              });
-            }}
-          >
-            <img src={icons[collection.icon]} alt={t(collection.label)} className="icon" />
-            <span className="store-collections__name text-size-smaller text-center text-weight-bolder">
-              {t(collection.label)}
-            </span>
-          </li>
-        ))}
+      <ul className="store-collections flex flex-space-between flex-middle">
+        {collections.map(collection => {
+          const { name, beepCollectionId, image } = collection;
+          return (
+            <li
+              key={beepCollectionId}
+              className="store-collections__item text-center"
+              data-testid="collection"
+              onClick={() => {
+                // concern to use location.href if icons fixed to the top
+                backLeftPosition();
+                this.props.history.push({
+                  pathname: `/collections/${beepCollectionId}`,
+                });
+              }}
+            >
+              <Image src={image} alt={name} className="icon store-collections__img" />
+              {/*<img src={image} alt={name} className="icon store-collections__img" />*/}
+              <span className="store-collections__name text-size-smaller text-center text-weight-bolder">{name}</span>
+            </li>
+          );
+        })}
       </ul>
     );
   }
