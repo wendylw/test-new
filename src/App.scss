@@ -2755,6 +2755,16 @@
     margin-right: 5px;
   }
 
+  &__earned-cashback-image {
+    position: absolute;
+    max-width: 328px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+  }
+
   &__earned-cashback-description {
     margin: 8px auto;
     max-width: 300px;
