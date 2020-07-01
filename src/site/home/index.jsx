@@ -63,9 +63,6 @@ class Home extends React.Component {
     // placeInfo ok
     this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
 
-    // collection card ok
-    this.props.collectionCardActions.getCollections();
-
     this.reloadStoreListIfNecessary();
 
     if (source === 'ip') {
@@ -92,6 +89,7 @@ class Home extends React.Component {
 
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
+      this.props.collectionCardActions.getCollections();
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
