@@ -389,7 +389,7 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry, currentOrder } = this.props;
+    const { t, match, history, cartSummary, merchantCountry } = this.props;
     const { total } = cartSummary || {};
 
     return (
@@ -415,7 +415,6 @@ class Stripe extends Component {
               history={history}
               country={merchantCountry}
               cartSummary={cartSummary}
-              currentOrder={currentOrder}
               renderRedirectForm={paymentMethod => {
                 if (!paymentMethod) return null;
 
