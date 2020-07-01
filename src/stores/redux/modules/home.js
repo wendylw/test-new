@@ -9,7 +9,7 @@ import { getBusiness } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import Utils from '../../../utils/utils';
 
-const initialState = {
+export const initialState = {
   storeHashCode: null,
   currentStoreId: null,
   enableDelivery: false,

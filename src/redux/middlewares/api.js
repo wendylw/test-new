@@ -1,4 +1,4 @@
-import { get, post, del } from '../../utils/request';
+import { get, post, del, put } from '../../utils/request';
 
 //Deal with every single action that has API_REQUEST field.
 export const API_REQUEST = 'API REQUEST';
@@ -44,6 +44,7 @@ export default store => next => action => {
     get: url => get(url),
     post: (url, payload, options) => post(url, payload, options),
     del: (url, payload, options) => del(url, payload, options),
+    put: (url, payload, options) => put(url, payload, options),
   };
 
   return methodMapToRequest[method](requestUrl, payload, { mode })

@@ -10,7 +10,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const { AUTH_INFO } = Constants;
 
-const initialState = {
+export const initialState = {
   user: {
     showLoginPage: false,
     // isWebview: Utils.isWebview(),
@@ -174,7 +174,7 @@ const fetchCoreBusiness = variables => ({
   },
 });
 
-const fetchCustomerProfile = consumerId => ({
+export const fetchCustomerProfile = consumerId => ({
   [API_REQUEST]: {
     types: [
       types.FETCH_CUSTOMER_PROFILE_REQUEST,

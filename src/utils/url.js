@@ -131,6 +131,10 @@ const API_URLS = {
     url: '/api/transactions',
     method: 'post',
   },
+  GET_COLLECTIONS: {
+    url: '/api/stores/collections',
+    method: 'get',
+  },
   QUERY_FEED_BACK: {
     url: `/api/feedback`,
     method: 'get',
