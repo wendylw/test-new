@@ -52,6 +52,7 @@ class QRScan extends Component {
   canvasRef = React.createRef();
   mediaStreamTrackList = [];
   show = true;
+  timer = null;
 
   componentDidMount() {
     this.getCamera();
@@ -151,7 +152,7 @@ class QRScan extends Component {
   }
 
   getQRCode(video, canvas, context) {
-    let timer = setInterval(function() {
+    this.timer = setInterval(function() {
       const imageWidth = video.videoWidth;
       const imageHeight = video.videoHeight;
 
@@ -164,7 +165,7 @@ class QRScan extends Component {
       qr.decodeFromImage(canvas.toDataURL('image/png')).then(res => {
         if (res.data) {
           processQR(res.data).then(() => {
-            window.clearInterval(timer);
+            window.clearInterval(this.timer);
           });
         }
       });
@@ -202,6 +203,7 @@ class QRScan extends Component {
   };
 
   handleBackClicked = () => {
+    window.clearInterval(this.timer);
     this.backToPreviousPage();
   };
 
