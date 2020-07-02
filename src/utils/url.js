@@ -13,7 +13,9 @@ const API_URLS = {
         params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
       }
     }
-    params.fulfillDate = Utils.getFulfillDate().expectDeliveryDateFrom;
+    const { expectDeliveryDateFrom } = Utils.getFulfillDate();
+
+    expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
     const queryString = Object.keys(params)
       .map(key => `${key}=${params[key]}`)
       .join('&');
