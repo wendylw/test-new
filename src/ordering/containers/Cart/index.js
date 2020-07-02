@@ -163,6 +163,16 @@ class Cart extends Component {
     }
   }
 
+  AdditionalCommentsFocus = () => {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    const asideOffset = document.querySelectorAll('.aside-bottom')[0].offsetTop;
+    const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
+    const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
+    const scroll = textOffset - asideOffset + textHeight + 55;
+    document.documentElement.scrollTop = scroll;
+  };
+
   renderAdditionalComments() {
     const { t } = this.props;
     const { additionalComments } = this.state;
@@ -175,6 +185,7 @@ class Cart extends Component {
           maxLength="140"
           value={additionalComments || ''}
           onChange={this.handleChangeAdditionalComments.bind(this)}
+          onFocus={this.AdditionalCommentsFocus}
         ></textarea>
         {additionalComments ? (
           <IconClose className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)} />
