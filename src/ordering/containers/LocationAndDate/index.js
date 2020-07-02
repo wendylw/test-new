@@ -171,7 +171,6 @@ class LocationAndDate extends Component {
 
   getMerchantLocalTime = () => {
     const { business, allBusinessInfo } = this.props;
-    const { country } = allBusinessInfo[business];
 
     return Utils.getMerchantLocalTime(allBusinessInfo[business]);
   };
