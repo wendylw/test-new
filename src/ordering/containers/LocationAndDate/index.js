@@ -388,9 +388,9 @@ class LocationAndDate extends Component {
       if (from === 'now') {
         // immediate
         // TODO the date show use merchats localtime
-        let now = new Date();
-        let h = now.getHours();
-        let m = now.getMinutes();
+        let now = new Date(),
+          h = now.getHours(),
+          m = now.getMinutes();
         now = +(h + '.' + m);
         let nowNextHour = +(h + 1 + '.' + m);
 
@@ -401,12 +401,13 @@ class LocationAndDate extends Component {
           newTimeList.push(time);
         }
       } else {
-        let timeFrom = new Date(from);
-        let timeTo = new Date(to);
-        let fh = timeFrom.getHours();
-        let fm = timeFrom.getMinutes();
-        let th = timeTo.getHours();
-        let tm = timeTo.getMinutes();
+        let timeFrom = new Date(from),
+          timeTo = new Date(to),
+          fh = timeFrom.getHours(),
+          fm = timeFrom.getMinutes(),
+          th = timeTo.getHours(),
+          tm = timeTo.getMinutes();
+
         timeFrom = +(fh + '.' + fm);
         timeTo = +(th + '.' + tm);
 
@@ -429,6 +430,7 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     const { selectedHour = {} } = this.state;
     const country = this.getBusinessCountry();
+
     timeList = this.patchBreakTime(timeList);
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
