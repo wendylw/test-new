@@ -49,6 +49,8 @@ const isAfterTime = (time1, time2) => new Date(time1).valueOf < new Date(time2).
 
 const isNoLaterThan = (time1, time2) => new Date(time1).valueOf() <= new Date(time2).valueOf();
 
+const storehubLogisticsBusinessHours = ['09:00', '21:00'];
+
 class LocationAndDate extends Component {
   state = {
     deliveryToAddress: '',
@@ -85,15 +87,6 @@ class LocationAndDate extends Component {
     const currentTime = new Date(this.getMerchantLocalTime());
 
     return currentTime.setHours(hour || 0, minute || 0, 0, 0);
-  };
-
-  getExpectedTimeFromSession = () => {
-    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
-
-    this.setState({
-      selectedDate: date,
-      selectedHour: hour,
-    });
   };
 
   getBusinessCountry = () => {
@@ -180,19 +173,31 @@ class LocationAndDate extends Component {
     const deliveryDates = [];
     const { business, allBusinessInfo } = this.props;
     const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const businessInfo = allBusinessInfo[business];
+    const { qrOrderingSettings } = businessInfo || {};
+    const { useStorehubLogistics } = qrOrderingSettings || {};
+    const currentTime = this.getMerchantLocalTime();
 
     for (let i = 0; i < 5; i++) {
-      const currentTime = this.getMerchantLocalTime();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
       let isOpen = validDays.includes(weekday);
       const deliveryDate = new Date(newDate).setHours(0, 0, 0, 0);
+      let isValidTodayTime = !i;
 
       if (!i) {
         // Today option is open when user visits delivery time page before store is closed
         const isBeforeStoreClose = isNoLaterThan(currentTime, this.createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
+      }
+
+      if (useStorehubLogistics) {
+        const isBeforeStoreClose = isNoLaterThan(
+          currentTime,
+          createTimeWithTimeString(storehubLogisticsBusinessHours[1])
+        );
+        isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
       }
 
       if (disableTodayPreOrder && !i) {
@@ -202,7 +207,7 @@ class LocationAndDate extends Component {
       deliveryDates.push({
         date: new Date(deliveryDate).toISOString(),
         isOpen: isOpen,
-        isToday: !i,
+        isToday: isValidTodayTime,
       });
     }
     this.deliveryDates = deliveryDates;
@@ -474,9 +479,17 @@ class LocationAndDate extends Component {
     }
 
     let timeList = [];
+    const { business, allBusinessInfo } = this.props;
+    const businessInfo = allBusinessInfo[business];
+    const { qrOrderingSettings } = businessInfo || {};
+    const { useStorehubLogistics } = qrOrderingSettings || {};
 
-    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(this.validPreOrderTimeFrom);
-    const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(this.validTimeTo);
+    const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(
+      useStorehubLogistics ? storehubLogisticsBusinessHours[0] : this.validPreOrderTimeFrom
+    );
+    const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(
+      useStorehubLogistics ? storehubLogisticsBusinessHours[1] : this.validTimeTo
+    );
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0, 0);
     const timeIncrease = i =>
