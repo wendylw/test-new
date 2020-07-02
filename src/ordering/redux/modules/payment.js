@@ -18,7 +18,7 @@ import { getPaymentList, getUnavailablePaymentList } from '../../containers/Paym
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES } = Constants;
 
 export const initialState = {
   currentPayment: '',
@@ -189,11 +189,25 @@ export const actions = {
     );
 
     if (result.type === types.CREATEORDER_FAILURE) {
+      let errorMessage = '';
+
+      switch (result.code) {
+        case CREATE_ORDER_ERROR_CODES.PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT:
+          errorMessage = 'OrderingPayment:PromotionExceededTotalClaimLimit';
+          break;
+
+        case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
+          errorMessage = 'OrderingPayment:PromotionInvalid';
+          break;
+
+        default:
+          errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
+          break;
+      }
+
       dispatch(
         appActions.showError({
-          message: i18next.t('PlaceOrderFailedDescription', {
-            ns: 'OrderingPayment',
-          }),
+          message: i18next.t(errorMessage),
         })
       );
     }

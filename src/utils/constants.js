@@ -139,6 +139,11 @@ const LOGIN_PROMPT = {
   400: 'Your One Time Passcode is invalid.',
 };
 
+const CREATE_ORDER_ERROR_CODES = {
+  PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT: 4050,
+  PROMOTION_INVALID: 4051,
+};
+
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
 const LANGUAGES = ['en', 'th'];
 const POLYFILL_FEATURES = ['Object.values', 'Intl'];
@@ -187,6 +192,7 @@ const PROMOTION_APPLIED_STATUS = {
   NOT_VALID: 'not_valid',
   NOT_EXISTED: 'not_existed',
   UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
+  REACH_MAX_CLAIM_COUNT: 'reach_max_claim_count',
 };
 
 const PREORDER_IMMEDIATE_TAG = {
@@ -256,4 +262,5 @@ export default {
   PROMO_TYPE,
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
+  CREATE_ORDER_ERROR_CODES,
 };
