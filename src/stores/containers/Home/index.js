@@ -57,7 +57,8 @@ class App extends Component {
     });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
     if (isValidTimeToOrder || enablePreOrder) {
-      homeActions.setCurrentStore(storeId);
+      window.location.href = window.location.href + '?' + encodeURIComponent('s=' + storeId + '&from=home');
+      // homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);
       const { hashCode } = this.props;
