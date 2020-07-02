@@ -195,7 +195,7 @@ class LocationAndDate extends Component {
       if (useStorehubLogistics) {
         const isBeforeStoreClose = isNoLaterThan(
           currentTime,
-          createTimeWithTimeString(storehubLogisticsBusinessHours[1])
+          this.createTimeWithTimeString(storehubLogisticsBusinessHours[1])
         );
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
       }
