@@ -10,6 +10,7 @@ import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
+import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import {
   getAllCurrentStores,
@@ -26,7 +27,7 @@ import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } fr
 import { checkStateRestoreStatus } from '../redux/modules/index';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
-const isCampaignActive = false; // feature switch
+const isCampaignActive = true; // feature switch
 
 class Home extends React.Component {
   static lastUsedPlaceId = null;
@@ -88,6 +89,7 @@ class Home extends React.Component {
 
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
+      this.props.collectionCardActions.getCollections();
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -223,11 +225,9 @@ class Home extends React.Component {
             />
           )}
 
-          {countryCode.toUpperCase() === 'MY' && (
-            <Suspense fallback={null}>
-              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
-            </Suspense>
-          )}
+          <Suspense fallback={null}>
+            <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
+          </Suspense>
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}
@@ -253,6 +253,7 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
     })
   )
 )(Home);

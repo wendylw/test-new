@@ -503,7 +503,14 @@
       padding: 16px;
       border: 1px solid $gray-3;
     }
-
+    .form__label ~ .form-field {
+      margin-bottom: 16px;
+      padding: 0;
+      border: 0;
+      input {
+        font-size: 14px;
+      }
+    }
     .form__textarea {
       min-height: 0;
       word-break: break-word;
@@ -2774,6 +2781,8 @@
   &__prompt {
     margin: auto;
     max-width: 74%;
+    font-size: 1.1rem;
+    line-height: 1.5rem;
   }
 
   &__text {
@@ -2971,6 +2980,9 @@
 .thanks-pickup {
   &__id-container {
     @extend .border-radius-base;
+    background-color: #fafafa;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    margin-top: 23px;
 
     padding: 4vw;
 
