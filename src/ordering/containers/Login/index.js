@@ -112,9 +112,10 @@ class Login extends React.Component {
     }
 
     return (
-      <section className={classList.join(' ')}>
+      <section className={classList.join(' ')} data-heap-name="ordering.login.container">
         <Header
           className="border__bottom-divider flex-middle"
+          data-heap-name="ordering.login.header"
           title="Account"
           isPage={true}
           navFunc={() => {
@@ -147,11 +148,21 @@ class Login extends React.Component {
                 By tapping to continue, you agree to our
                 <br />
                 <BrowserRouter basename="/">
-                  <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+                  <Link
+                    className="font-weight-bolder"
+                    target="_blank"
+                    data-heap-name="ordering.login.term-link"
+                    to={Constants.ROUTER_PATHS.TERMS_OF_USE}
+                  >
                     Terms of Service
                   </Link>
                   , and{' '}
-                  <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+                  <Link
+                    className="font-weight-bolder"
+                    target="_blank"
+                    data-heap-name="ordering.login.privacy-policy-link"
+                    to={Constants.ROUTER_PATHS.PRIVACY}
+                  >
                     Privacy Policy
                   </Link>
                   .

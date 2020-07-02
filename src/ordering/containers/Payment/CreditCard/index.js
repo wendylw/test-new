@@ -384,6 +384,7 @@ class CreditCard extends Component {
                 ref={ref => (this.cardNumberEl = ref)}
                 id="cardNumber"
                 className="input input__block"
+                data-heap-name="ordering.payment.credit-card.card-number"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
                 value={cardNumber || ''}
@@ -396,6 +397,7 @@ class CreditCard extends Component {
               <input
                 id="validDate"
                 className={`input input__block ${invalidCardInfoFields.includes('validDate') ? 'has-error' : ''}`}
+                data-heap-name="ordering.payment.credit-card.valid-date"
                 type="tel"
                 placeholder="MM / YY"
                 value={validDate || ''}
@@ -406,6 +408,7 @@ class CreditCard extends Component {
                 id="cvv"
                 data-encrypt="cvv"
                 className={`input input__block ${invalidCardInfoFields.includes('cvv') ? 'has-error' : ''}`}
+                data-heap-name="ordering.payment.credit-card.cvv"
                 type="password"
                 placeholder="CVV"
                 onBlur={this.validCardInfo.bind(this)}
@@ -440,6 +443,7 @@ class CreditCard extends Component {
             className={`input input__block border-radius-base ${
               cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''
             }`}
+            data-heap-name="ordering.payment.credit-card.holder-name"
             type="text"
             value={cardholderName || ''}
             onChange={this.handleChangeCardHolderName.bind(this)}
@@ -465,9 +469,13 @@ class CreditCard extends Component {
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
-      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+      <section
+        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        data-heap-name="ordering.payment.credit-card.container"
+      >
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="ordering.payment.credit-card.header"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -487,7 +495,8 @@ class CreditCard extends Component {
           <CreateOrderButton
             history={history}
             className="border-radius-base"
-            dataTestId="payMoney"
+            data-test-id="payMoney"
+            data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             afterCreateOrder={() => {

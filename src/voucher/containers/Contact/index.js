@@ -78,8 +78,8 @@ class Contact extends Component {
     const storeName = onlineStoreName || businessDisplayName;
 
     return (
-      <div className="update-contact__page">
-        <Header clickBack={this.handleClickBack} />
+      <div className="update-contact__page" data-heap-name="voucher.contact.container">
+        <Header clickBack={this.handleClickBack} data-heap-name="voucher.contact.header" />
         <div className="gift-card__page">
           <div className="gift-card__card">
             <h2 className="font-weight-bolder text-center gift-card__subtitle">{t('GiftCardSelected')}</h2>
@@ -103,6 +103,7 @@ class Contact extends Component {
             <div className="gift-card__email-note">{t('GiftCardEmailNote')}</div>
             <input
               className={`gift-card__email-input input input__block ${invalidEmailClass}`}
+              data-heap-name="voucher.contact.email-input"
               onChange={this.handleEmailChange}
               value={contactEmail}
             />
@@ -115,6 +116,7 @@ class Contact extends Component {
               className="continue__button button button__fill button__block font-weight-bolder"
               onClick={this.handleContinue}
               disabled={!contactEmail}
+              data-heap-name="voucher.contact.continue-btn"
             >
               {t('CONTINUE')}
             </button>

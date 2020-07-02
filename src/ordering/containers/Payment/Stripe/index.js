@@ -26,6 +26,7 @@ import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import PaymentCardBrands from '../components/PaymentCardBrands';
+import withDataAttributes from '../../../../components/withDataAttributes';
 // import '../styles/2-Card-Detailed.css';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
@@ -33,41 +34,45 @@ import PaymentCardBrands from '../components/PaymentCardBrands';
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
 const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
 
-const Field = ({
-  t,
-  label,
-  formClassName,
-  inputClassName,
-  id,
-  type,
-  placeholder,
-  required,
-  autoComplete,
-  isNotNameComplete,
-  isFormTouched,
-  value,
-  onChange,
-}) => (
-  <div className={formClassName}>
-    <div className="flex flex-middle flex-space-between">
-      <label htmlFor={id} className="payment-bank__label font-weight-bolder">
-        {label}
-      </label>
-      {isFormTouched && isNotNameComplete ? (
-        <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
-      ) : null}
+const Field = withDataAttributes(
+  ({
+    t,
+    label,
+    formClassName,
+    inputClassName,
+    id,
+    type,
+    placeholder,
+    required,
+    autoComplete,
+    isNotNameComplete,
+    isFormTouched,
+    value,
+    onChange,
+    dataAttributes,
+  }) => (
+    <div className={formClassName}>
+      <div className="flex flex-middle flex-space-between">
+        <label htmlFor={id} className="payment-bank__label font-weight-bolder">
+          {label}
+        </label>
+        {isFormTouched && isNotNameComplete ? (
+          <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
+        ) : null}
+      </div>
+      <input
+        className={inputClassName}
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={onChange}
+        {...dataAttributes}
+      />
     </div>
-    <input
-      className={inputClassName}
-      id={id}
-      type={type}
-      placeholder={placeholder}
-      required={required}
-      autoComplete={autoComplete}
-      value={value}
-      onChange={onChange}
-    />
-  </div>
+  )
 );
 
 const ErrorMessage = ({ children }) => (
@@ -154,6 +159,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
             ? ' has-error'
             : ''
         }`}
+        data-heap-name="ordering.payment.stripe.card-number-wrapper"
         style={{
           height: '50px',
           padding: '12px',
@@ -202,6 +208,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
 
       <div className="input__list-bottomn">
         <div
+          data-heap-name="ordering.payment.stripe.valid-date-wrapper"
           style={{
             display: 'inline-block',
             height: '50px',
@@ -262,6 +269,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
             borderBottomRightRadius: '4px',
             transform: 'translateY(-1px)',
           }}
+          data-heap-name="ordering.payment.stripe.cvc-wrapper"
         >
           <CardCvcElement
             options={{
@@ -307,6 +315,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
         type="text"
         required
         autoComplete="name"
+        data-heap-name="ordering.payment.stripe.holder-name"
         value={billingDetails.name}
         isNotNameComplete={isNotNameComplete}
         isFormTouched={isFormTouched}
@@ -318,6 +327,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
         <CreateOrderButton
           history={history}
           buttonType="submit"
+          data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={processing || !stripe}
           beforeCreateOrder={() => setIsFormTouched(true)}
           afterCreateOrder={async () => {
@@ -393,9 +403,13 @@ class Stripe extends Component {
     const { total } = cartSummary || {};
 
     return (
-      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+      <section
+        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        data-heap-name="ordering.payment.stripe.container"
+      >
         <Header
           className="flex-middle border__bottom-divider gray has-right"
+          data-heap-name="ordering.payment.stripe.header"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
