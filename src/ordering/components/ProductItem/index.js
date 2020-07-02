@@ -42,6 +42,7 @@ export class ProductItem extends Component {
         detail={<CurrencyNumber className="price item__text font-weight-bolder" money={price || 0} numberOnly={true} />}
         operateItemDetail={showProductDetail}
         hasTag={isFeaturedProduct}
+        data-heap-name="ordering.common.product-item"
       >
         {soldOut ? (
           <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />

@@ -30,7 +30,11 @@ class Campaign extends Component {
 
     return (
       <React.Fragment>
-        <section className="offer-details__bar" onClick={this.handleToggleOfferDetails}>
+        <section
+          className="offer-details__bar"
+          data-heap-name="site.home.campaign-bar"
+          onClick={this.handleToggleOfferDetails}
+        >
           <p className="flex flex-middle flex-center">
             <img className="offer-details__bar-image" src={campaign.barImage} alt="" />
           </p>
@@ -40,7 +44,11 @@ class Campaign extends Component {
           <div className="offer-details-aside__content aside__content">
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
-                <IconClose className="icon icon__big icon__gray text-middle" onClick={this.handleToggleOfferDetails} />
+                <IconClose
+                  className="icon icon__big icon__gray text-middle"
+                  data-heap-name="site.campaign.close-btn"
+                  onClick={this.handleToggleOfferDetails}
+                />
                 <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
                   {t('OfferDetails')}
                 </h2>

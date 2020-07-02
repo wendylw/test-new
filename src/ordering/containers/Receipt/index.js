@@ -105,8 +105,13 @@ export class ReceiptDetail extends Component {
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
 
     return (
-      <section className="table-ordering__receipt">
-        <Header className="border__bottom-divider gray flex-middle" title={t('ViewReceipt')} navFunc={this.goBack}>
+      <section className="table-ordering__receipt" data-heap-name="ordering.receipt.container">
+        <Header
+          className="border__bottom-divider gray flex-middle"
+          title={t('ViewReceipt')}
+          data-heap-name="ordering.receipt.header"
+          navFunc={this.goBack}
+        >
           <span className="gray-font-opacity">{this.getHeaderContent()}</span>
         </Header>
         <div className="receipt__content text-center">

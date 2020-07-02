@@ -177,7 +177,7 @@ class Home extends React.Component {
     const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
 
     return (
-      <main className="entry fixed-wrapper fixed-wrapper__main">
+      <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
           title={t('DeliverTo')}
           className={`entry__deliver-to base-box-shadow ${
@@ -208,6 +208,7 @@ class Home extends React.Component {
                 <input
                   className="form__input entry-home__input"
                   data-testid="searchStore"
+                  data-heap-name="site.home.search-box"
                   type="type"
                   placeholder={t('SearchRestaurantPlaceholder')}
                   onClick={this.handleLoadSearchPage}
