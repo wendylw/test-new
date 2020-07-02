@@ -178,12 +178,14 @@ export class ThankYou extends PureComponent {
     const { t } = this.props;
     return (
       <div className="thanks__delivery-status-container">
-        <img
-          src={this.state.cashbackSuccessImage}
-          alt="cashback Earned"
-          onLoad={this.cashbackSuccessStop}
-          className="thanks__earned-cashback-image"
-        />
+        {this.state.cashbackSuccessImage && (
+          <img
+            src={this.state.cashbackSuccessImage}
+            alt="cashback Earned"
+            onLoad={this.cashbackSuccessStop}
+            className="thanks__earned-cashback-image"
+          />
+        )}
         <CurrencyNumber
           className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
           money={cashback || 0}
