@@ -176,9 +176,9 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
-    const currentTime = this.getMerchantLocalTime();
 
     for (let i = 0; i < 5; i++) {
+      const currentTime = this.getMerchantLocalTime();
       const weekday = (currentTime.getDay() + i) % 7;
       const newDate = currentTime.setDate(currentTime.getDate() + i);
       let isOpen = validDays.includes(weekday);
@@ -322,7 +322,7 @@ class LocationAndDate extends Component {
   renderDeliveryOn = () => {
     const { selectedDate } = this.state;
     const { t } = this.props;
-
+    console.log(this.deliveryDates, 'deliverableTime');
     return (
       <div className="form__group">
         <label className="form__label font-weight-bold">
