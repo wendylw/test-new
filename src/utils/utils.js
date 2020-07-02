@@ -563,7 +563,13 @@ Utils.getFulfillDate = () => {
   // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
 
   if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
-    return getExpectDeliveryDateInfo(expectedDeliveryDate.date, expectedDeliveryHour.from, expectedDeliveryHour.to);
+    console.log(expectedDeliveryDate, expectedDeliveryHour, expectedDeliveryHour, 'expectedDeliveryDate');
+    return (
+      (expectedDeliveryDate.date &&
+        expectedDeliveryHour.from &&
+        getExpectDeliveryDateInfo(expectedDeliveryDate.date, expectedDeliveryHour.from, expectedDeliveryHour.to)) ||
+      {}
+    );
   } else {
     return {};
   }
