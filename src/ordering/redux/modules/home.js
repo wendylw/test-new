@@ -16,7 +16,7 @@ import { getBusiness } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 // import { getBusinessInfo } from './cart';
 
-const initialState = {
+export const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
     // 33.8% equal (item padding + item image + item cart controller button height) / window width
@@ -144,7 +144,7 @@ export const actions = {
   }),
 };
 
-const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
@@ -155,7 +155,7 @@ const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
 };
 
 // generator a virtual shopping cart for Customer place a Voucher Order
-const generatorShoppingCartForVoucherOrdering = () => {
+export const generatorShoppingCartForVoucherOrdering = () => {
   const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
   const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
 
@@ -165,7 +165,7 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-const fetchOnlineCategory = () => {
+export const fetchOnlineCategory = () => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
@@ -179,7 +179,7 @@ const fetchOnlineCategory = () => {
   };
 };
 // variables := { productId, variations }
-const removeShoppingCartItem = variables => {
+export const removeShoppingCartItem = variables => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -194,7 +194,7 @@ const removeShoppingCartItem = variables => {
   };
 };
 
-const addOrUpdateShoppingCartItem = variables => {
+export const addOrUpdateShoppingCartItem = variables => {
   const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -209,7 +209,7 @@ const addOrUpdateShoppingCartItem = variables => {
   };
 };
 
-const fetchProductDetail = variables => {
+export const fetchProductDetail = variables => {
   const endpoint = Url.apiGql('ProductDetail');
   return {
     [FETCH_GRAPHQL]: {

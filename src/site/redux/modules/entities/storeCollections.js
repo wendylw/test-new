@@ -34,9 +34,9 @@ const reducer = (state = initialState, action) => {
       let collectionIds = {};
       const { collections } = action.response;
       collections['Icon'].forEach(collection => {
-        const { beepCollectionId: id } = collection;
+        const { urlPath } = collection;
         Object.assign(collectionIds, {
-          [id]: collection,
+          [urlPath]: collection,
         });
       });
       return collectionIds;
@@ -49,5 +49,4 @@ export default reducer;
 
 // @selector
 export const getAllStoreCollections = state => state.entities.storeCollections;
-export const getCollectionById = (state, id) => getAllStoreCollections(state)[id] || null;
-export const getCollectionBySlug = (state, slug) => getAllStoreCollections(state)[slug] || null;
+export const getCollectionByPath = (state, urlPath) => getAllStoreCollections(state)[urlPath] || null;
