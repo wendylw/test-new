@@ -28,15 +28,17 @@ class CollectionPage extends React.Component {
   sectionRef = React.createRef();
 
   componentDidMount = async () => {
-    await this.props.collectionCardActions.getCollections();
+    if (!this.props.currentCollection) {
+      await this.props.collectionCardActions.getCollections();
+    }
     const { currentCollection } = this.props;
-    const { shippingType, beepCollectionId: id } = currentCollection;
+    const { shippingType, urlPath } = currentCollection;
     if (!checkStateRestoreStatus()) {
       const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
       this.props.collectionsActions.setShippingType(type);
       this.props.collectionsActions.resetPageInfo(type);
     }
-    this.props.collectionsActions.getStoreList(id);
+    this.props.collectionsActions.getStoreList(urlPath);
   };
 
   handleBackClicked = () => {
@@ -66,10 +68,10 @@ class CollectionPage extends React.Component {
   };
 
   handleSwitchTab = shippingType => {
-    const { beepCollectionId } = this.props.currentCollection || {};
+    const { urlPath } = this.props.currentCollection || {};
     this.props.collectionsActions.setShippingType(shippingType);
     this.props.collectionsActions.resetPageInfo(shippingType);
-    this.props.collectionsActions.getStoreList(beepCollectionId);
+    this.props.collectionsActions.getStoreList(urlPath);
   };
 
   renderSwitchBar = () => {
@@ -97,7 +99,7 @@ class CollectionPage extends React.Component {
   renderStoreList = () => {
     const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
-    const { beepCollectionId } = currentCollection;
+    const { urlPath } = currentCollection;
 
     return (
       <div className="store-card-list__container padding-normal">
@@ -112,7 +114,7 @@ class CollectionPage extends React.Component {
             hasMore={pageInfo.hasMore}
             getScrollParent={() => this.sectionRef.current}
             loadMoreStores={() => {
-              this.props.collectionsActions.getStoreList(beepCollectionId);
+              this.props.collectionsActions.getStoreList(urlPath);
             }}
             onStoreClicked={store => this.backLeftPosition(store)}
             withInfiniteScroll
