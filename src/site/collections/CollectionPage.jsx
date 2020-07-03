@@ -12,51 +12,33 @@ import {
   getStoreList,
   getShippingType,
 } from '../redux/modules/collections';
-import { getPlaceInfo, readPlaceInfo, submitStoreMenu } from '../home/utils';
+import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import '../home/index.scss';
 import './CollectionPage.scss';
+import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
+import { checkStateRestoreStatus } from '../redux/modules/index';
+import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
 
 class CollectionPage extends React.Component {
-  static isFirstRender = true;
   renderId = `${Date.now()}`;
   scrollTop = 0;
   sectionRef = React.createRef();
-  isRestoreFromStorage = false;
-
-  constructor(props) {
-    super(props);
-    this.isRestoreFromStorage = props.rootActions.restore();
-  }
 
   componentDidMount = async () => {
-    const { currentPlaceInfo, currentCollection } = this.props;
-
-    if (!currentPlaceInfo) {
-      const { placeInfo } = await getPlaceInfo(this.props);
-      // if no placeInfo at all
-      if (!placeInfo) {
-        return this.gotoLocationPage();
-      }
-      // placeInfo ok
-      this.props.appActions.setCurrentPlaceInfo(placeInfo);
+    if (!this.props.currentCollection) {
+      await this.props.collectionCardActions.getCollections();
     }
-    const placeInfoFromStorage = await readPlaceInfo();
-    if (!placeInfoFromStorage) {
-      console.error('[CollectionPage] no coords found. Back to home.');
-      this.goBackHome();
-      return;
+    const { currentCollection } = this.props;
+    const { shippingType, urlPath } = currentCollection;
+    if (!checkStateRestoreStatus()) {
+      const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
+      this.props.collectionsActions.setShippingType(type);
+      this.props.collectionsActions.resetPageInfo(type);
     }
-    if (!(this.isRestoreFromStorage && CollectionPage.isFirstRender)) {
-      const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
-      this.props.collectionsActions.setShippingType(shippingType);
-      this.props.collectionsActions.resetPageInfo(shippingType);
-    }
-    CollectionPage.isFirstRender = false;
-    this.props.collectionsActions.setCoords(placeInfoFromStorage.coords);
-    this.props.collectionsActions.getStoreList(currentCollection.tags);
+    this.props.collectionsActions.getStoreList(urlPath);
   };
 
   handleBackClicked = () => {
@@ -86,10 +68,10 @@ class CollectionPage extends React.Component {
   };
 
   handleSwitchTab = shippingType => {
-    const { tags } = this.props.currentCollection || {};
+    const { urlPath } = this.props.currentCollection || {};
     this.props.collectionsActions.setShippingType(shippingType);
     this.props.collectionsActions.resetPageInfo(shippingType);
-    this.props.collectionsActions.getStoreList(tags);
+    this.props.collectionsActions.getStoreList(urlPath);
   };
 
   renderSwitchBar = () => {
@@ -99,6 +81,7 @@ class CollectionPage extends React.Component {
       <ul className="header flex flex-space-around text-uppercase border__bottom-divider sticky-wrapper">
         <li
           className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
+          data-testid="switchBar"
           onClick={() => this.handleSwitchTab('delivery')}
         >
           {t('Delivery')}
@@ -116,11 +99,8 @@ class CollectionPage extends React.Component {
   renderStoreList = () => {
     const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
-    const { tags } = currentCollection;
+    const { urlPath } = currentCollection;
 
-    if (!this.sectionRef.current) {
-      return null;
-    }
     return (
       <div className="store-card-list__container padding-normal">
         <StoreListAutoScroll
@@ -133,9 +113,8 @@ class CollectionPage extends React.Component {
             stores={stores}
             hasMore={pageInfo.hasMore}
             getScrollParent={() => this.sectionRef.current}
-            loadMoreStores={page => {
-              console.log('page =', page);
-              this.props.collectionsActions.getStoreList(tags);
+            loadMoreStores={() => {
+              this.props.collectionsActions.getStoreList(urlPath);
             }}
             onStoreClicked={store => this.backLeftPosition(store)}
             withInfiniteScroll
@@ -146,11 +125,13 @@ class CollectionPage extends React.Component {
   };
 
   render() {
-    const { t, currentCollection } = this.props;
-    if (!currentCollection) return null;
+    const { currentCollection } = this.props;
+    if (!currentCollection) {
+      return null;
+    }
     return (
-      <ModalPageLayout title={t(currentCollection.label)} onGoBack={this.handleBackClicked}>
-        {currentCollection.slug === 'self-pickup' ? null : this.renderSwitchBar()}
+      <ModalPageLayout title={currentCollection.name} onGoBack={this.handleBackClicked}>
+        {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           {this.renderStoreList()}
         </section>
@@ -160,6 +141,7 @@ class CollectionPage extends React.Component {
 }
 
 export default compose(
+  withPlaceInfo(),
   withTranslation('SiteHome'),
   connect(
     (state, ownProps) => ({
@@ -174,6 +156,7 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       collectionsActions: bindActionCreators(collectionsActions, dispatch),
+      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )

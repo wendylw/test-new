@@ -22,9 +22,10 @@ export const gtmEventTracking = (eventName, data, callback) => {
   });
 };
 
-export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
-  let storeInfoForGtm = {};
+export const gtmSetUserProperties = ({ onlineStoreInfo, userInfo, store }) => {
+  let onlineStoreInfoForGtm = {};
   let userInfoForGtm = {};
+  let selectedStoreInfoForGtm = {};
 
   if (onlineStoreInfo && Object.keys(onlineStoreInfo).length) {
     if (onlineStoreInfo.analyticTools) {
@@ -36,7 +37,7 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
         {}
       );
     }
-    storeInfoForGtm = {
+    onlineStoreInfoForGtm = {
       merchantID: onlineStoreInfo.id,
       merchantIndustry: onlineStoreInfo.businessType,
       country: onlineStoreInfo.country,
@@ -56,8 +57,20 @@ export const gtmSetUserProperties = (onlineStoreInfo, userInfo) => {
     };
   }
 
+  if (store && store.id) {
+    selectedStoreInfoForGtm = {
+      storeId: store.id,
+    };
+  }
+
   window.dataLayer = window.dataLayer || [];
-  return window.dataLayer.push(Object.assign({}, storeInfoForGtm, userInfoForGtm));
+  return window.dataLayer.push(Object.assign({}, onlineStoreInfoForGtm, userInfoForGtm, selectedStoreInfoForGtm));
+};
+
+export const gtmSetPageViewData = data => {
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push(data);
 };
 
 export const GTM_TRACKING_EVENTS = {

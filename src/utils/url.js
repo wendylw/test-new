@@ -56,6 +56,10 @@ const API_URLS = {
     url: `/api/ordering/stores/${storeId}`,
     method: 'post',
   }),
+  GET_S3_POST_POLICY: action => ({
+    url: `/api/s3-post-policy/${action}`,
+    method: 'get',
+  }),
   GET_RECEIPTS_LIST: {
     url: '/api/transactions',
     method: 'get',
@@ -123,6 +127,18 @@ const API_URLS = {
   },
   CREATE_VOUCHER_ORDER: {
     url: '/api/transactions',
+    method: 'post',
+  },
+  GET_COLLECTIONS: {
+    url: '/api/stores/collections',
+    method: 'get',
+  },
+  QUERY_FEED_BACK: {
+    url: `/api/feedback`,
+    method: 'get',
+  },
+  CREATE_FEED_BACK: {
+    url: '/api/feedback',
     method: 'post',
   },
 };

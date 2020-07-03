@@ -6,7 +6,7 @@ import {
   getDevicePositionInfo,
   getHistoricalDeliveryAddresses,
   getPlaceAutocompleteList,
-  getPlaceDetailsFromPlaceId,
+  getPlaceInfoFromPlaceId,
   computeStraightDistance,
 } from '../utils/geoUtils';
 import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
@@ -20,10 +20,14 @@ class LocationPicker extends Component {
     country: PropTypes.string,
     mode: PropTypes.oneOf(['ORIGIN_STORE', 'ORIGIN_DEVICE']),
     onSelect: PropTypes.func,
+    // FB-1409: we don't get user's place from device position for now, because it's accurate and cost a lot. but
+    // we won't totally remove it. instead, we just provide an option which is by default disabled.
+    detectPosition: PropTypes.bool,
   };
   static defaultProps = {
     mode: 'ORIGIN_DEVICE',
     onSelect: () => {},
+    detectPosition: false,
   };
 
   constructor(props) {
@@ -35,15 +39,16 @@ class LocationPicker extends Component {
       devicePositionInfo: null,
       isDetectingPosition: true,
       historicalAddresses: [],
-      // isInitializing: true,
-      // initializeError: '',
       isSubmitting: false,
       errorToast: null,
     };
   }
 
   componentDidMount() {
-    this.detectDevicePosition();
+    const { detectPosition } = this.props;
+    if (detectPosition) {
+      this.detectDevicePosition();
+    }
     this.getHistoricalAddresses();
   }
 
@@ -75,7 +80,7 @@ class LocationPicker extends Component {
   }
 
   async getPlaceDetailsFromSearchResult(searchResult) {
-    const placeDetail = await getPlaceDetailsFromPlaceId(searchResult.place_id, {
+    const placeDetail = await getPlaceInfoFromPlaceId(searchResult.place_id, {
       fields: ['geometry', 'address_components'],
     });
     const { main_text, secondary_text } = searchResult.structured_formatting;
@@ -185,6 +190,7 @@ class LocationPicker extends Component {
           <IconSearch className="location-picker__search-box-magnifier-icon" onClick={this.tryGeolocation} />
           <input
             className="location-picker__search-box-input"
+            data-testid="searchAddress"
             type="text"
             placeholder={t('SearchYourAddress')}
             onChange={this.onSearchBoxChange}
@@ -202,7 +208,7 @@ class LocationPicker extends Component {
 
   renderAddressItem(summary, detail, distance) {
     return (
-      <div className="location-picker__address-item">
+      <div className="location-picker__address-item" data-testid="searchedAddressResult">
         <div className="location-picker__address-title">{summary}</div>
         <div className="location-picker__address-detail">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
@@ -317,9 +323,10 @@ class LocationPicker extends Component {
   }
 
   renderPredictedPositions() {
+    const { detectPosition } = this.props;
     return (
       <div>
-        {this.renderDetectedPosition()}
+        {detectPosition && this.renderDetectedPosition()}
         {this.renderHistoricalAddressList()}
       </div>
     );

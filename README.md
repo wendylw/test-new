@@ -15,6 +15,7 @@ is now so popular for quick started and production friendly.
 ## Table of contents
 
 1. [Abstraction](#abstraction)
+1. [Developing components in Isolation](#isolation-components)
 1. [Get started](#get-started)
     1. [Pre install stuffs](#pre-install-stuffs)
     1. [Quick start](#quick-start)
@@ -25,6 +26,18 @@ is now so popular for quick started and production friendly.
 1. [I18N JSON File Style Guide](#i18n-json-style-guide)
 1. [Analyzing bundle size](#analyzing-bundle-size)
 
+<a name="isolation-components"></a>
+## Developing components in Isolation
+
+If you are a component developer, read this section.
+
+We added `storybook` in project, no need configuring project, just run story book.
+
+```shell script
+yarn storybook
+``` 
+
+> browser will automatically start on port `9009`  
 
 <a name="get-started"></a>
 ## Get started

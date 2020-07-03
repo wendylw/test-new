@@ -136,5 +136,7 @@
   "TAKE_AWAY": "TAKE AWAY",
   "Login": "LOGIN",
   "LoginTip": "Login with your mobile number to view all your promos & vouchers",
-  "TryAgain": "Try Again"
+  "TryAgain": "Try Again",
+  "Required": "Required",
+  "Dismiss": "Dismiss"
 }

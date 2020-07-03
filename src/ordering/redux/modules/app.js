@@ -10,7 +10,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const { AUTH_INFO } = Constants;
 
-const initialState = {
+export const initialState = {
   user: {
     showLoginPage: false,
     // isWebview: Utils.isWebview(),
@@ -170,7 +170,7 @@ const fetchCoreBusiness = variables => ({
   },
 });
 
-const fetchCustomerProfile = consumerId => ({
+export const fetchCustomerProfile = consumerId => ({
   [API_REQUEST]: {
     types: [
       types.FETCH_CUSTOMER_PROFILE_REQUEST,
@@ -198,7 +198,6 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
-    case types.CREATE_LOGIN_FAILURE:
       return { ...state, isFetching: false };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };

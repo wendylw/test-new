@@ -18,9 +18,9 @@ import { getPaymentList, getUnavailablePaymentList } from '../../containers/Paym
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES } = Constants;
 
-const initialState = {
+export const initialState = {
   currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
@@ -107,7 +107,7 @@ export const actions = {
     // there is preOrder in url
     const business = getBusiness(getState());
     const businessInfo = getBusinessByName(getState(), business);
-    const { qrOrderingSettings = {} } = businessInfo;
+    const { qrOrderingSettings = {} } = businessInfo || {};
     const { enablePreOrder } = qrOrderingSettings;
     const shoppingCartIds = getCartItemIds(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
@@ -147,13 +147,8 @@ export const actions = {
 
     if (shippingType === DELIVERY_METHOD.DELIVERY) {
       const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
-      const {
-        addressDetails,
-        deliveryComments,
-        deliveryToAddress: deliveryTo,
-        deliveryToLocation: location,
-        /*routerDistance,*/
-      } = deliveryDetails || {};
+      const { addressDetails, deliveryComments, deliveryToAddress: deliveryTo, deliveryToLocation: location } =
+        deliveryDetails || {};
 
       variables = {
         ...variables,
@@ -194,11 +189,25 @@ export const actions = {
     );
 
     if (result.type === types.CREATEORDER_FAILURE) {
+      let errorMessage = '';
+
+      switch (result.code) {
+        case CREATE_ORDER_ERROR_CODES.PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT:
+          errorMessage = 'OrderingPayment:PromotionExceededTotalClaimLimit';
+          break;
+
+        case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
+          errorMessage = 'OrderingPayment:PromotionInvalid';
+          break;
+
+        default:
+          errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
+          break;
+      }
+
       dispatch(
         appActions.showError({
-          message: i18next.t('PlaceOrderFailedDescription', {
-            ns: 'OrderingPayment',
-          }),
+          message: i18next.t(errorMessage),
         })
       );
     }

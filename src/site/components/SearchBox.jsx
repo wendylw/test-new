@@ -12,6 +12,7 @@ class SearchBox extends React.Component {
           <IconSearch className="common-search__icon icon icon__small icon__gray" />
           <input
             className="form__input text-size-small"
+            data-testid="inputStore"
             autoFocus="autoFocus"
             type="type"
             placeholder={t('SearchRestaurantPlaceholder')}

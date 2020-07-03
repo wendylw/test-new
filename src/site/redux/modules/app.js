@@ -4,6 +4,7 @@ import { get } from '../../../utils/request';
 const initialState = {
   error: '',
   currentPlaceId: '',
+  currentPlaceInfoSource: '',
   user: {
     isLogin: false,
   },
@@ -32,12 +33,16 @@ const actions = {
   ping: () => async (dispatch, getState) => {
     await dispatch(queryPing());
   },
-  setCurrentPlaceInfo: placeInfo => (dispatch, getState) => {
+  setCurrentPlaceInfo: (placeInfo, source) => (dispatch, getState) => {
+    if (!source) {
+      console.error('setCurrentPlaceInfo: Must pass source as parameter');
+    }
     if (placeInfo) {
       dispatch(placesActionCreators.savePlace(placeInfo));
       dispatch({
         type: types.SET_CURRENT_PLACE_INFO,
         placeId: placeInfo.placeId,
+        source: source || 'unknown',
       });
     }
   },
@@ -59,7 +64,7 @@ const reducer = (state = initialState, action) => {
     case types.CLEAR_ERROR:
       return { ...state, error: null };
     case types.SET_CURRENT_PLACE_INFO:
-      return { ...state, currentPlaceId: action.placeId };
+      return { ...state, currentPlaceId: action.placeId, currentPlaceInfoSource: action.source };
     case types.PING_SUCCESS:
       return { ...state, user: userReducer(state.user, action) };
     default:
@@ -75,4 +80,6 @@ export default reducer;
 
 // @selectors
 export const getError = state => state.app.error;
+export const getCurrentPlaceId = state => state.app.currentPlaceId;
 export const getCurrentPlaceInfo = state => getPlaceById(state, state.app.currentPlaceId);
+export const getCurrentPlaceInfoSource = state => state.app.currentPlaceInfoSource;

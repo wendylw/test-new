@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import qs from 'qs';
 import { withTranslation, Trans } from 'react-i18next';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
@@ -106,54 +105,6 @@ class Cart extends Component {
       cart_value_local: cartSummary.total,
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
-  };
-
-  handleCheckPaymentStatus = async () => {
-    this.handleGtmEventTracking();
-    const { history, cartSummary, user, t } = this.props;
-    const { isLogin } = user;
-    const { total, totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const pathname = type ? Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO : Constants.ROUTER_PATHS.ORDERING_PAYMENT;
-
-    if (!this.isPromotionValid()) {
-      this.props.appActions.showMessageModal({
-        message: t('InvalidPromoCode'),
-        description: this.getPromotionErrorMessage(),
-        buttonText: t('Dismiss'),
-      });
-      return;
-    }
-
-    if (isLogin && !total && !type) {
-      const { paymentActions } = this.props;
-
-      this.setState({
-        isCreatingOrder: true,
-      });
-
-      await paymentActions.createOrder({ cashback: totalCashback });
-
-      const { currentOrder } = this.props;
-      const { orderId } = currentOrder || {};
-
-      if (orderId) {
-        Utils.removeSessionVariable('additionalComments');
-      }
-
-      const { thankYouPageUrl } = this.props;
-
-      if (thankYouPageUrl) {
-        window.location = thankYouPageUrl;
-      }
-
-      return;
-    }
-
-    history.push({
-      pathname,
-      search: window.location.search,
-    });
   };
 
   handleClearAll = () => {
@@ -337,8 +288,24 @@ class Cart extends Component {
           <div className="footer-operation__item width-2-3">
             <button
               className="billing__link button button__fill button__block font-weight-bolder"
-              onClick={this.handleCheckPaymentStatus.bind(this)}
-              disabled={!items || !items.length || isCreatingOrder || isInvalidTotal}
+              data-testid="pay"
+              onClick={() => {
+                if (!this.isPromotionValid()) {
+                  this.props.appActions.showMessageModal({
+                    message: t('InvalidPromoCode'),
+                    description: this.getPromotionErrorMessage(),
+                    buttonText: t('Dismiss'),
+                  });
+
+                  return;
+                }
+
+                history.push({
+                  pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                  search: window.location.search,
+                });
+              }}
+              disabled={!items || !items.length || isInvalidTotal}
             >
               {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
               {!isCreatingOrder ? buttonText : null}

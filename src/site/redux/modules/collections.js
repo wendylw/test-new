@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import { getCollectionBySlug } from './entities/storeCollections';
+import { getCollectionByPath } from './entities/storeCollections';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';
@@ -13,6 +13,7 @@ const defaultPageInfo = {
   hasMore: true,
   loading: false,
   scrollTop: 0,
+  id: '',
 };
 
 const initialState = {
@@ -30,15 +31,11 @@ const initialState = {
     pickupUrl: '',
     loading: false,
   },
-  coords: null, // { lat: float, lng: float }
   shippingType: 'delivery', // delivery || pickup, same to the above 2 states
 };
 
 // @types
 const types = {
-  // setCoords
-  SET_COORDS: 'SITE/COLLECTIONS/SET_COORDS',
-
   FETCH_STORE_LIST_REQUEST: 'SITE/COLLECTIONS/FETCH_STORE_LIST_REQUEST',
   FETCH_STORE_LIST_SUCCESS: 'SITE/COLLECTIONS/FETCH_STORE_LIST_SUCCESS',
   FETCH_STORE_LIST_FAILURE: 'SITE/COLLECTIONS/FETCH_STORE_LIST_FAILURE',
@@ -50,10 +47,6 @@ const types = {
 
 // @actions
 const actions = {
-  setCoords: coords => ({
-    type: types.SET_COORDS,
-    coords,
-  }),
   setShippingType: shippingType => ({
     type: types.SET_SHIPPING_TYPE,
     shippingType,
@@ -68,28 +61,23 @@ const actions = {
     shippingType,
     scrollTop,
   }),
-  getStoreList: tags => (dispatch, getState) => {
+  getStoreList: urlPath => (dispatch, getState) => {
     const shippingType = getShippingType(getState());
     const { loading, page, pageSize, hasMore } = getPageInfo(getState());
     if (loading || !hasMore) return;
-    return dispatch(fetchStoreList(page, pageSize, shippingType, tags));
+    return dispatch(fetchStoreList(page, pageSize, shippingType, urlPath));
   },
 };
 
-const fetchStoreList = (page, pageSize, shippingType, tags) => (dispatch, getState) => {
+const fetchStoreList = (page, pageSize, shippingType, urlPath) => (dispatch, getState) => {
   const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
   const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
   const { coords } = currentPlaceInfo;
-  const tagsParam =
-    !tags || tags.length === 0
-      ? []
-      : tags.reduce((accumulator, currencyValue) => accumulator + '&tags=' + currencyValue);
-
   return dispatch({
     types: [types.FETCH_STORE_LIST_REQUEST, types.FETCH_STORE_LIST_SUCCESS, types.FETCH_STORE_LIST_FAILURE],
     context: { page, pageSize, shippingType },
     requestPromise: get(
-      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&tags=${tagsParam}&countryCode=${countryCode}`
+      `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&countryCode=${countryCode}&urlPath=${urlPath}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
         await dispatch(storesActionCreators.saveStores(response.stores));
@@ -182,13 +170,6 @@ const pickup = (state = initialState.pickup, action) => {
   return state;
 };
 
-const coords = (state = initialState.coords, action) => {
-  if (action.type === types.SET_COORDS) {
-    return action.coords;
-  }
-  return state;
-};
-
 const shippingType = (state = initialState.shippingType, action) => {
   if (action.type === types.SET_SHIPPING_TYPE) {
     return action.shippingType;
@@ -200,12 +181,10 @@ export const collectionsActions = actions;
 export default combineReducers({
   delivery,
   pickup,
-  coords,
   shippingType,
 });
 
 // @selector
-export const getCoords = state => state.collections.coords;
 export const getShippingType = state => state.collections.shippingType;
 export const getPageInfo = state => {
   const shippingType = getShippingType(state);
@@ -216,7 +195,7 @@ const getStoreIds = state => {
   return state.collections[shippingType].storeIds;
 };
 
-export const getCurrentCollection = (state, ownProps) => getCollectionBySlug(state, ownProps.match.params.name);
+export const getCurrentCollection = (state, ownProps) => getCollectionByPath(state, ownProps.match.params.urlPath);
 export const getStoreList = createSelector([getStoreIds, getAllStores], (storeIds, stores) => {
   return storeIds.map(id => stores[id]);
 });

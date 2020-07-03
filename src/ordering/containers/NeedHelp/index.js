@@ -1,14 +1,47 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import qs from 'qs';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as thankYouActionCreators, getBusinessInfo } from '../../redux/modules/thankYou';
+import { IconNext } from '../../../components/Icons';
+import {
+  actions as thankYouActionCreators,
+  getBusinessInfo,
+  getReceiptNumber,
+  getOrderStatus,
+  getIsUseStorehubLogistics,
+} from '../../redux/modules/thankYou';
+
+import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 
 export class NeedHelp extends Component {
+  componentDidMount() {
+    const { thankYouActions, receiptNumber } = this.props;
+
+    thankYouActions.loadOrder(receiptNumber);
+  }
+
+  handleReportUnsafeDriver = () => {
+    const queryParams = {
+      receiptNumber: this.props.receiptNumber,
+    };
+
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  isReportUnsafeDriverButtonDisabled = () => {
+    const { orderStatus } = this.props;
+
+    return !CAN_REPORT_STATUS_LIST.includes(orderStatus);
+  };
+
   render() {
-    const { history, businessInfo, t } = this.props;
+    const { history, businessInfo, t, isUseStorehubLogistics } = this.props;
     const { stores } = businessInfo || '';
     const { name, phone, street1 } = stores && stores[0] ? stores[0] : [];
 
@@ -47,6 +80,18 @@ export class NeedHelp extends Component {
             </li>
           </ul>
         </div>
+        {isUseStorehubLogistics ? (
+          <div className="need-help__report-driver">
+            <button
+              disabled={this.isReportUnsafeDriverButtonDisabled()}
+              onClick={this.handleReportUnsafeDriver}
+              className="need-help__report-driver-button"
+            >
+              <span className="need-help__report-driver-button-text">{t('ReportDriver')}</span>
+              <IconNext className="need-help__report-driver-button-icon" />
+            </button>
+          </div>
+        ) : null}
       </section>
     );
   }
@@ -57,6 +102,9 @@ export default compose(
   connect(
     state => ({
       businessInfo: getBusinessInfo(state),
+      receiptNumber: getReceiptNumber(state),
+      orderStatus: getOrderStatus(state),
+      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
