@@ -321,7 +321,6 @@ class LocationAndDate extends Component {
   renderDeliveryOn = () => {
     const { selectedDate } = this.state;
     const { t } = this.props;
-    console.log(this.deliveryDates, 'deliverableTime');
     return (
       <div className="form__group">
         <label className="form__label font-weight-bold">
