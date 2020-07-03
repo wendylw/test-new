@@ -35,7 +35,7 @@ class PageLoyalty extends React.Component {
     const { displayBusinessName, name } = businessInfo || {};
     return (
       <div className="location">
-        <span className="location__text gray-font-opacity text-middle">{displayBusinessName || name}</span>
+        <span className="location__text text-opacity text-middle">{displayBusinessName || name}</span>
       </div>
     );
   }

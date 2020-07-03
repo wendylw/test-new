@@ -18,7 +18,7 @@
   bottom: 0;
   z-index: 200;
   width: 100%;
-  background-color: $dark;
+  background-color: $main-color;
 
   .button {
     @extend .border-radius-base;
@@ -186,7 +186,7 @@
     }
 
     &-input.input__error {
-      border-color: $red;
+      border-color: $status-red;
     }
 
     .input__error-message {
@@ -323,7 +323,7 @@
       a {
         text-decoration: none;
         font-weight: $font-weight-bolder;
-        color: $link-blue;
+        color: $status-blue;
         font-size: 1.1rem;
       }
     }

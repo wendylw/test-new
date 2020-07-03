@@ -84,7 +84,7 @@ address {
   color: $green;
 }
 
-.reset-font-size {
+.text-size-reset {
   font-size: 0;
 }
 
@@ -497,7 +497,7 @@ img {
 }
 
 .icon {
-  @extend .reset-font-size;
+  @extend .text-size-reset;
 
   display: inline-block;
 

@@ -44,17 +44,17 @@ export class OrderDetails extends Component {
           return (
             <li key={`title-${index}`} className="item flex flex-space-between">
               <div className="flex">
-                <span style={{ width: '6vw' }} className="gray-font-opacity">
+                <span style={{ width: '6vw' }} className="text-opacity">
                   {quantity} x
                 </span>
                 <div style={{ marginLeft: '2vw' }}>
-                  <span className="gray-font-opacity">{title}</span>
+                  <span className="text-opacity">{title}</span>
                   <p>
                     {variationTexts[0] ? <span className="order-detail__tag">{variationTexts.join(', ')}</span> : null}
                   </p>
                 </div>
               </div>
-              <CurrencyNumber className="gray-font-opacity" money={displayPrice * quantity} />
+              <CurrencyNumber className="text-opacity" money={displayPrice * quantity} />
             </li>
           );
         })}
@@ -70,10 +70,10 @@ export class OrderDetails extends Component {
 
     return (
       <li className="item flex flex-space-between flex-middle">
-        <span className="gray-font-opacity">
+        <span className="text-opacity">
           {t(promotion.promoType)} ({promotion.promoCode})
         </span>
-        <CurrencyNumber className="gray-font-opacity" money={-promotion.discount} />
+        <CurrencyNumber className="text-opacity" money={-promotion.discount} />
       </li>
     );
   }
@@ -109,20 +109,20 @@ export class OrderDetails extends Component {
           <div>
             <ul className="list">
               <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Subtotal')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={subtotal || 0} />
+                <span className="text-opacity">{t('Subtotal')}</span>
+                <CurrencyNumber className="text-opacity" money={subtotal || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Tax')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={tax || 0} />
+                <span className="text-opacity">{t('Tax')}</span>
+                <CurrencyNumber className="text-opacity" money={tax || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={shippingFee || 0} />
+                <span className="text-opacity">{t('DeliveryCharge')}</span>
+                <CurrencyNumber className="text-opacity" money={shippingFee || 0} />
               </li>
               <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={-displayDiscount || 0} />
+                <span className="text-opacity">{t('Cashback')}</span>
+                <CurrencyNumber className="text-opacity" money={-displayDiscount || 0} />
               </li>
               {this.renderPromotion()}
             </ul>

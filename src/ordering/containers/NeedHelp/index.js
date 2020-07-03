@@ -66,7 +66,7 @@ export class NeedHelp extends Component {
           <ul className="list">
             <li className="item border__bottom-divider">
               <summary className="item__title store-info__item font-weight-bolder">{t('StoreName')}</summary>
-              <span className="item__text gray-font-opacity">{name}</span>
+              <span className="item__text text-opacity">{name}</span>
             </li>
             <li className="item border__bottom-divider">
               <summary className="item__title store-info__item font-weight-bolder">{t('ContactInfo')}</summary>
@@ -76,7 +76,7 @@ export class NeedHelp extends Component {
             </li>
             <li className="item">
               <summary className="item__title store-info__item font-weight-bolder">{t('StoreAddress')}</summary>
-              <span className="item__text gray-font-opacity">{street1}</span>
+              <span className="item__text text-opacity">{street1}</span>
             </li>
           </ul>
         </div>

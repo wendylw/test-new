@@ -98,7 +98,7 @@ class DeliveryDetailModal extends Component {
               </a>
 
               <div className="store-info__delivery-hours">
-                <label className="font-weight-bold gray-font-opacity">{t('DeliveryHours')}</label>
+                <label className="font-weight-bold text-opacity">{t('DeliveryHours')}</label>
                 <ul className="store-info__list">{this.renderDeliveryHour()}</ul>
               </div>
             </div>

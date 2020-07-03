@@ -244,7 +244,7 @@ class Customer extends Component {
           });
         }}
       >
-        <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
+        <p className={`form__textarea ${deliveryTime ? '' : 'text-opacity'}`}>
           {deliveryTime || t('AddDeliveryTimePlaceholder')}
         </p>
       </div>
@@ -285,7 +285,7 @@ class Customer extends Component {
             });
           }}
         >
-          <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
+          <p className={`form__textarea ${deliveryToAddress ? '' : 'text-opacity'}`}>
             {deliveryToAddress || t('AddAddressPlaceholder')}
           </p>
           <IconNext className="flex__shrink-fixed" />
@@ -353,12 +353,12 @@ class Customer extends Component {
             });
           }}
         >
-          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
+          <p className={`form__textarea ${pickUpTime ? '' : 'text-opacity'}`}>
             {pickUpTime || t('PickUpAtPlaceholder')}
           </p>
         </div>
         <div className="form__group border-radius-base">
-          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
+          <p className={`form__textarea ${pickUpAddress ? '' : 'text-opacity'}`}>
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
         </div>
@@ -366,7 +366,7 @@ class Customer extends Component {
           className="form__group border-radius-base flex flex-middle flex-space-between"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
-          <p className={`${deliveryComments ? '' : 'gray-font-opacity'}`}>
+          <p className={`${deliveryComments ? '' : 'text-opacity'}`}>
             {deliveryComments ||
               `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
           </p>

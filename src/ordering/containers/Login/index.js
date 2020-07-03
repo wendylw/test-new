@@ -142,7 +142,7 @@ class Login extends React.Component {
             updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
             onSubmit={this.handleSubmitPhoneNumber.bind(this)}
           >
-            <p className="terms-privacy text-center gray-font-opacity">
+            <p className="terms-privacy text-center text-opacity">
               <Trans i18nKey="TermsAndPrivacyDescription">
                 By tapping to continue, you agree to our
                 <br />

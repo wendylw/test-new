@@ -115,7 +115,7 @@ export class VariationSelector extends Component {
 
     return (
       <li className="product-detail__options" key={variation.id}>
-        <h4 className="product-detail__options-title gray-font-opacity text-uppercase">{variation.name}</h4>
+        <h4 className="product-detail__options-title text-opacity text-uppercase">{variation.name}</h4>
         {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
           <span className={`product-detail__max-minimum-text text-error`}>{AmountLimitDescription}</span>
         ) : null}

@@ -91,13 +91,13 @@ class FormTextarea extends Component {
     return (
       <aside className={className.join(' ')} onClick={e => this.handleHideAside(e)}>
         <div ref={this.addressAsideInnerRef} className="form-text">
-          <label className="gray-font-opacity">{title}</label>
+          <label className="text-opacity">{title}</label>
           <div className="form__group">
             <textarea
               ref={this.textareaRef}
               rows="4"
               maxLength="140"
-              className="input input__textarea input__block gray-font-opacity"
+              className="input input__textarea input__block text-opacity"
               value={textValue || ''}
               onChange={this.handleUpdateText.bind(this)}
             ></textarea>

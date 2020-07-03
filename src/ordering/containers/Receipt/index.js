@@ -107,19 +107,17 @@ export class ReceiptDetail extends Component {
     return (
       <section className="table-ordering__receipt">
         <Header className="border__bottom-divider gray flex-middle" title={t('ViewReceipt')} navFunc={this.goBack}>
-          <span className="gray-font-opacity">{this.getHeaderContent()}</span>
+          <span className="text-opacity">{this.getHeaderContent()}</span>
         </Header>
         <div className="receipt__content text-center">
-          <label className="receipt__label gray-font-opacity font-weight-bolder text-uppercase">
-            {t('ReceiptNumber')}
-          </label>
+          <label className="receipt__label text-opacity font-weight-bolder text-uppercase">{t('ReceiptNumber')}</label>
           <span className="receipt__id-number">{orderId}</span>
         </div>
         {this.renderProductItem()}
         {additionalComments ? (
           <article className="receipt__note border__bottom-divider">
             <h4 className="receipt__title font-weight-bolder text-uppercase">{t('Notes')}</h4>
-            <p className="receipt__text gray-font-opacity">{additionalComments}</p>
+            <p className="receipt__text text-opacity">{additionalComments}</p>
           </article>
         ) : null}
         <Billing

@@ -85,17 +85,17 @@ export class Footer extends Component {
                 <label className="cart-bar__money-minimum">
                   {count ? (
                     <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
-                      <span className="gray-font-opacity">Remaining</span>
+                      <span className="text-opacity">Remaining</span>
                       <CurrencyNumber
-                        className="gray-font-opacity"
+                        className="text-opacity"
                         money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
                       />
                     </Trans>
                   ) : (
                     <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
-                      <span className="gray-font-opacity">Min</span>
+                      <span className="text-opacity">Min</span>
                       <CurrencyNumber
-                        className="gray-font-opacity"
+                        className="text-opacity"
                         money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
                       />
                     </Trans>

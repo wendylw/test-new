@@ -512,14 +512,14 @@ export class ThankYou extends PureComponent {
         <div className="flex flex-middle flex-space-between">
           <label className="thanks__text font-weight-bolder">{t('ThanksForOrderingWithUs')}</label>
         </div>
-        <p className="thanks__address-details gray-font-opacity">
+        <p className="thanks__address-details text-opacity">
           {t('PreOrderDeliveryTimeDetails', {
             day: toDayDateMonth(new Date(expectDeliveryDateFrom)),
             dayAndTime: toNumericTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
             deliveryTo: address,
           })}
         </p>
-        <p className="thanks__address-details gray-font-opacity">{t('PreOrderDeliverySMS')}</p>
+        <p className="thanks__address-details text-opacity">{t('PreOrderDeliverySMS')}</p>
       </div>
     );
   };
@@ -560,7 +560,7 @@ export class ThankYou extends PureComponent {
             <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderConfirmed')}</label>
             <div className="thanks__delivery-status-time">
               <IconAccessTime className="access-time-icon text-middle" />
-              <time className="text-middle gray-font-opacity">
+              <time className="text-middle text-opacity">
                 {`${paidStatusObjTime ? toLocaleTimeString(paidStatusObjTime, country, TIME_OPTIONS) : ''}, ${
                   paidStatusObjTime ? toLocaleDateString(paidStatusObjTime, country, DATE_OPTIONS) : ''
                 }`}
@@ -577,7 +577,7 @@ export class ThankYou extends PureComponent {
               <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderOnTheWay')}</label>
               <div className="thanks__delivery-status-time">
                 <IconAccessTime className="access-time-icon text-middle" />
-                <time className="text-middle gray-font-opacity">
+                <time className="text-middle text-opacity">
                   {`${pickingStatusObjTime ? toLocaleTimeString(pickingStatusObjTime, country, TIME_OPTIONS) : ''}, ${
                     pickingStatusObjTime ? toLocaleDateString(pickingStatusObjTime, country, DATE_OPTIONS) : ''
                   }`}
@@ -590,7 +590,7 @@ export class ThankYou extends PureComponent {
               <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderCancelledNoRide')}</label>
               <div className="thanks__delivery-status-time">
                 <IconAccessTime className="access-time-icon text-middle" />
-                <time className="text-middle gray-font-opacity">
+                <time className="text-middle text-opacity">
                   {`${
                     cancelledStatusObjTime ? toLocaleTimeString(cancelledStatusObjTime, country, TIME_OPTIONS) : ''
                   }, ${
@@ -695,7 +695,7 @@ export class ThankYou extends PureComponent {
                 <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
               </button>
             ) : (
-              <span className="gray-font-opacity">
+              <span className="text-opacity">
                 {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
               </span>
             )}

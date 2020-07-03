@@ -361,9 +361,9 @@ export class Home extends Component {
     switch (type) {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
-        return <span className="gray-font-opacity">{t('TableIdText', { tableId })}</span>;
+        return <span className="text-opacity">{t('TableIdText', { tableId })}</span>;
       case DELIVERY_METHOD.TAKE_AWAY:
-        return <span className="gray-font-opacity">{t('TAKE_AWAY')}</span>;
+        return <span className="text-opacity">{t('TAKE_AWAY')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
         return <IconInfoOutline className="header__info-icon" />;

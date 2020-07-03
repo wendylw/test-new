@@ -1,5 +1,3 @@
-// @import '~normalize.css';
-@import "~normalize.css/normalize.css";
 @import "Common";
 
 .back-drop {
@@ -32,7 +30,7 @@
   }
 
   &.error {
-    background-color: $red;
+    background-color: $status-red;
   }
 
   &.fixed {
@@ -62,227 +60,14 @@
   &__second-level {
     padding: 10px;
     color: $white;
-    background-color: $blue;
+    background-color: $status-blue;
   }
 }
 
 .main-section {
   position: relative;
   width: 100%;
-  background-color: $gray-4;
-}
-
-.loader {
-  color: $gray-5;
-  font-size: 16px;
-  text-indent: -9999em;
-  overflow: hidden;
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
-  animation: load6 1.7s infinite ease, round 1.7s infinite ease;
-
-  &.theme {
-    color: $theme-color;
-  }
-
-  &.page-loader {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    font-size: 40px;
-    z-index: 300;
-  }
-}
-
-@-webkit-keyframes load6 {
-  0% {
-    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-  }
-  5%,
-  95% {
-    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-  }
-  10%,
-  59% {
-    box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em,
-      -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
-  }
-  20% {
-    box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em,
-      -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
-  }
-  38% {
-    box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em,
-      -0.82em -0.09em 0 -0.477em;
-  }
-  100% {
-    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-  }
-}
-
-@keyframes load6 {
-  0% {
-    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-  }
-  5%,
-  95% {
-    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-  }
-  10%,
-  59% {
-    box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em,
-      -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
-  }
-  20% {
-    box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em,
-      -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
-  }
-  38% {
-    box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em,
-      -0.82em -0.09em 0 -0.477em;
-  }
-  100% {
-    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-  }
-}
-
-@-webkit-keyframes round {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes round {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
-.loading-cover {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: $white;
-  z-index: 300;
-
-  &.opacity {
-    background-color: rgba($color: $white, $alpha: 0.7);
-  }
-}
-
-.loader-wave {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: 16px;
-  width: 60px;
-}
-
-.dot {
-  transform-origin: 50% 50%;
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-  top: 0;
-  background-color: $theme-color;
-  position: absolute;
-  -webkit-animation: vertical-movement 1.2s infinite ease-in-out;
-  -moz-animation: vertical-movement 1.2s infinite ease-in-out;
-  -ms-animation: vertical-movement 1.2s infinite ease-in-out;
-  -o-animation: vertical-movement 1.2s infinite ease-in-out;
-  animation: vertical-movement 1.2s infinite ease-in-out;
-}
-
-.dot1 {
-  left: 12px;
-  -webkit-animation-delay: -0.3s;
-  -moz-animation-delay: -0.3s;
-  -ms-animation-delay: -0.3s;
-  -o-animation-delay: -0.3s;
-  animation-delay: -0.3s;
-  opacity: 0.25;
-}
-
-.dot2 {
-  left: 24px;
-  -webkit-animation-delay: -0.6s;
-  -moz-animation-delay: -0.6s;
-  -ms-animation-delay: -0.6s;
-  -o-animation-delay: -0.6s;
-  animation-delay: -0.6s;
-  opacity: 0.5;
-}
-
-.dot3 {
-  left: 36px;
-  -webkit-animation-delay: -0.9s;
-  -moz-animation-delay: -0.9s;
-  -ms-animation-delay: -0.9s;
-  -o-animation-delay: -0.9s;
-  animation-delay: -0.9s;
-  opacity: 0.75;
-}
-
-.dot4 {
-  left: 48px;
-  -webkit-animation-delay: -1.2s;
-  -moz-animation-delay: -1.2s;
-  -ms-animation-delay: -1.2s;
-  -o-animation-delay: -1.2s;
-  animation-delay: -1.2s;
-  opacity: 1;
-}
-
-@-webkit-keyframes vertical-movement {
-  0%,
-  100% {
-    -webkit-transform: translateY(0%);
-  }
-  50% {
-    -webkit-transform: translateY(8px);
-  }
-}
-
-@keyframes vertical-movement {
-  0%,
-  100% {
-    -webkit-transform: translateY(0%);
-    -moz-transform: translateY(0%);
-    -ms-transform: translateY(0%);
-    -o-transform: translateY(0%);
-    transform: translateY(0%);
-  }
-  50% {
-    -webkit-transform: translateY(8px);
-    -moz-transform: translateY(8px);
-    -ms-transform: translateY(8px);
-    -o-transform: translateY(8px);
-    transform: translateY(8px);
-  }
+  background-color: $gray-5;
 }
 
 .succeed-animation {
@@ -298,11 +83,6 @@
 }
 
 .container {
-  position: relative;
-  margin: auto;
-  height: 100%;
-  min-height: 100%;
-
   &.fixed {
     .list__container {
       position: fixed;
@@ -360,7 +140,7 @@
     }
 
     .header__image-container {
-      background-color: $gray-4;
+      background-color: $gray-5;
     }
 
     .item__content {
@@ -435,13 +215,13 @@
 
       label:not(.font-weight-bolder),
       span:not(.font-weight-bolder) {
-        @extend .gray-font-opacity;
+        @extend .text-opacity;
       }
     }
 
     .promotion__item {
-      border-top: 1px solid $gray-8;
-      border-bottom: 1px solid $gray-8;
+      border-top: 1px solid $gray-4;
+      border-bottom: 1px solid $gray-4;
       margin-top: 10px;
       padding-left: 5px;
 
@@ -472,14 +252,14 @@
         margin-left: 3px;
         border: none;
         svg {
-          fill: $gray-1;
+          fill: $gray-2;
           width: 100%;
           height: 100%;
         }
       }
       .promotion__error {
         white-space: normal;
-        color: $red;
+        color: $status-red;
         font-weight: $font-weight-bolder;
       }
     }
@@ -501,7 +281,7 @@
 
     .form__label ~ .form__group {
       padding: 16px;
-      border: 1px solid $gray-3;
+      border: 1px solid $gray-4;
     }
     .form__label ~ .form-field {
       margin-bottom: 16px;
@@ -534,7 +314,7 @@
   &__thanks {
     @extend .main-section;
 
-    background-color: $gray-10;
+    background-color: $gray-5;
 
     .header__title + button {
       width: 180px;
@@ -593,7 +373,7 @@
         position: absolute;
         top: 21px;
         right: 15px;
-        fill: $gray-1;
+        fill: $gray-2;
       }
 
       .promotion-code__message {
@@ -604,19 +384,19 @@
 
       &.has-error {
         input {
-          border: 1px solid $red;
+          border: 1px solid $status-red;
         }
         .promotion-code__message {
-          color: $red;
+          color: $status-red;
         }
       }
 
       &.has-success {
         input {
-          border: 1px solid $green;
+          border: 1px solid $status-green;
         }
         .promotion-code__message {
-          color: $green;
+          color: $status-green;
         }
       }
     }
@@ -741,11 +521,11 @@
 
 .border {
   &__top-divider {
-    border-top: 1px solid $gray-3;
+    border-top: 1px solid $gray-4;
   }
 
   &__bottom-divider {
-    border-bottom: 1px solid $gray-3;
+    border-bottom: 1px solid $gray-4;
   }
 }
 
@@ -793,7 +573,7 @@
   background-color: $white;
 
   &.gray {
-    background-color: $gray-5;
+    background-color: $gray-6;
   }
 
   &.transparent {
@@ -821,7 +601,7 @@
 
   &__image-container,
   &__icon {
-    @extend .reset-font-size;
+    @extend .text-size-reset;
 
     position: relative;
     display: inline-block;
@@ -973,7 +753,7 @@
 
   top: 50px;
   padding: 0;
-  background-color: $gray-5;
+  background-color: $gray-6;
 
   &__content {
     width: 100%;
@@ -1013,8 +793,8 @@
 
   &__vertical &__item {
     background-color: $gray-6;
-    color: $gray-7;
-    border-bottom: solid 1px $gray-8;
+    color: $gray-3;
+    border-bottom: solid 1px $gray-4;
     label {
       opacity: 0.8;
       word-break: break-word;
@@ -1096,7 +876,7 @@
     padding: 10px 3.8vw;
     font-size: 0.85rem;
     height: 36px;
-    background-color: $gray-5;
+    background-color: $gray-6;
 
     label {
       width: 100%;
@@ -1133,13 +913,13 @@
   }
 
   &__image-container {
-    @extend .reset-font-size;
+    @extend .text-size-reset;
     @extend .border-radius-base;
 
     position: relative;
     width: 18.5vw;
     height: 18.5vw;
-    background-color: $gray-5;
+    background-color: $gray-6;
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center center;
@@ -1203,7 +983,7 @@
     font-size: 0.9rem;
 
     &.price {
-      color: $gray-7;
+      color: $gray-3;
       margin-top: 15px;
       font-size: 0.85rem;
     }
@@ -1323,11 +1103,11 @@
 
       .cart__ctrl {
         color: $white;
-        background-color: $gray-3;
+        background-color: $gray-4;
       }
 
       .cart__add {
-        border-color: $gray-3;
+        border-color: $gray-4;
       }
     }
   }
@@ -1349,14 +1129,14 @@
 
   &__minus {
     display: none;
-    border-color: $gray-1;
+    border-color: $gray-2;
     background-color: $white;
 
     &:active {
-      border-color: $gray-1-active;
+      border-color: $minus-button-active;
 
       .cart__icon::before {
-        background-color: $gray-1-active;
+        background-color: $minus-button-active;
       }
     }
   }
@@ -1366,8 +1146,8 @@
     background-color: $theme-color;
 
     &:active {
-      border-color: $theme-color-active;
-      background-color: $theme-color-active;
+      border-color: $add-button-active;
+      background-color: $add-button-active;
     }
   }
 
@@ -1405,7 +1185,7 @@
 
   &__minus &__icon {
     &::before {
-      background-color: $gray-1;
+      background-color: $gray-2;
     }
   }
 
@@ -1434,7 +1214,7 @@
     padding: 5px;
     width: 42px;
     height: 42px;
-    fill: $gray-1;
+    fill: $gray-2;
 
     svg {
       width: 100%;
@@ -1520,7 +1300,7 @@
   &__amount-container {
     svg {
       vertical-align: middle;
-      fill: $blue;
+      fill: $status-blue;
     }
 
     svg ~ .cart-pane__amount-label {
@@ -1529,7 +1309,7 @@
   }
 
   &__amount-label {
-    color: $gray-9;
+    color: $gray-2;
   }
 }
 
@@ -1556,7 +1336,7 @@
   }
 
   &__item.active {
-    background-color: $gray-4;
+    background-color: $gray-5;
   }
 }
 
@@ -1761,7 +1541,7 @@
     line-height: 16px;
     font-size: 0.8rem;
     color: $white;
-    background-color: $blue;
+    background-color: $status-blue;
     border-radius: 12px;
   }
 
@@ -1792,8 +1572,8 @@
     padding: 3px;
     color: $white;
     line-height: 1em;
-    border-color: $gray-1;
-    background-color: $gray-1;
+    border-color: $gray-2;
+    background-color: $gray-2;
     font-style: normal;
   }
 
@@ -1804,23 +1584,23 @@
   }
 
   &__card.warning {
-    border-color: $red;
+    border-color: $status-red;
     color: $white;
-    background-color: $red;
+    background-color: $status-red;
   }
 
   &__card.blue {
-    border-color: $link-blue;
+    border-color: $status-blue;
     color: $white;
-    background-color: $link-blue;
+    background-color: $status-blue;
     white-space: nowrap;
   }
 
   &__card.disabled {
     pointer-events: none;
-    border-color: $gray-3;
-    color: $gray-1;
-    background-color: $gray-3;
+    border-color: $gray-4;
+    color: $gray-2;
+    background-color: $gray-4;
   }
 
   &__card.downsize {
@@ -1837,10 +1617,10 @@
   bottom: 0;
   z-index: 200;
   width: 100%;
-  background-color: $dark;
+  background-color: $main-color;
 
   &.opt {
-    background-color: $gray-4;
+    background-color: $gray-5;
   }
 
   .button {
@@ -1885,7 +1665,7 @@
   }
 
   &__slide-button {
-    @extend .reset-font-size;
+    @extend .text-size-reset;
 
     text-align: center;
     display: block;
@@ -1898,14 +1678,14 @@
       height: 4px;
       width: 28px;
       border-radius: 2px;
-      background-color: $gray-3;
+      background-color: $gray-4;
     }
   }
 
   &__title {
     padding: 10px 0;
     font-size: 1.3rem;
-    color: $gray-0;
+    color: $main-color;
   }
 }
 
@@ -1955,7 +1735,7 @@
 
 .logo-default {
   &__image-container {
-    @extend .reset-font-size;
+    @extend .text-size-reset;
 
     position: relative;
     display: inline-block;
@@ -1990,7 +1770,7 @@
   &__title {
     padding: 6px 0;
     line-height: $line-height-base;
-    color: $yellow;
+    color: $logo-default-title;
   }
 }
 
@@ -1999,7 +1779,7 @@
 
   width: 100%;
   height: 14vw;
-  background-color: $dark;
+  background-color: $main-color;
 
   button {
     height: 12vw;
@@ -2095,7 +1875,7 @@
   svg {
     @extend .text-middle;
 
-    fill: $gray-1;
+    fill: $gray-2;
   }
 
   &__text {
@@ -2231,7 +2011,7 @@
 
   .input__list-top {
     position: relative;
-    border: 1px solid $gray-3;
+    border: 1px solid $gray-4;
     border-radius: 4px 4px 0 0;
 
     .input {
@@ -2344,7 +2124,7 @@
   &__detected-position {
     overflow: hidden;
     align-items: stretch;
-    border-bottom: 1px solid $gray-3;
+    border-bottom: 1px solid $gray-4;
     padding: 8px 16px 16px 0;
     .location-page__address-item {
       padding: 0;
@@ -2376,7 +2156,7 @@
   }
 
   &__historical-address {
-    border-bottom: 1px solid $gray-3;
+    border-bottom: 1px solid $gray-4;
     overflow: hidden;
   }
 
@@ -2403,7 +2183,7 @@
 
   &__address-item {
     padding: 16px 24px;
-    border-bottom: 1px solid $gray-3;
+    border-bottom: 1px solid $gray-4;
   }
 
   &__address-title {
@@ -2415,7 +2195,7 @@
 
   &__address-detail {
     margin-top: 4px;
-    color: $gray-1;
+    color: $gray-2;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -2456,7 +2236,7 @@
       width: 95.2%;
       display: block;
       height: 1px;
-      background-color: $gray-3;
+      background-color: $gray-4;
     }
 
     .header__icon {
@@ -2622,7 +2402,7 @@
     font-size: 0.85rem;
     max-height: 16px;
     max-width: 100%;
-    color: $gray-9;
+    color: $gray-2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2771,7 +2551,7 @@
   &__title {
     margin: 4vw 0;
     font-size: 2.4rem;
-    color: $gray-1;
+    color: $gray-2;
   }
 
   &__delivering-title {
@@ -2807,7 +2587,7 @@
     @extend .border-radius-base;
 
     position: relative;
-    background-color: $gray-5;
+    background-color: $gray-6;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
     overflow: hidden;
 
@@ -2822,7 +2602,7 @@
     margin: 4vw 0;
 
     > * ~ * {
-      border-top: 1px solid $gray-3;
+      border-top: 1px solid $gray-4;
     }
   }
 
@@ -2866,7 +2646,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background-color: $gray-3;
+      background-color: $gray-4;
     }
 
     &.active::before {
@@ -2874,7 +2654,7 @@
     }
 
     &.error::before {
-      background-color: $red;
+      background-color: $status-red;
     }
 
     &::after {
@@ -2885,7 +2665,7 @@
       display: block;
       width: 1px;
       height: 74%;
-      background-color: $gray-3;
+      background-color: $gray-4;
     }
 
     &.finished::after {
@@ -2905,7 +2685,7 @@
 
     &.error .access-time-icon {
       svg {
-        fill: $red;
+        fill: $status-red;
       }
     }
 
@@ -2956,7 +2736,7 @@
     ~ span {
       padding-left: 20px;
       line-height: 1.5em;
-      color: $gray-9;
+      color: $gray-2;
       word-break: break-word;
       -webkit-hyphens: auto;
       -ms-hyphens: auto;
@@ -2990,14 +2770,14 @@
       display: block;
       padding: 8px 0;
       font-size: 1.2857rem;
-      color: $dark;
+      color: $main-color;
     }
   }
 
   &__id-number {
     display: block;
     font-size: 2.1428rem;
-    color: $gray-1;
+    color: $gray-2;
   }
 }
 
@@ -3044,8 +2824,8 @@
 .receipt {
   &__content {
     padding: 8vw 4vw;
-    background-color: $gray-4;
-    border-bottom: 1px solid $gray-3;
+    background-color: $gray-5;
+    border-bottom: 1px solid $gray-4;
   }
 
   &__label,
@@ -3071,7 +2851,7 @@
 }
 
 .otp-resend {
-  color: $link-blue;
+  color: $status-blue;
   font-weight: bold;
   margin-top: 2rem;
 
@@ -3089,7 +2869,7 @@
   input {
     @extend .border-radius-base;
 
-    border: 1px solid $gray-3;
+    border: 1px solid $gray-4;
     margin: 2px;
     font-size: 14vw;
   }
@@ -3203,7 +2983,7 @@
   &__icon {
     @extend .card-list__icon;
 
-    fill: $gray-5;
+    fill: $gray-6;
 
     svg {
       @extend .card-list__icon-svg;
@@ -3228,7 +3008,7 @@
 }
 
 .otp-resend {
-  color: $link-blue;
+  color: $status-blue;
   font-weight: bold;
   margin-top: 2rem;
 
@@ -3246,7 +3026,7 @@
   input {
     @extend .border-radius-base;
 
-    border: 1px solid $gray-3;
+    border: 1px solid $gray-4;
     margin: 2px;
     font-size: 14vw;
   }
@@ -3368,7 +3148,7 @@
   &__icon {
     @extend .card-list__icon;
 
-    fill: $gray-5;
+    fill: $gray-6;
 
     svg {
       @extend .card-list__icon-svg;
@@ -3464,7 +3244,7 @@
       @extend .border-radius-base;
       background-color: $white;
       color: $main-color;
-      border: solid 1px $gray-8;
+      border: solid 1px $gray-4;
       padding: 5px 28px;
       margin-right: 16px;
       align-items: center;
@@ -3485,8 +3265,8 @@
 
       &.disabled {
         background-color: $white;
-        color: $gray-8;
-        border: solid 1px $gray-8;
+        color: $gray-4;
+        border: solid 1px $gray-4;
       }
     }
   }
@@ -3505,7 +3285,7 @@
     overflow-y: scroll;
 
     &-item {
-      color: $gray-9;
+      color: $gray-2;
       font-size: 16px;
       height: 50px;
       line-height: 50px;
@@ -3516,11 +3296,11 @@
 
       &.selected {
         color: $main-color;
-        background-color: $gray-4;
+        background-color: $gray-5;
       }
 
       &.disabled {
-        color: $gray-8;
+        color: $gray-4;
       }
     }
   }
@@ -3662,7 +3442,7 @@ body.loading {
   margin: 8px 0;
 
   .react-phone-number-input__row {
-    border: 1px solid $gray-8;
+    border: 1px solid $gray-4;
     border-radius: 4px;
     padding: 0 12px;
   }
@@ -3754,7 +3534,7 @@ body.loading {
   }
 
   a.font-weight-bolder {
-    color: $gray-1;
+    color: $gray-2;
   }
 }
 
@@ -3809,13 +3589,6 @@ body.loading {
 }
 
 @media (min-width: 600px) {
-  .container {
-    position: relative;
-    max-width: 414px;
-    margin: auto;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-  }
-
   .back-drop,
   .header,
   .top-message.fixed,
@@ -3874,7 +3647,7 @@ body.loading {
   }
 
   .category__list {
-    border-right: 1px solid $gray-4;
+    border-right: 1px solid $gray-5;
   }
 
   .location-page__form,
@@ -4204,7 +3977,7 @@ body.loading {
     &-item {
       width: 17vw;
       height: 15vw;
-      border: 1px solid $gray-3;
+      border: 1px solid $gray-4;
       border-radius: 8px;
       margin: 10px;
       line-height: $line-height-base;
@@ -4232,7 +4005,7 @@ body.loading {
 
 .table-ordering__report-driver {
   width: 100%;
-  background-color: $gray-10;
+  background-color: $gray-5;
 
   .report-driver {
     &__main {
@@ -4286,7 +4059,7 @@ body.loading {
         padding: 0;
         flex-shrink: 0;
         &__check-icon {
-          border-color: $gray-3;
+          border-color: $gray-4;
           width: 24px;
           height: 24px;
 
@@ -4325,7 +4098,7 @@ body.loading {
       resize: none;
       width: 100%;
       border-radius: 8px;
-      border: 1px solid $gray-3;
+      border: 1px solid $gray-4;
       background-color: white;
       padding: 8px;
       padding-bottom: 31px;
@@ -4338,7 +4111,7 @@ body.loading {
       right: 14px;
       bottom: 14px;
       font-size: 0.9em;
-      color: $gray-7;
+      color: $gray-3;
       background-color: white;
     }
 
@@ -4357,7 +4130,7 @@ body.loading {
       align-items: center;
       justify-content: center;
       position: relative;
-      border: 2px dashed $gray-3;
+      border: 2px dashed $gray-4;
       border-radius: 8px;
       width: 120px;
       height: 104px;
@@ -4376,7 +4149,7 @@ body.loading {
     &__upload-photo-reminder {
       text-align: center;
       p {
-        color: $gray-9;
+        color: $gray-2;
       }
     }
 
@@ -4406,7 +4179,7 @@ body.loading {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background-color: $red;
+        background-color: $status-red;
         padding: 3px;
         border: 2px solid white;
 
@@ -4435,7 +4208,7 @@ body.loading {
       border-radius: $border-radius-base;
 
       &:disabled {
-        background-color: $gray-1;
+        background-color: $gray-2;
       }
     }
   }
@@ -4443,7 +4216,7 @@ body.loading {
 
 .table-ordering__report-driver-thankyou {
   width: 100%;
-  background-color: $gray-10;
+  background-color: $gray-5;
 
   .report-driver-thankyou {
     &__image {
@@ -4462,7 +4235,7 @@ body.loading {
       width: 100%;
       text-align: center;
       font-size: 3rem;
-      color: $gray-1;
+      color: $gray-2;
       font-weight: $font-weight-light;
     }
 

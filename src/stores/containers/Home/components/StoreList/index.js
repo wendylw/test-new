@@ -25,7 +25,7 @@ class StoreList extends Component {
               <div className="item__content flex flex-middle flex-space-between">
                 <div className="item__detail">
                   <summary className="item__title font-weight-bolder">{name}</summary>
-                  <span className="gray-font-opacity">{Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}</span>
+                  <span className="text-opacity">{Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}</span>
                 </div>
               </div>
             </li>

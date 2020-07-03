@@ -587,10 +587,7 @@ class ProductDetail extends Component {
                 <div className="item__detail-content">
                   <summary className="item__title font-weight-bolder">{title}</summary>
                 </div>
-                <CurrencyNumber
-                  className="gray-font-opacity font-weight-bolder"
-                  money={Number(this.displayPrice()) || 0}
-                />
+                <CurrencyNumber className="text-opacity font-weight-bolder" money={Number(this.displayPrice()) || 0} />
               </div>
             </div>
 
@@ -612,9 +609,9 @@ class ProductDetail extends Component {
             }}
           >
             {Boolean(descriptionStr) ? (
-              <p className="product-description__text gray-font-opacity" dangerouslySetInnerHTML={descriptionStr} />
+              <p className="product-description__text text-opacity" dangerouslySetInnerHTML={descriptionStr} />
             ) : (
-              <p className="product-description__text gray-font-opacity">{t('NoProductDescription')}</p>
+              <p className="product-description__text text-opacity">{t('NoProductDescription')}</p>
             )}
           </article>
         </div>

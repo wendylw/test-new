@@ -152,7 +152,7 @@ class PageClaim extends React.Component {
     return (
       <div className="location">
         <IconLocation />
-        <span className="location__text gray-font-opacity text-middle">{addressInfo.join(', ')}</span>
+        <span className="location__text text-opacity text-middle">{addressInfo.join(', ')}</span>
       </div>
     );
   }

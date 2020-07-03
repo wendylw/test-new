@@ -65,7 +65,7 @@ class CurrentCategoryBar extends PureComponent {
                           })
                         }
                       >
-                        <label className={isVerticalMenu ? '' : 'gray-font-opacity'}>{c.name}</label>
+                        <label className={isVerticalMenu ? '' : 'text-opacity'}>{c.name}</label>
                       </li>
                     );
                   })}

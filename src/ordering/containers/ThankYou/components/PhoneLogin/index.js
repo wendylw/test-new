@@ -282,7 +282,7 @@ class PhoneLogin extends React.Component {
         <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
 
-        {/* <p className="terms-privacy text-center gray-font-opacity">
+        {/* <p className="terms-privacy text-center text-opacity">
           <Trans i18nKey="TermsAndPrivacyDescription">
             By tapping to continue, you agree to our
             <br />
