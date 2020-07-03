@@ -92,7 +92,12 @@ export class ReceiptDetail extends Component {
                 />
               }
             >
-              <ItemOperator className="flex-middle exhibit" quantity={quantity} decreaseDisabled={quantity === 0} />
+              <ItemOperator
+                className="flex-middle exhibit"
+                data-heap-name="ordering.receipt.item-operator"
+                quantity={quantity}
+                decreaseDisabled={quantity === 0}
+              />
             </Item>
           );
         })}
