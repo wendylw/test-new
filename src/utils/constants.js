@@ -207,9 +207,11 @@ const PROMO_TYPE = {
 
 const REPORT_DRIVER_REASON_CODE = {
   FOOD_WAS_DAMAGED: 'foodWasDamaged',
-  DRIVER_WAS_LATE: 'driverWasLate',
+  DELIVERY_TAKE_TOO_LONG: 'deliveryTakeTooLong',
   DRIVER_WAS_RUDE: 'driverWasRude',
   DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
+  ORDER_WAS_MISSING_ITEM: 'orderWasMissingItem',
+  NEVER_RECEIVED_MY_ORDER: 'NeverReceivedMyOrder',
   OTHERS: 'others',
 };
 
