@@ -366,7 +366,7 @@ export class Home extends Component {
         return <span className="text-opacity">{t('TAKE_AWAY')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
-        return <IconInfoOutline className="header__info-icon" />;
+        return <IconInfoOutline className="icon icon__big text-middle flex__shrink-fixed" />;
       default:
         return null;
     }
@@ -460,10 +460,7 @@ export class Home extends Component {
       classList.push('location-page__entry-container');
     }
     return (
-      <section className={classList.join(' ')}>
-        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
-          <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
-        ) : null}
+      <React.Fragment>
         {this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping &&
@@ -528,9 +525,11 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-
+        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
+          <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
+        ) : null}
         {this.renderOfflineModal(enableLiveOnline)}
-      </section>
+      </React.Fragment>
     );
   }
 }

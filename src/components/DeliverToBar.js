@@ -29,9 +29,9 @@ class DeliverToBar extends PureComponent {
             gotoLocationPage();
           }}
         >
-          <label className="deliver-to-entry__label text-uppercase text-weight-bold">{title}</label>
+          <label className="deliver-to-entry__label text-size-small text-uppercase text-weight-bold">{title}</label>
           <div>
-            <IconLocation className="icon icon__small icon__gray text-middle" />
+            <IconLocation className="icon icon__smaller text-middle" />
             <span className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">{address}</span>
           </div>
         </div>

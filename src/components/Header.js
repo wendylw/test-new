@@ -8,6 +8,7 @@ import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
 import { BackPosition, showBackButton } from '../utils/backHelper';
+import './Header.scss';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -18,34 +19,38 @@ class Header extends Component {
     // }
 
     const renderPageAction = () => {
-      if (
-        !isStoreHome ||
-        (isStoreHome &&
-          showBackButton({
-            isValidTimeToOrder,
-            enablePreOrder,
-            backPosition: BackPosition.STORE_NAME,
-          }))
-      ) {
-        const iconClassName = 'icon icon__big icon__gray text-middle';
+      const isHomePageBack =
+        isStoreHome &&
+        showBackButton({
+          isValidTimeToOrder,
+          enablePreOrder,
+          backPosition: BackPosition.STORE_NAME,
+        });
 
-        return (
-          <div>
-            {isPage ? (
-              <IconLeftArrow className={iconClassName} onClick={navFunc} />
-            ) : (
-              <IconClose className={iconClassName} onClick={navFunc} />
-            )}
-          </div>
+      if (!isStoreHome || isHomePageBack) {
+        const iconClassName = `icon ${
+          isHomePageBack ? 'icon__normal' : 'icon__big'
+        } icon__gray text-middle flex__shrink-fixed`;
+
+        return isPage ? (
+          <IconLeftArrow className={iconClassName} onClick={navFunc} />
+        ) : (
+          <IconClose className={iconClassName} onClick={navFunc} />
         );
       }
     };
 
     return (
-      <div>
+      <React.Fragment>
         {renderPageAction()}
-        {isStoreHome ? <Image className="header__image-container text-middle" src={logo} alt={title} /> : null}
-      </div>
+        {isStoreHome ? (
+          <Image
+            className="logo logo__normal text-middle margin-top-bottom-smallest flex__shrink-fixed"
+            src={logo}
+            alt={title}
+          />
+        ) : null}
+      </React.Fragment>
     );
   }
 
@@ -66,69 +71,77 @@ class Header extends Component {
     } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
-    const classList = [`header flex flex-space-between${isPickUpType ? ' pick-up' : ''}`];
+    const classList = ['header flex flex-space-between flex-middle sticky-wrapper'];
+    const contentClassList = ['header__content padding-top-bottom-smaller padding-left-right-small flex'];
     const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
 
     if (className) {
       classList.push(className);
+      contentClassList.push(className);
     }
 
     return (
       <header
-        className="header flex flex-space-between flex-middle sticky-wrapper"
+        className={classList.join(' ')}
         onClick={() => {
           if (isDeliveryType || isPickUpType) {
             onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
           }
         }}
       >
-        {this.renderLogoAndNavDom()}
-        {isStoreHome && (isDeliveryType || isPickUpType) ? (
-          <div className="header__title-container">
-            <h1 className="header__title">
-              <span
-                className={`header__one-line-title font-weight-bolder text-middle ${
-                  !isValidTimeToOrder ? 'has-tag' : ''
-                }`}
-              >
-                {title}
-              </span>
-              {isValidTimeToOrder ? null : (
-                <div className="tag__card-container text-middle">
-                  {enablePreOrder ? (
-                    <Tag text={t('PreOrder')} className="tag__card blue downsize text-middle" />
-                  ) : (
-                    <Tag text={t('Closed')} className="tag__card warning downsize text-middle" />
-                  )}
-                </div>
-              )}
-            </h1>
-            {isDeliveryType ? (
-              <ul className="header__info-list">
-                <li className="header__info-item">
-                  <IconMotorcycle className="header__motor-icon text-middle" />
-                  <CurrencyNumber
-                    className="header__info-text text-middle font-weight-bolder"
-                    money={deliveryFee || 0}
-                  />
-                </li>
-                {enableCashback && cashbackRatePercentage ? (
-                  <li className="header__info-item">
-                    <IconWallet className="header__motor-icon text-middle" />
-                    <span className="header__info-text text-middle font-weight-bolder">
-                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
-                    </span>
+        <div className={contentClassList.join(' ')}>
+          {this.renderLogoAndNavDom()}
+          {isStoreHome && (isDeliveryType || isPickUpType) ? (
+            <div className="header__store-info padding-left-right-small">
+              <div>
+                <h1
+                  className={`padding-top-bottom-smaller text-size-big font-weight-bolder text-middle ${
+                    !isValidTimeToOrder ? 'has-tag' : ''
+                  }`}
+                >
+                  {title}
+                </h1>
+                {isValidTimeToOrder ? null : (
+                  <div className="tag__card-container text-middle">
+                    {enablePreOrder ? (
+                      <Tag text={t('PreOrder')} className="tag__card blue downsize text-middle" />
+                    ) : (
+                      <Tag text={t('Closed')} className="tag__card warning downsize text-middle" />
+                    )}
+                  </div>
+                )}
+              </div>
+              {isDeliveryType ? (
+                <ul className="store-info">
+                  <li className="store-info__item">
+                    <IconMotorcycle className="icon icon__smaller text-middle" />
+                    <CurrencyNumber
+                      className="store-info__text text-size-smaller text-middle"
+                      money={deliveryFee || 0}
+                    />
                   </li>
-                ) : null}
-              </ul>
-            ) : null}
-            {isPickUpType ? <p className="header__pickup-address text-opacity text-omit">{storeAddress}</p> : null}
-          </div>
-        ) : (
-          <h2 className="header__title font-weight-bolder text-middle" data-testid="headerTitle">
-            {title}
-          </h2>
-        )}
+                  {enableCashback && cashbackRatePercentage ? (
+                    <li className="store-info__item">
+                      <IconWallet className="icon icon__smaller text-middle" />
+                      <span className="store-info__text text-size-smaller text-middle">
+                        {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
+                      </span>
+                    </li>
+                  ) : null}
+                </ul>
+              ) : null}
+              {isPickUpType ? (
+                <p className="header__store-address padding-top-bottom-smaller text-size-small text-opacity text-omit__multiple-line">
+                  {storeAddress}
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <h2 className="header__title font-weight-bolder text-middle" data-testid="headerTitle">
+              {title}
+            </h2>
+          )}
+        </div>
         {children}
       </header>
     );

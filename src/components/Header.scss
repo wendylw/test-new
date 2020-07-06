@@ -1,0 +1,31 @@
+@import "../site/Variables.scss";
+
+.header {
+  top: 0;
+  width: 100%;
+  z-index: $z-index-base;
+  background-color: $white;
+
+  &__content {
+    max-width: 90%;
+    width: 100%;
+  }
+
+  &__title,
+  &__store-info {
+    max-width: 85%;
+
+    h1 {
+      margin: 0;
+    }
+  }
+
+  &__title {
+    max-height: 20px;
+    -webkit-line-clamp: 1;
+  }
+
+  &__store-address {
+    -webkit-line-clamp: 2;
+  }
+}

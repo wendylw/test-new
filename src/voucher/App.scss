@@ -25,19 +25,19 @@
   }
 }
 
-.header {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 200;
-  width: 100%;
-  background-color: $white;
-  padding: 10px;
-  height: 50px;
-  .header__back-button {
-    fill: #909090;
-  }
-}
+// .header {
+//   position: fixed;
+//   left: 0;
+//   top: 0;
+//   z-index: 200;
+//   width: 100%;
+//   background-color: $white;
+//   padding: 10px;
+//   height: 50px;
+//   .header__back-button {
+//     fill: #909090;
+//   }
+// }
 
 .gift-card {
   &__page {
@@ -243,12 +243,12 @@
     padding-bottom: 90px;
   }
 
-  .header {
-    max-width: 414px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-  }
+  // .header {
+  //   max-width: 414px;
+  //   left: 0;
+  //   right: 0;
+  //   margin: 0 auto;
+  // }
 }
 
 .thankyou-page {
