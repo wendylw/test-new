@@ -172,7 +172,7 @@ class LocationAndDate extends Component {
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
     const { business, allBusinessInfo } = this.props;
-    const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { disableTodayPreOrder, disableOnDemandOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
@@ -188,7 +188,7 @@ class LocationAndDate extends Component {
         if (!isOpen) continue;
       }
 
-      if (disableTodayPreOrder && !i) {
+      if (disableTodayPreOrder && disableOnDemandOrder && !i) {
         continue;
       }
 
@@ -359,7 +359,7 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     const { qrOrderingSettings } = allBusinessInfo[business];
-    const { disableOnDemandOrder } = qrOrderingSettings;
+    const { disableOnDemandOrder, disableTodayPreOrder } = qrOrderingSettings;
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return !disableOnDemandOrder ? (
@@ -392,16 +392,18 @@ class LocationAndDate extends Component {
       const from = getHourAndMinuteFromTime(item.from);
       const to = item.to && getHourAndMinuteFromTime(item.to);
       return (
-        <li
-          className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
-          data-testid="preOrderHour"
-          onClick={() => {
-            this.handleSelectHour({ from, to });
-          }}
-          key={`${from} - ${to}`}
-        >
-          {timeToDisplay}
-        </li>
+        !disableTodayPreOrder && (
+          <li
+            className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
+            data-testid="preOrderHour"
+            onClick={() => {
+              this.handleSelectHour({ from, to });
+            }}
+            key={`${from} - ${to}`}
+          >
+            {timeToDisplay}
+          </li>
+        )
       );
     });
   };
