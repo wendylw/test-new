@@ -159,7 +159,7 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="table-ordering">
+      <main className="table-ordering fixed-wrapper fixed-wrapper__main">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         <Routes />

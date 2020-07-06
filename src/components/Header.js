@@ -27,21 +27,25 @@ class Header extends Component {
             backPosition: BackPosition.STORE_NAME,
           }))
       ) {
-        const iconClassName = 'header__icon text-middle';
+        const iconClassName = 'icon icon__big icon__gray text-middle';
 
-        return isPage ? (
-          <IconLeftArrow className={iconClassName} onClick={navFunc} />
-        ) : (
-          <IconClose className={iconClassName} onClick={navFunc} />
+        return (
+          <div>
+            {isPage ? (
+              <IconLeftArrow className={iconClassName} onClick={navFunc} />
+            ) : (
+              <IconClose className={iconClassName} onClick={navFunc} />
+            )}
+          </div>
         );
       }
     };
 
     return (
-      <React.Fragment>
+      <div>
         {renderPageAction()}
         {isStoreHome ? <Image className="header__image-container text-middle" src={logo} alt={title} /> : null}
-      </React.Fragment>
+      </div>
     );
   }
 
@@ -71,7 +75,7 @@ class Header extends Component {
 
     return (
       <header
-        className={classList.join(' ')}
+        className="header flex flex-space-between flex-middle sticky-wrapper"
         onClick={() => {
           if (isDeliveryType || isPickUpType) {
             onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
