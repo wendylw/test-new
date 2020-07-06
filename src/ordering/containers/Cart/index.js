@@ -38,7 +38,24 @@ class Cart extends Component {
     window.scrollTo(0, 0);
     this.handleResizeEvent();
   }
+  componentDidUpdate() {
+    this.setListHeight();
+  }
+  setListHeight = () => {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    const asideOffset = document.querySelectorAll('.aside-bottom')[0].offsetTop;
+    const asideHeight = document.querySelectorAll('.aside-bottom')[0].offsetHeight;
 
+    const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
+    const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
+    const footerHeight = document.querySelectorAll('footer.footer-operation')[0].offsetHeight;
+
+    const scroll = textOffset - asideOffset + textHeight + 55;
+    const h = clientHeight - 50 - footerHeight - asideHeight;
+    console.log(clientHeight, footerHeight, asideHeight);
+    document.querySelector('.list__container').style.height = h + 'px';
+  };
   handleResizeEvent() {
     window.addEventListener(
       'resize',
@@ -164,13 +181,9 @@ class Cart extends Component {
   }
 
   AdditionalCommentsFocus = () => {
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
-    const asideOffset = document.querySelectorAll('.aside-bottom')[0].offsetTop;
-    const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
-    const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
-    const scroll = textOffset - asideOffset + textHeight + 55;
-    document.documentElement.scrollTop = document.documentElement.scrollHeight;
+    setTimeout(() => {
+      document.querySelector('.list__container').scrollTop = document.querySelector('.list__container').scrollHeight;
+    }, 300);
   };
 
   renderAdditionalComments() {
@@ -267,7 +280,7 @@ class Cart extends Component {
             <span className="warning__label text-middle">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="list__container">
+        <div className="list__container" style={{ overflowY: 'scroll' }}>
           <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
