@@ -171,11 +171,9 @@ class LocationAndDate extends Component {
   setDeliveryDays = (validDays = []) => {
     const deliveryDates = [];
     const { business, allBusinessInfo } = this.props;
-    const { disableTodayPreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
-    const { useStorehubLogistics } = qrOrderingSettings || {};
-
+    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
     for (let i = 0; i < 5; i++) {
       const currentTime = this.getMerchantLocalTime();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -199,7 +197,7 @@ class LocationAndDate extends Component {
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
       }
 
-      if (disableTodayPreOrder && !i) {
+      if (disableTodayPreOrder && disableOnDemandOrder && !i) {
         continue;
       }
 
@@ -369,7 +367,7 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     const { qrOrderingSettings } = allBusinessInfo[business];
-    const { disableOnDemandOrder } = qrOrderingSettings;
+    const { disableOnDemandOrder, disableTodayPreOrder } = qrOrderingSettings;
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return !disableOnDemandOrder ? (
@@ -401,17 +399,28 @@ class LocationAndDate extends Component {
       // item.from and item.to are time in ISOString format
       const from = getHourAndMinuteFromTime(item.from);
       const to = item.to && getHourAndMinuteFromTime(item.to);
+      console.log(this.state.selectedDate, '---');
+      let isShowList = true;
+      if (this.state.selectedDate.isToday) {
+        if (disableTodayPreOrder) {
+          isShowList = false;
+        } else {
+          isShowList = true;
+        }
+      }
       return (
-        <li
-          className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
-          data-testid="preOrderHour"
-          onClick={() => {
-            this.handleSelectHour({ from, to });
-          }}
-          key={`${from} - ${to}`}
-        >
-          {timeToDisplay}
-        </li>
+        isShowList && (
+          <li
+            className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
+            data-testid="preOrderHour"
+            onClick={() => {
+              this.handleSelectHour({ from, to });
+            }}
+            key={`${from} - ${to}`}
+          >
+            {timeToDisplay}
+          </li>
+        )
       );
     });
   };
