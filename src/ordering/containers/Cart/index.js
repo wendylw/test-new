@@ -170,7 +170,7 @@ class Cart extends Component {
     const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
     const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
     const scroll = textOffset - asideOffset + textHeight + 55;
-    document.documentElement.scrollTop = scroll;
+    document.documentElement.scrollTop = document.documentElement.scrollHeight;
   };
 
   renderAdditionalComments() {
