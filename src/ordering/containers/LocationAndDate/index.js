@@ -359,10 +359,10 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     const { qrOrderingSettings } = allBusinessInfo[business];
-    const { disableOnDemandPreOrder } = qrOrderingSettings;
+    const { disableOnDemandOrder } = qrOrderingSettings;
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
-        return !disableOnDemandPreOrder ? (
+        return !disableOnDemandOrder ? (
           <li
             className={`location-display__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
