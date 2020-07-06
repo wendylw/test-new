@@ -391,8 +391,17 @@ class LocationAndDate extends Component {
       // item.from and item.to are time in ISOString format
       const from = getHourAndMinuteFromTime(item.from);
       const to = item.to && getHourAndMinuteFromTime(item.to);
+      console.log(this.state.selectedDate, '---');
+      let isShowList = true;
+      if (this.state.selectedDate.isToday) {
+        if (disableTodayPreOrder) {
+          isShowList = false;
+        } else {
+          isShowList = true;
+        }
+      }
       return (
-        !disableTodayPreOrder && (
+        isShowList && (
           <li
             className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
             data-testid="preOrderHour"
