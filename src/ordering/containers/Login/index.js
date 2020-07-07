@@ -114,7 +114,7 @@ class Login extends React.Component {
     return (
       <section className={classList.join(' ')}>
         <Header
-          className="border__bottom-divider flex-middle"
+          className="flex-middle border__bottom-divider"
           title="Account"
           isPage={true}
           navFunc={() => {
@@ -147,11 +147,11 @@ class Login extends React.Component {
                 By tapping to continue, you agree to our
                 <br />
                 <BrowserRouter basename="/">
-                  <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
+                  <Link className="text-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
                     Terms of Service
                   </Link>
                   , and{' '}
-                  <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
+                  <Link className="text-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
                     Privacy Policy
                   </Link>
                   .

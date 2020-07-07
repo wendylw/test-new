@@ -253,7 +253,7 @@ export class Home extends Component {
 
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
-        <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
+        <div className="location-page__entry" onClick={fillInDeliverToAddress}>
           <div className="item__detail-content flex flex-top flex-space-between">
             {showBackButton({
               isValidTimeToOrder,
@@ -261,7 +261,7 @@ export class Home extends Component {
               backPosition: BackPosition.DELIVERY_TO,
             }) ? (
               <IconLeftArrow
-                className="header__icon"
+                className="icon icon__big icon__gray text-middle flex__shrink-fixed"
                 onClick={event => {
                   event.preventDefault();
                   window.location.href = this.navBackUrl;
@@ -270,7 +270,7 @@ export class Home extends Component {
               />
             ) : null}
             <div className="location-page__base-info">
-              <summary className="item__title text-uppercase font-weight-bolder">
+              <summary className="item__title text-uppercase text-weight-bolder">
                 {Utils.isDeliveryType() && t('DeliverTo')}
                 {Utils.isPickUpType() && t('PickUpOn')}
               </summary>
@@ -361,9 +361,11 @@ export class Home extends Component {
     switch (type) {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
-        return <span className="text-opacity">{t('TableIdText', { tableId })}</span>;
+        return (
+          <span className="flex__shrink-fixed flex__shrink-fixed text-opacity">{t('TableIdText', { tableId })}</span>
+        );
       case DELIVERY_METHOD.TAKE_AWAY:
-        return <span className="text-opacity">{t('TAKE_AWAY')}</span>;
+        return <span className="flex__shrink-fixed padding-normal text-opacity">{t('TAKE_AWAY')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
         return <IconInfoOutline className="icon icon__big text-middle flex__shrink-fixed" />;
@@ -386,7 +388,7 @@ export class Home extends Component {
     if (isDeliveryType || isPickUpType) {
       classList.push('flex-top');
     } else {
-      classList.push('border__bottom-divider gray flex-middle');
+      classList.push('flex-middle border__bottom-divider');
     }
 
     return (

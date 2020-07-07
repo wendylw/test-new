@@ -41,7 +41,7 @@ export class Item extends Component {
                   <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
                 </div>
               ) : null}
-              <summary className="item__title font-weight-bolder">
+              <summary className="item__title text-weight-bolder">
                 <span className="item__title-productName">{title}</span>
               </summary>
               {variation ? (

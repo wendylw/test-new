@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 class Tag extends Component {
   render() {
     const { text, className, style } = this.props;
-    const classList = ['text-uppercase font-weight-bolder'];
+    const classList = ['text-uppercase text-weight-bolder'];
 
     if (className) {
       classList.push(className);

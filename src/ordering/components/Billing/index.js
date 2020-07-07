@@ -35,12 +35,12 @@ export class Billing extends Component {
     return (
       <li className="billing__item flex flex-middle flex-space-between">
         <label className="flex flex-middle">
-          <span className="font-weight-bolder">
+          <span className="text-weight-bolder">
             {t(promotion.promoType)} ({promotion.promoCode})
           </span>
         </label>
         <span className="text-nowrap">
-          {'-'} <CurrencyNumber className="font-weight-bolder" money={promotion.discount} />
+          {'-'} <CurrencyNumber className="text-weight-bolder" money={promotion.discount} />
         </span>
       </li>
     );
@@ -104,10 +104,10 @@ export class Billing extends Component {
                 isLogin ? 'primary' : ''
               }`}
             >
-              <label className="font-weight-bolder">{t('BeepCashback')}</label>
+              <label className="text-weight-bolder">{t('BeepCashback')}</label>
               {isLogin ? (
-                <span className="font-weight-bolder">
-                  - <CurrencyNumber className="font-weight-bolder" money={creditsBalance || 0} />
+                <span className="text-weight-bolder">
+                  - <CurrencyNumber className="text-weight-bolder" money={creditsBalance || 0} />
                 </span>
               ) : (
                 <button onClick={this.handleLogin} className="billing__login">
@@ -119,8 +119,8 @@ export class Billing extends Component {
           {this.renderPromotion()}
           {children}
           <li className="billing__item show flex flex-middle flex-space-between">
-            <label className="font-weight-bolder">{t('Total')}</label>
-            <CurrencyNumber className="font-weight-bolder" money={total || 0} />
+            <label className="text-weight-bolder">{t('Total')}</label>
+            <CurrencyNumber className="text-weight-bolder" money={total || 0} />
           </li>
         </ul>
       </section>

@@ -109,7 +109,7 @@ class Login extends React.Component {
                   By tapping to continue, you agree to our
                   <br />
                   <Link
-                    className="font-weight-bolder link__non-underline"
+                    className="text-weight-bolder link__non-underline"
                     target="_blank"
                     to={Constants.ROUTER_PATHS.TERMS_OF_USE}
                   >
@@ -117,7 +117,7 @@ class Login extends React.Component {
                   </Link>
                   , and{' '}
                   <Link
-                    className="font-weight-bolder link__non-underline"
+                    className="text-weight-bolder link__non-underline"
                     target="_blank"
                     to={Constants.ROUTER_PATHS.PRIVACY}
                   >

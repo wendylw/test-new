@@ -119,7 +119,7 @@ class RecentActivities extends React.Component {
         }
       >
         <Header
-          className="flex-middle transparent text-center"
+          className="flex-middle text-center"
           title={t('CashbackHistory')}
           isPage={true}
           navFunc={() => {
@@ -130,7 +130,7 @@ class RecentActivities extends React.Component {
             closeActivity();
           }}
         />
-        <article className="loyalty__content">{this.renderLogList()}</article>
+        <article className="flex__shrink-fixed loyalty__content">{this.renderLogList()}</article>
       </section>
     );
   }

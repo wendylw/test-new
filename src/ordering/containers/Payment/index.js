@@ -167,7 +167,7 @@ class Payment extends Component {
     return (
       <section className={className.join(' ')}>
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('SelectPayment')}
           navFunc={this.handleClickBack}
@@ -198,7 +198,7 @@ class Payment extends Component {
                     <PaymentLogo payment={payment} />
                   </figure>
                   <div className="payment__name">
-                    <label className="font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
+                    <label className="text-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
                     {disabledPayment ? promptDom : null}
                   </div>
                   <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>

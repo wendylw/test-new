@@ -369,9 +369,9 @@ class CreditCard extends Component {
       <form id="bank-2c2p-form" className="form">
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bolder">{t('CardInformation')}</label>
+            <label className="payment-bank__label text-weight-bolder">{t('CardInformation')}</label>
             {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
-              <span className="error-message font-weight-bolder text-uppercase">{cardInfoError.messages.required}</span>
+              <span className="error-message text-weight-bolder text-uppercase">{cardInfoError.messages.required}</span>
             ) : null}
           </div>
           <div className="payment-bank__card-container">
@@ -430,9 +430,9 @@ class CreditCard extends Component {
         </div>
         <div className="payment-bank__form-item">
           <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label font-weight-bolder">{t('NameOnCard')}</label>
+            <label className="payment-bank__label text-weight-bolder">{t('NameOnCard')}</label>
             {cardHolderNameError.key === FormValidate.errorNames.required ? (
-              <span className="error-message font-weight-bolder text-uppercase">{cardHolderNameError.message}</span>
+              <span className="error-message text-weight-bolder text-uppercase">{cardHolderNameError.message}</span>
             ) : null}
           </div>
           <input
@@ -467,7 +467,7 @@ class CreditCard extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -478,7 +478,7 @@ class CreditCard extends Component {
           }}
         />
         <div className="payment-bank">
-          <CurrencyNumber className="payment-bank__money font-weight-bold text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money text-weight-bold text-center" money={total || 0} />
 
           {this.renderForm()}
         </div>
@@ -499,11 +499,11 @@ class CreditCard extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </CreateOrderButton>
           {/* <button
-            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
+            className="button button__fill button__block text-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             data-testid="payMoney"
             disabled={payNowLoading}
@@ -511,7 +511,7 @@ class CreditCard extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-                <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+                <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
               )}
           </button> */}
         </div>

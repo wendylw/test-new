@@ -30,7 +30,7 @@ class Sorry extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
-              className="continue__button button button__fill button__block font-weight-bolder"
+              className="continue__button button button__fill button__block text-weight-bolder"
               onClick={this.handleClickBack}
             >
               {t('TryAgain')}

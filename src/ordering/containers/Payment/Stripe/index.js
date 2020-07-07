@@ -50,11 +50,11 @@ const Field = ({
 }) => (
   <div className={formClassName}>
     <div className="flex flex-middle flex-space-between">
-      <label htmlFor={id} className="payment-bank__label font-weight-bolder">
+      <label htmlFor={id} className="payment-bank__label text-weight-bolder">
         {label}
       </label>
       {isFormTouched && isNotNameComplete ? (
-        <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
+        <span className="error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
       ) : null}
     </div>
     <input
@@ -142,9 +142,9 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
   return (
     <form className="form" onSubmit={handleSubmit}>
       <div className="flex flex-middle flex-space-between">
-        <label className="payment-bank__label font-weight-bolder">{t('CardInformation')}</label>
+        <label className="payment-bank__label text-weight-bolder">{t('CardInformation')}</label>
         {isFormTouched && isNotCardComplete ? (
-          <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
+          <span className="error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
         ) : null}
       </div>
       <div
@@ -336,11 +336,11 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
             }
           }}
         >
-          <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+          <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
         </CreateOrderButton>
       </div>
       {/* <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
-        <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+        <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
       </SubmitButton> */}
 
       {paymentMethod ? renderRedirectForm(paymentMethod) : null}
@@ -395,7 +395,7 @@ class Stripe extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="flex-middle border__bottom-divider gray has-right"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -407,7 +407,7 @@ class Stripe extends Component {
         />
 
         <div className="payment-bank stripe">
-          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money text-weight-bolder text-center" money={total || 0} />
 
           <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm

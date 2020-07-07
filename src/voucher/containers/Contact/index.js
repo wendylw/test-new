@@ -82,7 +82,7 @@ class Contact extends Component {
         <Header clickBack={this.handleClickBack} />
         <div className="gift-card__page">
           <div className="gift-card__card">
-            <h2 className="font-weight-bolder text-center gift-card__subtitle">{t('GiftCardSelected')}</h2>
+            <h2 className="text-weight-bolder text-center gift-card__subtitle">{t('GiftCardSelected')}</h2>
             <div className="gift-card__card-container">
               <div className="gift-card__store">
                 <div className="gift-card__store-item gift-card__store-logo">
@@ -112,7 +112,7 @@ class Contact extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
-              className="continue__button button button__fill button__block font-weight-bolder"
+              className="continue__button button button__fill button__block text-weight-bolder"
               onClick={this.handleContinue}
               disabled={!contactEmail}
             >

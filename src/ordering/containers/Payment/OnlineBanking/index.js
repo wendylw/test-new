@@ -136,7 +136,7 @@ class OnlineBanking extends Component {
     return (
       <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
@@ -149,12 +149,12 @@ class OnlineBanking extends Component {
 
         <div className="payment-bank">
           <Image className="logo-default__image-container" src={logo} />
-          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
+          <CurrencyNumber className="payment-bank__money text-weight-bolder text-center" money={total || 0} />
 
           <form id="bank-2c2p-form" className="form">
             <div className="payment-bank__form-item">
               <div className="flex flex-middle flex-space-between">
-                <label className="payment-bank__label font-weight-bolder">{t('SelectABank')}</label>
+                <label className="payment-bank__label text-weight-bolder">{t('SelectABank')}</label>
               </div>
               <div className="payment-bank__card-container">
                 <div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
@@ -194,11 +194,11 @@ class OnlineBanking extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </CreateOrderButton>
           {/* <button
-            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
+            className="button button__fill button__block text-weight-bolder text-uppercase border-radius-base"
             data-testid="payMoney"
             onClick={this.payNow.bind(this)}
             disabled={payNowLoading}
@@ -206,7 +206,7 @@ class OnlineBanking extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-                <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+                <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
               )}
           </button> */}
         </div>

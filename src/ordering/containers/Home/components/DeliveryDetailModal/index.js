@@ -79,7 +79,7 @@ class DeliveryDetailModal extends Component {
             <div className="header__title-container">
               <h2 className="header__title">
                 <span
-                  className={`header__one-line-title font-weight-bolder text-middle ${
+                  className={`header__one-line-title text-weight-bolder text-middle ${
                     !isValidTimeToOrder ? 'has-tag' : ''
                   }`}
                 >
@@ -98,7 +98,7 @@ class DeliveryDetailModal extends Component {
               </a>
 
               <div className="store-info__delivery-hours">
-                <label className="font-weight-bold text-opacity">{t('DeliveryHours')}</label>
+                <label className="text-weight-bold text-opacity">{t('DeliveryHours')}</label>
                 <ul className="store-info__list">{this.renderDeliveryHour()}</ul>
               </div>
             </div>

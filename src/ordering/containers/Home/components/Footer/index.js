@@ -80,7 +80,7 @@ export class Footer extends Component {
             </div>
 
             <div className="cart-bar__money text-middle text-left">
-              <CurrencyNumber className="font-weight-bolder" money={this.getDisplayPrice() || 0} />
+              <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
               {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="cart-bar__money-minimum">
                   {count ? (

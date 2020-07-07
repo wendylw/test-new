@@ -286,11 +286,18 @@ img {
 }
 
 .margin-top-bottom-smallest {
-  margin: 1.4vw 0;
+  margin-top: 1.4vw;
+  margin-bottom: 1.4vw;
 }
 
 .margin-top-bottom-smaller {
-  margin: 2.4vw 0;
+  margin-top: 2.4vw;
+  margin-bottom: 2.4vw;
+}
+
+.margin-left-right-smaller {
+  margin-left: 2.4vw;
+  margin-right: 2.4vw;
 }
 
 .margin-normal {
@@ -605,6 +612,10 @@ img {
   &__error {
     background-color: $status-red;
   }
+
+  &__primary {
+    background-color: $status-blue;
+  }
 }
 
 .top-message {
@@ -819,11 +830,18 @@ img {
   }
 
   .margin-top-bottom-smallest {
-    margin: 4px 0;
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 
   .margin-top-bottom-smaller {
-    margin: 8px 0;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .margin-left-right-smaller {
+    margin-left: 8px;
+    margin-right: 8px;
   }
 
   .margin-normal {
@@ -1118,21 +1136,21 @@ form {
   }
 }
 
-.font-weight-light {
-  font-weight: $font-weight-light;
-}
+// .font-weight-light {
+//   font-weight: $font-weight-light;
+// }
 
-.font-weight-bolder {
-  font-weight: $font-weight-bolder;
-}
+// .font-weight-bolder {
+//   font-weight: $font-weight-bolder;
+// }
 
-.font-weight-bold {
-  font-weight: $font-weight-bold;
-}
+// .font-weight-bold {
+//   font-weight: $font-weight-bold;
+// }
 
-.text-uppercase {
-  text-transform: uppercase;
-}
+// .text-uppercase {
+//   text-transform: uppercase;
+// }
 
 .text-error {
   color: $status-red;
@@ -1142,9 +1160,9 @@ form {
   white-space: nowrap;
 }
 
-.border-radius-base {
-  border-radius: 4px;
-}
+// .border-radius-base {
+//   border-radius: 4px;
+// }
 
 .grid {
   display: -ms-flexbox;

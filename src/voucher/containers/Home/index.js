@@ -56,7 +56,7 @@ class Home extends Component {
     return (
       <div className="gift-card__page">
         <div className="gift-card__card">
-          <h1 className="font-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
+          <h1 className="text-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
           <div className="gift-card__card-container">
             <div className="gift-card__store">
               <div className="gift-card__store-item gift-card__store-logo">
@@ -90,7 +90,7 @@ class Home extends Component {
                 }}
               >
                 <span>{currencySymbol}</span>
-                <span className="font-weight-bolder gift-card__amount-number">{voucher}</span>
+                <span className="text-weight-bolder gift-card__amount-number">{voucher}</span>
               </li>
             ))}
           </ul>
@@ -99,7 +99,7 @@ class Home extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
-              className="continue__button button button__fill button__block font-weight-bolder"
+              className="continue__button button button__fill button__block text-weight-bolder"
               onClick={this.handleContinue}
               disabled={!selectedVoucher}
             >

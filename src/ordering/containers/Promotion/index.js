@@ -85,7 +85,7 @@ class Promotion extends Component {
     return (
       <section className="table-ordering__promotion">
         <Header
-          className="border__bottom-divider gray flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('MyVouchersAndPromos')}
           navFunc={this.handleClickBack}
@@ -112,7 +112,7 @@ class Promotion extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
-              className="promotion-apply__button button button__fill button__block font-weight-bolder"
+              className="promotion-apply__button button button__fill button__block text-weight-bolder"
               disabled={promoCode === '' || inProcess || isAppliedSuccess}
               onClick={this.handleApplyPromotion}
             >

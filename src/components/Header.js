@@ -45,7 +45,7 @@ class Header extends Component {
         {renderPageAction()}
         {isStoreHome ? (
           <Image
-            className="logo logo__normal text-middle margin-top-bottom-smallest flex__shrink-fixed"
+            className="logo logo__normal text-middle margin-top-bottom-smallest margin-left-right-smaller flex__shrink-fixed"
             src={logo}
             alt={title}
           />
@@ -92,10 +92,10 @@ class Header extends Component {
         <div className={contentClassList.join(' ')}>
           {this.renderLogoAndNavDom()}
           {isStoreHome && (isDeliveryType || isPickUpType) ? (
-            <div className="header__store-info padding-left-right-small">
+            <div className="header__store-info">
               <div>
                 <h1
-                  className={`padding-top-bottom-smaller text-size-big font-weight-bolder text-middle ${
+                  className={`padding-top-bottom-smaller text-size-big text-weight-bolder text-middle ${
                     !isValidTimeToOrder ? 'has-tag' : ''
                   }`}
                 >
@@ -104,9 +104,9 @@ class Header extends Component {
                 {isValidTimeToOrder ? null : (
                   <div className="tag__card-container text-middle">
                     {enablePreOrder ? (
-                      <Tag text={t('PreOrder')} className="tag__card blue downsize text-middle" />
+                      <Tag text={t('PreOrder')} className="tag tag__small tag__primary text-middle" />
                     ) : (
-                      <Tag text={t('Closed')} className="tag__card warning downsize text-middle" />
+                      <Tag text={t('Closed')} className="tag tag__small tag__error text-middle" />
                     )}
                   </div>
                 )}
@@ -137,7 +137,7 @@ class Header extends Component {
               ) : null}
             </div>
           ) : (
-            <h2 className="header__title font-weight-bolder text-middle" data-testid="headerTitle">
+            <h2 className="header__title text-size-big text-weight-bolder text-middle" data-testid="headerTitle">
               {title}
             </h2>
           )}

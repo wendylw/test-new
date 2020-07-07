@@ -168,12 +168,7 @@ class ReportDriver extends Component {
     const { t } = this.props;
     return (
       <section className="table-ordering__report-driver-thankyou">
-        <Header
-          className="report-driver__header flex-middle"
-          isPage={false}
-          title={t('ReportDriver')}
-          navFunc={this.handleGoBack}
-        ></Header>
+        <Header className="flex-middle" isPage={false} title={t('ReportDriver')} navFunc={this.handleGoBack}></Header>
         <div className="report-driver-thankyou__image">
           <img alt="Thank your feedback" src={feedBackThankyou} />
         </div>
@@ -264,12 +259,7 @@ class ReportDriver extends Component {
 
     return (
       <section className="table-ordering__report-driver">
-        <Header
-          className="report-driver__header flex-middle"
-          isPage={false}
-          title={t('ReportDriver')}
-          navFunc={this.handleGoBack}
-        ></Header>
+        <Header className="flex-middle" isPage={false} title={t('ReportDriver')} navFunc={this.handleGoBack}></Header>
         <main className="report-driver__main">
           <div className="report-driver__select-reason">
             <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>

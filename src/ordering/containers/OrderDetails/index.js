@@ -87,7 +87,7 @@ export class OrderDetails extends Component {
     return (
       <section className="order-detail">
         <Header
-          className="order-detail__header flex-middle"
+          className="flex-middle"
           isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>
@@ -97,13 +97,13 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+          <button className="flex__shrink-fixed text-uppercase" onClick={this.handleNeedHelp}>
             <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
           </button>
         </Header>
         <div className="order-detail__info-container">
           <div className="border__bottom-divider">
-            <h3 className="order-detail__title font-weight-bolder text-uppercase">{t('YourOrder')}</h3>
+            <h3 className="order-detail__title text-weight-bolder text-uppercase">{t('YourOrder')}</h3>
             {this.renderOrderBillings()}
           </div>
           <div>
@@ -127,8 +127,8 @@ export class OrderDetails extends Component {
               {this.renderPromotion()}
             </ul>
             <div className="flex flex-space-between flex-middle">
-              <label className="order-detail__title  font-weight-bolder">{t('Total')}</label>
-              <CurrencyNumber className="font-weight-bolder" money={total || 0} />
+              <label className="order-detail__title  text-weight-bolder">{t('Total')}</label>
+              <CurrencyNumber className="text-weight-bolder" money={total || 0} />
             </div>
           </div>
         </div>

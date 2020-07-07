@@ -273,7 +273,7 @@ class LocationAndDate extends Component {
       const { t } = this.props;
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
+          <label className="form__label text-weight-bold">{t('DeliverTo')}</label>
           <div className="location-page__search-box" onClick={this.showLocationSearch}>
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input
@@ -300,7 +300,7 @@ class LocationAndDate extends Component {
       const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('PickupAt')}</label>
+          <label className="form__label text-weight-bold">{t('PickupAt')}</label>
           <div className="form__textarea">{pickUpAddress}</div>
         </div>
       );
@@ -313,7 +313,7 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group">
-        <label className="form__label font-weight-bold">
+        <label className="form__label text-weight-bold">
           {Utils.isDeliveryType() && t('DeliverOn')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </label>
@@ -539,8 +539,8 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
+        {Utils.isDeliveryType() && <label className="form__label text-weight-bold">{t('DeliveryTime')}</label>}
+        {Utils.isPickUpType() && <label className="form__label text-weight-bold">{t('PickupTime')}</label>}
         <ul
           ref={this.timeListRef}
           className="location-display__hour"
@@ -602,7 +602,7 @@ class LocationAndDate extends Component {
       <footer ref={this.footerRef} className="footer-operation grid flex flex-middle flex-space-between">
         <div className="footer-operation__item width-1-1">
           <button
-            className="billing__link button button__fill button__block font-weight-bolder"
+            className="billing__link button button__fill button__block text-weight-bolder"
             data-testid="continue"
             disabled={this.checkIfCanContinue()}
             onClick={this.goToNext}
@@ -618,7 +618,7 @@ class LocationAndDate extends Component {
     return (
       <section className="table-ordering__location">
         <Header
-          className="has-right flex-middle"
+          className="flex-middle"
           isPage={true}
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}

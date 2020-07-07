@@ -45,7 +45,7 @@ class Tables extends Component {
     return (
       <section className="tables">
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('SelectTableNumber')}
           navFunc={this.handleClickBack}
@@ -69,7 +69,7 @@ class Tables extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-1">
             <button
-              className="tables__continue-button button button__fill button__block font-weight-bolder"
+              className="tables__continue-button button button__fill button__block text-weight-bolder"
               disabled={currentTableId === ''}
               onClick={this.handleContinue}
             >

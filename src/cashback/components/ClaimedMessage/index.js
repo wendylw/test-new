@@ -37,17 +37,17 @@ class ClaimedMessage extends React.Component {
             <Modal.Body className="active">
               <img src={beepRewardImage} alt="beep reward" />
               <div className="modal__detail text-center">
-                <h4 className="modal__title font-weight-bolder">{title}</h4>
+                <h4 className="modal__title text-weight-bolder">{title}</h4>
                 {description ? <p className="modal__text">{description}</p> : null}
                 {isFirstTime ? (
                   <RedeemInfo
-                    buttonClassName="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+                    buttonClassName="button__fill button__block border-radius-base text-weight-bolder text-uppercase"
                     buttonText={t('HowToUseCashback')}
                   />
                 ) : null}
 
                 <button
-                  className="button__block button__block-link link text-uppercase font-weight-bolder"
+                  className="button__block button__block-link link text-uppercase text-weight-bolder"
                   onClick={() => hideMessage()}
                 >
                   {t('Close')}

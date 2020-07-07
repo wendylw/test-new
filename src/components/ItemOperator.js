@@ -26,7 +26,7 @@ export class ItemOperator extends Component {
         ) : null}
 
         {quantity > 0 ? (
-          <span className="font-weight-bolder" data-testid="itemDetailQuantity">
+          <span className="text-weight-bolder" data-testid="itemDetailQuantity">
             {quantity}
           </span>
         ) : null}

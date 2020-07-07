@@ -20,14 +20,14 @@ export class OfflineStoreModal extends PureComponent {
     return (
       <Modal show={!enableLiveOnline && show} className="align-middle">
         <Modal.Body className="modal__content text-center">
-          <h2 className="modal__subtitle text-size-biggest font-weight-bolder">
+          <h2 className="modal__subtitle text-size-biggest text-weight-bolder">
             {t('OfflinePromptTitle', { storeName: currentStoreName })}
           </h2>
           <p className="text-size-big">{t('OfflinePromptDescription')}</p>
         </Modal.Body>
         <Modal.Footer className="modal__footer">
           <button
-            className="button__fill button__block border-radius-base text-uppercase font-weight-bolder"
+            className="button__fill button__block border-radius-base text-uppercase text-weight-bolder"
             onClick={this.handleHideOfflineStoreModal.bind(this)}
           >
             {t('Dismiss')}

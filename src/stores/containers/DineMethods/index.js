@@ -58,7 +58,7 @@ class DineMethods extends Component {
     return (
       <section className="dine">
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('SelectYourPreference')}
           navFunc={this.handleClickBack}
@@ -74,7 +74,7 @@ class DineMethods extends Component {
                 <figure className="delivery__image-container">
                   <img src={method.logo} alt={t(method.labelKey)}></img>
                 </figure>
-                <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
+                <label className="delivery__name text-weight-bolder">{t(method.labelKey)}</label>
                 <IconNext className="delivery__next-icon" />
               </li>
             );

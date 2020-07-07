@@ -72,7 +72,7 @@ class PhoneViewContainer extends React.Component {
           onChange={phone => this.handleUpdatePhoneNumber(phone)}
         />
         <button
-          className="phone-view-form__button button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+          className="phone-view-form__button button__fill button__block border-radius-base text-weight-bolder text-uppercase"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
           disabled={!phone || isSavingPhone || !isValidPhoneNumber(phone)}
         >

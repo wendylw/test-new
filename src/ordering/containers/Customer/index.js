@@ -269,7 +269,7 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <label className="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
+        <label className="form__label text-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
         {this.renderDeliveryTime()}
 
         <div
@@ -339,7 +339,7 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <label className="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
+        <label className="form__label text-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
         <div
           className="form__group border-radius-base"
           onClick={async () => {
@@ -398,7 +398,7 @@ class Customer extends Component {
     return (
       <section className={`table-ordering__customer` /* hide */}>
         <Header
-          className="text-center gray flex-middle"
+          className="flex-middle text-center"
           isPage={true}
           title={this.getHeaderTitle()}
           navFunc={() => {
@@ -457,7 +457,7 @@ class Customer extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
-              className="billing__button button button__fill button__block dark font-weight-bolder"
+              className="billing__button button button__fill button__block dark text-weight-bolder"
               onClick={() => {
                 history.push({
                   pathname: ROUTER_PATHS.ORDERING_CART,

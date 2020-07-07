@@ -45,7 +45,7 @@ export class ErrorPage extends PureComponent {
 
         <div className="prompt-page__button-container">
           <button
-            className="button button__block button__fill font-weight-bolder text-center text-uppercase border-radius-base"
+            className="button button__block button__fill text-weight-bolder text-center text-uppercase border-radius-base"
             onClick={() => {
               return (window.location.href = config.qrScanPageUrl);
             }}

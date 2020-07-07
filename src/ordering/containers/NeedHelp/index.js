@@ -48,7 +48,7 @@ export class NeedHelp extends Component {
     return (
       <section className="need-help">
         <Header
-          className="has-right flex-middle"
+          className="flex-middle"
           isPage={false}
           title={t('ContactUs')}
           navFunc={() => {
@@ -65,17 +65,17 @@ export class NeedHelp extends Component {
         <div className="need-help__info-container">
           <ul className="list">
             <li className="item border__bottom-divider">
-              <summary className="item__title store-info__item font-weight-bolder">{t('StoreName')}</summary>
+              <summary className="item__title store-info__item text-weight-bolder">{t('StoreName')}</summary>
               <span className="item__text text-opacity">{name}</span>
             </li>
             <li className="item border__bottom-divider">
-              <summary className="item__title store-info__item font-weight-bolder">{t('ContactInfo')}</summary>
+              <summary className="item__title store-info__item text-weight-bolder">{t('ContactInfo')}</summary>
               <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
                 {phone}
               </a>
             </li>
             <li className="item">
-              <summary className="item__title store-info__item font-weight-bolder">{t('StoreAddress')}</summary>
+              <summary className="item__title store-info__item text-weight-bolder">{t('StoreAddress')}</summary>
               <span className="item__text text-opacity">{street1}</span>
             </li>
           </ul>

@@ -190,11 +190,11 @@ class Cart extends Component {
       <li className="billing__item promotion__item">
         {promotion ? (
           <div className="promotion__container flex flex-middle flex-space-between">
-            <span className="flex font-weight-bolder">
+            <span className="flex text-weight-bolder">
               <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
               <div className="promotion-info__container">
                 <div className="promotion-code__container flex flex-middle text-nowrap">
-                  <span className="promotion-code font-weight-bolder">
+                  <span className="promotion-code text-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button onClick={this.handleDismissPromotion} className="dismiss__button">
@@ -204,8 +204,8 @@ class Cart extends Component {
                 <div className="promotion__error">{this.getPromotionErrorMessage()}</div>
               </div>
             </span>
-            <span className="promotion-discount__container font-weight-bolder text-nowrap">
-              {'-'} <CurrencyNumber className="font-weight-bolder" money={promotion.discount} />
+            <span className="promotion-discount__container text-weight-bolder text-nowrap">
+              {'-'} <CurrencyNumber className="text-weight-bolder" money={promotion.discount} />
             </span>
           </div>
         ) : (
@@ -234,8 +234,8 @@ class Cart extends Component {
       t('Pay')
     ) : (
       <Trans i18nKey="MinimumConsumption">
-        <span className="font-weight-bolder">Min</span>
-        <CurrencyNumber className="font-weight-bolder" money={minTotal} />
+        <span className="text-weight-bolder">Min</span>
+        <CurrencyNumber className="text-weight-bolder" money={minTotal} />
       </Trans>
     );
 
@@ -246,12 +246,12 @@ class Cart extends Component {
     return (
       <section className={`table-ordering__order` /* hide */}>
         <Header
-          className="border__bottom-divider gray flex-middle"
+          className="flex-middle border__bottom-divider"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
         >
-          <button className="warning__button" onClick={this.handleClearAll.bind(this)}>
+          <button className="flex__shrink-fixed warning__button" onClick={this.handleClearAll.bind(this)}>
             <IconDelete />
             <span className="warning__label text-middle">{t('ClearAll')}</span>
           </button>
@@ -279,7 +279,7 @@ class Cart extends Component {
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
-              className="billing__button button button__fill button__block dark font-weight-bolder"
+              className="billing__button button button__fill button__block dark text-weight-bolder"
               onClick={this.handleClickBack.bind(this)}
             >
               {t('Back')}
@@ -287,7 +287,7 @@ class Cart extends Component {
           </div>
           <div className="footer-operation__item width-2-3">
             <button
-              className="billing__link button button__fill button__block font-weight-bolder"
+              className="billing__link button button__fill button__block text-weight-bolder"
               data-testid="pay"
               onClick={() => {
                 if (!this.isPromotionValid()) {

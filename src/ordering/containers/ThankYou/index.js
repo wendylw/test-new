@@ -174,11 +174,11 @@ export class ThankYou extends PureComponent {
     return (
       <div className="thanks__delivery-status-container">
         <CurrencyNumber
-          className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+          className="thanks__earned-cashback-total text-size-huge text-weight-bolder"
           money={cashback || 0}
         />
         <h3 className="flex flex-middle flex-center">
-          <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+          <span className="thanks__earned-cashback-title text-size-big text-weight-bolder">
             {t('EarnedCashBackTitle')}
           </span>
           <img src={IconCelebration} alt="Beep Celebration" />
@@ -200,8 +200,8 @@ export class ThankYou extends PureComponent {
     return (
       <div className="thanks-pickup">
         <div className="thanks-pickup__id-container">
-          <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
-          <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
+          <label className="text-uppercase text-weight-bolder">{t('OrderNumber')}</label>
+          <span className="thanks-pickup__id-number text-weight-bolder" data-testid="thanks__pickup-number">
             {pickUpId}
           </span>
         </div>
@@ -225,10 +225,10 @@ export class ThankYou extends PureComponent {
     if (this.state.needReceipt === 'detail') {
       return (
         <div className="thanks__receipt-info">
-          <h4 className="thanks__receipt-title font-weight-bolder">{t('PingStaffTitle')}</h4>
+          <h4 className="thanks__receipt-title text-weight-bolder">{t('PingStaffTitle')}</h4>
           <div>
             <label className="thanks__receipt-label">{t('ReceiptNumber')}: </label>
-            <span className="thanks__receipt-number font-weight-bolder">{orderId}</span>
+            <span className="thanks__receipt-number text-weight-bolder">{orderId}</span>
           </div>
         </div>
       );
@@ -236,7 +236,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <button
-        className="thanks__link link font-weight-bolder text-uppercase button__block"
+        className="thanks__link link text-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
       >
@@ -249,7 +249,7 @@ export class ThankYou extends PureComponent {
     const { t } = this.props;
     return (
       <button
-        className="thanks__link link font-weight-bolder text-uppercase button__block"
+        className="thanks__link link text-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
       >
@@ -370,14 +370,14 @@ export class ThankYou extends PureComponent {
 
           {currentStatusObj.status === 'cancelled' ? (
             <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
-              <h4 className="thanks__status-title text-size-big font-weight-bolder">
+              <h4 className="thanks__status-title text-size-big text-weight-bolder">
                 {{ storeName: name }}
-                <CurrencyNumber className="text-size-big font-weight-bolder" money={total || 0} />
+                <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
               </h4>
             </Trans>
           ) : (
             <h4
-              className={`thanks__status-title text-size-big font-weight-bolder ${
+              className={`thanks__status-title text-size-big text-weight-bolder ${
                 (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'
                   ? ` ${currentStatusObj.status}`
                   : ''
@@ -388,7 +388,7 @@ export class ThankYou extends PureComponent {
                 : currentStatusObj.firstNote}
               {(useStorehubLogistics && currentStatusObj.status === 'accepted') ||
               currentStatusObj.status === 'paid' ? (
-                <span className="thanks__status-title-dots text-size-big font-weight-bolder"></span>
+                <span className="thanks__status-title-dots text-size-big text-weight-bolder"></span>
               ) : null}
             </h4>
           )}
@@ -405,7 +405,7 @@ export class ThankYou extends PureComponent {
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
             <div className="thanks__status-description flex flex-middle flex-center">
               {trackingUrl ? (
-                <a href={trackingUrl} target="__blank" className="link text-uppercase font-weight-bolder">
+                <a href={trackingUrl} target="__blank" className="link text-uppercase text-weight-bolder">
                   {currentStatusObj.secondNote}
                 </a>
               ) : (
@@ -416,7 +416,7 @@ export class ThankYou extends PureComponent {
           {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
             <div className="thanks__status-description flex flex-middle flex-center">
               <IconAccessTime className="icon" />
-              <span className="font-weight-bolder">{currentStatusObj.secondNote}</span>
+              <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>
             </div>
           ) : null}
 
@@ -453,18 +453,18 @@ export class ThankYou extends PureComponent {
     return (
       <div className="thanks__delivery-info text-left">
         <div className="flex flex-middle flex-space-between">
-          <label className="font-weight-bolder text-size-big">{name}</label>
+          <label className="text-weight-bolder text-size-big">{name}</label>
           {isPickUpType && !isPreOrder ? (
             <div>
               <span className="thanks__text">{t('Total')}</span>
-              <CurrencyNumber className="thanks__text font-weight-bolder" money={total || 0} />
+              <CurrencyNumber className="thanks__text text-weight-bolder" money={total || 0} />
             </div>
           ) : null}
         </div>
 
         {isPickUpType && isPreOrder ? (
           <div className="thanks__pickup margin-bottom-zero ">
-            <h4 className="thanks__delivering-title font-weight-bolder">{t('PickUpOn')}</h4>
+            <h4 className="thanks__delivering-title text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="thanks__address-pin flex flex-middle">
               <i className="thanks__pin-icon">
                 <IconAccessTime />
@@ -474,10 +474,10 @@ export class ThankYou extends PureComponent {
           </div>
         ) : null}
 
-        {isDeliveryType ? <h4 className="thanks__delivering-title font-weight-bolder">{t('DeliveringTo')}</h4> : null}
+        {isDeliveryType ? <h4 className="thanks__delivering-title text-weight-bolder">{t('DeliveringTo')}</h4> : null}
 
         {isPickUpType && isPreOrder ? (
-          <h4 className="thanks__delivering-title font-weight-bolder margin-top-zero">{t('PickupAt')}</h4>
+          <h4 className="thanks__delivering-title text-weight-bolder margin-top-zero">{t('PickupAt')}</h4>
         ) : null}
 
         <p className="thanks__address-pin flex flex-middle">
@@ -489,7 +489,7 @@ export class ThankYou extends PureComponent {
 
         <div className="thanks__total-container text-center">
           <span className="thanks__total-text">{t('Total')}</span>
-          <CurrencyNumber className="thanks__total-text font-weight-bolder" money={total || 0} />
+          <CurrencyNumber className="thanks__total-text text-weight-bolder" money={total || 0} />
         </div>
       </div>
     );
@@ -510,7 +510,7 @@ export class ThankYou extends PureComponent {
     return (
       <div className="thanks__delivery-info text-left">
         <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text font-weight-bolder">{t('ThanksForOrderingWithUs')}</label>
+          <label className="thanks__text text-weight-bolder">{t('ThanksForOrderingWithUs')}</label>
         </div>
         <p className="thanks__address-details text-opacity">
           {t('PreOrderDeliveryTimeDetails', {
@@ -557,7 +557,7 @@ export class ThankYou extends PureComponent {
               this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
             }`}
           >
-            <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderConfirmed')}</label>
+            <label className="thanks__delivery-status-label text-weight-bolder">{t('OrderConfirmed')}</label>
             <div className="thanks__delivery-status-time">
               <IconAccessTime className="access-time-icon text-middle" />
               <time className="text-middle text-opacity">
@@ -569,12 +569,12 @@ export class ThankYou extends PureComponent {
           </li>
           {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderPendingTips')}</label>
+              <label className="thanks__delivery-status-label text-weight-bolder">{t('RiderPendingTips')}</label>
             </li>
           ) : null}
           {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{t('RiderOnTheWay')}</label>
+              <label className="thanks__delivery-status-label text-weight-bolder">{t('RiderOnTheWay')}</label>
               <div className="thanks__delivery-status-time">
                 <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle text-opacity">
@@ -587,7 +587,7 @@ export class ThankYou extends PureComponent {
           ) : null}
           {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
             <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
-              <label className="thanks__delivery-status-label font-weight-bolder">{t('OrderCancelledNoRide')}</label>
+              <label className="thanks__delivery-status-label text-weight-bolder">{t('OrderCancelledNoRide')}</label>
               <div className="thanks__delivery-status-time">
                 <IconAccessTime className="access-time-icon text-middle" />
                 <time className="text-middle text-opacity">
@@ -642,7 +642,7 @@ export class ThankYou extends PureComponent {
     if (isPreOrder && isDeliveryType) return null;
     const { t } = this.props;
     return (
-      <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
+      <h4 className="thanks__info-container-title text-uppercase text-weight-bolder text-left text-size-big">
         {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
       </h4>
     );
@@ -679,7 +679,7 @@ export class ThankYou extends PureComponent {
       >
         <React.Fragment>
           <Header
-            className="border__bottom-divider gray flex-middle"
+            className="flex-middle border__bottom-divider"
             isPage={true}
             title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
             navFunc={() =>
@@ -691,11 +691,11 @@ export class ThankYou extends PureComponent {
             }
           >
             {isTakeaway ? (
-              <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+              <button className="flex__shrink-fixed text-uppercase" onClick={this.handleNeedHelp}>
                 <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
               </button>
             ) : (
-              <span className="text-opacity">
+              <span className="flex__shrink-fixed text-opacity">
                 {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
               </span>
             )}
@@ -711,7 +711,7 @@ export class ThankYou extends PureComponent {
                 alt="Beep Success"
               />
             )}
-            {isDeliveryType ? null : <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>}
+            {isDeliveryType ? null : <h2 className="thanks__title text-weight-light">{t('ThankYou')}!</h2>}
             {isDeliveryType ? null : (
               <p className="thanks__prompt">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
