@@ -317,7 +317,7 @@ class LocationAndDate extends Component {
     const m = day.getMonth() + 1;
     const d = day.getDate();
 
-    day = +(y + '' + (m < 10 ? '0' + m : m) + '' + (d < 10 ? '0' + d : d));
+    day = +`${y}${m < 10 ? '0' + m : m}${d < 10 ? '0' + d : d}`;
     for (let i = 0; i < vacations.length; i++) {
       let item = vacations[i];
       let { vacationTimeFrom, vacationTimeTo } = item;
