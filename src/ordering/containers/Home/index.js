@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime, IconLocation } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -33,7 +33,6 @@ import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
-import locationIcon from '../../../images/Pin.svg';
 
 const localState = {
   blockScrollTop: 0,
@@ -254,7 +253,7 @@ export class Home extends Component {
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
         <div className="location-page__entry" onClick={fillInDeliverToAddress}>
-          <div className="item__detail-content flex flex-top flex-space-between">
+          <div className="deliver-to-entry__content">
             {showBackButton({
               isValidTimeToOrder,
               enablePreOrder,
@@ -269,22 +268,28 @@ export class Home extends Component {
                 }}
               />
             ) : null}
-            <div className="location-page__base-info">
-              <summary className="item__title text-uppercase text-weight-bolder">
+            <div className="">
+              <label className="deliver-to-entry__label text-size-small text-uppercase text-weight-bolder">
                 {Utils.isDeliveryType() && t('DeliverTo')}
                 {Utils.isPickUpType() && t('PickUpOn')}
-              </summary>
+              </label>
               {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address">
-                  {' '}
-                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
-                  {deliveryToAddress}
-                </p>
+                <div className="flex flex-top">
+                  <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
+                  <div>
+                    <p className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">
+                      {deliveryToAddress}
+                    </p>
+                    <p className="text-size-small text-opacity text-omit__single-line">
+                      {enablePreOrder ? this.getExpectedDeliveryTime() : t('DeliverNow')}
+                    </p>
+                  </div>
+                </div>
               ) : null}
-              {this.renderDeliveryDate()}
+              {Utils.isPickUpType() ? this.renderPickupAddress() : null}
             </div>
-            {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
           </div>
+          {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
         </div>
       );
     }
@@ -315,25 +320,19 @@ export class Home extends Component {
     return <OfflineStoreModal currentStoreName={currentStoreName} enableLiveOnline={enableLiveOnline} />;
   };
 
-  renderDeliveryDate = () => {
-    const { t, deliveryInfo } = this.props;
+  renderPickupAddress = () => {
+    const { deliveryInfo } = this.props;
 
     if (!deliveryInfo) {
       return null;
     }
 
-    const { enablePreOrder } = deliveryInfo;
-    let deliveryTimeText = t('DeliverNow');
-    const isPickUpType = Utils.isPickUpType();
-
-    if (enablePreOrder) {
-      deliveryTimeText = this.getExpectedDeliveryTime();
-    }
-
     return (
-      <div className="location-page__entry-address pick-up flex flex-middle">
-        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
-        <p>{deliveryTimeText}</p>
+      <div className="flex flex-middle">
+        <IconAccessTime className="icon icon__smaller text-middle flex__shrink-fixed" />
+        <p className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">
+          {this.getExpectedDeliveryTime()}
+        </p>
       </div>
     );
   };

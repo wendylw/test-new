@@ -93,20 +93,22 @@ class Header extends Component {
           {this.renderLogoAndNavDom()}
           {isStoreHome && (isDeliveryType || isPickUpType) ? (
             <div className="header__store-info">
-              <div>
-                <h1
-                  className={`padding-top-bottom-smaller text-size-big text-weight-bolder text-middle ${
-                    !isValidTimeToOrder ? 'has-tag' : ''
-                  }`}
-                >
+              <div className="flex flex-middle">
+                <h1 className="header__store-name padding-top-bottom-smaller text-size-big text-weight-bolder text-middle text-omit__single-line">
                   {title}
                 </h1>
                 {isValidTimeToOrder ? null : (
                   <div className="tag__card-container text-middle">
                     {enablePreOrder ? (
-                      <Tag text={t('PreOrder')} className="tag tag__small tag__primary text-middle" />
+                      <Tag
+                        text={t('PreOrder')}
+                        className="tag tag__small tag__primary margin-left-right-smaller text-middle"
+                      />
                     ) : (
-                      <Tag text={t('Closed')} className="tag tag__small tag__error text-middle" />
+                      <Tag
+                        text={t('Closed')}
+                        className="tag tag__small tag__error margin-left-right-smaller text-middle"
+                      />
                     )}
                   </div>
                 )}
