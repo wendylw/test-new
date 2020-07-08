@@ -4,7 +4,6 @@ import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
-import { fetchDeliveryDetails } from '../Customer/utils';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 
@@ -39,16 +38,7 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { history, payments, unavailablePaymentList } = this.props;
-    const { phone, username: name } = await fetchDeliveryDetails();
-
-    if (!phone || !name) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    }
-
+    const { payments, unavailablePaymentList } = this.props;
     const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
 
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
