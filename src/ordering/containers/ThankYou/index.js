@@ -252,6 +252,7 @@ export class ThankYou extends PureComponent {
         className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
+        data-heap-name="ordering.thank-you.view-receipt-btn"
       >
         {t('ViewReceipt')}
       </button>
@@ -265,6 +266,7 @@ export class ThankYou extends PureComponent {
         className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
+        data-heap-name="ordering.thank-you.view-detail-btn"
       >
         {t('SeeDetails')}
       </button>
@@ -425,7 +427,12 @@ export class ThankYou extends PureComponent {
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
             <div className="thanks__status-description flex flex-middle flex-center">
               {trackingUrl ? (
-                <a href={trackingUrl} target="__blank" className="link text-uppercase font-weight-bolder">
+                <a
+                  href={trackingUrl}
+                  target="__blank"
+                  className="link text-uppercase font-weight-bolder"
+                  data-heap-name="ordering.thank-you.logistics-tracking-link"
+                >
                   {currentStatusObj.secondNote}
                 </a>
               ) : (
@@ -696,10 +703,12 @@ export class ThankYou extends PureComponent {
         className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${
           match.isExact ? '' : 'hide'
         }`}
+        data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
           <Header
             className="border__bottom-divider gray flex-middle"
+            data-heap-name="ordering.thank-you.header"
             isPage={true}
             title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
             navFunc={() =>
@@ -711,7 +720,11 @@ export class ThankYou extends PureComponent {
             }
           >
             {isTakeaway ? (
-              <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+              <button
+                className="link text-uppercase"
+                onClick={this.handleNeedHelp}
+                data-heap-name="ordering.thank-you.contact-us-btn"
+              >
                 <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
               </button>
             ) : (
@@ -756,7 +769,11 @@ export class ThankYou extends PureComponent {
           <ul className="flex flex-middle flex-space-between">
             <li>
               <span>&copy; {date.getFullYear()} </span>
-              <a className="link link__non-underline" href="https://www.storehub.com/">
+              <a
+                className="link link__non-underline"
+                href="https://www.storehub.com/"
+                data-heap-name="ordering.thank-you.storehub-link"
+              >
                 {t('StoreHub')}
               </a>
             </li>

@@ -5,7 +5,7 @@ class VoucherAboutContent extends Component {
   render() {
     const { t, onlineStoreName, validityPeriodDays } = this.props;
     return (
-      <div className="gift-voucher-notes">
+      <div className="gift-voucher-notes" data-heap-name="voucher.common.voucher-about-content.container">
         <div className="gift-voucher-notes__note">
           <h2>{t('GiftCardAbout')}</h2>
           <ul>

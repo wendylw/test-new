@@ -27,7 +27,7 @@ class Sorry extends Component {
   }
 
   render() {
-    return <div className="loader theme page-loader"></div>;
+    return <div className="loader theme page-loader" data-heap-name="ordering.sorry.container"></div>;
   }
 }
 

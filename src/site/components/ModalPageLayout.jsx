@@ -10,7 +10,11 @@ class ModalPageLayout extends React.Component {
       <main ref={sectionRef} className="fixed-wrapper fixed-wrapper__main">
         <header className="header flex flex-space-between flex-middle sticky-wrapper border__bottom-divider">
           <div>
-            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.props.onGoBack} />
+            <IconLeftArrow
+              className="icon icon__big icon__gray text-middle"
+              onClick={this.props.onGoBack}
+              data-heap-name="site.common.back-btn"
+            />
             {title ? (
               <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
                 {title}

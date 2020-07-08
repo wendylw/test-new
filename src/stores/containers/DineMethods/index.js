@@ -63,9 +63,10 @@ class DineMethods extends Component {
     const { t } = this.props;
 
     return (
-      <section className="dine">
+      <section className="dine" data-heap-name="stores.dine-methods.container">
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="stores.dine-methods.header"
           isPage={true}
           title={t('SelectYourPreference')}
           navFunc={this.handleClickBack}
@@ -77,6 +78,8 @@ class DineMethods extends Component {
                 key={method.name}
                 className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
                 onClick={() => this.handleSelectMethod(method.name)}
+                data-heap-name="stores.dine-methods.method-item"
+                data-heap-method-name={method.name}
               >
                 <figure className="delivery__image-container">
                   <img src={method.logo} alt={t(method.labelKey)}></img>

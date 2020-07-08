@@ -40,7 +40,6 @@ class OtpModal extends React.Component {
         },
         false
       );
-
       this.inputRef.current.addEventListener(
         'blur',
         () => {
@@ -107,8 +106,8 @@ class OtpModal extends React.Component {
     const { currentOtpTime, isNewInput } = this.state;
 
     return (
-      <div className="full-aside">
-        <Header navFunc={onClose} />
+      <div className="full-aside" data-heap-name="common.otp-modal.container">
+        <Header navFunc={onClose} data-heap-name="common.otp-modal.header" />
 
         <section ref={this.addressAsideInnerRef} className="full-aside__content text-center">
           <figure className="full-aside__image-container">
@@ -122,6 +121,7 @@ class OtpModal extends React.Component {
                   id="newOtpInput"
                   ref={this.inputRef}
                   className="otp-input__single-input"
+                  data-heap-name="common.otp-modal.new-otp-input"
                   onChange={e => this.updateAndValidateOtp(e.target.value)}
                   maxLength={Constants.OTP_CODE_SIZE}
                   type="tel"
@@ -131,6 +131,8 @@ class OtpModal extends React.Component {
             ) : (
               <OtpInput
                 key="otp-input"
+                // NOTE: OtpInput seems not support data attr, but we are not using old OtpInput anyway. This is just a placeholder.
+                data-heap-name="common.otp-modal.old-otp-input"
                 onChange={otp => this.updateAndValidateOtp(otp)}
                 numInputs={Constants.OTP_CODE_SIZE}
                 inputStyle={{
@@ -143,6 +145,7 @@ class OtpModal extends React.Component {
           </div>
           <button
             className="otp-resend text-uppercase"
+            data-heap-name="common.otp-modal.resend-btn"
             disabled={!!currentOtpTime}
             onClick={() => {
               this.setState({ currentOtpTime: ResendOtpTime });
