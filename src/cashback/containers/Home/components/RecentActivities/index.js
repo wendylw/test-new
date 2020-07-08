@@ -117,9 +117,11 @@ class RecentActivities extends React.Component {
             // backgroundImage: `url(${theImage})`,
           }
         }
+        data-heap-name="cashback.home.recent-activities.container"
       >
         <Header
           className="flex-middle text-center"
+          data-heap-name="cashback.home.recent-activities.header"
           title={t('CashbackHistory')}
           isPage={true}
           navFunc={() => {

@@ -82,12 +82,16 @@ class CollectionPage extends React.Component {
         <li
           className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
           data-testid="switchBar"
+          data-heap-name="site.collection.tab-bar"
+          data-heap-delivery-type="delivery"
           onClick={() => this.handleSwitchTab('delivery')}
         >
           {t('Delivery')}
         </li>
         <li
           className={`${classList} ${shippingType === 'pickup' ? 'switch-bar__active' : 'text-opacity'}`}
+          data-heap-name="site.collection.tab-bar"
+          data-heap-delivery-type="pickup"
           onClick={() => this.handleSwitchTab('pickup')}
         >
           {t('SelfPickup')}
@@ -132,7 +136,12 @@ class CollectionPage extends React.Component {
     return (
       <ModalPageLayout title={currentCollection.name} onGoBack={this.handleBackClicked}>
         {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
-        <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
+        <section
+          ref={this.sectionRef}
+          className="entry-home fixed-wrapper__container wrapper"
+          data-heap-name="site.collection.container"
+          data-heap-collection-name={currentCollection.name}
+        >
           {this.renderStoreList()}
         </section>
       </ModalPageLayout>

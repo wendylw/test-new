@@ -54,7 +54,7 @@ class Home extends Component {
     const storeName = onlineStoreName || businessDisplayName;
 
     return (
-      <div className="gift-card__page">
+      <div className="gift-card__page" data-heap-name="voucher.home.container">
         <div className="gift-card__card">
           <h1 className="text-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
           <div className="gift-card__card-container">
@@ -73,7 +73,7 @@ class Home extends Component {
           </div>
           <div className="gift-card__caption text-center">
             {t('GiftCardFindOutMore')}
-            <a href={beepSiteUrl}>{storeName} ></a>
+            <a href={beepSiteUrl}>{storeName} &gt;</a>
           </div>
         </div>
         <div className="gift-card__amount">
@@ -85,6 +85,7 @@ class Home extends Component {
                 className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
                   voucher === selectedVoucher ? 'selected' : ''
                 }`}
+                data-heap-name="voucher.home.voucher-item"
                 onClick={() => {
                   this.handleSelectVoucher(voucher);
                 }}
@@ -102,6 +103,7 @@ class Home extends Component {
               className="continue__button button button__fill button__block text-weight-bolder"
               onClick={this.handleContinue}
               disabled={!selectedVoucher}
+              data-heap-name="voucher.home.continue-btn"
             >
               {t('CONTINUE')}
             </button>

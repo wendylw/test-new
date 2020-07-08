@@ -56,7 +56,7 @@ class PageLoyalty extends React.Component {
     const { showRecentActivities } = this.state;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
-      <section className="loyalty__home">
+      <section className="loyalty__home" data-heap-name="cashback.home.container">
         <div className="loyalty__content text-center">
           {logo ? (
             <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
@@ -64,7 +64,7 @@ class PageLoyalty extends React.Component {
           <h5 className="logo-default__title text-uppercase">{t('TotalCashback')}</h5>
           <div className="loyalty__money-info">
             <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
-            <span onClick={this.showRecentActivities.bind(this)}>
+            <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
               <IconInfo />
             </span>
           </div>

@@ -48,7 +48,11 @@ class MiniCartListModal extends Component {
     }
 
     return (
-      <aside className={className.join(' ')} onClick={e => this.handleHideCart(e)}>
+      <aside
+        className={className.join(' ')}
+        onClick={e => this.handleHideCart(e)}
+        data-heap-name="ordering.home.mini-cart.container"
+      >
         <div className="cart-pane">
           <div className="cart-pane__operation border__bottom-divider flex flex-middle flex-space-between">
             <h3 className="cart-pane__amount-container">
@@ -57,7 +61,12 @@ class MiniCartListModal extends Component {
                 {t('CartItemsInCategory', { cartQuantity: count })}
               </span>
             </h3>
-            <button className="warning__button" onClick={this.handleClearAll.bind(this)} data-testid="clearAll">
+            <button
+              className="warning__button"
+              onClick={this.handleClearAll.bind(this)}
+              data-testid="clearAll"
+              data-heap-name="ordering.home.mini-cart.clear-btn"
+            >
               <IconDelete />
               <span className="warning__label text-middle">{t('ClearAll')}</span>
             </button>

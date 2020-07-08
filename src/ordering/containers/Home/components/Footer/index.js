@@ -71,9 +71,12 @@ export class Footer extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
     return (
-      <footer className="footer-operation flex flex-middle flex-space-between">
+      <footer
+        className="footer-operation flex flex-middle flex-space-between"
+        data-heap-name="ordering.home.footer.container"
+      >
         <div className="cart-bar has-products flex flex-middle flex-space-between">
-          <button className="flex__shrink-fixed" onClick={onClickCart}>
+          <button className="flex__shrink-fixed" data-heap-name="ordering.home.footer.cart-btn" onClick={onClickCart}>
             <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
               <IconCart />
               <span className="tag__number">{count || 0}</span>
@@ -108,6 +111,7 @@ export class Footer extends Component {
             <button
               className="cart-bar__order-button"
               data-testid="orderNow"
+              data-heap-name="ordering.home.footer.order-btn"
               disabled={
                 (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
                 (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||

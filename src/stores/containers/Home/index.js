@@ -99,9 +99,10 @@ class App extends Component {
     }
 
     return (
-      <section className="store-list__content">
+      <section className="store-list__content" data-heap-name="stores.home.container">
         <Header
           className="flex-middle border__bottom-divider"
+          data-heap-name="stores.home.header"
           isPage={true}
           isStoreHome={true}
           logo={logo}

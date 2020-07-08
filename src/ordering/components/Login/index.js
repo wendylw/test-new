@@ -90,7 +90,7 @@ class Login extends React.Component {
     }
 
     return (
-      <section className={classList.join(' ')}>
+      <section className={classList.join(' ')} data-heap-name="ordering.common.login.container">
         {showLoginPage ? (
           <PhoneViewContainer
             className="aside-bottom not-full"
@@ -111,6 +111,7 @@ class Login extends React.Component {
                   <Link
                     className="text-weight-bolder link__non-underline"
                     target="_blank"
+                    data-heap-name="ordering.common.login.term-link"
                     to={Constants.ROUTER_PATHS.TERMS_OF_USE}
                   >
                     Terms of Service
@@ -119,6 +120,7 @@ class Login extends React.Component {
                   <Link
                     className="text-weight-bolder link__non-underline"
                     target="_blank"
+                    data-heap-name="ordering.common.login.privacy-policy-link"
                     to={Constants.ROUTER_PATHS.PRIVACY}
                   >
                     Privacy Policy

@@ -247,6 +247,7 @@ class PhoneLogin extends React.Component {
           <Link
             className="button__fill link__non-underline link__block border-radius-base text-weight-bolder text-uppercase"
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
+            data-heap-name="ordering.thank-you.phone-login.check-balance-link"
             target="_blank"
           >
             {t('CheckMyBalance')}
@@ -258,6 +259,7 @@ class PhoneLogin extends React.Component {
     return (
       <button
         className="button__fill button__block border-radius-base text-weight-bolder text-uppercase"
+        data-heap-name="ordering.thank-you.phone-login.check-balance-btn"
         onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
       >
         {t('CheckMyBalance')}
@@ -278,7 +280,7 @@ class PhoneLogin extends React.Component {
     }
 
     return (
-      <div className="thanks__phone-view">
+      <div className="thanks__phone-view" data-heap-name="ordering.thank-you.phone-login.container">
         <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
 

@@ -83,9 +83,10 @@ class Promotion extends Component {
     }
 
     return (
-      <section className="table-ordering__promotion">
+      <section className="table-ordering__promotion" data-heap-name="ordering.promotion.container">
         <Header
           className="flex-middle border__bottom-divider"
+          data-heap-name="ordering.promotion.header"
           isPage={true}
           title={t('MyVouchersAndPromos')}
           navFunc={this.handleClickBack}
@@ -100,10 +101,15 @@ class Promotion extends Component {
             value={promoCode}
             autoFocus
             className="input input__block"
+            data-heap-name="ordering.promotion.promotion-input"
             placeholder={t('EnterPromoCodeHere')}
           />
           {showCleanButton ? (
-            <button onClick={this.handleCleanClick} className="clean__button">
+            <button
+              onClick={this.handleCleanClick}
+              className="clean__button"
+              data-heap-name="ordering.promotion.clear-btn"
+            >
               <IconClose />
             </button>
           ) : null}
@@ -113,6 +119,7 @@ class Promotion extends Component {
           <div className="footer-operation__item width-1-1">
             <button
               className="promotion-apply__button button button__fill button__block text-weight-bolder"
+              data-heap-name="ordering.promotion.apply-btn"
               disabled={promoCode === '' || inProcess || isAppliedSuccess}
               onClick={this.handleApplyPromotion}
             >

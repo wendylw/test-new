@@ -18,6 +18,8 @@ class StoreList extends Component {
               key={id}
               className="item border__bottom-divider border-radius-base flex flex-top"
               data-testid="store"
+              data-heap-name="stores.home.store-item"
+              data-heap-store-name={name}
               onClick={() => {
                 onSelect(id);
               }}

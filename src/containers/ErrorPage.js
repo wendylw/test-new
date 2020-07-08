@@ -32,7 +32,7 @@ export class ErrorPage extends PureComponent {
     const { title, description } = this.getCurrentErrorType(message);
 
     return (
-      <section className="table-ordering__prompt-page">
+      <section className="table-ordering__prompt-page" data-heap-name="common.error-page.container">
         <figure className="prompt-page__image-container text-center">
           <img src={beepErrorImage} alt="error found" />
         </figure>
@@ -46,6 +46,7 @@ export class ErrorPage extends PureComponent {
         <div className="prompt-page__button-container">
           <button
             className="button button__block button__fill text-weight-bolder text-center text-uppercase border-radius-base"
+            data-heap-name="common.error-page.back-btn"
             onClick={() => {
               return (window.location.href = config.qrScanPageUrl);
             }}

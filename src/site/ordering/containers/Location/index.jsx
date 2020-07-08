@@ -77,10 +77,14 @@ class Location extends React.Component {
     }
 
     return (
-      <main className="fixed-wrapper fixed-wrapper__main">
+      <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.location.container">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
-            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
+            <IconLeftArrow
+              className="icon icon__big icon__gray text-middle"
+              data-heap-name="site.location.back-btn"
+              onClick={this.handleBackClicked}
+            />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
               {t('DeliverTo')}
             </h2>

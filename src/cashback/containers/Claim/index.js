@@ -179,6 +179,7 @@ class PageClaim extends React.Component {
             // backgroundImage: `url(${theImage})`,
           }
         }
+        data-heap-name="cashback.claim.container"
       >
         <article className="loyalty__content text-center">
           {logo ? (

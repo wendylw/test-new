@@ -85,9 +85,10 @@ export class OrderDetails extends Component {
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
-      <section className="order-detail">
+      <section className="order-detail" data-heap-name="ordering.order-detail.container">
         <Header
           className="flex-middle"
+          data-heap-name="ordering.order-detail.header"
           isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>
@@ -97,7 +98,11 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <button className="flex__shrink-fixed text-uppercase" onClick={this.handleNeedHelp}>
+          <button
+            className="flex__shrink-fixed text-uppercase"
+            onClick={this.handleNeedHelp}
+            data-heap-name="ordering.order-detail.contact-us-btn"
+          >
             <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
           </button>
         </Header>

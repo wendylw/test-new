@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import withDataAttributes from './withDataAttributes';
 
 export class ItemOperator extends Component {
   render() {
-    const { quantity, className, decreaseDisabled, increaseDisabled, onDecrease, onIncrease } = this.props;
+    const {
+      quantity,
+      className,
+      decreaseDisabled,
+      increaseDisabled,
+      onDecrease,
+      onIncrease,
+      dataAttributes,
+    } = this.props;
     const classList = [`item__cart-ctrl flex flex-space-between ${quantity > 0 ? 'is-minus' : ''}`];
 
     if (className) {
@@ -11,13 +20,14 @@ export class ItemOperator extends Component {
     }
 
     return (
-      <div className={classList.join(' ')}>
+      <div className={classList.join(' ')} {...dataAttributes}>
         {onDecrease ? (
           <button
             className="cart__ctrl-container"
             disabled={decreaseDisabled}
             onClick={onDecrease}
             data-testid="itemDecrease"
+            data-heap-name="common.item-operator.decrease"
           >
             <i className="cart__ctrl cart__minus">
               <span className="cart__icon"></span>
@@ -26,7 +36,11 @@ export class ItemOperator extends Component {
         ) : null}
 
         {quantity > 0 ? (
-          <span className="text-weight-bolder" data-testid="itemDetailQuantity">
+          <span
+            className="text-weight-bolder"
+            data-testid="itemDetailQuantity"
+            data-heap-name="common.item-operator.quantity"
+          >
             {quantity}
           </span>
         ) : null}
@@ -37,6 +51,7 @@ export class ItemOperator extends Component {
             onClick={onIncrease}
             disabled={increaseDisabled}
             data-testid="itemIncrease"
+            data-heap-name="common.item-operator.increase"
           >
             <i className="cart__ctrl cart__add">
               <span className="cart__icon"></span>
@@ -62,4 +77,4 @@ ItemOperator.defaultProps = {
   increaseDisabled: false,
 };
 
-export default ItemOperator;
+export default withDataAttributes(ItemOperator);

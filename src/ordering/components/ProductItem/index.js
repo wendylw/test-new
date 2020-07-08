@@ -42,12 +42,14 @@ export class ProductItem extends Component {
         detail={<CurrencyNumber className="price item__text text-weight-bolder" money={price || 0} numberOnly={true} />}
         operateItemDetail={showProductDetail}
         hasTag={isFeaturedProduct}
+        data-heap-name="ordering.common.product-item.container"
       >
         {soldOut ? (
           <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
         ) : (
           <ItemOperator
             className="flex-middle"
+            data-heap-name="ordering.common.product-item.item-operator"
             quantity={cartQuantity}
             decreaseDisabled={decreaseDisabled}
             onDecrease={onDecrease}

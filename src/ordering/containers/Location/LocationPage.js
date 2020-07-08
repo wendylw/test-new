@@ -117,8 +117,14 @@ class LocationPage extends Component {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
     return (
-      <section className="table-ordering__location location-page">
-        <Header className="flex-middle" isPage={true} title={t('DeliverTo')} navFunc={this.handleBackClicked} />
+      <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
+        <Header
+          className="flex-middle"
+          data-heap-name="ordering.location.header"
+          isPage={true}
+          title={t('DeliverTo')}
+          navFunc={this.handleBackClicked}
+        />
         {initError ? (
           this.renderInitError()
         ) : (

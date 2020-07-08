@@ -77,7 +77,7 @@ export class Billing extends Component {
     }
 
     return (
-      <section className={classList.join(' ')}>
+      <section className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
         <ul className="billing__list">
           <li className="billing__item flex flex-middle flex-space-between">
             <label>{t('Subtotal')}</label>
@@ -110,7 +110,11 @@ export class Billing extends Component {
                   - <CurrencyNumber className="text-weight-bolder" money={creditsBalance || 0} />
                 </span>
               ) : (
-                <button onClick={this.handleLogin} className="billing__login">
+                <button
+                  onClick={this.handleLogin}
+                  className="billing__login"
+                  data-heap-name="ordering.common.billing.login-btn"
+                >
                   {t('Login')}
                 </button>
               )}

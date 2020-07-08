@@ -92,7 +92,12 @@ export class ReceiptDetail extends Component {
                 />
               }
             >
-              <ItemOperator className="flex-middle exhibit" quantity={quantity} decreaseDisabled={quantity === 0} />
+              <ItemOperator
+                className="flex-middle exhibit"
+                data-heap-name="ordering.receipt.item-operator"
+                quantity={quantity}
+                decreaseDisabled={quantity === 0}
+              />
             </Item>
           );
         })}
@@ -105,8 +110,13 @@ export class ReceiptDetail extends Component {
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
 
     return (
-      <section className="table-ordering__receipt">
-        <Header className="flex-middle border__bottom-divider" title={t('ViewReceipt')} navFunc={this.goBack}>
+      <section className="table-ordering__receipt" data-heap-name="ordering.receipt.container">
+        <Header
+          className="flex-middle border__bottom-divider"
+          title={t('ViewReceipt')}
+          data-heap-name="ordering.receipt.header"
+          navFunc={this.goBack}
+        >
           <span className="flex__shrink-fixed text-opacity">{this.getHeaderContent()}</span>
         </Header>
         <div className="receipt__content text-center">

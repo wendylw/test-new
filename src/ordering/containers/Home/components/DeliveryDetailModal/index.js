@@ -60,6 +60,7 @@ class DeliveryDetailModal extends Component {
     return (
       <aside
         className={classList.join(' ')}
+        data-heap-name="ordering.home.delivery-detail.container"
         onClick={() => {
           if (initDom) {
             this.setState({ initDom: false });
@@ -93,7 +94,11 @@ class DeliveryDetailModal extends Component {
                 )}
               </h2>
               <p className="store-info__address">{storeAddress}</p>
-              <a className="store-info__phone link link__non-underline" href={`tel:+${telephone}`}>
+              <a
+                className="store-info__phone link link__non-underline"
+                href={`tel:+${telephone}`}
+                data-heap-name="ordering.home.delivery-detail.phone-number"
+              >
                 {telephone}
               </a>
 

@@ -46,9 +46,10 @@ export class NeedHelp extends Component {
     const { name, phone, street1 } = stores && stores[0] ? stores[0] : [];
 
     return (
-      <section className="need-help">
+      <section className="need-help" data-heap-name="ordering.need-help.container">
         <Header
           className="flex-middle"
+          data-heap-name="ordering.need-help.header"
           isPage={false}
           title={t('ContactUs')}
           navFunc={() => {
@@ -86,6 +87,7 @@ export class NeedHelp extends Component {
               disabled={this.isReportUnsafeDriverButtonDisabled()}
               onClick={this.handleReportUnsafeDriver}
               className="need-help__report-driver-button"
+              data-heap-name="ordering.need-help.report-driver-btn"
             >
               <span className="need-help__report-driver-button-text">{t('ReportDriver')}</span>
               <IconNext className="need-help__report-driver-button-icon" />

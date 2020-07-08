@@ -252,7 +252,11 @@ export class Home extends Component {
 
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
-        <div className="deliver-to-entry flex flex-top flex-space-between" onClick={fillInDeliverToAddress}>
+        <div
+          className="deliver-to-entry flex flex-top flex-space-between"
+          onClick={fillInDeliverToAddress}
+          data-heap-name="ordering.home.delivery-bar"
+        >
           <div className="deliver-to-entry__content">
             {showBackButton({
               isValidTimeToOrder,
@@ -261,6 +265,7 @@ export class Home extends Component {
             }) ? (
               <IconLeftArrow
                 className="icon icon__big icon__gray text-middle flex__shrink-fixed"
+                data-heap-name="order.home.delivery-bar-back-btn"
                 onClick={event => {
                   event.preventDefault();
                   window.location.href = this.navBackUrl;
@@ -395,6 +400,7 @@ export class Home extends Component {
     return (
       <Header
         className={classList.join(' ')}
+        data-heap-name="ordering.home.header"
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}

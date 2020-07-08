@@ -174,10 +174,15 @@ class Cart extends Component {
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
+          data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
         ></textarea>
         {additionalComments ? (
-          <IconClose className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)} />
+          <IconClose
+            className="cart__close-button"
+            data-heap-name="ordering.cart.clear-additional-msg"
+            onClick={this.handleClearAdditionalComments.bind(this)}
+          />
         ) : null}
       </div>
     );
@@ -197,7 +202,11 @@ class Cart extends Component {
                   <span className="promotion-code text-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
-                  <button onClick={this.handleDismissPromotion} className="dismiss__button">
+                  <button
+                    onClick={this.handleDismissPromotion}
+                    className="dismiss__button"
+                    data-heap-name="ordering.cart.dismiss-promo"
+                  >
                     <IconClose className="icon" />
                   </button>
                 </div>
@@ -209,7 +218,11 @@ class Cart extends Component {
             </span>
           </div>
         ) : (
-          <button className="add-promo__button" onClick={this.handleGotoPromotion}>
+          <button
+            className="add-promo__button"
+            onClick={this.handleGotoPromotion}
+            data-heap-name="ordering.cart.add-promo"
+          >
             <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
             {t('AddPromoCode')}
           </button>
@@ -244,14 +257,19 @@ class Cart extends Component {
     }
 
     return (
-      <section className={`table-ordering__order` /* hide */}>
+      <section className={`table-ordering__order` /* hide */} data-heap-name="ordering.cart.container">
         <Header
           className="flex-middle border__bottom-divider"
+          data-heap-name="ordering.cart.header"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
         >
-          <button className="flex__shrink-fixed warning__button" onClick={this.handleClearAll.bind(this)}>
+          <button
+            className="flex__shrink-fixed warning__button"
+            onClick={this.handleClearAll.bind(this)}
+            data-heap-name="ordering.cart.clear-btn"
+          >
             <IconDelete />
             <span className="warning__label text-middle">{t('ClearAll')}</span>
           </button>
@@ -281,6 +299,7 @@ class Cart extends Component {
             <button
               className="billing__button button button__fill button__block dark text-weight-bolder"
               onClick={this.handleClickBack.bind(this)}
+              data-heap-name="ordering.cart.back-btn"
             >
               {t('Back')}
             </button>
@@ -289,6 +308,7 @@ class Cart extends Component {
             <button
               className="billing__link button button__fill button__block text-weight-bolder"
               data-testid="pay"
+              data-heap-name="ordering.cart.pay-btn"
               onClick={() => {
                 if (!this.isPromotionValid()) {
                   this.props.appActions.showMessageModal({
