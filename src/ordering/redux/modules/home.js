@@ -216,7 +216,10 @@ export const fetchProductDetail = variables => {
     [FETCH_GRAPHQL]: {
       types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
-      variables,
+      variables: {
+        ...variables,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      },
     },
   };
 };
