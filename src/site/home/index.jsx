@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DeliverToBar from '../../components/DeliverToBar';
-import { IconSearch, IconScanner } from '../../components/Icons';
+import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
@@ -180,7 +180,9 @@ class Home extends React.Component {
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
+          heapName="site.home.delivery-bar"
           title={t('DeliverTo')}
+          icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
           className={`entry__deliver-to base-box-shadow ${
             this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
           }`}

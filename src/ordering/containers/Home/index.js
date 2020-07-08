@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
 import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime, IconLocation } from '../../../components/Icons';
+import DeliverToBar from '../../../components/DeliverToBar';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -252,54 +253,70 @@ export class Home extends Component {
 
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
-        <div
-          className="deliver-to-entry flex flex-top flex-space-between"
-          onClick={fillInDeliverToAddress}
-          data-heap-name="ordering.home.delivery-bar"
+        <DeliverToBar
+          heapName="ordering.home.delivery-bar"
+          title={Utils.isDeliveryType() ? t('DeliverTo') : t('PickUpOn')}
+          icon={
+            Utils.isDeliveryType() ? (
+              <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
+            ) : (
+              <IconAccessTime className="icon icon__smaller text-middle flex__shrink-fixed" />
+            )
+          }
         >
-          <div className="deliver-to-entry__content">
-            {showBackButton({
-              isValidTimeToOrder,
-              enablePreOrder,
-              backPosition: BackPosition.DELIVERY_TO,
-            }) ? (
-              <IconLeftArrow
-                className="icon icon__big icon__gray text-middle flex__shrink-fixed"
-                data-heap-name="order.home.delivery-bar-back-btn"
-                onClick={event => {
-                  event.preventDefault();
-                  window.location.href = this.navBackUrl;
-                  event.stopPropagation();
-                }}
-              />
-            ) : null}
-            <div>
-              <label className="deliver-to-entry__label padding-top-bottom-small padding-left-right-smaller text-size-small text-uppercase text-weight-bolder">
-                {Utils.isDeliveryType() && t('DeliverTo')}
-                {Utils.isPickUpType() && t('PickUpOn')}
-              </label>
-              {Utils.isDeliveryType() ? (
-                <div className="flex flex-top">
-                  <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
-                  <div>
-                    <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
-                      {deliveryToAddress}
-                    </p>
-                    <p className="text-size-small padding-top-bottom-smaller text-opacity text-omit__single-line">
-                      {enablePreOrder ? this.getExpectedDeliveryTime() : t('DeliverNow')}
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-              {Utils.isPickUpType() ? this.renderPickupAddress() : null}
-            </div>
-          </div>
           {isValidTimeToOrder || enablePreOrder ? (
             <IconEdit className="icon icon__small icon__privacy flex__shrink-fixed" />
           ) : null}
-        </div>
+        </DeliverToBar>
+        // <div
+        //   className="deliver-to-entry flex flex-top flex-space-between"
+        //   onClick={fillInDeliverToAddress}
+        //   data-heap-name="ordering.home.delivery-bar"
+        // >
+        //   <div className="deliver-to-entry__content">
+        //     {showBackButton({
+        //       isValidTimeToOrder,
+        //       enablePreOrder,
+        //       backPosition: BackPosition.DELIVERY_TO,
+        //     }) ? (
+        //         <IconLeftArrow
+        //           className="icon icon__big icon__gray text-middle flex__shrink-fixed"
+        //           data-heap-name="order.home.delivery-bar-back-btn"
+        //           onClick={event => {
+        //             event.preventDefault();
+        //             window.location.href = this.navBackUrl;
+        //             event.stopPropagation();
+        //           }}
+        //         />
+        //       ) : null}
+        //     <div>
+        //       <label className="deliver-to-entry__label padding-top-bottom-small padding-left-right-smaller text-size-small text-uppercase text-weight-bolder">
+        //         {Utils.isDeliveryType() && t('DeliverTo')}
+        //         {Utils.isPickUpType() && t('PickUpOn')}
+        //       </label>
+        //       {Utils.isDeliveryType() ? (
+        //         <div className="flex flex-top">
+        //           <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
+        //           <div>
+        //             <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
+        //               {deliveryToAddress}
+        //             </p>
+        //             <p className="text-size-small padding-top-bottom-smaller text-opacity text-omit__single-line">
+        //               {enablePreOrder ? this.getExpectedDeliveryTime() : t('DeliverNow')}
+        //             </p>
+        //           </div>
+        //         </div>
+        //       ) : null}
+        //       {Utils.isPickUpType() ? this.renderPickupAddress() : null}
+        //     </div>
+        //   </div>
+        //   {isValidTimeToOrder || enablePreOrder ? (
+        //     <IconEdit className="icon icon__small icon__privacy flex__shrink-fixed" />
+        //   ) : null}
+        // </div>
       );
     }
+
     return null;
   }
 
