@@ -8,7 +8,12 @@ class PopUpMessage extends React.Component {
     const { description, title, button, containerClass = '' } = this.props;
 
     return (
-      <Modal show={true} className={`align-middle ${containerClass}`} hideOnBlank>
+      <Modal
+        show={true}
+        className={`align-middle ${containerClass}`}
+        data-heap-name="ordering.common.popup-message.container"
+        hideOnBlank
+      >
         <Modal.Body className="active">
           <div className="modal__detail text-center">
             <h4 className="modal__title font-weight-bolder">{title}</h4>

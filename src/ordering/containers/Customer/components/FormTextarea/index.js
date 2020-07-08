@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import Utils from '../../../../../utils/utils';
+import withDataAttributes from '../../../../../components/withDataAttributes';
 
 class FormTextarea extends Component {
   state = {
@@ -80,7 +81,7 @@ class FormTextarea extends Component {
   }
 
   render() {
-    const { t, show, onToggle, title, onUpdateText } = this.props;
+    const { t, show, onToggle, title, onUpdateText, dataAttributes } = this.props;
     const { textValue } = this.state;
     const className = ['aside'];
 
@@ -89,7 +90,7 @@ class FormTextarea extends Component {
     }
 
     return (
-      <aside className={className.join(' ')} onClick={e => this.handleHideAside(e)}>
+      <aside className={className.join(' ')} onClick={e => this.handleHideAside(e)} {...dataAttributes}>
         <div ref={this.addressAsideInnerRef} className="form-text">
           <label className="gray-font-opacity">{title}</label>
           <div className="form__group">
@@ -98,12 +99,14 @@ class FormTextarea extends Component {
               rows="4"
               maxLength="140"
               className="input input__textarea input__block gray-font-opacity"
+              data-heap-name="common.form-textarea.textarea"
               value={textValue || ''}
               onChange={this.handleUpdateText.bind(this)}
             ></textarea>
           </div>
           <button
             className="button button__fill button__block font-weight-bolder border-radius-base"
+            data-heap-name="common.form-textarea.ok-btn"
             onClick={() => {
               onToggle();
               onUpdateText(textValue);
@@ -134,4 +137,4 @@ FormTextarea.defaultProps = {
   textareaValue: '',
 };
 
-export default withTranslation()(FormTextarea);
+export default withDataAttributes(withTranslation()(FormTextarea));

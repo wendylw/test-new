@@ -171,6 +171,7 @@ class ReportDriver extends Component {
       <section className="table-ordering__report-driver-thankyou">
         <Header
           className="report-driver__header flex-middle"
+          data-heap-name="ordering.report-driver.thank-you-header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
@@ -196,6 +197,7 @@ class ReportDriver extends Component {
         </h3>
         <textarea
           className="report-driver__note-textarea"
+          data-heap-name="ordering.report-driver.notes-input"
           placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
           rows="6"
           maxLength={NOTE_MAX_LENGTH}
@@ -221,14 +223,23 @@ class ReportDriver extends Component {
           <div className="report-driver__upload-photo-viewer">
             <img alt="upload file" src={uploadPhotoUrl} />
             {disabled ? null : (
-              <button onClick={this.handleRemoveUploadPhoto} className="report-driver__upload-photo-remove-button">
+              <button
+                onClick={this.handleRemoveUploadPhoto}
+                className="report-driver__upload-photo-remove-button"
+                data-heap-name="ordering.report-driver.remove-image"
+              >
                 <IconClose />
               </button>
             )}
           </div>
         ) : (
           <div className="report-driver__upload-photo-uploader">
-            <input onChange={this.handleUploadPhoto} type="file" accept="image/*" />
+            <input
+              onChange={this.handleUploadPhoto}
+              type="file"
+              accept="image/*"
+              data-heap-name="ordering.report-driver.add-image"
+            />
             <div className="report-driver__upload-photo-reminder">
               <img alt="upload" src={uploadImage} />
               <p>{t('UploadFileHere')}</p>
@@ -264,9 +275,10 @@ class ReportDriver extends Component {
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
 
     return (
-      <section className="table-ordering__report-driver">
+      <section className="table-ordering__report-driver" data-heap-name="ordering.report-driver.container">
         <Header
           className="report-driver__header flex-middle"
+          data-heap-name="ordering.report-driver.header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
@@ -294,6 +306,8 @@ class ReportDriver extends Component {
                         onChange={() => {
                           this.handleSelectReason(code);
                         }}
+                        data-heap-name="ordering.report-driver.reason-item"
+                        data-heap-reason={code}
                         checked={selectedReasonCode === code}
                         inputId={`reason_${code}`}
                         name="reason"
@@ -323,6 +337,7 @@ class ReportDriver extends Component {
           <div className="report-driver__submit">
             <button
               className="report-driver__submit-button"
+              data-heap-name="ordering.report-driver.submit-btn"
               disabled={this.isSubmitButtonDisable()}
               onClick={this.handleSubmit}
             >

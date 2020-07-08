@@ -212,6 +212,11 @@ When you want to use html tag in translation, please use like:
   <Trans ns="Ordering" i18nKey="Greeting">hello, <span>User</span></Trans>
   ```
 
+<a name="heap-tracking-code"></a>
+## Heap tracking code
+
+Refer to: [Heap name convention](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
+
 <a name="analyzing-bundle-size"></a>
 ## Analyzing bundle size
 

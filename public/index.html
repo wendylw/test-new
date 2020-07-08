@@ -111,7 +111,8 @@
           'Promise',
           'Array.prototype.includes',
           'localStorage',
-          'navigator.geolocation'
+          'navigator.geolocation',
+          'Number.isNaN'
         ];
         var featureArr = [];
 
@@ -120,7 +121,7 @@
             var feature = POLYFILL_FEATURES[i];
             if (feature === 'Intl') {
               for (var j=0; j<LANGUAGES.length; j++) {
-                featureArr.push(`Intl.~locale.${LANGUAGES[j]}`);
+                featureArr.push('Intl.~locale.' + LANGUAGES[j]);
               }
             } else {
               featureArr.push(feature);
