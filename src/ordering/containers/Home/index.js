@@ -335,11 +335,13 @@ export class Home extends Component {
     }
 
     return (
-      <div className="flex flex-middle">
+      <div className="flex flex-top">
         <IconAccessTime className="icon icon__smaller text-middle flex__shrink-fixed" />
-        <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
-          {this.getExpectedDeliveryTime()}
-        </p>
+        <div>
+          <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
+            {this.getExpectedDeliveryTime()}
+          </p>
+        </div>
       </div>
     );
   };

@@ -1,18 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
 import Constants from '../utils/constants';
 import './DeliverToBar.scss';
-import { IconLocation, IconScanner } from './Icons';
+import { IconLocation } from './Icons';
 
 class DeliverToBar extends PureComponent {
-  handleScannerClicked = () => {
-    this.props.backLeftPosition();
-  };
-
   render() {
-    const { title, address, className, gotoLocationPage } = this.props;
-    const { ROUTER_PATHS } = Constants;
+    const { title, address, className, gotoLocationPage, backLeftPosition, children } = this.props;
     const classList = ['deliver-to-entry flex flex-middle flex-space-between'];
 
     if (className) {
@@ -26,7 +20,10 @@ class DeliverToBar extends PureComponent {
           data-testid="DeliverToBar"
           data-heap-name="site.home.delivery-bar"
           onClick={() => {
-            this.handleScannerClicked();
+            if (backLeftPosition) {
+              backLeftPosition();
+            }
+
             gotoLocationPage();
           }}
         >
@@ -36,9 +33,7 @@ class DeliverToBar extends PureComponent {
             <span className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">{address}</span>
           </div>
         </div>
-        <Link to={ROUTER_PATHS.QRSCAN} data-heap-name="site.home.qr-scan-icon">
-          <IconScanner className="icon icon__privacy" onClick={this.handleScannerClicked} />
-        </Link>
+        {children}
       </section>
     );
   }

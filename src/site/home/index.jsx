@@ -1,9 +1,10 @@
 import React, { Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DeliverToBar from '../../components/DeliverToBar';
-import { IconSearch } from '../../components/Icons';
+import { IconSearch, IconScanner } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
@@ -186,7 +187,11 @@ class Home extends React.Component {
           address={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
           backLeftPosition={this.backLeftPosition}
-        />
+        >
+          <Link to={ROUTER_PATHS.QRSCAN} data-heap-name="site.home.qr-scan-icon">
+            <IconScanner className="icon icon__privacy" onClick={this.backLeftPosition} />
+          </Link>
+        </DeliverToBar>
 
         <section
           ref={this.sectionRef}
