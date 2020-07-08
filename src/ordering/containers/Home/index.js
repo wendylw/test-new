@@ -252,7 +252,7 @@ export class Home extends Component {
 
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
-        <div className="location-page__entry" onClick={fillInDeliverToAddress}>
+        <div className="deliver-to-entry flex flex-top flex-space-between" onClick={fillInDeliverToAddress}>
           <div className="deliver-to-entry__content">
             {showBackButton({
               isValidTimeToOrder,
@@ -268,8 +268,8 @@ export class Home extends Component {
                 }}
               />
             ) : null}
-            <div className="">
-              <label className="deliver-to-entry__label text-size-small text-uppercase text-weight-bolder">
+            <div>
+              <label className="deliver-to-entry__label padding-top-bottom-small padding-left-right-smaller text-size-small text-uppercase text-weight-bolder">
                 {Utils.isDeliveryType() && t('DeliverTo')}
                 {Utils.isPickUpType() && t('PickUpOn')}
               </label>
@@ -277,10 +277,10 @@ export class Home extends Component {
                 <div className="flex flex-top">
                   <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
                   <div>
-                    <p className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">
+                    <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
                       {deliveryToAddress}
                     </p>
-                    <p className="text-size-small text-opacity text-omit__single-line">
+                    <p className="text-size-small padding-top-bottom-smaller text-opacity text-omit__single-line">
                       {enablePreOrder ? this.getExpectedDeliveryTime() : t('DeliverNow')}
                     </p>
                   </div>
@@ -289,7 +289,9 @@ export class Home extends Component {
               {Utils.isPickUpType() ? this.renderPickupAddress() : null}
             </div>
           </div>
-          {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
+          {isValidTimeToOrder || enablePreOrder ? (
+            <IconEdit className="icon icon__small icon__privacy flex__shrink-fixed" />
+          ) : null}
         </div>
       );
     }
@@ -330,7 +332,7 @@ export class Home extends Component {
     return (
       <div className="flex flex-middle">
         <IconAccessTime className="icon icon__smaller text-middle flex__shrink-fixed" />
-        <p className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">
+        <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
           {this.getExpectedDeliveryTime()}
         </p>
       </div>

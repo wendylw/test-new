@@ -48,12 +48,14 @@ DeliverToBar.propTypes = {
   title: PropTypes.string,
   address: PropTypes.string,
   gotoLocationPage: PropTypes.func,
+  backLeftPosition: PropTypes.func,
 };
 
 DeliverToBar.defaultProps = {
   title: '',
   address: '',
   toLocationPage: () => {},
+  backLeftPosition: () => {},
 };
 
 export default DeliverToBar;
