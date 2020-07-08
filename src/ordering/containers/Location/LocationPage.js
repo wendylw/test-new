@@ -8,6 +8,7 @@ import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import '../../../App.scss';
 import Utils from '../../../utils/utils';
+import qs from 'qs';
 
 class LocationPage extends Component {
   state = {
@@ -27,6 +28,7 @@ class LocationPage extends Component {
     try {
       const { business, storeId } = config;
       if (!business || !storeId) {
+        return;
         throw new Error('business id or store id is missing.');
       }
       const response = await post('/api/gql/CoreBusiness', { business, storeId });
@@ -79,7 +81,7 @@ class LocationPage extends Component {
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
-      history.push(callbackUrl);
+      history.replace(callbackUrl);
     } else {
       history.go(-1);
     }
@@ -116,6 +118,8 @@ class LocationPage extends Component {
   render() {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+
     return (
       <section className="table-ordering__location location-page">
         <Header
@@ -128,7 +132,7 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
-            mode="ORIGIN_STORE"
+            mode={search.h ? 'ORIGIN_STORE' : 'ORIGIN_DEVICE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}

@@ -5,14 +5,18 @@ import { IconNext } from '../../../components/Icons';
 
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
-
-const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
+import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
+import { actions as appActionCreators } from '../../redux/modules/app';
+import qs from 'qs';
+import config from '../../../config';
+const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -29,7 +33,7 @@ const closestValidTime = (baseTime, timeGap = 0, timeUnit = 'm') => {
 
 // Accepts time format like 10:00, 10, and 10:40
 const getHourAndMinuteFromString = time => {
-  if (!time) return;
+  if (!time) return {};
   if (typeof time === 'number') return { hour: time };
   const hour = parseInt(time.split(':')[0], 10);
   const minute = parseInt(time.split(':')[1] || 0, 10);
@@ -62,6 +66,11 @@ class LocationAndDate extends Component {
     deliveryToAddress: '',
     selectedDate: {},
     selectedHour: {},
+    h: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }).h,
+    isDeliveryType: false,
+    isPickUpType: false,
+    nearlyStore: '',
+    search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -79,14 +88,113 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
+    if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
+      this.setDeliveryType();
+    } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
+      this.setPickUpType();
+    }
+
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
       deliveryToAddress,
     });
+    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
+  };
+  setDeliveryType = () => {
+    this.setState(
+      {
+        isDeliveryType: true,
+        isPickUpType: false,
+      },
+      () => {
+        this.setMethodsTime();
+      }
+    );
+  };
+  setPickUpType = () => {
+    this.setState(
+      {
+        isPickUpType: true,
+        isDeliveryType: false,
+      },
+      () => {
+        this.setMethodsTime();
+      }
+    );
+  };
+  setMethodsTime = () => {
+    const { business, allBusinessInfo } = this.props;
+    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    // Calculate rendering time data when everything is ready
+    if (validDays && validDays.length && typeof validTimeFrom === 'string' && typeof validTimeTo === 'string') {
+      // IST saved Sunday as 1, Monday as two
+      // Transfer sunday to 0, Monday to 1
+      this.initialValidDays = validDays;
+      this.validDays = Array.from(validDays, v => v - 1);
+      this.validTimeFrom = validTimeFrom;
+      this.validTimeTo = validTimeTo;
+
+      this.getValidTimeToOrder(validTimeFrom, validTimeTo);
+      this.setDeliveryDays(this.validDays);
+    }
   };
 
+  setStoreFromSelect = async () => {
+    if (this.state.search.storeid) {
+      await this.props.homeActions.getStoreHashData(this.state.search.storeid);
+      this.setState({
+        h: this.props.storeHash,
+      });
+    }
+  };
+
+  setStore = async () => {
+    if (Utils.getSessionVariable('deliveryAddress') && !this.state.search.h) {
+      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+      await this.props.homeActions.loadCoreStores();
+      const { allStore } = this.props;
+
+      if (allStore.length && !this.state.h) {
+        let stores = allStore;
+        let { type } = this.state.search;
+        stores.forEach((item, idx, arr) => {
+          if (item.location) {
+            item.distance = computeStraightDistance(deliveryAddress.coords, {
+              lat: item.location.latitude,
+              lng: item.location.longitude,
+            });
+          }
+        });
+        stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+        let nearly;
+        stores.forEach(item => {
+          if (!nearly) {
+            nearly = item;
+          } else {
+            item.distance < nearly.distance && (nearly = item);
+          }
+        });
+        let result = await this.props.homeActions.getStoreHashData(nearly.id);
+        const h = result.response.redirectTo;
+
+        this.setState({
+          h,
+          nearlyStore: nearly,
+        });
+        // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
+      }
+    } else if (this.state.search.h) {
+      await this.props.homeActions.loadCoreStores();
+      let store = this.props.allStore.filter(item => item.id === config.storeId);
+      this.setState({
+        nearlyStore: store[0],
+      });
+    }
+  };
   getExpectedTimeFromSession = () => {
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
@@ -111,12 +219,12 @@ class LocationAndDate extends Component {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       // Calculate valid delivery time range
       this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
@@ -145,7 +253,7 @@ class LocationAndDate extends Component {
         this.setDeliveryDays(this.validDays);
       }
 
-      if (business && allBusinessInfo && allBusinessInfo[business]) {
+      if (business && allBusinessInfo && allBusinessInfo[business] && allBusinessInfo[business].country) {
         const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
         if (!enablePreOrder) window.location.href = '/';
@@ -206,7 +314,7 @@ class LocationAndDate extends Component {
     const { history, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let { search } = window.location;
-
+    search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
     const callbackUrl = encodeURIComponent(
       `${enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION}${search}`
     );
@@ -221,7 +329,15 @@ class LocationAndDate extends Component {
 
   handleBackClicked = () => {
     const { history } = this.props;
-    history.go(-1);
+
+    if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
+      history.replace({
+        pathname: this.state.search.callbackUrl.split('?')[0],
+        search: `h=${this.state.h}&type=${this.state.search.type}`,
+      });
+    } else {
+      history.go(-1);
+    }
   };
 
   getFirstItemFromTimeList = date => {
@@ -264,11 +380,11 @@ class LocationAndDate extends Component {
   getLocationDisplayTitle = () => {
     const { t } = this.props;
 
-    return Utils.isDeliveryType() ? t('DeliveryDetails') : t('PickUpDetails');
+    return this.state.isDeliveryType ? t('DeliveryDetails') : t('PickUpDetails');
   };
 
   renderDeliveryTo = () => {
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       const { deliveryToAddress } = this.state;
       const { t } = this.props;
       return (
@@ -290,7 +406,7 @@ class LocationAndDate extends Component {
       );
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       const { t, business, allBusinessInfo = {} } = this.props;
       const businessInfo = allBusinessInfo[business] || {};
       const { stores = [] } = businessInfo;
@@ -314,8 +430,8 @@ class LocationAndDate extends Component {
     return (
       <div className="form__group">
         <label className="form__label font-weight-bold">
-          {Utils.isDeliveryType() && t('DeliverOn')}
-          {Utils.isPickUpType() && t('PickUpOn')}
+          {this.state.isDeliveryType && t('DeliverOn')}
+          {this.state.isPickUpType && t('PickUpOn')}
         </label>
         <ul className="flex flex-middle flex-space-between location-display__date">
           {this.deliveryDates.map(deliverableTime => {
@@ -378,11 +494,11 @@ class LocationAndDate extends Component {
 
       let timeToDisplay;
 
-      if (Utils.isDeliveryType()) {
+      if (this.state.isDeliveryType) {
         timeToDisplay = `${toNumericTime(new Date(item.from), country)} - ${toNumericTime(new Date(item.to), country)}`;
       }
 
-      if (Utils.isPickUpType()) {
+      if (this.state.isPickUpType) {
         timeToDisplay = `${toNumericTime(new Date(item.from), country)}`;
       }
 
@@ -408,11 +524,11 @@ class LocationAndDate extends Component {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(baseTimeString);
     let validStartingTime;
 
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       validStartingTime = `${startMinute ? startHour + 2 : startHour + 1} : 0`;
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       const tempStartBaseTime = createTimeWithTimeString(baseTimeString);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
@@ -443,7 +559,7 @@ class LocationAndDate extends Component {
       if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
         return [PREORDER_IMMEDIATE_TAG];
       }
-      const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
+      const timeUnitToCompare = this.state.isDeliveryType ? ['h'] : ['h', 'm'];
       const startTimeInList = fullTimeList.findIndex(item =>
         isSameTime(item.from, createTimeWithTimeString(validStartingTimeString), timeUnitToCompare)
       );
@@ -473,7 +589,7 @@ class LocationAndDate extends Component {
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0, 0);
     const timeIncrease = i =>
-      Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
+      this.state.isDeliveryType ? addTime(i, 1, 'h') : this.state.isPickUpType ? addTime(i, 15, 'm') : 0;
 
     const loopCheck = i => {
       // Assuming store closes at 10:00 pm
@@ -482,11 +598,11 @@ class LocationAndDate extends Component {
       // For delivery is { from: "21:00" , to: "22:00" }
       // For pickup is { from: "21:30" , to: "21:45" }
       // So for delivery should compare 'to' and for pickup should compare 'from'
-      if (Utils.isDeliveryType()) {
+      if (this.state.isDeliveryType) {
         return timeIncrease(i);
       }
 
-      if (Utils.isPickUpType()) {
+      if (this.state.isPickUpType) {
         return i;
       }
 
@@ -504,7 +620,7 @@ class LocationAndDate extends Component {
         from: i,
       };
 
-      if (Utils.isDeliveryType()) {
+      if (this.state.isDeliveryType) {
         timeItem.to = timeIncrease(i);
       }
       timeList.push(timeItem);
@@ -539,12 +655,13 @@ class LocationAndDate extends Component {
 
     return (
       <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
+        {this.state.isDeliveryType && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
+        {this.state.isPickUpType && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
         <ul
           ref={this.timeListRef}
-          className="location-display__hour"
-          style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
+          className=""
+          // style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
+          style={{ paddingBottom: '100px' }}
         >
           {this.renderHoursList(timeList)}
         </ul>
@@ -561,18 +678,17 @@ class LocationAndDate extends Component {
 
     if (!enablePreOrder || !selectedDate.isOpen) return true;
 
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
         return false;
       }
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       if (selectedDate.date && selectedHour.from) {
         return false;
       }
     }
-
     return true;
   };
 
@@ -590,10 +706,55 @@ class LocationAndDate extends Component {
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
     if (typeof callbackUrl === 'string') {
-      history.push(callbackUrl);
+      if (callbackUrl.split('?')[0] === '/customer') {
+        // from customer
+        this.checkDetailChange(this.state.search);
+      } else {
+        // from ordering
+        history.replace({
+          pathname: callbackUrl.split('?')[0],
+          search: `h=${this.state.h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+        });
+      }
     } else {
       history.go(-1);
     }
+  };
+
+  checkDetailChange = async search => {
+    const cachedeliveryAddress = Utils.getSessionVariable('cachedeliveryAddress');
+    const cacheexpectedDeliveryDate = Utils.getSessionVariable('cacheexpectedDeliveryDate');
+    const cacheexpectedDeliveryHour = Utils.getSessionVariable('cacheexpectedDeliveryHour');
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+
+    if (search.storeid && search.storeid !== Utils.getCookieVariable('__s')) {
+      let result = await this.props.homeActions.getStoreHashData(search.storeid);
+      const h = result.response.redirectTo;
+
+      this.props.history.replace({
+        pathname: '/cart',
+        search: `h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+      });
+      return;
+    }
+    if (
+      cachedeliveryAddress !== deliveryAddress ||
+      cacheexpectedDeliveryDate !== expectedDeliveryDate ||
+      cacheexpectedDeliveryHour !== expectedDeliveryHour
+    ) {
+      Utils.removeSessionVariable('cachedeliveryAddress');
+      Utils.removeSessionVariable('cacheexpectedDeliveryDate');
+      Utils.removeSessionVariable('cacheexpectedDeliveryHour');
+
+      this.props.history.replace({
+        pathname: '/cart',
+        search: `h=${this.state.h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+      });
+      return;
+    }
+    this.props.history.push(search.callbackUrl);
   };
 
   renderContinueButton = () => {
@@ -614,6 +775,27 @@ class LocationAndDate extends Component {
     );
   };
 
+  renderStoreList = () => {
+    let store = [];
+    if (this.state.search.storeid) {
+      store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
+    } else {
+      store = [this.state.nearlyStore];
+    }
+    store = store.length ? store[0].name : '';
+    return (
+      <div className="form__group">
+        <label className="form__label font-weight-bold">Selected Store</label>
+        <div className="location-page__search-box">
+          <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
+            <input className="input input__block" data-testid="deliverTo" type="text" defaultValue={store} readOnly />
+            <IconNext className="delivery__next-icon" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   render() {
     return (
       <section className="table-ordering__location">
@@ -623,8 +805,13 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
+        <div>
+          <p onClick={this.setDeliveryType}>delivery</p>
+          <p onClick={this.setPickUpType}>pickup</p>
+        </div>
         <div className="location-display__content">
           {this.renderDeliveryTo()}
+          {this.renderStoreList()}
           {this.renderDeliveryOn()}
           {this.renderHourSelector()}
         </div>
@@ -640,7 +827,12 @@ export default compose(
     state => ({
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
+      allStore: getStoresList(state),
+      storeHash: getStoreHashCode(state),
     }),
-    dispatch => ({})
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
   )
 )(LocationAndDate);

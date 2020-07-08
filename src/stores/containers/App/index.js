@@ -7,7 +7,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/modules/home';
+import { actions as homeActionCreators } from '../../../ordering/redux/modules/home';
+import {
+  actions as storesActionsCreators,
+  getDeliveryStatus,
+  getCurrentStoreId,
+  getAllStores,
+  getStoreHashCode,
+} from '../../redux/modules/home';
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
 import Home from '../Home';
@@ -17,8 +24,109 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
+import qs from 'qs';
+import config from '../../../config';
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    if (!this.isDinePath()) {
+      const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+      console.log(search, 'search', this.props.history);
+      let { type } = search;
+      if (!type) {
+        type = DELIVERY_METHOD.DELIVERY;
+      }
+
+      this.checkCustomer(type);
+
+      // let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+      // if (deliveryAddress) {
+      //   if (!h) {
+      //
+      //   } else {
+      //     window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
+      //   }
+      // } else {
+      //   window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`;
+      // }
+
+      // Utils.removeCookieVariable('__s','')
+      // Utils.setCookieVariable('__s','5e5dd6c7407cf700063ba869')
+      // console.log(`${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`,'`${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`')
+    }
+  }
+  checkCustomer = async type => {
+    if (config.storeId) {
+      Utils.removeCookieVariable('__s', '');
+    }
+    this.checkType(type);
+  };
+
+  checkType = async type => {
+    await this.props.storesActions.loadCoreStores();
+    if (type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
+      this.checkDeliveryAddress(type);
+    } else if (type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
+      let stores = this.props.stores;
+      if (stores.length) {
+        if (stores.length === 1) {
+          await this.props.storesActions.getStoreHashData(stores[0].id);
+          this.props.history.replace({
+            pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
+            search: `h=${this.props.storeHash}&type=${type}`,
+          });
+          window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${this.props.storeHash}&type=${type}`;
+        } else {
+          // TODO 跳转商店选择页面
+        }
+      }
+    } else {
+      this.checkDeliveryAddress(DELIVERY_METHOD.DELIVERY);
+    }
+  };
+  checkDeliveryAddress = async type => {
+    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    if (deliveryAddress) {
+      deliveryAddress = JSON.parse(deliveryAddress);
+      let stores = this.props.stores;
+
+      stores.forEach(item => {
+        if (item.location) {
+          item.distance = computeStraightDistance(deliveryAddress.coords, {
+            lat: item.location.latitude,
+            lng: item.location.longitude,
+          });
+        }
+      });
+      stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+      let nearly;
+      stores.forEach(item => {
+        if (!nearly) {
+          nearly = item;
+        } else {
+          item.distance < nearly.distance && (nearly = item);
+        }
+      });
+      console.log(nearly, 'nearly');
+      await this.props.storesActions.getStoreHashData(nearly.id);
+
+      this.props.history.replace({
+        pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
+        search: `h=${this.props.storeHash}&type=${type}`,
+      });
+    } else {
+      this.props.history.replace({
+        pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
+        search: `type=${type}`,
+      });
+      // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`;
+    }
+  };
+
   componentDidMount() {
     const { appActions, currentStoreId } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
@@ -82,7 +190,7 @@ class App extends Component {
 
     return (
       <main className="store-list">
-        {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home />}
+        {currentStoreId ? this.renderDeliveryOrDineMethods() : this.isDinePath() ? <Home /> : null}
 
         {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
         <DocumentFavicon icon={favicon || faviconImage} />
@@ -99,8 +207,11 @@ export default connect(
     stores: getAllStores(state),
     error: getError(state),
     pageError: getPageError(state),
+    storeHash: getStoreHashCode(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    storesActions: bindActionCreators(storesActionsCreators, dispatch),
   })
 )(withRouter(App));

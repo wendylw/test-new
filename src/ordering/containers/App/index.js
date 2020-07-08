@@ -19,14 +19,16 @@ import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
-
+import { actions as homeActionCreators } from '../../redux/modules/home';
 class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { appActions, homeActions } = this.props;
+
     this.visitErrorPage();
     await appActions.getLoginStatus();
+    // await homeActions.loadCoreStores();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
     await appActions.loadCoreBusiness();
 
@@ -65,7 +67,7 @@ class App extends Component {
   setGtmData = ({ onlineStoreInfo, userInfo, businessInfo }) => {
     const userProperties = { onlineStoreInfo, userInfo };
 
-    if (businessInfo && businessInfo.stores[0].id) {
+    if (businessInfo && businessInfo.stores.length && businessInfo.stores[0].id) {
       userProperties.store = {
         id: businessInfo.stores[0].id,
       };
@@ -181,5 +183,6 @@ export default connect(
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   })
 )(App);

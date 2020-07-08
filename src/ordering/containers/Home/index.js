@@ -19,6 +19,8 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
+import { actions as appActionsCreators } from '../../redux/modules/app';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -46,6 +48,7 @@ export class Home extends Component {
     alcoholModal: false,
     offlineStoreModal: false,
     dScrollY: 0,
+    deliveryBar: false,
   };
   handleScroll = () => {
     const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
@@ -64,12 +67,12 @@ export class Home extends Component {
 
   componentDidMount = async () => {
     const { history, homeActions, requestInfo, deliveryInfo } = this.props;
-    const { tableId, storeId } = requestInfo;
-    const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    // const { tableId, storeId } = requestInfo;
+    // const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (!h || !storeId || tableId === 'DEMO') {
-      window.location.href = '/';
-    }
+    // if (!h || !storeId || tableId === 'DEMO') {
+    //   window.location.href = '/';
+    // }
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
@@ -78,12 +81,122 @@ export class Home extends Component {
 
     this.handleDeliveryTimeInSession();
 
-    homeActions.loadProductList();
+    await homeActions.loadProductList();
+    // await homeActions.loadCoreStores();
     window.addEventListener('scroll', this.handleScroll);
 
     const pageRf = this.getPageRf();
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
+    }
+
+    if (Utils.getSessionVariable('deliveryAddress')) {
+      await this.props.appActions.loadCoreBusiness();
+
+      const { businessInfo } = this.props;
+      const {
+        qrOrderingSetting,
+        validTimeFrom,
+        validTimeTo,
+        breakTimeFrom,
+        breakTimeTo,
+        validDays,
+      } = businessInfo.qrOrderingSettings;
+
+      if (!Utils.getSessionVariable('expectedDeliveryDate')) {
+        // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
+
+        let defaultTime = new Date(); //TODO 应该用商家本地时间
+        while (true) {
+          console.log(defaultTime, 'defaultTime');
+          defaultTime = defaultTime.getTime();
+          if (breakTimeFrom && breakTimeTo) {
+            const breakTimeFromValue = new Date(breakTimeFrom).getTime();
+            const breakTimeToValue = new Date(breakTimeTo).getTime();
+            if (defaultTime >= breakTimeFromValue && defaultTime <= breakTimeToValue) {
+              defaultTime = new Date(defaultTime + 24 * 60 * 60 * 1000);
+              continue;
+            }
+          }
+          defaultTime = new Date(defaultTime);
+          if (validDays.indexOf(defaultTime.getDay()) === -1) {
+            defaultTime = new Date(defaultTime + 24 * 60 * 60 * 1000);
+          } else {
+            break;
+          }
+        }
+        defaultTime = new Date(defaultTime);
+        const currentTime = new Date(); //TODO 应该用商家本地时间
+
+        if (defaultTime.getMonth() === currentTime.getMonth() && defaultTime.getDate() === currentTime.getDate()) {
+          Utils.setSessionVariable(
+            'expectedDeliveryDate',
+            JSON.stringify({
+              date: defaultTime.toISOString(),
+              isOpen: true,
+              isToday: true,
+            })
+          );
+        } else {
+          Utils.setSessionVariable(
+            'expectedDeliveryDate',
+            JSON.stringify({
+              date: defaultTime.toISOString(),
+              isOpen: true,
+              isToday: false,
+            })
+          );
+        }
+      }
+      if (!Utils.getSessionVariable('expectedDeliveryHour')) {
+        let deliverDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
+        let currentTime = new Date(); //TODO 应该用商家本地时间
+        if (deliverDate.isToday) {
+          currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
+          let d = new Date();
+          if (currentTime.getTime() < d.setHours(validTimeTo.split(':')[0], validTimeTo.split(':')[1])) {
+            Utils.setSessionVariable(
+              'expectedDeliveryHour',
+              JSON.stringify({
+                from: 'now',
+                to: 'now',
+              })
+            );
+          } else {
+            const from =
+              +validTimeFrom.split(':')[0] + 1 < 10
+                ? '0' + (+validTimeFrom.split(':')[0] + 1) + ':00'
+                : +validTimeFrom.split(':')[0] + 1 + ':00';
+            const to =
+              +validTimeFrom.split(':')[0] + 2 < 10
+                ? '0' + (+validTimeFrom.split(':')[0] + 2) + ':00'
+                : +validTimeFrom.split(':')[0] + 2 + ':00';
+
+            Utils.setSessionVariable(
+              'expectedDeliveryHour',
+              JSON.stringify({
+                from,
+                to,
+              })
+            );
+            const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
+
+            expectedDeliveryDate.date = new Date(expectedDeliveryDate.date);
+            expectedDeliveryDate.date.setHours(0, 0, 0, 0);
+            Utils.setSessionVariable(
+              'expectedDeliveryDate',
+              JSON.stringify({
+                ...expectedDeliveryDate,
+                isToday: false,
+                date: new Date(new Date(expectedDeliveryDate.date).getTime() + 24 * 60 * 60 * 1000).toISOString(),
+              })
+            );
+          }
+        }
+      }
+      this.setState({
+        deliveryBar: true,
+      });
     }
   };
   setAlcoholModalState = val => {
@@ -328,6 +441,14 @@ export class Home extends Component {
 
     if (enablePreOrder) {
       deliveryTimeText = this.getExpectedDeliveryTime();
+    } else {
+      Utils.setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from: 'now',
+          to: 'now',
+        })
+      );
     }
 
     return (
@@ -464,7 +585,7 @@ export class Home extends Component {
         {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null}
-        {this.renderDeliverToBar()}
+        {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping &&
         freeShippingMinAmount &&
@@ -500,7 +621,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        {!Utils.isDeliveryType() && !Utils.isPickUpType() ? null : (
+        {(Utils.isDeliveryType() || Utils.isPickUpType()) && validTimeFrom && validTimeTo && (
           <DeliveryDetailModal
             onlineStoreInfo={onlineStoreInfo}
             businessInfo={businessInfo}
@@ -549,11 +670,14 @@ export default compose(
         businessLoaded: getBusinessIsLoaded(state),
         popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
+        // hashcode: getStoreHashCode(state)
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
+      storesActions: bindActionCreators(storesActionCreators, dispatch),
+      appActions: bindActionCreators(appActionsCreators, dispatch),
     })
   )
 )(Home);

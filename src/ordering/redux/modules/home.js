@@ -42,10 +42,21 @@ export const initialState = {
   popUpModal: {
     userConfirmed: false,
   },
+  coreStore: {
+    isFetching: false,
+    storeList: [],
+    storeHashCode: '',
+  },
 };
 
 export const types = HOME_TYPES;
 
+types.FETCH_CORESTORES_REQUEST = 'STORES/HOME/FETCH_CORESTORES_REQUEST';
+types.FETCH_CORESTORES_SUCCESS = 'STORES/HOME/FETCH_CORESTORES_SUCCESS';
+types.FETCH_CORESTORES_FAILURE = 'STORES/HOME/FETCH_CORESTORES_FAILURE';
+types.FETCH_STORE_HASHCODE_REQUEST = 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST';
+types.FETCH_STORE_HASHCODE_SUCCESS = 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS';
+types.FETCH_STORE_HASHCODE_FAILURE = 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE';
 // actions
 export const actions = {
   // load product list group by category, and shopping cart
@@ -55,11 +66,33 @@ export const actions = {
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
     }
-    dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
     if (!getState().home.onlineCategory.categoryIds.length) {
       dispatch(fetchOnlineCategory());
     }
   },
+
+  loadCoreStores: () => (dispatch, getState) => {
+    const business = getBusiness(getState());
+    return dispatch({
+      [FETCH_GRAPHQL]: {
+        types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
+        endpoint: Url.apiGql('CoreStores'),
+        variables: { business },
+      },
+    });
+  },
+
+  getStoreHashData: storeId => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_REQUEST,
+        types.FETCH_STORE_HASHCODE_SUCCESS,
+        types.FETCH_STORE_HASHCODE_FAILURE,
+      ],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
+    },
+  }),
 
   // load shopping cart
   loadShoppingCart: () => async (dispatch, getState) => {
@@ -288,6 +321,30 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
   }
 };
 
+const coreStore = (state = initialState.coreStore, action) => {
+  switch (action.type) {
+    case types.FETCH_CORESTORES_REQUEST:
+      return { ...state, isFetching: true };
+    case types.FETCH_CORESTORES_SUCCESS:
+      const { stores } = action.responseGql.data.business;
+      return {
+        ...state,
+        isFetching: false,
+        storeList: stores,
+      };
+    case types.FETCH_CORESTORES_FAILURE:
+      return { ...state, isFetching: false };
+    case types.FETCH_STORE_HASHCODE_SUCCESS: {
+      const { response } = action;
+      const { redirectTo } = response || {};
+
+      return { ...state, storeHashCode: redirectTo };
+    }
+    default:
+      return state;
+  }
+};
+
 const popUpModal = (state = initialState.popUpModal, action) => {
   if (action.type === types.SET_PRE_ORDER_MODAL_CONFIRM) {
     return { ...state, userConfirmed: true };
@@ -301,6 +358,7 @@ export default combineReducers({
   shoppingCart,
   onlineCategory,
   popUpModal,
+  coreStore,
 });
 
 // selectors
@@ -313,6 +371,10 @@ export const getDeliveryInfo = state => {
 };
 
 export const isFetched = state => state.home.shoppingCart.isFetched;
+
+export const getStoresList = state => state.home.coreStore.storeList;
+
+export const getStoreHashCode = state => state.home.coreStore.storeHashCode;
 
 export const getCartItemIds = state => state.home.shoppingCart.itemIds;
 
