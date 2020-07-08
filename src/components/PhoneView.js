@@ -47,7 +47,7 @@ class PhoneView extends React.Component {
     }
 
     return (
-      <div className={className}>
+      <div className={className} data-heap-name="common.phone-view.container">
         <PhoneInput
           placeholder={t('EnterPhoneNumber')}
           value={formatPhoneNumberIntl(phone)}
@@ -60,12 +60,14 @@ class PhoneView extends React.Component {
               setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
             }
           }}
+          data-heap-name="common.phone-view.phone-input"
         />
 
         {errorMessage.phone ? <span className="error">{errorMessage.phone}</span> : null}
 
         <button
           className="phone-view-form__button button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+          data-heap-name="common.phone-view.submit-btn"
           onClick={this.savePhoneNumber.bind(this)}
           disabled={!phone || isLoading || !isValidPhoneNumber(phone)}
         >

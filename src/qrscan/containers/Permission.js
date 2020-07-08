@@ -5,7 +5,7 @@ import '../styles.scss';
 class Permission extends Component {
   render() {
     return (
-      <div>
+      <div data-heap-name="qrscan.permission.container">
         <GetPermission />
       </div>
     );

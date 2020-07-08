@@ -164,6 +164,7 @@ class QRScan extends Component {
 
       qr.decodeFromImage(canvas.toDataURL('image/png')).then(res => {
         if (res.data) {
+          window.heap.track('site.scan.qr-scanned');
           processQR(res.data).then(() => {
             window.clearInterval(this.timer);
           });
@@ -212,10 +213,14 @@ class QRScan extends Component {
     const showMessage = !/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
 
     return (
-      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main">
+      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.scan.container">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
-            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
+            <IconLeftArrow
+              className="icon icon__big icon__gray text-middle"
+              onClick={this.handleBackClicked}
+              data-heap-name="site.scan.back-btn"
+            />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
               {t('ScanQRCode')}
             </h2>

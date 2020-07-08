@@ -279,7 +279,11 @@ class LocationAndDate extends Component {
       return (
         <div className="form__group">
           <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
-          <div className="location-page__search-box" onClick={this.showLocationSearch}>
+          <div
+            className="location-page__search-box"
+            onClick={this.showLocationSearch}
+            data-heap-name="ordering.location-and-date.deliver-to"
+          >
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               <input
                 className="input input__block"
@@ -335,6 +339,8 @@ class LocationAndDate extends Component {
                   deliverableTime.isOpen ? '' : 'disabled'
                 } ${isSelected ? 'selected' : ''}`}
                 data-testid="preOrderDate"
+                data-heap-name="ordering.location-and-date.date-item"
+                data-heap-is-today={deliverableTime.isToday ? 'yes' : 'no'}
                 onClick={() => {
                   this.handleSelectDate(deliverableTime);
                 }}
@@ -371,6 +377,8 @@ class LocationAndDate extends Component {
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
             }`}
             data-testid="preOrderHour"
+            data-heap-name="ordering.location-and-date.time-item"
+            data-heap-is-immediate="yes"
             onClick={() => {
               this.handleSelectHour({ ...item });
             }}
@@ -398,6 +406,8 @@ class LocationAndDate extends Component {
         <li
           className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
           data-testid="preOrderHour"
+          data-heap-name="ordering.location-and-date.time-item"
+          data-heap-is-immediate="no"
           onClick={() => {
             this.handleSelectHour({ from, to });
           }}
@@ -621,6 +631,7 @@ class LocationAndDate extends Component {
           <button
             className="billing__link button button__fill button__block font-weight-bolder"
             data-testid="continue"
+            data-heap-name="ordering.location-and-date.continue-btn"
             disabled={this.checkIfCanContinue()}
             onClick={this.goToNext}
           >
@@ -633,9 +644,10 @@ class LocationAndDate extends Component {
 
   render() {
     return (
-      <section className="table-ordering__location">
+      <section className="table-ordering__location" data-heap-name="ordering.location-and-date.container">
         <Header
           className="has-right flex-middle"
+          data-heap-name="ordering.location-and-date.header"
           isPage={true}
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
