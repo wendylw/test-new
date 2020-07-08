@@ -106,7 +106,7 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, order, businessInfo, promotion } = this.props;
+    const { t, order, businessInfo, promotion, cashbackInfo } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
 
     return (
@@ -139,6 +139,7 @@ export class ReceiptDetail extends Component {
           subtotal={subtotal}
           total={total}
           promotion={promotion}
+          isLogin={true}
           creditsBalance={this.getSpendCashback()}
         />
       </section>
