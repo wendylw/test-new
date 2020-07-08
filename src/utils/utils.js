@@ -1,7 +1,6 @@
 import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
-import dayjs from 'dayjs';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -303,16 +302,16 @@ Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
-Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }, merchantTime) => {
+Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
   // ValidDays received from api side, sunday is 1, monday is two
   // convert it to browser weekday format first, for which sunday is 0, monday is 1
   if (!(Array.isArray(validDays) && validDays.length)) {
     return false;
   }
   const localValidDays = Array.from(validDays, v => v - 1);
-  const weekInfo = new Date(merchantTime).getDay() % 7;
-  const hourInfo = new Date(merchantTime).getHours();
-  const minutesInfo = new Date(merchantTime).getMinutes();
+  const weekInfo = new Date().getDay() % 7;
+  const hourInfo = new Date().getHours();
+  const minutesInfo = new Date().getMinutes();
   const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
   const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
 
@@ -476,18 +475,6 @@ Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   if (type) storeUrl += `&type=${type}`;
   if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
   return storeUrl;
-};
-Utils.getMerchantLocalTime = (businessInfo = {}) => {
-  const { timezoneOffset } = businessInfo;
-
-  if (timezoneOffset !== undefined) {
-    const currentOffset = dayjs().utcOffset();
-    const UTCTime = new Date().getTime() - currentOffset * 60 * 1000;
-    const merchantTime = UTCTime + timezoneOffset * 60 * 1000;
-
-    return new Date(merchantTime);
-  }
-  return new Date();
 };
 
 if (process.env.NODE_ENV !== 'production') {

@@ -344,17 +344,15 @@ export class Home extends Component {
   };
 
   isValidTimeToOrder = () => {
-    const { deliveryInfo, businessInfo } = this.props;
+    const { deliveryInfo } = this.props;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
+
     const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
 
-    return Utils.isValidTimeToOrder(
-      { validDays, validTimeFrom, validTimeTo },
-      Utils.getMerchantLocalTime(businessInfo)
-    );
+    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
   renderHeaderChildren() {
