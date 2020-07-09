@@ -26,12 +26,16 @@ class DeliverToBar extends PureComponent {
           }}
         >
           <div>
-            <label className="deliver-to-entry__label text-size-small text-uppercase text-weight-bolder">{title}</label>
+            <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
+              {title}
+            </label>
             <div className="flex flex-top">
               {icon}
-              <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
-                {address}
-              </p>
+              <div>
+                <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
+                  {address}
+                </p>
+              </div>
             </div>
           </div>
         </div>
