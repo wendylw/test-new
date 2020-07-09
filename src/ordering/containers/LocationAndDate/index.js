@@ -117,12 +117,20 @@ class LocationAndDate extends Component {
   };
 
   getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
+    const { business, allBusinessInfo } = this.props;
+    const businessInfo = allBusinessInfo[business];
+    const { qrOrderingSettings } = businessInfo || {};
+    const { useStorehubLogistics } = qrOrderingSettings || {};
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
       this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
+
+      if (useStorehubLogistics && Number(storehubLogisticsBusinessHours[0].slice(0, 2)) > this.validPreOrderTimeFrom) {
+        this.validPreOrderTimeFrom = Number(storehubLogisticsBusinessHours[0].slice(0, 2));
+      }
     }
 
     if (Utils.isPickUpType()) {
@@ -199,7 +207,7 @@ class LocationAndDate extends Component {
         if (!isOpen) continue;
       }
 
-      if (useStorehubLogistics && Utils.isDeliveryType()) {
+      if (useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
         const isBeforeStoreClose = isNoLaterThan(
           currentTime,
           this.createTimeWithTimeString(storehubLogisticsBusinessHours[1])
@@ -511,10 +519,14 @@ class LocationAndDate extends Component {
     const { useStorehubLogistics } = qrOrderingSettings || {};
 
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(
-      useStorehubLogistics && Utils.isDeliveryType() ? storehubLogisticsBusinessHours[0] : this.validPreOrderTimeFrom
+      useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[0] > this.validPreOrderTimeFrom
+        ? storehubLogisticsBusinessHours[0]
+        : this.validPreOrderTimeFrom
     );
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(
-      useStorehubLogistics && Utils.isDeliveryType() ? storehubLogisticsBusinessHours[1] : this.validTimeTo
+      useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[1] < this.validTimeTo
+        ? storehubLogisticsBusinessHours[1]
+        : this.validTimeTo
     );
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0, 0);

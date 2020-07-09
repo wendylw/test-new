@@ -199,7 +199,8 @@ export const actions = {
         case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
           errorMessage = 'OrderingPayment:PromotionInvalid';
           break;
-
+        case CREATE_ORDER_ERROR_CODES.CONTACT_DETAIL_INVALID:
+          errorMessage = 'OrderingPayment:ContactDetailInvalid';
         default:
           errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
           break;
