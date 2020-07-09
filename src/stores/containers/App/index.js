@@ -74,7 +74,7 @@ class App extends Component {
     }
   };
 
-  getNearlyStore = (stores, type) => {
+  getNearlyStore = (stores, type, deliveryAddress) => {
     stores.forEach(item => {
       if (item.location) {
         item.distance = computeStraightDistance(deliveryAddress.coords, {
@@ -100,7 +100,7 @@ class App extends Component {
     if (deliveryAddress) {
       deliveryAddress = JSON.parse(deliveryAddress);
       let stores = this.props.stores;
-      const nearly = this.getNearlyStore(stores, type);
+      const nearly = this.getNearlyStore(stores, type, deliveryAddress);
 
       await this.props.storesActions.getStoreHashData(nearly.id);
       this.props.history.replace({
