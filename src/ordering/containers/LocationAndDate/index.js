@@ -117,7 +117,8 @@ class LocationAndDate extends Component {
   };
 
   getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
-    const { businessInfo } = this.props;
+    const { business, allBusinessInfo } = this.props;
+    const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
@@ -127,8 +128,8 @@ class LocationAndDate extends Component {
       // Calculate valid delivery time range
       this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
 
-      if (useStorehubLogistics && storehubLogisticsBusinessHours[0] < this.validPreOrderTimeFrom) {
-        this.validPreOrderTimeFrom = storehubLogisticsBusinessHours[0];
+      if (useStorehubLogistics && Number(storehubLogisticsBusinessHours[0].slice(0, 2)) > this.validPreOrderTimeFrom) {
+        this.validPreOrderTimeFrom = Number(storehubLogisticsBusinessHours[0].slice(0, 2));
       }
     }
 
