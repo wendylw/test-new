@@ -121,6 +121,7 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
+    const limit = useStorehubLogistics && Utils.isDeliveryType();
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
@@ -472,7 +473,6 @@ class LocationAndDate extends Component {
 
   getHoursListForToday = (selectedDate = {}) => {
     if (!selectedDate.isToday) return;
-    console.log(this.props);
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
@@ -493,9 +493,11 @@ class LocationAndDate extends Component {
     const fullTimeList = this.getHoursList();
 
     // If user visit this webpage before store opens, show full time list
-    console.log(currentTime.valueOf(), storeOpenTime.valueOf(), isNoLaterThan(currentTime, storeOpenTime));
 
     if (isNoLaterThan(currentTime, storeOpenTime)) {
+      if (new Date(this.fullTimeList[0].from).getHours() - new Date().getHours() < 2) {
+        return this.fullTimeList.slice(1);
+      }
       return this.fullTimeList;
     }
 
@@ -505,7 +507,6 @@ class LocationAndDate extends Component {
       // Check here use isAfterTime because there is a case if what needs to display after 'immediate'
       // is 6:30, and close time is 6: 30, should show 6:30
       if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
-        console.log('123');
         return [PREORDER_IMMEDIATE_TAG];
       }
       const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
@@ -515,7 +516,6 @@ class LocationAndDate extends Component {
 
       const timeListToDisplay = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
       timeListToDisplay.unshift(PREORDER_IMMEDIATE_TAG);
-      console.log('timeListToDisplay', startTimeInList, fullTimeList);
 
       return timeListToDisplay;
     }
