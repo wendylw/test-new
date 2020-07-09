@@ -1,11 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { IconLeftArrow } from './Icons';
 import './DeliverToBar.scss';
 
 class DeliverToBar extends PureComponent {
   render() {
-    const { heapName, title, icon, address, className, gotoLocationPage, backLeftPosition, children } = this.props;
-    const classList = ['deliver-to-entry flex flex-middle flex-space-between'];
+    const {
+      heapContentName,
+      heapBackButtonName,
+      title,
+      icon,
+      navBackUrl,
+      content,
+      extraInfo,
+      className,
+      showBackButton,
+      gotoLocationPage,
+      backLeftPosition,
+      children,
+    } = this.props;
+    const classList = ['deliver-to-entry flex flex-space-between'];
 
     if (className) {
       classList.push(className);
@@ -16,7 +30,7 @@ class DeliverToBar extends PureComponent {
         <div
           className="deliver-to-entry__content"
           data-testid="DeliverToBar"
-          data-heap-name={heapName}
+          data-heap-name={heapContentName}
           onClick={() => {
             if (backLeftPosition) {
               backLeftPosition();
@@ -25,16 +39,32 @@ class DeliverToBar extends PureComponent {
             gotoLocationPage();
           }}
         >
-          <div>
+          {showBackButton ? (
+            <IconLeftArrow
+              className="icon icon__big icon__gray text-middle flex__shrink-fixed"
+              data-heap-name={heapBackButtonName}
+              onClick={event => {
+                event.preventDefault();
+                window.location.href = navBackUrl;
+                event.stopPropagation();
+              }}
+            />
+          ) : null}
+          <div className={showBackButton ? '' : 'padding-left-right-smaller'}>
             <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
               {title}
             </label>
             <div className="flex flex-top">
               {icon}
-              <div>
-                <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
-                  {address}
+              <div className="deliver-to-entry__detail-container">
+                <p className="deliver-to-entry__content padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
+                  {content}
                 </p>
+                {extraInfo ? (
+                  <p className="text-size-small padding-top-bottom-smaller text-opacity text-omit__single-line">
+                    {extraInfo}
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>
@@ -46,19 +76,26 @@ class DeliverToBar extends PureComponent {
 }
 
 DeliverToBar.propTypes = {
-  heapName: PropTypes.string,
+  heapContentName: PropTypes.string,
+  heapBackButtonName: PropTypes.string,
   className: PropTypes.string,
   title: PropTypes.string,
   icon: PropTypes.node,
-  address: PropTypes.string,
+  content: PropTypes.string,
+  navBackUrl: PropTypes.string,
+  extraInfo: PropTypes.string,
+  showBackButton: PropTypes.bool,
   gotoLocationPage: PropTypes.func,
   backLeftPosition: PropTypes.func,
 };
 
 DeliverToBar.defaultProps = {
   title: '',
-  address: '',
+  content: '',
+  navBackUrl: '',
+  extraInfo: '',
   icon: null,
+  showBackButton: false,
   toLocationPage: () => {},
   backLeftPosition: () => {},
 };

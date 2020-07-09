@@ -254,8 +254,20 @@ export class Home extends Component {
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
         <DeliverToBar
-          heapName="ordering.home.delivery-bar"
+          heapContentName="ordering.home.delivery-bar"
+          heapBackButtonName="order.home.delivery-bar-back-btn"
           title={Utils.isDeliveryType() ? t('DeliverTo') : t('PickUpOn')}
+          content={Utils.isDeliveryType() ? deliveryToAddress : this.getExpectedDeliveryTime()}
+          navBackUrl={this.navBackUrl}
+          extraInfo={
+            Utils.isDeliveryType() ? (!enablePreOrder ? t('DeliverNow') : this.getExpectedDeliveryTime()) : null
+          }
+          showBackButton={showBackButton({
+            isValidTimeToOrder,
+            enablePreOrder,
+            backPosition: BackPosition.DELIVERY_TO,
+          })}
+          gotoLocationPage={fillInDeliverToAddress}
           icon={
             Utils.isDeliveryType() ? (
               <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
@@ -265,55 +277,12 @@ export class Home extends Component {
           }
         >
           {isValidTimeToOrder || enablePreOrder ? (
-            <IconEdit className="icon icon__small icon__privacy flex__shrink-fixed" />
+            <IconEdit
+              className="icon icon__small icon__privacy flex flex-middle flex__shrink-fixed"
+              onClick={fillInDeliverToAddress}
+            />
           ) : null}
         </DeliverToBar>
-        // <div
-        //   className="deliver-to-entry flex flex-top flex-space-between"
-        //   onClick={fillInDeliverToAddress}
-        //   data-heap-name="ordering.home.delivery-bar"
-        // >
-        //   <div className="deliver-to-entry__content">
-        //     {showBackButton({
-        //       isValidTimeToOrder,
-        //       enablePreOrder,
-        //       backPosition: BackPosition.DELIVERY_TO,
-        //     }) ? (
-        //         <IconLeftArrow
-        //           className="icon icon__big icon__gray text-middle flex__shrink-fixed"
-        //           data-heap-name="order.home.delivery-bar-back-btn"
-        //           onClick={event => {
-        //             event.preventDefault();
-        //             window.location.href = this.navBackUrl;
-        //             event.stopPropagation();
-        //           }}
-        //         />
-        //       ) : null}
-        //     <div>
-        //       <label className="deliver-to-entry__label padding-top-bottom-small padding-left-right-smaller text-size-small text-uppercase text-weight-bolder">
-        //         {Utils.isDeliveryType() && t('DeliverTo')}
-        //         {Utils.isPickUpType() && t('PickUpOn')}
-        //       </label>
-        //       {Utils.isDeliveryType() ? (
-        //         <div className="flex flex-top">
-        //           <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
-        //           <div>
-        //             <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
-        //               {deliveryToAddress}
-        //             </p>
-        //             <p className="text-size-small padding-top-bottom-smaller text-opacity text-omit__single-line">
-        //               {enablePreOrder ? this.getExpectedDeliveryTime() : t('DeliverNow')}
-        //             </p>
-        //           </div>
-        //         </div>
-        //       ) : null}
-        //       {Utils.isPickUpType() ? this.renderPickupAddress() : null}
-        //     </div>
-        //   </div>
-        //   {isValidTimeToOrder || enablePreOrder ? (
-        //     <IconEdit className="icon icon__small icon__privacy flex__shrink-fixed" />
-        //   ) : null}
-        // </div>
       );
     }
 

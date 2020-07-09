@@ -180,17 +180,17 @@ class Home extends React.Component {
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
-          heapName="site.home.delivery-bar"
+          heapContentName="site.home.delivery-bar"
           title={t('DeliverTo')}
           icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
           className={`entry__deliver-to base-box-shadow ${
             this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
           }`}
-          address={currentPlaceInfo ? currentPlaceInfo.address : ''}
+          content={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
           backLeftPosition={this.backLeftPosition}
         >
-          <Link to={ROUTER_PATHS.QRSCAN} data-heap-name="site.home.qr-scan-icon">
+          <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
             <IconScanner className="icon icon__privacy" onClick={this.backLeftPosition} />
           </Link>
         </DeliverToBar>
