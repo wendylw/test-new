@@ -58,6 +58,12 @@ class App extends Component {
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
+
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      this.props.homeActions.setCurrentStore(queries.s);
+    }
   }
 
   handleClearError = () => {
