@@ -40,25 +40,10 @@ class App extends Component {
       if (!type) {
         type = DELIVERY_METHOD.DELIVERY;
       }
-
       this.checkCustomer(type);
-
-      // let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-      // if (deliveryAddress) {
-      //   if (!h) {
-      //
-      //   } else {
-      //     window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
-      //   }
-      // } else {
-      //   window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`;
-      // }
-
-      // Utils.removeCookieVariable('__s','')
-      // Utils.setCookieVariable('__s','5e5dd6c7407cf700063ba869')
-      // console.log(`${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`,'`${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`')
     }
   }
+
   checkCustomer = async type => {
     if (config.storeId) {
       Utils.removeCookieVariable('__s', '');
@@ -88,32 +73,36 @@ class App extends Component {
       this.checkDeliveryAddress(DELIVERY_METHOD.DELIVERY);
     }
   };
+
+  getNearlyStore = (stores, type) => {
+    stores.forEach(item => {
+      if (item.location) {
+        item.distance = computeStraightDistance(deliveryAddress.coords, {
+          lat: item.location.latitude,
+          lng: item.location.longitude,
+        });
+      }
+    });
+    stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+    let nearly;
+    stores.forEach(item => {
+      if (!nearly) {
+        nearly = item;
+      } else {
+        item.distance < nearly.distance && (nearly = item);
+      }
+    });
+    return nearly;
+  };
+
   checkDeliveryAddress = async type => {
     let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     if (deliveryAddress) {
       deliveryAddress = JSON.parse(deliveryAddress);
       let stores = this.props.stores;
+      const nearly = this.getNearlyStore(stores, type);
 
-      stores.forEach(item => {
-        if (item.location) {
-          item.distance = computeStraightDistance(deliveryAddress.coords, {
-            lat: item.location.latitude,
-            lng: item.location.longitude,
-          });
-        }
-      });
-      stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
-      let nearly;
-      stores.forEach(item => {
-        if (!nearly) {
-          nearly = item;
-        } else {
-          item.distance < nearly.distance && (nearly = item);
-        }
-      });
-      console.log(nearly, 'nearly');
       await this.props.storesActions.getStoreHashData(nearly.id);
-
       this.props.history.replace({
         pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
         search: `h=${this.props.storeHash}&type=${type}`,

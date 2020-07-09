@@ -89,7 +89,10 @@ export class Home extends Component {
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
+    this.checkOrderTime();
+  };
 
+  checkOrderTime = async () => {
     if (Utils.getSessionVariable('deliveryAddress')) {
       await this.props.appActions.loadCoreBusiness();
 
@@ -199,6 +202,7 @@ export class Home extends Component {
       });
     }
   };
+
   setAlcoholModalState = val => {
     this.setState({
       alcoholModal: val,
