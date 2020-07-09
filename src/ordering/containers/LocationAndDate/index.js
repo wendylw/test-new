@@ -117,12 +117,19 @@ class LocationAndDate extends Component {
   };
 
   getValidTimeToOrder = (validTimeFrom, validTimeTo) => {
+    const { businessInfo } = this.props;
+    const { qrOrderingSettings } = businessInfo || {};
+    const { useStorehubLogistics } = qrOrderingSettings || {};
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
     if (Utils.isDeliveryType()) {
       // Calculate valid delivery time range
       this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
+
+      if (useStorehubLogistics && storehubLogisticsBusinessHours[0] < this.validPreOrderTimeFrom) {
+        this.validPreOrderTimeFrom = storehubLogisticsBusinessHours[0];
+      }
     }
 
     if (Utils.isPickUpType()) {
