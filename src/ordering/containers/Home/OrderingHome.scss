@@ -1,0 +1,8 @@
+@import "../../../Variables.scss";
+
+.ordering-home {
+  &__delivery-fee {
+    color: $white;
+    background-color: $theme-blue;
+  }
+}

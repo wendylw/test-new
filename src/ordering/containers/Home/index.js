@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime, IconLocation } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconAccessTime, IconLocation } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
@@ -34,6 +34,7 @@ import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
+import './OrderingHome.scss';
 
 const localState = {
   blockScrollTop: 0,
@@ -464,13 +465,11 @@ export class Home extends Component {
         freeShippingMinAmount &&
         Utils.isDeliveryType() &&
         this.state.dScrollY < adBarHeight ? (
-          <div className="top-message__second-level text-center">
-            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
-              <span>
-                Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
-              </span>
-            </Trans>
-          </div>
+          <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+            <p className="ordering-home__delivery-fee padding-small text-center">
+              Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
+            </p>
+          </Trans>
         ) : null}
 
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
