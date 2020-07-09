@@ -25,6 +25,14 @@ import Utils from '../../../utils/utils';
 import qs from 'qs';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      this.props.homeActions.setCurrentStore(queries.s);
+    }
+  }
   componentDidMount() {
     const { appActions, currentStoreId } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
@@ -51,12 +59,6 @@ class App extends Component {
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
-    }
-
-    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
-
-    if (queries.s && queries.from === 'home') {
-      this.props.homeActions.setCurrentStore(queries.s);
     }
   }
 
