@@ -1,3 +1,4 @@
+import Utils from '../../../utils/utils';
 export const DeliveryDetailsStorageKey = 'deliveryDetails';
 
 export const updateDeliveryDetails = async fields => {
@@ -6,7 +7,7 @@ export const updateDeliveryDetails = async fields => {
 
 export const patchDeliveryDetails = async fields => {
   const deliveryDetails = await fetchDeliveryDetails();
-  return sessionStorage.setItem(
+  return Utils.setSessionVariable(
     DeliveryDetailsStorageKey,
     JSON.stringify({
       ...deliveryDetails,
@@ -17,7 +18,7 @@ export const patchDeliveryDetails = async fields => {
 
 export const fetchDeliveryDetails = async () => {
   try {
-    return JSON.parse(sessionStorage.getItem(DeliveryDetailsStorageKey));
+    return JSON.parse(Utils.getSessionVariable(DeliveryDetailsStorageKey));
   } catch (e) {
     console.error(e);
     return null;
@@ -26,7 +27,7 @@ export const fetchDeliveryDetails = async () => {
 
 export const fetchDeliveryAddress = async () => {
   try {
-    return JSON.parse(sessionStorage.getItem('deliveryAddress'));
+    return JSON.parse(Utils.getSessionVariable('deliveryAddress'));
   } catch (e) {
     console.error(e);
     return null;
