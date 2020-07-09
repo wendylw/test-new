@@ -784,7 +784,12 @@ class LocationAndDate extends Component {
     }
     store = store.length ? store[0].name : '';
     return (
-      <div className="form__group">
+      <div
+        className="form__group"
+        onClick={() => {
+          this.props.history.push('/storeList');
+        }}
+      >
         <label className="form__label font-weight-bold">Selected Store</label>
         <div className="location-page__search-box">
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
@@ -805,13 +810,29 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        <div>
-          <p onClick={this.setDeliveryType}>delivery</p>
-          <p onClick={this.setPickUpType}>pickup</p>
+        <div
+          style={{ margin: '30px 16px', height: '40px' }}
+          className="form__group flex flex-middle input-group outline border-radius-base"
+        >
+          <p
+            onClick={this.setDeliveryType}
+            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px' }}
+            className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
+          >
+            Delivery
+          </p>
+          <p
+            onClick={this.setPickUpType}
+            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px' }}
+            className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
+          >
+            Pickup
+          </p>
         </div>
         <div className="location-display__content">
+          {this.state.isPickUpType && this.renderStoreList()}
           {this.renderDeliveryTo()}
-          {this.renderStoreList()}
+          {this.state.isDeliveryType && this.renderStoreList()}
           {this.renderDeliveryOn()}
           {this.renderHourSelector()}
         </div>
