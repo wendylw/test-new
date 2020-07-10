@@ -472,13 +472,29 @@ class LocationAndDate extends Component {
 
   getHoursListForToday = (selectedDate = {}) => {
     if (!selectedDate.isToday) return;
+    console.log(this.props);
+    const { business, allBusinessInfo } = this.props;
+    const businessInfo = allBusinessInfo[business];
+    const { qrOrderingSettings } = businessInfo || {};
+    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
+    const limit = useStorehubLogistics && Utils.isDeliveryType();
     const currentTime = new Date();
-    const storeOpenTime = createTimeWithTimeString(this.validTimeFrom);
-    const storeCloseTime = createTimeWithTimeString(this.validTimeTo);
+    const storeOpenTime = createTimeWithTimeString(
+      limit && this.validTimeFrom < storehubLogisticsBusinessHours[0]
+        ? storehubLogisticsBusinessHours[0]
+        : this.validTimeFrom
+    );
+    const storeCloseTime = createTimeWithTimeString(
+      limit && this.validTimeTo > storehubLogisticsBusinessHours[1]
+        ? storehubLogisticsBusinessHours[1]
+        : this.validTimeTo
+    );
     const validStartingTimeString = this.getValidStartingTimeString(getHourAndMinuteFromTime(currentTime));
     const fullTimeList = this.getHoursList();
 
     // If user visit this webpage before store opens, show full time list
+    console.log(currentTime.valueOf(), storeOpenTime.valueOf(), isNoLaterThan(currentTime, storeOpenTime));
+
     if (isNoLaterThan(currentTime, storeOpenTime)) {
       return this.fullTimeList;
     }
@@ -489,6 +505,7 @@ class LocationAndDate extends Component {
       // Check here use isAfterTime because there is a case if what needs to display after 'immediate'
       // is 6:30, and close time is 6: 30, should show 6:30
       if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
+        console.log('123');
         return [PREORDER_IMMEDIATE_TAG];
       }
       const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
@@ -498,6 +515,7 @@ class LocationAndDate extends Component {
 
       const timeListToDisplay = startTimeInList < 0 ? [] : fullTimeList.slice(startTimeInList);
       timeListToDisplay.unshift(PREORDER_IMMEDIATE_TAG);
+      console.log('timeListToDisplay', startTimeInList, fullTimeList);
 
       return timeListToDisplay;
     }
