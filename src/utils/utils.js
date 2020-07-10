@@ -343,6 +343,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enablePreOrder,
     sellAlcohol,
     disableTodayPreOrder,
+    disableOnDemandOrder,
   } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
@@ -368,6 +369,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enablePreOrder,
     sellAlcohol,
     disableTodayPreOrder,
+    disableOnDemandOrder,
   };
 };
 

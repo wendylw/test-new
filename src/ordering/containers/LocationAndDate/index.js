@@ -171,10 +171,18 @@ class LocationAndDate extends Component {
     }
   };
 
-  setInitialSelectedTime = () => {
+  setInitialSelectedTime = deliveryDates => {
+    this.deliveryDates = deliveryDates;
     const { business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { enablePreOrder, disableOnDemandOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     const { date } = Utils.getExpectedDeliveryDateFromSession();
+
+    if (deliveryDates[0].isToday) {
+      const list = this.getHoursList(deliveryDates[0]);
+      if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder) {
+        this.deliveryDates.shift();
+      }
+    }
     const initialSelectedTime =
       enablePreOrder && date.date ? Utils.getExpectedDeliveryDateFromSession() : { date: this.deliveryDates[0] };
 
@@ -185,6 +193,7 @@ class LocationAndDate extends Component {
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
     });
+    this.deliveryDates = deliveryDates;
   };
 
   setDeliveryDays = (validDays = []) => {
@@ -228,8 +237,7 @@ class LocationAndDate extends Component {
         isToday: isValidTodayTime,
       });
     }
-    this.deliveryDates = deliveryDates;
-    this.setInitialSelectedTime();
+    this.setInitialSelectedTime(deliveryDates);
   };
 
   showLocationSearch = () => {
