@@ -174,12 +174,18 @@ class LocationAndDate extends Component {
   setInitialSelectedTime = deliveryDates => {
     this.deliveryDates = deliveryDates;
     const { business, allBusinessInfo } = this.props;
-    const { enablePreOrder, disableOnDemandOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { enablePreOrder, disableOnDemandOrder, disableTodayPreOrder } = Utils.getDeliveryInfo({
+      business,
+      allBusinessInfo,
+    });
     const { date } = Utils.getExpectedDeliveryDateFromSession();
     if (deliveryDates[0].isToday) {
       const list = this.getHoursList(deliveryDates[0]);
       if (list.length) {
         if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder) {
+          this.deliveryDates.shift();
+        }
+        if (list[0].from !== 'now' && disableTodayPreOrder) {
           this.deliveryDates.shift();
         }
       } else {
@@ -196,7 +202,7 @@ class LocationAndDate extends Component {
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
     });
-    this.deliveryDates = deliveryDates;
+    // this.deliveryDates = deliveryDates;
   };
 
   setDeliveryDays = (validDays = []) => {
@@ -627,7 +633,7 @@ class LocationAndDate extends Component {
     const timeList = this.getHoursList(selectedDate);
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
-
+    console.log(timeList, 'timelist');
     return (
       <div className="form__group location-display__date-container">
         {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
