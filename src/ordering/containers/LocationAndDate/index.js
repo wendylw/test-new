@@ -213,6 +213,8 @@ class LocationAndDate extends Component {
           this.createTimeWithTimeString(storehubLogisticsBusinessHours[1])
         );
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
+
+        if (!isBeforeStoreClose && !i) continue;
       }
 
       if (disableTodayPreOrder && disableOnDemandOrder && !i) {
