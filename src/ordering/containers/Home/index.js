@@ -113,7 +113,6 @@ export class Home extends Component {
 
         let defaultTime = new Date(); //TODO 应该用商家本地时间
         while (true) {
-          console.log(defaultTime, 'defaultTime');
           defaultTime = defaultTime.getTime();
           if (breakTimeFrom && breakTimeTo) {
             const breakTimeFromValue = new Date(breakTimeFrom).getTime();

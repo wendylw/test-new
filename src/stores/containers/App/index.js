@@ -14,6 +14,7 @@ import {
   getCurrentStoreId,
   getAllStores,
   getStoreHashCode,
+  getDeliveryRadius,
 } from '../../redux/modules/home';
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
@@ -35,7 +36,6 @@ class App extends Component {
 
     if (!this.isDinePath()) {
       const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-      console.log(search, 'search', this.props.history);
       let { type } = search;
       if (!type) {
         type = DELIVERY_METHOD.DELIVERY;
@@ -75,7 +75,7 @@ class App extends Component {
     }
   };
 
-  getNearlyStore = (stores, type, deliveryAddress) => {
+  getNearlyStore = async (stores, type, deliveryAddress) => {
     stores.forEach(item => {
       if (item.location) {
         item.distance = computeStraightDistance(deliveryAddress.coords, {
@@ -93,7 +93,16 @@ class App extends Component {
         item.distance < nearly.distance && (nearly = item);
       }
     });
-    return nearly;
+    let res = await this.props.storesActions.loadCoreBusiness(nearly.id);
+    const deliveryRadius = res.responseGql.data.business.qrOrderingSettings.deliveryRadius;
+    if (nearly.distance / 1000 < deliveryRadius) {
+      return nearly;
+    } else {
+      this.props.history.replace({
+        pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_LOCATION,
+        search: `type=${type}&outRange=${deliveryRadius}`,
+      });
+    }
   };
 
   checkDeliveryAddress = async type => {
@@ -198,6 +207,7 @@ export default connect(
     error: getError(state),
     pageError: getPageError(state),
     storeHash: getStoreHashCode(state),
+    deliveryRadius: getDeliveryRadius(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),

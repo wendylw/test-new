@@ -88,7 +88,6 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
-    console.log(this.state.search, 'this.state.search');
     if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.setDeliveryType();
     } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
@@ -700,7 +699,7 @@ class LocationAndDate extends Component {
     const { history } = this.props;
     const { selectedDate, selectedHour } = this.state;
 
-    if (Utils.isPickUpType()) delete selectedHour.to;
+    if (this.state.isPickUpType) delete selectedHour.to;
 
     Utils.setExpectedDeliveryTime({
       date: selectedDate,
@@ -803,7 +802,6 @@ class LocationAndDate extends Component {
       <div
         className="form__group"
         onClick={() => {
-          console.log(this.props, 'this.props.history');
           this.props.history.push({
             pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
             search: `h=${this.state.h}&type=${

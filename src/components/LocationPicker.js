@@ -12,7 +12,8 @@ import {
 import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
-
+import Utils from '../utils/utils';
+import qs from 'qs';
 class LocationPicker extends Component {
   static propTypes = {
     origin: PropTypes.exact({ lat: PropTypes.number.isRequired, lng: PropTypes.number.isRequired }),
@@ -50,6 +51,13 @@ class LocationPicker extends Component {
       this.detectDevicePosition();
     }
     this.getHistoricalAddresses();
+    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+    if (search.outRange) {
+      this.setState({
+        searchText: JSON.parse(Utils.getSessionVariable('deliveryAddress')).address,
+      });
+    }
   }
 
   detectDevicePosition = async (withCache = true) => {

@@ -34,7 +34,6 @@ class StoreList extends Component {
   async componentDidMount() {
     await this.props.homeActions.loadCoreStores();
     await this.props.appActions.fetchOnlineStoreInfo();
-    console.log(this.props);
   }
 
   selectStore = store => {
