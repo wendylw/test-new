@@ -88,6 +88,7 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
+    console.log(this.state.search, 'this.state.search');
     if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.setDeliveryType();
     } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
@@ -145,7 +146,10 @@ class LocationAndDate extends Component {
   setStoreFromSelect = async () => {
     if (this.state.search.storeid) {
       await this.props.homeActions.getStoreHashData(this.state.search.storeid);
+      await this.props.homeActions.loadCoreStores();
+      let store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
       this.setState({
+        nearlyStore: store[0],
         h: this.props.storeHash,
       });
     }
@@ -729,12 +733,12 @@ class LocationAndDate extends Component {
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
 
-    if (search.storeid && search.storeid !== Utils.getCookieVariable('__s')) {
+    if (search.storeid && search.storeid !== config.storeId) {
       let result = await this.props.homeActions.getStoreHashData(search.storeid);
       const h = result.response.redirectTo;
 
       this.props.history.replace({
-        pathname: '/cart',
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
         search: `h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
       });
       return;
@@ -749,8 +753,20 @@ class LocationAndDate extends Component {
       Utils.removeSessionVariable('cacheexpectedDeliveryHour');
 
       this.props.history.replace({
-        pathname: '/cart',
-        search: `h=${this.state.h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+        search: `h=${this.state.h}&type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }`,
+      });
+      return;
+    }
+    const type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+    if (type !== this.state.search.type.toLowerCase()) {
+      this.props.history.replace({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+        search: `h=${this.state.h}&type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }`,
       });
       return;
     }
@@ -787,7 +803,13 @@ class LocationAndDate extends Component {
       <div
         className="form__group"
         onClick={() => {
-          this.props.history.push('/storeList');
+          console.log(this.props, 'this.props.history');
+          this.props.history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+            search: `h=${this.state.h}&type=${
+              this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+            }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+          });
         }}
       >
         <label className="form__label font-weight-bold">Selected Store</label>

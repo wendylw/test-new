@@ -93,7 +93,8 @@ export class Home extends Component {
   };
 
   checkOrderTime = async () => {
-    if (Utils.getSessionVariable('deliveryAddress')) {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       await this.props.appActions.loadCoreBusiness();
 
       const { businessInfo } = this.props;
@@ -104,6 +105,7 @@ export class Home extends Component {
         breakTimeFrom,
         breakTimeTo,
         validDays,
+        enablePreOrder,
       } = businessInfo.qrOrderingSettings;
 
       if (!Utils.getSessionVariable('expectedDeliveryDate')) {
@@ -157,6 +159,8 @@ export class Home extends Component {
         if (deliverDate.isToday) {
           currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
           let d = new Date();
+          if (enablePreOrder) {
+          }
           if (currentTime.getTime() < d.setHours(validTimeTo.split(':')[0], validTimeTo.split(':')[1])) {
             Utils.setSessionVariable(
               'expectedDeliveryHour',

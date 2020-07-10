@@ -67,6 +67,7 @@ class App extends Component {
           window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${this.props.storeHash}&type=${type}`;
         } else {
           // TODO 跳转商店选择页面
+          window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_STORE_LIST}/?type=${type}`;
         }
       }
     } else {

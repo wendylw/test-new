@@ -328,6 +328,11 @@ Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
   }
 };
 
+// get valid time list fron qrsetting
+Utils.getValidTimeList = (qrOrderingSettings, type = Utils.isPickUpType() ? 'pickup' : 'delivery') => {
+  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, validDays } = qrOrderingSettings;
+};
+
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
