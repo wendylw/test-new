@@ -176,10 +176,13 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const { enablePreOrder, disableOnDemandOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     const { date } = Utils.getExpectedDeliveryDateFromSession();
-
     if (deliveryDates[0].isToday) {
       const list = this.getHoursList(deliveryDates[0]);
-      if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder) {
+      if (list.length) {
+        if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder) {
+          this.deliveryDates.shift();
+        }
+      } else {
         this.deliveryDates.shift();
       }
     }
@@ -503,8 +506,10 @@ class LocationAndDate extends Component {
     // If user visit this webpage before store opens, show full time list
 
     if (isNoLaterThan(currentTime, storeOpenTime)) {
-      if (new Date(this.fullTimeList[0].from).getHours() - new Date().getHours() < 2) {
-        return this.fullTimeList.slice(1);
+      if (this.fullTimeList.length) {
+        if (new Date(this.fullTimeList[0].from).getHours() - new Date().getHours() < 2) {
+          return this.fullTimeList.slice(1);
+        }
       }
       return this.fullTimeList;
     }
