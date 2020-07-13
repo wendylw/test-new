@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withDataAttributes from './withDataAttributes';
+import './ItemOperator.scss';
 
 export class ItemOperator extends Component {
   render() {
@@ -13,7 +14,7 @@ export class ItemOperator extends Component {
       onIncrease,
       dataAttributes,
     } = this.props;
-    const classList = [`item__cart-ctrl flex flex-space-between ${quantity > 0 ? 'is-minus' : ''}`];
+    const classList = [`item-operator flex flex-space-between ${quantity > 0 ? 'item-operator--minus' : ''}`];
 
     if (className) {
       classList.push(className);
@@ -23,14 +24,14 @@ export class ItemOperator extends Component {
       <div className={classList.join(' ')} {...dataAttributes}>
         {onDecrease ? (
           <button
-            className="cart__ctrl-container"
+            className="item-operator__button item-operator__button-minus padding-small"
             disabled={decreaseDisabled}
             onClick={onDecrease}
             data-testid="itemDecrease"
             data-heap-name="common.item-operator.decrease"
           >
-            <i className="cart__ctrl cart__minus">
-              <span className="cart__icon"></span>
+            <i className="item-operator__ctrl item-operator__minus margin-smallest">
+              <span className="item-operator__icon"></span>
             </i>
           </button>
         ) : null}
@@ -47,14 +48,14 @@ export class ItemOperator extends Component {
 
         {onIncrease ? (
           <button
-            className="cart__ctrl-container"
+            className="item-operator__button padding-small"
             onClick={onIncrease}
             disabled={increaseDisabled}
             data-testid="itemIncrease"
             data-heap-name="common.item-operator.increase"
           >
-            <i className="cart__ctrl cart__add">
-              <span className="cart__icon"></span>
+            <i className="item-operator__ctrl item-operator__add margin-smallest">
+              <span className="item-operator__icon"></span>
             </i>
           </button>
         ) : null}

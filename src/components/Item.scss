@@ -5,11 +5,9 @@
   background-color: $white;
   list-style: none;
 
-  // .sold-out {
-  //   position: absolute;
-  //   right: 0;
-  //   bottom: 0;
-  // }
+  &__content {
+    padding-bottom: 2.4vw * 2;
+  }
 
   &__image-container {
     position: relative;
@@ -38,39 +36,16 @@
     -webkit-line-clamp: 3;
   }
 
-  &__cart-ctrl {
-    position: absolute;
-    right: 0;
-    top: 0;
-    min-width: 30vw;
-
-    &::before {
-      content: "";
-      display: block;
-      width: 12vw;
-      height: 12vw;
-    }
-
-    &.exhibit {
-      display: block;
-      padding: 0 2.4vw;
-      text-align: right;
-      top: 9px;
-    }
-  }
-
-  &__cart-ctrl.is-minus {
-    &::before {
-      content: none;
-    }
-
-    .cart__minus {
-      display: block;
-    }
-  }
-
   &__amount {
     min-width: 24px;
+  }
+}
+
+@media (min-width: 420px) {
+  .item {
+    &__content {
+      padding-bottom: 8px * 2;
+    }
   }
 }
 

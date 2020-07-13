@@ -1,0 +1,17 @@
+.product-item {
+  &__tag {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: inline-block;
+    margin: 3.8vw;
+  }
+}
+
+@media (min-width: 420px) {
+  .product-item {
+    &__tag {
+      margin: 12px;
+    }
+  }
+}

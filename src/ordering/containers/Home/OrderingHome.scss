@@ -19,7 +19,6 @@ $gray-nav-item-color: #707070;
   top: 0;
   background-color: $gray-6;
   width: 25%;
-  max-width: 110px;
   height: 100%;
 
   &__content {
@@ -44,7 +43,7 @@ $gray-nav-item-color: #707070;
 }
 
 .category {
-  width: 100%;
+  width: 75%;
 
   &__header {
     top: 0;

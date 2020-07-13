@@ -23,7 +23,7 @@ export class Item extends Component {
       dataAttributes,
     } = this.props;
     const classList = ['item border__bottom-divider'];
-    const contentClassList = ['item__content flex'];
+    const contentClassList = ['item__content flex padding-left-right-smaller padding-top-bottom-small'];
 
     if (className) {
       classList.push(className);
@@ -36,10 +36,10 @@ export class Item extends Component {
     return (
       <li className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-          <div className="item__image-container flex__shrink-fixed">
+          <div className="item__image-container flex__shrink-fixed padding-small">
             <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
           </div>
-          <summary className="item__summary flex flex-column flex-space-between" data-testid="itemDetail">
+          <summary className="item__summary flex flex-column flex-space-between padding-small" data-testid="itemDetail">
             <div className="item__summary-content">
               {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
               <h3 className="item__title margin-top-bottom-smallest text-omit__multiple-line text-weight-bolder">

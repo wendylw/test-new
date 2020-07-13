@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getProductItemMinHeight } from '../../redux/modules/home';
 
+import './index.scss';
+
 export class ProductItem extends Component {
   renderItem() {
     const {
@@ -44,7 +46,7 @@ export class ProductItem extends Component {
         data-heap-name="ordering.common.product-item.container"
       >
         {soldOut ? (
-          <Tag text={t('SoldOut')} className="tag tag__default text-size-big" style={{ minWidth: '70px' }} />
+          <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />
         ) : (
           <ItemOperator
             className="flex-middle"
