@@ -36,7 +36,7 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import locationIcon from '../../../images/Pin.svg';
-
+import { computeStraightDistance } from '../../../utils/geoUtils';
 const localState = {
   blockScrollTop: 0,
 };
@@ -89,14 +89,43 @@ export class Home extends Component {
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
+
+    await this.props.appActions.loadCoreBusiness();
+    this.checkRange();
     this.checkOrderTime();
+  };
+
+  checkRange = () => {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
+      const { businessInfo } = this.props;
+      let { stores, qrOrderingSettings } = businessInfo;
+      const { deliveryRadius } = qrOrderingSettings;
+      if (stores.length) {
+        stores = stores[0];
+        const { location } = stores;
+        const distance = computeStraightDistance(JSON.parse(Utils.getSessionVariable('deliveryAddress')).coords, {
+          lat: location.latitude,
+          lng: location.longitude,
+        });
+
+        if (distance / 1000 > deliveryRadius) {
+          let { search } = window.location;
+          // search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
+          const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+          this.props.history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+            search: `${search}&outRange=${deliveryRadius}&callbackUrl=${callbackUrl}`,
+          });
+        }
+      }
+    }
   };
 
   checkOrderTime = async () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
-      await this.props.appActions.loadCoreBusiness();
-
       const { businessInfo } = this.props;
       const {
         qrOrderingSetting,
