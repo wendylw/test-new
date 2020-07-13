@@ -808,7 +808,7 @@ class LocationAndDate extends Component {
         onClick={() => {
           this.props.history.push({
             pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-            search: `h=${this.state.h}&type=${
+            search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}&type=${
               this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
             }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
           });
