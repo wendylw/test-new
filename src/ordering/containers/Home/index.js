@@ -399,7 +399,13 @@ export class Home extends Component {
         search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };
+    console.log(this.props);
+    const { businessInfo } = this.props;
+    const { stores = [] } = businessInfo;
 
+    let pickupAddress = '';
+    if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
+    console.log(pickupAddress, 'pickupAddress');
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
         <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
@@ -419,17 +425,12 @@ export class Home extends Component {
               />
             ) : null}
             <div className="location-page__base-info">
-              <summary className="item__title text-uppercase font-weight-bolder">
-                {Utils.isDeliveryType() && t('DeliverTo')}
-                {Utils.isPickUpType() && t('PickUpOn')}
-              </summary>
-              {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address">
-                  {' '}
-                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
-                  {deliveryToAddress}
-                </p>
-              ) : null}
+              <p className="location-page__entry-address">
+                {' '}
+                <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+                {Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+              </p>
+
               {this.renderDeliveryDate()}
             </div>
             {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
@@ -488,7 +489,14 @@ export class Home extends Component {
     }
 
     return (
-      <div className="location-page__entry-address pick-up flex flex-middle">
+      <div
+        className="location-page__entry-address pick-up flex flex-middle"
+        style={{ color: '#333', lineHeight: '100%', paddingLeft: '20px' }}
+      >
+        <summary className="item__title text-uppercase font-weight-bolder inline-block">
+          {Utils.isDeliveryType() && t('DeliverAt')}
+          {Utils.isPickUpType() && t('PickUpOn')}
+        </summary>
         {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
         <p>{deliveryTimeText}</p>
       </div>

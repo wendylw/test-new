@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
 import img from '../../../images/beep-logo.svg';
+import checked from '../../../images/select.svg';
+
 import './storeList.scss';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
@@ -19,7 +21,7 @@ const StoreListItem = props => (
     <p>{props.store.name}</p>
     <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
     <p>opening Houres:</p>
-    <p>{props.storeId === props.store.id && <IconChecked />}</p>
+    <p>{props.storeId === props.store.id && <img src={checked} />}</p>
   </div>
 );
 class StoreList extends Component {
@@ -33,7 +35,7 @@ class StoreList extends Component {
 
   async componentDidMount() {
     await this.props.homeActions.loadCoreStores();
-    await this.props.appActions.fetchOnlineStoreInfo();
+    // await this.props.appActions.fetchOnlineStoreInfo();
   }
 
   selectStore = store => {
