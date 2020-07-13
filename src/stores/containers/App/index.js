@@ -27,10 +27,14 @@ import qs from 'qs';
 class App extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isHome: true,
+    };
+
     const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
 
     if (queries.s && queries.from === 'home') {
-      this.props.homeActions.setCurrentStore(queries.s);
+      this.state.isHome = false;
     }
   }
   componentDidMount() {
@@ -47,6 +51,21 @@ class App extends Component {
       const { onlineStoreInfo } = data;
       gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
+
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      let timer = setInterval(() => {
+        if (this.props.stores.length) {
+          clearInterval(timer);
+          this.props.homeActions.setCurrentStore(queries.s);
+        }
+      }, 300);
+    } else {
+      this.setState({
+        isHome: true,
+      });
+    }
   }
 
   isDinePath() {
@@ -60,6 +79,7 @@ class App extends Component {
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
   }
 
   handleClearError = () => {
@@ -96,7 +116,7 @@ class App extends Component {
 
     return (
       <main className="store-list">
-        {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home />}
+        {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home isHome={this.state.isHome} />}
 
         {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
         <DocumentFavicon icon={favicon || faviconImage} />

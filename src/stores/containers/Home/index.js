@@ -100,27 +100,28 @@ class App extends Component {
     }
 
     return (
-      <section className="store-list__content" data-heap-name="stores.home.container">
-        <Header
-          className="border__bottom-divider gray has-right flex-middle"
-          data-heap-name="stores.home.header"
-          isPage={true}
-          isStoreHome={true}
-          logo={logo}
-          title={storeName}
-        />
-        <h2 className="text-center" data-testid="selectStoreDescription">
-          {t('SelectStoreDescription')}
-        </h2>
+      this.props.isHome && (
+        <section className="store-list__content">
+          <Header
+            className="border__bottom-divider gray has-right flex-middle"
+            isPage={true}
+            isStoreHome={true}
+            logo={logo}
+            title={storeName}
+          />
+          <h2 className="text-center" data-testid="selectStoreDescription">
+            {t('SelectStoreDescription')}
+          </h2>
 
-        <div className="list__container">
-          {!stores || !stores.length ? (
-            <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
-          ) : (
-            <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
-          )}
-        </div>
-      </section>
+          <div className="list__container">
+            {!stores || !stores.length ? (
+              <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
+            ) : (
+              <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
+            )}
+          </div>
+        </section>
+      )
     );
   }
 }
