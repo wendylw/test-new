@@ -349,6 +349,10 @@ class Customer extends Component {
           onClick={async () => {
             const { search } = window.location;
 
+            Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
+            Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
+            Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
+
             const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
             history.push({

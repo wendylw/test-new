@@ -36,7 +36,7 @@ class CategoryProductList extends Component {
 
   handleIncreaseProductInCart = async product => {
     let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    if (!deliveryAddress && (Utils.isDeliveryType() || Utils.isPickUpType())) {
+    if (!deliveryAddress && Utils.isDeliveryType()) {
       const { search } = window.location;
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 

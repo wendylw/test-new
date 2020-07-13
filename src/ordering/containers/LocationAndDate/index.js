@@ -681,6 +681,8 @@ class LocationAndDate extends Component {
 
     if (!enablePreOrder || !selectedDate.isOpen) return true;
 
+    if (!this.state.nearlyStore) return true;
+
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
         return false;
@@ -716,7 +718,9 @@ class LocationAndDate extends Component {
         // from ordering
         history.replace({
           pathname: callbackUrl.split('?')[0],
-          search: `h=${this.state.h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+          search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
+            this.state.isPickUpType ? 'pickup' : 'delivery'
+          }`,
         });
       }
     } else {
@@ -791,13 +795,13 @@ class LocationAndDate extends Component {
   };
 
   renderStoreList = () => {
-    let store = [];
-    if (this.state.search.storeid) {
-      store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
-    } else {
-      store = [this.state.nearlyStore];
-    }
-    store = store.length ? store[0].name : '';
+    // let store = [];
+    // if (this.state.search.storeid) {
+    //   store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
+    // } else {
+    //   store = [this.state.nearlyStore];
+    // }
+    const store = this.state.nearlyStore.name;
     return (
       <div
         className="form__group"
