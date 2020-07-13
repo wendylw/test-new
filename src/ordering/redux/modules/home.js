@@ -56,9 +56,9 @@ export const actions = {
       deliveryCoords = Utils.getDeliveryCoords();
     }
     dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
-    // if (!getState().home.onlineCategory.categoryIds.length) {
-    dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
-    // }
+    if (!getState().home.onlineCategory.categoryIds.length) {
+      dispatch(fetchOnlineCategory());
+    }
   },
 
   // load shopping cart
@@ -165,7 +165,7 @@ export const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-const fetchOnlineCategory = variables => {
+export const fetchOnlineCategory = () => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
@@ -175,7 +175,6 @@ const fetchOnlineCategory = variables => {
         types.FETCH_ONLINECATEGORY_FAILURE,
       ],
       endpoint,
-      variables,
     },
   };
 };
@@ -216,10 +215,7 @@ export const fetchProductDetail = variables => {
     [FETCH_GRAPHQL]: {
       types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
-      variables: {
-        ...variables,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
+      variables,
     },
   };
 };
