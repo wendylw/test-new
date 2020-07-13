@@ -29,7 +29,9 @@ class App extends Component {
     await this.props.homeActions.loadCoreStores();
     if (Array.isArray(this.props.stores) && this.props.stores.length === 1) {
       const defaultSelectStore = this.props.stores[0];
-      this.selectStore(defaultSelectStore.id);
+      // this.selectStore(defaultSelectStore.id);
+      window.location.href =
+        window.location.href + '?' + encodeURIComponent('s=' + defaultSelectStore.id + '&from=home');
     }
   };
 
