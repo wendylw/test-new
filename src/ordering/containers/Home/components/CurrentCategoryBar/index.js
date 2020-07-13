@@ -25,7 +25,11 @@ class CurrentCategoryBar extends PureComponent {
               <div id="CategoryNavContent" className="category-nav__content">
                 <ul className="category-nav__list text-middle">
                   {categories.map(c => {
-                    const classList = [`category-nav__item ${isVerticalMenu ? 'text-left' : 'text-center'}`];
+                    const classList = [
+                      `category-nav__item padding-top-bottom-normal padding-left-right-small border__bottom-divider ${
+                        isVerticalMenu ? 'text-left' : 'text-center'
+                      }`,
+                    ];
 
                     if (
                       document
@@ -66,7 +70,7 @@ class CurrentCategoryBar extends PureComponent {
                           })
                         }
                       >
-                        <label className={isVerticalMenu ? '' : 'text-opacity'}>{c.name}</label>
+                        <label>{c.name}</label>
                       </li>
                     );
                   })}

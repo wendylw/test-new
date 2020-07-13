@@ -59,6 +59,7 @@ class Header extends Component {
     const {
       t,
       className,
+      contentClassName,
       style,
       isStoreHome,
       title,
@@ -81,7 +82,10 @@ class Header extends Component {
 
     if (className) {
       classList.push(className);
-      contentClassList.push(className);
+    }
+
+    if (contentClassName) {
+      contentClassList.push(contentClassName);
     }
 
     return (

@@ -141,14 +141,13 @@ export class Home extends Component {
 
   setMainContainerHeight = () => {
     const isValid =
-      ReactDOM.findDOMNode(this.deliveryEntryEl) &&
-      ReactDOM.findDOMNode(this.headerEl) &&
+      (ReactDOM.findDOMNode(this.deliveryEntryEl) || ReactDOM.findDOMNode(this.headerEl)) &&
       ReactDOM.findDOMNode(this.footerEl);
 
     if (isValid) {
       this.setState({
         containerHeight: `${Utils.getContainerElementHeight(
-          [ReactDOM.findDOMNode(this.deliveryEntryEl), ReactDOM.findDOMNode(this.headerEl)],
+          [ReactDOM.findDOMNode(this.deliveryEntryEl), ReactDOM.findDOMNode(this.headerEl)].filter(el => el),
           ReactDOM.findDOMNode(this.footerEl)
         )}px`,
       });
@@ -412,23 +411,17 @@ export class Home extends Component {
     const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const classList = [];
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
 
-    if (isDeliveryType || isPickUpType) {
-      classList.push('flex-top');
-    } else {
-      classList.push('flex-middle border__bottom-divider');
-    }
-
     return (
       <Header
         headerRef={ref => (this.headerEl = ref)}
-        className={classList.join(' ')}
+        className={isDeliveryType || isPickUpType ? 'flex-top' : 'flex-middle border__bottom-divider'}
+        contentClassName={isDeliveryType || isPickUpType ? 'flex-top' : 'flex-middle'}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}
@@ -515,17 +508,17 @@ export class Home extends Component {
         ) : null}
 
         <div
-          className="ordering-home fixed-wrapper__container wrapper"
+          className="ordering-home fixed-wrapper__container wrapper flex flex-top"
           style={containerHeight ? { height: containerHeight } : null}
         >
           <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
-          {/* 
           <CategoryProductList
             isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
+          {/* 
           <ProductDetail
             onlineStoreInfo={onlineStoreInfo}
             show={
@@ -570,10 +563,10 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
+        {/* {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null}
-        {this.renderOfflineModal(enableLiveOnline)}
+        {this.renderOfflineModal(enableLiveOnline)} */}
       </React.Fragment>
     );
   }

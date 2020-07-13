@@ -92,7 +92,7 @@ class CategoryProductList extends Component {
   render() {
     const { categories, isVerticalMenu } = this.props;
     return (
-      <div id="product-list" className="list__container">
+      <div id="product-list" className="category">
         {/* <ScrollObserver
           render={scrollid => {
             const categoryList = categories || [];
@@ -125,8 +125,8 @@ class CategoryProductList extends Component {
           {categories.map(category => (
             <li key={category.id} id={category.id}>
               <ScrollObservable targetId={category.id} key={category.id}>
-                <h2 className="category__header flex flex-middle flex-space-between">
-                  <label>{category.name}</label>
+                <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
+                  <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
                 <ul className="list">
                   {(category.products || []).map(product => (
