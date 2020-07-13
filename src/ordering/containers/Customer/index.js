@@ -251,7 +251,6 @@ class Customer extends Component {
       </div>
     );
   };
-
   handleInputChange = e => {
     const inputValue = e.target.value;
     e.target.name === 'addressDetails' &&
@@ -259,7 +258,6 @@ class Customer extends Component {
     e.target.name === 'deliveryComments' &&
       this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
   };
-
   renderDeliveryAddress() {
     const { t, history } = this.props;
 

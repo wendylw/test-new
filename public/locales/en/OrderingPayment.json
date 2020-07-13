@@ -26,6 +26,5 @@
   "PlaceOrderFailedDescription": "Sorry there was some issue with the connection, please try again",
   "TemporarilyUnavailable": "Temporarily Unavailable",
   "PromotionExceededTotalClaimLimit": "This promotion has exceeded the total claim limit",
-  "PromotionInvalid": "This promotion code is invalid",
-  "ContactDetailInvalid": "There was an error while saving your contact details, please try again"
+  "PromotionInvalid": "This promotion code is invalid"
 }
