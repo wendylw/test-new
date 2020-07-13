@@ -123,6 +123,7 @@
   &__title {
     max-height: 24px;
     max-width: 100%;
+    line-clamp: 1;
     -webkit-line-clamp: 1;
   }
 

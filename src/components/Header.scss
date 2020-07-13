@@ -1,4 +1,4 @@
-@import "../site/Variables.scss";
+@import "../Variables.scss";
 
 .header {
   top: 0;
@@ -37,10 +37,12 @@
 
   &__title {
     max-height: 20px;
+    line-clamp: 1;
     -webkit-line-clamp: 1;
   }
 
   &__store-address {
+    line-clamp: 2;
     -webkit-line-clamp: 2;
   }
 }

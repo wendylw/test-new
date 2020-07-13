@@ -1,0 +1,46 @@
+@import "../Variables.scss";
+
+.tag {
+  text-align: center;
+  padding: 3px 5px;
+  border-radius: $border-radius-base;
+  // font-size: 0.8571rem;
+  text-transform: uppercase;
+  color: $white;
+  font-style: normal;
+  white-space: nowrap;
+
+  &__block {
+    display: block;
+    width: 100%;
+  }
+
+  &__small {
+    font-size: 0.7142rem;
+  }
+
+  &__primary {
+    background-color: $theme-color;
+  }
+
+  &__reverse-primary {
+    color: $theme-color;
+    background-color: $white;
+  }
+
+  &__primary-blue {
+    background-color: $theme-blue;
+  }
+
+  &__error {
+    background-color: $status-red;
+  }
+
+  &__info {
+    background-color: $status-blue;
+  }
+
+  &__default {
+    background-color: $gray-2;
+  }
+}

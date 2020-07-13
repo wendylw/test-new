@@ -34,18 +34,17 @@ export class ProductItem extends Component {
     return (
       <Item
         className={className}
-        contentClassName="flex-top"
         productDetailImageRef={productDetailImageRef}
         image={image}
         title={title}
         variation={variation}
-        detail={<CurrencyNumber className="price item__text text-weight-bolder" money={price || 0} numberOnly={true} />}
+        detail={<CurrencyNumber className="price text-opacity" money={price || 0} numberOnly={true} />}
         operateItemDetail={showProductDetail}
-        hasTag={isFeaturedProduct}
+        tagText={isFeaturedProduct ? t('BestSeller') : null}
         data-heap-name="ordering.common.product-item.container"
       >
         {soldOut ? (
-          <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
+          <Tag text={t('SoldOut')} className="tag tag__default text-size-big" style={{ minWidth: '70px' }} />
         ) : (
           <ItemOperator
             className="flex-middle"

@@ -602,7 +602,7 @@ class ProductDetail extends Component {
             </div>
 
             {Utils.isProductSoldOut(product || {}) ? (
-              <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
+              <Tag text={t('SoldOut')} className="tag tag__default text-size-big" style={{ minWidth: '70px' }} />
             ) : (
               <ItemOperator
                 className="flex-middle"

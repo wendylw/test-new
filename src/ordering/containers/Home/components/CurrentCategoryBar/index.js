@@ -21,7 +21,7 @@ class CurrentCategoryBar extends PureComponent {
           const currentCategory = categories.find(c => c.id === scrollid);
 
           return (
-            <div className="category-nav">
+            <div className="category-nav flex__shrink-fixed">
               <div id="CategoryNavContent" className="category-nav__content">
                 <ul className="category-nav__list text-middle">
                   {categories.map(c => {

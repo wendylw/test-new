@@ -727,6 +727,7 @@ img {
   &__title {
     max-width: 85%;
     max-height: 20px;
+    line-clamp: 1;
     -webkit-line-clamp: 1;
   }
 }

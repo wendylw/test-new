@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './Tag.scss';
 
 /**
  * `<Tag />` is used on the product items and store items.
@@ -9,7 +10,7 @@ import PropTypes from 'prop-types';
 class Tag extends Component {
   render() {
     const { text, className, style } = this.props;
-    const classList = ['text-uppercase text-weight-bolder'];
+    const classList = ['tag text-uppercase text-weight-bolder'];
 
     if (className) {
       classList.push(className);

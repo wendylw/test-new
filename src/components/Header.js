@@ -113,12 +113,12 @@ class Header extends Component {
                     {enablePreOrder ? (
                       <Tag
                         text={t('PreOrder')}
-                        className="tag tag__small tag__info margin-left-right-smaller text-middle"
+                        className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
                       />
                     ) : (
                       <Tag
                         text={t('Closed')}
-                        className="tag tag__small tag__error margin-left-right-smaller text-middle"
+                        className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
                       />
                     )}
                   </div>

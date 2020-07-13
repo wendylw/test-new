@@ -19,10 +19,10 @@ export class Item extends Component {
       detail,
       operateItemDetail,
       productDetailImageRef,
-      hasTag,
+      tagText,
       dataAttributes,
     } = this.props;
-    const classList = ['item border__bottom-divider item-padding'];
+    const classList = ['item border__bottom-divider'];
     const contentClassList = ['item__content flex'];
 
     if (className) {
@@ -36,25 +36,26 @@ export class Item extends Component {
     return (
       <li className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-          <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
-          <div className="item__detail flex flex-column flex-space-between" data-testid="itemDetail">
-            <div className="item__detail-content">
-              {hasTag ? (
-                <div className="tag__card-container">
-                  <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
-                </div>
-              ) : null}
-              <summary className="item__title text-weight-bolder">
-                <span className="item__title-productName">{title}</span>
-              </summary>
+          <div className="item__image-container flex__shrink-fixed">
+            <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
+          </div>
+          <summary className="item__summary flex flex-column flex-space-between" data-testid="itemDetail">
+            <div className="item__summary-content">
+              {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
+              <h3 className="item__title margin-top-bottom-smallest text-omit__multiple-line text-weight-bolder">
+                {title}
+              </h3>
               {variation ? (
-                <p className="item__description" data-testid="itemDetailSummary">
+                <p
+                  className="item__description margin-top-bottom-smaller text-omit__multiple-line"
+                  data-testid="itemDetailSummary"
+                >
                   {variation}
                 </p>
               ) : null}
             </div>
             {detail}
-          </div>
+          </summary>
         </div>
 
         {children}
@@ -72,7 +73,7 @@ Item.propTypes = {
   detail: PropTypes.any,
   operateItemDetail: PropTypes.func,
   productDetailImageRef: PropTypes.any,
-  hasTag: PropTypes.bool,
+  tagText: PropTypes.string,
 };
 
 Item.defaultProps = {

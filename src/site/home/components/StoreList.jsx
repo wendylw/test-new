@@ -21,7 +21,7 @@ class StoreList extends Component {
     const { t } = this.props;
     return enablePreOrder ? (
       <div className="store-card-list__image-cover">
-        <label className="store-card-list__tag tag tag__small tag__info text-uppercase text-weight-bolder">
+        <label className="store-card-list__tag tag tag__small tag__info text-size-small text-uppercase text-weight-bolder">
           {t('PreOrder')}
         </label>
       </div>
