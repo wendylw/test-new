@@ -66,26 +66,28 @@ export class Footer extends Component {
       isValidTimeToOrder,
       isLiveOnline,
       enablePreOrder,
+      footerRef,
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
     return (
-      <footer
-        className="footer-operation flex flex-middle flex-space-between"
-        data-heap-name="ordering.home.footer.container"
-      >
-        <div className="cart-bar has-products flex flex-middle flex-space-between">
-          <button className="flex__shrink-fixed" data-heap-name="ordering.home.footer.cart-btn" onClick={onClickCart}>
-            <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
-              <IconCart />
-              <span className="tag__number">{count || 0}</span>
+      <footer ref={footerRef} className="footer padding-small" data-heap-name="ordering.home.footer.container">
+        <div className="flex flex-middle flex-space-between">
+          <button
+            className="button button__block text-left margin-top-bottom-smallest margin-left-right-smaller flex flex-middle"
+            data-heap-name="ordering.home.footer.cart-btn"
+            onClick={onClickCart}
+          >
+            <div className="home-cart__icon-container text-middle">
+              <IconCart className={`home-cart__icon-cart icon ${count !== 0 ? 'non-empty' : ''}`} />
+              {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
             </div>
 
-            <div className="cart-bar__money text-middle text-left">
+            <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
               <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
               {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
-                <label className="cart-bar__money-minimum">
+                <label className="home-cart__money-minimum margin-top-bottom-smallest">
                   {count ? (
                     <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
                       <span className="text-opacity">Remaining</span>
@@ -109,7 +111,7 @@ export class Footer extends Component {
           </button>
           {tableId !== 'DEMO' ? (
             <button
-              className="cart-bar__order-button"
+              className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder flex__shrink-fixed"
               data-testid="orderNow"
               data-heap-name="ordering.home.footer.order-btn"
               disabled={
@@ -137,6 +139,7 @@ export class Footer extends Component {
 }
 
 Footer.propTypes = {
+  footerRef: PropTypes.any,
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
   onClickCart: PropTypes.func,

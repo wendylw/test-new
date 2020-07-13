@@ -196,7 +196,7 @@ class Cart extends Component {
         {promotion ? (
           <div className="promotion__container flex flex-middle flex-space-between">
             <span className="flex text-weight-bolder">
-              <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
+              <IconLocalOffer className="icon icon__primary tag-icon text-middle" />
               <div className="promotion-info__container">
                 <div className="promotion-code__container flex flex-middle text-nowrap">
                   <span className="promotion-code text-weight-bolder">
@@ -223,7 +223,7 @@ class Cart extends Component {
             onClick={this.handleGotoPromotion}
             data-heap-name="ordering.cart.add-promo"
           >
-            <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
+            <IconLocalOffer className="icon icon__primary tag-icon text-middle" />
             {t('AddPromoCode')}
           </button>
         )}

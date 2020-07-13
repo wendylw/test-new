@@ -191,7 +191,7 @@ class Home extends React.Component {
           backLeftPosition={this.backLeftPosition}
         >
           <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
-            <IconScanner className="icon icon__privacy" onClick={this.backLeftPosition} />
+            <IconScanner className="icon icon__primary" onClick={this.backLeftPosition} />
           </Link>
         </DeliverToBar>
 

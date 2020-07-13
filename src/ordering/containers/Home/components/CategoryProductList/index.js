@@ -93,7 +93,7 @@ class CategoryProductList extends Component {
     const { categories, isVerticalMenu } = this.props;
     return (
       <div id="product-list" className="list__container">
-        <ScrollObserver
+        {/* <ScrollObserver
           render={scrollid => {
             const categoryList = categories || [];
             const currentTarget = categoryList.find(category => category.id === scrollid) || categoryList[0];
@@ -117,15 +117,10 @@ class CategoryProductList extends Component {
             return (
               <h2 className="category__header fixed flex flex-middle flex-space-between" data-testid="categoryRight">
                 <label>{target.name || ''}</label>
-                {/* {target.cartQuantity ? (
-                  <span className="text-opacity">
-                    {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
-                  </span>
-                ) : null} */}
               </h2>
             );
           }}
-        />
+        /> */}
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>

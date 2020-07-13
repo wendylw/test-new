@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
@@ -42,12 +43,18 @@ const localState = {
 
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
+  deliveryEntryEl = null;
+  headerEl = null;
+  footerEl = null;
+
   state = {
     viewAside: null,
     alcoholModal: false,
     offlineStoreModal: false,
     dScrollY: 0,
+    containerHeight: null,
   };
+
   handleScroll = () => {
     const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
     this.setState({
@@ -86,7 +93,16 @@ export class Home extends Component {
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
+
+    if (
+      ReactDOM.findDOMNode(this.deliveryEntryEl) &&
+      ReactDOM.findDOMNode(this.headerEl) &&
+      ReactDOM.findDOMNode(this.footerEl)
+    ) {
+      this.setMainContainerHeight();
+    }
   };
+
   setAlcoholModalState = val => {
     this.setState({
       alcoholModal: val,
@@ -98,8 +114,9 @@ export class Home extends Component {
     }
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
+    const { containerHeight } = prevState;
     const { deliveryInfo } = this.props;
     const pageRf = this.getPageRf();
     if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
@@ -107,6 +124,10 @@ export class Home extends Component {
       if (sellAlcohol) {
         this.setAlcoholModalState(sellAlcohol);
       }
+    }
+
+    if (!containerHeight) {
+      this.setMainContainerHeight();
     }
   }
 
@@ -117,6 +138,22 @@ export class Home extends Component {
   componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
   }
+
+  setMainContainerHeight = () => {
+    const isValid =
+      ReactDOM.findDOMNode(this.deliveryEntryEl) &&
+      ReactDOM.findDOMNode(this.headerEl) &&
+      ReactDOM.findDOMNode(this.footerEl);
+
+    if (isValid) {
+      this.setState({
+        containerHeight: `${Utils.getContainerElementHeight(
+          [ReactDOM.findDOMNode(this.deliveryEntryEl), ReactDOM.findDOMNode(this.headerEl)],
+          ReactDOM.findDOMNode(this.footerEl)
+        )}px`,
+      });
+    }
+  };
 
   // Remove user previously selected delivery/pickup time from session
   // Just in case the previous one they select is delivery and the new one is pickup
@@ -255,8 +292,10 @@ export class Home extends Component {
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
         <DeliverToBar
+          deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
           heapContentName="ordering.home.delivery-bar"
           heapBackButtonName="order.home.delivery-bar-back-btn"
+          className="ordering-home__deliver-to"
           title={Utils.isDeliveryType() ? t('DeliverTo') : t('PickUpOn')}
           content={Utils.isDeliveryType() ? deliveryToAddress : this.getExpectedDeliveryTime()}
           navBackUrl={this.navBackUrl}
@@ -279,7 +318,7 @@ export class Home extends Component {
         >
           {isValidTimeToOrder || enablePreOrder ? (
             <IconEdit
-              className="icon icon__small icon__privacy flex flex-middle flex__shrink-fixed"
+              className="icon icon__small icon__primary flex flex-middle flex__shrink-fixed"
               onClick={fillInDeliverToAddress}
             />
           ) : null}
@@ -388,7 +427,9 @@ export class Home extends Component {
 
     return (
       <Header
+        headerRef={ref => (this.headerEl = ref)}
         className={classList.join(' ')}
+        style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}
         isStoreHome={true}
@@ -445,7 +486,7 @@ export class Home extends Component {
       enableLiveOnline,
     } = deliveryInfo;
 
-    const { viewAside, alcoholModal } = this.state;
+    const { viewAside, alcoholModal, containerHeight } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
     const adBarHeight = 30;
@@ -457,6 +498,7 @@ export class Home extends Component {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
+
     return (
       <React.Fragment>
         {this.renderDeliverToBar()}
@@ -472,47 +514,54 @@ export class Home extends Component {
           </Trans>
         ) : null}
 
-        <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
-        <CategoryProductList
-          isVerticalMenu={isVerticalMenu}
-          onToggle={this.handleToggleAside.bind(this)}
-          onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-          isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
-        />
-        <ProductDetail
-          onlineStoreInfo={onlineStoreInfo}
-          show={
-            viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
-            viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
-          }
-          viewAside={viewAside}
-          onToggle={this.handleToggleAside.bind(this)}
-        />
-        <MiniCartListModal
-          viewAside={viewAside}
-          show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
-          onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
-        />
-        {!Utils.isDeliveryType() && !Utils.isPickUpType() ? null : (
-          <DeliveryDetailModal
-            onlineStoreInfo={onlineStoreInfo}
-            businessInfo={businessInfo}
-            businessLoaded={businessLoaded}
-            show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
+        <div
+          className="ordering-home fixed-wrapper__container wrapper"
+          style={containerHeight ? { height: containerHeight } : null}
+        >
+          <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
+          {/* 
+          <CategoryProductList
+            isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
-            storeAddress={storeAddress}
-            telephone={telephone}
-            validDays={validDays}
-            validTimeFrom={validTimeFrom}
-            validTimeTo={validTimeTo}
+            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
-        )}
-        {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
-          <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
-        ) : null}
+          <ProductDetail
+            onlineStoreInfo={onlineStoreInfo}
+            show={
+              viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
+              viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
+            }
+            viewAside={viewAside}
+            onToggle={this.handleToggleAside.bind(this)}
+          />
+          <MiniCartListModal
+            viewAside={viewAside}
+            show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
+            onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
+          />
+          {!Utils.isDeliveryType() && !Utils.isPickUpType() ? null : (
+            <DeliveryDetailModal
+              onlineStoreInfo={onlineStoreInfo}
+              businessInfo={businessInfo}
+              businessLoaded={businessLoaded}
+              show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
+              onToggle={this.handleToggleAside.bind(this)}
+              storeAddress={storeAddress}
+              telephone={telephone}
+              validDays={validDays}
+              validTimeFrom={validTimeFrom}
+              validTimeTo={validTimeTo}
+              isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
+            />
+          )}
+          {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
+            <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
+          ) : null} */}
+        </div>
         <Footer
           {...otherProps}
+          footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
           onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}

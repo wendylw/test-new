@@ -11,19 +11,19 @@
   padding-top: 50px;
 }
 
-.footer-operation {
-  position: fixed;
-  padding: 3.8vw;
-  left: 0;
-  bottom: 0;
-  z-index: 200;
-  width: 100%;
-  background-color: $main-color;
+// .footer-operation {
+// position: fixed;
+// padding: 3.8vw;
+// left: 0;
+// bottom: 0;
+// z-index: 200;
+// width: 100%;
+// background-color: $main-color;
 
-  .button {
-    @extend .border-radius-base;
-  }
-}
+// .button {
+//   @extend .border-radius-base;
+// }
+// }
 
 // .header {
 //   position: fixed;
@@ -226,13 +226,13 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
-  .footer-operation {
-    max-width: 414px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    padding: 20px;
-  }
+  // .footer-operation {
+  //   max-width: 414px;
+  //   left: 0;
+  //   right: 0;
+  //   margin: 0 auto;
+  //   padding: 20px;
+  // }
 
   .continue__button {
     max-height: 50px;

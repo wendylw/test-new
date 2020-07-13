@@ -59,6 +59,7 @@ class Header extends Component {
     const {
       t,
       className,
+      style,
       isStoreHome,
       title,
       storeAddress,
@@ -70,6 +71,7 @@ class Header extends Component {
       enableCashback,
       defaultLoyaltyRatio,
       dataAttributes,
+      headerRef,
     } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
@@ -84,6 +86,8 @@ class Header extends Component {
 
     return (
       <header
+        ref={headerRef}
+        style={style}
         className={classList.join(' ')}
         {...dataAttributes}
         onClick={() => {
@@ -105,7 +109,7 @@ class Header extends Component {
                     {enablePreOrder ? (
                       <Tag
                         text={t('PreOrder')}
-                        className="tag tag__small tag__primary margin-left-right-smaller text-middle"
+                        className="tag tag__small tag__info margin-left-right-smaller text-middle"
                       />
                     ) : (
                       <Tag
@@ -155,6 +159,8 @@ class Header extends Component {
 
 Header.propTypes = {
   className: PropTypes.string,
+  style: PropTypes.object,
+  headerRef: PropTypes.any,
   deliveryFee: PropTypes.number,
   isPage: PropTypes.bool,
   isStoreHome: PropTypes.bool,

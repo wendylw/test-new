@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { IconLeftArrow } from './Icons';
 import './DeliverToBar.scss';
 
-class DeliverToBar extends PureComponent {
+class DeliverToBar extends Component {
   render() {
     const {
       heapContentName,
@@ -17,16 +17,17 @@ class DeliverToBar extends PureComponent {
       showBackButton,
       gotoLocationPage,
       backLeftPosition,
+      deliverToBarRef,
       children,
     } = this.props;
-    const classList = ['deliver-to-entry flex flex-space-between'];
+    const classList = ['deliver-to-entry flex flex-space-between sticky-wrapper'];
 
     if (className) {
       classList.push(className);
     }
 
     return (
-      <section className={classList.join(' ')}>
+      <section ref={deliverToBarRef} className={classList.join(' ')}>
         <div
           className="deliver-to-entry__content"
           data-testid="DeliverToBar"
@@ -76,6 +77,7 @@ class DeliverToBar extends PureComponent {
 }
 
 DeliverToBar.propTypes = {
+  deliverToBarRef: PropTypes.any,
   heapContentName: PropTypes.string,
   heapBackButtonName: PropTypes.string,
   className: PropTypes.string,

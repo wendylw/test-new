@@ -530,7 +530,7 @@ class ProductDetail extends Component {
       const productHeight = this.productEl.clientHeight;
       const asideWidth = this.asideEl.clientWidth;
       const buttonElHeight = this.buttonEl.clientHeight;
-      const footerHeight = document.querySelector('.footer-operation').clientHeight;
+      const footerHeight = document.querySelector('.footer').clientHeight;
 
       imageContainerHeight = `${asideWidth * 0.8}px`;
       imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;

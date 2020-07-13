@@ -11,8 +11,8 @@ import {
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
+import '../../../Common.scss';
 import Routes from '../Routes';
-import '../../../App.scss';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';

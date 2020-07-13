@@ -21,7 +21,7 @@ class CurrentCategoryBar extends PureComponent {
           const currentCategory = categories.find(c => c.id === scrollid);
 
           return (
-            <div className={`category-nav ${isVerticalMenu ? 'category-nav__vertical' : 'category-nav__horizontal'}`}>
+            <div className="category-nav">
               <div id="CategoryNavContent" className="category-nav__content">
                 <ul className="category-nav__list text-middle">
                   {categories.map(c => {

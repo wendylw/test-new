@@ -501,7 +501,7 @@ img {
 
   display: inline-block;
 
-  &__privacy {
+  &__primary {
     fill: $theme-color;
   }
 
@@ -584,11 +584,11 @@ img {
     font-size: 0.7142rem;
   }
 
-  &__privacy {
+  &__primary {
     background-color: $theme-color;
   }
 
-  &__reverse-privacy {
+  &__reverse-primary {
     color: $theme-color;
     background-color: $white;
   }

@@ -9,7 +9,7 @@ import { getPageError } from '../../../redux/modules/entities/error';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
 import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/modules/home';
 import Constants from '../../../utils/constants';
-import '../../../App.scss';
+import '../../../Common.scss';
 import Home from '../Home';
 import { withRouter } from 'react-router-dom';
 import DeliveryMethods from '../DeliveryMethods';

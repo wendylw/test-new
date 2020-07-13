@@ -521,7 +521,7 @@ img {
 
   display: inline-block;
 
-  &__privacy {
+  &__primary {
     fill: $theme-color;
   }
 
@@ -604,20 +604,24 @@ img {
     font-size: 0.7142rem;
   }
 
-  &__privacy {
+  &__primary {
     background-color: $theme-color;
   }
 
-  &__reverse-privacy {
+  &__reverse-primary {
     color: $theme-color;
     background-color: $white;
+  }
+
+  &__primary-blue {
+    background-color: $theme-blue;
   }
 
   &__error {
     background-color: $status-red;
   }
 
-  &__primary {
+  &__info {
     background-color: $status-blue;
   }
 }
@@ -645,6 +649,7 @@ img {
 
 .button {
   height: 8vh;
+  max-height: 62px;
   background-color: transparent;
   border-color: transparent;
   border-radius: $border-radius-base;
@@ -759,6 +764,12 @@ img {
   }
 }
 
+.footer {
+  position: sticky;
+  bottom: 0;
+  background-color: $main-color;
+}
+
 .store-info {
   &__item {
     display: inline-block;
@@ -780,21 +791,7 @@ img {
   }
 }
 
-@media (min-width: 770px) {
-  .wrapper {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 414px;
-  }
-
-  .fixed-wrapper {
-    @extend .wrapper;
-
-    border-width: 1px;
-    border-style: solid;
-    border-color: $gray-4;
-  }
-
+@media (min-width: 420px) {
   .padding-top-bottom-smaller {
     padding-top: 4px;
     padding-bottom: 4px;
@@ -854,6 +851,22 @@ img {
 
   .margin-normal {
     margin: 16px;
+  }
+}
+
+@media (min-width: 770px) {
+  .wrapper {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 414px;
+  }
+
+  .fixed-wrapper {
+    @extend .wrapper;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: $gray-4;
   }
 }
 
@@ -1053,41 +1066,6 @@ form {
 
   &__list-top + &__list-bottom {
     margin-top: -1px;
-  }
-}
-
-.button {
-  &.dark {
-    background-color: $main-color;
-  }
-
-  &__fill {
-    border: 0;
-    height: 14vw;
-    line-height: 14vw;
-    color: $white;
-    background-color: $theme-color;
-  }
-
-  &__block {
-    width: 100%;
-  }
-
-  &__outline {
-    border: 1px solid;
-    height: 14vw;
-    background-color: transparent;
-  }
-
-  &__block-link {
-    height: 14vw;
-  }
-
-  &__disabled {
-    pointer-events: none;
-    color: $white;
-    background-color: $gray-3;
-    opacity: 0.8;
   }
 }
 

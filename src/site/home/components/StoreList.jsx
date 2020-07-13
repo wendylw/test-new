@@ -21,7 +21,7 @@ class StoreList extends Component {
     const { t } = this.props;
     return enablePreOrder ? (
       <div className="store-card-list__image-cover">
-        <label className="store-card-list__tag tag tag__small tag__privacy text-uppercase text-weight-bolder">
+        <label className="store-card-list__tag tag tag__small tag__info text-uppercase text-weight-bolder">
           {t('PreOrder')}
         </label>
       </div>
@@ -122,7 +122,7 @@ class StoreList extends Component {
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconWallet className="icon icon__privacy icon__smaller text-middle" />
+                    <IconWallet className="icon icon__primary icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle text-capitalize">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
                     </span>
@@ -130,7 +130,7 @@ class StoreList extends Component {
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
+                    <IconLocalOffer className="icon icon__primary icon__smaller text-middle" />
                     <Trans i18nKey="MvpFreeDeliveryPrompt" minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}>
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery above

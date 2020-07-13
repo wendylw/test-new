@@ -523,4 +523,21 @@ Utils.getFileExtension = file => {
   return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
 };
 
+Utils.getContainerElementHeight = (headerEls, footerEl) => {
+  const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+  let headerFooterHeight = 0;
+
+  if (headerEls && headerEls.length) {
+    headerEls.forEach(el => {
+      headerFooterHeight += el.clientHeight || el.offsetHeight;
+    });
+  }
+
+  if (footerEl) {
+    headerFooterHeight += footerEl.clientHeight || footerEl.offsetHeight;
+  }
+
+  return windowHeight - headerFooterHeight;
+};
+
 export default Utils;
