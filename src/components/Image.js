@@ -21,7 +21,7 @@ const DIM = {
   w: 100,
   h: 100,
 };
-const DIM_SCALING_RATIO = [1, 5, 8];
+const DIM_SCALING_RATIO = [1, 3, 5, 8];
 const FIT = 'outside';
 class Image extends React.Component {
   shouldComponentUpdate(nextProps) {

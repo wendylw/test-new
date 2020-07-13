@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import withDataAttributes from './withDataAttributes';
 import Image from './Image';
 import Tag from './Tag';
+import './Item.scss';
 
 export class Item extends Component {
   render() {
