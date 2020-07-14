@@ -20,6 +20,7 @@ import Utils from '../../../utils/utils';
 import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import '../DineMethods/StoresTakingMealMethod.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 let METHODS_LIST = [
@@ -109,21 +110,19 @@ class DeliveryMethods extends Component {
             return fulfillmentOptions && fulfillmentOptions.find(item => item.toLowerCase() === method.name) ? (
               <li
                 key={method.name}
-                className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
+                className="border__bottom-divider flex flex-middle flex-space-between"
                 data-testid="selectPrefrence"
                 data-heap-name="stores.delivery-methods.method-item"
                 data-heap-method-name={method.name}
                 onClick={() => this.handleVisitStore(method.name)}
               >
-                <summary>
-                  <figure className="delivery__image-container">
+                <summary className="taking-meal-method__summary">
+                  <figure className="taking-meal-method__image-container text-middle margin-normal">
                     <img src={method.logo} alt={t(method.labelKey)}></img>
                   </figure>
-                  <label className="delivery__name text-weight-bolder">{t(method.labelKey)}</label>
+                  <label className="text-middle text-size-big text-weight-bolder">{t(method.labelKey)}</label>
                 </summary>
-                <i className="delivery__next-icon">
-                  <IconNext />
-                </i>
+                <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
               </li>
             ) : null;
           })}

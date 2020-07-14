@@ -26,7 +26,7 @@ class StoreList extends Component {
             >
               <div className="card margin-top-bottom-smallest margin-left-right-smaller flex flex-middle flex-space-between padding-normal border-radius-large">
                 <summary className="margin-top-bottom-smaller">
-                  <h4 className="margin-top-bottom-smallest text-size-bigger text-weight-bolder">{name}</h4>
+                  <h4 className="margin-top-bottom-smallest text-size-big text-weight-bolder">{name}</h4>
                   <p className="margin-top-bottom-smallest text-opacity">
                     {Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}
                   </p>

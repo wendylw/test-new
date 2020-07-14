@@ -112,17 +112,15 @@ class App extends Component {
         />
 
         <section>
-          <h2 className="padding-normal text-size-bigger text-center" data-testid="selectStoreDescription">
+          <h2 className="padding-normal text-size-big text-center" data-testid="selectStoreDescription">
             {t('SelectStoreDescription')}
           </h2>
 
-          <div className="list__container">
-            {!stores || !stores.length ? (
-              <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
-            ) : (
-              <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
-            )}
-          </div>
+          {!stores || !stores.length ? (
+            <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
+          ) : (
+            <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
+          )}
         </section>
       </section>
     );
