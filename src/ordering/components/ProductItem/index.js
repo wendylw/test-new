@@ -64,7 +64,13 @@ export class ProductItem extends Component {
   render() {
     const { isList, productItemMinHeight } = this.props;
 
-    return isList ? <LazyLoad height={productItemMinHeight}>{this.renderItem()}</LazyLoad> : this.renderItem();
+    return isList ? (
+      <LazyLoad offset={150} height={productItemMinHeight}>
+        {this.renderItem()}
+      </LazyLoad>
+    ) : (
+      this.renderItem()
+    );
   }
 }
 

@@ -343,6 +343,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enablePreOrder,
     sellAlcohol,
     disableTodayPreOrder,
+    disableOnDemandOrder,
   } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
@@ -368,6 +369,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     enablePreOrder,
     sellAlcohol,
     disableTodayPreOrder,
+    disableOnDemandOrder,
   };
 };
 
@@ -521,6 +523,44 @@ Utils.getFileExtension = file => {
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
   return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
+};
+
+// function to get query date for pre-order
+Utils.getFulfillDate = () => {
+  const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
+    const fromHour = hour1.split(':')[0];
+    const fromMinute = hour1.split(':')[1];
+    const d1 = new Date(dateValue);
+    let d2, toHour, toMinute;
+
+    if (hour2) {
+      d2 = new Date(dateValue);
+      toHour = hour2.split(':')[0];
+      toMinute = hour2.split(':')[1];
+      d2.setHours(Number(toHour), Number(toMinute), 0, 0);
+    }
+    d1.setHours(Number(fromHour), Number(fromMinute), 0, 0);
+    return {
+      expectDeliveryDateFrom: d1.toISOString(),
+      expectDeliveryDateTo: d2 && d2.toISOString(),
+    };
+  };
+
+  const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
+  // => {"from":2,"to":3}
+  const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
+  // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
+
+  if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
+    return (
+      (expectedDeliveryDate.date &&
+        expectedDeliveryHour.from &&
+        getExpectDeliveryDateInfo(expectedDeliveryDate.date, expectedDeliveryHour.from, expectedDeliveryHour.to)) ||
+      {}
+    );
+  } else {
+    return {};
+  }
 };
 
 export default Utils;
