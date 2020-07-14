@@ -127,31 +127,3 @@
     }
   }
 }
-
-.cart {
-  &__note {
-    background-color: $white;
-
-    textarea {
-      padding: 3vw;
-      border: 0;
-      width: 100%;
-      resize: none;
-      -webkit-appearance: none;
-      border-radius: 0;
-    }
-  }
-
-  &__close-button {
-    display: block;
-    padding: 5px;
-    width: 42px;
-    height: 42px;
-    fill: $gray-2;
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}

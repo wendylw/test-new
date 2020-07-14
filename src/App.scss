@@ -965,106 +965,106 @@
 }
 
 .cart {
-  &__ctrl-container {
-    border: 0;
+  // &__ctrl-container {
+  //   border: 0;
 
-    &:disabled {
-      background-color: transparent;
+  //   &:disabled {
+  //     background-color: transparent;
 
-      .cart__ctrl {
-        color: $white;
-        background-color: $gray-4;
-      }
+  //     .cart__ctrl {
+  //       color: $white;
+  //       background-color: $gray-4;
+  //     }
 
-      .cart__add {
-        border-color: $gray-4;
-      }
-    }
-  }
+  //     .cart__add {
+  //       border-color: $gray-4;
+  //     }
+  //   }
+  // }
 
-  &__ctrl {
-    position: relative;
-    display: block;
-    margin: 2.6vw;
-    width: 7vw;
-    max-width: 26px;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 50%;
+  // &__ctrl {
+  //   position: relative;
+  //   display: block;
+  //   margin: 2.6vw;
+  //   width: 7vw;
+  //   max-width: 26px;
+  //   border-width: 2px;
+  //   border-style: solid;
+  //   border-radius: 50%;
 
-    &:before {
-      // @extend .w-h-same;
-    }
-  }
+  //   &:before {
+  //     // @extend .w-h-same;
+  //   }
+  // }
 
-  &__minus {
-    display: none;
-    border-color: $gray-2;
-    background-color: $white;
+  // &__minus {
+  //   display: none;
+  //   border-color: $gray-2;
+  //   background-color: $white;
 
-    &:active {
-      border-color: $minus-button-active;
+  //   &:active {
+  //     border-color: $minus-button-active;
 
-      .cart__icon::before {
-        background-color: $minus-button-active;
-      }
-    }
-  }
+  //     .cart__icon::before {
+  //       background-color: $minus-button-active;
+  //     }
+  //   }
+  // }
 
-  &__add {
-    border-color: $theme-color;
-    background-color: $theme-color;
+  // &__add {
+  //   border-color: $theme-color;
+  //   background-color: $theme-color;
 
-    &:active {
-      border-color: $add-button-active;
-      background-color: $add-button-active;
-    }
-  }
+  //   &:active {
+  //     border-color: $add-button-active;
+  //     background-color: $add-button-active;
+  //   }
+  // }
 
-  &__icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  // &__icon {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
 
-    &::before,
-    &::after {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      content: "";
-      display: block;
-      margin: auto;
-      border-radius: 6px;
-      opacity: 0.9;
-    }
+  //   &::before,
+  //   &::after {
+  //     position: absolute;
+  //     top: 0;
+  //     bottom: 0;
+  //     left: 0;
+  //     right: 0;
+  //     content: "";
+  //     display: block;
+  //     margin: auto;
+  //     border-radius: 6px;
+  //     opacity: 0.9;
+  //   }
 
-    &::before {
-      width: 65%;
-      height: 2px;
-    }
+  //   &::before {
+  //     width: 65%;
+  //     height: 2px;
+  //   }
 
-    &::after {
-      height: 65%;
-      width: 2px;
-    }
-  }
+  //   &::after {
+  //     height: 65%;
+  //     width: 2px;
+  //   }
+  // }
 
-  &__minus &__icon {
-    &::before {
-      background-color: $gray-2;
-    }
-  }
+  // &__minus &__icon {
+  //   &::before {
+  //     background-color: $gray-2;
+  //   }
+  // }
 
-  &__add &__icon {
-    &::before,
-    &::after {
-      background-color: $white;
-    }
-  }
+  // &__add &__icon {
+  //   &::before,
+  //   &::after {
+  //     background-color: $white;
+  //   }
+  // }
 
   &__note {
     background-color: $white;
