@@ -16,7 +16,7 @@ class StoreList extends Component {
           return (
             <li
               key={id}
-              className="padding-small border-radius-base"
+              className="padding-top-bottom-small padding-left-right-normal"
               data-testid="store"
               data-heap-name="stores.home.store-item"
               data-heap-store-name={name}
@@ -24,11 +24,13 @@ class StoreList extends Component {
                 onSelect(id);
               }}
             >
-              <div className="card margin-small flex flex-middle flex-space-between">
-                <div className="">
-                  <summary className="text-weight-bolder">{name}</summary>
-                  <span className="text-opacity">{Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}</span>
-                </div>
+              <div className="card margin-top-bottom-smallest margin-left-right-smaller flex flex-middle flex-space-between padding-normal border-radius-large">
+                <summary className="margin-top-bottom-smaller">
+                  <h4 className="margin-top-bottom-smallest text-size-bigger text-weight-bolder">{name}</h4>
+                  <p className="margin-top-bottom-smallest text-opacity">
+                    {Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}
+                  </p>
+                </summary>
               </div>
             </li>
           );

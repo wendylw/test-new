@@ -76,8 +76,9 @@ class Header extends Component {
     } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
+    const isDeliveryHomePage = isStoreHome && (isDeliveryType || isPickUpType);
     const classList = ['header flex flex-space-between flex-middle sticky-wrapper'];
-    const contentClassList = ['header__content padding-top-bottom-smaller padding-left-right-small flex'];
+    const contentClassList = ['header__content flex padding-top-bottom-smaller'];
     const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
 
     if (className) {
@@ -102,7 +103,7 @@ class Header extends Component {
       >
         <div className={contentClassList.join(' ')}>
           {this.renderLogoAndNavDom()}
-          {isStoreHome && (isDeliveryType || isPickUpType) ? (
+          {isDeliveryHomePage ? (
             <div className="header__store-info">
               <div className="flex flex-middle">
                 <h1 className="header__store-name padding-top-bottom-smaller text-size-big text-weight-bolder text-middle text-omit__single-line">

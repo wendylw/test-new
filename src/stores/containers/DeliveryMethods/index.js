@@ -115,10 +115,12 @@ class DeliveryMethods extends Component {
                 data-heap-method-name={method.name}
                 onClick={() => this.handleVisitStore(method.name)}
               >
-                <figure className="delivery__image-container">
-                  <img src={method.logo} alt={t(method.labelKey)}></img>
-                </figure>
-                <label className="delivery__name text-weight-bolder">{t(method.labelKey)}</label>
+                <summary>
+                  <figure className="delivery__image-container">
+                    <img src={method.logo} alt={t(method.labelKey)}></img>
+                  </figure>
+                  <label className="delivery__name text-weight-bolder">{t(method.labelKey)}</label>
+                </summary>
                 <i className="delivery__next-icon">
                   <IconNext />
                 </i>

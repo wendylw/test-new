@@ -6,17 +6,6 @@
   z-index: $z-index-base;
   background-color: $white;
 
-  &::before {
-    content: " ";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: inline-block;
-    margin: 0 2.4vw;
-    border-top: 1px solid $gray-4;
-  }
-
   &__content {
     max-width: 90%;
     width: 100%;
@@ -44,13 +33,5 @@
   &__store-address {
     line-clamp: 2;
     -webkit-line-clamp: 2;
-  }
-}
-
-@media (min-width: 770px) {
-  .header {
-    &::before {
-      margin: 0 8px;
-    }
   }
 }

@@ -8,6 +8,17 @@ $gray-nav-item-color: #707070;
     top: 0;
   }
 
+  &__header::before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: inline-block;
+    margin: 0 2.4vw;
+    border-top: 1px solid $gray-4;
+  }
+
   &__delivery-fee {
     color: $white;
     background-color: $theme-blue;
@@ -91,5 +102,13 @@ $gray-nav-item-color: #707070;
 
   &__order-button {
     width: 40%;
+  }
+}
+
+@media (min-width: 770px) {
+  .ordering-home {
+    &__header::before {
+      margin: 0 8px;
+    }
   }
 }

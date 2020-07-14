@@ -413,8 +413,10 @@ export class Home extends Component {
     return (
       <Header
         headerRef={ref => (this.headerEl = ref)}
-        className={isDeliveryType || isPickUpType ? 'flex-top' : 'flex-middle border__bottom-divider'}
-        contentClassName={isDeliveryType || isPickUpType ? 'flex-top' : 'flex-middle'}
+        className={
+          isDeliveryType || isPickUpType ? 'flex-top ordering-home__header' : 'flex-middle border__bottom-divider'
+        }
+        contentClassName={`${isDeliveryType || isPickUpType ? 'flex-top' : 'flex-middle'} padding-left-right-small`}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}

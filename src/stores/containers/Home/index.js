@@ -112,7 +112,7 @@ class App extends Component {
         />
 
         <section>
-          <h2 className="padding-normal text-size-biggest text-center" data-testid="selectStoreDescription">
+          <h2 className="padding-normal text-size-bigger text-center" data-testid="selectStoreDescription">
             {t('SelectStoreDescription')}
           </h2>
 
