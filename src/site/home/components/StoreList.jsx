@@ -86,7 +86,6 @@ class StoreList extends Component {
                   className="store-card-list__image card__image"
                   src={avatar}
                   placeholderImage={MvpStorePlaceholderImage}
-                  scalingRatioIndex={1}
                   alt={name}
                 />
               </div>
