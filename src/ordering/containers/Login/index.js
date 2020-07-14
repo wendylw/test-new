@@ -115,6 +115,7 @@ class Login extends React.Component {
       <section className={classList.join(' ')} data-heap-name="ordering.login.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.login.header"
           title="Account"
           isPage={true}

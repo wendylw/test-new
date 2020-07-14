@@ -33,6 +33,7 @@ class RedeemInfo extends React.Component {
           <div className="full-aside" data-heap-name="cashback.common.redeem-info.modal">
             <Header
               className="flex-middle"
+              contentClassName="flex-middle"
               isPage={true}
               navFunc={this.toggleModal.bind(this)}
               data-heap-name="cashback.common.redeem-info.header"

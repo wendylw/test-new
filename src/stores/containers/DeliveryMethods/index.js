@@ -98,6 +98,7 @@ class DeliveryMethods extends Component {
       <section className="delivery" data-heap-name="stores.delivery-methods.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="stores.delivery-methods.header"
           isPage={true}
           title={t('SelectYourPreference')}

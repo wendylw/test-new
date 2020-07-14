@@ -133,6 +133,7 @@ class RecentActivities extends React.Component {
           ) : (
             <Header
               className="flex-middle"
+              contentClassName="flex-middle"
               navFunc={this.toggleFullScreen.bind(this)}
               data-heap-name="cashback.home.receipt-list.header"
             />

@@ -630,6 +630,7 @@ class LocationAndDate extends Component {
       <section className="table-ordering__location" data-heap-name="ordering.location-and-date.container">
         <Header
           className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.location-and-date.header"
           isPage={true}
           title={this.getLocationDisplayTitle()}

@@ -409,6 +409,7 @@ class Stripe extends Component {
       >
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.payment.stripe.header"
           isPage={true}
           title={t('PayViaCard')}

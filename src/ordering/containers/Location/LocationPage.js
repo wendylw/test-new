@@ -120,6 +120,7 @@ class LocationPage extends Component {
       <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
         <Header
           className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.location.header"
           isPage={true}
           title={t('DeliverTo')}

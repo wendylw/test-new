@@ -688,6 +688,7 @@ export class ThankYou extends PureComponent {
         <React.Fragment>
           <Header
             className="flex-middle border__bottom-divider"
+            contentClassName="flex-middle"
             data-heap-name="ordering.thank-you.header"
             isPage={true}
             title={isTakeaway ? `#${orderId}` : t('OrderPaid')}

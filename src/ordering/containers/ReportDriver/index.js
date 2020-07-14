@@ -171,6 +171,7 @@ class ReportDriver extends Component {
       <section className="table-ordering__report-driver-thankyou">
         <Header
           className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
           isPage={false}
           title={t('ReportDriver')}
@@ -278,6 +279,7 @@ class ReportDriver extends Component {
       <section className="table-ordering__report-driver" data-heap-name="ordering.report-driver.container">
         <Header
           className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
           isPage={false}
           title={t('ReportDriver')}

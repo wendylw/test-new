@@ -94,13 +94,7 @@ export class Home extends Component {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
-    if (
-      ReactDOM.findDOMNode(this.deliveryEntryEl) &&
-      ReactDOM.findDOMNode(this.headerEl) &&
-      ReactDOM.findDOMNode(this.footerEl)
-    ) {
-      this.setMainContainerHeight();
-    }
+    this.setMainContainerHeight();
   };
 
   setAlcoholModalState = val => {
@@ -126,9 +120,7 @@ export class Home extends Component {
       }
     }
 
-    if (!containerHeight) {
-      this.setMainContainerHeight();
-    }
+    this.setMainContainerHeight(containerHeight);
   }
 
   getPageRf = () => {
@@ -139,17 +131,18 @@ export class Home extends Component {
     window.removeEventListener('scroll', this.handleScroll);
   }
 
-  setMainContainerHeight = () => {
+  setMainContainerHeight = containerHeight => {
     const isValid =
       (ReactDOM.findDOMNode(this.deliveryEntryEl) || ReactDOM.findDOMNode(this.headerEl)) &&
       ReactDOM.findDOMNode(this.footerEl);
+    const currentContainerHeight = Utils.getContainerElementHeight(
+      [ReactDOM.findDOMNode(this.deliveryEntryEl), ReactDOM.findDOMNode(this.headerEl)].filter(el => el),
+      ReactDOM.findDOMNode(this.footerEl)
+    );
 
-    if (isValid) {
+    if (isValid && containerHeight != `${currentContainerHeight}px`) {
       this.setState({
-        containerHeight: `${Utils.getContainerElementHeight(
-          [ReactDOM.findDOMNode(this.deliveryEntryEl), ReactDOM.findDOMNode(this.headerEl)].filter(el => el),
-          ReactDOM.findDOMNode(this.footerEl)
-        )}px`,
+        containerHeight: `${currentContainerHeight}px`,
       });
     }
   };

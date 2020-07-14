@@ -102,6 +102,7 @@ class App extends Component {
       <section className="store-list__content" data-heap-name="stores.home.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="stores.home.header"
           isPage={true}
           isStoreHome={true}

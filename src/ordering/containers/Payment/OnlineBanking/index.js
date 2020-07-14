@@ -144,6 +144,7 @@ class OnlineBanking extends Component {
       >
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.payment.online-banking.header"
           isPage={true}
           title={t('PayViaOnlineBanking')}

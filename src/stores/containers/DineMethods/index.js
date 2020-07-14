@@ -59,6 +59,7 @@ class DineMethods extends Component {
       <section className="dine" data-heap-name="stores.dine-methods.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="stores.dine-methods.header"
           isPage={true}
           title={t('SelectYourPreference')}

@@ -475,6 +475,7 @@ class CreditCard extends Component {
       >
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.payment.credit-card.header"
           isPage={true}
           title={t('PayViaCard')}

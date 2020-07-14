@@ -405,6 +405,7 @@ class Customer extends Component {
       <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
         <Header
           className="flex-middle text-center"
+          contentClassName="flex-middle"
           data-heap-name="ordering.customer.header"
           isPage={true}
           title={this.getHeaderTitle()}

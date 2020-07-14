@@ -168,6 +168,7 @@ class Payment extends Component {
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.payment.header"
           isPage={true}
           title={t('SelectPayment')}

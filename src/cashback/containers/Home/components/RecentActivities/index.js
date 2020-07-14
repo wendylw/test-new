@@ -121,6 +121,7 @@ class RecentActivities extends React.Component {
       >
         <Header
           className="flex-middle text-center"
+          contentClassName="flex-middle"
           data-heap-name="cashback.home.recent-activities.header"
           title={t('CashbackHistory')}
           isPage={true}

@@ -88,6 +88,7 @@ export class OrderDetails extends Component {
       <section className="order-detail" data-heap-name="ordering.order-detail.container">
         <Header
           className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.order-detail.header"
           isPage={false}
           title={t('OrderDetails')}

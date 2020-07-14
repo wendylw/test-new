@@ -260,6 +260,7 @@ class Cart extends Component {
       <section className={`table-ordering__order` /* hide */} data-heap-name="ordering.cart.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}

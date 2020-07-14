@@ -49,6 +49,7 @@ export class NeedHelp extends Component {
       <section className="need-help" data-heap-name="ordering.need-help.container">
         <Header
           className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.need-help.header"
           isPage={false}
           title={t('ContactUs')}

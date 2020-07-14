@@ -86,6 +86,7 @@ class Promotion extends Component {
       <section className="table-ordering__promotion" data-heap-name="ordering.promotion.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.promotion.header"
           isPage={true}
           title={t('MyVouchersAndPromos')}

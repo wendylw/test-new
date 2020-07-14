@@ -46,6 +46,7 @@ class Tables extends Component {
       <section className="tables" data-heap-name="stores.tables.container">
         <Header
           className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="stores.tables.header"
           isPage={true}
           title={t('SelectTableNumber')}
