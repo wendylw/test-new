@@ -12,6 +12,7 @@ import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
+import qs from 'qs';
 
 import {
   actions as homeActionCreators,
@@ -29,7 +30,11 @@ class App extends Component {
     await this.props.homeActions.loadCoreStores();
     if (Array.isArray(this.props.stores) && this.props.stores.length === 1) {
       const defaultSelectStore = this.props.stores[0];
-      this.selectStore(defaultSelectStore.id);
+      const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+      if (!(queries.s && queries.from === 'home')) {
+        this.selectStore(defaultSelectStore.id);
+      }
     }
   };
 
@@ -57,7 +62,7 @@ class App extends Component {
     });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
     if (isValidTimeToOrder || enablePreOrder) {
-      window.location.href = window.location.href + '?' + encodeURIComponent('s=' + storeId + '&from=home');
+      window.location.href = `${window.location.href}?s=${storeId}&from=home`;
       // homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);
@@ -69,11 +74,7 @@ class App extends Component {
   }
 
   gotoDine(storeId) {
-    this.props.homeActions.setCurrentStore(storeId);
-    this.props.history.push({
-      pathname: ROUTER_PATHS.DINE,
-      search: window.location.search,
-    });
+    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}?s=${storeId}&from=home`;
   }
 
   selectStore = storeId => {
