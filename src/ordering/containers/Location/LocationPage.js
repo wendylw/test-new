@@ -16,13 +16,13 @@ class LocationPage extends Component {
     initError: null,
     storeInfo: {},
     errorToast: '',
+    outRange: Utils.getSessionVariable('outRange'),
   };
 
   componentDidMount() {
     this.loadStoreInfo();
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
 
-    if (search.outRange) {
+    if (this.state.outRange) {
       this.onSelectPlace(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
     }
   }
@@ -141,7 +141,7 @@ class LocationPage extends Component {
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
-            outRange={search.outRange}
+            outRange={this.state.outRange}
             onSelect={this.onSelectPlace}
           />
         )}

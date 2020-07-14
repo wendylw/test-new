@@ -114,9 +114,10 @@ export class Home extends Component {
           // search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
           const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
+          Utils.setSessionVariable('outRange', deliveryRadius);
           this.props.history.push({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-            search: `${search}&outRange=${deliveryRadius}&callbackUrl=${callbackUrl}`,
+            search: `${search}&callbackUrl=${callbackUrl}`,
           });
         }
       }

@@ -98,9 +98,10 @@ class App extends Component {
     if (nearly.distance / 1000 < deliveryRadius) {
       return nearly;
     } else {
+      Utils.setSessionVariable('outRange', deliveryRadius);
       this.props.history.replace({
         pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_LOCATION,
-        search: `type=${type}&outRange=${deliveryRadius}`,
+        search: `type=${type}`,
       });
     }
   };
