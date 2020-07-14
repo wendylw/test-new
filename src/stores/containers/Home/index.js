@@ -30,7 +30,7 @@ class App extends Component {
     await this.props.homeActions.loadCoreStores();
     if (Array.isArray(this.props.stores) && this.props.stores.length === 1) {
       const defaultSelectStore = this.props.stores[0];
-      const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+      const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
 
       if (!(queries.s && queries.from === 'home')) {
         this.selectStore(defaultSelectStore.id);
@@ -62,7 +62,7 @@ class App extends Component {
     });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
     if (isValidTimeToOrder || enablePreOrder) {
-      window.location.href = window.location.href + '?' + encodeURIComponent('s=' + storeId + '&from=home');
+      window.location.href = `${window.location.href}?s=${storeId}&from=home`;
       // homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);
@@ -74,9 +74,7 @@ class App extends Component {
   }
 
   gotoDine(storeId) {
-    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}?${encodeURIComponent(
-      's=' + storeId + '&from=home'
-    )}`;
+    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}?s=${storeId}&from=home`;
   }
 
   selectStore = storeId => {

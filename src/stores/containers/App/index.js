@@ -31,7 +31,7 @@ class App extends Component {
       isHome: true,
     };
 
-    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+    const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
 
     if (queries.s && queries.from === 'home') {
       this.state.isHome = false;
@@ -52,7 +52,7 @@ class App extends Component {
       gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
 
-    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+    const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
 
     if (queries.s && queries.from === 'home') {
       let timer = setInterval(() => {
@@ -79,7 +79,6 @@ class App extends Component {
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
-    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
   }
 
   handleClearError = () => {
