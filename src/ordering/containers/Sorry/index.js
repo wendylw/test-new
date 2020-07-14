@@ -38,7 +38,7 @@ class Sorry extends Component {
 
   getDescription = () => {
     const params = Utils.getQueryString();
-    const { errorCode, provider } = params || {};
+    const { errorCode, paymentProvider } = params || {};
     const { t } = this.props;
     const errors = {
       AmountTooLarge: t('AmountTooLarge'),
@@ -54,8 +54,8 @@ class Sorry extends Component {
       onlineBanking: t('Online Banking'),
       creditCard: t('Credit/Debit Card'),
     };
-    const provideMethod = PROVIDER_TO_METHOD[provider];
-    return errorCode && provider
+    const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
+    return errorCode && paymentProvider
       ? t('Description', { paymentMethod: methods[provideMethod], error: errors[errorCode] })
       : t('PaymentFailedDescription');
   };
