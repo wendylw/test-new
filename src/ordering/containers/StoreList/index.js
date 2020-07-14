@@ -51,6 +51,11 @@ class StoreList extends Component {
       },
       async () => {
         if (this.state.search.callbackUrl) {
+          console.log(
+            this.state.search.callbackUrl,
+            'this.state.search.callbackUrl',
+            Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
+          );
           this.props.history.replace({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: `${this.props.history.location.search}&${store.id ? 'storeid=' + store.id : ''}`,
@@ -67,8 +72,6 @@ class StoreList extends Component {
   };
 
   getOpeningHouers = item => {
-    console.log(item);
-
     const { qrOrderingSettings } = item;
     if (!qrOrderingSettings) return;
     const { validTimeFrom, validTimeTo } = qrOrderingSettings;

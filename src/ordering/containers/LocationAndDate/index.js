@@ -88,12 +88,6 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
-    if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
-      this.setDeliveryType();
-    } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
-      this.setPickUpType();
-    }
-
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // Should do setState to here for what is in componentDidUpdate to work
@@ -101,6 +95,12 @@ class LocationAndDate extends Component {
       deliveryToAddress,
     });
     this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
+
+    if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
+      this.setDeliveryType();
+    } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
+      this.setPickUpType(false);
+    }
   };
 
   setDeliveryType = () => {
@@ -115,14 +115,14 @@ class LocationAndDate extends Component {
     );
   };
 
-  setPickUpType = () => {
+  setPickUpType = (ischeckStore = true) => {
     this.setState(
       {
         isPickUpType: true,
         isDeliveryType: false,
       },
       () => {
-        if (!this.state.nearlyStore) this.goStoreList();
+        if (!this.state.nearlyStore && ischeckStore) this.goStoreList();
         this.setMethodsTime();
       }
     );
