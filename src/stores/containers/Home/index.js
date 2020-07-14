@@ -74,7 +74,9 @@ class App extends Component {
   }
 
   gotoDine(storeId) {
-    window.location.href = window.location.origin + '/dine?' + encodeURIComponent('s=' + storeId + '&from=home');
+    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}?${encodeURIComponent(
+      's=' + storeId + '&from=home'
+    )}`;
   }
 
   selectStore = storeId => {
