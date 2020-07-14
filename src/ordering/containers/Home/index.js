@@ -399,13 +399,11 @@ export class Home extends Component {
         search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };
-    console.log(this.props);
     const { businessInfo } = this.props;
     const { stores = [] } = businessInfo;
 
     let pickupAddress = '';
     if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    console.log(pickupAddress, 'pickupAddress');
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
         <div className="location-page__entry item" onClick={fillInDeliverToAddress}>

@@ -13,9 +13,6 @@ import Constants from '../../../../../utils/constants';
 import { withRouter } from 'react-router-dom';
 
 class CategoryProductList extends Component {
-  constructor(props) {
-    super(props);
-  }
   prevCategory = null;
 
   handleDecreaseProductInCart = async product => {

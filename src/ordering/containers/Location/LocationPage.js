@@ -21,6 +21,7 @@ class LocationPage extends Component {
   componentDidMount() {
     this.loadStoreInfo();
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+
     if (search.outRange) {
       this.onSelectPlace(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
     }

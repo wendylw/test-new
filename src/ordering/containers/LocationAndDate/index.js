@@ -102,6 +102,7 @@ class LocationAndDate extends Component {
     });
     this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
   };
+
   setDeliveryType = () => {
     this.setState(
       {
@@ -113,6 +114,7 @@ class LocationAndDate extends Component {
       }
     );
   };
+
   setPickUpType = () => {
     this.setState(
       {
@@ -125,6 +127,7 @@ class LocationAndDate extends Component {
       }
     );
   };
+
   setMethodsTime = () => {
     const { business, allBusinessInfo } = this.props;
     const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
@@ -199,6 +202,7 @@ class LocationAndDate extends Component {
       });
     }
   };
+
   getExpectedTimeFromSession = () => {
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
@@ -803,7 +807,7 @@ class LocationAndDate extends Component {
       }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
     });
   };
-  renderStoreList = () => {
+  renderSelectStore = () => {
     // let store = [];
     // if (this.state.search.storeid) {
     //   store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
@@ -853,9 +857,9 @@ class LocationAndDate extends Component {
           </p>
         </div>
         <div className="location-display__content">
-          {this.state.isPickUpType && this.renderStoreList()}
+          {this.state.isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}
-          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderStoreList() : null) : null}
+          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderSelectStore() : null) : null}
           {this.state.isDeliveryType
             ? this.state.deliveryToAddress
               ? this.renderDeliveryOn()
