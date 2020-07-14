@@ -12,6 +12,7 @@ import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
+import './StoresHome.scss';
 
 import {
   actions as homeActionCreators,
@@ -109,17 +110,20 @@ class App extends Component {
           logo={logo}
           title={storeName}
         />
-        <h2 className="text-center" data-testid="selectStoreDescription">
-          {t('SelectStoreDescription')}
-        </h2>
 
-        <div className="list__container">
-          {!stores || !stores.length ? (
-            <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
-          ) : (
-            <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
-          )}
-        </div>
+        <section>
+          <h2 className="padding-normal text-size-biggest text-center" data-testid="selectStoreDescription">
+            {t('SelectStoreDescription')}
+          </h2>
+
+          <div className="list__container">
+            {!stores || !stores.length ? (
+              <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
+            ) : (
+              <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
+            )}
+          </div>
+        </section>
       </section>
     );
   }

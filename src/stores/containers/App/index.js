@@ -81,7 +81,7 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="store-list">
+      <main className="store-list fixed-wrapper fixed-wrapper__main">
         {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home />}
 
         {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}

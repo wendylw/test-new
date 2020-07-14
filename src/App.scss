@@ -492,33 +492,33 @@
   }
 }
 
-.store-list {
-  // @extend .flex;
-  // @extend .flex-center;
-  // @extend .has-header-container;
+// .store-list {
+//   // @extend .flex;
+//   // @extend .flex-center;
+//   // @extend .has-header-container;
 
-  // .item {
-  //   margin: 5vw 0;
-  // }
+//   // .item {
+//   //   margin: 5vw 0;
+//   // }
 
-  .item__content {
-    padding: 2.4vw;
-  }
+//   .item__content {
+//     padding: 2.4vw;
+//   }
 
-  .item__detail {
-    width: auto;
-  }
+//   .item__detail {
+//     width: auto;
+//   }
 
-  .item__title {
-    font-size: 1.2rem;
-  }
+//   .item__title {
+//     font-size: 1.2rem;
+//   }
 
-  &__content {
-    // @extend .main-section;
+//   &__content {
+//     // @extend .main-section;
 
-    padding: 5vw;
-  }
-}
+//     padding: 5vw;
+//   }
+// }
 
 // .border {
 //   &__top-divider {
@@ -530,12 +530,12 @@
 //   }
 // }
 
-.w-h-same {
-  content: "";
-  display: block;
-  padding: 50% 0;
-  height: 0;
-}
+// .w-h-same {
+//   content: "";
+//   display: block;
+//   padding: 50% 0;
+//   height: 0;
+// }
 
 .phone-view-form {
   &__label {
