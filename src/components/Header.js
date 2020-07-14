@@ -31,7 +31,7 @@ class Header extends Component {
       if (!isStoreHome || isHomePageBack) {
         const iconClassName = `icon ${
           isHomePageBack ? 'icon__normal' : 'icon__big'
-        } icon__gray text-middle flex__shrink-fixed`;
+        } icon__default text-middle flex__shrink-fixed`;
 
         return isPage ? (
           <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />

@@ -267,12 +267,12 @@ class Cart extends Component {
           navFunc={this.handleClickBack.bind(this)}
         >
           <button
-            className="flex__shrink-fixed warning__button"
+            className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleClearAll.bind(this)}
             data-heap-name="ordering.cart.clear-btn"
           >
-            <IconDelete />
-            <span className="warning__label text-middle">{t('ClearAll')}</span>
+            <IconDelete className="icon icon__normal icon__error text-middle" />
+            <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
         <div className="list__container">

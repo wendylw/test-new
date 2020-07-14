@@ -505,7 +505,7 @@ img {
     fill: $theme-color;
   }
 
-  &__gray {
+  &__default {
     fill: $gray-2;
   }
 
@@ -540,7 +540,7 @@ img {
   }
 
   &__item.active {
-    .icon__gray {
+    .icon__default {
       fill: $theme-color;
     }
   }

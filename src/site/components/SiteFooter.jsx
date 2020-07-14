@@ -31,7 +31,7 @@ class SiteFooter extends Component {
                 data-heap-name="site.common.footer.tab-icon"
                 data-heap-tab-pathname={tab.pathname}
               >
-                <tab.component className="icon icon__gray" />
+                <tab.component className="icon icon__default" />
               </Link>
             </li>
           ))}

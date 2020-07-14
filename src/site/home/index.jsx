@@ -211,7 +211,7 @@ class Home extends React.Component {
 
             <div className="entry-home__search">
               <div className="form__group flex flex-middle">
-                <IconSearch className="entry-home__search-icon icon icon__small icon__gray" />
+                <IconSearch className="entry-home__search-icon icon icon__small icon__default" />
                 <input
                   className="form__input entry-home__input"
                   data-testid="searchStore"

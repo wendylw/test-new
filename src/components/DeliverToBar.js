@@ -42,7 +42,7 @@ class DeliverToBar extends Component {
         >
           {showBackButton ? (
             <IconLeftArrow
-              className="icon icon__big icon__gray text-middle flex__shrink-fixed"
+              className="icon icon__big icon__default text-middle flex__shrink-fixed"
               data-heap-name={heapBackButtonName}
               onClick={event => {
                 event.preventDefault();

@@ -9,7 +9,7 @@ class SearchBox extends React.Component {
     return (
       <div className="common-search">
         <div className="form__group flex flex-middle">
-          <IconSearch className="common-search__icon icon icon__small icon__gray" />
+          <IconSearch className="common-search__icon icon icon__small icon__default" />
           <input
             className="form__input text-size-small"
             data-testid="inputStore"
@@ -21,7 +21,7 @@ class SearchBox extends React.Component {
             onChange={handleSearchTextChange}
           />
           <IconClose
-            className="icon icon__small icon__gray"
+            className="icon icon__small icon__default"
             data-heap-name="site.search.search-box-clear-btn"
             onClick={handleClearSearchText}
             style={{ visibility: keyword ? 'visible' : 'hidden' }}
