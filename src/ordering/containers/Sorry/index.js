@@ -40,23 +40,15 @@ class Sorry extends Component {
     const params = Utils.getQueryString();
     const { errorCode, paymentProvider } = params || {};
     const { t } = this.props;
-    const errors = {
-      AmountTooLarge: t('AmountTooLarge'),
-      AmountTooSmall: t('AmountTooSmall'),
-      AuthenticationRequired: t('AuthenticationRequired'),
-      BalanceInsufficient: t('BalanceInsufficient'),
-      CardExpired: t('CardExpired'),
-      BankDeclined: t('BankDeclined'),
-      IncorrectCvc: t('IncorrectCvc'),
-      UnknownError: t('UnknownError'),
-    };
+
     const methods = {
-      onlineBanking: t('Online Banking'),
-      creditCard: t('Credit/Debit Card'),
+      onlineBanking: t('OnlineBanking'),
+      creditCard: t('CreditAndDebitCard'),
     };
     const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
+
     return errorCode && paymentProvider
-      ? t('Description', { paymentMethod: methods[provideMethod], error: errors[errorCode] })
+      ? t('Description', { paymentMethod: methods[provideMethod], error: t(errorCode) })
       : t('PaymentFailedDescription');
   };
 

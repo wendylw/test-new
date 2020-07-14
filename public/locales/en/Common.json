@@ -147,6 +147,6 @@
   "BankDeclined": "Bank Declined",
   "IncorrectCvc": "Incorrect Cvc",
   "UnknownError": "Unknown Error",
-  "Online Banking": "Online Banking",
-  "Credit/Debit Card": "Credit/Debit Card"
+  "OnlineBanking": "Online Banking",
+  "CreditAndDebitCard": "Credit/Debit Card"
 }
