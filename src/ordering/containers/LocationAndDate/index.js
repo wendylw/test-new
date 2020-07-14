@@ -120,6 +120,7 @@ class LocationAndDate extends Component {
         isDeliveryType: false,
       },
       () => {
+        if (!this.state.nearlyStore) this.goStoreList();
         this.setMethodsTime();
       }
     );
@@ -794,6 +795,14 @@ class LocationAndDate extends Component {
     );
   };
 
+  goStoreList = () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+      search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}&type=${
+        this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+      }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+    });
+  };
   renderStoreList = () => {
     // let store = [];
     // if (this.state.search.storeid) {
@@ -803,17 +812,7 @@ class LocationAndDate extends Component {
     // }
     const store = this.state.nearlyStore.name;
     return (
-      <div
-        className="form__group"
-        onClick={() => {
-          this.props.history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-            search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}&type=${
-              this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-            }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
-          });
-        }}
-      >
+      <div className="form__group" onClick={this.goStoreList}>
         <label className="form__label font-weight-bold">Selected Store</label>
         <div className="location-page__search-box">
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
@@ -856,9 +855,17 @@ class LocationAndDate extends Component {
         <div className="location-display__content">
           {this.state.isPickUpType && this.renderStoreList()}
           {this.renderDeliveryTo()}
-          {this.state.isDeliveryType && this.renderStoreList()}
-          {this.renderDeliveryOn()}
-          {this.renderHourSelector()}
+          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderStoreList() : null) : null}
+          {this.state.isDeliveryType
+            ? this.state.deliveryToAddress
+              ? this.renderDeliveryOn()
+              : null
+            : this.renderDeliveryOn()}
+          {this.state.isDeliveryType
+            ? this.state.deliveryToAddress
+              ? this.renderHourSelector()
+              : null
+            : this.renderHourSelector()}
         </div>
         {this.renderContinueButton()}
       </section>

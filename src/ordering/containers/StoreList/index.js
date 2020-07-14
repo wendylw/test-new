@@ -12,7 +12,7 @@ import './storeList.scss';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import { IconChecked } from '../../../components/Icons';
+import { IconChecked, IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
 const { ADDRESS_RANGE } = Constants;
@@ -20,7 +20,13 @@ const StoreListItem = props => (
   <div className="stores-list-item" onClick={() => props.select(props.store)}>
     <p>{props.store.name}</p>
     <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
-    <p>opening Houres:</p>
+    {props.isDeliveryType && (
+      <p>
+        <IconLocation className="header__motor-icon text-middle" />
+        <IconMotorcycle className="header__motor-icon text-middle" />
+      </p>
+    )}
+    <p>opening Houres: {props.openingHouers}</p>
     <p>{props.storeId === props.store.id && <img src={checked} />}</p>
   </div>
 );
@@ -60,6 +66,30 @@ class StoreList extends Component {
     );
   };
 
+  getOpeningHouers = item => {
+    console.log(item);
+
+    const { qrOrderingSettings } = item;
+    if (!qrOrderingSettings) return;
+    const { validTimeFrom, validTimeTo } = qrOrderingSettings;
+    let openingHouersStringFrom = `${
+      validTimeFrom.split(':')[0] < '12'
+        ? validTimeFrom + ' AM'
+        : +validTimeFrom.split(':')[0] - 12 < 10
+        ? '0' + (+validTimeFrom.split(':')[0] - 12)
+        : +validTimeFrom.split(':')[0] - 12 + ':' + validTimeFrom.split(':')[1] + ' PM'
+    }`;
+    let openingHouersStringTo = `${
+      validTimeTo.split(':')[0] < '12'
+        ? validTimeTo + ' AM'
+        : +validTimeTo.split(':')[0] - 12 < 10
+        ? '0' + (+validTimeTo.split(':')[0] - 12)
+        : +validTimeTo.split(':')[0] - 12 + ':' + validTimeTo.split(':')[1] + ' PM'
+    }`;
+
+    return `${openingHouersStringFrom} - ${openingHouersStringTo}`;
+  };
+
   render() {
     return (
       (this.props.onlineStoreInfo && (
@@ -77,12 +107,23 @@ class StoreList extends Component {
             <div className="stores-info-detail">
               <p>{this.props.onlineStoreInfo.storeName}</p>
               <p>{this.props.onlineStoreInfo.businessType}</p>
-              <p>Total {this.props.allStore.length} outlets</p>
+              <p>
+                {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
+                  ? `${this.props.allStore.length} outlets near you`
+                  : `Total ${this.props.allStore.length} outlets`}
+              </p>
             </div>
           </div>
           <div className="stores-list">
             {this.props.allStore.map(item => (
-              <StoreListItem store={item} storeId={this.state.storeid} select={this.selectStore} key={item.id} />
+              <StoreListItem
+                store={item}
+                openingHouers={this.getOpeningHouers(item)}
+                storeId={this.state.storeid}
+                select={this.selectStore}
+                key={item.id}
+                isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+              />
             ))}
           </div>
         </div>

@@ -53,8 +53,13 @@
         right: 0;
         // margin: auto 0;
       }
-    }
-    i {
+      p {
+        color: #999;
+      }
+      p:nth-child(1),
+      p:nth-child(3) {
+        color: #303030;
+      }
     }
   }
 }
