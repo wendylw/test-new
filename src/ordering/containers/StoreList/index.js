@@ -27,9 +27,9 @@ const StoreListItem = props => (
     {props.isDeliveryType && (
       <p>
         <IconLocation className="header__motor-icon text-middle" />
-        {props.store.distance}
+        <span className="stores-list-item-distance">{props.store.distance}km</span>
         <IconMotorcycle className="header__motor-icon text-middle" />
-        {props.store.deliveryFee}
+        <span className="stores-list-item-fee">{props.store.deliveryFee}</span>
       </p>
     )}
     <p>opening Houres: {props.openingHouers}</p>

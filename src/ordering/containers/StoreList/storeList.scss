@@ -59,6 +59,11 @@
       p:nth-child(1),
       p:nth-child(3) {
         color: #303030;
+        .stores-list-item-distance {
+          display: inline-block;
+          width: 24vw;
+          max-width: 100px;
+        }
       }
     }
   }
