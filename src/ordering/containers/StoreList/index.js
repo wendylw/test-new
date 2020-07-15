@@ -47,7 +47,6 @@ class StoreList extends Component {
 
   async componentDidMount() {
     let address = Utils.getSessionVariable('deliveryAddress');
-    console.log(address, 'addressaddress');
     if (address) {
       address = JSON.parse(address);
       address = {
