@@ -5,7 +5,7 @@ import NotFound from '../../NotFound';
 const RecentActivities = lazy(() => import('./Home/components/RecentActivities'));
 const Claim = lazy(() => import('./Claim'));
 const Home = lazy(() => import('./Home'));
-const Error = lazy(() => import('../../components/Error'));
+const Error = lazy(() => import('./Error'));
 
 class Routes extends Component {
   render() {

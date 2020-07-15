@@ -41,6 +41,10 @@ address {
   font-style: normal;
 }
 
+.text-size-large {
+  font-size: 2.5714rem;
+}
+
 .text-size-huge {
   font-size: 2.1428rem;
 }
@@ -757,6 +761,10 @@ img {
   position: sticky;
   bottom: 0;
   background-color: $main-color;
+
+  &__white {
+    background-color: $white;
+  }
 }
 
 .store-info {
@@ -925,27 +933,27 @@ form {
     z-index: 1;
   }
 
-  &.form .has-error {
-    @extend .input__error;
+  // &.form .has-error {
+  //   @extend .input__error;
 
-    position: relative;
-    z-index: 1;
+  //   position: relative;
+  //   z-index: 1;
 
-    input {
-      color: inherit;
-    }
-  }
+  //   input {
+  //     color: inherit;
+  //   }
+  // }
 
-  .error-message {
-    @extend .input__error-message;
+  // .error-message {
+  //   @extend .input__error-message;
 
-    display: inline-block;
-    line-height: $line-height-base;
+  //   display: inline-block;
+  //   line-height: $line-height-base;
 
-    &__container {
-      margin: 10px 0;
-    }
-  }
+  //   &__container {
+  //     margin: 10px 0;
+  //   }
+  // }
 }
 
 .progress-bar {

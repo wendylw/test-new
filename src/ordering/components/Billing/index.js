@@ -123,7 +123,7 @@ export class Billing extends Component {
           ) : null}
           {this.renderPromotion()}
           {children}
-          <li className="padding-top-bottom-small padding-left-right-normal show flex flex-middle flex-space-between">
+          <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
             <label className="margin-top-bottom-smallest text-size-biggest">{t('Total')}</label>
             <CurrencyNumber className="text-size-biggest text-weight-bolder" money={total || 0} />
           </li>

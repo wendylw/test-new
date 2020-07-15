@@ -340,13 +340,6 @@
     margin-top: 50px;
   }
 
-  &__prompt-page {
-    // @extend .main-section;
-
-    padding: 5vh 0;
-    background-color: $white;
-  }
-
   // &__promotion {
   // width: 100%;
 
@@ -2599,46 +2592,6 @@
     display: block;
     font-size: 2.1428rem;
     color: $gray-2;
-  }
-}
-
-.prompt-page {
-  &__image-container {
-    margin: auto;
-    max-width: 50%;
-  }
-
-  &__content {
-    margin: 4vh 0;
-  }
-
-  &__title {
-    margin: 3vh 0;
-    font-size: 2.2rem;
-    color: $gray-2;
-  }
-
-  &__paragraphs {
-    margin: auto;
-    font-size: 1.2rem;
-    width: 80%;
-    max-width: 280px;
-
-    p {
-      font-size: inherit;
-      line-height: $line-height-base;
-    }
-  }
-
-  &__button-container {
-    position: fixed;
-    bottom: 0;
-    padding: 3.8vw;
-    width: 100%;
-  }
-
-  &__self-pickup {
-    white-space: nowrap;
   }
 }
 

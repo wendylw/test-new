@@ -196,29 +196,33 @@ class Cart extends Component {
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         {promotion ? (
-          <div className="promotion__container flex flex-middle flex-space-between">
-            <span className="flex text-weight-bolder">
+          <React.Fragment>
+            <span className="flex flex-middle flex-space-between padding-left-right-small text-weight-bolder">
               <IconLocalOffer className="icon icon__small icon__primary text-middle" />
-              <div className="promotion-info__container">
-                <div className="promotion-code__container flex flex-middle text-nowrap">
-                  <span className="promotion-code text-weight-bolder">
+              <div>
+                <div className="flex flex-middle text-nowrap">
+                  <span className="margin-left-right-smaller text-size-big text-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button
                     onClick={this.handleDismissPromotion}
-                    className="dismiss__button"
+                    className="button"
                     data-heap-name="ordering.cart.dismiss-promo"
                   >
-                    <IconClose className="icon" />
+                    <IconClose className="icon icon__small" />
                   </button>
                 </div>
-                <div className="promotion__error">{this.getPromotionErrorMessage()}</div>
+                {Boolean(this.getPromotionErrorMessage()) ? (
+                  <p className="form__error-message margin-left-right-smaller text-omit__single-line text-weight-bolder">
+                    {this.getPromotionErrorMessage()}
+                  </p>
+                ) : null}
               </div>
             </span>
-            <span className="promotion-discount__container text-weight-bolder text-nowrap">
-              {'-'} <CurrencyNumber className="text-weight-bolder" money={promotion.discount} />
-            </span>
-          </div>
+            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder text-nowrap">
+              {'-'} <CurrencyNumber className="text-size-big text-weight-bolder" money={promotion.discount} />
+            </div>
+          </React.Fragment>
         ) : (
           <button
             className="cart-promotion__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
@@ -259,7 +263,7 @@ class Cart extends Component {
     }
 
     return (
-      <section className="ordering-cart" data-heap-name="ordering.cart.container">
+      <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <Header
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -277,7 +281,7 @@ class Cart extends Component {
             <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div>
+        <div className="ordering-cart__container">
           <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>

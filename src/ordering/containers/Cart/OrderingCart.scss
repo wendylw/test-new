@@ -4,6 +4,10 @@
   height: 100vh;
   background-color: $gray-5;
 
+  &__container {
+    height: 100%;
+  }
+
   &__additional-comments {
     background-color: $white;
   }
