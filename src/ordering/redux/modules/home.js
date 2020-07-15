@@ -46,6 +46,9 @@ export const initialState = {
 
 export const types = HOME_TYPES;
 
+types.FETCH_TIMESLOT_REQUEST = 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST';
+types.FETCH_TIMESLOT_SUCCESS = 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS';
+types.FETCH_TIMESLOT_FAILURE = 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE';
 // actions
 export const actions = {
   // load product list group by category, and shopping cart
@@ -142,6 +145,15 @@ export const actions = {
   userConfirmPreOrder: () => ({
     type: types.SET_PRE_ORDER_MODAL_CONFIRM,
   }),
+
+  getTimeSlot: (shippingType, fulfillDate) => dispatch => {
+    return dispatch({
+      [API_REQUEST]: {
+        types: [types.FETCH_TIMESLOT_REQUEST, types.FETCH_TIMESLOT_SUCCESS, types.FETCH_TIMESLOT_FAILURE],
+        ...Url.API_URLS.GET_TIME_SLOT(shippingType, fulfillDate),
+      },
+    });
+  },
 };
 
 export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {

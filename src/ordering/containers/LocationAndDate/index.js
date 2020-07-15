@@ -7,11 +7,11 @@ import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
-
+import { actions as homeActionCreators } from '../../redux/modules/home';
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
@@ -290,16 +290,30 @@ class LocationAndDate extends Component {
     };
   };
 
-  handleSelectDate = date => {
+  handleSelectDate = async date => {
     if (!date.isOpen) {
       return;
     }
     const selectedHour = this.getFirstItemFromTimeList(date);
-
+    let res = await this.props.homeActions.getTimeSlot(
+      Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
+      this.getFulfillDate(date, selectedHour)
+    );
+    console.log(res, 'time slot res');
     this.setState({
       selectedDate: date,
       selectedHour,
     });
+  };
+
+  getFulfillDate = (date, hour) => {
+    date = date.date;
+    let fufillDate = new Date(date);
+    const hours = hour.from.split(':')[0];
+    const min = hour.from.split(':')[1];
+    fufillDate.setHours(hours, min); // TODO need switch to marchat local time
+    console.log(fufillDate.toISOString());
+    return fufillDate.toISOString();
   };
 
   handleSelectHour = hour => {
@@ -740,6 +754,8 @@ export default compose(
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
     }),
-    dispatch => ({})
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
   )
 )(LocationAndDate);
