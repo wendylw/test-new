@@ -138,6 +138,8 @@ export class VariationSelector extends Component {
                 key={id}
                 className={className.join(' ')}
                 data-testid="itemDetailSimpleSelection"
+                data-heap-name="common.variation-selector.tag"
+                data-heap-tag-value={value}
                 onClick={selectedOptionFunc}
               >
                 {value}

@@ -191,6 +191,7 @@ class LocationPicker extends Component {
           <input
             className="location-picker__search-box-input"
             data-testid="searchAddress"
+            data-heap-name="common.location-picker.search-box"
             type="text"
             placeholder={t('SearchYourAddress')}
             onChange={this.onSearchBoxChange}
@@ -199,6 +200,7 @@ class LocationPicker extends Component {
           <IconClose
             className="location-picker__search-box-close-icon"
             onClick={this.clearSearchBox}
+            data-heap-name="common.location-picker.search-box-clear-icon"
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
           />
         </div>
@@ -254,7 +256,10 @@ class LocationPicker extends Component {
           {isDetectingPosition ? (
             this.renderDetectedPositionStatus(t('DetectingLocation'))
           ) : devicePositionInfo ? (
-            <div onClick={() => this.selectPlace(devicePositionInfo)}>
+            <div
+              onClick={() => this.selectPlace(devicePositionInfo)}
+              data-heap-name="common.location-picker.detected-location-item"
+            >
               {this.renderAddressItem(
                 mainText,
                 secondaryText
@@ -288,7 +293,10 @@ class LocationPicker extends Component {
                 key={positionInfo.address}
               >
                 <IconBookmarks className="location-picker__historical-address-icon" />
-                <div className="location-picker__historical-address-content">
+                <div
+                  className="location-picker__historical-address-content"
+                  data-heap-name="common.location-picker.historical-location-item"
+                >
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>
               </div>
@@ -309,7 +317,11 @@ class LocationPicker extends Component {
       <div className="location-picker__list">
         {searchResultList.map(searchResult => {
           return (
-            <div key={searchResult.place_id} onClick={() => this.selectPlace(searchResult)}>
+            <div
+              key={searchResult.place_id}
+              onClick={() => this.selectPlace(searchResult)}
+              data-heap-name="common.location-picker.search-result-item"
+            >
               {this.renderAddressItem(
                 searchResult.structured_formatting.main_text,
                 searchResult.structured_formatting.secondary_text

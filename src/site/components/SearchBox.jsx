@@ -13,6 +13,7 @@ class SearchBox extends React.Component {
           <input
             className="form__input text-size-small"
             data-testid="inputStore"
+            data-heap-name="site.search.search-box"
             autoFocus="autoFocus"
             type="type"
             placeholder={t('SearchRestaurantPlaceholder')}
@@ -21,6 +22,7 @@ class SearchBox extends React.Component {
           />
           <IconClose
             className="icon icon__small icon__gray"
+            data-heap-name="site.search.search-box-clear-btn"
             onClick={handleClearSearchText}
             style={{ visibility: keyword ? 'visible' : 'hidden' }}
           />

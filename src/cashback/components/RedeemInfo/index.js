@@ -21,13 +21,22 @@ class RedeemInfo extends React.Component {
     const { showModal } = this.state;
 
     return (
-      <div className={className}>
-        <button className={buttonClassName} onClick={this.toggleModal.bind(this)}>
+      <div className={className} data-heap-name="cashback.common.redeem-info.container">
+        <button
+          className={buttonClassName}
+          onClick={this.toggleModal.bind(this)}
+          data-heap-name="cashback.common.redeem-info.toggle-btn"
+        >
           {buttonText}
         </button>
         {showModal ? (
-          <div className="full-aside">
-            <Header className="flex-middle" isPage={true} navFunc={this.toggleModal.bind(this)} />
+          <div className="full-aside" data-heap-name="cashback.common.redeem-info.modal">
+            <Header
+              className="flex-middle"
+              isPage={true}
+              navFunc={this.toggleModal.bind(this)}
+              data-heap-name="cashback.common.redeem-info.header"
+            />
 
             <section className="full-aside__content text-center">
               <figure className="full-aside__image-container">

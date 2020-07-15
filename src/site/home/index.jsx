@@ -10,6 +10,7 @@ import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
+import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import {
   getAllCurrentStores,
@@ -88,6 +89,7 @@ class Home extends React.Component {
 
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
+      this.props.collectionCardActions.getCollections();
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -175,7 +177,7 @@ class Home extends React.Component {
     const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
 
     return (
-      <main className="entry fixed-wrapper fixed-wrapper__main">
+      <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
           title={t('DeliverTo')}
           className={`entry__deliver-to base-box-shadow ${
@@ -206,6 +208,7 @@ class Home extends React.Component {
                 <input
                   className="form__input entry-home__input"
                   data-testid="searchStore"
+                  data-heap-name="site.home.search-box"
                   type="type"
                   placeholder={t('SearchRestaurantPlaceholder')}
                   onClick={this.handleLoadSearchPage}
@@ -223,11 +226,9 @@ class Home extends React.Component {
             />
           )}
 
-          {countryCode.toUpperCase() === 'MY' && (
-            <Suspense fallback={null}>
-              <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
-            </Suspense>
-          )}
+          <Suspense fallback={null}>
+            <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
+          </Suspense>
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}
@@ -253,6 +254,7 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
     })
   )
 )(Home);

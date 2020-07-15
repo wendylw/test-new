@@ -20,6 +20,7 @@ import Utils from '../../../utils/utils';
 import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import qs from 'qs';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 let METHODS_LIST = [
@@ -47,6 +48,12 @@ class DeliveryMethods extends Component {
     const { homeActions } = this.props;
 
     homeActions.clearCurrentStore();
+
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      window.location.href = window.location.origin;
+    }
   }
 
   async handleVisitStore(methodName) {
@@ -95,9 +102,10 @@ class DeliveryMethods extends Component {
     const { t, currentStoreInfo } = this.props;
     const { fulfillmentOptions } = currentStoreInfo || {};
     return (
-      <section className="delivery">
+      <section className="delivery" data-heap-name="stores.delivery-methods.container">
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="stores.delivery-methods.header"
           isPage={true}
           title={t('SelectYourPreference')}
           navFunc={this.handleClickBack.bind(this)}
@@ -109,6 +117,8 @@ class DeliveryMethods extends Component {
                 key={method.name}
                 className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
                 data-testid="selectPrefrence"
+                data-heap-name="stores.delivery-methods.method-item"
+                data-heap-method-name={method.name}
                 onClick={() => this.handleVisitStore(method.name)}
               >
                 <figure className="delivery__image-container">

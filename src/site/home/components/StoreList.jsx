@@ -74,6 +74,8 @@ class StoreList extends Component {
               key={id}
               className="store-card-list__item flex flex-top padding-top-bottom-normal border__bottom-divider"
               data-testid="deliverStore"
+              data-heap-name="site.common.store-item"
+              data-heap-store-name={name}
               onClick={() => {
                 this.handleStoreClicked(store);
               }}

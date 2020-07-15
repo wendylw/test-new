@@ -126,7 +126,7 @@ class CategoryProductList extends Component {
             );
           }}
         />
-        <ol className="category__list">
+        <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
               <ScrollObservable targetId={category.id} key={category.id}>
@@ -148,6 +148,7 @@ class CategoryProductList extends Component {
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
+                      data-heap-name="ordering.home.product-item"
                     />
                   ))}
                 </ul>
