@@ -72,13 +72,13 @@ export const actions = {
     // }
   },
 
-  loadCoreStores: () => (dispatch, getState) => {
+  loadCoreStores: address => (dispatch, getState) => {
     const business = getBusiness(getState());
     return dispatch({
       [FETCH_GRAPHQL]: {
         types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
         endpoint: Url.apiGql('CoreStores'),
-        variables: { business },
+        variables: { business, ...address },
       },
     });
   },

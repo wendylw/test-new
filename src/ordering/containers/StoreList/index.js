@@ -27,6 +27,7 @@ const StoreListItem = props => (
     {props.isDeliveryType && (
       <p>
         <IconLocation className="header__motor-icon text-middle" />
+        {props.store.distance}
         <IconMotorcycle className="header__motor-icon text-middle" />
       </p>
     )}
@@ -44,7 +45,18 @@ class StoreList extends Component {
   }
 
   async componentDidMount() {
-    await this.props.homeActions.loadCoreStores();
+    let address = Utils.getSessionVariable('deliveryAddress');
+    console.log(address, 'addressaddress');
+    if (address) {
+      address = JSON.parse(address);
+      address = {
+        location: {
+          longitude: address.coords.lng,
+          latitude: address.coords.lat,
+        },
+      };
+    }
+    await this.props.homeActions.loadCoreStores(address);
     // await this.props.appActions.fetchOnlineStoreInfo();
   }
 
