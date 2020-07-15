@@ -23,7 +23,11 @@ export class AlcoholModal extends PureComponent {
   renderAskContent() {
     const { t, country = 'MY' } = this.props;
     return (
-      <Modal show={true} className="modal align-middle alcohol-modal">
+      <Modal
+        show={true}
+        className="modal align-middle alcohol-modal"
+        data-heap-name="ordering.home.alcohol-modal.confirm-modal"
+      >
         <Modal.Body className="modal__content text-center">
           <div className="alcohol-modal__image">
             <img src={beepAlcoholImage} alt="" />
@@ -37,10 +41,20 @@ export class AlcoholModal extends PureComponent {
 
         <Modal.Footer>
           <div className="alcohol-modal__buttons text-center">
-            <button className="btn" data-testid="noIamNot" onClick={this.handleClick.bind(null, false)}>
+            <button
+              className="btn"
+              data-testid="noIamNot"
+              data-heap-name="ordering.home.alcohol-modal.reject"
+              onClick={this.handleClick.bind(null, false)}
+            >
               {t('AlcoholNo')}
             </button>
-            <button className="btn active" data-testid="yesIam" onClick={this.handleClick.bind(null, true)}>
+            <button
+              className="btn active"
+              data-testid="yesIam"
+              data-heap-name="ordering.home.alcohol-modal.accept"
+              onClick={this.handleClick.bind(null, true)}
+            >
               {t('AlcoholYes')}
             </button>
           </div>
@@ -53,6 +67,7 @@ export class AlcoholModal extends PureComponent {
                   className="font-weight-bolder link__non-underline"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.TERMS_OF_USE}
+                  data-heap-name="ordering.home.alcohol-modal.terms"
                 >
                   Terms of Service
                 </Link>
@@ -61,6 +76,7 @@ export class AlcoholModal extends PureComponent {
                   className="font-weight-bolder link__non-underline"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.PRIVACY}
+                  data-heap-name="ordering.home.alcohol-modal.privacy-policy"
                 >
                   Privacy Policy
                 </Link>
@@ -76,7 +92,11 @@ export class AlcoholModal extends PureComponent {
   renderNotLegalContent() {
     const { t } = this.props;
     return (
-      <Modal show={true} className="modal align-middle alcohol-modal">
+      <Modal
+        show={true}
+        className="modal align-middle alcohol-modal"
+        data-heap-name="ordering.home.alcohol-modal.reject-modal"
+      >
         <Modal.Body className="modal__content text-center">
           <div className="alcohol-modal__image">
             <img src={beepAlcoholImage} alt="" />

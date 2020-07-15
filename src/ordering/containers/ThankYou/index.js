@@ -28,6 +28,7 @@ import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
+import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 
 import {
   toDayDateMonth,
@@ -47,8 +48,12 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
+const ANIMATION_TIME = 3600;
+
 export class ThankYou extends PureComponent {
-  state = {};
+  state = {
+    cashbackSuccessImage,
+  };
 
   componentDidMount() {
     // expected delivery time is for pre order
@@ -173,6 +178,14 @@ export class ThankYou extends PureComponent {
     const { t } = this.props;
     return (
       <div className="thanks__delivery-status-container">
+        {this.state.cashbackSuccessImage && (
+          <img
+            src={this.state.cashbackSuccessImage}
+            alt="cashback Earned"
+            onLoad={this.cashbackSuccessStop}
+            className="thanks__earned-cashback-image"
+          />
+        )}
         <CurrencyNumber
           className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
           money={cashback || 0}
@@ -239,6 +252,7 @@ export class ThankYou extends PureComponent {
         className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
+        data-heap-name="ordering.thank-you.view-receipt-btn"
       >
         {t('ViewReceipt')}
       </button>
@@ -252,6 +266,7 @@ export class ThankYou extends PureComponent {
         className="thanks__link link font-weight-bolder text-uppercase button__block"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
+        data-heap-name="ordering.thank-you.view-detail-btn"
       >
         {t('SeeDetails')}
       </button>
@@ -269,7 +284,14 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
-
+  cashbackSuccessStop = () => {
+    let timer = setTimeout(() => {
+      this.setState({
+        cashbackSuccessImage: '',
+      });
+      clearTimeout(timer);
+    }, ANIMATION_TIME);
+  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
@@ -405,7 +427,12 @@ export class ThankYou extends PureComponent {
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
             <div className="thanks__status-description flex flex-middle flex-center">
               {trackingUrl ? (
-                <a href={trackingUrl} target="__blank" className="link text-uppercase font-weight-bolder">
+                <a
+                  href={trackingUrl}
+                  target="__blank"
+                  className="link text-uppercase font-weight-bolder"
+                  data-heap-name="ordering.thank-you.logistics-tracking-link"
+                >
                   {currentStatusObj.secondNote}
                 </a>
               ) : (
@@ -676,10 +703,12 @@ export class ThankYou extends PureComponent {
         className={`table-ordering__thanks flex flex-middle flex-column flex-space-between ${
           match.isExact ? '' : 'hide'
         }`}
+        data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
           <Header
             className="border__bottom-divider gray flex-middle"
+            data-heap-name="ordering.thank-you.header"
             isPage={true}
             title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
             navFunc={() =>
@@ -691,7 +720,11 @@ export class ThankYou extends PureComponent {
             }
           >
             {isTakeaway ? (
-              <button className="link text-uppercase" onClick={this.handleNeedHelp}>
+              <button
+                className="link text-uppercase"
+                onClick={this.handleNeedHelp}
+                data-heap-name="ordering.thank-you.contact-us-btn"
+              >
                 <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
               </button>
             ) : (
@@ -736,7 +769,11 @@ export class ThankYou extends PureComponent {
           <ul className="flex flex-middle flex-space-between">
             <li>
               <span>&copy; {date.getFullYear()} </span>
-              <a className="link link__non-underline" href="https://www.storehub.com/">
+              <a
+                className="link link__non-underline"
+                href="https://www.storehub.com/"
+                data-heap-name="ordering.thank-you.storehub-link"
+              >
                 {t('StoreHub')}
               </a>
             </li>

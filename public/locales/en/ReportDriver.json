@@ -13,7 +13,9 @@
     "UploadFileHere": "Upload file here",
     "UploadPhotoTooLarge": "The photo you have selected is too large. The maximum size is {{maxFileSize}}MB.",
     "Reasons_foodWasDamaged": "Food was damaged",
-    "Reasons_driverWasLate": "Driver was late",
+    "Reasons_deliveryTakeTooLong": "Delivery took too long",
+    "Reasons_orderWasMissingItem": "Order was missing item(s)",
+    "Reasons_neverReceivedMyOrder": "Never received my order",
     "Reasons_driverWasRude": "Driver was rude",
     "Reasons_driverAskedMoreMoney": "Driver asked for more money on delivery",
     "Reasons_others": "Others"

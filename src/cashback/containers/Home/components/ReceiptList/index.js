@@ -64,6 +64,7 @@ class RecentActivities extends React.Component {
     const { business, homeActions } = this.props;
     const pageSize = 10;
     homeActions.getReceiptList(business, page, pageSize);
+    window.heap.track('cashback.home.receipt-list.load-page', { Page: page });
   }
 
   toggleFullScreen() {
@@ -118,14 +119,29 @@ class RecentActivities extends React.Component {
     }
 
     return (
-      <div className={`aside-section ${this.state.fullScreen ? 'full' : ''}`}>
+      <div
+        className={`aside-section ${this.state.fullScreen ? 'full' : ''}`}
+        data-heap-name="cashback.home.receipt-list.container"
+      >
         <aside className="aside-bottom">
           {!this.state.fullScreen ? (
-            <i className="aside-bottom__slide-button" onClick={this.toggleFullScreen.bind(this)}></i>
+            <i
+              className="aside-bottom__slide-button"
+              onClick={this.toggleFullScreen.bind(this)}
+              data-heap-name="cashback.home.receipt-list.screen-toggler"
+            ></i>
           ) : (
-            <Header className="flex-middle" navFunc={this.toggleFullScreen.bind(this)} />
+            <Header
+              className="flex-middle"
+              navFunc={this.toggleFullScreen.bind(this)}
+              data-heap-name="cashback.home.receipt-list.header"
+            />
           )}
-          <h3 className="aside-bottom__title text-center" onClick={this.toggleFullScreen.bind(this)}>
+          <h3
+            className="aside-bottom__title text-center"
+            onClick={this.toggleFullScreen.bind(this)}
+            data-heap-name="cashback.home.receipt-list.title"
+          >
             {t('Receipts')}
           </h3>
           <div className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}>{this.renderLogList()}</div>

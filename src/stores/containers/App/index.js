@@ -16,6 +16,7 @@ import {
   getStoreHashCode,
   getDeliveryRadius,
 } from '../../redux/modules/home';
+
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
 import Home from '../Home';
@@ -33,7 +34,15 @@ const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class App extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isHome: true,
+    };
 
+    const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      this.state.isHome = false;
+    }
     if (!this.isDinePath()) {
       const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
       let { type } = search;
@@ -140,6 +149,21 @@ class App extends Component {
       const { onlineStoreInfo } = data;
       gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
+
+    const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      let timer = setInterval(() => {
+        if (this.props.stores.length) {
+          clearInterval(timer);
+          this.props.storesActions.setCurrentStore(queries.s);
+        }
+      }, 300);
+    } else {
+      this.setState({
+        isHome: true,
+      });
+    }
   }
 
   isDinePath() {
@@ -189,7 +213,11 @@ class App extends Component {
 
     return (
       <main className="store-list">
-        {currentStoreId ? this.renderDeliveryOrDineMethods() : this.isDinePath() ? <Home /> : null}
+        {currentStoreId ? (
+          this.renderDeliveryOrDineMethods()
+        ) : this.isDinePath() ? (
+          <Home isHome={this.state.isHome} />
+        ) : null}
 
         {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
         <DocumentFavicon icon={favicon || faviconImage} />
@@ -211,7 +239,6 @@ export default connect(
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
     storesActions: bindActionCreators(storesActionsCreators, dispatch),
   })
 )(withRouter(App));

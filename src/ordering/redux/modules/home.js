@@ -67,9 +67,9 @@ export const actions = {
       deliveryCoords = Utils.getDeliveryCoords();
     }
     config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
-    if (!getState().home.onlineCategory.categoryIds.length) {
-      dispatch(fetchOnlineCategory());
-    }
+    // if (!getState().home.onlineCategory.categoryIds.length) {
+    dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
+    // }
   },
 
   loadCoreStores: () => (dispatch, getState) => {
@@ -198,7 +198,7 @@ export const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-export const fetchOnlineCategory = () => {
+const fetchOnlineCategory = variables => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
@@ -208,6 +208,7 @@ export const fetchOnlineCategory = () => {
         types.FETCH_ONLINECATEGORY_FAILURE,
       ],
       endpoint,
+      variables,
     },
   };
 };
@@ -248,7 +249,10 @@ export const fetchProductDetail = variables => {
     [FETCH_GRAPHQL]: {
       types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
-      variables,
+      variables: {
+        ...variables,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      },
     },
   };
 };

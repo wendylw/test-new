@@ -1,57 +1,57 @@
 .input__list-top,
 .input__list-bottom {
-	position: relative;
-	height: 50px;
+  position: relative;
+  height: 50px;
 
-	> div {
-		height: 100%;
-	}
+  > div {
+    height: 100%;
+  }
 }
 
 .input__list-bottom {
-	> div {
-		border: 1px solid #DEDEDF;
-		width: 100%;
+  > div {
+    border: 1px solid #dededf;
+    width: 100%;
 
-		&:first-child {
-			border-bottom-left-radius: 4px;
-		}
+    &:first-child {
+      border-bottom-left-radius: 4px;
+    }
 
-		&:last-child {
-			border-bottom-right-radius: 4px;
-		}
-	}
+    &:last-child {
+      border-bottom-right-radius: 4px;
+    }
+  }
 
-	> div ~ div {
-		margin-left: -1px;
-	}
+  > div ~ div {
+    margin-left: -1px;
+  }
 }
 
 .card-info {
-	&__wrapper::before {
-		width: 100%;
-		display: block;
-		padding: 6px 12px;
-		font-size: 18px;
-		line-height: 36px;
-		color: #909090;
-	}
+  &__wrapper::before {
+    width: 100%;
+    display: block;
+    padding: 6px 12px;
+    font-size: 18px;
+    line-height: 36px;
+    color: #909090;
+  }
 }
 
 #card-number::before {
-	content: "1234 1234 1234 1234";
+  content: "1234 1234 1234 1234";
 }
 
 #expiration-date::before {
-	content: "MM / YY";
+  content: "MM / YY";
 }
 
 #cardCvv::before {
-	content: "CVV";
+  content: "CVV";
 }
 
 .payment-bank__card-container {
-	&.loaded .card-info__wrapper::before {
-		display: none;
-	}
+  &.loaded .card-info__wrapper::before {
+    display: none;
+  }
 }

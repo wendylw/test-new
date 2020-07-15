@@ -407,7 +407,11 @@ export class Home extends Component {
     if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
     if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
       return (
-        <div className="location-page__entry item" onClick={fillInDeliverToAddress}>
+        <div
+          className="location-page__entry item"
+          onClick={fillInDeliverToAddress}
+          data-heap-name="ordering.home.delivery-bar"
+        >
           <div className="item__detail-content flex flex-top flex-space-between">
             {showBackButton({
               isValidTimeToOrder,
@@ -416,6 +420,7 @@ export class Home extends Component {
             }) ? (
               <IconLeftArrow
                 className="header__icon"
+                data-heap-name="order.home.delivery-bar-back-btn"
                 onClick={event => {
                   event.preventDefault();
                   window.location.href = this.navBackUrl;
@@ -556,6 +561,7 @@ export class Home extends Component {
     return (
       <Header
         className={classList.join(' ')}
+        data-heap-name="ordering.home.header"
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}

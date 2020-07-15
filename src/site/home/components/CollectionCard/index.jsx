@@ -18,6 +18,8 @@ class CollectionCard extends React.Component {
               key={urlPath}
               className="store-collections__item text-center"
               data-testid="collection"
+              data-heap-name="site.home.collection-icon"
+              data-heap-collection-name={name}
               onClick={() => {
                 // concern to use location.href if icons fixed to the top
                 backLeftPosition();
