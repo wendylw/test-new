@@ -29,6 +29,7 @@ const StoreListItem = props => (
         <IconLocation className="header__motor-icon text-middle" />
         {props.store.distance}
         <IconMotorcycle className="header__motor-icon text-middle" />
+        {props.store.deliveryFee}
       </p>
     )}
     <p>opening Houres: {props.openingHouers}</p>
