@@ -237,7 +237,7 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
-    const limit = useStorehubLogistics && Utils.isDeliveryType();
+    const limit = useStorehubLogistics && this.state.isDeliveryType;
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
@@ -342,7 +342,7 @@ class LocationAndDate extends Component {
         if (!isOpen) continue;
       }
 
-      if (useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
+      if (useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
         const isBeforeStoreClose = isNoLaterThan(
           currentTime,
           this.createTimeWithTimeString(storehubLogisticsBusinessHours[1])
@@ -618,7 +618,7 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
-    const limit = useStorehubLogistics && Utils.isDeliveryType();
+    const limit = useStorehubLogistics && this.state.isDeliveryType;
     const currentTime = new Date();
     const storeOpenTime = createTimeWithTimeString(
       limit && this.validTimeFrom < storehubLogisticsBusinessHours[0]
@@ -682,12 +682,14 @@ class LocationAndDate extends Component {
     const { useStorehubLogistics } = qrOrderingSettings || {};
 
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(
-      useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[0] > this.validPreOrderTimeFrom
+      useStorehubLogistics &&
+        this.state.isDeliveryType &&
+        storehubLogisticsBusinessHours[0] > this.validPreOrderTimeFrom
         ? storehubLogisticsBusinessHours[0]
         : this.validPreOrderTimeFrom
     );
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(
-      useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[1] < this.validTimeTo
+      useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo
         ? storehubLogisticsBusinessHours[1]
         : this.validTimeTo
     );
@@ -757,7 +759,7 @@ class LocationAndDate extends Component {
     const timeList = this.getHoursList(selectedDate);
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
-    console.log(timeList, 'timelist');
+
     return (
       <div className="form__group location-display__date-container">
         {this.state.isDeliveryType && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
