@@ -17,7 +17,11 @@ import config from '../../../config';
 import qs from 'qs';
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
-  <div className="stores-list-item" onClick={() => props.select(props.store)}>
+  <div
+    className="stores-list-item"
+    onClick={() => props.select(props.store)}
+    data-heap-name="ordering.location-and-date.store-item"
+  >
     <p>{props.store.name}</p>
     <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
     {props.isDeliveryType && (
@@ -51,11 +55,6 @@ class StoreList extends Component {
       },
       async () => {
         if (this.state.search.callbackUrl) {
-          console.log(
-            this.state.search.callbackUrl,
-            'this.state.search.callbackUrl',
-            Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
-          );
           this.props.history.replace({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: `${this.props.history.location.search}&${store.id ? 'storeid=' + store.id : ''}`,
@@ -96,11 +95,12 @@ class StoreList extends Component {
   render() {
     return (
       (this.props.onlineStoreInfo && (
-        <div className="stores-list-contain">
+        <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
           <Header
             className="has-right flex-middle"
             isPage={true}
             title={'Select store'}
+            data-heap-name="ordering.store-list.header"
             navFunc={() => {
               this.props.history.go(-1);
             }}

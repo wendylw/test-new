@@ -916,8 +916,12 @@ class LocationAndDate extends Component {
     // }
     const store = this.state.nearlyStore.name;
     return (
-      <div className="form__group" onClick={this.goStoreList}>
-        <label className="form__label font-weight-bold">Selected Store</label>
+      <div
+        className="form__group"
+        onClick={this.goStoreList}
+        data-heap-name="ordering.location-and-date.selected-store"
+      >
+        <label className="form__label font-weight-bold">{this.props.t('Selected Store')}</label>
         <div className="location-page__search-box">
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
             <input className="input input__block" data-testid="deliverTo" type="text" defaultValue={store} readOnly />
@@ -946,6 +950,7 @@ class LocationAndDate extends Component {
             onClick={this.setDeliveryType}
             style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px' }}
             className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
+            data-heap-name="ordering.location-and-date.delivery"
           >
             Delivery
           </p>
@@ -953,6 +958,7 @@ class LocationAndDate extends Component {
             onClick={this.setPickUpType}
             style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px' }}
             className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
+            data-heap-name="ordering.location-and-date.pickup"
           >
             Pickup
           </p>

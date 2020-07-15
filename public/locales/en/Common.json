@@ -78,6 +78,7 @@
   "PickupAt": "Pickup At",
   "PickUpOn": "Pickup On",
   "DeliveryTime": "Delivery Time",
+  "Selected Store": "Selected Store",
   "PickupTime": "Pickup Time",
   "DeliverNow": "TODAY, immediate",
   "DeliverToErrorMessage": "Sorry order location is too far from store",
