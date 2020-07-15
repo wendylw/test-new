@@ -20,6 +20,7 @@ import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness 
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
+import './OrderingCart.scss';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 const { PROMOTION_APPLIED_STATUS } = Constants;
@@ -168,9 +169,10 @@ class Cart extends Component {
     const { additionalComments } = this.state;
 
     return (
-      <div className="cart__note flex flex-middle flex-space-between">
+      <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
         <textarea
-          rows="4"
+          className="ordering-cart__textarea form__textarea padding-small margin-left-right-smaller"
+          rows="2"
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
@@ -179,7 +181,7 @@ class Cart extends Component {
         ></textarea>
         {additionalComments ? (
           <IconClose
-            className="cart__close-button"
+            className="icon icon__big icon__default flex__shrink-fixed"
             data-heap-name="ordering.cart.clear-additional-msg"
             onClick={this.handleClearAdditionalComments.bind(this)}
           />
@@ -192,11 +194,11 @@ class Cart extends Component {
     const { t, promotion } = this.props;
 
     return (
-      <li className="billing__item promotion__item">
+      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         {promotion ? (
           <div className="promotion__container flex flex-middle flex-space-between">
             <span className="flex text-weight-bolder">
-              <IconLocalOffer className="icon icon__primary tag-icon text-middle" />
+              <IconLocalOffer className="icon icon__small icon__primary text-middle" />
               <div className="promotion-info__container">
                 <div className="promotion-code__container flex flex-middle text-nowrap">
                   <span className="promotion-code text-weight-bolder">
@@ -219,12 +221,12 @@ class Cart extends Component {
           </div>
         ) : (
           <button
-            className="add-promo__button"
+            className="cart-promotion__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
             data-heap-name="ordering.cart.add-promo"
           >
-            <IconLocalOffer className="icon icon__primary tag-icon text-middle" />
-            {t('AddPromoCode')}
+            <IconLocalOffer className="icon icon__small icon__primary text-middle" />
+            <span className="margin-left-right-smaller text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
         )}
       </li>
@@ -257,7 +259,7 @@ class Cart extends Component {
     }
 
     return (
-      <section className={`table-ordering__order` /* hide */} data-heap-name="ordering.cart.container">
+      <section className="ordering-cart" data-heap-name="ordering.cart.container">
         <Header
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -275,7 +277,7 @@ class Cart extends Component {
             <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="list__container">
+        <div>
           <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
@@ -295,43 +297,39 @@ class Cart extends Component {
             {this.renderPromotionItem()}
           </Billing>
         </aside>
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-3">
-            <button
-              className="billing__button button button__fill button__block dark text-weight-bolder"
-              onClick={this.handleClickBack.bind(this)}
-              data-heap-name="ordering.cart.back-btn"
-            >
-              {t('Back')}
-            </button>
-          </div>
-          <div className="footer-operation__item width-2-3">
-            <button
-              className="billing__link button button__fill button__block text-weight-bolder"
-              data-testid="pay"
-              data-heap-name="ordering.cart.pay-btn"
-              onClick={() => {
-                if (!this.isPromotionValid()) {
-                  this.props.appActions.showMessageModal({
-                    message: t('InvalidPromoCode'),
-                    description: this.getPromotionErrorMessage(),
-                    buttonText: t('Dismiss'),
-                  });
-
-                  return;
-                }
-
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                  search: window.location.search,
+        <footer className="footer padding-small flex flex-middle flex-space-between">
+          <button
+            className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            onClick={this.handleClickBack.bind(this)}
+            data-heap-name="ordering.cart.back-btn"
+          >
+            {t('Back')}
+          </button>
+          <button
+            className="button button__fill button__block padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder"
+            data-testid="pay"
+            data-heap-name="ordering.cart.pay-btn"
+            onClick={() => {
+              if (!this.isPromotionValid()) {
+                this.props.appActions.showMessageModal({
+                  message: t('InvalidPromoCode'),
+                  description: this.getPromotionErrorMessage(),
+                  buttonText: t('Dismiss'),
                 });
-              }}
-              disabled={!items || !items.length || isInvalidTotal}
-            >
-              {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
-              {!isCreatingOrder ? buttonText : null}
-            </button>
-          </div>
+
+                return;
+              }
+
+              history.push({
+                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                search: window.location.search,
+              });
+            }}
+            disabled={!items || !items.length || isInvalidTotal}
+          >
+            {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
+            {!isCreatingOrder ? buttonText : null}
+          </button>
         </footer>
       </section>
     );

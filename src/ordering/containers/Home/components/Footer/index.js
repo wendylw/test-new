@@ -72,67 +72,69 @@ export class Footer extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
     return (
-      <footer ref={footerRef} className="footer padding-small" data-heap-name="ordering.home.footer.container">
-        <div className="flex flex-middle flex-space-between">
-          <button
-            className="button button__block text-left margin-top-bottom-smallest margin-left-right-smaller flex flex-middle"
-            data-heap-name="ordering.home.footer.cart-btn"
-            onClick={onClickCart}
-          >
-            <div className="home-cart__icon-container text-middle">
-              <IconCart className={`home-cart__icon-cart icon ${count !== 0 ? 'non-empty' : ''}`} />
-              {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
-            </div>
+      <footer
+        ref={footerRef}
+        className="footer padding-small flex flex-middle flex-space-between"
+        data-heap-name="ordering.home.footer.container"
+      >
+        <button
+          className="button button__block text-left margin-top-bottom-smallest margin-left-right-smaller flex flex-middle"
+          data-heap-name="ordering.home.footer.cart-btn"
+          onClick={onClickCart}
+        >
+          <div className="home-cart__icon-container text-middle">
+            <IconCart className={`home-cart__icon-cart icon ${count !== 0 ? 'non-empty' : ''}`} />
+            {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
+          </div>
 
-            <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
-              <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
-              {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
-                <label className="home-cart__money-minimum margin-top-bottom-smallest">
-                  {count ? (
-                    <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
-                      <span className="text-opacity">Remaining</span>
-                      <CurrencyNumber
-                        className="text-opacity"
-                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                      />
-                    </Trans>
-                  ) : (
-                    <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
-                      <span className="text-opacity">Min</span>
-                      <CurrencyNumber
-                        className="text-opacity"
-                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                      />
-                    </Trans>
-                  )}
-                </label>
-              ) : null}
-            </div>
+          <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
+            <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
+            {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
+              <label className="home-cart__money-minimum margin-top-bottom-smallest">
+                {count ? (
+                  <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
+                    <span className="text-opacity">Remaining</span>
+                    <CurrencyNumber
+                      className="text-opacity"
+                      money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                    />
+                  </Trans>
+                ) : (
+                  <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
+                    <span className="text-opacity">Min</span>
+                    <CurrencyNumber
+                      className="text-opacity"
+                      money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                    />
+                  </Trans>
+                )}
+              </label>
+            ) : null}
+          </div>
+        </button>
+        {tableId !== 'DEMO' ? (
+          <button
+            className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder flex__shrink-fixed"
+            data-testid="orderNow"
+            data-heap-name="ordering.home.footer.order-btn"
+            disabled={
+              (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
+              (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||
+              (!isValidTimeToOrder && !enablePreOrder) ||
+              !isLiveOnline
+            }
+            onClick={() => {
+              onToggle();
+              this.handleRedirect();
+            }}
+          >
+            {isLiveOnline
+              ? !isValidTimeToOrder && enablePreOrder
+                ? t('PreOrderNow')
+                : t('OrderNow')
+              : t('StoreOffline')}
           </button>
-          {tableId !== 'DEMO' ? (
-            <button
-              className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder flex__shrink-fixed"
-              data-testid="orderNow"
-              data-heap-name="ordering.home.footer.order-btn"
-              disabled={
-                (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
-                (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||
-                (!isValidTimeToOrder && !enablePreOrder) ||
-                !isLiveOnline
-              }
-              onClick={() => {
-                onToggle();
-                this.handleRedirect();
-              }}
-            >
-              {isLiveOnline
-                ? !isValidTimeToOrder && enablePreOrder
-                  ? t('PreOrderNow')
-                  : t('OrderNow')
-                : t('StoreOffline')}
-            </button>
-          ) : null}
-        </div>
+        ) : null}
       </footer>
     );
   }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
 import Constants from '../../../utils/constants';
+import './Billing.scss';
 export class Billing extends Component {
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo } = this.props;
@@ -14,14 +15,14 @@ export class Billing extends Component {
     }
 
     return (
-      <li className="billing__item flex flex-middle flex-space-between">
-        <label>
+      <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+        <label className="margin-top-bottom-smallest text-size-big">
           {t('ServiceChargeTitle', {
             serviceChargeRate:
               typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null,
           })}
         </label>
-        <CurrencyNumber money={serviceCharge || 0} />
+        <CurrencyNumber className="text-size-big" money={serviceCharge || 0} />
       </li>
     );
   }
@@ -33,8 +34,8 @@ export class Billing extends Component {
     }
 
     return (
-      <li className="billing__item flex flex-middle flex-space-between">
-        <label className="flex flex-middle">
+      <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+        <label className="margin-top-bottom-smallest text-size-big">
           <span className="text-weight-bolder">
             {t(promotion.promoType)} ({promotion.promoCode})
           </span>
@@ -79,40 +80,40 @@ export class Billing extends Component {
     return (
       <section className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
         <ul className="billing__list">
-          <li className="billing__item flex flex-middle flex-space-between">
-            <label>{t('Subtotal')}</label>
-            <CurrencyNumber money={subtotal || 0} />
+          <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+            <label className="margin-top-bottom-smallest text-size-big">{t('Subtotal')}</label>
+            <CurrencyNumber className="text-size-big" money={subtotal || 0} />
           </li>
-          <li className="billing__item flex flex-middle flex-space-between">
-            <label>{(receiptTemplateData || {}).taxName || t('Tax')}</label>
-            <CurrencyNumber money={tax || 0} />
+          <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+            <label className="text-size-big">{(receiptTemplateData || {}).taxName || t('Tax')}</label>
+            <CurrencyNumber className="text-size-big" money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
           {isDeliveryType ? (
-            <li className="billing__item flex flex-middle flex-space-between">
-              <label>{t('DeliveryFee')}</label>
+            <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+              <label className="margin-top-bottom-smallest text-size-big">{t('DeliveryFee')}</label>
               {shippingFee ? (
-                <CurrencyNumber money={shippingFee || 0} />
+                <CurrencyNumber className="text-size-big" money={shippingFee || 0} />
               ) : (
-                <span className="text-uppercase">{t('Free')}</span>
+                <span className="text-size-big text-uppercase">{t('Free')}</span>
               )}
             </li>
           ) : null}
           {enableCashback ? (
             <li
-              className={`billing__item show border-radius-base flex flex-middle flex-space-between ${
-                isLogin ? 'primary' : ''
+              className={`padding-top-bottom-small padding-left-right-normal border-radius-base flex flex-middle flex-space-between ${
+                isLogin ? 'margin-smaller billing__item-primary' : ''
               }`}
             >
-              <label className="text-weight-bolder">{t('BeepCashback')}</label>
+              <label className="margin-top-bottom-smallest text-size-big text-weight-bolder">{t('BeepCashback')}</label>
               {isLogin ? (
-                <span className="text-weight-bolder">
-                  - <CurrencyNumber className="text-weight-bolder" money={creditsBalance || 0} />
+                <span>
+                  - <CurrencyNumber className="text-size-big text-weight-bolder" money={creditsBalance || 0} />
                 </span>
               ) : (
                 <button
                   onClick={this.handleLogin}
-                  className="billing__login"
+                  className="billing__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
                   data-heap-name="ordering.common.billing.login-btn"
                 >
                   {t('Login')}
@@ -122,9 +123,9 @@ export class Billing extends Component {
           ) : null}
           {this.renderPromotion()}
           {children}
-          <li className="billing__item show flex flex-middle flex-space-between">
-            <label className="text-weight-bolder">{t('Total')}</label>
-            <CurrencyNumber className="text-weight-bolder" money={total || 0} />
+          <li className="padding-top-bottom-small padding-left-right-normal show flex flex-middle flex-space-between">
+            <label className="margin-top-bottom-smallest text-size-biggest">{t('Total')}</label>
+            <CurrencyNumber className="text-size-biggest text-weight-bolder" money={total || 0} />
           </li>
         </ul>
       </section>

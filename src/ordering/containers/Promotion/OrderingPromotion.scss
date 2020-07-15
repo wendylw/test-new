@@ -1,0 +1,18 @@
+@import "../../../Variables.scss";
+
+.ordering-promotion {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+  }
+
+  .header__title {
+    margin: 0 auto;
+    padding-right: 48px;
+  }
+
+  &__button-close {
+    max-height: 54px;
+  }
+}

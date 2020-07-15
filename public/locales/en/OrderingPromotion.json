@@ -1,15 +1,15 @@
 {
-    "MyVouchersAndPromos": "My Vouchers & Promos",
-    "APPLY": "APPLY",
-    "Success": "Apply Success",
-    "Redeemed": "This voucher has been redeemed",
-    "NotMatchMinimumPurchase": "You haven't reached the minimum order amount to use this voucher code",
-    "Expired": "This voucher is expired",
-    "NotStart": "This voucher can only be used on {{date}} onward",
-    "Invalid": "This voucher is invalid",
-    "EnterPromoCodeHere":"Enter Promo Code Here",
-    "NotAvailable": "Minimum requirements not met",
-    "NotValid": "Coupon has expired",
-    "NotExisted": "Invalid coupon",
-    "ReachedMaxClaimCount": "This promotion has exceeded the total claim limit"
+  "MyVouchersAndPromos": "My Vouchers & Promos",
+  "Apply": "Apply",
+  "Success": "Apply Success",
+  "Redeemed": "This voucher has been redeemed",
+  "NotMatchMinimumPurchase": "You haven't reached the minimum order amount to use this voucher code",
+  "Expired": "This voucher is expired",
+  "NotStart": "This voucher can only be used on {{date}} onward",
+  "Invalid": "This voucher is invalid",
+  "EnterPromoCodeHere": "Enter Promo Code Here",
+  "NotAvailable": "Minimum requirements not met",
+  "NotValid": "Coupon has expired",
+  "NotExisted": "Invalid coupon",
+  "ReachedMaxClaimCount": "This promotion has exceeded the total claim limit"
 }
