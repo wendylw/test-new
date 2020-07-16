@@ -104,6 +104,15 @@ class StoreList extends Component {
     return `${openingHouersStringFrom} - ${openingHouersStringTo}`;
   };
 
+  isShowStore = store => {
+    const { qrOrderingSettings } = store;
+    if (!qrOrderingSettings) return true;
+    const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
+    if (disableOnDemandOrder && disableTodayPreOrder && !enablePreOrder) {
+      return false;
+    }
+    return true;
+  };
   render() {
     return (
       (this.props.onlineStoreInfo && (
@@ -130,16 +139,19 @@ class StoreList extends Component {
             </div>
           </div>
           <div className="stores-list">
-            {this.props.allStore.map(item => (
-              <StoreListItem
-                store={item}
-                openingHouers={this.getOpeningHouers(item)}
-                storeId={this.state.storeid}
-                select={this.selectStore}
-                key={item.id}
-                isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
-              />
-            ))}
+            {this.props.allStore.map(
+              item =>
+                this.isShowStore(item) && (
+                  <StoreListItem
+                    store={item}
+                    openingHouers={this.getOpeningHouers(item)}
+                    storeId={this.state.storeid}
+                    select={this.selectStore}
+                    key={item.id}
+                    isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+                  />
+                )
+            )}
           </div>
         </div>
       )) ||

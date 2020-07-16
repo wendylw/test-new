@@ -161,9 +161,7 @@ class LocationPicker extends Component {
     this.setState({ isSearching: true });
     try {
       let places = await getPlaceAutocompleteList(searchText, { location, origin, radius, country });
-      if (mode === 'ORIGIN_STORE') {
-        places = await this.setDistance(places);
-      }
+
       this.setState({
         searchResultList: places,
       });
@@ -174,13 +172,7 @@ class LocationPicker extends Component {
       this.setState({ isSearching: false });
     }
   }, 700);
-  setDistance = async list => {
-    for (let i = 0; i < list.length; i++) {
-      let item = list[i];
-      item.distance = item.distance_meters;
-    }
-    return list;
-  };
+
   onSearchBoxChange = event => {
     const searchText = event.currentTarget.value;
     this.setState({ searchText }, () => {
@@ -225,13 +217,19 @@ class LocationPicker extends Component {
     );
   }
 
+  isRenderDistance = distance => {
+    return (
+      typeof distance === 'number' && distance !== Infinity && !isNaN(distance) && this.props.mode === 'ORIGIN_STORE'
+    );
+  };
+
   renderAddressItem(summary, detail, distance) {
     return (
       <div className="location-picker__address-item" data-testid="searchedAddressResult">
         <div className="location-picker__address-title">{summary}</div>
         <div className="location-picker__address-detail">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
-          {typeof distance === 'number' && distance !== Infinity && !isNaN(distance) && (
+          {this.isRenderDistance(distance) && (
             <span className="location-picker__address-distance">{distance.toFixed(1)} KM</span>
           )}
           <span>{detail}</span>
@@ -342,7 +340,7 @@ class LocationPicker extends Component {
               {this.renderAddressItem(
                 searchResult.structured_formatting.main_text,
                 searchResult.structured_formatting.secondary_text,
-                searchResult.distance / 1000
+                searchResult.distance_meters / 1000
               )}
             </div>
           );

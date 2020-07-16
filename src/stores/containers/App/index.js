@@ -62,6 +62,9 @@ class App extends Component {
 
   checkType = async type => {
     await this.props.storesActions.loadCoreStores();
+    if (!this.props.enableDelivery) {
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.DINE}`;
+    }
     if (type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.checkDeliveryAddress(type);
     } else if (type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
