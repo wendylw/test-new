@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import { IconNext } from '../../../components/Icons';
+import { IconNext, IconSearch } from '../../../components/Icons';
 
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -454,14 +454,21 @@ class LocationAndDate extends Component {
             data-heap-name="ordering.location-and-date.deliver-to"
           >
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
+              {!deliveryToAddress && (
+                <IconSearch
+                  className="location-picker__search-box-magnifier-icon"
+                  style={{ padding: '8px', fill: '#909090' }}
+                />
+              )}
               <input
                 className="input input__block"
                 data-testid="deliverTo"
                 type="text"
                 defaultValue={deliveryToAddress}
                 readOnly
+                placeholder={this.props.t('Where to deliver your food')}
               />
-              <IconNext className="delivery__next-icon" />
+              {deliveryToAddress && <IconNext className="delivery__next-icon" />}
             </div>
           </div>
         </div>
