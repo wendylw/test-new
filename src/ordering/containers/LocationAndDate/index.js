@@ -71,7 +71,7 @@ class LocationAndDate extends Component {
     h: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }).h,
     isDeliveryType: false,
     isPickUpType: false,
-    nearlyStore: '',
+    nearlyStore: {},
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
   };
   deliveryHours = [];
