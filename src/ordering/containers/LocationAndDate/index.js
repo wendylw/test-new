@@ -307,7 +307,7 @@ class LocationAndDate extends Component {
   };
 
   setTimeSlot = async (date, selectedHour) => {
-    let res = await this.props.homeActions.getTimeSlot(
+    await this.props.homeActions.getTimeSlot(
       Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
       this.getFulfillDate(date, selectedHour),
       config.storeId
@@ -321,16 +321,17 @@ class LocationAndDate extends Component {
     if (!enablePerTimeSlotLimitForPreOrder) return;
 
     const list = [];
+
     timeSlotList.forEach(item => {
       if (item.count >= maxPreOrdersPerTimeSlot) {
-        let { timeSlotStartDate } = item;
+        let { timeSlotStartDate } = item || {};
         timeSlotStartDate = new Date(timeSlotStartDate);
-        let hour, min;
+        let hour, minute;
         hour = timeSlotStartDate.getHours();
-        min = timeSlotStartDate.getMinutes();
+        minute = timeSlotStartDate.getMinutes();
         hour = hour < 10 ? '0' + hour : hour;
-        min = min < 10 ? '0' + min : min;
-        list.push(`${hour}:${min}`);
+        minute = minute < 10 ? '0' + minute : minute;
+        list.push(`${hour}:${minute}`);
       }
     });
     this.setState({
@@ -510,7 +511,7 @@ class LocationAndDate extends Component {
             key={`${from} - ${to}`}
           >
             {timeToDisplay}
-            {isSoldOut && <span> (SOLD OUT)</span>}
+            {isSoldOut && <span> {this.props.t('SOLDOUT')}</span>}
           </li>
         )
       );
