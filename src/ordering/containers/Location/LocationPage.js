@@ -127,7 +127,7 @@ class LocationPage extends Component {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress')).address;
+    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
         <Header
