@@ -342,8 +342,7 @@ class LocationAndDate extends Component {
   getFulfillDate = (date, hour) => {
     date = date.date;
     let fufillDate = new Date(date);
-    const hours = hour.from.split(':')[0];
-    const min = hour.from.split(':')[1];
+
     // fufillDate.setHours(hours, min); // TODO need switch to marchat local time
     return fufillDate.toISOString();
   };
@@ -519,14 +518,15 @@ class LocationAndDate extends Component {
   };
 
   isTimeSlot = from => {
-    let hour = +from.split(' ')[0].split(':')[0];
-    let min = from.split(' ')[0].split(':')[1];
+    const timeString = from.split(' ')[0];
+    let { hour, minute } = Utils.getHourAndMinuteFromString(timeString);
 
+    hour = +hour;
     if (from.split(' ')[1] === 'PM') {
       hour += 12;
     }
 
-    const time = `${hour}:${min}`;
+    const time = `${hour}:${minute}`;
 
     return this.state.timeSlot.indexOf(time) !== -1;
   };
