@@ -177,9 +177,7 @@ class LocationPicker extends Component {
   setDistance = async list => {
     for (let i = 0; i < list.length; i++) {
       let item = list[i];
-      const itemDetail = await this.getPlaceDetailsFromSearchResult(item);
-
-      item.distance = computeStraightDistance(this.props.origin, itemDetail.coords);
+      item.distance = item.distance_meters;
     }
     return list;
   };

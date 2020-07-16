@@ -23,7 +23,9 @@ class LocationPage extends Component {
     this.loadStoreInfo();
 
     if (this.state.outRange) {
-      this.onSelectPlace(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
+      this.setState({
+        errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
+      });
     }
   }
 
