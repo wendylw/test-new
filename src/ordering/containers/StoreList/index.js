@@ -32,7 +32,9 @@ const StoreListItem = props => (
         <span className="stores-list-item-fee">{props.store.deliveryFee}</span>
       </p>
     )}
-    <p>opening Houres: {props.openingHouers}</p>
+    <p>
+      {props.t('openingHours')}: {props.openingHouers}
+    </p>
     <p>{props.storeId === props.store.id && <img src={checked} />}</p>
   </div>
 );
@@ -148,6 +150,7 @@ class StoreList extends Component {
                     storeId={this.state.storeid}
                     select={this.selectStore}
                     key={item.id}
+                    t={this.props.t}
                     isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
                   />
                 )
