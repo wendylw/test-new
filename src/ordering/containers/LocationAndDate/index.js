@@ -150,8 +150,11 @@ class LocationAndDate extends Component {
 
   setStoreFromSelect = async () => {
     if (this.state.search.storeid) {
+      await this.props.appActions.loadCoreBusiness(this.state.search.storeid);
       await this.props.homeActions.getStoreHashData(this.state.search.storeid);
       await this.props.homeActions.loadCoreStores();
+      this.setMethodsTime();
+
       let store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
       this.setState({
         nearlyStore: store[0],
@@ -282,7 +285,7 @@ class LocationAndDate extends Component {
       if (business && allBusinessInfo && allBusinessInfo[business] && allBusinessInfo[business].country) {
         const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-        if (!enablePreOrder) window.location.href = '/';
+        // if (!enablePreOrder) window.location.href = '/';
       }
     }
   };
