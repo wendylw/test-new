@@ -495,13 +495,13 @@ export class Home extends Component {
     return (
       <div
         className="location-page__entry-address pick-up flex flex-middle"
-        style={{ color: '#333', lineHeight: '100%', paddingLeft: '20px' }}
+        style={{ color: '#333', lineHeight: '100%', paddingLeft: '20px', maxHeight: '26px' }}
       >
         <summary className="item__title text-uppercase font-weight-bolder inline-block">
           {Utils.isDeliveryType() && t('DeliverAt')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </summary>
-        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
+        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle flex" /> : null}
         <p>{deliveryTimeText}</p>
       </div>
     );
