@@ -67,7 +67,7 @@ class LocationPage extends Component {
   }
 
   onSelectPlace = placeInfo => {
-    Utils.removeSessionVariable('outRang');
+    Utils.removeSessionVariable('outRange');
 
     const { t, history } = this.props;
     const {
