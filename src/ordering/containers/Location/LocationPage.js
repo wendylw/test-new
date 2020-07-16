@@ -145,7 +145,7 @@ class LocationPage extends Component {
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
-            outRangeSearchText={outRangeSearchText}
+            outRangeSearchText={this.state.outRange && outRangeSearchText}
             onSelect={this.onSelectPlace}
           />
         )}

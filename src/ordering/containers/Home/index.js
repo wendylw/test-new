@@ -66,7 +66,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { history, homeActions, requestInfo, deliveryInfo } = this.props;
+    const { homeActions, deliveryInfo } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
