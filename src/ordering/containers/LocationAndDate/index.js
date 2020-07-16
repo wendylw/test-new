@@ -11,7 +11,8 @@ import { bindActionCreators, compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
-import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as homeActionCreators, getTimeSlotList } from '../../redux/modules/home';
+import config from '../../../config';
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
@@ -64,6 +65,7 @@ class LocationAndDate extends Component {
     deliveryToAddress: '',
     selectedDate: {},
     selectedHour: {},
+    timeSlot: ['15:00'],
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -198,6 +200,7 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
+    this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
@@ -290,19 +293,48 @@ class LocationAndDate extends Component {
     };
   };
 
-  handleSelectDate = async date => {
+  handleSelectDate = date => {
     if (!date.isOpen) {
       return;
     }
     const selectedHour = this.getFirstItemFromTimeList(date);
-    let res = await this.props.homeActions.getTimeSlot(
-      Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
-      this.getFulfillDate(date, selectedHour)
-    );
-    console.log(res, 'time slot res');
+
+    this.setTimeSlot(date, selectedHour);
     this.setState({
       selectedDate: date,
       selectedHour,
+    });
+  };
+
+  setTimeSlot = async (date, selectedHour) => {
+    let res = await this.props.homeActions.getTimeSlot(
+      Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
+      this.getFulfillDate(date, selectedHour),
+      config.storeId
+    );
+    const { timeSlotList, allBusinessInfo, business } = this.props;
+    const { stores } = allBusinessInfo[business];
+    const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = stores[0];
+
+    // timeSlotStartDate: { type: GraphQLString },
+    // count: { type: GraphQLInt },
+    if (!enablePerTimeSlotLimitForPreOrder) return;
+
+    const list = [];
+    timeSlotList.forEach(item => {
+      if (item.count >= maxPreOrdersPerTimeSlot) {
+        let { timeSlotStartDate } = item;
+        timeSlotStartDate = new Date(timeSlotStartDate);
+        let hour, min;
+        hour = timeSlotStartDate.getHours();
+        min = timeSlotStartDate.getMinutes();
+        hour = hour < 10 ? '0' + hour : hour;
+        min = min < 10 ? '0' + min : min;
+        list.push(`${hour}:${min}`);
+      }
+    });
+    this.setState({
+      timeSlot: list,
     });
   };
 
@@ -311,8 +343,7 @@ class LocationAndDate extends Component {
     let fufillDate = new Date(date);
     const hours = hour.from.split(':')[0];
     const min = hour.from.split(':')[1];
-    fufillDate.setHours(hours, min); // TODO need switch to marchat local time
-    console.log(fufillDate.toISOString());
+    // fufillDate.setHours(hours, min); // TODO need switch to marchat local time
     return fufillDate.toISOString();
   };
 
@@ -467,21 +498,36 @@ class LocationAndDate extends Component {
           isShowList = true;
         }
       }
+      const isSoldOut = this.isTimeSlot(from);
       return (
         isShowList && (
           <li
             className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
             data-testid="preOrderHour"
             onClick={() => {
-              this.handleSelectHour({ from, to });
+              !isSoldOut && this.handleSelectHour({ from, to });
             }}
             key={`${from} - ${to}`}
           >
             {timeToDisplay}
+            {isSoldOut && <span> (SOLD OUT)</span>}
           </li>
         )
       );
     });
+  };
+
+  isTimeSlot = from => {
+    let hour = +from.split(' ')[0].split(':')[0];
+    let min = from.split(' ')[0].split(':')[1];
+
+    if (from.split(' ')[1] === 'PM') {
+      hour += 12;
+    }
+
+    const time = `${hour}:${min}`;
+
+    return this.state.timeSlot.indexOf(time) !== -1;
   };
 
   getValidStartingTimeString = (baseTimeString = this.validTimeFrom) => {
@@ -753,6 +799,7 @@ export default compose(
     state => ({
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
+      timeSlotList: getTimeSlotList(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
