@@ -245,11 +245,22 @@ export class Home extends Component {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
     const { deliveryInfo } = this.props;
     const pageRf = this.getPageRf();
+    const { sellAlcohol, enablePreOrder } = deliveryInfo;
+
     if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
-      const { sellAlcohol } = deliveryInfo;
       if (sellAlcohol) {
         this.setAlcoholModalState(sellAlcohol);
       }
+    }
+
+    if (!enablePreOrder) {
+      Utils.setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from: 'now',
+          to: 'now',
+        })
+      );
     }
   }
 
