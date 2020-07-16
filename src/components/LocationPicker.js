@@ -42,7 +42,6 @@ class LocationPicker extends Component {
       historicalAddresses: [],
       isSubmitting: false,
       errorToast: null,
-      outRange: Utils.getSessionVariable('outRange'),
     };
   }
 
@@ -53,11 +52,10 @@ class LocationPicker extends Component {
     }
     this.getHistoricalAddresses();
 
-    if (this.state.outRange) {
+    this.props.outRangeSearchText &&
       this.setState({
-        searchText: JSON.parse(Utils.getSessionVariable('deliveryAddress')).address,
+        searchText: this.props.outRangeSearchText,
       });
-    }
   }
 
   detectDevicePosition = async (withCache = true) => {

@@ -67,12 +67,6 @@ export class Home extends Component {
 
   componentDidMount = async () => {
     const { history, homeActions, requestInfo, deliveryInfo } = this.props;
-    // const { tableId, storeId } = requestInfo;
-    // const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    // if (!h || !storeId || tableId === 'DEMO') {
-    //   window.location.href = '/';
-    // }
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
