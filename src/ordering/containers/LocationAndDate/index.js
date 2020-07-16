@@ -124,7 +124,7 @@ class LocationAndDate extends Component {
         isDeliveryType: false,
       },
       () => {
-        if (!this.state.nearlyStore && ischeckStore) this.goStoreList();
+        if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
         this.setMethodsTime();
       }
     );
@@ -785,7 +785,7 @@ class LocationAndDate extends Component {
 
     if (!enablePreOrder || !selectedDate.isOpen) return true;
 
-    if (!this.state.nearlyStore) return true;
+    if (!this.state.nearlyStore.id) return true;
 
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
