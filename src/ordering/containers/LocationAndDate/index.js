@@ -65,7 +65,7 @@ class LocationAndDate extends Component {
     deliveryToAddress: '',
     selectedDate: {},
     selectedHour: {},
-    timeSlot: ['15:00'],
+    timeSlot: [],
   };
   deliveryHours = [];
   deliveryDates = [];
