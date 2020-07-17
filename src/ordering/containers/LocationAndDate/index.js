@@ -633,7 +633,7 @@ class LocationAndDate extends Component {
     const timeList = this.getHoursList(selectedDate);
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
-    console.log(timeList, 'timelist');
+
     return (
       <div className="form__group location-display__date-container">
         {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
