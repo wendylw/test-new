@@ -150,7 +150,6 @@ class LocationAndDate extends Component {
 
   setStoreFromSelect = async () => {
     if (this.state.search.storeid) {
-      console.log(this.props, 'props');
       if (!this.props.allStore.length) {
         await this.props.homeActions.loadCoreStores();
       }
