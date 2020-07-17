@@ -76,7 +76,7 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     await homeActions.loadProductList();
-    // await homeActions.loadCoreStores();
+
     window.addEventListener('scroll', this.handleScroll);
 
     const pageRf = this.getPageRf();
@@ -182,8 +182,6 @@ export class Home extends Component {
         if (deliverDate.isToday) {
           currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
           let d = new Date();
-          if (enablePreOrder) {
-          }
           if (currentTime.getTime() < d.setHours(validTimeTo.split(':')[0], validTimeTo.split(':')[1])) {
             Utils.setSessionVariable(
               'expectedDeliveryHour',
@@ -192,7 +190,7 @@ export class Home extends Component {
                 to: 'now',
               })
             );
-          } else {
+          } else if (enablePreOrder) {
             const from =
               +validTimeFrom.split(':')[0] + 1 < 10
                 ? '0' + (+validTimeFrom.split(':')[0] + 1) + ':00'
