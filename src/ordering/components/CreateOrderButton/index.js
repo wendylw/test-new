@@ -45,6 +45,7 @@ class CreateOrderButton extends React.Component {
 
     if ((isLogin || type === 'digital') && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+
       const { currentOrder } = this.props;
       const { orderId } = currentOrder || {};
 
