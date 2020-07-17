@@ -34,6 +34,9 @@
     ]
   },
   "dependencies": {
+    "@sentry/apm": "^5.19.2",
+    "@sentry/react": "^5.19.2",
+    "@sentry/webpack-plugin": "^1.12.0",
     "@stripe/react-stripe-js": "^1.1.2",
     "@stripe/stripe-js": "^1.4.0",
     "apollo-boost": "^0.3.1",
@@ -94,6 +97,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@sentry/cli": "^1.55.0",
     "@storybook/addon-actions": "^5.3.19",
     "@storybook/addon-docs": "^5.3.19",
     "@storybook/addon-links": "^5.3.19",

@@ -1,0 +1,7 @@
+[defaults]
+url=https://sentry.io/
+org=storehub
+project=beep-test
+
+[auth]
+token=f7b38d02903e4e8d9123c8d1bc5e689f4bae6c3ec0eb4b7aa391fc641a076d70
