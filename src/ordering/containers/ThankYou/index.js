@@ -426,7 +426,7 @@ export class ThankYou extends PureComponent {
           {useStorehubLogistics &&
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
             <div className="thanks__status-description flex flex-middle flex-center">
-              {trackingUrl ? (
+              {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                 <a
                   href={trackingUrl}
                   target="__blank"
