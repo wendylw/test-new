@@ -36,7 +36,7 @@ export class Item extends Component {
     return (
       <li className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-          <div className="item__image-container flex__shrink-fixed padding-small">
+          <div className="item__image-container flex__shrink-fixed margin-smaller">
             <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
           </div>
           <summary className="item__summary flex flex-column flex-space-between padding-small" data-testid="itemDetail">
