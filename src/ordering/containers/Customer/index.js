@@ -289,11 +289,11 @@ class Customer extends Component {
     country &&
       !this.state.isInitCoed &&
       setTimeout(() => {
-        const t = document.querySelector(
+        const input = document.querySelector(
           '.react-phone-number-input__input.react-phone-number-input__phone.react-phone-number-input__input--style'
         );
 
-        t.value = `+${getCountryCallingCode(country)}`;
+        input.value = `+${getCountryCallingCode(country)}`;
         this.setState({
           isInitCoed: true,
         });
