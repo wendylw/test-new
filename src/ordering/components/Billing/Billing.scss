@@ -10,21 +10,4 @@
   &__item-primary {
     background-color: $theme-color-translucent-light;
   }
-
-  // &__link,
-  // &__button {
-  // @extend .text-uppercase;
-  // }
-
-  &__link {
-    // @extend .link__non-underline;
-
-    // display: block;
-    // text-align: center;
-    // line-height: 14vw;
-
-    &.disabled {
-      // @extend .button__disabled;
-    }
-  }
 }

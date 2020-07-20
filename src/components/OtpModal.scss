@@ -1,0 +1,40 @@
+@import "../Variables.scss";
+
+.otp-modal {
+  top: 0;
+  height: 100vh;
+  background-color: $gray-6;
+
+  &__header {
+    background-color: $gray-6;
+    border-bottom-color: $gray-6;
+  }
+
+  &__container {
+    height: 100%;
+  }
+
+  &__image-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 40%;
+  }
+
+  &__group {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 7.8em;
+    overflow: hidden;
+  }
+
+  &__input {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    height: 56px;
+    letter-spacing: 1em;
+  }
+
+  &__button-resend:not(:disabled) {
+    color: $status-blue;
+  }
+}

@@ -41,6 +41,10 @@ address {
   font-style: normal;
 }
 
+.text-size-larger {
+  font-size: 2.8571rem;
+}
+
 .text-size-large {
   font-size: 2.5714rem;
 }
@@ -644,12 +648,25 @@ img {
     background-color: transparent;
   }
 
+  &__link {
+    height: auto;
+    text-decoration: none;
+  }
+
   &:disabled,
   &__disabled {
     pointer-events: none;
     color: $white;
     background-color: $gray-2;
     opacity: 0.8;
+  }
+
+  &__link:disabled,
+  &__link-disabled {
+    pointer-events: none;
+    color: $gray-2;
+    background-color: transparent;
+    opacity: 1;
   }
 }
 
@@ -670,7 +687,8 @@ img {
   }
 
   &__input {
-    padding: 8px 0;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border: 0;
     line-height: 26px;
     height: 40px;
@@ -699,6 +717,34 @@ img {
     color: $status-red;
   }
 }
+
+/* react Phone number input box */
+.react-phone-number-input {
+  @extend .margin-top-bottom-smaller;
+
+  .react-phone-number-input__row {
+    @extend .form__group;
+  }
+
+  .react-phone-number-input__country--native {
+    @extend .margin-left-right-smaller;
+  }
+
+  .react-phone-number-input__icon {
+    border: 0;
+    width: calc(0.51em * 4);
+    height: calc(0.51em * 3);
+  }
+
+  .react-phone-number-input__input,
+  .react-phone-number-input__input:focus {
+    @extend .form__input;
+    @extend .text-size-biggest;
+
+    color: $main-color;
+  }
+}
+/* End of react Phone number input box */
 
 .aside {
   display: block;

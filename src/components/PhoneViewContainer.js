@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
+import './PhoneViewContainer.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const DEFAULT_COUNTRY = 'MY';
@@ -54,15 +55,24 @@ class PhoneViewContainer extends React.Component {
   render() {
     const { t, children, title, className, country, buttonText } = this.props;
     const { isSavingPhone, phone } = this.state;
+    const classList = ['phone-view'];
     let buttonContent = buttonText;
 
     if (isSavingPhone) {
       buttonContent = <div className="loader"></div>;
     }
 
+    if (className) {
+      classList.push(className);
+    }
+
     return (
-      <aside className={className}>
-        {title ? <label className="phone-view-form__label text-center">{title}</label> : null}
+      <section className={classList.join(' ')}>
+        {title ? (
+          <label className="phone-view__label text-center padding-top-bottom-small text-size-bigger text-line-height-base text-weight-bolder">
+            {title}
+          </label>
+        ) : null}
         <PhoneInput
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
@@ -73,7 +83,7 @@ class PhoneViewContainer extends React.Component {
           onChange={phone => this.handleUpdatePhoneNumber(phone)}
         />
         <button
-          className="phone-view-form__button button__fill button__block border-radius-base text-weight-bolder text-uppercase"
+          className="button button__fill button__block margin-top-bottom-smaller text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
           disabled={!phone || isSavingPhone || !isValidPhoneNumber(phone)}
@@ -81,7 +91,7 @@ class PhoneViewContainer extends React.Component {
           {buttonContent}
         </button>
         {children}
-      </aside>
+      </section>
     );
   }
 }

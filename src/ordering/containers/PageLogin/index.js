@@ -12,9 +12,9 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import beepLoginImage from './images/login.svg';
-import './index.scss';
+import './OrderingPageLogin.scss';
 
-class Login extends React.Component {
+class PageLogin extends React.Component {
   state = {
     sendOtp: false,
     phone: Utils.getLocalStorageVariable('user.p'),
@@ -93,11 +93,11 @@ class Login extends React.Component {
   }
 
   render() {
-    const { t, user, title, className, onlineStoreInfo, history } = this.props;
+    const { t, user, className, onlineStoreInfo, history } = this.props;
     const { isLogin, showLoginPage, hasOtp, isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['login page-login'];
+    const classList = ['page-login flex flex-column'];
 
     if (isLogin) {
       return null;
@@ -112,78 +112,77 @@ class Login extends React.Component {
     }
 
     return (
-      <section className={classList.join(' ')} data-heap-name="ordering.login.container">
-        <Header
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          data-heap-name="ordering.login.header"
-          title="Account"
-          isPage={true}
-          navFunc={() => {
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-              search: window.location.search,
-            });
-          }}
-        />
-        <section className="page-login__content text-center">
-          <figure className="page-login__image-container">
-            <img src={beepLoginImage} alt="otp" />
-          </figure>
-        </section>
-        <section className="page-login__container">
-          <h2 className="page-login__tip">{t('LoginTip')}</h2>
-          <PhoneViewContainer
-            className="aside-bottom not-full"
-            title={title}
-            phone={phone}
-            country={country}
-            buttonText={t('Continue')}
-            show={true}
-            isLoading={isFetching}
-            updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
-            onSubmit={this.handleSubmitPhoneNumber.bind(this)}
-          >
-            <p className="terms-privacy text-center text-opacity">
-              <Trans i18nKey="TermsAndPrivacyDescription">
-                By tapping to continue, you agree to our
-                <br />
+      <React.Fragment>
+        <section className={classList.join(' ')} data-heap-name="ordering.login.container">
+          <Header
+            className="flex-middle border__bottom-divider"
+            contentClassName="flex-middle"
+            data-heap-name="ordering.login.header"
+            title="Account"
+            isPage={true}
+            navFunc={() => {
+              history.push({
+                pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+                search: window.location.search,
+              });
+            }}
+          />
+          <div className="page-login__container">
+            <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-smaller">
+              <img src={beepLoginImage} alt="otp" />
+            </figure>
+            <PhoneViewContainer
+              className="card padding-normal margin-normal"
+              title={t('LoginTip')}
+              phone={phone}
+              country={country}
+              buttonText={t('Continue')}
+              show={true}
+              isLoading={isFetching}
+              updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
+              onSubmit={this.handleSubmitPhoneNumber.bind(this)}
+            >
+              <p className="text-center margin-top-bottom-smaller text-size-big text-line-height-base text-opacity">
                 <BrowserRouter basename="/">
-                  <Link
-                    className="text-weight-bolder"
-                    target="_blank"
-                    data-heap-name="ordering.login.term-link"
-                    to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                  >
-                    Terms of Service
-                  </Link>
-                  , and{' '}
-                  <Link
-                    className="text-weight-bolder"
-                    target="_blank"
-                    data-heap-name="ordering.login.privacy-policy-link"
-                    to={Constants.ROUTER_PATHS.PRIVACY}
-                  >
-                    Privacy Policy
-                  </Link>
-                  .
+                  <Trans i18nKey="TermsAndPrivacyDescription">
+                    By tapping to continue, you agree to our
+                    <br />
+                    <Link
+                      className="page-login__button-link button button__link text-size-big text-weight-bolder"
+                      target="_blank"
+                      data-heap-name="ordering.common.login.term-link"
+                      to={Constants.ROUTER_PATHS.TERMS_OF_USE}
+                    >
+                      Terms of Service
+                    </Link>
+                    , and{' '}
+                    <Link
+                      className="page-login__button-link button button__link text-size-big text-weight-bolder"
+                      target="_blank"
+                      data-heap-name="ordering.common.login.privacy-policy-link"
+                      to={Constants.ROUTER_PATHS.PRIVACY}
+                    >
+                      Privacy Policy
+                    </Link>
+                    .
+                  </Trans>
                 </BrowserRouter>
-              </Trans>
-            </p>
-          </PhoneViewContainer>
+              </p>
+            </PhoneViewContainer>
+          </div>
         </section>
         {this.renderOtpModal()}
-      </section>
+      </React.Fragment>
     );
   }
 }
 
-Login.propTypes = {
+PageLogin.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
 };
 
-Login.defaultProps = {
+PageLogin.defaultProps = {
   title: '',
 };
 
@@ -198,4 +197,4 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
-)(Login);
+)(PageLogin);
