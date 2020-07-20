@@ -448,7 +448,7 @@ class Customer extends Component {
           }}
         ></Header>
         <div className="ordering-customer__container padding-normal">
-          <form className="customer__form">
+          <form className="ordering-customer__form">
             <div className="padding-top-bottom-small">
               <div className="ordering-customer__group form__group" data-testid="customerName">
                 <input

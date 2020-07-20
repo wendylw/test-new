@@ -2862,12 +2862,12 @@
   }
 
   &__form {
-    padding: 0 3.8vw;
+    // padding: 0 3.8vw;
 
-    .form__group {
-      padding: 0;
-      margin: 16px 0;
-    }
+    // .form__group {
+    //   padding: 0;
+    //   margin: 16px 0;
+    // }
 
     // .react-phone-number-input {
     //   margin: 0;
@@ -3428,7 +3428,7 @@ body.loading {
   }
 
   // .header__title,
-  .customer__form,
+  // .customer__form,
   .item__image-container ~ .item__detail,
   .aside-bottom {
     // .table-ordering__receipt .billing {
