@@ -1,11 +1,4 @@
-/* eslint-disable import/first */
-import * as Sentry from '@sentry/react';
-// import { Integrations as ApmIntegrations } from '@sentry/apm';
-
-Sentry.init({
-  dsn: 'https://be399ca403c14a7ba5c785d60ac1716c@o420511.ingest.sentry.io/5338848',
-});
-
+import './sentry';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
