@@ -26,6 +26,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import './OrderingCustomer.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -231,26 +232,29 @@ class Customer extends Component {
     }
 
     return (
-      <div
-        className="form__group border-radius-base"
-        data-heap-name="ordering.customer.delivery-time"
-        onClick={async () => {
-          const { search } = window.location;
+      <div className="padding-top-bottom-small">
+        <div
+          className="form__group"
+          data-heap-name="ordering.customer.delivery-time"
+          onClick={async () => {
+            const { search } = window.location;
 
-          const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
-          history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-            search: `${search}&callbackUrl=${callbackUrl}`,
-          });
-        }}
-      >
-        <p className={`form__textarea ${deliveryTime ? '' : 'text-opacity'}`}>
-          {deliveryTime || t('AddDeliveryTimePlaceholder')}
-        </p>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+              search: `${search}&callbackUrl=${callbackUrl}`,
+            });
+          }}
+        >
+          <p className={`padding-normal text-size-big text-line-height-base ${deliveryTime ? '' : 'text-opacity'}`}>
+            {deliveryTime || t('AddDeliveryTimePlaceholder')}
+          </p>
+        </div>
       </div>
     );
   };
+
   handleInputChange = e => {
     const inputValue = e.target.value;
     e.target.name === 'addressDetails' &&
@@ -258,6 +262,7 @@ class Customer extends Component {
     e.target.name === 'deliveryComments' &&
       this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
   };
+
   renderDeliveryAddress() {
     const { t, history } = this.props;
 
@@ -270,51 +275,65 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <label className="form__label text-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
+        <label className="ordering-customer__label padding-top-bottom-small text-size-big text-weight-bolder">
+          {t('DeliveryTimeAndAddressTitle')}
+        </label>
         {this.renderDeliveryTime()}
 
-        <div
-          className="form__group border-radius-base flex flex-middle flex-space-between"
-          data-heap-name="ordering.customer.delivery-address"
-          onClick={async () => {
-            const { search } = window.location;
+        <div className="padding-top-bottom-small">
+          <div
+            className="form__group flex flex-middle flex-space-between"
+            data-heap-name="ordering.customer.delivery-address"
+            onClick={async () => {
+              const { search } = window.location;
 
-            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+              const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-              search: `${search}&callbackUrl=${callbackUrl}`,
-            });
-          }}
-        >
-          <p className={`form__textarea ${deliveryToAddress ? '' : 'text-opacity'}`}>
-            {deliveryToAddress || t('AddAddressPlaceholder')}
-          </p>
-          <IconNext className="flex__shrink-fixed" />
+              history.push({
+                pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+                search: `${search}&callbackUrl=${callbackUrl}`,
+              });
+            }}
+          >
+            <p
+              className={`padding-normal text-size-big text-line-height-base ${
+                deliveryToAddress ? '' : 'text-opacity'
+              }`}
+            >
+              {deliveryToAddress || t('AddAddressPlaceholder')}
+            </p>
+            <IconNext className="icon icon__normal flex__shrink-fixed" />
+          </div>
         </div>
-        <div className="form__group border-radius-base  form-field">
-          <input
-            className="input input__block"
-            data-heap-name="ordering.customer.delivery-address-detail"
-            type="text"
-            maxLength="140"
-            placeholder={t('AddressDetailsPlaceholder')}
-            value={addressDetails}
-            name="addressDetails"
-            onChange={this.handleInputChange}
-          />
+
+        <div className="padding-top-bottom-small">
+          <div className="ordering-customer__group form__group">
+            <input
+              className="ordering-customer__input form__input padding-left-right-normal text-size-big text-line-height-base"
+              data-heap-name="ordering.customer.delivery-address-detail"
+              type="text"
+              maxLength="140"
+              placeholder={t('AddressDetailsPlaceholder')}
+              value={addressDetails}
+              name="addressDetails"
+              onChange={this.handleInputChange}
+            />
+          </div>
         </div>
-        <div className="form__group border-radius-base form-field">
-          <input
-            className="input input__block"
-            data-heap-name="ordering.customer.delivery-note"
-            type="text"
-            maxLength="140"
-            value={deliveryComments}
-            name="deliveryComments"
-            onChange={this.handleInputChange}
-            placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          />
+
+        <div className="padding-top-bottom-small">
+          <div className="ordering-customer__group form__group">
+            <input
+              className="ordering-customer__input form__input padding-left-right-normal text-size-big"
+              data-heap-name="ordering.customer.delivery-note"
+              type="text"
+              maxLength="140"
+              value={deliveryComments}
+              name="deliveryComments"
+              onChange={this.handleInputChange}
+              placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+            />
+          </div>
         </div>
       </React.Fragment>
     );
@@ -343,39 +362,51 @@ class Customer extends Component {
 
     return (
       <React.Fragment>
-        <label className="form__label text-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
-        <div
-          className="form__group border-radius-base"
-          data-heap-name="ordering.customer.pickup-time"
-          onClick={async () => {
-            const { search } = window.location;
+        <label className="ordering-customer__label padding-top-bottom-small text-size-big text-weight-bolder">
+          {t('PickUpTimeAndAddressTitle')}
+        </label>
+        <div className="padding-top-bottom-small">
+          <div
+            className="form__group"
+            data-heap-name="ordering.customer.pickup-time"
+            onClick={async () => {
+              const { search } = window.location;
 
-            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+              const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-              search: `${search}&callbackUrl=${callbackUrl}`,
-            });
-          }}
-        >
-          <p className={`form__textarea ${pickUpTime ? '' : 'text-opacity'}`}>
-            {pickUpTime || t('PickUpAtPlaceholder')}
-          </p>
+              history.push({
+                pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+                search: `${search}&callbackUrl=${callbackUrl}`,
+              });
+            }}
+          >
+            <p className={`padding-normal text-size-big text-line-height-base ${pickUpTime ? '' : 'text-opacity'}`}>
+              {pickUpTime || t('PickUpAtPlaceholder')}
+            </p>
+          </div>
         </div>
-        <div className="form__group border-radius-base">
-          <p className={`form__textarea ${pickUpAddress ? '' : 'text-opacity'}`}>
-            {pickUpAddress || t('PickUpAtPlaceholder')}
-          </p>
+
+        <div className="padding-top-bottom-small">
+          <div className="form__group">
+            <p className={`padding-normal text-size-big text-line-height-base ${pickUpAddress ? '' : 'text-opacity'}`}>
+              {pickUpAddress || t('PickUpAtPlaceholder')}
+            </p>
+          </div>
         </div>
-        <div
-          className="form__group border-radius-base flex flex-middle flex-space-between"
-          data-heap-name="ordering.customer.pickup-note"
-          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
-        >
-          <p className={`${deliveryComments ? '' : 'text-opacity'}`}>
-            {deliveryComments ||
-              `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          </p>
+
+        <div className="padding-top-bottom-small">
+          <div
+            className="form__group"
+            data-heap-name="ordering.customer.pickup-note"
+            onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
+          >
+            <p
+              className={`padding-normal text-size-big text-line-height-base ${deliveryComments ? '' : 'text-opacity'}`}
+            >
+              {deliveryComments ||
+                `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+            </p>
+          </div>
         </div>
       </React.Fragment>
     );
@@ -402,7 +433,7 @@ class Customer extends Component {
     }
 
     return (
-      <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
+      <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
         <Header
           className="flex-middle text-center"
           contentClassName="flex-middle"
@@ -416,22 +447,24 @@ class Customer extends Component {
             });
           }}
         ></Header>
-        <div className="customer__content">
+        <div className="ordering-customer__container padding-normal">
           <form className="customer__form">
-            <div className="form__group" data-testid="customerName">
-              <input
-                className="input input__block"
-                data-heap-name="ordering.customer.name-input"
-                type="text"
-                placeholder={t('Name')}
-                defaultValue={deliveryDetails.username}
-                onChange={e => {
-                  this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
-                }}
-              />
+            <div className="padding-top-bottom-small">
+              <div className="ordering-customer__group form__group" data-testid="customerName">
+                <input
+                  className="ordering-customer__input form__input padding-left-right-normal text-size-biggest"
+                  data-heap-name="ordering.customer.name-input"
+                  type="text"
+                  placeholder={t('Name')}
+                  defaultValue={deliveryDetails.username}
+                  onChange={e => {
+                    this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
+                  }}
+                />
+              </div>
             </div>
 
-            <div className="form__group" data-testid="customerPhoneNumber">
+            <div className="padding-top-bottom-small" data-testid="customerPhoneNumber">
               <PhoneInput
                 smartCaret={false}
                 data-heap-name="ordering.customer.phone-input"
@@ -465,34 +498,31 @@ class Customer extends Component {
           data-heap-name="ordering.customer.form-textarea"
         />
 
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-3">
-            <button
-              className="billing__button button button__fill button__block dark text-weight-bolder"
-              data-heap-name="ordering.customer.back-btn"
-              onClick={() => {
-                history.push({
-                  pathname: ROUTER_PATHS.ORDERING_CART,
-                  search: window.location.search,
-                });
-              }}
-            >
-              {t('Back')}
-            </button>
-          </div>
-          <div className="footer-operation__item width-2-3">
-            <CreateOrderButton
-              history={history}
-              data-testid="customerContinue"
-              data-heap-name="ordering.customer.continue-btn"
-              disabled={!this.getCanContinue() || isFetching}
-              validCreateOrder={!total}
-              beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-              afterCreateOrder={this.visitPaymentPage.bind(this)}
-            >
-              {isFetching ? <div className="loader"></div> : t('Continue')}
-            </CreateOrderButton>
-          </div>
+        <footer className="footer padding-small flex flex-middle flex-space-between">
+          <button
+            className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            data-heap-name="ordering.customer.back-btn"
+            onClick={() => {
+              history.push({
+                pathname: ROUTER_PATHS.ORDERING_CART,
+                search: window.location.search,
+              });
+            }}
+          >
+            {t('Back')}
+          </button>
+          <CreateOrderButton
+            className="padding-normal margin-top-bottom-smallest margin-left-right-smaller"
+            history={history}
+            data-testid="customerContinue"
+            data-heap-name="ordering.customer.continue-btn"
+            disabled={!this.getCanContinue() || isFetching}
+            validCreateOrder={!total}
+            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            afterCreateOrder={this.visitPaymentPage.bind(this)}
+          >
+            {isFetching ? <div className="loader"></div> : t('Continue')}
+          </CreateOrderButton>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
       </section>

@@ -69,7 +69,7 @@ class CreateOrderButton extends React.Component {
 
   render() {
     const { children, className, buttonType, disabled, dataAttributes } = this.props;
-    const classList = ['billing__link button button__fill button__block text-weight-bolder'];
+    const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
       classList.push(className);

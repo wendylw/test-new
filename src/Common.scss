@@ -724,6 +724,8 @@ img {
 
   .react-phone-number-input__row {
     @extend .form__group;
+
+    overflow: hidden;
   }
 
   .react-phone-number-input__country--native {
@@ -1031,11 +1033,11 @@ form {
   //   padding: 15px 0;
   // }
 
-  &__label {
-    display: block;
-    margin: 5px 0;
-    font-size: 1.2rem;
-  }
+  // &__label {
+  //   display: block;
+  //   margin: 5px 0;
+  //   font-size: 1.2rem;
+  // }
 }
 
 .input {

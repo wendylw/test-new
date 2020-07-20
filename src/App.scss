@@ -269,36 +269,36 @@
   &__customer {
     // @extend .main-section;
 
-    background-color: $white;
-    padding-bottom: 18.8vw;
+    // background-color: $white;
+    // padding-bottom: 18.8vw;
 
-    .aside {
-      bottom: 18.8vw;
-    }
+    // .aside {
+    //   bottom: 18.8vw;
+    // }
 
-    .form__label {
-      margin: 8px 0;
-    }
+    // .form__label {
+    //   margin: 8px 0;
+    // }
 
-    .form__label ~ .form__group {
-      padding: 16px;
-      border: 1px solid $gray-4;
-    }
-    .form__label ~ .form-field {
-      margin-bottom: 16px;
-      padding: 0;
-      border: 0;
-      input {
-        font-size: 14px;
-      }
-    }
-    .form__textarea {
-      min-height: 0;
-      word-break: break-word;
-      -webkit-hyphens: auto;
-      -ms-hyphens: auto;
-      hyphens: auto;
-    }
+    // .form__label ~ .form__group {
+    //   padding: 16px;
+    //   border: 1px solid $gray-4;
+    // }
+    // .form__label ~ .form-field {
+    //   margin-bottom: 16px;
+    //   padding: 0;
+    //   border: 0;
+    //   input {
+    //     font-size: 14px;
+    //   }
+    // }
+    // .form__textarea {
+    //   min-height: 0;
+    //   word-break: break-word;
+    //   -webkit-hyphens: auto;
+    //   -ms-hyphens: auto;
+    //   hyphens: auto;
+    // }
   }
 
   &__payment {

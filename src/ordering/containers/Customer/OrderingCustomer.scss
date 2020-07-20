@@ -1,0 +1,39 @@
+.ordering-customer {
+  height: 100vh;
+
+  .header__title {
+    margin: 0 auto;
+    padding-right: 48px;
+  }
+
+  &__container {
+    height: 100%;
+  }
+
+  &__label {
+    display: block;
+    padding-bottom: 2.4vw;
+  }
+
+  &__group {
+    overflow: hidden;
+  }
+
+  &__input,
+  .react-phone-number-input .react-phone-number-input__input,
+  .react-phone-number-input .react-phone-number-input__input:focus {
+    height: 54px;
+  }
+
+  &__button-back {
+    width: 33.333333%;
+  }
+}
+
+@media (min-width: 420px) {
+  .ordering-customer {
+    &__label {
+      padding-bottom: 8px;
+    }
+  }
+}
