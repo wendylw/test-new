@@ -44,10 +44,10 @@ class Customer extends Component {
     !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
     homeActions.loadShoppingCart(
       deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
+      deliveryToLocation.longitude && {
+        lat: deliveryToLocation.latitude,
+        lng: deliveryToLocation.longitude,
+      }
     );
   }
 
@@ -176,15 +176,13 @@ class Customer extends Component {
         {/* Address Info of Delivery or Pickup */}
         <div className="ordering-customer__detail padding-top-bottom-normal padding-left-right-smaller">
           <div
-            className={`flex ${
-              isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
-            }`}
+            className={`flex ${isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+              }`}
           >
             <IconLocation className="icon icon__small icon__default margin-left-right-small" />
             <div
-              className={`ordering-customer__summary flex ${
-                isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
-              } flex-space-between padding-left-right-small`}
+              className={`ordering-customer__summary flex ${isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+                } flex-space-between padding-left-right-small`}
             >
               {isDeliveryType ? (
                 <Link
@@ -200,34 +198,34 @@ class Customer extends Component {
                       <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
                     </React.Fragment>
                   ) : (
-                    <React.Fragment>
-                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
-                        {t('DeliveryLocationLabel')}
-                      </h5>
-                      <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
-                        {' '}
-                        {t('DeliveryLocationDescription')}
-                      </p>
-                    </React.Fragment>
-                  )}
+                      <React.Fragment>
+                        <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
+                          {t('DeliveryLocationLabel')}
+                        </h5>
+                        <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                          {' '}
+                          {t('DeliveryLocationDescription')}
+                        </p>
+                      </React.Fragment>
+                    )}
                 </Link>
               ) : (
-                <Link
-                  to={{
-                    pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-                    search: window.location.search,
-                    state: {
-                      from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                    },
-                  }}
-                  className="padding-top-bottom-smaller ordering-customer__button-link button__link"
-                >
-                  <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
-                    {t('PickupLocationTitle')}
-                  </h3>
-                  <time className="ordering-customer__time padding-top-bottom-smaller">{pickUpAddress}</time>
-                </Link>
-              )}
+                  <Link
+                    to={{
+                      pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+                      search: window.location.search,
+                      state: {
+                        from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                      },
+                    }}
+                    className="padding-top-bottom-smaller ordering-customer__button-link button__link"
+                  >
+                    <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                      {t('PickupLocationTitle')}
+                    </h3>
+                    <time className="ordering-customer__time padding-top-bottom-smaller">{pickUpAddress}</time>
+                  </Link>
+                )}
 
               <IconNext className="icon" />
             </div>
@@ -286,6 +284,21 @@ class Customer extends Component {
       </li>
     );
   }
+
+  intiCode = country => {
+    country &&
+      !this.state.isInitCoed &&
+      setTimeout(() => {
+        const t = document.querySelector(
+          '.react-phone-number-input__input.react-phone-number-input__phone.react-phone-number-input__input--style'
+        );
+
+        t.value = `+${getCountryCallingCode(country)}`;
+        this.setState({
+          isInitCoed: true,
+        });
+      }, 0);
+  };
 
   render() {
     const { t, history, deliveryDetails, cartSummary, error } = this.props;
@@ -350,12 +363,12 @@ class Customer extends Component {
                       {username ? (
                         <span className="text-size-big">{username}</span>
                       ) : (
-                        <React.Fragment>
-                          <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
-                          <span className="text-size-big text-error"> - *</span>
-                          <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
-                        </React.Fragment>
-                      )}
+                          <React.Fragment>
+                            <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
+                            <span className="text-size-big text-error"> - *</span>
+                            <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
+                          </React.Fragment>
+                        )}
                     </p>
                     {phone ? (
                       <p className="padding-top-bottom-smaller">
