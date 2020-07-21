@@ -712,6 +712,16 @@ img {
     resize: none;
   }
 
+  &__select {
+    border: 0;
+    width: 100%;
+    background-color: transparent;
+    -webkit-appearance: none;
+    box-shadow: none;
+    outline: none;
+    z-index: 1;
+  }
+
   &__error-message {
     display: inline-block;
     color: $status-red;
