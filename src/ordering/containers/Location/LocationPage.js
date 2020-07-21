@@ -9,6 +9,12 @@ import ErrorToast from '../../../components/ErrorToast';
 import '../../../App.scss';
 import Utils from '../../../utils/utils';
 import qs from 'qs';
+import { bindActionCreators, compose } from 'redux';
+import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+
+import { connect } from 'react-redux';
 
 class LocationPage extends Component {
   state = {
@@ -21,11 +27,18 @@ class LocationPage extends Component {
 
   componentDidMount() {
     this.loadStoreInfo();
+    !config.storeId && this.props.appActions.loadCoreBusiness();
 
     if (this.state.outRange) {
-      this.setState({
-        errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
-      });
+      this.setState(
+        {
+          errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
+        },
+        () => {
+          Utils.removeSessionVariable('deliveryAddress');
+          Utils.removeSessionVariable('outRange');
+        }
+      );
     }
   }
 
@@ -65,9 +78,7 @@ class LocationPage extends Component {
     }
   }
 
-  onSelectPlace = placeInfo => {
-    Utils.removeSessionVariable('outRange');
-
+  onSelectPlace = async placeInfo => {
     const { t, history } = this.props;
     const {
       storeInfo: { radius },
@@ -86,6 +97,28 @@ class LocationPage extends Component {
       });
       return;
     }
+
+    if (!config.storeId) {
+      const address = {
+        location: {
+          longitude: placeInfo.coords.lng,
+          latitude: placeInfo.coords.lat,
+        },
+      };
+
+      let stores = await this.props.homeActions.loadCoreStores(address);
+      stores = stores.responseGql.data.business.stores;
+
+      if (!stores.length) {
+        const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
+
+        this.setState({
+          errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
+        });
+        return;
+      }
+    }
+
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
@@ -156,4 +189,16 @@ class LocationPage extends Component {
   }
 }
 
-export default withTranslation(['OrderingDelivery'])(LocationPage);
+export default compose(
+  withTranslation(['OrderingDelivery']),
+  connect(
+    state => ({
+      businessInfo: getBusiness(state),
+      allBusinesses: getAllBusinesses(state),
+    }),
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
+)(LocationPage);
