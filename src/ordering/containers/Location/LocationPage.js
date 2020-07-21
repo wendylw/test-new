@@ -108,7 +108,6 @@ class LocationPage extends Component {
 
       let stores = await this.props.homeActions.loadCoreStores(address);
       stores = stores.responseGql.data.business.stores;
-
       if (!stores.length) {
         const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
 
@@ -193,7 +192,7 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
-      businessInfo: getBusiness(state),
+      business: getBusiness(state),
       allBusinesses: getAllBusinesses(state),
     }),
     dispatch => ({
