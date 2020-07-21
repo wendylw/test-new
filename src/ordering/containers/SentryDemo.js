@@ -2,6 +2,17 @@ import React from 'react';
 import { get } from '../../utils/request';
 import * as Sentry from '@sentry/react';
 
+function xhr(method, url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      callback && callback(xhr.responseText);
+    }
+  };
+  xhr.open(method, url);
+  xhr.send();
+}
+
 const triggerSyncError = () => {
   const a = {};
   a.func();
@@ -20,6 +31,16 @@ const triggerCaughtError = async () => {
     await Promise.reject(new Error('example error'));
   } catch (e) {
     Sentry.captureException(e);
+  }
+};
+const triggerXHRError = async () => {
+  xhr('get', '/api/ccccd');
+};
+const triggerFetchError = async () => {
+  try {
+    await fetch('http://lkjlkjlkj');
+  } catch {
+    console.log('caught');
   }
 };
 
@@ -45,6 +66,12 @@ export default props => {
       </li>
       <li>
         <button onClick={triggerConsoleError}>Console error</button>
+      </li>
+      <li>
+        <button onClick={triggerXHRError}>XHR error</button>
+      </li>
+      <li>
+        <button onClick={triggerFetchError}>Fetch error</button>
       </li>
     </ul>
   );
