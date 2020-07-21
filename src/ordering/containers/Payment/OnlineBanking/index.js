@@ -194,7 +194,7 @@ class OnlineBanking extends Component {
                 payNowLoading: true,
               });
             }}
-            afterCreateOrder={() => {
+            afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });

@@ -223,7 +223,7 @@ class Payment extends Component {
             disabled={payNowLoading}
             validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-            afterCreateOrder={() => {
+            afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });

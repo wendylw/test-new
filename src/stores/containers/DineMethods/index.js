@@ -40,7 +40,11 @@ class DineMethods extends Component {
     const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
 
     if (queries.s && queries.from === 'home') {
-      window.location.href = `${window.location.origin}/dine`;
+      delete queries.s;
+      delete queries.from;
+      const search = qs.stringify(queries, { addQueryPrefix: true });
+
+      window.location.href = `${window.location.origin}/dine${search}`;
     }
   };
 
