@@ -467,8 +467,8 @@ class LocationAndDate extends Component {
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
               {!deliveryToAddress && (
                 <IconSearch
-                  className="location-picker__search-box-magnifier-icon"
-                  style={{ fill: '#909090', padding: '3.2vw 0 3.2vw 3.8vw', display: 'flex' }}
+                  className="location-picker__search-box-magnifier-icon delivery__next-icon delivery_search"
+                  style={{ display: 'flex', paddingRight: 0 }}
                 />
               )}
               <input
