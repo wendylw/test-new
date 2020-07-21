@@ -110,10 +110,11 @@ class App extends Component {
       return nearly;
     } else {
       Utils.setSessionVariable('outRange', deliveryRadius);
-      this.props.history.replace({
-        pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_LOCATION,
-        search: `type=${type}`,
-      });
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?type=${type}`;
+      // this.props.history.replace({
+      //   pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_LOCATION,
+      //   search: `type=${type}`,
+      // });
     }
   };
 
@@ -125,15 +126,18 @@ class App extends Component {
       const nearly = await this.getNearlyStore(stores, type, deliveryAddress);
 
       await this.props.storesActions.getStoreHashData(nearly.id);
-      this.props.history.replace({
-        pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
-        search: `h=${this.props.storeHash}&type=${type}`,
-      });
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?h=${this.props.storeHash}&type=${type}`;
+      // this.props.history.replace({
+      //   pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
+      //   search: `h=${this.props.storeHash}&type=${type}`,
+      // });
     } else {
-      this.props.history.replace({
-        pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
-        search: `type=${type}`,
-      });
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?type=${type}`;
+
+      // this.props.history.replace({
+      //   pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
+      //   search: `type=${type}`,
+      // });
       // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`;
     }
   };
