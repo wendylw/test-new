@@ -148,21 +148,21 @@ class Payment extends Component {
     const { total } = cartSummary || {};
     const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
-    const className = ['table-ordering__payment' /*, 'hide' */];
+    const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
     const promptDom =
       total >= minimumFpxTotal ? (
-        <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>
+        <p className="margin-top-bottom-smallest">{t('TemporarilyUnavailable')}</p>
       ) : (
-        <span className="payment__prompt">
+        <p className="margin-top-bottom-smallest">
           ({' '}
           <Trans i18nKey="MinimumConsumption">
             <span>Min</span>
             <CurrencyNumber money={minimumFpxTotal} />
           </Trans>{' '}
           )
-        </span>
+        </p>
       );
 
     return (
@@ -176,10 +176,12 @@ class Payment extends Component {
           navFunc={this.handleClickBack}
         />
 
-        <div>
-          <ul className="payment__list">
+        <div className="ordering-payment__container">
+          <ul>
             {payments.map(payment => {
-              const classList = ['payment__item border__bottom-divider flex flex-middle flex-space-between'];
+              const classList = [
+                'ordering-payment__item flex flex-middle flex-space-between padding-small border__bottom-divider',
+              ];
               const disabledPayment = unavailablePaymentList.find(p => p === payment.key);
 
               if (!payment) {
@@ -199,19 +201,25 @@ class Payment extends Component {
                   data-heap-payment-name={payment.label}
                   onClick={() => this.setCurrentPayment(payment)}
                 >
-                  <div>
-                    <figure className="payment__image-container">
+                  <div className="ordering-payment__item-content">
+                    <figure className="ordering-payment__image-container text-middle margin-smaller">
                       <PaymentLogo payment={payment} />
                     </figure>
-                    <div className="payment__name">
-                      <label className="text-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
+                    <div className="ordering-payment__description text-middle padding-left-right-normal">
+                      <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
+                        {this.getPaymentShowLabel(payment)}
+                      </label>
                       {disabledPayment ? promptDom : null}
                     </div>
                   </div>
-                  <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
-                    <i className="radio__check-icon"></i>
+                  <i
+                    className={`radio padding-small flex__shrink-fixed ${
+                      currentPayment === payment.label ? 'active' : ''
+                    }`}
+                  >
+                    <span className="radio__check-icon"></span>
                     <input type="radio"></input>
-                  </div>
+                  </i>
                 </li>
               );
             })}

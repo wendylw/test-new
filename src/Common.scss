@@ -725,7 +725,7 @@ img {
     position: relative;
     display: block;
     padding: 0;
-    border: 3px solid $gray-2;
+    border: 3px solid $gray-4;
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -1245,9 +1245,3 @@ form {
     overflow: hidden;
   }
 }
-
-// @media (min-width: 770px) {
-//   .radio {
-//     padding: 16px;
-//   }
-// }

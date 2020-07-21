@@ -254,16 +254,16 @@
     // }
   }
 
-  &__payment {
-    // @extend .main-section;
-    padding-bottom: 43.2vw;
-  }
+  // &__payment {
+  // @extend .main-section;
+  // padding-bottom: 43.2vw;
+  // }
 
-  &__bank-payment {
-    // @extend .main-section;
-    padding-bottom: 21.6vw;
-    background-color: $white;
-  }
+  // &__bank-payment {
+  // @extend .main-section;
+  // padding-bottom: 21.6vw;
+  // background-color: $white;
+  // }
 
   &__thanks {
     // @extend .main-section;
@@ -2349,7 +2349,7 @@ main > section.hide {
   //   -webkit-transform: translateX(100%);
   // }
 
-  &.table-ordering__payment,
+  // &.table-ordering__payment,
   &.table-ordering__thanks,
   &.table-ordering__prompt-page {
     display: none;
@@ -2540,9 +2540,9 @@ body.loading {
   //   -ms-transform: translateX(-103px);
   // }
 
-  .payment__image-container {
-    width: 62px;
-  }
+  // .payment__image-container {
+  //   width: 62px;
+  // }
 
   .payment-bank__card-type-icon.visa {
     max-width: 50px;
@@ -2628,9 +2628,9 @@ body.loading {
     padding: 0 16px;
   }
 
-  .payment__item {
-    padding: 16px 0 16px 16px;
-  }
+  // .payment__item {
+  //   padding: 16px 0 16px 16px;
+  // }
 
   .top-message.fixed,
   // .store-list__content,
@@ -2807,26 +2807,26 @@ body.loading {
       display: flex;
       align-items: center;
 
-      .radio {
-        padding: 0;
-        flex-shrink: 0;
-        &__check-icon {
-          border-color: $gray-4;
-          width: 24px;
-          height: 24px;
+      // .radio {
+      //   padding: 0;
+      //   flex-shrink: 0;
+      //   &__check-icon {
+      //     border-color: $gray-4;
+      //     width: 24px;
+      //     height: 24px;
 
-          &::before {
-            width: 10px;
-            height: 10px;
-          }
-        }
+      //     &::before {
+      //       width: 10px;
+      //       height: 10px;
+      //     }
+      //   }
 
-        &.active {
-          .radio__check-icon {
-            border-color: $theme-color;
-          }
-        }
-      }
+      //   &.active {
+      //     .radio__check-icon {
+      //       border-color: $theme-color;
+      //     }
+      //   }
+      // }
 
       label {
         margin-left: 1em;
