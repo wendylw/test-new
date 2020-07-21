@@ -122,7 +122,7 @@ class App extends Component {
     if (deliveryAddress) {
       deliveryAddress = JSON.parse(deliveryAddress);
       let stores = this.props.stores;
-      const nearly = this.getNearlyStore(stores, type, deliveryAddress);
+      const nearly = await this.getNearlyStore(stores, type, deliveryAddress);
 
       await this.props.storesActions.getStoreHashData(nearly.id);
       this.props.history.replace({
