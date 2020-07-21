@@ -399,7 +399,7 @@ class LocationAndDate extends Component {
     if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       history.replace({
         pathname: this.state.search.callbackUrl.split('?')[0],
-        search: `h=${this.state.h}&type=${this.state.search.type}`,
+        search: `h=${encodeURIComponent(this.state.h)}&type=${this.state.search.type}`,
       });
     } else {
       history.go(-1);
@@ -840,7 +840,9 @@ class LocationAndDate extends Component {
         // from ordering
         window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
           callbackUrl.split('?')[0]
-        }?${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+        }?${this.state.h ? 'h=' + encodeURIComponent(this.state.h) + '&' : ''}type=${
+          this.state.isPickUpType ? 'pickup' : 'delivery'
+        }`;
         // history.replace({
         //   pathname: callbackUrl.split('?')[0],
         //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
@@ -884,7 +886,7 @@ class LocationAndDate extends Component {
 
       this.props.history.replace({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${this.state.h}&type=${
+        search: `h=${encodeURIComponent(this.state.h)}&type=${
           this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
         }`,
       });
@@ -894,7 +896,7 @@ class LocationAndDate extends Component {
     if (type !== this.state.search.type.toLowerCase()) {
       this.props.history.replace({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${this.state.h}&type=${
+        search: `h=${encodeURIComponent(this.state.h)}&type=${
           this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
         }`,
       });
@@ -925,7 +927,7 @@ class LocationAndDate extends Component {
   goStoreList = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-      search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
+      search: `${this.state.h ? 'h=' + encodeURIComponent(this.state.h) + '&' : ''}type=${
         this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
       }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
     });
