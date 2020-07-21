@@ -72,13 +72,9 @@ class App extends Component {
       if (stores.length) {
         if (stores.length === 1) {
           await this.props.storesActions.getStoreHashData(stores[0].id);
-          this.props.history.replace({
-            pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
-            search: `h=${this.props.storeHash}&type=${type}`,
-          });
-          window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${this.props.storeHash}&type=${type}`;
+          window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.props.storeHash}&type=${type}`;
         } else {
-          window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_STORE_LIST}/?type=${type}`;
+          window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_STORE_LIST}?type=${type}`;
         }
       }
     } else {
@@ -106,15 +102,12 @@ class App extends Component {
     });
     let res = await this.props.storesActions.loadCoreBusiness(nearly.id);
     const deliveryRadius = res.responseGql.data.business.qrOrderingSettings.deliveryRadius;
+
     if (nearly.distance / 1000 < deliveryRadius) {
       return nearly;
     } else {
       Utils.setSessionVariable('outRange', deliveryRadius);
       window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?type=${type}`;
-      // this.props.history.replace({
-      //   pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_LOCATION,
-      //   search: `type=${type}`,
-      // });
     }
   };
 
@@ -127,18 +120,8 @@ class App extends Component {
 
       await this.props.storesActions.getStoreHashData(nearly.id);
       window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?h=${this.props.storeHash}&type=${type}`;
-      // this.props.history.replace({
-      //   pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
-      //   search: `h=${this.props.storeHash}&type=${type}`,
-      // });
     } else {
       window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?type=${type}`;
-
-      // this.props.history.replace({
-      //   pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
-      //   search: `type=${type}`,
-      // });
-      // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?type=${type}`;
     }
   };
 
