@@ -838,12 +838,15 @@ class LocationAndDate extends Component {
         this.checkDetailChange(this.state.search);
       } else {
         // from ordering
-        history.replace({
-          pathname: callbackUrl.split('?')[0],
-          search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
-            this.state.isPickUpType ? 'pickup' : 'delivery'
-          }`,
-        });
+        window.location.href = `${window.location.origin}${callbackUrl.split('?')[0]}?${
+          this.state.h ? 'h=' + this.state.h + '&' : ''
+        }type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+        // history.replace({
+        //   pathname: callbackUrl.split('?')[0],
+        //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
+        //     this.state.isPickUpType ? 'pickup' : 'delivery'
+        //   }`,
+        // });
       }
     } else {
       history.go(-1);
@@ -861,11 +864,13 @@ class LocationAndDate extends Component {
     if (search.storeid && search.storeid !== config.storeId) {
       let result = await this.props.homeActions.getStoreHashData(search.storeid);
       const h = result.response.redirectTo;
-
-      this.props.history.replace({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
-      });
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+        Constants.ROUTER_PATHS.ORDERING_CART
+      }?h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+      // this.props.history.replace({
+      //   pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      //   search: `h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+      // });
       return;
     }
     if (
