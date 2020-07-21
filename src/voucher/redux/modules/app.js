@@ -7,6 +7,7 @@ import config from '../../../config';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../utils';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 
 export const PAGE_ERROR_CODE_LIST = {
   BUSINESS_NOT_FOUND: '40005',
@@ -25,6 +26,7 @@ const initialState = {
   showPageLoader: true,
   pageErrorCode: null,
   selectedVoucher: null,
+  voucherList: [], // [{id: string, title: string, unitPrice: integer}]
   contactInfo: {
     email: '',
   },
@@ -41,9 +43,15 @@ export const actions = {
   initialSelectedVoucher: () => (dispatch, getState) => {
     const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
     const state = getState();
-    const voucher = _get(voucherInfo, 'selectedVoucher', getMaxVoucherFromVoucherList(state));
+    const maxVoucher = getMaxVoucherFromVoucherList(state);
+    const voucherListIds = getVoucherListIds(state);
+    const voucher = _get(voucherInfo, 'selectedVoucher', null);
 
-    dispatch(actions.selectVoucher(voucher));
+    if (voucher && voucher.id && voucherListIds.includes(voucher.id)) {
+      dispatch(actions.selectVoucher(voucher));
+    } else {
+      dispatch(actions.selectVoucher(maxVoucher));
+    }
   },
   initialContactInfo: () => (dispatch, getState) => {
     const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
@@ -58,9 +66,13 @@ export const actions = {
   loadAppBaseData: () => async (dispatch, getState) => {
     dispatch(actions.togglePageLoader(true));
 
-    const baseDataActionList = [dispatch(actions.loadOnlineStoreInfo()), dispatch(actions.loadBusinessInfo())];
+    const baseDataActionList = [
+      dispatch(actions.loadOnlineStoreInfo()),
+      dispatch(actions.loadBusinessInfo()),
+      dispatch(actions.loadVoucherList()),
+    ];
 
-    const [onlineStoreInfoResult, businessInfoResult] = await Promise.all(baseDataActionList);
+    const [onlineStoreInfoResult, businessInfoResult, voucherListResult] = await Promise.all(baseDataActionList);
 
     if (onlineStoreInfoResult.type === TYPES.FETCH_ONLINESTOREINFO_FAILURE) {
       dispatch(actions.showPageError(onlineStoreInfoResult.code || PAGE_ERROR_CODE_LIST.REQUEST_ERROR));
@@ -68,6 +80,8 @@ export const actions = {
       dispatch(actions.showPageError(businessInfoResult.code || PAGE_ERROR_CODE_LIST.REQUEST_ERROR));
     } else if (!getOnlineStoreInfo(getState())) {
       dispatch(actions.showPageError(PAGE_ERROR_CODE_LIST.BUSINESS_NOT_FOUND));
+    } else if (voucherListResult.type === TYPES.FETCH_VOUCHER_LIST_FAILURE) {
+      dispatch(actions.showPageError(PAGE_ERROR_CODE_LIST.REQUEST_ERROR));
     }
 
     dispatch(actions.togglePageLoader(false));
@@ -102,6 +116,12 @@ export const actions = {
       },
     });
   },
+  loadVoucherList: () => ({
+    [API_REQUEST]: {
+      types: [TYPES.FETCH_VOUCHER_LIST_REQUEST, TYPES.FETCH_VOUCHER_LIST_SUCCESS, TYPES.FETCH_VOUCHER_LIST_FAILURE],
+      ...Url.API_URLS.GET_VOUCHER_LIST,
+    },
+  }),
   selectVoucher: voucher => ({
     type: TYPES.SELECT_VOUCHER,
     voucher,
@@ -210,6 +230,15 @@ const pageErrorCodeReducer = (state = initialState.pageErrorCode, action) => {
   }
 };
 
+const voucherListReducer = (state = initialState.voucherList, action) => {
+  switch (action.type) {
+    case TYPES.FETCH_VOUCHER_LIST_SUCCESS:
+      return action.response.products || [];
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   onlineStoreInfo: onlineStoreInfoReducer,
   businessInfo: businessInfoReducer,
@@ -218,6 +247,7 @@ export default combineReducers({
   order: orderReducer,
   showPageLoader: showPageLoaderReducer,
   pageErrorCode: pageErrorCodeReducer,
+  voucherList: voucherListReducer,
 });
 
 export function getOnlineStoreInfo(state) {
@@ -264,16 +294,28 @@ export const getContactEmail = state => {
   return _get(state.app, 'contactInfo.email', '');
 };
 
-export const getVoucherList = createSelector([getOnlineStoreCountry], country => {
-  return _get(VOUCHER_LIST_COUNTRY_MAP, country, []);
-});
+export const getVoucherList = state => {
+  return _get(state.app, 'voucherList', []);
+};
 
 export const getMaxVoucherFromVoucherList = createSelector([getVoucherList], voucherList => {
   if (voucherList.length > 0) {
-    return Math.max(...voucherList);
+    let maxVoucher = voucherList[0];
+
+    voucherList.forEach(voucher => {
+      if (voucher.unitPrice > maxVoucher.unitPrice) {
+        maxVoucher = voucher;
+      }
+    });
+
+    return maxVoucher;
   } else {
     return null;
   }
+});
+
+export const getVoucherListIds = createSelector([getVoucherList], voucherList => {
+  return voucherList.map(voucher => voucher.id);
 });
 
 export const getVoucherValidityPeriodDays = state => {

@@ -147,6 +147,10 @@ const API_URLS = {
     url: '/api/feedback',
     method: 'post',
   },
+  GET_VOUCHER_LIST: {
+    url: '/api/products/vouchers',
+    method: 'get',
+  },
 };
 
 export default {
