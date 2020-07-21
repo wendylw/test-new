@@ -397,7 +397,7 @@ class LocationAndDate extends Component {
     const { history } = this.props;
 
     if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
-      window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}/?h=${this.state.h}&type=${this.state.search.type}`;
+      window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
       // history.replace({
       //   pathname: this.state.search.callbackUrl.split('?')[0],
       //   search: `h=${this.state.h}&type=${this.state.search.type}`,
