@@ -24,7 +24,7 @@ class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const { appActions, homeActions } = this.props;
+    const { appActions } = this.props;
 
     this.visitErrorPage();
     await appActions.getLoginStatus();

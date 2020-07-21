@@ -36,7 +36,6 @@ class LocationPage extends Component {
       const { business, storeId } = config;
       if (!business || !storeId) {
         return;
-        throw new Error('business id or store id is missing.');
       }
       const response = await post('/api/gql/CoreBusiness', { business, storeId });
       const { qrOrderingSettings, country } = response.data.business;
@@ -67,6 +66,8 @@ class LocationPage extends Component {
   }
 
   onSelectPlace = placeInfo => {
+    Utils.removeSessionVariable('outRange');
+
     const { t, history } = this.props;
     const {
       storeInfo: { radius },
@@ -126,7 +127,7 @@ class LocationPage extends Component {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-
+    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
         <Header
@@ -144,7 +145,7 @@ class LocationPage extends Component {
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
-            outRange={this.state.outRange}
+            outRangeSearchText={this.state.outRange && outRangeSearchText}
             onSelect={this.onSelectPlace}
           />
         )}

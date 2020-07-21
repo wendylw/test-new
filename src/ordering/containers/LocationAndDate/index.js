@@ -150,14 +150,22 @@ class LocationAndDate extends Component {
 
   setStoreFromSelect = async () => {
     if (this.state.search.storeid) {
-      await this.props.appActions.loadCoreBusiness(this.state.search.storeid);
-      await this.props.homeActions.getStoreHashData(this.state.search.storeid);
-      await this.props.homeActions.loadCoreStores();
-      this.setMethodsTime();
-
+      if (!this.props.allStore.length) {
+        await this.props.homeActions.loadCoreStores();
+      }
       let store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
+
       this.setState({
         nearlyStore: store[0],
+      });
+      await Promise.all([
+        this.props.appActions.loadCoreBusiness(this.state.search.storeid),
+        this.props.homeActions.getStoreHashData(this.state.search.storeid),
+      ]);
+
+      this.setMethodsTime();
+
+      this.setState({
         h: this.props.storeHash,
       });
     }

@@ -50,7 +50,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={Login} />
-            <Route exact path={'/storeList'} component={StoreList} />
+            <Route exact path={ROUTER_PATHS.ORDERING_STORE_LIST} component={StoreList} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>

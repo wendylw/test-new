@@ -66,13 +66,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { history, homeActions, requestInfo, deliveryInfo } = this.props;
-    // const { tableId, storeId } = requestInfo;
-    // const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    // if (!h || !storeId || tableId === 'DEMO') {
-    //   window.location.href = '/';
-    // }
+    const { homeActions, deliveryInfo } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
@@ -82,7 +76,7 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     await homeActions.loadProductList();
-    // await homeActions.loadCoreStores();
+
     window.addEventListener('scroll', this.handleScroll);
 
     const pageRf = this.getPageRf();
@@ -188,8 +182,6 @@ export class Home extends Component {
         if (deliverDate.isToday) {
           currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
           let d = new Date();
-          if (enablePreOrder) {
-          }
           if (currentTime.getTime() < d.setHours(validTimeTo.split(':')[0], validTimeTo.split(':')[1])) {
             Utils.setSessionVariable(
               'expectedDeliveryHour',
@@ -198,7 +190,7 @@ export class Home extends Component {
                 to: 'now',
               })
             );
-          } else {
+          } else if (enablePreOrder) {
             const from =
               +validTimeFrom.split(':')[0] + 1 < 10
                 ? '0' + (+validTimeFrom.split(':')[0] + 1) + ':00'
@@ -251,11 +243,22 @@ export class Home extends Component {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
     const { deliveryInfo } = this.props;
     const pageRf = this.getPageRf();
+    const { sellAlcohol, enablePreOrder } = deliveryInfo;
+
     if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
-      const { sellAlcohol } = deliveryInfo;
       if (sellAlcohol) {
         this.setAlcoholModalState(sellAlcohol);
       }
+    }
+
+    if (!enablePreOrder) {
+      Utils.setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from: 'now',
+          to: 'now',
+        })
+      );
     }
   }
 
@@ -495,13 +498,13 @@ export class Home extends Component {
     return (
       <div
         className="location-page__entry-address pick-up flex flex-middle"
-        style={{ color: '#333', lineHeight: '100%', paddingLeft: '20px' }}
+        style={{ color: '#333', lineHeight: '100%', paddingLeft: '20px', maxHeight: '26px' }}
       >
         <summary className="item__title text-uppercase font-weight-bolder inline-block">
           {Utils.isDeliveryType() && t('DeliverAt')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </summary>
-        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
+        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle flex" /> : null}
         <p>{deliveryTimeText}</p>
       </div>
     );
