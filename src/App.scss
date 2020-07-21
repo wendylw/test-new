@@ -122,36 +122,10 @@
       top: 50px;
       bottom: 18.8vw;
     }
-
-    // .item__content {
-    //   width: 70%;
-    // }
-
-    // .item__detail {
-    //   width: 50vw;
-    // }
-
-    // .category__list .item__cart-ctrl {
-    //   top: auto;
-    //   bottom: 0;
-    // }
-    // .item-padding {
-    //   padding: 2.4vw;
-    // }
   }
 
   &__location {
-    // @extend .main-section;
-
     background-color: $white;
-
-    .item__detail {
-      width: auto;
-    }
-
-    .item__title {
-      font-size: 1.2rem;
-    }
   }
 
   &__order {
@@ -403,22 +377,6 @@
 //   // @extend .flex;
 //   // @extend .flex-center;
 
-//   // .item {
-//   //   margin: 5vw 0;
-//   // }
-
-//   .item__content {
-//     padding: 2.4vw;
-//   }
-
-//   .item__detail {
-//     width: auto;
-//   }
-
-//   .item__title {
-//     font-size: 1.2rem;
-//   }
-
 //   &__content {
 //     // @extend .main-section;
 
@@ -509,135 +467,6 @@
 .hint-modal {
   &__header {
     font-size: 1.4rem;
-  }
-}
-
-.cart {
-  // &__ctrl-container {
-  //   border: 0;
-
-  //   &:disabled {
-  //     background-color: transparent;
-
-  //     .cart__ctrl {
-  //       color: $white;
-  //       background-color: $gray-4;
-  //     }
-
-  //     .cart__add {
-  //       border-color: $gray-4;
-  //     }
-  //   }
-  // }
-
-  // &__ctrl {
-  //   position: relative;
-  //   display: block;
-  //   margin: 2.6vw;
-  //   width: 7vw;
-  //   max-width: 26px;
-  //   border-width: 2px;
-  //   border-style: solid;
-  //   border-radius: 50%;
-
-  //   &:before {
-  //     // @extend .w-h-same;
-  //   }
-  // }
-
-  // &__minus {
-  //   display: none;
-  //   border-color: $gray-2;
-  //   background-color: $white;
-
-  //   &:active {
-  //     border-color: $minus-button-active;
-
-  //     .cart__icon::before {
-  //       background-color: $minus-button-active;
-  //     }
-  //   }
-  // }
-
-  // &__add {
-  //   border-color: $theme-color;
-  //   background-color: $theme-color;
-
-  //   &:active {
-  //     border-color: $add-button-active;
-  //     background-color: $add-button-active;
-  //   }
-  // }
-
-  // &__icon {
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   height: 100%;
-
-  //   &::before,
-  //   &::after {
-  //     position: absolute;
-  //     top: 0;
-  //     bottom: 0;
-  //     left: 0;
-  //     right: 0;
-  //     content: "";
-  //     display: block;
-  //     margin: auto;
-  //     border-radius: 6px;
-  //     opacity: 0.9;
-  //   }
-
-  //   &::before {
-  //     width: 65%;
-  //     height: 2px;
-  //   }
-
-  //   &::after {
-  //     height: 65%;
-  //     width: 2px;
-  //   }
-  // }
-
-  // &__minus &__icon {
-  //   &::before {
-  //     background-color: $gray-2;
-  //   }
-  // }
-
-  // &__add &__icon {
-  //   &::before,
-  //   &::after {
-  //     background-color: $white;
-  //   }
-  // }
-
-  // &__note {
-  //   background-color: $white;
-
-  //   textarea {
-  //     padding: 3vw;
-  //     border: 0;
-  //     width: 100%;
-  //     resize: none;
-  //     -webkit-appearance: none;
-  //     border-radius: 0;
-  //   }
-  // }
-
-  &__close-button {
-    display: block;
-    padding: 5px;
-    width: 42px;
-    height: 42px;
-    fill: $gray-2;
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
   }
 }
 
@@ -798,23 +627,6 @@
 
   position: absolute;
   width: 100%;
-
-  .item__content {
-    min-height: 0;
-    width: 85%;
-    height: 100%;
-
-    &::before {
-      content: "";
-      width: 0;
-      min-height: 21vw;
-    }
-  }
-
-  .item__detail {
-    width: 100%;
-    height: 100%;
-  }
 
   &__image-container {
     position: relative;
@@ -2469,17 +2281,6 @@
 
   padding: 5vw;
 
-  .item,
-  .item__title,
-  .item__text {
-    padding: 2.4vw 0;
-  }
-
-  .item__title,
-  .item__text {
-    display: block;
-  }
-
   &__tag {
     color: $theme_color;
   }
@@ -2699,36 +2500,6 @@ body.loading {
   //   z-index: 100;
   // }
 
-  .item__cart-ctrl {
-    min-width: 125px;
-
-    &::before {
-      width: 46px;
-      height: 46px;
-    }
-  }
-
-  .cart__ctrl {
-    margin: 10px;
-    width: 28px;
-  }
-
-  // .table-ordering__order .item__detail {
-  //   max-width: 180px;
-  // }
-
-  .item__image-container {
-    width: 87px;
-    height: 87px;
-    min-width: 87px;
-    min-height: 87px;
-  }
-
-  .item__image-container ~ .item__detail {
-    min-width: 87px;
-    min-height: 87px;
-  }
-
   // .cart-bar {
   //   max-height: 58px;
   // }
@@ -2800,13 +2571,10 @@ body.loading {
 
   // reset padding
   // .store-list
-  // .item__content,
   // .cart__note textarea,
   .need-help__info-container,
   .order-detail__info-container,
-  // .item,
   .aside__section-container,
-  // .billing__item,
   .cart-pane__operation,
   .location-page__edit {
     padding: 10px;
@@ -2816,18 +2584,10 @@ body.loading {
   //   padding: 0;
   // }
 
-  .order-detail .list,
-  .item__text,
-  .need-help .item,
-  .need-help .item__title,
-  .need-help .item__text,
-  .order-detail .item,
-  .order-detail .item__title,
-  .order-detail .item__text {
+  .order-detail .list {
     padding: 10px 0;
   }
 
-  .item__image-container ~ .item__detail,
   .aside-bottom {
     // .table-ordering__receipt .billing {
     padding: 0 10px;
@@ -2837,7 +2597,6 @@ body.loading {
   .location-page__search-box-search-icon,
   // .delivery__next-icon,
   .prompt-page__button-container {
-    // .table-ordering__home .item-padding {
     padding: 13px;
   }
 
@@ -2860,7 +2619,6 @@ body.loading {
 
   .modal__detail,
   .payment-bank__form-item,
-  .location-page__icon-adjust + .item,
   .thanks__info-container {
     padding: 16px 0;
   }
@@ -2935,10 +2693,6 @@ body.loading {
     padding: 20px 9px;
   }
 
-  // .store-list .item {
-  //   margin: 20px 0;
-  // }
-
   .product-detail__options ~ .product-detail__options {
     margin-top: 20px;
   }
@@ -2953,12 +2707,6 @@ body.loading {
 
   .location-display__date-container label.form__label {
     margin: 16px 0;
-  }
-
-  // .table-ordering__home .item__content,
-  .product-description .item__content::before,
-  .product-description .item__detail {
-    min-height: 88px;
   }
 }
 
