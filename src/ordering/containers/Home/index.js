@@ -85,6 +85,17 @@ export class Home extends Component {
     }
 
     await this.props.appActions.loadCoreBusiness();
+
+    if (!this.props.deliveryInfo.enablePreOrder) {
+      debugger;
+      Utils.setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from: 'now',
+          to: 'now',
+        })
+      );
+    }
     this.checkRange();
     this.checkOrderTime();
   };
@@ -249,16 +260,6 @@ export class Home extends Component {
       if (sellAlcohol) {
         this.setAlcoholModalState(sellAlcohol);
       }
-    }
-
-    if (!enablePreOrder) {
-      Utils.setSessionVariable(
-        'expectedDeliveryHour',
-        JSON.stringify({
-          from: 'now',
-          to: 'now',
-        })
-      );
     }
   }
 
