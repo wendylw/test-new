@@ -66,6 +66,10 @@
       p:nth-child(1),
       p:nth-child(3) {
         color: #303030;
+        display: flex;
+        i {
+          margin-right: 5px;
+        }
         .stores-list-item-distance {
           display: inline-block;
           width: 24vw;
