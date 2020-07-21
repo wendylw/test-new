@@ -492,10 +492,10 @@ class CreditCard extends Component {
           {this.renderForm()}
         </div>
 
-        <div className="footer-operation">
+        <footer className="footer padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="border-radius-base"
+            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
@@ -509,7 +509,11 @@ class CreditCard extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber
+                className="text-center text-weight-bolder text-uppercase"
+                addonBefore={t('Pay')}
+                money={total || 0}
+              />
             )}
           </CreateOrderButton>
           {/* <button
@@ -524,7 +528,7 @@ class CreditCard extends Component {
                 <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
               )}
           </button> */}
-        </div>
+        </footer>
 
         {paymentData ? (
           <RedirectForm

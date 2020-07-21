@@ -27,6 +27,7 @@ import { getPaymentName, getSupportCreditCardBrands } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import './OrderingPayment.scss';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -198,12 +199,14 @@ class Payment extends Component {
                   data-heap-payment-name={payment.label}
                   onClick={() => this.setCurrentPayment(payment)}
                 >
-                  <figure className="payment__image-container">
-                    <PaymentLogo payment={payment} />
-                  </figure>
-                  <div className="payment__name">
-                    <label className="text-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
-                    {disabledPayment ? promptDom : null}
+                  <div>
+                    <figure className="payment__image-container">
+                      <PaymentLogo payment={payment} />
+                    </figure>
+                    <div className="payment__name">
+                      <label className="text-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
+                      {disabledPayment ? promptDom : null}
+                    </div>
                   </div>
                   <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
                     <i className="radio__check-icon"></i>
@@ -215,10 +218,10 @@ class Payment extends Component {
           </ul>
         </div>
 
-        <div className="footer-operation">
+        <footer className="footer padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="border-radius-base"
+            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
             disabled={payNowLoading}
@@ -232,7 +235,7 @@ class Payment extends Component {
           >
             {payNowLoading ? <div className="loader"></div> : t('PayNow')}
           </CreateOrderButton>
-        </div>
+        </footer>
 
         {paymentData ? (
           <RedirectForm

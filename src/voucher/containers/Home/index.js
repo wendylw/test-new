@@ -97,17 +97,15 @@ class Home extends Component {
           </ul>
         </div>
         <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-1">
-            <button
-              className="continue__button button button__fill button__block text-weight-bolder"
-              onClick={this.handleContinue}
-              disabled={!selectedVoucher}
-              data-heap-name="voucher.home.continue-btn"
-            >
-              {t('CONTINUE')}
-            </button>
-          </div>
+        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+          <button
+            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            onClick={this.handleContinue}
+            disabled={!selectedVoucher}
+            data-heap-name="voucher.home.continue-btn"
+          >
+            {t('Continue')}
+          </button>
         </footer>
       </div>
     );

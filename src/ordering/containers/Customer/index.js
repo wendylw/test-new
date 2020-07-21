@@ -512,7 +512,7 @@ class Customer extends Component {
             {t('Back')}
           </button>
           <CreateOrderButton
-            className="padding-normal margin-top-bottom-smallest margin-left-right-smaller"
+            className="padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase"
             history={history}
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"

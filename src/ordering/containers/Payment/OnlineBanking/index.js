@@ -183,10 +183,10 @@ class OnlineBanking extends Component {
           </form>
         </div>
 
-        <div className="footer-operation">
+        <footer className="footer padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="border-radius-base"
+            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
@@ -204,22 +204,14 @@ class OnlineBanking extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber
+                className="text-center text-weight-bolder text-uppercase"
+                addonBefore={t('Pay')}
+                money={total || 0}
+              />
             )}
           </CreateOrderButton>
-          {/* <button
-            className="button button__fill button__block text-weight-bolder text-uppercase border-radius-base"
-            data-testid="payMoney"
-            onClick={this.payNow.bind(this)}
-            disabled={payNowLoading}
-          >
-            {payNowLoading ? (
-              <div className="loader"></div>
-            ) : (
-                <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-              )}
-          </button> */}
-        </div>
+        </footer>
 
         {payNowLoading && paymentData ? (
           <RedirectForm

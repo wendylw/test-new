@@ -11,34 +11,6 @@
   padding-top: 50px;
 }
 
-// .footer-operation {
-// position: fixed;
-// padding: 3.8vw;
-// left: 0;
-// bottom: 0;
-// z-index: 200;
-// width: 100%;
-// background-color: $main-color;
-
-// .button {
-//   @extend .border-radius-base;
-// }
-// }
-
-// .header {
-//   position: fixed;
-//   left: 0;
-//   top: 0;
-//   z-index: 200;
-//   width: 100%;
-//   background-color: $white;
-//   padding: 10px;
-//   height: 50px;
-//   .header__back-button {
-//     fill: #909090;
-//   }
-// }
-
 .gift-card {
   &__page {
     padding: 24px 16px;
@@ -226,19 +198,6 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
   }
 
-  // .footer-operation {
-  //   max-width: 414px;
-  //   left: 0;
-  //   right: 0;
-  //   margin: 0 auto;
-  //   padding: 20px;
-  // }
-
-  .continue__button {
-    max-height: 50px;
-    line-height: 50px;
-  }
-
   .gift-card__page {
     padding-bottom: 90px;
   }
@@ -357,9 +316,5 @@
     font-size: 1.1em;
     line-height: $line-height-base;
     color: $gray-0;
-  }
-
-  footer {
-    background-color: transparent;
   }
 }

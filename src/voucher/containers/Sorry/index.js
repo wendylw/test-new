@@ -27,16 +27,14 @@ class Sorry extends Component {
           <br />
           {t('PleaseUpdateAndTryAgain')}
         </div>
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-1">
-            <button
-              className="continue__button button button__fill button__block text-weight-bolder"
-              data-heap-name="voucher.sorry.try-again-btn"
-              onClick={this.handleClickBack}
-            >
-              {t('TryAgain')}
-            </button>
-          </div>
+        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+          <button
+            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            data-heap-name="voucher.sorry.try-again-btn"
+            onClick={this.handleClickBack}
+          >
+            {t('TryAgain')}
+          </button>
         </footer>
       </section>
     );

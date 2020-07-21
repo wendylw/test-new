@@ -110,17 +110,15 @@ class Contact extends Component {
             {invalidEmail ? <div className="input__error-message">{t('InvalidEmail')}</div> : null}
           </div>
         </div>
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-1">
-            <button
-              className="continue__button button button__fill button__block text-weight-bolder"
-              onClick={this.handleContinue}
-              disabled={!contactEmail}
-              data-heap-name="voucher.contact.continue-btn"
-            >
-              {t('CONTINUE')}
-            </button>
-          </div>
+        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+          <button
+            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            onClick={this.handleContinue}
+            disabled={!contactEmail}
+            data-heap-name="voucher.contact.continue-btn"
+          >
+            {t('Continue')}
+          </button>
         </footer>
       </div>
     );

@@ -609,18 +609,16 @@ class LocationAndDate extends Component {
   renderContinueButton = () => {
     const { t } = this.props;
     return (
-      <footer ref={this.footerRef} className="footer-operation grid flex flex-middle flex-space-between">
-        <div className="footer-operation__item width-1-1">
-          <button
-            className="billing__link button button__fill button__block text-weight-bolder"
-            data-testid="continue"
-            data-heap-name="ordering.location-and-date.continue-btn"
-            disabled={this.checkIfCanContinue()}
-            onClick={this.goToNext}
-          >
-            {t('Continue')}
-          </button>
-        </div>
+      <footer ref={this.footerRef} className="footer padding-top-bottom-small padding-left-right-normal">
+        <button
+          className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+          data-testid="continue"
+          data-heap-name="ordering.location-and-date.continue-btn"
+          disabled={this.checkIfCanContinue()}
+          onClick={this.goToNext}
+        >
+          {t('Continue')}
+        </button>
       </footer>
     );
   };

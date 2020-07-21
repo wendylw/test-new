@@ -1,0 +1,64 @@
+@import "../../../Variables.scss";
+
+.ordering-payment {
+  &__item {
+    padding: 4vw 0 4vw 4vw;
+    margin: 0;
+  }
+
+  &__image-container {
+    width: 15vw;
+
+    > img {
+      width: 100%;
+    }
+  }
+
+  &__name {
+    padding: 0 20px;
+    font-size: 1.3rem;
+    width: 60vw;
+    white-space: nowrap;
+
+    label {
+      display: block;
+      margin: 2px 0;
+      font-size: inherit;
+    }
+  }
+
+  &__item.disabled {
+    &::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 60px;
+    }
+
+    .payment__image-container {
+      filter: grayscale(100%) contrast(100%) brightness(100%);
+      -webkit-filter: grayscale(100%) contrast(100%) brightness(100%);
+      -moz-filter: grayscale(100%) contrast(100%) brightness(100%);
+      -ms-filter: grayscale(100%) contrast(100%) brightness(100%);
+      -o-filter: grayscale(100%) contrast(100%) brightness(100%);
+      transition: filter 0.4s;
+      -webkit-transition: -webkit-filter 0.4s;
+      -moz-transition: -moz-filter 0.4s;
+      -ms-transition: -ms-filter 0.4s;
+      -o-transition: -o-filter 0.4s;
+    }
+
+    .payment__name {
+      color: $gray-2;
+    }
+
+    .radio {
+      display: none;
+    }
+  }
+
+  &__prompt {
+    display: block;
+    padding: 5px 0;
+  }
+}

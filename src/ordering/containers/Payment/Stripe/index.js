@@ -323,7 +323,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           setBillingDetails({ ...billingDetails, name: e.target.value });
         }}
       />
-      <div className="footer-operation">
+      <footer className="footer padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
           history={history}
           buttonType="submit"
@@ -346,12 +346,13 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
             }
           }}
         >
-          <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+          <CurrencyNumber
+            className="text-center text-weight-bolder text-uppercase"
+            addonBefore={t('Pay')}
+            money={total || 0}
+          />
         </CreateOrderButton>
-      </div>
-      {/* <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
-        <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-      </SubmitButton> */}
+      </footer>
 
       {paymentMethod ? renderRedirectForm(paymentMethod) : null}
 
