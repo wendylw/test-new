@@ -15,6 +15,8 @@ import Utils from '../../../utils/utils';
 import { IconChecked, IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
+import CurrencyNumber from '../../components/CurrencyNumber';
+
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
   <div
@@ -29,7 +31,8 @@ const StoreListItem = props => (
         <IconLocation className="header__motor-icon text-middle" />
         <span className="stores-list-item-distance">{props.store.distance}km</span>
         <IconMotorcycle className="header__motor-icon text-middle" />
-        <span className="stores-list-item-fee">{props.store.deliveryFee}</span>
+        <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} />
+        {/* <span className="stores-list-item-fee">{props.store.deliveryFee}</span> */}
       </p>
     )}
     <p>
