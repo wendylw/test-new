@@ -165,9 +165,10 @@ class Payment extends Component {
       );
 
     return (
-      <section className={className.join(' ')}>
+      <section className={className.join(' ')} data-heap-name="ordering.payment.container">
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="ordering.payment.header"
           isPage={true}
           title={t('SelectPayment')}
           navFunc={this.handleClickBack}
@@ -192,6 +193,8 @@ class Payment extends Component {
                   key={payment.label}
                   className={classList.join(' ')}
                   data-testid="paymentSelector"
+                  data-heap-name="ordering.payment.payment-item"
+                  data-heap-payment-name={payment.label}
                   onClick={() => this.setCurrentPayment(payment)}
                 >
                   <figure className="payment__image-container">
@@ -215,11 +218,12 @@ class Payment extends Component {
           <CreateOrderButton
             history={history}
             className="border-radius-base"
-            dataTestId="payNow"
+            data-testid="payNow"
+            data-heap-name="ordering.payment.pay-btn"
             disabled={payNowLoading}
             validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-            afterCreateOrder={() => {
+            afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });

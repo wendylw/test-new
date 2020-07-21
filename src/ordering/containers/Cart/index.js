@@ -38,7 +38,22 @@ class Cart extends Component {
     window.scrollTo(0, 0);
     this.handleResizeEvent();
   }
+  componentDidUpdate() {
+    this.setListHeight();
+  }
+  setListHeight = () => {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    const asideOffset = document.querySelectorAll('.aside-bottom')[0].offsetTop;
+    const asideHeight = document.querySelectorAll('.aside-bottom')[0].offsetHeight;
+    const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
+    const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
+    const footerHeight = document.querySelectorAll('footer.footer-operation')[0].offsetHeight;
+    const scroll = textOffset - asideOffset + textHeight + 55;
+    const h = clientHeight - 50 - footerHeight - asideHeight;
 
+    document.querySelector('.list__container').style.height = h + 'px';
+  };
   handleResizeEvent() {
     window.addEventListener(
       'resize',
@@ -163,6 +178,12 @@ class Cart extends Component {
     }
   }
 
+  AdditionalCommentsFocus = () => {
+    setTimeout(() => {
+      document.querySelector('.list__container').scrollTop = document.querySelector('.list__container').scrollHeight;
+    }, 300);
+  };
+
   renderAdditionalComments() {
     const { t } = this.props;
     const { additionalComments } = this.state;
@@ -174,10 +195,16 @@ class Cart extends Component {
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
+          data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
+          onFocus={this.AdditionalCommentsFocus}
         ></textarea>
         {additionalComments ? (
-          <IconClose className="cart__close-button" onClick={this.handleClearAdditionalComments.bind(this)} />
+          <IconClose
+            className="cart__close-button"
+            data-heap-name="ordering.cart.clear-additional-msg"
+            onClick={this.handleClearAdditionalComments.bind(this)}
+          />
         ) : null}
       </div>
     );
@@ -197,7 +224,11 @@ class Cart extends Component {
                   <span className="promotion-code font-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
-                  <button onClick={this.handleDismissPromotion} className="dismiss__button">
+                  <button
+                    onClick={this.handleDismissPromotion}
+                    className="dismiss__button"
+                    data-heap-name="ordering.cart.dismiss-promo"
+                  >
                     <IconClose className="icon" />
                   </button>
                 </div>
@@ -209,7 +240,11 @@ class Cart extends Component {
             </span>
           </div>
         ) : (
-          <button className="add-promo__button" onClick={this.handleGotoPromotion}>
+          <button
+            className="add-promo__button"
+            onClick={this.handleGotoPromotion}
+            data-heap-name="ordering.cart.add-promo"
+          >
             <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
             {t('AddPromoCode')}
           </button>
@@ -244,19 +279,24 @@ class Cart extends Component {
     }
 
     return (
-      <section className={`table-ordering__order` /* hide */}>
+      <section className={`table-ordering__order` /* hide */} data-heap-name="ordering.cart.container">
         <Header
           className="border__bottom-divider gray flex-middle"
+          data-heap-name="ordering.cart.header"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
         >
-          <button className="warning__button" onClick={this.handleClearAll.bind(this)}>
+          <button
+            className="warning__button"
+            onClick={this.handleClearAll.bind(this)}
+            data-heap-name="ordering.cart.clear-btn"
+          >
             <IconDelete />
             <span className="warning__label text-middle">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="list__container">
+        <div className="list__container" style={{ overflowY: 'scroll' }}>
           <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
@@ -281,6 +321,7 @@ class Cart extends Component {
             <button
               className="billing__button button button__fill button__block dark font-weight-bolder"
               onClick={this.handleClickBack.bind(this)}
+              data-heap-name="ordering.cart.back-btn"
             >
               {t('Back')}
             </button>
@@ -289,6 +330,7 @@ class Cart extends Component {
             <button
               className="billing__link button button__fill button__block font-weight-bolder"
               data-testid="pay"
+              data-heap-name="ordering.cart.pay-btn"
               onClick={() => {
                 if (!this.isPromotionValid()) {
                   this.props.appActions.showMessageModal({

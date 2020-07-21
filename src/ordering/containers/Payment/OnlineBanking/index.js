@@ -30,6 +30,11 @@ class OnlineBanking extends Component {
     payNowLoading: false,
   };
 
+  componentDidMount() {
+    this.updateBankList();
+    this.props.homeActions.loadShoppingCart();
+  }
+
   getPaymentEntryRequestData = () => {
     const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
@@ -58,11 +63,6 @@ class OnlineBanking extends Component {
       agentCode,
     };
   };
-
-  componentDidMount() {
-    this.updateBankList();
-    this.props.homeActions.loadShoppingCart();
-  }
 
   updateBankList = async () => {
     const { paymentActions, merchantCountry } = this.props;
@@ -113,7 +113,11 @@ class OnlineBanking extends Component {
     }
 
     return (
-      <select className="input__block" onChange={this.handleSelectBank.bind(this)}>
+      <select
+        className="input__block"
+        onChange={this.handleSelectBank.bind(this)}
+        data-heap-name="ordering.payment.online-banking.bank-select"
+      >
         {bankingList.map((banking, key) => {
           return (
             <option key={`banking-${key}`} value={banking.agentCode}>
@@ -134,9 +138,13 @@ class OnlineBanking extends Component {
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
-      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+      <section
+        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        data-heap-name="ordering.payment.online-banking.container"
+      >
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="ordering.payment.online-banking.header"
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
@@ -178,14 +186,15 @@ class OnlineBanking extends Component {
           <CreateOrderButton
             history={history}
             className="border-radius-base"
-            dataTestId="payMoney"
+            data-test-id="payMoney"
+            data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={() => {
               this.setState({
                 payNowLoading: true,
               });
             }}
-            afterCreateOrder={() => {
+            afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });

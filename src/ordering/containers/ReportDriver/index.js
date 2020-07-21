@@ -36,6 +36,7 @@ import { IconClose } from '../../../components/Icons';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
+const { REPORT_DRIVER_REASON_CODE } = Constants;
 
 class ReportDriver extends Component {
   componentDidMount() {
@@ -170,6 +171,7 @@ class ReportDriver extends Component {
       <section className="table-ordering__report-driver-thankyou">
         <Header
           className="report-driver__header flex-middle"
+          data-heap-name="ordering.report-driver.thank-you-header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
@@ -195,6 +197,7 @@ class ReportDriver extends Component {
         </h3>
         <textarea
           className="report-driver__note-textarea"
+          data-heap-name="ordering.report-driver.notes-input"
           placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
           rows="6"
           maxLength={NOTE_MAX_LENGTH}
@@ -220,14 +223,23 @@ class ReportDriver extends Component {
           <div className="report-driver__upload-photo-viewer">
             <img alt="upload file" src={uploadPhotoUrl} />
             {disabled ? null : (
-              <button onClick={this.handleRemoveUploadPhoto} className="report-driver__upload-photo-remove-button">
+              <button
+                onClick={this.handleRemoveUploadPhoto}
+                className="report-driver__upload-photo-remove-button"
+                data-heap-name="ordering.report-driver.remove-image"
+              >
                 <IconClose />
               </button>
             )}
           </div>
         ) : (
           <div className="report-driver__upload-photo-uploader">
-            <input onChange={this.handleUploadPhoto} type="file" accept="image/*" />
+            <input
+              onChange={this.handleUploadPhoto}
+              type="file"
+              accept="image/*"
+              data-heap-name="ordering.report-driver.add-image"
+            />
             <div className="report-driver__upload-photo-reminder">
               <img alt="upload" src={uploadImage} />
               <p>{t('UploadFileHere')}</p>
@@ -263,9 +275,10 @@ class ReportDriver extends Component {
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
 
     return (
-      <section className="table-ordering__report-driver">
+      <section className="table-ordering__report-driver" data-heap-name="ordering.report-driver.container">
         <Header
           className="report-driver__header flex-middle"
+          data-heap-name="ordering.report-driver.header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
@@ -274,22 +287,36 @@ class ReportDriver extends Component {
           <div className="report-driver__select-reason">
             <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>
             <ul className="report-driver__select-reason-list">
-              {REPORT_DRIVER_REASONS.map(({ code, i18n_key }) => {
-                return (
-                  <li key={code} className="report-driver__select-reason-item">
-                    <Radio
-                      onChange={() => {
-                        this.handleSelectReason(code);
-                      }}
-                      checked={selectedReasonCode === code}
-                      inputId={`reason_${code}`}
-                      name="reason"
-                      disabled={disabled}
-                    />
-                    <label htmlFor={`reason_${code}`}>{t(i18n_key)}</label>
-                  </li>
-                );
-              })}
+              {REPORT_DRIVER_REASONS.map(reason => ({
+                ...reason,
+                label: t(reason.i18n_key),
+              }))
+                // sort by localeCompare of reason.label, for English is alphabetic ascendings
+                .sort((reason1, reason2) => {
+                  // put the others of reason at the end
+                  if (reason1.code === REPORT_DRIVER_REASON_CODE.OTHERS) return 1;
+                  if (reason2.code === REPORT_DRIVER_REASON_CODE.OTHERS) return -1;
+
+                  return reason1.label.localeCompare(reason2.label);
+                })
+                .map(({ code, label }) => {
+                  return (
+                    <li key={code} className="report-driver__select-reason-item">
+                      <Radio
+                        onChange={() => {
+                          this.handleSelectReason(code);
+                        }}
+                        data-heap-name="ordering.report-driver.reason-item"
+                        data-heap-reason={code}
+                        checked={selectedReasonCode === code}
+                        inputId={`reason_${code}`}
+                        name="reason"
+                        disabled={disabled}
+                      />
+                      <label htmlFor={`reason_${code}`}>{label}</label>
+                    </li>
+                  );
+                })}
             </ul>
           </div>
 
@@ -310,6 +337,7 @@ class ReportDriver extends Component {
           <div className="report-driver__submit">
             <button
               className="report-driver__submit-button"
+              data-heap-name="ordering.report-driver.submit-btn"
               disabled={this.isSubmitButtonDisable()}
               onClick={this.handleSubmit}
             >

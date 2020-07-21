@@ -8,6 +8,7 @@ import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
 import { BackPosition, showBackButton } from '../utils/backHelper';
+import withDataAttributes from './withDataAttributes';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -30,9 +31,9 @@ class Header extends Component {
         const iconClassName = 'header__icon text-middle';
 
         return isPage ? (
-          <IconLeftArrow className={iconClassName} onClick={navFunc} />
+          <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
         ) : (
-          <IconClose className={iconClassName} onClick={navFunc} />
+          <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
         );
       }
     };
@@ -59,6 +60,7 @@ class Header extends Component {
       enablePreOrder,
       enableCashback,
       defaultLoyaltyRatio,
+      dataAttributes,
     } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
@@ -72,6 +74,7 @@ class Header extends Component {
     return (
       <header
         className={classList.join(' ')}
+        {...dataAttributes}
         onClick={() => {
           if (isDeliveryType || isPickUpType) {
             onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
@@ -159,4 +162,4 @@ Header.defaultProps = {
   onClickHandler: () => {},
 };
 
-export default withTranslation()(Header);
+export default withDataAttributes(withTranslation()(Header));

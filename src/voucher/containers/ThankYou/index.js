@@ -41,8 +41,8 @@ class ThankYou extends Component {
       validityPeriodDays,
     } = this.props;
     return (
-      <section className="thankyou-page">
-        <Header clickBack={this.handlerClickBack} />
+      <section className="thankyou-page" data-heap-name="voucher.thank-you.container">
+        <Header clickBack={this.handlerClickBack} data-heap-name="voucher.thank-you.header" />
         <h1 className="thankyou-page__title">{t('ThankYou')}!</h1>
         <div className="thankyou-page__gifCard">
           <img alt="Gift Card" src={giftCardImage} />
@@ -64,7 +64,9 @@ class ThankYou extends Component {
             ) : null}
 
             <p className="store-info__site">
-              <a href={beepSiteUrl}>{t('VisitSiteToUseVoucherNow', { onlineStoreName })}</a>
+              <a href={beepSiteUrl} data-heap-name="voucher.thank-you.visit-site-link">
+                {t('VisitSiteToUseVoucherNow', { onlineStoreName })}
+              </a>
             </p>
           </div>
         </div>

@@ -8,6 +8,7 @@ import { getUser, getRequestInfo } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
+import withDataAttributes from '../../../components/withDataAttributes';
 
 class CreateOrderButton extends React.Component {
   componentDidUpdate(prevProps) {
@@ -36,6 +37,7 @@ class CreateOrderButton extends React.Component {
     const { tableId } = requestInfo;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let newOrderId;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -47,6 +49,7 @@ class CreateOrderButton extends React.Component {
       const { currentOrder } = this.props;
       const { orderId } = currentOrder || {};
 
+      newOrderId = orderId;
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
         Utils.removeSessionVariable('deliveryComments');
@@ -62,12 +65,12 @@ class CreateOrderButton extends React.Component {
     }
 
     if (afterCreateOrder) {
-      afterCreateOrder();
+      afterCreateOrder(newOrderId);
     }
   };
 
   render() {
-    const { children, className, buttonType, dataTestId, disabled } = this.props;
+    const { children, className, buttonType, disabled, dataAttributes } = this.props;
     const classList = ['billing__link button button__fill button__block font-weight-bolder'];
 
     if (className) {
@@ -78,9 +81,9 @@ class CreateOrderButton extends React.Component {
       <button
         className={classList.join(' ')}
         type={buttonType}
-        data-testid={dataTestId}
         disabled={disabled}
         onClick={this.handleCreateOrder.bind(this)}
+        {...dataAttributes}
       >
         {children}
       </button>
@@ -93,7 +96,6 @@ CreateOrderButton.propTypes = {
   history: PropTypes.object,
   className: PropTypes.string,
   buttonType: PropTypes.string,
-  dataTestId: PropTypes.string,
   validCreateOrder: PropTypes.bool,
   sentOtp: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -112,6 +114,7 @@ CreateOrderButton.defaultProps = {
 };
 
 export default compose(
+  withDataAttributes,
   connect(
     state => {
       const currentOrderId = getCurrentOrderId(state);

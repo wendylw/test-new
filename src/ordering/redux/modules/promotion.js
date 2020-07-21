@@ -5,7 +5,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getPromotion } from '../../../redux/modules/entities/carts';
 import { actions as appActions } from './app';
 import i18next from 'i18next';
-
+import Utils from '../../../utils/utils';
 const { PROMOTION_APPLIED_STATUS, PROMO_TYPE } = Constants;
 
 const initialState = {
@@ -31,6 +31,7 @@ export const actions = {
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
           promoCode,
+          fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
         },
       },
     });
@@ -76,6 +77,7 @@ export const actions = {
         ...Url.API_URLS.APPLY_VOUCHER_CODE,
         payload: {
           voucherCode: promoCode,
+          fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
         },
       },
     });
@@ -112,6 +114,10 @@ export const actions = {
         ...Url.API_URLS[dismissType],
         payload: {
           voucherCode: promoCode,
+          fulfillDate:
+            dismissType === 'DISMISS_VOUCHER_CODE' || dismissType === 'DISMISS_PROMOTION_CODE'
+              ? Utils.getFulfillDate().expectDeliveryDateFrom
+              : undefined,
         },
       },
     });
