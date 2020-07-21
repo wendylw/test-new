@@ -456,7 +456,9 @@ class LocationAndDate extends Component {
       const { t } = this.props;
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
+          <label className="form__label font-weight-bold" style={{ fontWeight: !deliveryToAddress ? '600' : '500' }}>
+            {t('DeliverTo')}
+          </label>
           <div
             className="location-page__search-box"
             onClick={this.showLocationSearch}
@@ -466,7 +468,7 @@ class LocationAndDate extends Component {
               {!deliveryToAddress && (
                 <IconSearch
                   className="location-picker__search-box-magnifier-icon"
-                  style={{ padding: '8px', fill: '#909090' }}
+                  style={{ fill: '#909090', padding: '3.2vw 0 3.2vw 3.8vw', display: 'flex' }}
                 />
               )}
               <input
@@ -967,12 +969,12 @@ class LocationAndDate extends Component {
           navFunc={this.handleBackClicked}
         />
         <div
-          style={{ margin: '30px 16px', height: '40px' }}
+          style={{ margin: '30px 16px', height: '40px', boxShadow: '0px 1px 2px 1px #eee' }}
           className="form__group flex flex-middle input-group outline border-radius-base"
         >
           <p
             onClick={this.setDeliveryType}
-            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px' }}
+            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
             className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
             data-heap-name="ordering.location-and-date.delivery"
           >
@@ -980,7 +982,7 @@ class LocationAndDate extends Component {
           </p>
           <p
             onClick={this.setPickUpType}
-            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px' }}
+            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
             className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
             data-heap-name="ordering.location-and-date.pickup"
           >
