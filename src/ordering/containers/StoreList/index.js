@@ -75,10 +75,13 @@ class StoreList extends Component {
           });
         } else {
           await this.props.homeActions.getStoreHashData(store.id);
-          this.props.history.replace({
-            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-            search: `h=${this.props.storeHash}&type=${this.state.search.type || Constants.DELIVERY_METHOD.DELIVERY}`,
-          });
+          window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+            Constants.ROUTER_PATHS.ORDERING_HOME
+          }?h=${this.props.storeHash}&type=${this.state.search.type || Constants.DELIVERY_METHOD.DELIVERY}`;
+          // this.props.history.replace({
+          //   pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+          //   search: `h=${this.props.storeHash}&type=${this.state.search.type || Constants.DELIVERY_METHOD.DELIVERY}`,
+          // });
         }
       }
     );
