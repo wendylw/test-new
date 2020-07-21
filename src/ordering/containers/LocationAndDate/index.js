@@ -838,9 +838,9 @@ class LocationAndDate extends Component {
         this.checkDetailChange(this.state.search);
       } else {
         // from ordering
-        window.location.href = `${window.location.origin}${callbackUrl.split('?')[0]}?${
-          this.state.h ? 'h=' + this.state.h + '&' : ''
-        }type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+          callbackUrl.split('?')[0]
+        }?${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
         // history.replace({
         //   pathname: callbackUrl.split('?')[0],
         //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
