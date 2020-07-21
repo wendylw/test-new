@@ -1,0 +1,58 @@
+@import "../../../Variables.scss";
+
+.payment-credit-card {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+  }
+
+  &__group-card-number {
+    position: relative;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &__group-left-bottom,
+  &__group-right-bottom {
+    width: 50%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    transform: translateY(-1px);
+  }
+
+  &__group-left-bottom {
+    border-bottom-right-radius: 0;
+  }
+
+  &__group-right-bottom {
+    border-bottom-left-radius: 0;
+  }
+
+  &__group {
+    overflow: hidden;
+  }
+
+  &__icon-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 26px;
+    margin: auto;
+  }
+
+  &__icon {
+    display: inline-block;
+    max-width: 36px;
+  }
+
+  &__input {
+    height: 54px;
+  }
+
+  &__footer {
+    position: absolute;
+    width: 100%;
+  }
+}

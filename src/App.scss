@@ -228,30 +228,6 @@
     // .aside {
     //   bottom: 18.8vw;
     // }
-
-    // .form__label {
-    //   margin: 8px 0;
-    // }
-
-    // .form__label ~ .form__group {
-    //   padding: 16px;
-    //   border: 1px solid $gray-4;
-    // }
-    // .form__label ~ .form-field {
-    //   margin-bottom: 16px;
-    //   padding: 0;
-    //   border: 0;
-    //   input {
-    //     font-size: 14px;
-    //   }
-    // }
-    // .form__textarea {
-    //   min-height: 0;
-    //   word-break: break-word;
-    //   -webkit-hyphens: auto;
-    //   -ms-hyphens: auto;
-    //   hyphens: auto;
-    // }
   }
 
   // &__payment {
@@ -869,8 +845,6 @@
   }
 
   &__slide-button {
-    // @extend .text-size-reset;
-
     text-align: center;
     display: block;
     padding: 9px;
@@ -927,8 +901,6 @@
 
 .logo-default {
   &__image-container {
-    // @extend .text-size-reset;
-
     position: relative;
     display: inline-block;
     margin: 6px 0;
@@ -1073,99 +1045,6 @@
 //     }
 //   }
 // }
-
-.payment-bank {
-  padding: 4vw;
-
-  .input {
-    height: 50px;
-    font-size: 1.4rem;
-  }
-
-  .logo-default__image-container {
-    display: block;
-    margin: 4vw auto;
-  }
-
-  .input__list-top {
-    position: relative;
-    border: 1px solid $gray-4;
-    border-radius: 4px 4px 0 0;
-
-    .input {
-      border: 0;
-    }
-  }
-
-  &__money {
-    display: block;
-    padding: 2vw 0;
-    font-size: 2rem;
-  }
-
-  &__form-item {
-    padding: 4vw 0;
-  }
-
-  &__label {
-    display: block;
-    margin: 3vw 0;
-    font-size: 1.4rem;
-  }
-
-  &__card-type-container {
-    padding: 3px;
-  }
-
-  &__card-type-icon {
-    display: inline-block;
-    padding: 10px 0;
-    margin: 0 6px;
-    font-size: 0;
-    opacity: 0.5;
-
-    &.active {
-      opacity: 1;
-    }
-
-    img {
-      margin: auto;
-      max-width: 100%;
-    }
-
-    &.visa {
-      width: 12vw;
-    }
-
-    &.mastercard {
-      width: 10vw;
-    }
-
-    &.JCB {
-      width: 10vw;
-    }
-  }
-
-  &.stripe {
-    .payment-bank__card-type-icon {
-      position: absolute;
-      right: 5px;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      z-index: 100;
-    }
-
-    .payment-bank__card-type-icon.visa {
-      right: 45px;
-      height: 33px;
-    }
-
-    .payment-bank__card-type-icon.mastercard {
-      height: 38px;
-    }
-  }
-}
 
 .location-page {
   &__search-box {
@@ -2125,45 +2004,6 @@
 
   &__time {
     // @extend .card-list__time;
-  }
-}
-
-.customer {
-  &__method {
-    width: 50%;
-  }
-
-  &__method-label {
-    display: inline-block;
-    font-size: 1.2rem;
-  }
-
-  &__form {
-    // padding: 0 3.8vw;
-
-    // .form__group {
-    //   padding: 0;
-    //   margin: 16px 0;
-    // }
-
-    // .react-phone-number-input {
-    //   margin: 0;
-    // }
-
-    // .input,
-    // .react-phone-number-input--focus .react-phone-number-input__input,
-    // .react-phone-number-input .react-phone-number-input__input:focus,
-    // .react-phone-number-input .react-phone-number-input__input {
-    //   text-align: left;
-    //   font-size: 1.4rem;
-    //   height: 50px;
-    // }
-  }
-
-  &__edit-icon {
-    svg {
-      fill: $theme-color;
-    }
   }
 }
 

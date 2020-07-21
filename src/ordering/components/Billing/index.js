@@ -40,7 +40,7 @@ export class Billing extends Component {
             {t(promotion.promoType)} ({promotion.promoCode})
           </span>
         </label>
-        <span className="text-nowrap">
+        <span className="flex__shrink-fixed">
           {'-'} <CurrencyNumber className="text-weight-bolder" money={promotion.discount} />
         </span>
       </li>

@@ -200,7 +200,7 @@ class Cart extends Component {
             <span className="flex flex-middle flex-space-between padding-left-right-small text-weight-bolder">
               <IconLocalOffer className="icon icon__small icon__primary text-middle" />
               <div>
-                <div className="flex flex-middle text-nowrap">
+                <div className="flex flex-middle text-omit__single-line">
                   <span className="margin-left-right-smaller text-size-big text-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
@@ -219,7 +219,7 @@ class Cart extends Component {
                 ) : null}
               </div>
             </span>
-            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder text-nowrap">
+            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
               {'-'} <CurrencyNumber className="text-size-big text-weight-bolder" money={promotion.discount} />
             </div>
           </React.Fragment>

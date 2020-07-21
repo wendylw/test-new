@@ -21,6 +21,7 @@ import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
 import PaymentCardBrands from '../components/PaymentCardBrands';
+import '../PaymentCreditCard.scss';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -349,7 +350,7 @@ class CreditCard extends Component {
     const { card } = this.state;
 
     return (
-      <div className="payment-bank__card-type-container flex flex-middle">
+      <div className="payment-credit-card__card-type-container flex flex-middle">
         <PaymentCardBrands
           iconClassName={'payment-bank__card-type-icon'}
           country={this.props.merchantCountry}
@@ -367,23 +368,25 @@ class CreditCard extends Component {
 
     return (
       <form id="bank-2c2p-form" className="form">
-        <div className="payment-bank__form-item">
-          <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label text-weight-bolder">{t('CardInformation')}</label>
+        <div className="padding-left-right-normal">
+          <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
+            <label className="text-size-bigger text-weight-bolder">{t('CardInformation')}</label>
             {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
-              <span className="error-message text-weight-bolder text-uppercase">{cardInfoError.messages.required}</span>
+              <span className="form__error-message text-weight-bolder text-uppercase">
+                {cardInfoError.messages.required}
+              </span>
             ) : null}
           </div>
-          <div className="payment-bank__card-container">
+          <div className="payment-credit-card__card-container">
             <div
-              className={`input__list-top flex flex-middle flex-space-between ${
-                invalidCardInfoFields.includes('cardNumber') ? 'has-error' : ''
+              className={`payment-credit-card__group-card-number padding-left-right-normal form__group ${
+                invalidCardInfoFields.includes('cardNumber') ? 'error' : ''
               }`}
             >
               <input
                 ref={ref => (this.cardNumberEl = ref)}
                 id="cardNumber"
-                className="input input__block"
+                className="payment-credit-card__input form__input text-size-biggest"
                 data-heap-name="ordering.payment.credit-card.card-number"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
@@ -393,63 +396,76 @@ class CreditCard extends Component {
               />
               {this.renderCreditBrands()}
             </div>
-            <div className="input__list-bottom flex flex-middle flex-space-between">
-              <input
-                id="validDate"
-                className={`input input__block ${invalidCardInfoFields.includes('validDate') ? 'has-error' : ''}`}
-                data-heap-name="ordering.payment.credit-card.valid-date"
-                type="tel"
-                placeholder="MM / YY"
-                value={validDate || ''}
-                onChange={this.handleChangeValidaDate.bind(this)}
-                onBlur={this.validCardInfo.bind(this)}
-              />
-              <input
-                id="cvv"
-                data-encrypt="cvv"
-                className={`input input__block ${invalidCardInfoFields.includes('cvv') ? 'has-error' : ''}`}
-                data-heap-name="ordering.payment.credit-card.cvv"
-                type="password"
-                placeholder="CVV"
-                onBlur={this.validCardInfo.bind(this)}
-              />
+            <div className="flex flex-middle flex-space-between">
+              <div className="payment-credit-card__group-left-bottom form__group padding-left-right-normal">
+                <input
+                  id="validDate"
+                  className={`payment-credit-card__input form__input text-size-biggest ${
+                    invalidCardInfoFields.includes('validDate') ? 'error' : ''
+                  }`}
+                  data-heap-name="ordering.payment.credit-card.valid-date"
+                  type="tel"
+                  placeholder="MM / YY"
+                  value={validDate || ''}
+                  onChange={this.handleChangeValidaDate.bind(this)}
+                  onBlur={this.validCardInfo.bind(this)}
+                />
+              </div>
+
+              <div className="payment-credit-card__group-right-bottom form__group padding-left-right-normal">
+                <input
+                  id="cvv"
+                  data-encrypt="cvv"
+                  className={`payment-credit-card__input form__input text-size-biggest ${
+                    invalidCardInfoFields.includes('cvv') ? 'error' : ''
+                  }`}
+                  data-heap-name="ordering.payment.credit-card.cvv"
+                  type="password"
+                  placeholder="CVV"
+                  onBlur={this.validCardInfo.bind(this)}
+                />
+              </div>
             </div>
           </div>
-          <div className="error-message__container">
-            {cardInfoError.keys.length
-              ? cardInfoError.keys.map(key => {
-                  if (key === FormValidate.errorNames.required) {
-                    return null;
-                  }
+          {cardInfoError.keys.length
+            ? cardInfoError.keys.map(key => {
+                if (key === FormValidate.errorNames.required) {
+                  return null;
+                }
 
-                  return (
-                    <span key={key} className="error-message">
-                      {cardInfoError.messages[key]}
-                    </span>
-                  );
-                })
-              : null}
-          </div>
+                return (
+                  <span key={key} className="form__error-message padding-left-right-normal margin-top-bottom-smaller">
+                    {cardInfoError.messages[key]}
+                  </span>
+                );
+              })
+            : null}
         </div>
-        <div className="payment-bank__form-item">
-          <div className="flex flex-middle flex-space-between">
-            <label className="payment-bank__label text-weight-bolder">{t('NameOnCard')}</label>
+        <div className="padding-normal">
+          <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
+            <label className="text-size-bigger text-weight-bolder">{t('NameOnCard')}</label>
             {cardHolderNameError.key === FormValidate.errorNames.required ? (
-              <span className="error-message text-weight-bolder text-uppercase">{cardHolderNameError.message}</span>
+              <span className="form__error-message text-weight-bolder text-uppercase">
+                {cardHolderNameError.message}
+              </span>
             ) : null}
           </div>
-          <input
-            id="cardholderName"
-            className={`input input__block border-radius-base ${
-              cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''
-            }`}
-            data-heap-name="ordering.payment.credit-card.holder-name"
-            type="text"
-            value={cardholderName || ''}
-            onChange={this.handleChangeCardHolderName.bind(this)}
-          />
+          <div className="payment-credit-card__group form__group">
+            <input
+              id="cardholderName"
+              className={`payment-credit-card__input form__input padding-left-right-normal text-size-biggest ${
+                cardHolderNameError.key === FormValidate.errorNames.required ? 'error' : ''
+              }`}
+              data-heap-name="ordering.payment.credit-card.holder-name"
+              type="text"
+              value={cardholderName || ''}
+              onChange={this.handleChangeCardHolderName.bind(this)}
+            />
+          </div>
           {cardHolderNameError.key !== FormValidate.errorNames.required ? (
-            <span className="error-message">{cardHolderNameError.message}</span>
+            <span className="form__error-message padding-left-right-normal margin-top-bottom-smaller">
+              {cardHolderNameError.message}
+            </span>
           ) : null}
         </div>
 
@@ -470,7 +486,7 @@ class CreditCard extends Component {
 
     return (
       <section
-        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.credit-card.container"
       >
         <Header
@@ -486,16 +502,18 @@ class CreditCard extends Component {
             });
           }}
         />
-        <div className="payment-bank">
-          <CurrencyNumber className="payment-bank__money text-weight-bold text-center" money={total || 0} />
+        <div className="payment-credit-card__container padding-top-bottom-normal">
+          <div className="text-center padding-top-bottom-normal">
+            <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
+          </div>
 
           {this.renderForm()}
         </div>
 
-        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+        <footer className="payment-credit-card__footer footer padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="margin-top-bottom-smallest"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
@@ -516,18 +534,6 @@ class CreditCard extends Component {
               />
             )}
           </CreateOrderButton>
-          {/* <button
-            className="button button__fill button__block text-weight-bolder text-uppercase border-radius-base"
-            onClick={this.payNow.bind(this)}
-            data-testid="payMoney"
-            disabled={payNowLoading}
-          >
-            {payNowLoading ? (
-              <div className="loader"></div>
-            ) : (
-                <CurrencyNumber className="text-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-              )}
-          </button> */}
         </footer>
 
         {paymentData ? (

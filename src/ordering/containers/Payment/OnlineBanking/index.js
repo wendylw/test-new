@@ -156,16 +156,16 @@ class OnlineBanking extends Component {
           }}
         />
 
-        <div className="payment-bank">
+        <div className="payment-credit-card">
           <Image className="logo-default__image-container" src={logo} />
-          <CurrencyNumber className="payment-bank__money text-weight-bolder text-center" money={total || 0} />
+          <CurrencyNumber className="payment-credit-card__money text-weight-bolder text-center" money={total || 0} />
 
           <form id="bank-2c2p-form" className="form">
-            <div className="payment-bank__form-item">
+            <div className="payment-credit-card__form-item">
               <div className="flex flex-middle flex-space-between">
-                <label className="payment-bank__label text-weight-bolder">{t('SelectABank')}</label>
+                <label className="text-size-bigger text-weight-bolder">{t('SelectABank')}</label>
               </div>
-              <div className="payment-bank__card-container">
+              <div className="payment-credit-card__card-container">
                 <div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
                   {this.renderBankingList()}
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

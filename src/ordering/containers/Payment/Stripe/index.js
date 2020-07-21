@@ -27,7 +27,7 @@ import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../re
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import withDataAttributes from '../../../../components/withDataAttributes';
-// import '../styles/2-Card-Detailed.css';
+import '../PaymentCreditCard.scss';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -52,33 +52,35 @@ const Field = withDataAttributes(
     dataAttributes,
   }) => (
     <div className={formClassName}>
-      <div className="flex flex-middle flex-space-between">
-        <label htmlFor={id} className="payment-bank__label text-weight-bolder">
+      <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
+        <label htmlFor={id} className="text-size-bigger text-weight-bolder">
           {label}
         </label>
         {isFormTouched && isNotNameComplete ? (
-          <span className="error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
+          <span className="form__error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
         ) : null}
       </div>
-      <input
-        className={inputClassName}
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        required={required}
-        autoComplete={autoComplete}
-        value={value}
-        onChange={onChange}
-        {...dataAttributes}
-      />
+      <div className="form__group">
+        <input
+          className={inputClassName}
+          id={id}
+          type={type}
+          placeholder={placeholder}
+          required={required}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={onChange}
+          {...dataAttributes}
+        />
+      </div>
     </div>
   )
 );
 
 const ErrorMessage = ({ children }) => (
-  <div className="error-message__container has-error" role="alert">
+  <span className="form__error-message padding-left-right-normal margin-top-bottom-smaller" role="alert">
     {children}
-  </div>
+  </span>
 );
 
 const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) => {
@@ -146,170 +148,149 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <div className="flex flex-middle flex-space-between">
-        <label className="payment-bank__label text-weight-bolder">{t('CardInformation')}</label>
-        {isFormTouched && isNotCardComplete ? (
-          <span className="error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
-        ) : null}
-      </div>
-      <div
-        className={`input__list-top${
-          (isFormTouched && isNotCardComplete) ||
-          (error && (error.code === 'invalid_number' || error.code === 'incomplete_number'))
-            ? ' has-error'
-            : ''
-        }`}
-        data-heap-name="ordering.payment.stripe.card-number-wrapper"
-        style={{
-          height: '50px',
-          padding: '12px',
-        }}
-      >
-        <CardNumberElement
-          options={{
-            style: {
-              base: {
-                height: '50px',
-                color: '#303030',
-                fontWeight: 500,
-                fontSize: '1.3rem',
-                fontSmoothing: 'antialiased',
-                ':-webkit-autofill': {
-                  color: '#dededf',
+      <div className="padding-left-right-normal">
+        <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
+          <label className="text-size-bigger text-weight-bolder">{t('CardInformation')}</label>
+          {isFormTouched && isNotCardComplete ? (
+            <span className="form__error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
+          ) : null}
+        </div>
+        <div
+          className={`payment-credit-card__group-card-number padding-left-right-normal form__group ${
+            (isFormTouched && isNotCardComplete) ||
+            (error && (error.code === 'invalid_number' || error.code === 'incomplete_number'))
+              ? ' error'
+              : ''
+          }`}
+          data-heap-name="ordering.payment.stripe.card-number-wrapper"
+        >
+          <CardNumberElement
+            options={{
+              style: {
+                base: {
+                  lineHeight: '54px',
+                  color: '#303030',
+                  fontSize: '1.4285rem',
+                  fontSmoothing: 'antialiased',
+                  ':-webkit-autofill': {
+                    color: '#dededf',
+                  },
+                  '::placeholder': {
+                    color: '#dededf',
+                  },
                 },
-                '::placeholder': {
-                  color: '#dededf',
+                invalid: {
+                  color: '#fa4133',
                 },
               },
-              invalid: {
-                color: '#ff5821',
-              },
-            },
-          }}
-          onChange={e => {
-            setError(e.error);
-            // Card brand. Can be American Express, Diners Club, Discover, JCB, MasterCard, UnionPay, Visa, or Unknown.
-            // The card brand of the card number being entered.
-            // Can be one of visa, mastercard, amex, discover, diners, jcb, unionpay, or unknown.
-            setCardBrand(e.brand);
-            setCardNumberComplete(e.complete);
-          }}
-          onReady={e => {
-            setCardNumberDom(true);
-          }}
-        />
-        <PaymentCardBrands
-          iconClassName={'payment-bank__card-type-icon'}
-          country={country}
-          brand={cardBrand}
-          vendor={PaymentCardBrands.VENDOR_STRIPE}
-        />
-      </div>
+            }}
+            onChange={e => {
+              setError(e.error);
+              // Card brand. Can be American Express, Diners Club, Discover, JCB, MasterCard, UnionPay, Visa, or Unknown.
+              // The card brand of the card number being entered.
+              // Can be one of visa, mastercard, amex, discover, diners, jcb, unionpay, or unknown.
+              setCardBrand(e.brand);
+              setCardNumberComplete(e.complete);
+            }}
+            onReady={e => {
+              setCardNumberDom(true);
+            }}
+          />
+          <PaymentCardBrands country={country} brand={cardBrand} vendor={PaymentCardBrands.VENDOR_STRIPE} />
+        </div>
 
-      <div className="input__list-bottomn">
-        <div
-          data-heap-name="ordering.payment.stripe.valid-date-wrapper"
-          style={{
-            display: 'inline-block',
-            height: '50px',
-            width: '50%',
-            padding: '12px',
-            borderWidth: '1px',
-            borderStyle: 'solid',
-            borderColor:
-              (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_expiry')
-                ? '#ff5821'
-                : '#dededf',
-            borderBottomLeftRadius: '4px',
-            transform: 'translateY(-1px)',
-          }}
-        >
-          <CardExpiryElement
-            options={{
-              style: {
-                base: {
-                  height: '50px',
-                  color: '#303030',
-                  fontWeight: 500,
-                  fontSize: '1.3rem',
-                  fontSmoothing: 'antialiased',
-                  ':-webkit-autofill': {
-                    color: '#dededf',
+        <div className="flex flex-middle">
+          <div
+            className="payment-credit-card__group-left-bottom form__group padding-left-right-normal"
+            data-heap-name="ordering.payment.stripe.valid-date-wrapper"
+            style={{
+              width: '50%',
+              borderColor:
+                (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_expiry')
+                  ? '#fa4133'
+                  : '#dededf',
+            }}
+          >
+            <CardExpiryElement
+              options={{
+                style: {
+                  base: {
+                    lineHeight: '54px',
+                    color: '#303030',
+                    fontSize: '1.4285rem',
+                    fontSmoothing: 'antialiased',
+                    ':-webkit-autofill': {
+                      color: '#dededf',
+                    },
+                    '::placeholder': {
+                      color: '#dededf',
+                    },
                   },
-                  '::placeholder': {
-                    color: '#dededf',
+                  invalid: {
+                    color: '#fa4133',
                   },
                 },
-                invalid: {
-                  color: '#ff5821',
+              }}
+              onChange={e => {
+                setError(e.error);
+                setCardExpiryComplete(e.complete);
+              }}
+              onReady={e => {
+                setCardExpiryDom(true);
+              }}
+            />
+          </div>
+          <div
+            className="payment-credit-card__group-right-bottom form__group padding-left-right-normal"
+            style={{
+              width: '50%',
+              borderWidth: error && error.code === 'incomplete_cvc' ? '1px' : '1px 1px 1px 0',
+              borderColor:
+                (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
+                  ? '#fa4133'
+                  : '#dededf',
+            }}
+            data-heap-name="ordering.payment.stripe.cvc-wrapper"
+          >
+            <CardCvcElement
+              options={{
+                style: {
+                  base: {
+                    lineHeight: '54px',
+                    color: '#303030',
+                    fontSize: '1.4285rem',
+                    fontSmoothing: 'antialiased',
+                    ':-webkit-autofill': {
+                      color: '#dededf',
+                    },
+                    '::placeholder': {
+                      color: '#dededf',
+                    },
+                  },
+                  invalid: {
+                    color: '#fa4133',
+                  },
                 },
-              },
-            }}
-            onChange={e => {
-              setError(e.error);
-              setCardExpiryComplete(e.complete);
-            }}
-            onReady={e => {
-              setCardExpiryDom(true);
-            }}
-          />
+              }}
+              onChange={e => {
+                setError(e.error);
+                setCardCvcComplete(e.complete);
+              }}
+              onReady={e => {
+                setCardCVCDom(true);
+              }}
+            />
+          </div>
         </div>
-        <div
-          style={{
-            display: 'inline-block',
-            height: '50px',
-            width: '50%',
-            padding: '12px',
-            borderWidth: error && error.code === 'incomplete_cvc' ? '1px' : '1px 1px 1px 0',
-            borderStyle: 'solid',
-            borderColor:
-              (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
-                ? '#ff5821'
-                : '#dededf',
-            borderBottomRightRadius: '4px',
-            transform: 'translateY(-1px)',
-          }}
-          data-heap-name="ordering.payment.stripe.cvc-wrapper"
-        >
-          <CardCvcElement
-            options={{
-              style: {
-                base: {
-                  height: '50px',
-                  color: '#303030',
-                  fontWeight: 500,
-                  fontSize: '1.3rem',
-                  fontSmoothing: 'antialiased',
-                  ':-webkit-autofill': {
-                    color: '#dededf',
-                  },
-                  '::placeholder': {
-                    color: '#dededf',
-                  },
-                },
-                invalid: {
-                  color: '#ff5821',
-                },
-              },
-            }}
-            onChange={e => {
-              setError(e.error);
-              setCardCvcComplete(e.complete);
-            }}
-            onReady={e => {
-              setCardCVCDom(true);
-            }}
-          />
-        </div>
-        {error && <ErrorMessage>{renderFieldErrorMessage()}</ErrorMessage>}
       </div>
+      {error && <ErrorMessage>{renderFieldErrorMessage()}</ErrorMessage>}
 
       <Field
         t={t}
         label={t('NameOnCard')}
-        formClassName="payment-bank__form-item"
-        inputClassName={`input input__block border-radius-base${
-          isFormTouched && isNotCardComplete ? ' has-error' : ''
+        formClassName="padding-normal"
+        inputClassName={`payment-credit-card__input form__input padding-left-right-normal text-size-biggest ${
+          isFormTouched && isNotCardComplete ? ' error' : ''
         }`}
         id="name"
         type="text"
@@ -323,8 +304,10 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           setBillingDetails({ ...billingDetails, name: e.target.value });
         }}
       />
-      <footer className="footer padding-top-bottom-small padding-left-right-normal">
+
+      <footer className="payment-credit-card__footer footer padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
+          className="margin-top-bottom-smallest"
           history={history}
           buttonType="submit"
           data-heap-name="ordering.payment.stripe.pay-btn"
@@ -405,7 +388,7 @@ class Stripe extends Component {
 
     return (
       <section
-        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.stripe.container"
       >
         <Header
@@ -422,8 +405,10 @@ class Stripe extends Component {
           }}
         />
 
-        <div className="payment-bank stripe">
-          <CurrencyNumber className="payment-bank__money text-weight-bolder text-center" money={total || 0} />
+        <div className="payment-credit-card__container padding-top-bottom-normal">
+          <div className="text-center padding-top-bottom-normal">
+            <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
+          </div>
 
           <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm

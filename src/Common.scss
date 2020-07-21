@@ -991,63 +991,6 @@ img {
   }
 }
 
-.input-group {
-  background-color: $white;
-
-  &.outline {
-    border: 1px solid $gray-3;
-
-    .input {
-      border: 0;
-    }
-  }
-}
-
-.input {
-  &__error {
-    border-color: $status-red;
-    color: $status-red;
-  }
-
-  &__error-message {
-    color: $status-red;
-  }
-}
-
-form {
-  select {
-    position: relative;
-    border: 0;
-    background-color: transparent;
-    -webkit-appearance: none;
-    box-shadow: none;
-    outline: none;
-    z-index: 1;
-  }
-
-  // &.form .has-error {
-  //   @extend .input__error;
-
-  //   position: relative;
-  //   z-index: 1;
-
-  //   input {
-  //     color: inherit;
-  //   }
-  // }
-
-  // .error-message {
-  //   @extend .input__error-message;
-
-  //   display: inline-block;
-  //   line-height: $line-height-base;
-
-  //   &__container {
-  //     margin: 10px 0;
-  //   }
-  // }
-}
-
 .progress-bar {
   display: block;
   width: 100%;
@@ -1063,25 +1006,6 @@ form {
     height: 8px;
     background-color: $gray-4;
   }
-}
-
-.form {
-  // &__error-message {
-  //   display: inline-block;
-  //   margin: 10px 0;
-  //   color: $status-red;
-  //   font-size: 0.8rem;
-  // }
-
-  // &__group {
-  //   padding: 15px 0;
-  // }
-
-  // &__label {
-  //   display: block;
-  //   margin: 5px 0;
-  //   font-size: 1.2rem;
-  // }
 }
 
 .input {
@@ -1126,66 +1050,12 @@ form {
   &__textarea {
     height: auto;
   }
-
-  &__list-top {
-    input:first-child {
-      border-top-left-radius: 4px;
-    }
-
-    input:last-child {
-      border-top-right-radius: 4px;
-    }
-  }
-
-  &__list-bottom {
-    input ~ input {
-      margin-left: -1px;
-    }
-
-    input:first-child {
-      border-radius: 0;
-      border-bottom-left-radius: 4px;
-    }
-
-    input:last-child {
-      border-radius: 0;
-      border-bottom-right-radius: 4px;
-    }
-  }
-
-  &__list-top + &__list-bottom {
-    margin-top: -1px;
-  }
 }
 
 .reset-button {
   border: 0;
   outline: none;
   box-shadow: none;
-}
-
-// .font-weight-light {
-//   font-weight: $font-weight-light;
-// }
-
-// .font-weight-bolder {
-//   font-weight: $font-weight-bolder;
-// }
-
-// .font-weight-bold {
-//   font-weight: $font-weight-bold;
-// }
-
-// .text-uppercase {
-//   text-transform: uppercase;
-// }
-
-.text-error {
-  color: $status-red;
-}
-
-.text-nowrap {
-  white-space: nowrap;
 }
 
 // .border-radius-base {

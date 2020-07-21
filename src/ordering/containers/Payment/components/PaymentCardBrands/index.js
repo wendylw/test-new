@@ -38,21 +38,25 @@ const mapBrandToStandard = (brand, vendor) => {
 };
 
 /* eslint-disable jsx-a11y/alt-text */
-const PaymentCardBrands = ({ country, brand: originalBrand, iconClassName, vendor = '' }) => {
+const PaymentCardBrands = ({ country, brand: originalBrand, vendor = '' }) => {
   const brandsSupported = getSupportCreditCardBrands(country);
   const brand = mapBrandToStandard(originalBrand, vendor);
 
   return (
-    <React.Fragment>
+    <div className="payment-credit-card__icon-container padding-left-right-small">
       {brandsSupported.includes(CREDIT_CARD_BRANDS.VISA) ? (
-        <i className={`${iconClassName} visa text-middle ${brand === CREDIT_CARD_BRANDS.VISA ? 'active' : ''}`}>
+        <i
+          className={`payment-credit-card__icon text-middle margin-smallest text-size-reset ${
+            brand === CREDIT_CARD_BRANDS.VISA ? 'active' : ''
+          }`}
+        >
           <img src={paymentVisaImage} />
         </i>
       ) : null}
 
       {brandsSupported.includes(CREDIT_CARD_BRANDS.MASTER_CARD) ? (
         <i
-          className={`${iconClassName} mastercard text-middle ${
+          className={`payment-credit-card__icon text-middle margin-smallest text-size-reset ${
             brand === CREDIT_CARD_BRANDS.MASTER_CARD ? 'active' : ''
           }`}
         >
@@ -61,11 +65,15 @@ const PaymentCardBrands = ({ country, brand: originalBrand, iconClassName, vendo
       ) : null}
 
       {brandsSupported.includes(CREDIT_CARD_BRANDS.JCB) ? (
-        <i className={`${iconClassName} JCB text-middle ${brand === CREDIT_CARD_BRANDS.JCB ? 'active' : ''}`}>
+        <i
+          className={`payment-credit-card__icon text-middle margin-smallest text-size-reset ${
+            brand === CREDIT_CARD_BRANDS.JCB ? 'active' : ''
+          }`}
+        >
           <img src={paymentJCBImage} />
         </i>
       ) : null}
-    </React.Fragment>
+    </div>
   );
 };
 /* eslint-enable jsx-a11y/alt-text */

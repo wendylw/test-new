@@ -228,6 +228,7 @@ class Payment extends Component {
 
         <footer className="footer padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
+            className="margin-top-bottom-smallest"
             history={history}
             className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             data-testid="payNow"

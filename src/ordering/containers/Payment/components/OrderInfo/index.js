@@ -11,7 +11,7 @@ class OrderInfo extends Component {
         <figure className="logo-default__image-container">
           <img src={logo} alt="" />
         </figure>
-        <CurrencyNumber className="payment-bank__money text-weight-bolder text-center" money={money} />
+        <CurrencyNumber className="payment-credit-card__money text-weight-bolder text-center" money={money} />
       </div>
     );
   }
