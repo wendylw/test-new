@@ -297,142 +297,145 @@ class Customer extends Component {
         this.setState({
           isInitCoed: true,
         });
+
+        clearTimeout(timer);
       }, 0);
-  };
+  }
+};
 
-  render() {
-    const { t, history, deliveryDetails, cartSummary, error } = this.props;
-    const { addressChange, processing } = this.state;
-    const { username, phone } = deliveryDetails;
-    const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
-    const formatPhone = formatPhoneNumberIntl(phone);
-    const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
-    const { total, shippingFee } = cartSummary || {};
+render() {
+  const { t, history, deliveryDetails, cartSummary, error } = this.props;
+  const { addressChange, processing } = this.state;
+  const { username, phone } = deliveryDetails;
+  const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
+  const formatPhone = formatPhoneNumberIntl(phone);
+  const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
+  const { total, shippingFee } = cartSummary || {};
 
-    // console.log(shippingFee);
-    // console.log(addressChange);
+  // console.log(shippingFee);
+  // console.log(addressChange);
 
-    return (
-      <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
-        <Header
-          headerRef={ref => (this.headerEl = ref)}
-          className="flex-middle text-center"
-          contentClassName="flex-middle"
-          data-heap-name="ordering.customer.header"
-          isPage={true}
-          title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
-          navFunc={() => {
+  return (
+    <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
+      <Header
+        headerRef={ref => (this.headerEl = ref)}
+        className="flex-middle text-center"
+        contentClassName="flex-middle"
+        data-heap-name="ordering.customer.header"
+        isPage={true}
+        title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
+        navFunc={() => {
+          history.push({
+            pathname: ROUTER_PATHS.ORDERING_CART,
+            search: window.location.search,
+          });
+        }}
+      ></Header>
+      <div
+        className="ordering-customer__container"
+        style={{
+          top: `${Utils.mainTop({
+            headerEls: [this.headerEl],
+          })}px`,
+          height: `${Utils.windowSize().height -
+            Utils.mainTop({
+              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+            }) -
+            Utils.marginBottom({
+              footerEls: [this.footerEl],
+            })}px`,
+        }}
+      >
+        <ul>
+          {this.renderDeliveryPickupDetail()}
+          <li>
+            <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder">
+              {t('ContactDetails')}
+            </h4>
+            <Link
+              to={{
+                pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
+                search: window.location.search,
+              }}
+              className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
+            >
+              <IconAccountCircle className="icon icon__small icon__default margin-small" />
+              <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
+                <div className="padding-top-bottom-smaller">
+                  <p className="padding-top-bottom-smaller">
+                    {username ? (
+                      <span className="text-size-big">{username}</span>
+                    ) : (
+                        <React.Fragment>
+                          <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
+                          <span className="text-size-big text-error"> - *</span>
+                          <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
+                        </React.Fragment>
+                      )}
+                  </p>
+                  {phone ? (
+                    <p className="padding-top-bottom-smaller">
+                      {/* Country Code */}
+                      <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
+                        0,
+                        splitIndex
+                      )} `}</span>
+                      {/* end of Country Code */}
+                      <span className="text-size-big">{formatPhone.substring(splitIndex + 1)}</span>
+                    </p>
+                  ) : null}
+                </div>
+                <IconNext className="icon" />
+              </div>
+            </Link>
+          </li>
+        </ul>
+      </div>
+      <footer
+        ref={ref => (this.footerEl = ref)}
+        className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+      >
+        <button
+          className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+          data-heap-name="ordering.customer.back-btn"
+          onClick={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
               search: window.location.search,
             });
           }}
-        ></Header>
-        <div
-          className="ordering-customer__container"
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
-            height: `${Utils.windowSize().height -
-              Utils.mainTop({
-                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
-              }) -
-              Utils.marginBottom({
-                footerEls: [this.footerEl],
-              })}px`,
+        >
+          {t('Back')}
+        </button>
+        <CreateOrderButton
+          className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
+          history={history}
+          data-testid="customerContinue"
+          data-heap-name="ordering.customer.continue-btn"
+          disabled={processing}
+          validCreateOrder={!total && !this.validateFields().showModal}
+          beforeCreateOrder={this.handleBeforeCreateOrder}
+          afterCreateOrder={this.visitPaymentPage}
+        >
+          {processing ? t('Processing') : t('Continue')}
+        </CreateOrderButton>
+      </footer>
+      {error.show ? (
+        <MessageModal
+          data={error}
+          onHide={() => {
+            this.handleErrorHide();
           }}
-        >
-          <ul>
-            {this.renderDeliveryPickupDetail()}
-            <li>
-              <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder">
-                {t('ContactDetails')}
-              </h4>
-              <Link
-                to={{
-                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
-                  search: window.location.search,
-                }}
-                className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
-              >
-                <IconAccountCircle className="icon icon__small icon__default margin-small" />
-                <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
-                  <div className="padding-top-bottom-smaller">
-                    <p className="padding-top-bottom-smaller">
-                      {username ? (
-                        <span className="text-size-big">{username}</span>
-                      ) : (
-                          <React.Fragment>
-                            <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
-                            <span className="text-size-big text-error"> - *</span>
-                            <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
-                          </React.Fragment>
-                        )}
-                    </p>
-                    {phone ? (
-                      <p className="padding-top-bottom-smaller">
-                        {/* Country Code */}
-                        <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
-                          0,
-                          splitIndex
-                        )} `}</span>
-                        {/* end of Country Code */}
-                        <span className="text-size-big">{formatPhone.substring(splitIndex + 1)}</span>
-                      </p>
-                    ) : null}
-                  </div>
-                  <IconNext className="icon" />
-                </div>
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <footer
-          ref={ref => (this.footerEl = ref)}
-          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
-        >
-          <button
-            className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-            data-heap-name="ordering.customer.back-btn"
-            onClick={() => {
-              history.push({
-                pathname: ROUTER_PATHS.ORDERING_CART,
-                search: window.location.search,
-              });
-            }}
-          >
-            {t('Back')}
-          </button>
-          <CreateOrderButton
-            className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
-            history={history}
-            data-testid="customerContinue"
-            data-heap-name="ordering.customer.continue-btn"
-            disabled={processing}
-            validCreateOrder={!total && !this.validateFields().showModal}
-            beforeCreateOrder={this.handleBeforeCreateOrder}
-            afterCreateOrder={this.visitPaymentPage}
-          >
-            {processing ? t('Processing') : t('Continue')}
-          </CreateOrderButton>
-        </footer>
-        {error.show ? (
-          <MessageModal
-            data={error}
-            onHide={() => {
-              this.handleErrorHide();
-            }}
-          />
-        ) : null}
-        <AddressChangeModal
-          deliveryFee={shippingFee}
-          addressChange={addressChange}
-          continue={this.handleHideChangeShippingFeeModal}
         />
-      </section>
-    );
-  }
+      ) : null}
+      <AddressChangeModal
+        deliveryFee={shippingFee}
+        addressChange={addressChange}
+        continue={this.handleHideChangeShippingFeeModal}
+      />
+    </section>
+  );
+}
 }
 
 export default compose(
