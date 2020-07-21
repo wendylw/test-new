@@ -926,12 +926,21 @@ class LocationAndDate extends Component {
   };
 
   goStoreList = () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-      search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
-        this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-      }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
-    });
+    if (this.state.search.storeid) {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+        search: `${this.state.search.h ? 'h=' + this.state.h + '&' : ''}type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+      });
+    } else {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+        search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+      });
+    }
   };
   renderSelectStore = () => {
     // let store = [];
