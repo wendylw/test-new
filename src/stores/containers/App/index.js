@@ -29,6 +29,7 @@ import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
+import { store } from '../../../utils/testHelper';
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class App extends Component {
@@ -60,11 +61,47 @@ class App extends Component {
     this.checkType(type);
   };
 
+  checkOnlyType = type => {
+    const { stores } = this.props;
+
+    let isOnlyType = true,
+      onlyType;
+    for (let store of stores) {
+      if (store.fulfillmentOptions.length > 1) {
+        isOnlyType = false;
+        break;
+      }
+    }
+
+    if (isOnlyType) {
+      onlyType = stores[0].fulfillmentOptions[0].toLowerCase();
+      for (let store of stores) {
+        if (store.fulfillmentOptions[0].toLowerCase() !== onlyType) {
+          isOnlyType = false;
+          break;
+        }
+      }
+    }
+
+    if (isOnlyType) {
+      type = onlyType;
+      Utils.setLocalStorageVariable('ONLYTYPE', type);
+    } else {
+      Utils.removeLocalStorageVariable('ONLYTYPE');
+    }
+
+    return type;
+  };
+
   checkType = async type => {
     await this.props.storesActions.loadCoreStores();
+
+    type = this.checkOnlyType(type);
+
     if (!this.props.enableDelivery) {
       window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.DINE}`;
     }
+
     if (type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.checkDeliveryAddress(type);
     } else if (type.toLowerCase() === DELIVERY_METHOD.PICKUP) {

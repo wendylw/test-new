@@ -73,6 +73,7 @@ class LocationAndDate extends Component {
     isPickUpType: false,
     nearlyStore: {},
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+    onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -96,7 +97,7 @@ class LocationAndDate extends Component {
     this.setState({
       deliveryToAddress,
     });
-    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
+    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore(this.state.search.h);
 
     if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.setDeliveryType();
@@ -112,9 +113,58 @@ class LocationAndDate extends Component {
         isPickUpType: false,
       },
       () => {
+        if (this.state.nearlyStore.id) {
+          let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+          let isSupport = false;
+          this.state.nearlyStore.fulfillmentOptions.forEach(item => {
+            if (item.toLowerCase() == type) isSupport = true;
+          });
+
+          if (!isSupport) {
+            this.reSetStore();
+          }
+        }
         this.setMethodsTime();
       }
     );
+  };
+
+  reSetStore = async () => {
+    await this.props.homeActions.loadCoreStores();
+    const { allStore } = this.props;
+
+    if (Utils.getSessionVariable('deliveryAddress')) {
+      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+      if (allStore.length) {
+        let stores = allStore;
+        let type = Constants.DELIVERY_METHOD.DELIVERY;
+        stores.forEach((item, idx, arr) => {
+          if (item.location) {
+            item.distance = computeStraightDistance(deliveryAddress.coords, {
+              lat: item.location.latitude,
+              lng: item.location.longitude,
+            });
+          }
+        });
+        stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+        let nearly;
+        stores.forEach(item => {
+          if (!nearly) {
+            nearly = item;
+          } else {
+            item.distance < nearly.distance && (nearly = item);
+          }
+        });
+        let result = await this.props.homeActions.getStoreHashData(nearly.id);
+        const h = result.response.redirectTo;
+        this.setState({
+          h,
+          nearlyStore: nearly,
+        });
+        // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
+      }
+    }
   };
 
   setPickUpType = (ischeckStore = true) => {
@@ -124,8 +174,28 @@ class LocationAndDate extends Component {
         isDeliveryType: false,
       },
       () => {
-        if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
-        this.setMethodsTime();
+        if (this.state.nearlyStore.id && ischeckStore) {
+          let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+          let isSupport = false;
+          this.state.nearlyStore.fulfillmentOptions.forEach(item => {
+            if (item.toLowerCase() == type) isSupport = true;
+          });
+
+          if (!isSupport) {
+            this.setState(
+              {
+                nearlyStore: {},
+              },
+              () => {
+                if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
+                this.setMethodsTime();
+              }
+            );
+          }
+        } else {
+          if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
+          this.setMethodsTime();
+        }
       }
     );
   };
@@ -171,12 +241,51 @@ class LocationAndDate extends Component {
     }
   };
 
-  setStore = async () => {
-    if (Utils.getSessionVariable('deliveryAddress') && !this.state.search.h) {
-      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+  checkOnlyType = (stores, type) => {
+    let isOnlyType = true,
+      onlyType;
+    for (let store of stores) {
+      if (store.fulfillmentOptions.length > 1) {
+        isOnlyType = false;
+        break;
+      }
+    }
 
-      await this.props.homeActions.loadCoreStores();
-      const { allStore } = this.props;
+    if (isOnlyType) {
+      onlyType = stores[0].fulfillmentOptions[0].toLowerCase();
+      for (let store of stores) {
+        if (store.fulfillmentOptions[0].toLowerCase() !== onlyType) {
+          isOnlyType = false;
+          break;
+        }
+      }
+    }
+
+    if (isOnlyType) {
+      type = onlyType;
+      Utils.setLocalStorageVariable('ONLYTYPE', type);
+      if (type === DELIVERY_METHOD.DELIVERY) {
+        this.setDeliveryType();
+      } else if (type === DELIVERY_METHOD.PICKUP) {
+        this.setPickUpType(false);
+      }
+    } else {
+      Utils.removeLocalStorageVariable('ONLYTYPE');
+      this.setState({
+        onlyType: false,
+      });
+    }
+
+    return type;
+  };
+
+  setStore = async searchH => {
+    await this.props.homeActions.loadCoreStores();
+    const { allStore } = this.props;
+
+    this.checkOnlyType(allStore);
+    if (Utils.getSessionVariable('deliveryAddress') && !searchH) {
+      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
 
       if (allStore.length && !this.state.h) {
         let stores = allStore;
@@ -200,7 +309,7 @@ class LocationAndDate extends Component {
         });
         let result = await this.props.homeActions.getStoreHashData(nearly.id);
         const h = result.response.redirectTo;
-
+        debugger;
         this.setState({
           h,
           nearlyStore: nearly,
@@ -208,7 +317,6 @@ class LocationAndDate extends Component {
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
     } else if (this.state.search.h) {
-      await this.props.homeActions.loadCoreStores();
       let store = this.props.allStore.filter(item => item.id === config.storeId);
       this.setState({
         nearlyStore: store[0],
@@ -943,13 +1051,6 @@ class LocationAndDate extends Component {
     }
   };
   renderSelectStore = () => {
-    // let store = [];
-    // if (this.state.search.storeid) {
-    //   store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
-    // } else {
-    //   store = [this.state.nearlyStore];
-    // }
-    const store = this.state.nearlyStore.name;
     return (
       <div
         className="form__group"
@@ -958,10 +1059,17 @@ class LocationAndDate extends Component {
       >
         <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
           {this.props.t('Selected Store')}
+          {this.state.nearlyStore.name}
         </label>
         <div className="location-page__search-box">
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-            <input className="input input__block" data-testid="deliverTo" type="text" defaultValue={store} readOnly />
+            <input
+              className="input input__block"
+              data-testid="deliverTo"
+              type="text"
+              value={this.state.nearlyStore.name}
+              readOnly
+            />
             <IconNext className="delivery__next-icon" />
           </div>
         </div>
@@ -979,27 +1087,29 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        <div
-          style={{ margin: '30px 16px', height: '40px', boxShadow: '0px 1px 2px 1px #eee' }}
-          className="form__group flex flex-middle input-group outline border-radius-base"
-        >
-          <p
-            onClick={this.setDeliveryType}
-            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
-            className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
-            data-heap-name="ordering.location-and-date.delivery"
+        {!this.state.onlyType && (
+          <div
+            style={{ margin: '30px 16px', height: '40px', boxShadow: '0px 1px 2px 1px #eee' }}
+            className="form__group flex flex-middle input-group outline border-radius-base"
           >
-            Delivery
-          </p>
-          <p
-            onClick={this.setPickUpType}
-            style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
-            className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
-            data-heap-name="ordering.location-and-date.pickup"
-          >
-            Pickup
-          </p>
-        </div>
+            <p
+              onClick={this.setDeliveryType}
+              style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
+              className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
+              data-heap-name="ordering.location-and-date.delivery"
+            >
+              Delivery
+            </p>
+            <p
+              onClick={this.setPickUpType}
+              style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
+              className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
+              data-heap-name="ordering.location-and-date.pickup"
+            >
+              Pickup
+            </p>
+          </div>
+        )}
         <div className="location-display__content">
           {this.state.isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}

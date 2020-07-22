@@ -127,6 +127,7 @@ class StoreList extends Component {
       item =>
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
     );
+    stores = stores.filter(item => this.isShowStore(item));
     return (
       (this.props.onlineStoreInfo && (
         <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
