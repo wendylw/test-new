@@ -138,5 +138,16 @@
   "Login": "LOGIN",
   "Required": "Required",
   "LoginTip": "Login with your mobile number to view all your promos & vouchers",
-  "Dismiss": "Dismiss"
+  "Dismiss": "Dismiss",
+  "Description": "We could not process your {{paymentMethod}} payment due to {{error}}. The contents of your cart have been saved for you",
+  "AmountTooLarge": "Amount Too Large",
+  "AmountTooSmall": "Amount Too Small",
+  "AuthenticationRequired": "Authentication Required",
+  "BalanceInsufficient": "Balance Insufficient",
+  "CardExpired": "Card Expired",
+  "BankDeclined": "Bank Declined",
+  "IncorrectCvc": "Incorrect Cvc",
+  "UnknownError": "Unknown Error",
+  "OnlineBanking": "Online Banking",
+  "CreditAndDebitCard": "Credit/Debit Card"
 }

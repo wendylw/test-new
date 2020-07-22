@@ -561,7 +561,7 @@ class ProductDetail extends Component {
               {images.map((imageItemUrl, key) => {
                 return (
                   <SwipeItem key={`swipe-${key}`}>
-                    <Image src={imageItemUrl} scalingRatioIndex={1} alt={`${storeName} ${title}`} />
+                    <Image src={imageItemUrl} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
                   </SwipeItem>
                 );
               })}
@@ -569,7 +569,7 @@ class ProductDetail extends Component {
           ) : (
             <Image
               src={images && images.length ? images[0] : null}
-              scalingRatioIndex={1}
+              scalingRatioIndex={2}
               alt={`${storeName} ${title}`}
             />
           )}
