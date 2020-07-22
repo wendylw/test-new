@@ -35,7 +35,7 @@ import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
-import locationIcon from '../../../images/Pin.svg';
+import locationIcon from '../../../images/beep_home_location.svg';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 const localState = {
   blockScrollTop: 0,
@@ -433,7 +433,10 @@ export class Home extends Component {
               />
             ) : null}
             <div className="location-page__base-info">
-              <p className="location-page__entry-address">
+              <p
+                className="location-page__entry-address"
+                style={{ fontSize: '14px', lineHeight: '22px', display: 'flex', maxHeight: '22px' }}
+              >
                 {' '}
                 <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
                 {Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
@@ -486,27 +489,27 @@ export class Home extends Component {
 
     if (enablePreOrder) {
       deliveryTimeText = this.getExpectedDeliveryTime();
-    } else {
-      Utils.setSessionVariable(
-        'expectedDeliveryHour',
-        JSON.stringify({
-          from: 'now',
-          to: 'now',
-        })
-      );
     }
 
     return (
       <div
         className="location-page__entry-address pick-up flex flex-middle"
-        style={{ color: '#333', lineHeight: '100%', paddingLeft: '20px', maxHeight: '26px' }}
+        style={{
+          color: '#333',
+          lineHeight: '100%',
+          paddingLeft: '20px',
+          maxHeight: '26px',
+          fontSize: '12px',
+          fontWeight: '500',
+        }}
       >
-        <summary className="item__title text-uppercase font-weight-bolder inline-block">
+        <summary className="item__title text-uppercase font-weight-bold inline-block" style={{ lineHeight: '22px' }}>
           {Utils.isDeliveryType() && t('DeliverAt')}
-          {Utils.isPickUpType() && t('PickUpOn')}
+          {Utils.isPickUpType() && t('PickUpOn')}&nbsp;.&nbsp;
+          {deliveryTimeText}
         </summary>
-        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle flex" /> : null}
-        <p>{deliveryTimeText}</p>
+        {/* {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle flex" /> : null} */}
+        {/* <span style={{fontSize: '12px', fontWeight: '600'}}></span> */}
       </div>
     );
   };
