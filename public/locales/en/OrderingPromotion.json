@@ -10,5 +10,6 @@
     "EnterPromoCodeHere":"Enter Promo Code Here",
     "NotAvailable": "Minimum requirements not met",
     "NotValid": "Coupon has expired",
-    "NotExisted": "Invalid coupon"
+    "NotExisted": "Invalid coupon",
+    "ReachedMaxClaimCount": "This promotion has exceeded the total claim limit"
 }

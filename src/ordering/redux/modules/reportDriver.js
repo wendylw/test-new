@@ -34,14 +34,14 @@ export const REPORT_DRIVER_REASONS = [
     i18n_key: 'Reasons_foodWasDamaged',
   },
   {
-    code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_LATE,
+    code: REPORT_DRIVER_REASON_CODE.DELIVERY_TAKE_TOO_LONG,
     fields: [
       {
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
         required: true,
       },
     ],
-    i18n_key: 'Reasons_driverWasLate',
+    i18n_key: 'Reasons_deliveryTakeTooLong',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_RUDE,
@@ -62,6 +62,26 @@ export const REPORT_DRIVER_REASONS = [
       },
     ],
     i18n_key: 'Reasons_driverAskedMoreMoney',
+  },
+  {
+    code: REPORT_DRIVER_REASON_CODE.ORDER_WAS_MISSING_ITEM,
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+    ],
+    i18n_key: 'Reasons_orderWasMissingItem',
+  },
+  {
+    code: REPORT_DRIVER_REASON_CODE.NEVER_RECEIVED_MY_ORDER,
+    fields: [
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+    ],
+    i18n_key: 'Reasons_neverReceivedMyOrder',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.OTHERS,

@@ -11,7 +11,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const { AUTH_INFO } = Constants;
 
-const initialState = {
+export const initialState = {
   user: {
     // isWebview: Utils.isWebview(),
     isLogin: false,
@@ -50,6 +50,7 @@ export const actions = {
       payload: {
         accessToken,
         refreshToken,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
       },
     },
   }),
@@ -58,7 +59,10 @@ export const actions = {
     [API_REQUEST]: {
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       ...Url.API_URLS.PHONE_NUMBER_LOGIN,
-      payload: { phone },
+      payload: {
+        phone,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      },
     },
   }),
 

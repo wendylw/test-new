@@ -352,6 +352,7 @@ class ProductDetail extends Component {
   };
 
   handleSwipeProductImage(index) {
+    window.heap.track('ordering.home.product-detail-swipe', { ImageIndex: index });
     this.setState({ currentProductDescriptionImageIndex: index });
   }
 
@@ -411,6 +412,8 @@ class ProductDetail extends Component {
               key={variation.id}
               variation={variation}
               initVariation={show}
+              data-heap-name="ordering.home.product-detail.single-choice"
+              data-heap-variation-name={variation.name}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
           ))}
@@ -420,6 +423,8 @@ class ProductDetail extends Component {
               variation={variation}
               initVariation={show}
               isInvalidMinimum={this.isInvalidMinimumVariations()}
+              data-heap-name="ordering.home.product-detail.multi-choice"
+              data-heap-variation-name={variation.name}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
           ))}
@@ -460,6 +465,7 @@ class ProductDetail extends Component {
             className="button__fill button__block font-weight-bolder"
             type="button"
             data-testid="OK"
+            data-heap-name="ordering.home.product-detail.ok-btn"
             disabled={
               !this.isSubmitable() ||
               Utils.isProductSoldOut(product || {}) ||
@@ -541,7 +547,11 @@ class ProductDetail extends Component {
             ...resizeImageStyles,
           }}
         >
-          <IconLeftArrow className="product-description__back-icon" onClick={() => onToggle()} />
+          <IconLeftArrow
+            className="product-description__back-icon"
+            onClick={() => onToggle()}
+            data-heap-name="ordering.home.product-detail.back-btn"
+          />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}
@@ -551,7 +561,7 @@ class ProductDetail extends Component {
               {images.map((imageItemUrl, key) => {
                 return (
                   <SwipeItem key={`swipe-${key}`}>
-                    <Image src={imageItemUrl} scalingRatioIndex={1} alt={`${storeName} ${title}`} />
+                    <Image src={imageItemUrl} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
                   </SwipeItem>
                 );
               })}
@@ -559,7 +569,7 @@ class ProductDetail extends Component {
           ) : (
             <Image
               src={images && images.length ? images[0] : null}
-              scalingRatioIndex={1}
+              scalingRatioIndex={2}
               alt={`${storeName} ${title}`}
             />
           )}
@@ -600,6 +610,7 @@ class ProductDetail extends Component {
               <ItemOperator
                 className="flex-middle"
                 decreaseDisabled={false}
+                data-heap-name="ordering.home.product-detail.item-adjuster"
                 onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
               />
             )}
@@ -636,6 +647,7 @@ class ProductDetail extends Component {
         ref={ref => (this.asideEl = ref)}
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
+        data-heap-name="ordering.home.product-detail.container"
       >
         <div
           className="product-detail"

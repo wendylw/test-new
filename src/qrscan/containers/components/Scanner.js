@@ -145,6 +145,7 @@ class Scanner extends Component {
       qr.decodeFromImage(canvas.toDataURL('image/png')).then(res => {
         if (res.data) {
           processQR(res.data).then(() => {
+            window.heap.track('qrscan.common.scanner.qr-scanned');
             window.clearInterval(timer);
           });
         }
@@ -173,7 +174,7 @@ class Scanner extends Component {
     const { t } = this.props;
 
     return (
-      <div>
+      <div data-heap-name="qrscan.common.scanner.container">
         <div id="contentHolder">
           <Message />
           <video className="viedo-player" ref="video" autoPlay playsInline></video>

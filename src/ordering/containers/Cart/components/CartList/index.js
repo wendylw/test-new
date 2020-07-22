@@ -133,7 +133,11 @@ class CartList extends Component {
       return cartItems.sort(sortFn).map(this.generateProductItemView);
     };
 
-    return <ul className="list">{generateCartItemUI()}</ul>;
+    return (
+      <ul className="list" data-heap-name="ordering.common.cart-list">
+        {generateCartItemUI()}
+      </ul>
+    );
   }
 }
 

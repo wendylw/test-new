@@ -11,7 +11,7 @@ class GetPermission extends Component {
     const { t } = this.props;
 
     return (
-      <div>
+      <div data-heap-name="qrscan.common.get-permission.container">
         <div className="content-contenter">
           <div className="content-header">
             <Message />
@@ -29,6 +29,7 @@ class GetPermission extends Component {
             <a
               className="text-center content-footer__button-fill content-footer__button-shadow content-footer__button-main"
               href={Constants.BASE_URL + Constants.ALL_ROUTER.scan}
+              data-heap-name="qrscan.common.get-permission.scan-link"
             >
               {t('ScanQRCode')}
             </a>

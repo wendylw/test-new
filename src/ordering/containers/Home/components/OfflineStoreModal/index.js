@@ -18,7 +18,11 @@ export class OfflineStoreModal extends PureComponent {
     const { show } = this.state;
 
     return (
-      <Modal show={!enableLiveOnline && show} className="align-middle">
+      <Modal
+        show={!enableLiveOnline && show}
+        className="align-middle"
+        data-heap-name="ordering.home.offline-store-modal.container"
+      >
         <Modal.Body className="modal__content text-center">
           <h2 className="modal__subtitle text-size-biggest font-weight-bolder">
             {t('OfflinePromptTitle', { storeName: currentStoreName })}
@@ -28,6 +32,7 @@ export class OfflineStoreModal extends PureComponent {
         <Modal.Footer className="modal__footer">
           <button
             className="button__fill button__block border-radius-base text-uppercase font-weight-bolder"
+            data-heap-name="ordering.home.offline-store-modal.dismiss-btn"
             onClick={this.handleHideOfflineStoreModal.bind(this)}
           >
             {t('Dismiss')}
