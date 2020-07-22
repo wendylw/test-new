@@ -16,5 +16,11 @@
   "LocationSharingIsOff": "Location sharing is off.",
   "DeliveryTimeAndAddressTitle": "Delivery Time & Address",
   "PickUpTimeAndAddressTitle": "Pickup Time & Address",
+<<<<<<< HEAD
+  "AddressChangeTitle": "You delivery address has been changed",
+  "AddressChangeDescription": "Based on the new address location, the delivery charges is now ",
+  "CONTINUE": "CONTINUE"
+=======
   "ReportDriver": "Report Driver"
+>>>>>>> master
 }

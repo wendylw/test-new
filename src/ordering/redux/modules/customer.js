@@ -11,6 +11,7 @@ import _get from 'lodash/get';
 
 export const types = {
   PUT_DELIVERY_DETAILS: 'ORDERING/CUSTOMER/PUT_DELIVERY_DETAILS',
+  PUT_ADDRESS_CHANGE: 'ORDERING/CUSTOMER/PUT_ADDRESS_CHANGE',
 };
 
 export const actions = {
@@ -38,6 +39,22 @@ export const actions = {
       // then clean up the address details info
       if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
         newDeliveryDetails.addressDetails = '';
+      }
+
+      const { customer } = getState();
+      const { deliveryDetails } = customer;
+      const { deliveryToAddress } = deliveryDetails;
+      const { longitude, latitude } = deliveryDetails.deliveryToLocation;
+      if (!deliveryToAddress && !longitude && !latitude) {
+      } else {
+        const addressChange =
+          deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
+          longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
+          latitude !== newDeliveryDetails.deliveryToLocation.latitude;
+        dispatch({
+          type: types.PUT_ADDRESS_CHANGE,
+          addressChange,
+        });
       }
     } else if (shippingType === 'pickup') {
       delete newDeliveryDetails.deliveryToAddress;
@@ -70,6 +87,7 @@ export const actions = {
 
 const initialState = {
   deliveryDetails: {
+    addressChange: false,
     username: '',
     phone: '',
     addressDetails: '',
@@ -90,6 +108,11 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
       ...state,
       ...action.fields,
     };
+  } else if (action.type === types.PUT_ADDRESS_CHANGE) {
+    return {
+      ...state,
+      addressChange: action.addressChange,
+    };
   }
   return state;
 };
@@ -101,4 +124,5 @@ export default combineReducers({
 // selectors
 
 export const getDeliveryDetails = state => state.customer.deliveryDetails;
+export const getAddressChange = state => state.customer.deliveryDetails.addressChange;
 // export const isCheckoutDisabled = state => {}
