@@ -413,6 +413,17 @@ Utils.isPreOrderPage = () => {
   return enablePreOrder === 'true' || false;
 };
 
+Utils.getDateNumber = date => {
+  date = new Date(date);
+  let y = date.getFullYear(),
+    m = date.getMonth() + 1,
+    d = date.getDate();
+  m = m < 10 ? '0' + m : m;
+  d = d < 10 ? '0' + d : d;
+
+  return +`${y}${m}${d}`;
+};
+
 Utils.isPreOrder = () => {
   const isPreOrderPage = Utils.isPreOrderPage();
   if (isPreOrderPage) {

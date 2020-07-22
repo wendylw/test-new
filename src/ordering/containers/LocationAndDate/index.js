@@ -112,7 +112,7 @@ class LocationAndDate extends Component {
         isDeliveryType: true,
         isPickUpType: false,
       },
-      () => {
+      async () => {
         if (this.state.nearlyStore.id) {
           let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
           let isSupport = false;
@@ -121,11 +121,10 @@ class LocationAndDate extends Component {
           });
 
           if (!isSupport) {
-            this.reSetStore();
+            await this.reSetStore();
           }
-        } else {
-          this.setMethodsTime();
         }
+        this.setMethodsTime();
       }
     );
   };
@@ -433,6 +432,17 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
+    console.log(initialSelectedTime, 'initialSelectedTime');
+    let { date: initDate } = initialSelectedTime;
+    initDate = Utils.getDateNumber(initDate.date);
+    let currentDate = Utils.getDateNumber(new Date());
+    debugger;
+    if (initDate < currentDate) {
+      debugger;
+      Utils.removeSessionVariable('expectedDeliveryDate');
+      Utils.removeSessionVariable('expectedDeliveryHour');
+      this.setMethodsTime();
+    }
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
@@ -445,7 +455,8 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
-    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
+    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder, enablePreOrder } =
+      qrOrderingSettings || {};
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -459,6 +470,8 @@ class LocationAndDate extends Component {
         const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
+      } else {
+        !enablePreOrder && (isOpen = false);
       }
 
       if (useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
@@ -470,9 +483,10 @@ class LocationAndDate extends Component {
 
         if (!isBeforeStoreClose && !i) continue;
       }
-
-      if (disableTodayPreOrder && disableOnDemandOrder && !i) {
-        continue;
+      if (enablePreOrder) {
+        if (disableTodayPreOrder && disableOnDemandOrder && !i) {
+          continue;
+        }
       }
 
       deliveryDates.push({
@@ -656,6 +670,10 @@ class LocationAndDate extends Component {
     );
   };
 
+  isDisplayImmediate = (disableOnDemandOrder, enablePreOrder) => {
+    return !enablePreOrder || !disableOnDemandOrder;
+  };
+
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
@@ -664,10 +682,10 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     const { qrOrderingSettings } = allBusinessInfo[business];
-    const { disableOnDemandOrder, disableTodayPreOrder } = qrOrderingSettings;
+    const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
-        return !disableOnDemandOrder ? (
+        return this.isDisplayImmediate(disableOnDemandOrder, enablePreOrder) ? (
           <li
             className={`location-display__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
@@ -700,13 +718,16 @@ class LocationAndDate extends Component {
       const from = getHourAndMinuteFromTime(item.from);
       const to = item.to && getHourAndMinuteFromTime(item.to);
       let isShowList = true;
-      if (this.state.selectedDate.isToday) {
-        if (disableTodayPreOrder) {
-          isShowList = false;
-        } else {
-          isShowList = true;
+      if (enablePreOrder) {
+        if (this.state.selectedDate.isToday) {
+          if (disableTodayPreOrder) {
+            isShowList = false;
+          }
         }
+      } else {
+        isShowList = false;
       }
+
       return (
         isShowList && (
           <li
@@ -915,26 +936,50 @@ class LocationAndDate extends Component {
     );
   };
 
+  checkStoreStatus = (selectedHour, { enablePreOrder, disableOnDemandOrder, disableTodayPreOrder }) => {
+    if (selectedHour.from === 'now') {
+      if (enablePreOrder) {
+        if (disableOnDemandOrder) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      if (enablePreOrder) {
+        if (disableTodayPreOrder) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    }
+  };
+
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
     const { selectedHour = {} } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (!enablePreOrder || !selectedDate.isOpen) return true;
+    // if (!enablePreOrder || !selectedDate.isOpen) return true;
 
     if (!this.state.nearlyStore.id) return true;
 
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
-        return false;
+        return this.checkStoreStatus(selectedHour, deliveryInfo);
       }
     }
 
     if (this.state.isPickUpType) {
       if (selectedDate.date && selectedHour.from) {
-        return false;
+        return this.checkStoreStatus(selectedHour, deliveryInfo);
       }
     }
     return true;
@@ -1069,7 +1114,6 @@ class LocationAndDate extends Component {
       >
         <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
           {this.props.t('Selected Store')}
-          {this.state.nearlyStore.name}
         </label>
         <div className="location-page__search-box">
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
