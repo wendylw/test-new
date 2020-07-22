@@ -36,7 +36,7 @@
       p:nth-child(3),
       p:nth-child(4) {
         font-size: 12px;
-        line-height: 22x;
+        line-height: 22px;
       }
     }
   }
@@ -79,6 +79,8 @@
         display: flex;
         i {
           margin-right: 5px;
+          display: flex;
+          align-items: center;
         }
         .stores-list-item-distance {
           display: inline-block;

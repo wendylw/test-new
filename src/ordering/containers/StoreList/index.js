@@ -122,6 +122,11 @@ class StoreList extends Component {
     return true;
   };
   render() {
+    let stores = [];
+    stores = this.props.allStore.filter(
+      item =>
+        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
+    );
     return (
       (this.props.onlineStoreInfo && (
         <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
@@ -147,7 +152,7 @@ class StoreList extends Component {
             </div>
           </div>
           <div className="stores-list">
-            {this.props.allStore.map(
+            {stores.map(
               item =>
                 this.isShowStore(item) && (
                   <StoreListItem
