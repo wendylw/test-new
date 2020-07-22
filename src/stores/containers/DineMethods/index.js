@@ -14,6 +14,8 @@ import DineInImage from '../../../images/icon-dine-in.svg';
 import TakeAwayImage from '../../../images/icon-take-away.svg';
 import { IconNext } from '../../../components/Icons';
 import Tables from '../Tables';
+import qs from 'qs';
+import { withRouter } from 'react-router-dom';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -35,6 +37,15 @@ let METHODS_LIST = [
 class DineMethods extends Component {
   handleClickBack = () => {
     this.props.homeActions.clearCurrentStore();
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      delete queries.s;
+      delete queries.from;
+      const search = qs.stringify(queries, { addQueryPrefix: true });
+
+      window.location.href = `${window.location.origin}/dine${search}`;
+    }
   };
 
   handleSelectMethod = async methodName => {
@@ -108,4 +119,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(DineMethodsContainer);
+)(withRouter(DineMethodsContainer));

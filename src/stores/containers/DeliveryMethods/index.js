@@ -20,6 +20,7 @@ import Utils from '../../../utils/utils';
 import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import qs from 'qs';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 let METHODS_LIST = [
@@ -47,6 +48,16 @@ class DeliveryMethods extends Component {
     const { homeActions } = this.props;
 
     homeActions.clearCurrentStore();
+
+    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      delete queries.s;
+      delete queries.from;
+      const search = qs.stringify(queries, { addQueryPrefix: true });
+
+      window.location.href = `${window.location.origin}/${search}`;
+    }
   }
 
   async handleVisitStore(methodName) {

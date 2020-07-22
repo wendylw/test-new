@@ -28,6 +28,7 @@ import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
+import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 
 import {
   toDayDateMonth,
@@ -47,8 +48,12 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
+const ANIMATION_TIME = 3600;
+
 export class ThankYou extends PureComponent {
-  state = {};
+  state = {
+    cashbackSuccessImage,
+  };
 
   componentDidMount() {
     // expected delivery time is for pre order
@@ -173,6 +178,14 @@ export class ThankYou extends PureComponent {
     const { t } = this.props;
     return (
       <div className="thanks__delivery-status-container">
+        {this.state.cashbackSuccessImage && (
+          <img
+            src={this.state.cashbackSuccessImage}
+            alt="cashback Earned"
+            onLoad={this.cashbackSuccessStop}
+            className="thanks__earned-cashback-image"
+          />
+        )}
         <CurrencyNumber
           className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
           money={cashback || 0}
@@ -271,7 +284,14 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
-
+  cashbackSuccessStop = () => {
+    let timer = setTimeout(() => {
+      this.setState({
+        cashbackSuccessImage: '',
+      });
+      clearTimeout(timer);
+    }, ANIMATION_TIME);
+  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
@@ -406,7 +426,7 @@ export class ThankYou extends PureComponent {
           {useStorehubLogistics &&
           (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
             <div className="thanks__status-description flex flex-middle flex-center">
-              {trackingUrl ? (
+              {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                 <a
                   href={trackingUrl}
                   target="__blank"
