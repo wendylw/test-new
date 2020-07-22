@@ -385,6 +385,13 @@ Utils.formatTimeWithColon = time => {
   return `${hour}:${minute}`;
 };
 
+Utils.getHourAndMinuteFromString = timeString => {
+  return {
+    hour: timeString.split(':')[0],
+    minute: timeString.split(':')[1],
+  };
+};
+
 Utils.formatHour = (hour = 0) => {
   if (hour >= 12) {
     return `${hour}:00 PM`;

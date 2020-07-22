@@ -147,6 +147,12 @@ const API_URLS = {
     url: '/api/feedback',
     method: 'post',
   },
+  GET_TIME_SLOT: (shippingType, fulfillDate, storeid) => {
+    return {
+      url: `/api/transactions/timeslots?shippingType=${shippingType}&fulfillDate=${fulfillDate}&storeId=${storeid}`,
+      method: 'get',
+    };
+  },
 };
 
 export default {

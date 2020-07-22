@@ -42,10 +42,16 @@ export const initialState = {
   popUpModal: {
     userConfirmed: false,
   },
+  timeSlot: {
+    timeSlotList: [],
+  },
 };
 
 export const types = HOME_TYPES;
 
+types.FETCH_TIMESLOT_REQUEST = 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST';
+types.FETCH_TIMESLOT_SUCCESS = 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS';
+types.FETCH_TIMESLOT_FAILURE = 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE';
 // actions
 export const actions = {
   // load product list group by category, and shopping cart
@@ -142,6 +148,15 @@ export const actions = {
   userConfirmPreOrder: () => ({
     type: types.SET_PRE_ORDER_MODAL_CONFIRM,
   }),
+
+  getTimeSlot: (shippingType, fulfillDate, storeid) => dispatch => {
+    return dispatch({
+      [API_REQUEST]: {
+        types: [types.FETCH_TIMESLOT_REQUEST, types.FETCH_TIMESLOT_SUCCESS, types.FETCH_TIMESLOT_FAILURE],
+        ...Url.API_URLS.GET_TIME_SLOT(shippingType, fulfillDate, storeid),
+      },
+    });
+  },
 };
 
 export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
@@ -292,6 +307,24 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
   }
 };
 
+const timeSlot = (state = initialState.timeSlot, action) => {
+  switch (action.type) {
+    case types.FETCH_TIMESLOT_REQUEST:
+      return { ...state, isFetching: true };
+    case types.FETCH_TIMESLOT_SUCCESS:
+      const timeSlotList = action.response;
+      return {
+        ...state,
+        isFetching: false,
+        timeSlotList,
+      };
+    case types.FETCH_TIMESLOT_FAILURE:
+      return { ...state, isFetching: false };
+    default:
+      return state;
+  }
+};
+
 const popUpModal = (state = initialState.popUpModal, action) => {
   if (action.type === types.SET_PRE_ORDER_MODAL_CONFIRM) {
     return { ...state, userConfirmed: true };
@@ -305,6 +338,7 @@ export default combineReducers({
   shoppingCart,
   onlineCategory,
   popUpModal,
+  timeSlot,
 });
 
 // selectors
@@ -452,3 +486,5 @@ export const isVerticalMenuBusiness = state => {
 };
 
 export const getPopUpModal = state => state.home.popUpModal;
+
+export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;

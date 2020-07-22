@@ -7,11 +7,12 @@ import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
-
+import { actions as homeActionCreators, getTimeSlotList } from '../../redux/modules/home';
+import config from '../../../config';
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
@@ -64,6 +65,7 @@ class LocationAndDate extends Component {
     deliveryToAddress: '',
     selectedDate: {},
     selectedHour: {},
+    timeSlot: [],
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -198,6 +200,7 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
+    this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
@@ -296,10 +299,52 @@ class LocationAndDate extends Component {
     }
     const selectedHour = this.getFirstItemFromTimeList(date);
 
+    this.setTimeSlot(date, selectedHour);
     this.setState({
       selectedDate: date,
       selectedHour,
     });
+  };
+
+  setTimeSlot = async (date, selectedHour) => {
+    await this.props.homeActions.getTimeSlot(
+      Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
+      this.getFulfillDate(date, selectedHour),
+      config.storeId
+    );
+    const { timeSlotList, allBusinessInfo, business } = this.props;
+    const { stores } = allBusinessInfo[business];
+    const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = stores[0];
+
+    // timeSlotStartDate: { type: GraphQLString },
+    // count: { type: GraphQLInt },
+    if (!enablePerTimeSlotLimitForPreOrder) return;
+
+    const list = [];
+
+    timeSlotList.forEach(item => {
+      if (item.count >= maxPreOrdersPerTimeSlot) {
+        let { timeSlotStartDate } = item || {};
+        timeSlotStartDate = new Date(timeSlotStartDate);
+        let hour, minute;
+        hour = timeSlotStartDate.getHours();
+        minute = timeSlotStartDate.getMinutes();
+        hour = hour < 10 ? '0' + hour : hour;
+        minute = minute < 10 ? '0' + minute : minute;
+        list.push(`${hour}:${minute}`);
+      }
+    });
+    this.setState({
+      timeSlot: list,
+    });
+  };
+
+  getFulfillDate = (date, hour) => {
+    date = date.date;
+    let fufillDate = new Date(date);
+
+    // fufillDate.setHours(hours, min); // TODO need switch to marchat local time
+    return fufillDate.toISOString();
   };
 
   handleSelectHour = hour => {
@@ -528,21 +573,37 @@ class LocationAndDate extends Component {
           isShowList = true;
         }
       }
+      const isSoldOut = this.isTimeSlot(from);
       return (
         isShowList && (
           <li
             className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
             data-testid="preOrderHour"
             onClick={() => {
-              this.handleSelectHour({ from, to });
+              !isSoldOut && this.handleSelectHour({ from, to });
             }}
             key={`${from} - ${to}`}
           >
             {timeToDisplay}
+            {isSoldOut && <span> {this.props.t('SOLDOUT')}</span>}
           </li>
         )
       );
     });
+  };
+
+  isTimeSlot = from => {
+    const timeString = from.split(' ')[0];
+    let { hour, minute } = Utils.getHourAndMinuteFromString(timeString);
+
+    hour = +hour;
+    if (from.split(' ')[1] === 'PM') {
+      hour += 12;
+    }
+
+    const time = `${hour}:${minute}`;
+
+    return this.state.timeSlot.indexOf(time) !== -1;
   };
 
   getValidStartingTimeString = (baseTimeString = this.validTimeFrom) => {
@@ -814,7 +875,10 @@ export default compose(
     state => ({
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
+      timeSlotList: getTimeSlotList(state),
     }),
-    dispatch => ({})
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
   )
 )(LocationAndDate);
