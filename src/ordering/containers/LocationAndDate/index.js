@@ -432,13 +432,10 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
-    console.log(initialSelectedTime, 'initialSelectedTime');
     let { date: initDate } = initialSelectedTime;
     initDate = Utils.getDateNumber(initDate.date);
     let currentDate = Utils.getDateNumber(new Date());
-    debugger;
     if (initDate < currentDate) {
-      debugger;
       Utils.removeSessionVariable('expectedDeliveryDate');
       Utils.removeSessionVariable('expectedDeliveryHour');
       this.setMethodsTime();
