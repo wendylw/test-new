@@ -122,6 +122,11 @@ class StoreList extends Component {
     return true;
   };
   render() {
+    let stores = [];
+    stores = this.props.allStore.filter(
+      item =>
+        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
+    );
     return (
       (this.props.onlineStoreInfo && (
         <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
@@ -141,13 +146,13 @@ class StoreList extends Component {
               <p>{this.props.onlineStoreInfo.businessType}</p>
               <p>
                 {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
-                  ? `${this.props.allStore.length} outlets near you`
-                  : `Total ${this.props.allStore.length} outlets`}
+                  ? `${stores.length} outlets near you`
+                  : `Total ${stores.length} outlets`}
               </p>
             </div>
           </div>
           <div className="stores-list">
-            {this.props.allStore.map(
+            {stores.map(
               item =>
                 this.isShowStore(item) && (
                   <StoreListItem
