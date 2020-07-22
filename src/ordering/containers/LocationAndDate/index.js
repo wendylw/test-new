@@ -438,8 +438,10 @@ class LocationAndDate extends Component {
     let currentDate = Utils.getDateNumber(new Date());
     debugger;
     if (initDate < currentDate) {
+      debugger;
       Utils.removeSessionVariable('expectedDeliveryDate');
-      // this.setMethodsTime()
+      Utils.removeSessionVariable('expectedDeliveryHour');
+      this.setMethodsTime();
     }
     this.setState({
       selectedDate: initialSelectedTime.date,
