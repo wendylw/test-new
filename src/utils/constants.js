@@ -12,6 +12,7 @@ const ROUTER_PATHS = {
   PRIVACY: '/privacy',
   ERROR: '/error',
   SORRY: '/sorry',
+  REPORT_DRIVER: '/report-driver',
   STORES_HOME: '/',
   // ordering App basename
   ORDERING_BASE: '/ordering',
@@ -138,6 +139,12 @@ const LOGIN_PROMPT = {
   400: 'Your One Time Passcode is invalid.',
 };
 
+const CREATE_ORDER_ERROR_CODES = {
+  PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT: 4050,
+  PROMOTION_INVALID: 4051,
+  CONTACT_DETAIL_INVALID: 40012,
+};
+
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
 const LANGUAGES = ['en', 'th'];
 const POLYFILL_FEATURES = ['Object.values', 'Intl'];
@@ -186,6 +193,7 @@ const PROMOTION_APPLIED_STATUS = {
   NOT_VALID: 'not_valid',
   NOT_EXISTED: 'not_existed',
   UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
+  REACH_MAX_CLAIM_COUNT: 'reach_max_claim_count',
 };
 
 const PREORDER_IMMEDIATE_TAG = {
@@ -196,6 +204,34 @@ const PREORDER_IMMEDIATE_TAG = {
 const PROMO_TYPE = {
   PROMOTION: 'Promotion',
   VOUCHER: 'Voucher',
+};
+
+const REPORT_DRIVER_REASON_CODE = {
+  FOOD_WAS_DAMAGED: 'foodWasDamaged',
+  DELIVERY_TAKE_TOO_LONG: 'deliveryTakeTooLong',
+  DRIVER_WAS_RUDE: 'driverWasRude',
+  DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
+  ORDER_WAS_MISSING_ITEM: 'orderWasMissingItem',
+  NEVER_RECEIVED_MY_ORDER: 'neverReceivedMyOrder',
+  OTHERS: 'others',
+};
+
+const ORDER_STATUS = {
+  CREATED: 'created',
+  PENDING_PAYMENT: 'pendingPayment',
+  PENDING_VERIFICATION: 'pendingVerification',
+  PAID: 'paid',
+  PAYMENT_CANCELLED: 'paymentCancelled',
+  READY_FOR_DELIVERY: 'readyForDelivery',
+  READY_FOR_PICKUP: 'readyForPickup',
+  SHIPPED: 'shipped',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+  ACCEPTED: 'accepted',
+  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
+  CONFIRMED: 'confirmed',
+  DELIVERED: 'delivered',
+  PICKED_UP: 'pickedUp',
 };
 
 export default {
@@ -227,4 +263,7 @@ export default {
   PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
+  ORDER_STATUS,
+  REPORT_DRIVER_REASON_CODE,
+  CREATE_ORDER_ERROR_CODES,
 };

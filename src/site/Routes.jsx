@@ -15,7 +15,7 @@ const SiteRoute = () => {
   return (
     <Switch>
       <Route path={`/home`} component={Home} />
-      <Route path={`/collections/:name`} component={CollectionPage} />
+      <Route path={`/collections/:urlPath`} component={CollectionPage} />
       <Route path={`/search`} component={SearchPage} />
       <Route path={`/qrscan`} component={QRScan} />
       <Route path={`/auth`} component={Auth} />

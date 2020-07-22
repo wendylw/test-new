@@ -15,6 +15,7 @@ import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
 import CurrencyNumber from '../../../components/CurrencyNumber';
+import CreateOrderButton from '../../../components/CreateOrderButton';
 import RedirectForm from '../components/RedirectForm';
 import config from '../../../../config';
 
@@ -24,8 +25,8 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import Utils from '../../../../utils/utils';
 import PaymentCardBrands from '../components/PaymentCardBrands';
+import withDataAttributes from '../../../../components/withDataAttributes';
 // import '../styles/2-Card-Detailed.css';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
@@ -33,41 +34,45 @@ import PaymentCardBrands from '../components/PaymentCardBrands';
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
 const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
 
-const Field = ({
-  t,
-  label,
-  formClassName,
-  inputClassName,
-  id,
-  type,
-  placeholder,
-  required,
-  autoComplete,
-  isNotNameComplete,
-  isFormTouched,
-  value,
-  onChange,
-}) => (
-  <div className={formClassName}>
-    <div className="flex flex-middle flex-space-between">
-      <label htmlFor={id} className="payment-bank__label font-weight-bolder">
-        {label}
-      </label>
-      {isFormTouched && isNotNameComplete ? (
-        <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
-      ) : null}
+const Field = withDataAttributes(
+  ({
+    t,
+    label,
+    formClassName,
+    inputClassName,
+    id,
+    type,
+    placeholder,
+    required,
+    autoComplete,
+    isNotNameComplete,
+    isFormTouched,
+    value,
+    onChange,
+    dataAttributes,
+  }) => (
+    <div className={formClassName}>
+      <div className="flex flex-middle flex-space-between">
+        <label htmlFor={id} className="payment-bank__label font-weight-bolder">
+          {label}
+        </label>
+        {isFormTouched && isNotNameComplete ? (
+          <span className="error-message font-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
+        ) : null}
+      </div>
+      <input
+        className={inputClassName}
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={onChange}
+        {...dataAttributes}
+      />
     </div>
-    <input
-      className={inputClassName}
-      id={id}
-      type={type}
-      placeholder={placeholder}
-      required={required}
-      autoComplete={autoComplete}
-      value={value}
-      onChange={onChange}
-    />
-  </div>
+  )
 );
 
 const ErrorMessage = ({ children }) => (
@@ -76,20 +81,7 @@ const ErrorMessage = ({ children }) => (
   </div>
 );
 
-const SubmitButton = ({ processing, error, children, disabled, onClick }) => (
-  <div className="footer-operation">
-    <button
-      className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
-      type="submit"
-      onClick={onClick}
-      disabled={processing || disabled}
-    >
-      {processing ? <div className="loader"></div> : children}
-    </button>
-  </div>
-);
-
-const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country }) => {
+const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) => {
   const { total } = cartSummary || {};
   const stripe = useStripe();
   const elements = useElements();
@@ -132,22 +124,6 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
     if (cardComplete) {
       setProcessing(true);
     }
-
-    await onPreSubmit();
-
-    const payload = await stripe.createPaymentMethod({
-      type: 'card',
-      card: elements.getElement(CardNumberElement),
-      billing_details: billingDetails,
-    });
-
-    setProcessing(false);
-
-    if (payload.error) {
-      setError(payload.error);
-    } else {
-      setPaymentMethod(payload.paymentMethod);
-    }
   };
 
   const isNotCardComplete = !cardNumberComplete && !cardExpiryComplete && !cardCvcComplete;
@@ -183,6 +159,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
             ? ' has-error'
             : ''
         }`}
+        data-heap-name="ordering.payment.stripe.card-number-wrapper"
         style={{
           height: '50px',
           padding: '12px',
@@ -231,6 +208,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
 
       <div className="input__list-bottomn">
         <div
+          data-heap-name="ordering.payment.stripe.valid-date-wrapper"
           style={{
             display: 'inline-block',
             height: '50px',
@@ -291,6 +269,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
             borderBottomRightRadius: '4px',
             transform: 'translateY(-1px)',
           }}
+          data-heap-name="ordering.payment.stripe.cvc-wrapper"
         >
           <CardCvcElement
             options={{
@@ -336,6 +315,7 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
         type="text"
         required
         autoComplete="name"
+        data-heap-name="ordering.payment.stripe.holder-name"
         value={billingDetails.name}
         isNotNameComplete={isNotNameComplete}
         isFormTouched={isFormTouched}
@@ -343,9 +323,35 @@ const CheckoutForm = ({ t, renderRedirectForm, onPreSubmit, cartSummary, country
           setBillingDetails({ ...billingDetails, name: e.target.value });
         }}
       />
-      <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
+      <div className="footer-operation">
+        <CreateOrderButton
+          history={history}
+          buttonType="submit"
+          data-heap-name="ordering.payment.stripe.pay-btn"
+          disabled={processing || !stripe}
+          beforeCreateOrder={() => setIsFormTouched(true)}
+          afterCreateOrder={async orderId => {
+            const payload = await stripe.createPaymentMethod({
+              type: 'card',
+              card: elements.getElement(CardNumberElement),
+              billing_details: billingDetails,
+            });
+
+            setProcessing(!!orderId);
+
+            if (payload.error) {
+              setError(payload.error);
+            } else {
+              setPaymentMethod(payload.paymentMethod);
+            }
+          }}
+        >
+          <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+        </CreateOrderButton>
+      </div>
+      {/* <SubmitButton processing={processing} error={error} disabled={!stripe} onClick={() => setIsFormTouched(true)}>
         <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-      </SubmitButton>
+      </SubmitButton> */}
 
       {paymentMethod ? renderRedirectForm(paymentMethod) : null}
 
@@ -363,22 +369,6 @@ class Stripe extends Component {
   componentDidMount() {
     this.props.homeActions.loadShoppingCart();
   }
-
-  createOrder = async () => {
-    const { history, paymentActions, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
-
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
-    }
-  };
 
   getPaymentEntryRequestData = () => {
     const { history, onlineStoreInfo, currentOrder, business } = this.props;
@@ -413,9 +403,13 @@ class Stripe extends Component {
     const { total } = cartSummary || {};
 
     return (
-      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+      <section
+        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        data-heap-name="ordering.payment.stripe.container"
+      >
         <Header
           className="flex-middle border__bottom-divider gray has-right"
+          data-heap-name="ordering.payment.stripe.header"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -432,9 +426,9 @@ class Stripe extends Component {
           <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm
               t={t}
+              history={history}
               country={merchantCountry}
               cartSummary={cartSummary}
-              onPreSubmit={this.createOrder}
               renderRedirectForm={paymentMethod => {
                 if (!paymentMethod) return null;
 

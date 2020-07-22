@@ -10,6 +10,7 @@ const { ERROR, SCAN_NOT_SUPPORT } = Constants.ROUTER_PATHS;
 
 // --Begin-- Hack MediaStream
 // hacking codes, without this codes we are not able to close the camera
+/* eslint-disable no-unused-vars */
 let MediaStream = window.MediaStream;
 
 if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefined') {
@@ -24,6 +25,7 @@ if (typeof MediaStream !== 'undefined' && !('stop' in MediaStream.prototype)) {
     });
   };
 }
+/* eslint-enable no-unused-vars */
 // ---End--- Hack MediaStream
 
 const processQR = qrData =>
@@ -50,6 +52,7 @@ class QRScan extends Component {
   canvasRef = React.createRef();
   mediaStreamTrackList = [];
   show = true;
+  timer = null;
 
   componentDidMount() {
     this.getCamera();
@@ -149,7 +152,7 @@ class QRScan extends Component {
   }
 
   getQRCode(video, canvas, context) {
-    let timer = setInterval(function() {
+    this.timer = setInterval(function() {
       const imageWidth = video.videoWidth;
       const imageHeight = video.videoHeight;
 
@@ -161,8 +164,9 @@ class QRScan extends Component {
 
       qr.decodeFromImage(canvas.toDataURL('image/png')).then(res => {
         if (res.data) {
+          window.heap.track('site.scan.qr-scanned');
           processQR(res.data).then(() => {
-            window.clearInterval(timer);
+            window.clearInterval(this.timer);
           });
         }
       });
@@ -200,6 +204,7 @@ class QRScan extends Component {
   };
 
   handleBackClicked = () => {
+    window.clearInterval(this.timer);
     this.backToPreviousPage();
   };
 
@@ -208,10 +213,14 @@ class QRScan extends Component {
     const showMessage = !/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
 
     return (
-      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main">
+      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.scan.container">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
-            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.handleBackClicked} />
+            <IconLeftArrow
+              className="icon icon__big icon__gray text-middle"
+              onClick={this.handleBackClicked}
+              data-heap-name="site.scan.back-btn"
+            />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
               {t('ScanQRCode')}
             </h2>

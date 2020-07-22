@@ -7,7 +7,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { getDeliveryStatus, getCurrentStoreId, getAllStores } from '../../redux/modules/home';
+import {
+  getDeliveryStatus,
+  getCurrentStoreId,
+  getAllStores,
+  actions as homeActionCreators,
+} from '../../redux/modules/home';
 import Constants from '../../../utils/constants';
 import '../../../App.scss';
 import Home from '../Home';
@@ -17,10 +22,23 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import qs from 'qs';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isHome: true,
+    };
+
+    const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      this.state.isHome = false;
+    }
+  }
   componentDidMount() {
-    const { appActions } = this.props;
+    const { appActions, currentStoreId } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
     if (this.isDinePath()) {
@@ -31,8 +49,23 @@ class App extends Component {
     fetchOnlineStoreInfo().then(({ responseGql }) => {
       const { data } = responseGql;
       const { onlineStoreInfo } = data;
-      gtmSetUserProperties(onlineStoreInfo);
+      gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
+
+    const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+    if (queries.s && queries.from === 'home') {
+      let timer = setInterval(() => {
+        if (this.props.stores.length) {
+          clearInterval(timer);
+          this.props.homeActions.setCurrentStore(queries.s);
+        }
+      }, 300);
+    } else {
+      this.setState({
+        isHome: true,
+      });
+    }
   }
 
   isDinePath() {
@@ -82,7 +115,7 @@ class App extends Component {
 
     return (
       <main className="store-list">
-        {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home />}
+        {currentStoreId ? this.renderDeliveryOrDineMethods() : <Home isHome={this.state.isHome} />}
 
         {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
         <DocumentFavicon icon={favicon || faviconImage} />
@@ -102,5 +135,6 @@ export default connect(
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
+    homeActions: bindActionCreators(homeActionCreators, dispatch),
   })
 )(withRouter(App));

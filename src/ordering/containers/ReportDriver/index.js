@@ -1,0 +1,374 @@
+import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
+import qs from 'qs';
+
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
+
+import Constants from '../../../utils/constants';
+import PageLoader from '../../../components/PageLoader';
+import feedBackThankyou from '../../../images/feedback-thankyou.png';
+import uploadImage from '../../../images/upload-image.svg';
+import Header from '../../../components/Header';
+import Radio from '../../../components/Radio';
+import {
+  actions as reportDriverActionCreators,
+  getInputNotes,
+  getSelectedReasonCode,
+  getSelectedReasonFields,
+  getSubmitStatus,
+  getShowPageLoader,
+  getUploadPhotoUrl,
+  getUploadPhotoFile,
+  SUBMIT_STATUS,
+  CAN_REPORT_STATUS_LIST,
+  REPORT_DRIVER_FIELD_NAMES,
+  REPORT_DRIVER_REASONS,
+} from '../../redux/modules/reportDriver';
+import {
+  actions as thankyouActionCreators,
+  getIsUseStorehubLogistics,
+  getOrderStatus,
+  getReceiptNumber,
+} from '../../redux/modules/thankYou';
+import { actions as appActionCreators } from '../../redux/modules/app';
+import { IconClose } from '../../../components/Icons';
+
+const NOTE_MAX_LENGTH = 140;
+const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
+const { REPORT_DRIVER_REASON_CODE } = Constants;
+
+class ReportDriver extends Component {
+  componentDidMount() {
+    const { receiptNumber, thankyouActions, reportDriverActions } = this.props;
+
+    thankyouActions.loadOrder(receiptNumber);
+    reportDriverActions.fetchReport();
+  }
+
+  componentWillUnmount() {
+    // release the file reference
+    this.props.reportDriverActions.removeUploadPhotoFile();
+  }
+
+  handleGoBack = () => {
+    this.gotoThankYourPage();
+  };
+
+  handleDone = () => {
+    this.gotoThankYourPage();
+  };
+
+  gotoThankYourPage = () => {
+    const { receiptNumber, history } = this.props;
+    const searchParams = {
+      receiptNumber,
+      type: Constants.DELIVERY_METHOD.DELIVERY,
+    };
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.THANK_YOU,
+      search: qs.stringify(searchParams, { addQueryPrefix: true }),
+    });
+  };
+
+  handleNotesChange = e => {
+    const notes = e.target.value.slice(0, NOTE_MAX_LENGTH);
+
+    this.props.reportDriverActions.updateInputNotes(notes);
+  };
+
+  isOrderCanReportDriver = () => {
+    const { orderStatus, isUseStorehubLogistics } = this.props;
+
+    return CAN_REPORT_STATUS_LIST.includes(orderStatus) && isUseStorehubLogistics;
+  };
+
+  isInputNotesEmpty() {
+    const { inputNotes } = this.props;
+    return inputNotes.trim().length === 0;
+  }
+
+  isUploadPhotoEmpty() {
+    const { uploadPhotoFile } = this.props;
+    return !uploadPhotoFile;
+  }
+
+  isSubmitButtonDisable = () => {
+    const { submitStatus, selectedReasonFields, selectedReasonCode } = this.props;
+
+    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
+    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+
+    if (!this.isOrderCanReportDriver()) {
+      return true;
+    }
+
+    if (!selectedReasonCode) {
+      return true;
+    }
+
+    if (selectedReasonNoteField && selectedReasonNoteField.required && this.isInputNotesEmpty()) {
+      return true;
+    }
+
+    if (selectedReasonPhotoField && selectedReasonPhotoField.required && this.isUploadPhotoEmpty()) {
+      return true;
+    }
+
+    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
+      return true;
+    }
+
+    return false;
+  };
+
+  handleUploadPhoto = e => {
+    // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
+    const file = e.target.files[0];
+
+    if (file.size > UPLOAD_FILE_MAX_SIZE) {
+      this.props.appActions.showError({
+        message: this.props.t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }),
+      });
+      // clear the select file
+      e.target.value = '';
+      return;
+    }
+
+    this.props.reportDriverActions.setUploadPhotoFile(file);
+  };
+
+  handleRemoveUploadPhoto = () => {
+    this.props.reportDriverActions.removeUploadPhotoFile();
+  };
+
+  handleSubmit = async () => {
+    await this.props.reportDriverActions.submitReport();
+  };
+
+  handleSelectReason = reasonCode => {
+    this.props.reportDriverActions.selectReasonCode(reasonCode);
+  };
+
+  renderSubmitButtonContent = () => {
+    const { t, submitStatus } = this.props;
+    switch (submitStatus) {
+      case SUBMIT_STATUS.NOT_SUBMIT:
+        return t('Submit');
+      case SUBMIT_STATUS.IN_PROGRESS:
+        return <div className="loader"></div>;
+      case SUBMIT_STATUS.SUBMITTED:
+        return t('Submitted');
+      default:
+        return t('Submit');
+    }
+  };
+
+  renderThankYou() {
+    const { t } = this.props;
+    return (
+      <section className="table-ordering__report-driver-thankyou">
+        <Header
+          className="report-driver__header flex-middle"
+          data-heap-name="ordering.report-driver.thank-you-header"
+          isPage={false}
+          title={t('ReportDriver')}
+          navFunc={this.handleGoBack}
+        ></Header>
+        <div className="report-driver-thankyou__image">
+          <img alt="Thank your feedback" src={feedBackThankyou} />
+        </div>
+        <h3 className="report-driver-thankyou__title">{t('Thankyou')}</h3>
+        <main className="report-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
+        <div className="report-driver-thankyou__done-button">
+          <button onClick={this.handleDone}>{t('Done')}</button>
+        </div>
+      </section>
+    );
+  }
+
+  renderNotesField({ t, inputNotes, disabled, required }) {
+    return (
+      <div className="report-driver__note">
+        <h3 className="report-driver__note-title">
+          {t('Notes')}
+          {required ? <span className="report-driver__required-mark">{t('Common:Required')}</span> : null}
+        </h3>
+        <textarea
+          className="report-driver__note-textarea"
+          data-heap-name="ordering.report-driver.notes-input"
+          placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
+          rows="6"
+          maxLength={NOTE_MAX_LENGTH}
+          value={inputNotes}
+          onChange={this.handleNotesChange}
+          disabled={disabled}
+        ></textarea>
+        <div className="report-driver__note-char-length">
+          {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
+        </div>
+      </div>
+    );
+  }
+
+  renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled, required }) {
+    return (
+      <div className="report-driver__upload-photo">
+        <h3 className="report-driver__upload-photo-title">
+          {t('UploadPhoto')}
+          {required ? <span className="report-driver__required-mark">{t('Common:Required')}</span> : null}
+        </h3>
+        {uploadPhotoFile ? (
+          <div className="report-driver__upload-photo-viewer">
+            <img alt="upload file" src={uploadPhotoUrl} />
+            {disabled ? null : (
+              <button
+                onClick={this.handleRemoveUploadPhoto}
+                className="report-driver__upload-photo-remove-button"
+                data-heap-name="ordering.report-driver.remove-image"
+              >
+                <IconClose />
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="report-driver__upload-photo-uploader">
+            <input
+              onChange={this.handleUploadPhoto}
+              type="file"
+              accept="image/*"
+              data-heap-name="ordering.report-driver.add-image"
+            />
+            <div className="report-driver__upload-photo-reminder">
+              <img alt="upload" src={uploadImage} />
+              <p>{t('UploadFileHere')}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  render() {
+    const {
+      t,
+      inputNotes,
+      submitStatus,
+      showPageLoader,
+      selectedReasonCode,
+      selectedReasonFields,
+      uploadPhotoFile,
+      uploadPhotoUrl,
+    } = this.props;
+    const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
+
+    if (showPageLoader) {
+      return <PageLoader />;
+    }
+
+    if (submitStatus === SUBMIT_STATUS.SUBMITTED) {
+      return this.renderThankYou();
+    }
+
+    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
+    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+
+    return (
+      <section className="table-ordering__report-driver" data-heap-name="ordering.report-driver.container">
+        <Header
+          className="report-driver__header flex-middle"
+          data-heap-name="ordering.report-driver.header"
+          isPage={false}
+          title={t('ReportDriver')}
+          navFunc={this.handleGoBack}
+        ></Header>
+        <main className="report-driver__main">
+          <div className="report-driver__select-reason">
+            <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>
+            <ul className="report-driver__select-reason-list">
+              {REPORT_DRIVER_REASONS.map(reason => ({
+                ...reason,
+                label: t(reason.i18n_key),
+              }))
+                // sort by localeCompare of reason.label, for English is alphabetic ascendings
+                .sort((reason1, reason2) => {
+                  // put the others of reason at the end
+                  if (reason1.code === REPORT_DRIVER_REASON_CODE.OTHERS) return 1;
+                  if (reason2.code === REPORT_DRIVER_REASON_CODE.OTHERS) return -1;
+
+                  return reason1.label.localeCompare(reason2.label);
+                })
+                .map(({ code, label }) => {
+                  return (
+                    <li key={code} className="report-driver__select-reason-item">
+                      <Radio
+                        onChange={() => {
+                          this.handleSelectReason(code);
+                        }}
+                        data-heap-name="ordering.report-driver.reason-item"
+                        data-heap-reason={code}
+                        checked={selectedReasonCode === code}
+                        inputId={`reason_${code}`}
+                        name="reason"
+                        disabled={disabled}
+                      />
+                      <label htmlFor={`reason_${code}`}>{label}</label>
+                    </li>
+                  );
+                })}
+            </ul>
+          </div>
+
+          {selectedReasonNoteField
+            ? this.renderNotesField({ t, inputNotes, disabled, required: selectedReasonNoteField.required })
+            : null}
+
+          {selectedReasonPhotoField
+            ? this.renderPhotoField({
+                t,
+                uploadPhotoFile,
+                uploadPhotoUrl,
+                disabled,
+                required: selectedReasonPhotoField.required,
+              })
+            : null}
+
+          <div className="report-driver__submit">
+            <button
+              className="report-driver__submit-button"
+              data-heap-name="ordering.report-driver.submit-btn"
+              disabled={this.isSubmitButtonDisable()}
+              onClick={this.handleSubmit}
+            >
+              {this.renderSubmitButtonContent()}
+            </button>
+          </div>
+        </main>
+      </section>
+    );
+  }
+}
+
+export default compose(
+  withTranslation(['ReportDriver']),
+  connect(
+    state => ({
+      inputNotes: getInputNotes(state),
+      selectedReasonCode: getSelectedReasonCode(state),
+      selectedReasonFields: getSelectedReasonFields(state),
+      orderStatus: getOrderStatus(state),
+      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      receiptNumber: getReceiptNumber(state),
+      submitStatus: getSubmitStatus(state),
+      showPageLoader: getShowPageLoader(state),
+      uploadPhotoFile: getUploadPhotoFile(state),
+      uploadPhotoUrl: getUploadPhotoUrl(state),
+    }),
+    dispatch => ({
+      reportDriverActions: bindActionCreators(reportDriverActionCreators, dispatch),
+      thankyouActions: bindActionCreators(thankyouActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
+)(ReportDriver);

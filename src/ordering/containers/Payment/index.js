@@ -3,6 +3,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
+import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 
@@ -37,8 +38,10 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { currentPayment } = this.props;
-    this.props.paymentActions.setCurrentPayment(currentPayment);
+    const { payments, unavailablePaymentList } = this.props;
+    const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
+
+    this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
     await this.props.homeActions.loadShoppingCart();
   };
 
@@ -89,8 +92,13 @@ class Payment extends Component {
     }
   };
 
-  setCurrentPayment = paymentLabel => {
-    this.props.paymentActions.setCurrentPayment(paymentLabel);
+  setCurrentPayment = ({ label, key }) => {
+    const { unavailablePaymentList } = this.props;
+    const disabledPayment = unavailablePaymentList.find(p => p === key);
+
+    if (!disabledPayment) {
+      this.props.paymentActions.setCurrentPayment(label);
+    }
   };
 
   getPaymentShowLabel(payment) {
@@ -107,17 +115,15 @@ class Payment extends Component {
     }
   }
 
-  handleClickPayNow = async () => {
-    const { history, currentPaymentInfo, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+  handleBeforeCreateOrder = () => {
+    const { history, currentPaymentInfo } = this.props;
 
     this.setState({
       payNowLoading: true,
     });
 
     // redirect to customized payment page when the payment contains pathname of page router
-    if (currentPaymentInfo.pathname) {
+    if (currentPaymentInfo && currentPaymentInfo.pathname) {
       history.push({
         pathname: currentPaymentInfo.pathname,
         search: window.location.search,
@@ -125,25 +131,21 @@ class Payment extends Component {
 
       return;
     }
-
-    await this.props.paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
-
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
-    }
-
-    this.setState({
-      payNowLoading: !!orderId,
-    });
   };
 
   render() {
-    const { t, currentPayment, payments, unavailablePaymentList, cartSummary } = this.props;
+    const {
+      history,
+      t,
+      currentPayment,
+      payments,
+      unavailablePaymentList,
+      cartSummary,
+      currentOrder,
+      currentPaymentInfo,
+    } = this.props;
     const { total } = cartSummary || {};
+    const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
@@ -163,9 +165,10 @@ class Payment extends Component {
       );
 
     return (
-      <section className={className.join(' ')}>
+      <section className={className.join(' ')} data-heap-name="ordering.payment.container">
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="ordering.payment.header"
           isPage={true}
           title={t('SelectPayment')}
           navFunc={this.handleClickBack}
@@ -190,7 +193,9 @@ class Payment extends Component {
                   key={payment.label}
                   className={classList.join(' ')}
                   data-testid="paymentSelector"
-                  onClick={() => this.setCurrentPayment(payment.label)}
+                  data-heap-name="ordering.payment.payment-item"
+                  data-heap-payment-name={payment.label}
+                  onClick={() => this.setCurrentPayment(payment)}
                 >
                   <figure className="payment__image-container">
                     <PaymentLogo payment={payment} />
@@ -210,14 +215,22 @@ class Payment extends Component {
         </div>
 
         <div className="footer-operation">
-          <button
-            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
-            disabled={payNowLoading}
+          <CreateOrderButton
+            history={history}
+            className="border-radius-base"
             data-testid="payNow"
-            onClick={this.handleClickPayNow}
+            data-heap-name="ordering.payment.pay-btn"
+            disabled={payNowLoading}
+            validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
+            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            afterCreateOrder={orderId => {
+              this.setState({
+                payNowLoading: !!orderId,
+              });
+            }}
           >
             {payNowLoading ? <div className="loader"></div> : t('PayNow')}
-          </button>
+          </CreateOrderButton>
         </div>
 
         {paymentData ? (

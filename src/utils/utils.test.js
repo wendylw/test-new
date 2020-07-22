@@ -29,6 +29,7 @@ describe('utils/utils', () => {
     initSmoothAnimation,
     getUserAgentInfo,
     checkEmailIsValid,
+    getFileExtension,
   } = Utils;
 
   it('getQueryString', () => {
@@ -247,6 +248,33 @@ describe('utils/utils', () => {
       expect(checkEmailIsValid(null)).toBeFalsy();
       expect(checkEmailIsValid('')).toBeFalsy();
       expect(checkEmailIsValid()).toBeFalsy();
+    });
+  });
+
+  describe('Utils.getFileExtension', () => {
+    it('check get extension from file name first', () => {
+      expect(
+        getFileExtension({
+          name: 'test.jpg',
+          type: 'image/jpeg',
+        })
+      ).toBe('jpg');
+
+      expect(
+        getFileExtension({
+          name: 'test-1-2-3.1.2.3.jpg',
+          type: 'image/jpeg',
+        })
+      ).toBe('jpg');
+    });
+
+    it('check get extension from file type if file name not exist extension', () => {
+      expect(
+        getFileExtension({
+          name: 'test',
+          type: 'image/jpeg',
+        })
+      ).toBe('jpeg');
     });
   });
 });

@@ -1,3 +1,4 @@
+import Utils from './utils';
 const API_URLS = {
   GET_CART: {
     url: '/api/cart',
@@ -12,11 +13,16 @@ const API_URLS = {
         params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
       }
     }
+    const { expectDeliveryDateFrom } = Utils.getFulfillDate();
+
+    expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
     const queryString = Object.keys(params)
       .map(key => `${key}=${params[key]}`)
       .join('&');
     if (isDeliveryType) {
       CartObj.url = `/api/cart?${queryString}`;
+    } else {
+      expectDeliveryDateFrom && (CartObj.url = `/api/cart?fulfillDate=${expectDeliveryDateFrom}`);
     }
     return CartObj;
   },
@@ -55,6 +61,10 @@ const API_URLS = {
   POST_STORE_HASH_DATA: storeId => ({
     url: `/api/ordering/stores/${storeId}`,
     method: 'post',
+  }),
+  GET_S3_POST_POLICY: action => ({
+    url: `/api/s3-post-policy/${action}`,
+    method: 'get',
   }),
   GET_RECEIPTS_LIST: {
     url: '/api/transactions',
@@ -123,6 +133,18 @@ const API_URLS = {
   },
   CREATE_VOUCHER_ORDER: {
     url: '/api/transactions',
+    method: 'post',
+  },
+  GET_COLLECTIONS: {
+    url: '/api/stores/collections',
+    method: 'get',
+  },
+  QUERY_FEED_BACK: {
+    url: `/api/feedback`,
+    method: 'get',
+  },
+  CREATE_FEED_BACK: {
+    url: '/api/feedback',
     method: 'post',
   },
 };

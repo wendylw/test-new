@@ -24,6 +24,7 @@ class DeliverToBar extends PureComponent {
         <div
           className="deliver-to-entry__content"
           data-testid="DeliverToBar"
+          data-heap-name="site.home.delivery-bar"
           onClick={() => {
             this.handleScannerClicked();
             gotoLocationPage();
@@ -35,7 +36,7 @@ class DeliverToBar extends PureComponent {
             <span className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">{address}</span>
           </div>
         </div>
-        <Link to={ROUTER_PATHS.QRSCAN}>
+        <Link to={ROUTER_PATHS.QRSCAN} data-heap-name="site.home.qr-scan-icon">
           <IconScanner className="icon icon__privacy" onClick={this.handleScannerClicked} />
         </Link>
       </section>
