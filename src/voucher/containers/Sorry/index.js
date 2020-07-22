@@ -27,7 +27,7 @@ class Sorry extends Component {
           <br />
           {t('PleaseUpdateAndTryAgain')}
         </div>
-        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             data-heap-name="voucher.sorry.try-again-btn"

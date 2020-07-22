@@ -65,7 +65,7 @@ class App extends Component {
   setGtmData = ({ onlineStoreInfo, userInfo, businessInfo }) => {
     const userProperties = { onlineStoreInfo, userInfo };
 
-    if (businessInfo && businessInfo.stores[0].id) {
+    if (businessInfo && businessInfo.stores[0] && businessInfo.stores[0].id) {
       userProperties.store = {
         id: businessInfo.stores[0].id,
       };

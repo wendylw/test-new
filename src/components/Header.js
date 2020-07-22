@@ -77,7 +77,7 @@ class Header extends Component {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isDeliveryHomePage = isStoreHome && (isDeliveryType || isPickUpType);
-    const classList = ['header flex flex-space-between flex-middle sticky-wrapper'];
+    const classList = ['header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper'];
     const contentClassList = ['header__content flex padding-top-bottom-smaller'];
     const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
 

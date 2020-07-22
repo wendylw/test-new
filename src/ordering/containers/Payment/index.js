@@ -226,7 +226,7 @@ class Payment extends Component {
           </ul>
         </div>
 
-        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             className="margin-top-bottom-smallest"
             history={history}

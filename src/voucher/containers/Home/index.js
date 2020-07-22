@@ -97,7 +97,7 @@ class Home extends Component {
           </ul>
         </div>
         <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
-        <footer className="footer padding-top-bottom-small padding-left-right-normal">
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             onClick={this.handleContinue}

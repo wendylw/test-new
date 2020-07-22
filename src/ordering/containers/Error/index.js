@@ -36,7 +36,7 @@ export class Error extends Component {
 
     return (
       <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
-        <footer className="footer footer__white padding-top-bottom-small padding-left-right-normal">
+        <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
             data-heap-name="common.error-page.back-btn"

@@ -301,7 +301,7 @@ class Cart extends Component {
             {this.renderPromotionItem()}
           </Billing>
         </aside>
-        <footer className="footer padding-small flex flex-middle flex-space-between">
+        <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={this.handleClickBack.bind(this)}

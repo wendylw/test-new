@@ -498,7 +498,7 @@ class Customer extends Component {
           data-heap-name="ordering.customer.form-textarea"
         />
 
-        <footer className="footer padding-small flex flex-middle flex-space-between">
+        <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
           <button
             className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             data-heap-name="ordering.customer.back-btn"

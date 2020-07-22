@@ -609,7 +609,10 @@ class LocationAndDate extends Component {
   renderContinueButton = () => {
     const { t } = this.props;
     return (
-      <footer ref={this.footerRef} className="footer padding-top-bottom-small padding-left-right-normal">
+      <footer
+        ref={this.footerRef}
+        className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
+      >
         <button
           className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
           data-testid="continue"

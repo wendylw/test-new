@@ -510,7 +510,7 @@ class CreditCard extends Component {
           {this.renderForm()}
         </div>
 
-        <footer className="payment-credit-card__footer footer padding-top-bottom-small padding-left-right-normal">
+        <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
             className="margin-top-bottom-smallest"

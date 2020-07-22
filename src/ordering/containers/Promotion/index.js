@@ -124,7 +124,7 @@ class Promotion extends Component {
           ) : null}
         </div>
 
-        <footer className="footer padding-small flex flex-middle flex-space-between">
+        <footer className="footer flex__shrink-fixed padding-small flex flex-middle flex-space-between">
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder"
             data-heap-name="ordering.promotion.apply-btn"

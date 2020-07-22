@@ -305,7 +305,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
         }}
       />
 
-      <footer className="payment-credit-card__footer footer padding-top-bottom-small padding-left-right-normal">
+      <footer className="payment-credit-card__footer flex__shrink-fixed footer padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
           className="margin-top-bottom-smallest"
           history={history}

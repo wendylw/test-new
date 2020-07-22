@@ -76,6 +76,7 @@ export class Home extends Component {
     const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     if (!h || !storeId || tableId === 'DEMO') {
+      console.log(storeId);
       window.location.href = '/';
     }
 
