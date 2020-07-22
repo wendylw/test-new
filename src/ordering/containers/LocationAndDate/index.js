@@ -602,7 +602,9 @@ class LocationAndDate extends Component {
       const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('PickupAt')}</label>
+          <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
+            {t('PickupAt')}
+          </label>
           <div className="form__textarea">{pickUpAddress}</div>
         </div>
       );
@@ -890,9 +892,17 @@ class LocationAndDate extends Component {
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
-      <div className="form__group location-display__date-container" style={{ fontWeight: '600' }}>
-        {this.state.isDeliveryType && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
-        {this.state.isPickUpType && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
+      <div className="form__group location-display__date-container">
+        {this.state.isDeliveryType && (
+          <label className="form__label" style={{ fontWeight: '600' }}>
+            {t('DeliveryTime')}
+          </label>
+        )}
+        {this.state.isPickUpType && (
+          <label className="form__label" style={{ fontWeight: '600' }}>
+            {t('PickupTime')}
+          </label>
+        )}
         <ul
           ref={this.timeListRef}
           className=""
