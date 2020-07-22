@@ -454,7 +454,7 @@ class LocationAndDate extends Component {
       const { t } = this.props;
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold" style={{ fontWeight: !deliveryToAddress ? '600' : '500' }}>
+          <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
             {t('DeliverTo')}
           </label>
           <div
@@ -506,7 +506,7 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     return (
       <div className="form__group">
-        <label className="form__label font-weight-bold">
+        <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
           {this.state.isDeliveryType && t('DeliverOn')}
           {this.state.isPickUpType && t('PickUpOn')}
         </label>
@@ -534,7 +534,7 @@ class LocationAndDate extends Component {
                   <span className="text-uppercase">{t('Today')}</span>
                 ) : (
                   <Fragment>
-                    <span>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
+                    <span style={{ fontWeight: '600' }}>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
                     <span>{date}</span>
                   </Fragment>
                 )}
@@ -568,6 +568,7 @@ class LocationAndDate extends Component {
             onClick={() => {
               this.handleSelectHour({ ...item });
             }}
+            style={{ fontWeight: '600' }}
             key="deliveryOnDemandOrder"
           >
             {t('Immediate')}
@@ -780,7 +781,7 @@ class LocationAndDate extends Component {
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
-      <div className="form__group location-display__date-container">
+      <div className="form__group location-display__date-container" style={{ fontWeight: '600' }}>
         {this.state.isDeliveryType && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
         {this.state.isPickUpType && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
         <ul
@@ -954,7 +955,9 @@ class LocationAndDate extends Component {
         onClick={this.goStoreList}
         data-heap-name="ordering.location-and-date.selected-store"
       >
-        <label className="form__label font-weight-bold">{this.props.t('Selected Store')}</label>
+        <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
+          {this.props.t('Selected Store')}
+        </label>
         <div className="location-page__search-box">
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
             <input className="input input__block" data-testid="deliverTo" type="text" defaultValue={store} readOnly />
