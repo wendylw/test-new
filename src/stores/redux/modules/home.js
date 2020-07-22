@@ -67,9 +67,9 @@ export const actions = {
     type: types.CLEAR_CURRENT_STORE,
   }),
 
-  loadCoreBusiness: () => dispatch => {
-    const { storeId, business } = config;
-    return dispatch(fetchCoreBusiness({ business, storeId }));
+  loadCoreBusiness: storeId => dispatch => {
+    const { storeIdFromCookie, business } = config;
+    return dispatch(fetchCoreBusiness({ business, storeId: storeId || storeIdFromCookie }));
   },
 
   setOrderMethod: method => ({
