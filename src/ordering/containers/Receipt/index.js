@@ -139,6 +139,7 @@ export class ReceiptDetail extends Component {
           subtotal={subtotal}
           total={total}
           promotion={promotion}
+          isLogin={true}
           creditsBalance={this.getSpendCashback()}
         />
       </section>
