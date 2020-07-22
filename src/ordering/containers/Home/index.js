@@ -87,7 +87,6 @@ export class Home extends Component {
     await this.props.appActions.loadCoreBusiness();
 
     if (!this.props.deliveryInfo.enablePreOrder) {
-      debugger;
       Utils.setSessionVariable(
         'expectedDeliveryHour',
         JSON.stringify({
