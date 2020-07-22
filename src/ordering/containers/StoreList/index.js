@@ -146,8 +146,8 @@ class StoreList extends Component {
               <p>{this.props.onlineStoreInfo.businessType}</p>
               <p>
                 {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
-                  ? `${this.props.allStore.length} outlets near you`
-                  : `Total ${this.props.allStore.length} outlets`}
+                  ? `${stores.length} outlets near you`
+                  : `Total ${stores.length} outlets`}
               </p>
             </div>
           </div>
