@@ -7,6 +7,7 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     ignoreErrors: [],
     integrations: [new CaptureConsole({ levels: ['error', 'assert'] })],
     attachStacktrace: true,
+    environment: process.env.NODE_ENV,
   });
 
   // inject xhr and fetch to inspect error
