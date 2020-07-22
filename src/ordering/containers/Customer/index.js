@@ -233,6 +233,7 @@ class Customer extends Component {
     return (
       <div
         className="form__group border-radius-base"
+        data-heap-name="ordering.customer.delivery-time"
         onClick={async () => {
           const { search } = window.location;
 
@@ -250,6 +251,7 @@ class Customer extends Component {
       </div>
     );
   };
+
   handleInputChange = e => {
     const inputValue = e.target.value;
     e.target.name === 'addressDetails' &&
@@ -257,6 +259,7 @@ class Customer extends Component {
     e.target.name === 'deliveryComments' &&
       this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
   };
+
   renderDeliveryAddress() {
     const { t, history } = this.props;
 
@@ -274,6 +277,7 @@ class Customer extends Component {
 
         <div
           className="form__group border-radius-base flex flex-middle flex-space-between"
+          data-heap-name="ordering.customer.delivery-address"
           onClick={async () => {
             const { search } = window.location;
 
@@ -293,6 +297,7 @@ class Customer extends Component {
         <div className="form__group border-radius-base  form-field">
           <input
             className="input input__block"
+            data-heap-name="ordering.customer.delivery-address-detail"
             type="text"
             maxLength="140"
             placeholder={t('AddressDetailsPlaceholder')}
@@ -304,6 +309,7 @@ class Customer extends Component {
         <div className="form__group border-radius-base form-field">
           <input
             className="input input__block"
+            data-heap-name="ordering.customer.delivery-note"
             type="text"
             maxLength="140"
             value={deliveryComments}
@@ -342,6 +348,7 @@ class Customer extends Component {
         <label className="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
         <div
           className="form__group border-radius-base"
+          data-heap-name="ordering.customer.pickup-time"
           onClick={async () => {
             const { search } = window.location;
 
@@ -364,6 +371,7 @@ class Customer extends Component {
         </div>
         <div
           className="form__group border-radius-base flex flex-middle flex-space-between"
+          data-heap-name="ordering.customer.pickup-note"
           onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
         >
           <p className={`${deliveryComments ? '' : 'gray-font-opacity'}`}>
@@ -396,9 +404,10 @@ class Customer extends Component {
     }
 
     return (
-      <section className={`table-ordering__customer` /* hide */}>
+      <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
         <Header
           className="text-center gray flex-middle"
+          data-heap-name="ordering.customer.header"
           isPage={true}
           title={this.getHeaderTitle()}
           navFunc={() => {
@@ -413,6 +422,7 @@ class Customer extends Component {
             <div className="form__group" data-testid="customerName">
               <input
                 className="input input__block"
+                data-heap-name="ordering.customer.name-input"
                 type="text"
                 placeholder={t('Name')}
                 defaultValue={deliveryDetails.username}
@@ -425,6 +435,7 @@ class Customer extends Component {
             <div className="form__group" data-testid="customerPhoneNumber">
               <PhoneInput
                 smartCaret={false}
+                data-heap-name="ordering.customer.phone-input"
                 placeholder={t('EnterPhoneNumber')}
                 value={formatPhoneNumberIntl(deliveryDetails.phone)}
                 country={country}
@@ -452,12 +463,14 @@ class Customer extends Component {
           title={formTextareaTitle}
           textareaValue={textareaValue}
           onUpdateText={updateTextFunc}
+          data-heap-name="ordering.customer.form-textarea"
         />
 
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
             <button
               className="billing__button button button__fill button__block dark font-weight-bolder"
+              data-heap-name="ordering.customer.back-btn"
               onClick={() => {
                 history.push({
                   pathname: ROUTER_PATHS.ORDERING_CART,
@@ -471,7 +484,8 @@ class Customer extends Component {
           <div className="footer-operation__item width-2-3">
             <CreateOrderButton
               history={history}
-              dataTestId="customerContinue"
+              data-testid="customerContinue"
+              data-heap-name="ordering.customer.continue-btn"
               disabled={!this.getCanContinue() || isFetching}
               validCreateOrder={!total}
               beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}

@@ -89,7 +89,7 @@ class Login extends React.Component {
     }
 
     return (
-      <section className={classList.join(' ')}>
+      <section className={classList.join(' ')} data-heap-name="cashback.login.container">
         <PhoneViewContainer
           className="aside-bottom not-full"
           title={title}
@@ -110,6 +110,7 @@ class Login extends React.Component {
                   className="font-weight-bolder link__non-underline"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.TERMS_OF_USE}
+                  data-heap-name="cashback.login.term-link"
                 >
                   Terms of Service
                 </Link>
@@ -118,6 +119,7 @@ class Login extends React.Component {
                   className="font-weight-bolder link__non-underline"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.PRIVACY}
+                  data-heap-name="cashback.login.privacy-policy-link"
                 >
                   Privacy Policy
                 </Link>

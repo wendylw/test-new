@@ -134,10 +134,14 @@ class SearchPage extends React.Component {
     const { shippingType, searchInfo } = this.props;
     const { keyword } = searchInfo;
     return (
-      <main className="fixed-wrapper fixed-wrapper__main">
+      <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
-            <IconLeftArrow className="icon icon__big icon__gray text-middle" onClick={this.onGoBack} />
+            <IconLeftArrow
+              className="icon icon__big icon__gray text-middle"
+              onClick={this.onGoBack}
+              data-heap-name="site.search.back-btn"
+            />
           </div>
           <SearchBox
             keyword={keyword}

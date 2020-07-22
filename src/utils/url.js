@@ -1,3 +1,4 @@
+import Utils from './utils';
 const API_URLS = {
   GET_CART: {
     url: '/api/cart',
@@ -12,11 +13,16 @@ const API_URLS = {
         params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
       }
     }
+    const { expectDeliveryDateFrom } = Utils.getFulfillDate();
+
+    expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
     const queryString = Object.keys(params)
       .map(key => `${key}=${params[key]}`)
       .join('&');
     if (isDeliveryType) {
       CartObj.url = `/api/cart?${queryString}`;
+    } else {
+      expectDeliveryDateFrom && (CartObj.url = `/api/cart?fulfillDate=${expectDeliveryDateFrom}`);
     }
     return CartObj;
   },

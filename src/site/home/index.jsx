@@ -63,9 +63,6 @@ class Home extends React.Component {
     // placeInfo ok
     this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
 
-    // collection card ok
-    this.props.collectionCardActions.getCollections();
-
     this.reloadStoreListIfNecessary();
 
     if (source === 'ip') {
@@ -92,6 +89,7 @@ class Home extends React.Component {
 
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
+      this.props.collectionCardActions.getCollections();
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -179,7 +177,7 @@ class Home extends React.Component {
     const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
 
     return (
-      <main className="entry fixed-wrapper fixed-wrapper__main">
+      <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
           title={t('DeliverTo')}
           className={`entry__deliver-to base-box-shadow ${
@@ -210,6 +208,7 @@ class Home extends React.Component {
                 <input
                   className="form__input entry-home__input"
                   data-testid="searchStore"
+                  data-heap-name="site.home.search-box"
                   type="type"
                   placeholder={t('SearchRestaurantPlaceholder')}
                   onClick={this.handleLoadSearchPage}

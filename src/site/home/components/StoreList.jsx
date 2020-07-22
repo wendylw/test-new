@@ -74,6 +74,8 @@ class StoreList extends Component {
               key={id}
               className="store-card-list__item flex flex-top padding-top-bottom-normal border__bottom-divider"
               data-testid="deliverStore"
+              data-heap-name="site.common.store-item"
+              data-heap-store-name={name}
               onClick={() => {
                 this.handleStoreClicked(store);
               }}
@@ -83,8 +85,8 @@ class StoreList extends Component {
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
-                  placeholderImage={MvpStorePlaceholderImage}
                   scalingRatioIndex={1}
+                  placeholderImage={MvpStorePlaceholderImage}
                   alt={name}
                 />
               </div>

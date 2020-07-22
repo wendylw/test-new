@@ -12,22 +12,23 @@ class CollectionCard extends React.Component {
     return (
       <ul className="store-collections flex flex-space-between flex-middle">
         {collections.map(collection => {
-          const { name, beepCollectionId, image } = collection;
+          const { name, image, urlPath } = collection;
           return (
             <li
-              key={beepCollectionId}
+              key={urlPath}
               className="store-collections__item text-center"
               data-testid="collection"
+              data-heap-name="site.home.collection-icon"
+              data-heap-collection-name={name}
               onClick={() => {
                 // concern to use location.href if icons fixed to the top
                 backLeftPosition();
                 this.props.history.push({
-                  pathname: `/collections/${beepCollectionId}`,
+                  pathname: `/collections/${urlPath}`,
                 });
               }}
             >
               <Image src={image} alt={name} className="icon store-collections__img" />
-              {/*<img src={image} alt={name} className="icon store-collections__img" />*/}
               <span className="store-collections__name text-size-smaller text-center text-weight-bolder">{name}</span>
             </li>
           );

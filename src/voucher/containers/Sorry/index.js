@@ -16,8 +16,8 @@ class Sorry extends Component {
   render() {
     const { t } = this.props;
     return (
-      <section className="sorry-page">
-        <Header clickBack={this.handleClickBack} />
+      <section className="sorry-page" data-heap-name="voucher.sorry.container">
+        <Header clickBack={this.handleClickBack} data-heap-name="voucher.sorry.header" />
         <div className="sorry-page__title">{t('TransactionFailed')}</div>
         <div className="sorry-page__image">
           <img alt="Sorry" src={beepErrorImage} />
@@ -31,6 +31,7 @@ class Sorry extends Component {
           <div className="footer-operation__item width-1-1">
             <button
               className="continue__button button button__fill button__block font-weight-bolder"
+              data-heap-name="voucher.sorry.try-again-btn"
               onClick={this.handleClickBack}
             >
               {t('TryAgain')}
