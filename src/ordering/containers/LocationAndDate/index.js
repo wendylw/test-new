@@ -123,8 +123,9 @@ class LocationAndDate extends Component {
           if (!isSupport) {
             this.reSetStore();
           }
+        } else {
+          this.setMethodsTime();
         }
-        this.setMethodsTime();
       }
     );
   };
