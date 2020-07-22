@@ -7,6 +7,7 @@ import Header from '../../../../components/Header';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import FormValidate from '../../../../utils/form-validate';
 import RedirectForm from '../components/RedirectForm';
+import CreateOrderButton from '../../../components/CreateOrderButton';
 import Constants from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import config from '../../../../config';
@@ -244,7 +245,7 @@ class CreditCard extends Component {
     });
   }
 
-  async payNow() {
+  async handleBeforeCreateOrder() {
     await this.validateForm();
 
     const { t } = this.props;
@@ -303,24 +304,6 @@ class CreditCard extends Component {
 
       return;
     }
-
-    const { history, paymentActions, cartSummary } = this.props;
-    const { totalCashback } = cartSummary || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
-
-    const { currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
-
-    if (orderId) {
-      Utils.removeSessionVariable('additionalComments');
-      Utils.removeSessionVariable('deliveryComments');
-    }
-
-    this.setState({
-      payNowLoading: !!orderId,
-    });
   }
 
   handleChangeCardNumber(e) {
@@ -401,6 +384,7 @@ class CreditCard extends Component {
                 ref={ref => (this.cardNumberEl = ref)}
                 id="cardNumber"
                 className="input input__block"
+                data-heap-name="ordering.payment.credit-card.card-number"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
                 value={cardNumber || ''}
@@ -413,6 +397,7 @@ class CreditCard extends Component {
               <input
                 id="validDate"
                 className={`input input__block ${invalidCardInfoFields.includes('validDate') ? 'has-error' : ''}`}
+                data-heap-name="ordering.payment.credit-card.valid-date"
                 type="tel"
                 placeholder="MM / YY"
                 value={validDate || ''}
@@ -423,6 +408,7 @@ class CreditCard extends Component {
                 id="cvv"
                 data-encrypt="cvv"
                 className={`input input__block ${invalidCardInfoFields.includes('cvv') ? 'has-error' : ''}`}
+                data-heap-name="ordering.payment.credit-card.cvv"
                 type="password"
                 placeholder="CVV"
                 onBlur={this.validCardInfo.bind(this)}
@@ -457,6 +443,7 @@ class CreditCard extends Component {
             className={`input input__block border-radius-base ${
               cardHolderNameError.key === FormValidate.errorNames.required ? 'has-error' : ''
             }`}
+            data-heap-name="ordering.payment.credit-card.holder-name"
             type="text"
             value={cardholderName || ''}
             onChange={this.handleChangeCardHolderName.bind(this)}
@@ -475,15 +462,20 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary } = this.props;
+    const { t, match, history, cartSummary, currentOrder } = this.props;
     const { payNowLoading, domLoaded } = this.state;
+    const { orderId } = currentOrder || {};
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
-      <section className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}>
+      <section
+        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        data-heap-name="ordering.payment.credit-card.container"
+      >
         <Header
           className="border__bottom-divider gray has-right flex-middle"
+          data-heap-name="ordering.payment.credit-card.header"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -500,7 +492,26 @@ class CreditCard extends Component {
         </div>
 
         <div className="footer-operation">
-          <button
+          <CreateOrderButton
+            history={history}
+            className="border-radius-base"
+            data-test-id="payMoney"
+            data-heap-name="ordering.payment.credit-card.pay-btn"
+            disabled={payNowLoading}
+            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            afterCreateOrder={() => {
+              this.setState({
+                payNowLoading: !!orderId,
+              });
+            }}
+          >
+            {payNowLoading ? (
+              <div className="loader"></div>
+            ) : (
+              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+            )}
+          </CreateOrderButton>
+          {/* <button
             className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
             onClick={this.payNow.bind(this)}
             data-testid="payMoney"
@@ -509,9 +520,9 @@ class CreditCard extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-            )}
-          </button>
+                <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              )}
+          </button> */}
         </div>
 
         {paymentData ? (

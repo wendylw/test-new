@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import withDataAttributes from './withDataAttributes';
 
 class Modal extends Component {
   state = {
@@ -34,16 +35,16 @@ class Modal extends Component {
     });
   }
 
-  handleClick = (e) => {
+  handleClick = e => {
     const { hideOnBlank } = this.props;
 
     if (e.currentTarget === e.target && hideOnBlank) {
       this.hide();
     }
-  }
+  };
 
   render() {
-    const { children, className = '' } = this.props;
+    const { children, className = '', dataAttributes } = this.props;
     const { show } = this.state;
 
     if (!show) {
@@ -51,32 +52,20 @@ class Modal extends Component {
     }
 
     return (
-      <section className={`modal ${className}`} onClick={this.handleClick.bind(this)}>
-        <div className="modal__content">
-          {children}
-        </div>
+      <section className={`modal ${className}`} onClick={this.handleClick.bind(this)} {...dataAttributes}>
+        <div className="modal__content">{children}</div>
       </section>
     );
   }
 }
 
 Modal.Header = ({ children, className = '' }) => (
-  <header className={`modal__header border__bottom-divider ${className}`}>
-    {children}
-  </header>
+  <header className={`modal__header border__bottom-divider ${className}`}>{children}</header>
 );
 
-Modal.Body = ({ children, className = '' }) => (
-  <div className={`modal__body ${className}`}>
-    {children}
-  </div>
-);
+Modal.Body = ({ children, className = '' }) => <div className={`modal__body ${className}`}>{children}</div>;
 
-Modal.Footer = ({ children, className = '' }) => (
-  <footer className={className}>
-    {children}
-  </footer>
-);
+Modal.Footer = ({ children, className = '' }) => <footer className={className}>{children}</footer>;
 
 Modal.propTypes = {
   show: PropTypes.bool,
@@ -88,8 +77,8 @@ Modal.propTypes = {
 Modal.defaultProps = {
   show: false,
   hideOnBlank: false,
-  onShow: () => { },
-  onHide: () => { },
+  onShow: () => {},
+  onHide: () => {},
 };
 
-export default Modal;
+export default withDataAttributes(Modal);

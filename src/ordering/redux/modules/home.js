@@ -16,7 +16,7 @@ import { getBusiness } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 // import { getBusinessInfo } from './cart';
 
-const initialState = {
+export const initialState = {
   domProperties: {
     verticalMenuBusinesses: config.verticalMenuBusinesses,
     // 33.8% equal (item padding + item image + item cart controller button height) / window width
@@ -56,9 +56,9 @@ export const actions = {
       deliveryCoords = Utils.getDeliveryCoords();
     }
     dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
-    if (!getState().home.onlineCategory.categoryIds.length) {
-      dispatch(fetchOnlineCategory());
-    }
+    // if (!getState().home.onlineCategory.categoryIds.length) {
+    dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
+    // }
   },
 
   // load shopping cart
@@ -144,7 +144,7 @@ export const actions = {
   }),
 };
 
-const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
@@ -155,7 +155,7 @@ const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
 };
 
 // generator a virtual shopping cart for Customer place a Voucher Order
-const generatorShoppingCartForVoucherOrdering = () => {
+export const generatorShoppingCartForVoucherOrdering = () => {
   const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
   const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
 
@@ -165,7 +165,7 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-const fetchOnlineCategory = () => {
+const fetchOnlineCategory = variables => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {
@@ -175,11 +175,12 @@ const fetchOnlineCategory = () => {
         types.FETCH_ONLINECATEGORY_FAILURE,
       ],
       endpoint,
+      variables,
     },
   };
 };
 // variables := { productId, variations }
-const removeShoppingCartItem = variables => {
+export const removeShoppingCartItem = variables => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -194,7 +195,7 @@ const removeShoppingCartItem = variables => {
   };
 };
 
-const addOrUpdateShoppingCartItem = variables => {
+export const addOrUpdateShoppingCartItem = variables => {
   const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
   return {
     [FETCH_GRAPHQL]: {
@@ -209,13 +210,16 @@ const addOrUpdateShoppingCartItem = variables => {
   };
 };
 
-const fetchProductDetail = variables => {
+export const fetchProductDetail = variables => {
   const endpoint = Url.apiGql('ProductDetail');
   return {
     [FETCH_GRAPHQL]: {
       types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
-      variables,
+      variables: {
+        ...variables,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      },
     },
   };
 };

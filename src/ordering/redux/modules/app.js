@@ -10,7 +10,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 
 const { AUTH_INFO } = Constants;
 
-const initialState = {
+export const initialState = {
   user: {
     showLoginPage: false,
     // isWebview: Utils.isWebview(),
@@ -58,6 +58,7 @@ export const actions = {
       payload: {
         accessToken,
         refreshToken,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
       },
     },
   }),
@@ -66,7 +67,10 @@ export const actions = {
     [API_REQUEST]: {
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       ...Url.API_URLS.PHONE_NUMBER_LOGIN,
-      payload: { phone },
+      payload: {
+        phone,
+        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      },
     },
   }),
 
@@ -170,7 +174,7 @@ const fetchCoreBusiness = variables => ({
   },
 });
 
-const fetchCustomerProfile = consumerId => ({
+export const fetchCustomerProfile = consumerId => ({
   [API_REQUEST]: {
     types: [
       types.FETCH_CUSTOMER_PROFILE_REQUEST,

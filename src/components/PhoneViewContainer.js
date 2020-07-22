@@ -66,6 +66,7 @@ class PhoneViewContainer extends React.Component {
         <PhoneInput
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
+          data-heap-name="common.phone-view-container.phone-number-input"
           value={formatPhoneNumberIntl(phone)}
           country={country || DEFAULT_COUNTRY}
           metadata={metadataMobile}
@@ -73,6 +74,7 @@ class PhoneViewContainer extends React.Component {
         />
         <button
           className="phone-view-form__button button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+          data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
           disabled={!phone || isSavingPhone || !isValidPhoneNumber(phone)}
         >

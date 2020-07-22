@@ -3,7 +3,7 @@ import Constants from '../../../utils/constants';
 
 const { PROMO_TYPE } = Constants;
 
-const initialState = {
+export const initialState = {
   summary: {
     count: 0,
     discount: 0,

@@ -1,6 +1,7 @@
 import Constants from '../../../utils/constants';
 import { toISODateString } from '../../../utils/datetime-lib';
 import i18next from 'i18next';
+import { PROMOTION_TYPES } from '../../redux/types';
 
 const { PROMOTION_APPLIED_STATUS } = Constants;
 
@@ -23,6 +24,8 @@ export function getErrorMessageByPromoStatus({ status, validFrom }) {
     case PROMOTION_APPLIED_STATUS.NOT_EXISTED:
     case PROMOTION_APPLIED_STATUS.UNKNOWN_DISCOUNT_TYPE:
       return i18next.t('OrderingPromotion:NotExisted');
+    case PROMOTION_APPLIED_STATUS.REACH_MAX_CLAIM_COUNT:
+      return i18next.t('OrderingPromotion:ReachedMaxClaimCount');
     case PROMOTION_APPLIED_STATUS.INVALID:
     default:
       return i18next.t('OrderingPromotion:Invalid');

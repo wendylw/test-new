@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import withDataAttributes from './withDataAttributes';
 import Image from './Image';
 import Tag from './Tag';
 
@@ -18,6 +19,7 @@ export class Item extends Component {
       operateItemDetail,
       productDetailImageRef,
       hasTag,
+      dataAttributes,
     } = this.props;
     const classList = ['item border__bottom-divider item-padding'];
     const contentClassList = ['item__content flex'];
@@ -31,7 +33,7 @@ export class Item extends Component {
     }
 
     return (
-      <li className={classList.join(' ')}>
+      <li className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
           <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
           <div className="item__detail flex flex-column flex-space-between" data-testid="itemDetail">
@@ -79,4 +81,4 @@ Item.defaultProps = {
   hasTag: false,
 };
 
-export default withTranslation()(Item);
+export default withDataAttributes(withTranslation()(Item));

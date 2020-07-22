@@ -20,6 +20,7 @@ import '../home/index.scss';
 import './CollectionPage.scss';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
+import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -27,14 +28,17 @@ class CollectionPage extends React.Component {
   sectionRef = React.createRef();
 
   componentDidMount = async () => {
-    const { currentCollection } = this.props;
-
-    if (!checkStateRestoreStatus()) {
-      const shippingType = currentCollection.slug === 'self-pickup' ? 'pickup' : 'delivery';
-      this.props.collectionsActions.setShippingType(shippingType);
-      this.props.collectionsActions.resetPageInfo(shippingType);
+    if (!this.props.currentCollection) {
+      await this.props.collectionCardActions.getCollections();
     }
-    this.props.collectionsActions.getStoreList(currentCollection.tags);
+    const { currentCollection } = this.props;
+    const { shippingType, urlPath } = currentCollection;
+    if (!checkStateRestoreStatus()) {
+      const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
+      this.props.collectionsActions.setShippingType(type);
+      this.props.collectionsActions.resetPageInfo(type);
+    }
+    this.props.collectionsActions.getStoreList(urlPath);
   };
 
   handleBackClicked = () => {
@@ -64,10 +68,10 @@ class CollectionPage extends React.Component {
   };
 
   handleSwitchTab = shippingType => {
-    const { tags } = this.props.currentCollection || {};
+    const { urlPath } = this.props.currentCollection || {};
     this.props.collectionsActions.setShippingType(shippingType);
     this.props.collectionsActions.resetPageInfo(shippingType);
-    this.props.collectionsActions.getStoreList(tags);
+    this.props.collectionsActions.getStoreList(urlPath);
   };
 
   renderSwitchBar = () => {
@@ -78,12 +82,16 @@ class CollectionPage extends React.Component {
         <li
           className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
           data-testid="switchBar"
+          data-heap-name="site.collection.tab-bar"
+          data-heap-delivery-type="delivery"
           onClick={() => this.handleSwitchTab('delivery')}
         >
           {t('Delivery')}
         </li>
         <li
           className={`${classList} ${shippingType === 'pickup' ? 'switch-bar__active' : 'text-opacity'}`}
+          data-heap-name="site.collection.tab-bar"
+          data-heap-delivery-type="pickup"
           onClick={() => this.handleSwitchTab('pickup')}
         >
           {t('SelfPickup')}
@@ -95,7 +103,7 @@ class CollectionPage extends React.Component {
   renderStoreList = () => {
     const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
-    const { tags } = currentCollection;
+    const { urlPath } = currentCollection;
 
     return (
       <div className="store-card-list__container padding-normal">
@@ -109,9 +117,8 @@ class CollectionPage extends React.Component {
             stores={stores}
             hasMore={pageInfo.hasMore}
             getScrollParent={() => this.sectionRef.current}
-            loadMoreStores={page => {
-              console.log('page =', page);
-              this.props.collectionsActions.getStoreList(tags);
+            loadMoreStores={() => {
+              this.props.collectionsActions.getStoreList(urlPath);
             }}
             onStoreClicked={store => this.backLeftPosition(store)}
             withInfiniteScroll
@@ -122,14 +129,19 @@ class CollectionPage extends React.Component {
   };
 
   render() {
-    const { t, currentCollection } = this.props;
+    const { currentCollection } = this.props;
     if (!currentCollection) {
       return null;
     }
     return (
-      <ModalPageLayout title={t(currentCollection.label)} onGoBack={this.handleBackClicked}>
-        {currentCollection.slug === 'self-pickup' ? null : this.renderSwitchBar()}
-        <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
+      <ModalPageLayout title={currentCollection.name} onGoBack={this.handleBackClicked}>
+        {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
+        <section
+          ref={this.sectionRef}
+          className="entry-home fixed-wrapper__container wrapper"
+          data-heap-name="site.collection.container"
+          data-heap-collection-name={currentCollection.name}
+        >
           {this.renderStoreList()}
         </section>
       </ModalPageLayout>
@@ -153,6 +165,7 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       collectionsActions: bindActionCreators(collectionsActions, dispatch),
+      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )

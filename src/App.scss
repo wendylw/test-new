@@ -402,10 +402,10 @@
     -webkit-transition: -webkit-transform 0.4s;
 
     &::after {
-      content: "";
-      display: block;
-      width: 100%;
-      height: 43.2vw;
+      //content: "";
+      //display: block;
+      //width: 100%;
+      //height: 43.2vw;
     }
 
     .aside-bottom {
@@ -503,7 +503,14 @@
       padding: 16px;
       border: 1px solid $gray-3;
     }
-
+    .form__label ~ .form-field {
+      margin-bottom: 16px;
+      padding: 0;
+      border: 0;
+      input {
+        font-size: 14px;
+      }
+    }
     .form__textarea {
       min-height: 0;
       word-break: break-word;
@@ -2755,6 +2762,16 @@
     margin-right: 5px;
   }
 
+  &__earned-cashback-image {
+    position: absolute;
+    max-width: 328px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+  }
+
   &__earned-cashback-description {
     margin: 8px auto;
     max-width: 300px;
@@ -2774,6 +2791,8 @@
   &__prompt {
     margin: auto;
     max-width: 74%;
+    font-size: 1.1rem;
+    line-height: 1.5rem;
   }
 
   &__text {
@@ -2971,6 +2990,9 @@
 .thanks-pickup {
   &__id-container {
     @extend .border-radius-base;
+    background-color: #fafafa;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    margin-top: 23px;
 
     padding: 4vw;
 

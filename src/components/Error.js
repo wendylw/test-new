@@ -9,7 +9,7 @@ class Error extends React.Component {
     const { title = `${t('Eep')}!`, message = t('ErrorPageDescription') } = this.props.location.state || {};
 
     return (
-      <section className="table-ordering__prompt-page">
+      <section className="table-ordering__prompt-page" data-heap-name="cashback.error.container">
         <figure className="prompt-page__image-container text-center">
           <img src={beepErrorImage} alt="Error found" />
         </figure>
