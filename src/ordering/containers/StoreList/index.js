@@ -127,7 +127,7 @@ class StoreList extends Component {
       item =>
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
     );
-    stores = stores.filter(item => this.isShowStore(item));
+    // stores = stores.filter(item => this.isShowStore(item));
     return (
       (this.props.onlineStoreInfo && (
         <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
@@ -153,20 +153,17 @@ class StoreList extends Component {
             </div>
           </div>
           <div className="stores-list">
-            {stores.map(
-              item =>
-                this.isShowStore(item) && (
-                  <StoreListItem
-                    store={item}
-                    openingHouers={this.getOpeningHouers(item)}
-                    storeId={this.state.storeid}
-                    select={this.selectStore}
-                    key={item.id}
-                    t={this.props.t}
-                    isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
-                  />
-                )
-            )}
+            {stores.map(item => (
+              <StoreListItem
+                store={item}
+                openingHouers={this.getOpeningHouers(item)}
+                storeId={this.state.storeid}
+                select={this.selectStore}
+                key={item.id}
+                t={this.props.t}
+                isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+              />
+            ))}
           </div>
         </div>
       )) ||
