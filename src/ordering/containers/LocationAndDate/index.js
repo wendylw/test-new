@@ -605,6 +605,7 @@ class LocationAndDate extends Component {
             onClick={() => {
               this.handleSelectHour({ from, to });
             }}
+            style={{ fontWeight: '600' }}
             key={`${from} - ${to}`}
           >
             {timeToDisplay}
