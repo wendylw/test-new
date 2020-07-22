@@ -358,6 +358,29 @@ class LocationAndDate extends Component {
     }
   };
 
+  isVacation = day => {
+    const { t, business, allBusinessInfo = {} } = this.props;
+    const businessInfo = allBusinessInfo[business] || {};
+    const { vacations } = businessInfo.qrOrderingSettings;
+
+    day = new Date(day.date);
+    const y = day.getFullYear();
+    const m = day.getMonth() + 1;
+    const d = day.getDate();
+
+    day = +`${y}${m < 10 ? '0' + m : m}${d < 10 ? '0' + d : d}`;
+    for (let i = 0; i < vacations.length; i++) {
+      let item = vacations[i];
+      let { vacationTimeFrom, vacationTimeTo } = item;
+
+      vacationTimeFrom = +vacationTimeFrom.split('/').join('');
+      vacationTimeTo = +vacationTimeTo.split('/').join('');
+      if (day >= vacationTimeFrom && day <= vacationTimeTo) {
+        return false;
+      }
+    }
+    return true;
+  };
   renderDeliveryOn = () => {
     const { selectedDate } = this.state;
     const { t } = this.props;
@@ -377,13 +400,13 @@ class LocationAndDate extends Component {
             return (
               <li
                 className={`location-display__date-item flex flex-space-between flex-column text-center ${
-                  deliverableTime.isOpen ? '' : 'disabled'
+                  deliverableTime.isOpen && this.isVacation(deliverableTime) ? '' : 'disabled'
                 } ${isSelected ? 'selected' : ''}`}
                 data-testid="preOrderDate"
                 data-heap-name="ordering.location-and-date.date-item"
                 data-heap-is-today={deliverableTime.isToday ? 'yes' : 'no'}
                 onClick={() => {
-                  this.handleSelectDate(deliverableTime);
+                  this.isVacation(deliverableTime) && this.handleSelectDate(deliverableTime);
                 }}
                 key={date}
               >
@@ -403,6 +426,56 @@ class LocationAndDate extends Component {
     );
   };
 
+  patchBreakTime = list => {
+    const { t, business, allBusinessInfo = {} } = this.props;
+    const businessInfo = allBusinessInfo[business] || {};
+    let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
+
+    breakTimeFrom = +breakTimeFrom.split(':').join('.');
+    breakTimeTo = +breakTimeTo.split(':').join('.');
+    const newTimeList = [];
+
+    list.forEach(time => {
+      const { from, to } = time;
+      if (from === 'now') {
+        // immediate
+        // TODO the date show use merchats localtime
+        let now = new Date(),
+          h = now.getHours(),
+          m = now.getMinutes();
+        now = +(h + '.' + m);
+        let nowNextHour = +(h + 1 + '.' + m);
+
+        if (
+          !(now >= breakTimeFrom && now <= breakTimeTo) &&
+          !(nowNextHour >= breakTimeFrom && nowNextHour <= breakTimeTo)
+        ) {
+          newTimeList.push(time);
+        }
+      } else {
+        let timeFrom = new Date(from),
+          timeTo = new Date(to),
+          fh = timeFrom.getHours(),
+          fm = timeFrom.getMinutes(),
+          th = timeTo.getHours(),
+          tm = timeTo.getMinutes();
+
+        timeFrom = +(fh + '.' + fm);
+        timeTo = +(th + '.' + tm);
+
+        if (
+          !(
+            (timeFrom >= breakTimeFrom && timeFrom <= breakTimeTo) ||
+            (timeTo >= breakTimeFrom && timeTo <= breakTimeTo)
+          )
+        ) {
+          newTimeList.push(time);
+        }
+      }
+    });
+    return newTimeList;
+  };
+
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
@@ -410,8 +483,10 @@ class LocationAndDate extends Component {
     const { selectedHour = {} } = this.state;
     const country = this.getBusinessCountry();
 
+    timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder } = qrOrderingSettings;
+
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return !disableOnDemandOrder ? (
