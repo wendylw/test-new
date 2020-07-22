@@ -503,7 +503,10 @@ export class Home extends Component {
           fontWeight: '500',
         }}
       >
-        <summary className="item__title text-uppercase font-weight-bold inline-block" style={{ lineHeight: '22px' }}>
+        <summary
+          className="item__title text-uppercase font-weight-bold inline-block"
+          style={{ lineHeight: '22px', fontWeight: '600', fontSize: '12px' }}
+        >
           {Utils.isDeliveryType() && t('DeliverAt')}
           {Utils.isPickUpType() && t('PickUpOn')}&nbsp;.&nbsp;
           {deliveryTimeText}
