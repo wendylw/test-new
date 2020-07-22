@@ -309,7 +309,6 @@ class LocationAndDate extends Component {
         });
         let result = await this.props.homeActions.getStoreHashData(nearly.id);
         const h = result.response.redirectTo;
-        debugger;
         this.setState({
           h,
           nearlyStore: nearly,
@@ -1108,7 +1107,7 @@ class LocationAndDate extends Component {
               className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
               data-heap-name="ordering.location-and-date.delivery"
             >
-              Delivery
+              {this.props.t('Delivery')}
             </p>
             <p
               onClick={this.setPickUpType}
@@ -1116,7 +1115,7 @@ class LocationAndDate extends Component {
               className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
               data-heap-name="ordering.location-and-date.pickup"
             >
-              Pickup
+              {this.props.t('Pickup')}
             </p>
           </div>
         )}
