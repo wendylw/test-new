@@ -677,7 +677,7 @@ export class ThankYou extends PureComponent {
   render() {
     const { t, history, match, order, storeHashCode } = this.props;
     const date = new Date();
-    const { orderId, tableId } = order || {};
+    const { orderId, tableId, pickUpId } = order || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
@@ -761,7 +761,7 @@ export class ThankYou extends PureComponent {
             <div className="thanks__info-container">
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin hideMessage={isTakeaway} history={history} />
+              <PhoneLogin hideMessage={isTakeaway || !tableId} history={history} />
             </div>
           </div>
         </React.Fragment>
