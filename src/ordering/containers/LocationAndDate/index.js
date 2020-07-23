@@ -475,7 +475,7 @@ class LocationAndDate extends Component {
     const { t, business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
-
+    if (!breakTimeFrom || !breakTimeTo) return list;
     breakTimeFrom = +breakTimeFrom.split(':').join('.');
     breakTimeTo = +breakTimeTo.split(':').join('.');
     const newTimeList = [];
