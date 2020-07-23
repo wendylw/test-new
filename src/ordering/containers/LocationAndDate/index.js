@@ -213,7 +213,6 @@ class LocationAndDate extends Component {
       this.validDays = Array.from(validDays, v => v - 1);
       this.validTimeFrom = validTimeFrom;
       this.validTimeTo = validTimeTo;
-
       this.getValidTimeToOrder(validTimeFrom, validTimeTo);
       this.setDeliveryDays(this.validDays);
     }
@@ -422,7 +421,7 @@ class LocationAndDate extends Component {
     if (deliveryDates[0].isToday) {
       const list = this.getHoursList(deliveryDates[0]);
       if (list.length) {
-        if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder) {
+        if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder && enablePreOrder) {
           this.deliveryDates.shift();
         }
         if (list[0].from !== 'now' && disableTodayPreOrder) {
@@ -483,7 +482,6 @@ class LocationAndDate extends Component {
           this.createTimeWithTimeString(storehubLogisticsBusinessHours[1])
         );
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
-
         if (!isBeforeStoreClose && !i) continue;
       }
       if (enablePreOrder) {
