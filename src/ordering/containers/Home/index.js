@@ -448,7 +448,7 @@ export class Home extends Component {
 
             {this.renderDeliveryDate()}
           </div>
-          {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
+          <IconEdit className="location-page__edit" />
         </div>
       </div>
     );
