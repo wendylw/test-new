@@ -97,7 +97,7 @@ class LocationAndDate extends Component {
     this.setState({
       deliveryToAddress,
     });
-    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore(this.state.search.h);
+    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
 
     if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.setDeliveryType();
@@ -146,6 +146,12 @@ class LocationAndDate extends Component {
               lng: item.location.longitude,
             });
           }
+        });
+        stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+        stores = stores.filter(item => {
+          const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
+
+          return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
         });
         stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
         let nearly;
@@ -279,15 +285,15 @@ class LocationAndDate extends Component {
     return type;
   };
 
-  setStore = async searchH => {
+  setStore = async () => {
     await this.props.homeActions.loadCoreStores();
     const { allStore } = this.props;
 
     this.checkOnlyType(allStore);
-    if (Utils.getSessionVariable('deliveryAddress') && !searchH) {
+    if (Utils.getSessionVariable('deliveryAddress')) {
       const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
 
-      if (allStore.length && !this.state.h) {
+      if (allStore.length) {
         let stores = allStore;
         let { type } = this.state.search;
         stores.forEach((item, idx, arr) => {
@@ -504,6 +510,8 @@ class LocationAndDate extends Component {
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
+    search = search.replace(/&?storeid=[^&]*/, '');
+
     const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}${search}`);
     // next page don't need current page's callbackUrl.
     search = search.replace(/&?callbackUrl=[^&]*/, '');
@@ -1097,7 +1105,7 @@ class LocationAndDate extends Component {
     } else {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-        search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
+        search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}storeid=${this.state.nearlyStore.id}&type=${
           this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
         }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
       });
