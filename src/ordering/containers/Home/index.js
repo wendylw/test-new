@@ -49,7 +49,9 @@ export class Home extends Component {
     offlineStoreModal: false,
     dScrollY: 0,
     deliveryBar: false,
+    alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
   };
+
   handleScroll = () => {
     const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
     this.setState({
@@ -600,6 +602,7 @@ export class Home extends Component {
     // this.setState({
     //   alcoholModal: !isAgeLegal,
     // });
+    Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
   isCountryNeedAlcoholPop = country => {
@@ -646,7 +649,7 @@ export class Home extends Component {
     }
     return (
       <section className={classList.join(' ')}>
-        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
+        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null}
         {this.state.deliveryBar && this.renderDeliverToBar()}
