@@ -140,6 +140,7 @@ export class Home extends Component {
         breakTimeTo,
         validDays,
         enablePreOrder,
+        disableOnDemandOrder,
       } = businessInfo.qrOrderingSettings;
 
       if (!Utils.getSessionVariable('expectedDeliveryDate')) {
@@ -190,43 +191,48 @@ export class Home extends Component {
         let deliverDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
         let currentTime = new Date(); //TODO 应该用商家本地时间
         if (deliverDate.isToday) {
-          currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
-          let d = new Date();
-          if (currentTime.getTime() < d.setHours(validTimeTo.split(':')[0], validTimeTo.split(':')[1])) {
+          const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, true);
+          if (timeList.length) {
+            let first = timeList[0];
+            let expectedDeliveryHour;
+            if (first === 'now') {
+              if (disableOnDemandOrder) {
+                first = timeList[1];
+                expectedDeliveryHour = {
+                  from: first,
+                  to: Utils.zero(+first.split(':')[0] + 1) + ':00',
+                };
+              } else {
+                expectedDeliveryHour = {
+                  from: 'now',
+                  to: 'now',
+                };
+              }
+            } else if (enablePreOrder) {
+              expectedDeliveryHour = {
+                from: first,
+                to: Utils.zero(+first.split(':')[0] + 1) + ':00',
+              };
+            }
+            Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
+          }
+        } else {
+          if (enablePreOrder) {
+            const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, false);
+            let first = timeList[0];
+            Utils.setSessionVariable(
+              'expectedDeliveryHour',
+              JSON.stringify({
+                from: first,
+                to: Utils.zero(+first.split(':')[0] + 1) + ':00',
+              })
+            );
+          } else {
             Utils.setSessionVariable(
               'expectedDeliveryHour',
               JSON.stringify({
                 from: 'now',
                 to: 'now',
-              })
-            );
-          } else if (enablePreOrder) {
-            const from =
-              +validTimeFrom.split(':')[0] + 1 < 10
-                ? '0' + (+validTimeFrom.split(':')[0] + 1) + ':00'
-                : +validTimeFrom.split(':')[0] + 1 + ':00';
-            const to =
-              +validTimeFrom.split(':')[0] + 2 < 10
-                ? '0' + (+validTimeFrom.split(':')[0] + 2) + ':00'
-                : +validTimeFrom.split(':')[0] + 2 + ':00';
-
-            Utils.setSessionVariable(
-              'expectedDeliveryHour',
-              JSON.stringify({
-                from,
-                to,
-              })
-            );
-            const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
-
-            expectedDeliveryDate.date = new Date(expectedDeliveryDate.date);
-            expectedDeliveryDate.date.setHours(0, 0, 0, 0);
-            Utils.setSessionVariable(
-              'expectedDeliveryDate',
-              JSON.stringify({
-                ...expectedDeliveryDate,
-                isToday: false,
-                date: new Date(new Date(expectedDeliveryDate.date).getTime() + 24 * 60 * 60 * 1000).toISOString(),
               })
             );
           }
