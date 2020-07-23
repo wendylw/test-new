@@ -399,7 +399,8 @@ export class Home extends Component {
       history.push({
         pathname: enablePreOrder
           ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
-          : Constants.ROUTER_PATHS.ORDERING_LOCATION,
+          : // : Constants.ROUTER_PATHS.ORDERING_LOCATION,
+            Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
         search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };
@@ -408,47 +409,47 @@ export class Home extends Component {
 
     let pickupAddress = '';
     if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
-      return (
-        <div
-          className="location-page__entry item"
-          onClick={fillInDeliverToAddress}
-          data-heap-name="ordering.home.delivery-bar"
-        >
-          <div className="item__detail-content flex flex-top flex-space-between">
-            {showBackButton({
-              isValidTimeToOrder,
-              enablePreOrder,
-              backPosition: BackPosition.DELIVERY_TO,
-            }) ? (
-              <IconLeftArrow
-                className="header__icon"
-                data-heap-name="order.home.delivery-bar-back-btn"
-                onClick={event => {
-                  event.preventDefault();
-                  window.location.href = this.navBackUrl;
-                  event.stopPropagation();
-                }}
-              />
-            ) : null}
-            <div className="location-page__base-info">
-              <p
-                className="location-page__entry-address"
-                style={{ fontSize: '14px', lineHeight: '22px', display: 'flex', maxHeight: '22px' }}
-              >
-                {' '}
-                <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
-                {Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
-              </p>
+    // if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
+    return (
+      <div
+        className="location-page__entry item"
+        onClick={fillInDeliverToAddress}
+        data-heap-name="ordering.home.delivery-bar"
+      >
+        <div className="item__detail-content flex flex-top flex-space-between">
+          {showBackButton({
+            isValidTimeToOrder,
+            enablePreOrder,
+            backPosition: BackPosition.DELIVERY_TO,
+          }) ? (
+            <IconLeftArrow
+              className="header__icon"
+              data-heap-name="order.home.delivery-bar-back-btn"
+              onClick={event => {
+                event.preventDefault();
+                window.location.href = this.navBackUrl;
+                event.stopPropagation();
+              }}
+            />
+          ) : null}
+          <div className="location-page__base-info">
+            <p
+              className="location-page__entry-address"
+              style={{ fontSize: '14px', lineHeight: '22px', display: 'flex', maxHeight: '22px' }}
+            >
+              {' '}
+              <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+              {Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+            </p>
 
-              {this.renderDeliveryDate()}
-            </div>
-            {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
+            {this.renderDeliveryDate()}
           </div>
+          {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
         </div>
-      );
-    }
-    return null;
+      </div>
+    );
+    // }
+    // return null;
   }
 
   getExpectedDeliveryTime = () => {

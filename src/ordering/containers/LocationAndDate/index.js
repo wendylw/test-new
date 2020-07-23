@@ -196,6 +196,7 @@ class LocationAndDate extends Component {
           if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
           this.setMethodsTime();
         }
+        this.setMethodsTime();
       }
     );
   };
