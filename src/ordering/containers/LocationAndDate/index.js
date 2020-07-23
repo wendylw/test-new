@@ -139,31 +139,8 @@ class LocationAndDate extends Component {
       if (allStore.length) {
         let stores = allStore;
         let type = Constants.DELIVERY_METHOD.DELIVERY;
-        stores.forEach((item, idx, arr) => {
-          if (item.location) {
-            item.distance = computeStraightDistance(deliveryAddress.coords, {
-              lat: item.location.latitude,
-              lng: item.location.longitude,
-            });
-          }
-        });
-        stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
-        stores = stores.filter(item => {
-          const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
+        const { nearly, h } = await this.findNearyStore(stores, type);
 
-          return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-        });
-        stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
-        let nearly;
-        stores.forEach(item => {
-          if (!nearly) {
-            nearly = item;
-          } else {
-            item.distance < nearly.distance && (nearly = item);
-          }
-        });
-        let result = await this.props.homeActions.getStoreHashData(nearly.id);
-        const h = result.response.redirectTo;
         this.setState({
           h,
           nearlyStore: nearly,
@@ -285,42 +262,50 @@ class LocationAndDate extends Component {
     return type;
   };
 
+  findNearyStore = async (stores, type) => {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+    stores.forEach((item, idx, arr) => {
+      if (item.location) {
+        item.distance = computeStraightDistance(deliveryAddress.coords, {
+          lat: item.location.latitude,
+          lng: item.location.longitude,
+        });
+      }
+    });
+    stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+    stores = stores.filter(item => {
+      const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
+
+      return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    });
+    stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+    let nearly;
+    stores.forEach(item => {
+      if (!nearly) {
+        nearly = item;
+      } else {
+        item.distance < nearly.distance && (nearly = item);
+      }
+    });
+    let result = await this.props.homeActions.getStoreHashData(nearly.id);
+    const h = result.response.redirectTo;
+    return {
+      nearly,
+      h,
+    };
+  };
+
   setStore = async () => {
     await this.props.homeActions.loadCoreStores();
     const { allStore } = this.props;
 
     this.checkOnlyType(allStore);
     if (Utils.getSessionVariable('deliveryAddress')) {
-      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-
       if (allStore.length) {
         let stores = allStore;
         let { type } = this.state.search;
-        stores.forEach((item, idx, arr) => {
-          if (item.location) {
-            item.distance = computeStraightDistance(deliveryAddress.coords, {
-              lat: item.location.latitude,
-              lng: item.location.longitude,
-            });
-          }
-        });
-        stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
-        stores = stores.filter(item => {
-          const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
-
-          return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-        });
-        stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
-        let nearly;
-        stores.forEach(item => {
-          if (!nearly) {
-            nearly = item;
-          } else {
-            item.distance < nearly.distance && (nearly = item);
-          }
-        });
-        let result = await this.props.homeActions.getStoreHashData(nearly.id);
-        const h = result.response.redirectTo;
+        const { nearly, h } = await this.findNearyStore(stores, type);
         this.setState(
           {
             h,
