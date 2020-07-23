@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLeftArrow } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -133,7 +133,6 @@ export class Home extends Component {
     if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
       const {
-        qrOrderingSetting,
         validTimeFrom,
         validTimeTo,
         breakTimeFrom,
@@ -189,7 +188,6 @@ export class Home extends Component {
       }
       if (!Utils.getSessionVariable('expectedDeliveryHour')) {
         let deliverDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
-        let currentTime = new Date(); //TODO 应该用商家本地时间
         if (deliverDate.isToday) {
           const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, true);
           if (timeList.length) {
@@ -259,7 +257,7 @@ export class Home extends Component {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
     const { deliveryInfo } = this.props;
     const pageRf = this.getPageRf();
-    const { sellAlcohol, enablePreOrder } = deliveryInfo;
+    const { sellAlcohol } = deliveryInfo;
 
     if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
       if (sellAlcohol) {
@@ -384,7 +382,7 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t, history, deliveryInfo } = this.props;
+    const { history, deliveryInfo } = this.props;
 
     if (!deliveryInfo) {
       return null;
@@ -491,7 +489,6 @@ export class Home extends Component {
 
     const { enablePreOrder } = deliveryInfo;
     let deliveryTimeText = t('DeliverNow');
-    const isPickUpType = Utils.isPickUpType();
 
     if (enablePreOrder) {
       deliveryTimeText = this.getExpectedDeliveryTime();

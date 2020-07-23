@@ -117,7 +117,7 @@ class LocationAndDate extends Component {
           let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
           let isSupport = false;
           this.state.nearlyStore.fulfillmentOptions.forEach(item => {
-            if (item.toLowerCase() == type) isSupport = true;
+            if (item.toLowerCase() === type) isSupport = true;
           });
 
           if (!isSupport) {
@@ -178,7 +178,7 @@ class LocationAndDate extends Component {
           let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
           let isSupport = false;
           this.state.nearlyStore.fulfillmentOptions.forEach(item => {
-            if (item.toLowerCase() == type) isSupport = true;
+            if (item.toLowerCase() === type) isSupport = true;
           });
 
           if (!isSupport) {
@@ -356,7 +356,6 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
-    const limit = useStorehubLogistics && this.state.isDeliveryType;
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
@@ -396,12 +395,6 @@ class LocationAndDate extends Component {
 
         this.getValidTimeToOrder(validTimeFrom, validTimeTo);
         this.setDeliveryDays(this.validDays);
-      }
-
-      if (business && allBusinessInfo && allBusinessInfo[business] && allBusinessInfo[business].country) {
-        const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-
-        // if (!enablePreOrder) window.location.href = '/';
       }
     }
   };
@@ -767,7 +760,7 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
-    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
+    const { useStorehubLogistics } = qrOrderingSettings || {};
     const limit = useStorehubLogistics && this.state.isDeliveryType;
     const currentTime = new Date();
     const storeOpenTime = createTimeWithTimeString(
@@ -907,8 +900,8 @@ class LocationAndDate extends Component {
     }
 
     const timeList = this.getHoursList(selectedDate);
-    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
+    // const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    // const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
       <div className="form__group location-display__date-container">

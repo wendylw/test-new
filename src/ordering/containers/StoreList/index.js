@@ -12,7 +12,7 @@ import './storeList.scss';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import { IconChecked, IconLocation, IconMotorcycle } from '../../../components/Icons';
+import { IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -38,7 +38,7 @@ const StoreListItem = props => (
     <p>
       {props.t('openingHours')}: {props.openingHouers}
     </p>
-    <p>{props.storeId === props.store.id && <img src={checked} />}</p>
+    <p>{props.storeId === props.store.id && <img src={checked} alt="" />}</p>
   </div>
 );
 class StoreList extends Component {

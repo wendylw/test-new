@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { actions as homeActionCreators } from '../../../ordering/redux/modules/home';
 import {
   actions as storesActionsCreators,
   getDeliveryStatus,
@@ -29,7 +28,6 @@ import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
-import { store } from '../../../utils/testHelper';
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class App extends Component {
