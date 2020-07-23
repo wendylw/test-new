@@ -504,12 +504,9 @@ class LocationAndDate extends Component {
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
-    const callbackUrl = encodeURIComponent(
-      `${enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION}${search}`
-    );
+    const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}${search}`);
     // next page don't need current page's callbackUrl.
     search = search.replace(/&?callbackUrl=[^&]*/, '');
-
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
       search: `${search}&callbackUrl=${callbackUrl}`,
