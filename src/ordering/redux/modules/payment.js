@@ -199,8 +199,30 @@ export const actions = {
         case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
           errorMessage = 'OrderingPayment:PromotionInvalid';
           break;
+        case CREATE_ORDER_ERROR_CODES.NO_PERMISSION:
+          errorMessage = 'OrderingPayment:NoPermission';
+          break;
+        case CREATE_ORDER_ERROR_CODES.NO_STORE:
+          errorMessage = 'OrderingPayment:NoStore';
+          break;
+        case CREATE_ORDER_ERROR_CODES.NO_STORE_LOCATION:
+          errorMessage = 'OrderingPayment:NoStoreLocation';
+          break;
+        case CREATE_ORDER_ERROR_CODES.NO_DELIVERY_LOCATION:
+          errorMessage = 'OrderingPayment:NoDeliveryLocation';
+          break;
+        case CREATE_ORDER_ERROR_CODES.OVER_DELIVERY_DISTANCE:
+          errorMessage = 'OrderingPayment:OverDeliveryDistance';
+          break;
+        case CREATE_ORDER_ERROR_CODES.CREATE_ORDER_ERROR:
+          errorMessage = 'OrderingPayment:CreateOrderError';
+          break;
         case CREATE_ORDER_ERROR_CODES.CONTACT_DETAIL_INVALID:
           errorMessage = 'OrderingPayment:ContactDetailInvalid';
+          break;
+        case CREATE_ORDER_ERROR_CODES.STORE_IS_ON_VACATION:
+          errorMessage = 'OrderingPayment:StoreIsOnVacation';
+          break;
         default:
           errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
           break;
