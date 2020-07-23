@@ -5,7 +5,7 @@ import './Tag.scss';
 /**
  * `<Tag />` is used on the product items and store items.
  *
- * A very simple example is by `className="tag__card active"` is used with component
+ * A very simple example is by `className="tag tag__primary"` is used with component
  */
 class Tag extends Component {
   render() {

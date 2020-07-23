@@ -1,5 +1,5 @@
 @import "../../../Variables.scss";
-$gray-nav-item-color: #707070;
+$gray-nav-item-text: #707070;
 
 .ordering-home {
   height: 100vh;
@@ -43,7 +43,7 @@ $gray-nav-item-color: #707070;
   }
 
   &__item {
-    color: $gray-nav-item-color;
+    color: $gray-nav-item-text;
     border-left: 3px solid transparent;
 
     &.active {

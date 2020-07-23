@@ -450,7 +450,7 @@ img {
     width: 8px;
     border-radius: 50%;
     top: 0;
-    background-color: #ff9419;
+    background-color: $theme-color;
     position: absolute;
     -webkit-animation: vertical-movement 1.2s infinite ease-in-out;
     -moz-animation: vertical-movement 1.2s infinite ease-in-out;

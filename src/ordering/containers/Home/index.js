@@ -288,7 +288,7 @@ export class Home extends Component {
           deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
           heapContentName="ordering.home.delivery-bar"
           heapBackButtonName="order.home.delivery-bar-back-btn"
-          className="ordering-home__deliver-to"
+          className="ordering-home__deliver-to flex__shrink-fixed"
           title={Utils.isDeliveryType() ? t('DeliverTo') : t('PickUpOn')}
           content={Utils.isDeliveryType() ? deliveryToAddress : this.getExpectedDeliveryTime()}
           navBackUrl={this.navBackUrl}
