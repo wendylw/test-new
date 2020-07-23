@@ -20,6 +20,7 @@ import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
+import config from '../../../config';
 class App extends Component {
   state = {};
 
@@ -29,7 +30,7 @@ class App extends Component {
     this.visitErrorPage();
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
-    await appActions.loadCoreBusiness();
+    config.storeId && (await appActions.loadCoreBusiness());
 
     const { user, businessInfo } = this.props;
     const { isLogin } = user || {};

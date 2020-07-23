@@ -310,10 +310,15 @@ class LocationAndDate extends Component {
         });
         let result = await this.props.homeActions.getStoreHashData(nearly.id);
         const h = result.response.redirectTo;
-        this.setState({
-          h,
-          nearlyStore: nearly,
-        });
+        this.setState(
+          {
+            h,
+            nearlyStore: nearly,
+          },
+          () => {
+            this.props.appActions.loadCoreBusiness(nearly.id);
+          }
+        );
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
     } else if (this.state.search.h) {
