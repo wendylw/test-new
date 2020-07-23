@@ -151,15 +151,16 @@ export const toISODateString = date => {
   return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;
 };
 
-export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
+export const formatToDeliveryTime = ({ date, hour, locale = 'MY', separator = ',' }) => {
   const { from, to } = hour || {};
 
-  if (from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow');
+  if (from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow', { separator });
 
   const hourFrom = (from || '').split(':')[0];
   const minuteFrom = (from || '').split(':')[1];
   const workDate = new Date(date.date);
   const workDateFrom = new Date(date.date);
+
   workDateFrom.setHours(hourFrom, minuteFrom, 0, 0);
   let part1;
 
@@ -175,14 +176,15 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
     const hourTo = (to || '').split(':')[0];
     const minuteTo = (to || '').split(':')[1];
     const workDateTo = new Date(date.date);
+
     workDateTo.setHours(hourTo, minuteTo, 0, 0);
     part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
   }
 
-  return `${part1}, ${part2}`;
+  return !Boolean(part1) && !Boolean(part2) ? null : `${part1}${separator} ${part2}`;
 };
 
-export const formatPickupAddress = ({ date, locale }) => {
+export const formatPickupAddress = ({ date, locale, separator = ',' }) => {
   const orderTime = new Date(date);
   let part1;
 
@@ -194,7 +196,7 @@ export const formatPickupAddress = ({ date, locale }) => {
 
   const part2 = toNumericTime(orderTime, locale);
 
-  return `${part1}, ${part2}`;
+  return !Boolean(part1) && !Boolean(part2) ? null : `${part1}${separator} ${part2}`;
 };
 
 export const addTime = (date = new Date(), timeToAdd, unit) => {

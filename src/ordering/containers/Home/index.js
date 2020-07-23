@@ -293,7 +293,11 @@ export class Home extends Component {
           content={Utils.isDeliveryType() ? deliveryToAddress : this.getExpectedDeliveryTime()}
           navBackUrl={this.navBackUrl}
           extraInfo={
-            Utils.isDeliveryType() ? (!enablePreOrder ? t('DeliverNow') : this.getExpectedDeliveryTime()) : null
+            Utils.isDeliveryType()
+              ? !enablePreOrder
+                ? t('DeliverNow', { separator: ' .' })
+                : this.getExpectedDeliveryTime()
+              : null
           }
           showBackButton={showBackButton({
             isValidTimeToOrder,
@@ -304,9 +308,7 @@ export class Home extends Component {
           icon={
             Utils.isDeliveryType() ? (
               <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
-            ) : (
-              <IconAccessTime className="icon icon__smaller text-middle flex__shrink-fixed" />
-            )
+            ) : null
           }
         >
           {isValidTimeToOrder || enablePreOrder ? (
@@ -331,10 +333,11 @@ export class Home extends Component {
         date: date,
         hour: hour,
         locale,
+        separator: ' .',
       });
     }
 
-    return '';
+    return null;
   };
 
   renderOfflineModal = enableLiveOnline => {
@@ -355,7 +358,6 @@ export class Home extends Component {
 
     return (
       <div className="flex flex-top">
-        <IconAccessTime className="icon icon__smaller text-middle flex__shrink-fixed" />
         <div>
           <p className="deliver-to-entry__address padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
             {this.getExpectedDeliveryTime()}

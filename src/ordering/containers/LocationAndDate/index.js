@@ -271,6 +271,7 @@ class LocationAndDate extends Component {
     if (Utils.isDeliveryType()) {
       const { deliveryToAddress } = this.state;
       const { t } = this.props;
+
       return (
         <div className="form__group">
           <label className="form__label text-weight-bold">{t('DeliverTo')}</label>

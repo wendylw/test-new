@@ -225,7 +225,7 @@ class Customer extends Component {
     if (date.date && hour.from) {
       deliveryTime =
         date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
-          ? t('DeliverNow')
+          ? t('DeliverNow', { separator: ',' })
           : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
     } else {
       deliveryTime = '';
