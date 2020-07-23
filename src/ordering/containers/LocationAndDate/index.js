@@ -71,7 +71,7 @@ class LocationAndDate extends Component {
     h: Utils.getQueryVariable('h'),
     isDeliveryType: false,
     isPickUpType: false,
-    nearlyStore: {},
+    nearlyStore: { name: '' },
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
     onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
   };
