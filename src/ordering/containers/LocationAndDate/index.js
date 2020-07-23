@@ -299,6 +299,7 @@ class LocationAndDate extends Component {
             });
           }
         });
+        stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
         stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
         let nearly;
         stores.forEach(item => {
@@ -315,8 +316,9 @@ class LocationAndDate extends Component {
             h,
             nearlyStore: nearly,
           },
-          () => {
-            this.props.appActions.loadCoreBusiness(nearly.id);
+          async () => {
+            await this.props.appActions.loadCoreBusiness(nearly.id);
+            this.setMethodsTime();
           }
         );
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
