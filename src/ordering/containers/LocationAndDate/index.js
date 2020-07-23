@@ -300,6 +300,11 @@ class LocationAndDate extends Component {
           }
         });
         stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+        stores = stores.filter(item => {
+          const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
+
+          return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+        });
         stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
         let nearly;
         stores.forEach(item => {
