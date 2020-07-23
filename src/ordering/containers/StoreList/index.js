@@ -94,21 +94,33 @@ class StoreList extends Component {
     const { qrOrderingSettings } = item;
     if (!qrOrderingSettings) return;
     const { validTimeFrom, validTimeTo } = qrOrderingSettings;
+
     let openingHouersStringFrom = `${
       validTimeFrom.split(':')[0] < '12'
         ? validTimeFrom + ' AM'
         : +validTimeFrom.split(':')[0] - 12 < 10
-        ? '0' + (+validTimeFrom.split(':')[0] - 12)
+        ? '0' + (+validTimeFrom.split(':')[0] - 12) + ':' + validTimeFrom.split(':')[1] + ' PM'
         : +validTimeFrom.split(':')[0] - 12 + ':' + validTimeFrom.split(':')[1] + ' PM'
     }`;
     let openingHouersStringTo = `${
       validTimeTo.split(':')[0] < '12'
         ? validTimeTo + ' AM'
         : +validTimeTo.split(':')[0] - 12 < 10
-        ? '0' + (+validTimeTo.split(':')[0] - 12)
+        ? '0' + (+validTimeTo.split(':')[0] - 12) + ':' + validTimeTo.split(':')[1] + ' PM'
         : +validTimeTo.split(':')[0] - 12 + ':' + validTimeTo.split(':')[1] + ' PM'
     }`;
-
+    if (validTimeFrom === '12:00') {
+      openingHouersStringFrom = '12:00 PM';
+    }
+    if (validTimeTo === '12:00') {
+      openingHouersStringTo = '12:00 PM';
+    }
+    if (validTimeFrom === '24:00') {
+      openingHouersStringFrom = '00:00 AM';
+    }
+    if (validTimeTo === '24:00') {
+      openingHouersStringTo = '00:00 AM';
+    }
     return `${openingHouersStringFrom} - ${openingHouersStringTo}`;
   };
 
