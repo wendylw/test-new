@@ -48,6 +48,7 @@ class StoreList extends Component {
       storeid: config.storeId,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
     };
+    this.state.storeid = this.state.search.storeid || config.storeId;
   }
 
   async componentDidMount() {
@@ -72,9 +73,11 @@ class StoreList extends Component {
       },
       async () => {
         if (this.state.search.callbackUrl) {
+          let search = this.props.history.location.search;
+          search = search.replace(/&?storeid=[^&]*/, '');
           this.props.history.replace({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-            search: `${this.props.history.location.search}&${store.id ? 'storeid=' + store.id : ''}`,
+            search: `${search}&${store.id ? 'storeid=' + store.id : ''}`,
           });
         } else {
           await this.props.homeActions.getStoreHashData(store.id);
