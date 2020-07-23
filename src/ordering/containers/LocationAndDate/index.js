@@ -403,11 +403,11 @@ class LocationAndDate extends Component {
     }
   };
 
-  isVacation = day => {
+  notVacation = day => {
     const { t, business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     const { vacations } = businessInfo.qrOrderingSettings;
-
+    if (!vacations) return true;
     day = new Date(day.date);
     const y = day.getFullYear();
     const m = day.getMonth() + 1;
@@ -445,13 +445,13 @@ class LocationAndDate extends Component {
             return (
               <li
                 className={`location-display__date-item flex flex-space-between flex-column text-center ${
-                  deliverableTime.isOpen && this.isVacation(deliverableTime) ? '' : 'disabled'
+                  deliverableTime.isOpen && this.notVacation(deliverableTime) ? '' : 'disabled'
                 } ${isSelected ? 'selected' : ''}`}
                 data-testid="preOrderDate"
                 data-heap-name="ordering.location-and-date.date-item"
                 data-heap-is-today={deliverableTime.isToday ? 'yes' : 'no'}
                 onClick={() => {
-                  this.isVacation(deliverableTime) && this.handleSelectDate(deliverableTime);
+                  this.notVacation(deliverableTime) && this.handleSelectDate(deliverableTime);
                 }}
                 key={date}
               >
