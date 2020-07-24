@@ -273,23 +273,16 @@ class LocationAndDate extends Component {
       const { t } = this.props;
 
       return (
-        <div className="form__group">
+        <div className="">
           <label className="form__label text-weight-bold">{t('DeliverTo')}</label>
           <div
-            className="location-page__search-box"
+            className="form__group flex flex-middle flex-space-between"
             onClick={this.showLocationSearch}
             data-heap-name="ordering.location-and-date.deliver-to"
+            data-testid="deliverTo"
           >
-            <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-              <input
-                className="input input__block"
-                data-testid="deliverTo"
-                type="text"
-                defaultValue={deliveryToAddress}
-                readOnly
-              />
-              <IconNext className="delivery__next-icon" />
-            </div>
+            <p className="padding-normal text-size-big text-line-height-base">{deliveryToAddress}</p>
+            <IconNext className="icon icon__normal flex__shrink-fixed" />
           </div>
         </div>
       );
@@ -629,7 +622,7 @@ class LocationAndDate extends Component {
 
   render() {
     return (
-      <section className="table-ordering__location" data-heap-name="ordering.location-and-date.container">
+      <section className="ordering-location" data-heap-name="ordering.location-and-date.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
@@ -638,7 +631,7 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        <div className="location-display__content">
+        <div className="ordering-location__container">
           {this.renderDeliveryTo()}
           {this.renderDeliveryOn()}
           {this.renderHourSelector()}
