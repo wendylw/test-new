@@ -112,7 +112,7 @@ class LocationPicker extends Component {
       this.setState({ isSubmitting: false });
       let straightDistance;
       let directionDistance;
-      if (mode === 'ORIGIN_STORE') {
+      if (mode === 'ORIGIN_STORE' && origin) {
         try {
           straightDistance = computeStraightDistance(origin, placeInfo.coords);
         } catch (e) {
