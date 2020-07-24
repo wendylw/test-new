@@ -117,16 +117,6 @@
     }
   }
 
-  &__thanks {
-    // @extend .main-section;
-
-    background-color: $gray-5;
-
-    .thanks__info-container {
-      padding: 0;
-    }
-  }
-
   &__receipt {
     // @extend .main-section;
 
@@ -697,333 +687,6 @@
   }
 }
 
-.thanks {
-  padding: 5.4vh 4vw;
-  width: 100%;
-
-  .input {
-    // .button {
-    // @extend .border-radius-base;
-
-    padding: 6px 12px;
-    height: 40px;
-  }
-
-  &__image {
-    margin: 0 auto;
-    max-width: 62%;
-  }
-
-  &__status-title,
-  &__status-description {
-    margin: 14px 0;
-
-    p,
-    .icon {
-      margin-right: 5px;
-    }
-
-    .link {
-      text-decoration: none;
-      letter-spacing: 1.25px;
-    }
-  }
-
-  &__status-title.accepted &__status-title-dots,
-  &__status-title.paid &__status-title-dots {
-    text-align: left;
-    display: inline-block;
-  }
-
-  &__status-title.accepted &__status-title-dots {
-    width: 18px;
-  }
-
-  &__status-title.paid &__status-title-dots {
-    width: 24px;
-  }
-
-  &__status-title.accepted &__status-title-dots::after,
-  &__status-title.paid &__status-title-dots::after {
-    vertical-align: bottom;
-    display: inline-block;
-    margin-left: 2px;
-  }
-
-  &__status-title.accepted &__status-title-dots::after {
-    content: "...";
-    overflow: hidden;
-    -webkit-animation: dots steps(4, end) 2s infinite;
-    animation: dots steps(4, end) 2s infinite;
-    width: 0px;
-  }
-
-  &__status-title.paid &__status-title-dots::after {
-    content: ".....";
-    overflow: hidden;
-    -webkit-animation: dotsMore steps(6, end) 3s infinite;
-    animation: dotsMore steps(6, end) 3s infinite;
-    width: 0px;
-  }
-
-  &__earned-cashback-total {
-    display: block;
-    padding: 12px 0;
-  }
-
-  &__earned-cashback-title {
-    margin-right: 5px;
-  }
-
-  &__earned-cashback-image {
-    position: absolute;
-    max-width: 328px;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-  }
-
-  &__earned-cashback-description {
-    margin: 8px auto;
-    max-width: 300px;
-    line-height: $line-height-base;
-  }
-
-  &__title {
-    margin: 4vw 0;
-    font-size: 2.4rem;
-    color: $gray-2;
-  }
-
-  &__delivering-title {
-    margin-top: 20px;
-  }
-
-  &__prompt {
-    margin: auto;
-    max-width: 74%;
-    font-size: 1.1rem;
-    line-height: 1.5rem;
-  }
-
-  &__text {
-    font-size: 1.2rem;
-  }
-
-  &__total-text {
-    margin: 0 5px;
-    font-size: 1.7142rem;
-  }
-
-  &__text ~ &__text {
-    margin-left: 10px;
-  }
-
-  &__total-container {
-    margin: 10px 0;
-  }
-
-  &__info-container,
-  &__delivery-status-container {
-    // @extend .border-radius-base;
-
-    position: relative;
-    background-color: $gray-6;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-
-    .progress-bar__container {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-  }
-
-  &__info-container {
-    margin: 4vw 0;
-
-    > * ~ * {
-      border-top: 1px solid $gray-4;
-    }
-  }
-
-  &__info-container-title {
-    margin-top: 24px;
-  }
-
-  &__info-container-title ~ &__info-container {
-    margin-top: 10px;
-  }
-
-  &__pickup {
-    margin-bottom: 16px;
-  }
-
-  &__pickup-time {
-    margin: 8px 0;
-    font-size: 1.2rem;
-  }
-
-  &__delivery-status-container {
-    padding: 2.4vw;
-    margin-top: 16px;
-  }
-
-  &__delivery-status-list {
-    padding: 0 1vw;
-  }
-
-  &__delivery-status-item {
-    position: relative;
-    padding-bottom: 30px;
-    padding-left: 16px;
-
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      display: block;
-      margin: 6px 0;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: $gray-4;
-    }
-
-    &.active::before {
-      background-color: $theme-color;
-    }
-
-    &.error::before {
-      background-color: $status-red;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 24%;
-      left: 3px;
-      display: block;
-      width: 1px;
-      height: 74%;
-      background-color: $gray-4;
-    }
-
-    &.finished::after {
-      background-color: $theme-color;
-    }
-
-    .access-time-icon {
-      display: inline-block;
-      font-size: 0;
-
-      svg {
-        fill: $theme-color;
-        width: 20px;
-        height: 20px;
-      }
-    }
-
-    &.error .access-time-icon {
-      svg {
-        fill: $status-red;
-      }
-    }
-
-    time {
-      margin-left: 6px;
-    }
-  }
-
-  &__delivery-status-item:last-child {
-    padding-bottom: 10px;
-    border-left: 0;
-
-    &::after {
-      content: none;
-    }
-  }
-
-  &__delivery-status-time {
-    margin: 10px 0;
-  }
-
-  &__delivery-status-label {
-    font-size: 1.2rem;
-  }
-
-  &__delivery-info {
-    padding: 3.8vw;
-  }
-
-  &__address-details,
-  &__address-pin {
-    padding: 12px 0;
-  }
-
-  &__link {
-    padding: 2.4vh 0;
-  }
-
-  &__pin-icon {
-    margin: 0 -4px;
-    fill: $theme-color;
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    ~ span {
-      padding-left: 20px;
-      line-height: 1.5em;
-      color: $gray-2;
-      word-break: break-word;
-      -webkit-hyphens: auto;
-      -ms-hyphens: auto;
-      hyphens: auto;
-    }
-  }
-
-  &__phone-view,
-  &__receipt-info {
-    position: relative;
-    padding: 4vw;
-  }
-
-  &__receipt-title,
-  &__receipt-label,
-  &__receipt-number {
-    line-height: 1.5em;
-  }
-}
-
-.thanks-pickup {
-  &__id-container {
-    // @extend .border-radius-base;
-    background-color: #fafafa;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-    margin-top: 23px;
-
-    padding: 4vw;
-
-    label {
-      display: block;
-      padding: 8px 0;
-      font-size: 1.2857rem;
-      color: $main-color;
-    }
-  }
-
-  &__id-number {
-    display: block;
-    font-size: 2.1428rem;
-    color: $gray-2;
-  }
-}
-
 .receipt {
   &__content {
     padding: 8vw 4vw;
@@ -1407,7 +1070,7 @@ main > section.hide {
   // }
 
   // &.table-ordering__payment,
-  &.table-ordering__thanks,
+  // &.table-ordering__thanks,
   &.table-ordering__prompt-page {
     display: none;
   }
@@ -1548,19 +1211,11 @@ body.loading {
 
   .top-message__close-button,
   .form-text,
-  .product-detail__options-container,
-  .footer-link,
-  .payment-bank,
-  .thanks__phone-view,
-  .thanks__receipt-info,
-  .thanks-pickup__id-container,
-  .thanks__delivery-info {
+  .product-detail__options-container {
     padding: 16px;
   }
 
-  .modal__detail,
-  .payment-bank__form-item,
-  .thanks__info-container {
+  .modal__detail {
     padding: 16px 0;
   }
 
@@ -1593,20 +1248,8 @@ body.loading {
     padding: 16px 20px;
   }
 
-  .thanks__delivery-status-container {
-    padding: 10px 15px;
-  }
-
   .payment-bank__money {
     padding: 9px 0;
-  }
-
-  .thanks {
-    padding: 5.4vh 16px;
-
-    &__title {
-      margin: 16px 0;
-    }
   }
 
   .full-aside__content {

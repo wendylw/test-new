@@ -806,6 +806,23 @@ img {
 }
 /* End of react Phone number input box */
 
+.progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: $theme-color;
+
+  &.not-on-way {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &__container {
+    width: 100%;
+    height: 8px;
+    background-color: $gray-4;
+  }
+}
+
 .aside {
   display: block;
   top: 0;
@@ -1002,23 +1019,6 @@ img {
     svg ~ .warning__label {
       margin-left: 5px;
     }
-  }
-}
-
-.progress-bar {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background-color: $theme-color;
-
-  &.not-on-way {
-    border-radius: 0 4px 4px 0;
-  }
-
-  &__container {
-    width: 100%;
-    height: 8px;
-    background-color: $gray-4;
   }
 }
 
