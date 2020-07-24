@@ -25,9 +25,19 @@ class LocationPage extends Component {
     outRange: Utils.getSessionVariable('outRange'),
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.loadStoreInfo();
-    !config.storeId && this.props.appActions.loadCoreBusiness();
+    if (!config.storeId) {
+      await this.props.appActions.loadCoreBusiness();
+      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business];
+
+      this.setState({
+        storeInfo: {
+          radius: qrOrderingSettings.deliveryRadius * 1000,
+          country,
+        },
+      });
+    }
 
     if (this.state.outRange) {
       this.setState(
