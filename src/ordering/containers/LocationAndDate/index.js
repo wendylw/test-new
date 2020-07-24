@@ -321,15 +321,19 @@ class LocationAndDate extends Component {
       const { t } = this.props;
 
       return (
-        <div className="">
-          <label className="text-size-big text-weight-bolder">{t('DeliverTo')}</label>
+        <div className="padding-normal">
+          <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
+            {t('DeliverTo')}
+          </label>
           <div
             className="form__group flex flex-middle flex-space-between"
             onClick={this.showLocationSearch}
             data-heap-name="ordering.location-and-date.deliver-to"
             data-testid="deliverTo"
           >
-            <p className="padding-normal text-size-big text-line-height-base">{deliveryToAddress}</p>
+            <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
+              {deliveryToAddress}
+            </p>
             <IconNext className="icon icon__normal flex__shrink-fixed" />
           </div>
         </div>
@@ -345,8 +349,10 @@ class LocationAndDate extends Component {
 
       const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
-        <div className="">
-          <label className="text-size-big text-weight-bolder">{t('PickupAt')}</label>
+        <div className="padding-normal">
+          <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
+            {t('PickupAt')}
+          </label>
           <p className="">{pickUpAddress}</p>
         </div>
       );
@@ -357,12 +363,12 @@ class LocationAndDate extends Component {
     const { selectedDate } = this.state;
     const { t } = this.props;
     return (
-      <div className="">
-        <label className="text-size-big text-weight-bolder">
+      <div className="padding-small">
+        <label className="location-date__label padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder">
           {Utils.isDeliveryType() && t('DeliverOn')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </label>
-        <ul className="flex flex-middle flex-space-between location-date__date">
+        <ul className="location-date__date flex flex-middle flex-space-between">
           {this.deliveryDates.map(deliverableTime => {
             const dateDetail = new Date(deliverableTime.date);
             const date = dateDetail.getDate();
@@ -370,11 +376,11 @@ class LocationAndDate extends Component {
             const isSelected = dateDetail.getDay() === new Date(selectedDate.date).getDay();
 
             return (
-              <li className="location-date__date-item" key={date}>
+              <li key={date}>
                 <button
-                  className={`button ${
+                  className={`location-date__button-date button ${
                     isSelected ? 'button__fill' : 'button__outline'
-                  } padding-top-bottom-smaller padding-left-right-normal ${
+                  } padding-top-bottom-smaller padding-left-right-normal margin-left-right-smaller ${
                     deliverableTime.isToday ? 'text-uppercase' : ''
                   }`}
                   disabled={deliverableTime.isOpen ? '' : 'disabled'}
@@ -389,8 +395,10 @@ class LocationAndDate extends Component {
                     t('Today')
                   ) : (
                     <Fragment>
-                      <span>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
-                      <time>{date}</time>
+                      <span className="location-date__date-weekday text-weight-bolder">
+                        {t(WEEK_DAYS_I18N_KEYS[weekday])}
+                      </span>
+                      <time className="text-size-big">{date}</time>
                     </Fragment>
                   )}
                 </button>
@@ -411,22 +419,24 @@ class LocationAndDate extends Component {
 
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder } = qrOrderingSettings;
+
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return !disableOnDemandOrder ? (
-          <li
-            className={`location-date__hour-item text-center ${
-              selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
-            }`}
-            data-testid="preOrderHour"
-            data-heap-name="ordering.location-and-date.time-item"
-            data-heap-is-immediate="yes"
-            onClick={() => {
-              this.handleSelectHour({ ...item });
-            }}
-            key="deliveryOnDemandOrder"
-          >
-            {t('Immediate')}
+          <li className="location-date__hour-item" key="deliveryOnDemandOrder">
+            <button
+              className={`location-date__button-hour button button__block text-center text-size-big ${
+                selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected text-weight-bolder' : ''
+              }`}
+              data-testid="preOrderHour"
+              data-heap-name="ordering.location-and-date.time-item"
+              data-heap-is-immediate="yes"
+              onClick={() => {
+                this.handleSelectHour({ ...item });
+              }}
+            >
+              {t('Immediate')}
+            </button>
           </li>
         ) : null;
       }
@@ -454,15 +464,19 @@ class LocationAndDate extends Component {
       }
       return (
         isShowList && (
-          <li
-            className={`location-date__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
-            data-testid="preOrderHour"
-            onClick={() => {
-              this.handleSelectHour({ from, to });
-            }}
-            key={`${from} - ${to}`}
-          >
-            {timeToDisplay}
+          <li className="location-date__hour-item" key={`${from} - ${to}`}>
+            <button
+              className={`location-date__button-hour button button__block text-center text-size-big ${
+                selectedHour.from === from ? 'selected text-weight-bolder' : ''
+              }`}
+              data-testid="preOrderHour"
+              data-heap-name="ordering.location-and-date.time-item"
+              onClick={() => {
+                this.handleSelectHour({ from, to });
+              }}
+            >
+              {timeToDisplay}
+            </button>
           </li>
         )
       );
@@ -634,9 +648,17 @@ class LocationAndDate extends Component {
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
-      <div className="">
-        {Utils.isDeliveryType() && <label className="text-size-big text-weight-bolder">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="text-size-big text-weight-bolder">{t('PickupTime')}</label>}
+      <div className="padding-top-bottom-normal">
+        {Utils.isDeliveryType() && (
+          <label className="location-date__label padding-left-right-normal margin-top-bottom-smaller text-size-big text-weight-bolder">
+            {t('DeliveryTime')}
+          </label>
+        )}
+        {Utils.isPickUpType() && (
+          <label className="location-date__label padding-left-right-normal margin-top-bottom-smaller text-size-big text-weight-bolder">
+            {t('PickupTime')}
+          </label>
+        )}
         <ul
           ref={this.timeListRef}
           className="location-date__hour"
