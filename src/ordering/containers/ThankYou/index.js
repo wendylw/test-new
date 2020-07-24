@@ -178,7 +178,7 @@ export class ThankYou extends PureComponent {
   renderCashbackUI = cashback => {
     const { t } = this.props;
     return (
-      <div className="ordering-thanks__card-prompt card padding-small">
+      <div className="ordering-thanks__card-prompt card text-center padding-small">
         {this.state.cashbackSuccessImage && (
           <img
             src={this.state.cashbackSuccessImage}
@@ -381,7 +381,7 @@ export class ThankYou extends PureComponent {
     return (
       <React.Fragment>
         <img className="ordering-thanks__image padding-normal" src={currentStatusObj.bannerImage} alt="Beep Success" />
-        <div className="card">
+        <div className="card text-center">
           {currentStatusObj.status !== 'cancelled' ? (
             <div className="progress-bar__container">
               <i
@@ -495,9 +495,7 @@ export class ThankYou extends PureComponent {
           <div className="thanks__pickup margin-bottom-zero ">
             <h4 className="thanks__delivering-title text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="thanks__address-pin flex flex-middle">
-              <i className="thanks__pin-icon">
-                <IconAccessTime />
-              </i>
+              <IconAccessTime className="icon icon__small icon__primary" />
               <span>{pickupTime}</span>
             </p>
           </div>
@@ -510,9 +508,7 @@ export class ThankYou extends PureComponent {
         ) : null}
 
         <p className="thanks__address-pin flex flex-middle">
-          <i className="thanks__pin-icon">
-            <IconPin />
-          </i>
+          <IconPin className="icon icon__small icon__primary" />
           <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
         </p>
 
