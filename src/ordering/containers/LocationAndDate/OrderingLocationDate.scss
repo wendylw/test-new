@@ -1,0 +1,50 @@
+@import "../../../Variables.scss";
+
+.location-date {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+  }
+
+  &__date {
+    overflow-x: scroll;
+  }
+
+  &__date-item {
+  }
+
+  &__date-container {
+    &.form__group {
+      margin: auto;
+    }
+    label.form__label {
+      margin: 16px 3.8vw;
+    }
+  }
+
+  &__hour {
+    max-height: 200px;
+    overflow-y: scroll;
+
+    &-item {
+      color: $gray-2;
+      font-size: 16px;
+      height: 50px;
+      line-height: 50px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &.selected {
+        color: $main-color;
+        background-color: $gray-5;
+      }
+
+      &.disabled {
+        color: $gray-4;
+      }
+    }
+  }
+}

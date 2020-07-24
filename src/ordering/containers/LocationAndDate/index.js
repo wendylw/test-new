@@ -11,6 +11,7 @@ import { compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
+import './OrderingLocationDate.scss';
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
 
@@ -321,7 +322,7 @@ class LocationAndDate extends Component {
 
       return (
         <div className="">
-          <label className="form__label text-weight-bold">{t('DeliverTo')}</label>
+          <label className="text-size-big text-weight-bolder">{t('DeliverTo')}</label>
           <div
             className="form__group flex flex-middle flex-space-between"
             onClick={this.showLocationSearch}
@@ -344,9 +345,9 @@ class LocationAndDate extends Component {
 
       const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
-        <div className="form__group">
-          <label className="form__label text-weight-bold">{t('PickupAt')}</label>
-          <div className="form__textarea">{pickUpAddress}</div>
+        <div className="">
+          <label className="text-size-big text-weight-bolder">{t('PickupAt')}</label>
+          <p className="">{pickUpAddress}</p>
         </div>
       );
     }
@@ -356,12 +357,12 @@ class LocationAndDate extends Component {
     const { selectedDate } = this.state;
     const { t } = this.props;
     return (
-      <div className="form__group">
-        <label className="form__label text-weight-bold">
+      <div className="">
+        <label className="text-size-big text-weight-bolder">
           {Utils.isDeliveryType() && t('DeliverOn')}
           {Utils.isPickUpType() && t('PickUpOn')}
         </label>
-        <ul className="flex flex-middle flex-space-between location-display__date">
+        <ul className="flex flex-middle flex-space-between location-date__date">
           {this.deliveryDates.map(deliverableTime => {
             const dateDetail = new Date(deliverableTime.date);
             const date = dateDetail.getDate();
@@ -369,26 +370,30 @@ class LocationAndDate extends Component {
             const isSelected = dateDetail.getDay() === new Date(selectedDate.date).getDay();
 
             return (
-              <li
-                className={`location-display__date-item flex flex-space-between flex-column text-center ${
-                  deliverableTime.isOpen ? '' : 'disabled'
-                } ${isSelected ? 'selected' : ''}`}
-                data-testid="preOrderDate"
-                data-heap-name="ordering.location-and-date.date-item"
-                data-heap-is-today={deliverableTime.isToday ? 'yes' : 'no'}
-                onClick={() => {
-                  this.handleSelectDate(deliverableTime);
-                }}
-                key={date}
-              >
-                {deliverableTime.isToday ? (
-                  <span className="text-uppercase">{t('Today')}</span>
-                ) : (
-                  <Fragment>
-                    <span>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
-                    <span>{date}</span>
-                  </Fragment>
-                )}
+              <li className="location-date__date-item" key={date}>
+                <button
+                  className={`button ${
+                    isSelected ? 'button__fill' : 'button__outline'
+                  } padding-top-bottom-smaller padding-left-right-normal ${
+                    deliverableTime.isToday ? 'text-uppercase' : ''
+                  }`}
+                  disabled={deliverableTime.isOpen ? '' : 'disabled'}
+                  data-testid="preOrderDate"
+                  data-heap-name="ordering.location-and-date.date-item"
+                  data-heap-is-today={deliverableTime.isToday ? 'yes' : 'no'}
+                  onClick={() => {
+                    this.handleSelectDate(deliverableTime);
+                  }}
+                >
+                  {deliverableTime.isToday ? (
+                    t('Today')
+                  ) : (
+                    <Fragment>
+                      <span>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
+                      <time>{date}</time>
+                    </Fragment>
+                  )}
+                </button>
               </li>
             );
           })}
@@ -410,7 +415,7 @@ class LocationAndDate extends Component {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return !disableOnDemandOrder ? (
           <li
-            className={`location-display__hour-item text-center ${
+            className={`location-date__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
             }`}
             data-testid="preOrderHour"
@@ -450,7 +455,7 @@ class LocationAndDate extends Component {
       return (
         isShowList && (
           <li
-            className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
+            className={`location-date__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
             data-testid="preOrderHour"
             onClick={() => {
               this.handleSelectHour({ from, to });
@@ -629,12 +634,12 @@ class LocationAndDate extends Component {
     const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
-      <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && <label className="form__label text-weight-bold">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="form__label text-weight-bold">{t('PickupTime')}</label>}
+      <div className="">
+        {Utils.isDeliveryType() && <label className="text-size-big text-weight-bolder">{t('DeliveryTime')}</label>}
+        {Utils.isPickUpType() && <label className="text-size-big text-weight-bolder">{t('PickupTime')}</label>}
         <ul
           ref={this.timeListRef}
-          className="location-display__hour"
+          className="location-date__hour"
           style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
         >
           {this.renderHoursList(timeList)}
@@ -709,7 +714,7 @@ class LocationAndDate extends Component {
 
   render() {
     return (
-      <section className="ordering-location" data-heap-name="ordering.location-and-date.container">
+      <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
@@ -718,7 +723,7 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        <div className="ordering-location__container">
+        <div className="location-date__container">
           {this.renderDeliveryTo()}
           {this.renderDeliveryOn()}
           {this.renderHourSelector()}
