@@ -57,12 +57,6 @@
       fill: $white;
     }
   }
-
-  // &__second-level {
-  //   padding: 10px;
-  //   color: $white;
-  //   background-color: $status-blue;
-  // }
 }
 
 .main-section {
@@ -81,23 +75,6 @@
   &.active {
     display: block;
   }
-}
-
-.container {
-  // &.fixed {
-  // .list__container {
-  //   position: fixed;
-  //   overflow: hidden;
-  // }
-
-  // .category-nav__vertical ~ .list__container {
-  //   width: 75%;
-  // }
-
-  // .category-nav__horizontal ~ .list__container {
-  //   width: 100%;
-  // }
-  // }
 }
 
 .has-header-container {
@@ -135,103 +112,10 @@
     transition: transform 0.4s;
     -webkit-transition: -webkit-transform 0.4s;
 
-    &::after {
-      //content: "";
-      //display: block;
-      //width: 100%;
-      //height: 43.2vw;
-    }
-
     .aside-bottom {
       bottom: 18.8vw;
     }
-
-    // .billing__list {
-    //   margin: 10px 0;
-    // }
-
-    // .billing__login {
-    //   width: 80px;
-    //   height: 35px;
-    //   font-size: 14px;
-    //   color: $white;
-    //   border-radius: 4px;
-    //   background-color: $theme-color;
-    // }
-
-    // .billing__item {
-    //   font-size: 1.2rem;
-
-    //   label,
-    //   span {
-    //     font-size: inherit;
-    //   }
-
-    //   label:not(.font-weight-bolder),
-    //   span:not(.font-weight-bolder) {
-    //     // @extend .text-opacity;
-    //   }
-    // }
-
-    // .promotion__item {
-    //   border-top: 1px solid $gray-4;
-    //   border-bottom: 1px solid $gray-4;
-    //   margin-top: 10px;
-    //   padding-left: 5px;
-
-    //   .promotion__container {
-    //     font-size: inherit;
-    //   }
-    //   .promotion-info__container {
-    //     font-size: inherit;
-    //   }
-    //   .promotion-code__container {
-    //     font-size: inherit;
-    //   }
-    //   // .add-promo__button {
-    //   //   width: 100%;
-    //   //   text-align: left;
-    //   // }
-    //   .dismiss__button {
-    //     width: 20px;
-    //     height: 20px;
-    //     margin-left: 3px;
-    //     border: none;
-    //     svg {
-    //       fill: $gray-2;
-    //       width: 100%;
-    //       height: 100%;
-    //     }
-    //   }
-    //   .promotion__error {
-    //     white-space: normal;
-    //     color: $status-red;
-    //     font-weight: $font-weight-bolder;
-    //   }
-    // }
   }
-
-  &__customer {
-    // @extend .main-section;
-
-    // background-color: $white;
-    // padding-bottom: 18.8vw;
-
-    // .aside {
-    //   bottom: 18.8vw;
-    // }
-  }
-
-  // &__payment {
-  // @extend .main-section;
-  // padding-bottom: 43.2vw;
-  // }
-
-  // &__bank-payment {
-  // @extend .main-section;
-  // padding-bottom: 21.6vw;
-  // background-color: $white;
-  // }
 
   &__thanks {
     // @extend .main-section;
@@ -340,34 +224,6 @@
     line-height: $line-height-base;
   }
 }
-
-// .store-list {
-//   // @extend .flex;
-//   // @extend .flex-center;
-
-//   &__content {
-//     // @extend .main-section;
-
-//     padding: 5vw;
-//   }
-// }
-
-// .border {
-//   &__top-divider {
-//     border-top: 1px solid $gray-4;
-//   }
-
-//   &__bottom-divider {
-//     border-bottom: 1px solid $gray-4;
-//   }
-// }
-
-// .w-h-same {
-//   content: "";
-//   display: block;
-//   padding: 50% 0;
-//   height: 0;
-// }
 
 .modal {
   // @extend .back-drop;
