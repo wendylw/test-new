@@ -537,6 +537,10 @@ img {
     fill: $theme-color;
   }
 
+  &__primary-light {
+    fill: $theme-color-translucent;
+  }
+
   &__default {
     fill: $gray-2;
   }

@@ -673,206 +673,6 @@
   }
 }
 
-.location-page {
-  &__search-box {
-    padding: 5vw 2.4vw;
-    background-color: $white;
-
-    .input {
-      padding-left: 0;
-      padding-right: 5vw;
-      font-size: 1.4rem;
-    }
-  }
-
-  &__search-box-search-icon {
-    padding: 3.2vw;
-    font-size: 0;
-
-    svg {
-      fill: $gray-2;
-    }
-  }
-
-  &__search-box-clear-icon {
-    padding: 15px 8px;
-
-    svg {
-      fill: $gray-2;
-      width: 14px;
-      height: 14px;
-      vertical-align: middle;
-    }
-  }
-
-  &__detected-position {
-    overflow: hidden;
-    align-items: stretch;
-    border-bottom: 1px solid $gray-4;
-    padding: 8px 16px 16px 0;
-    .location-page__address-item {
-      padding: 0;
-      border: none;
-    }
-
-    .location-page__detected-position-address {
-      margin-top: 8px;
-    }
-  }
-
-  &__detected-position-status {
-    margin: 10px 0;
-    font-weight: bold;
-  }
-
-  &__detected-position-icon {
-    svg {
-      fill: $theme-color;
-      width: 14px;
-      height: 14px;
-    }
-    padding: 16px;
-    float: left;
-  }
-
-  &__detected-position-address {
-    overflow: hidden;
-  }
-
-  &__historical-address {
-    border-bottom: 1px solid $gray-4;
-    overflow: hidden;
-  }
-
-  &__historical-address-icon {
-    display: block;
-    margin-top: 8px;
-    padding: 16px;
-    float: left;
-
-    svg {
-      fill: $theme-color-translucent;
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  &__historical-address-content {
-    overflow: hidden;
-    .location-page__address-item {
-      padding: 16px 16px 16px 0;
-      border: none;
-    }
-  }
-
-  &__address-item {
-    padding: 16px 24px;
-    border-bottom: 1px solid $gray-4;
-  }
-
-  &__address-title {
-    font-weight: bold;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-
-  &__address-detail {
-    margin-top: 4px;
-    color: $gray-2;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-
-  &__address-distance {
-    margin-right: 8px;
-    font-weight: bold;
-  }
-
-  &__error-screen {
-    margin: 32px 0;
-    text-align: center;
-  }
-
-  &__error-screen-image {
-    max-width: 90%;
-  }
-
-  &__error-screen-message {
-    margin-top: 16px;
-    color: $gray-2;
-  }
-
-  &__entry-container {
-    .cover {
-      top: 64px;
-    }
-
-    .pick-up ~ .cover {
-      top: 84px;
-    }
-  }
-
-  .location-page {
-    &__loading-mask {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 1;
-    }
-  }
-
-  &__base-info {
-    width: 85vw;
-    margin-top: 0;
-  }
-
-  &__entry-address {
-    margin-top: 5px;
-    font-size: 0.85rem;
-    max-height: 16px;
-    max-width: 100%;
-    color: $gray-2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    p {
-      margin-left: 18px;
-      font-size: inherit;
-    }
-
-    .icon + p {
-      margin-left: 4px;
-      font-size: 1rem;
-    }
-
-    &.pick-up {
-      margin-top: 4px;
-    }
-
-    &__icon {
-      float: left;
-      width: 24px;
-      margin-top: -6px;
-      margin-left: -6px;
-    }
-  }
-
-  &__edit {
-    padding: 2.4vw;
-
-    svg {
-      width: 16px;
-      height: 16px;
-      fill: $theme-color;
-    }
-  }
-}
-
 @keyframes dots {
   to {
     width: 18px;
@@ -1695,9 +1495,7 @@ body.loading {
   .top-message.fixed,
   .aside-section,
   .full-aside__content,
-  .location-page__list,
   .top-message__second-level,
-  .location-page__search-box,
   .loyalty__claim,
   .loyalty__home,
   .loyalty__activities,
@@ -1710,12 +1508,6 @@ body.loading {
 
   .category__list {
     border-right: 1px solid $gray-5;
-  }
-
-  .location-page__form,
-  .location-page__detected-position {
-    margin: auto;
-    max-width: 414px;
   }
 
   .table-ordering__customer .aside {
@@ -1737,8 +1529,7 @@ body.loading {
   .need-help__info-container,
   .order-detail__info-container,
   .aside__section-container,
-  .cart-pane__operation,
-  .location-page__edit {
+  .cart-pane__operation {
     padding: 10px;
   }
 
@@ -1751,7 +1542,6 @@ body.loading {
   }
 
   .cart__note,
-  .location-page__search-box-search-icon,
   .prompt-page__button-container {
     padding: 13px;
   }
@@ -1823,16 +1613,8 @@ body.loading {
     padding: 4vh 20px;
   }
 
-  .location-page__form {
-    padding: 20px 9px;
-  }
-
   .product-detail__options ~ .product-detail__options {
     margin-top: 20px;
-  }
-
-  .location-page__search-box {
-    padding: 20px 10px;
   }
 }
 

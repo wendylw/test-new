@@ -185,11 +185,11 @@ class LocationPicker extends Component {
     const { searchText } = this.state;
     const { t } = this.props;
     return (
-      <div className="location-picker__search-box">
-        <div className="location-picker__search-box-inner flex flex-middle">
-          <IconSearch className="location-picker__search-box-magnifier-icon" onClick={this.tryGeolocation} />
+      <div className="location-picker__search-box sticky-wrapper padding-normal">
+        <div className="form__group flex flex-middle flex-space-between margin-top-bottom-smaller">
+          <IconSearch className="icon icon__big icon__default" onClick={this.tryGeolocation} />
           <input
-            className="location-picker__search-box-input"
+            className="location-picker__input form__input text-size-big"
             data-testid="searchAddress"
             data-heap-name="common.location-picker.search-box"
             type="text"
@@ -198,7 +198,7 @@ class LocationPicker extends Component {
             value={searchText}
           />
           <IconClose
-            className="location-picker__search-box-close-icon"
+            className="icon icon__normal icon__default"
             onClick={this.clearSearchBox}
             data-heap-name="common.location-picker.search-box-clear-icon"
             style={{ visibility: searchText ? 'visible' : 'hidden' }}
@@ -210,21 +210,26 @@ class LocationPicker extends Component {
 
   renderAddressItem(summary, detail, distance) {
     return (
-      <div className="location-picker__address-item" data-testid="searchedAddressResult">
-        <div className="location-picker__address-title">{summary}</div>
-        <div className="location-picker__address-detail">
+      <summary
+        className="location-picker__address-summary padding-top-bottom-small"
+        data-testid="searchedAddressResult"
+      >
+        <div className="location-picker__address-title padding-top-bottom-small text-size-big text-weight-bolder text-omit__single-line">
+          {summary}
+        </div>
+        <p className="location-picker__address-detail text-opacity">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
           {/* {typeof distance === 'number' && distance !== Infinity && (
             <span className="location-picker__address-distance">{(distance / 1000).toFixed(1)} KM</span>
           )} */}
-          <span>{detail}</span>
-        </div>
-      </div>
+          <span className="location-picker__address-detail-text text-omit__single-line">{detail}</span>
+        </p>
+      </summary>
     );
   }
 
   renderDetectedPositionStatus(message) {
-    return <div className="location-picker__detected-position-status">{message}</div>;
+    return <p className="padding-top-bottom-normal text-size-big text-weight-bolder">{message}</p>;
   }
 
   renderDetectedPosition() {
@@ -241,17 +246,17 @@ class LocationPicker extends Component {
         : devicePositionInfo.address
       : '';
     return (
-      <div className="location-picker__detected-position">
-        <div
-          className="location-picker__detected-position-icon"
+      <div className="location-picker__detected-position flex flex-top border__bottom-divider">
+        <button
+          className="location-picker__button-detected-position button flex__shrink-fixed padding-left-right-small"
           onClick={() => {
             if (storePositionInfo) {
               this.detectDevicePosition(false);
             }
           }}
         >
-          <IconGpsFixed style={{ width: '10px' }} />
-        </div>
+          <IconGpsFixed className="icon icon__small icon__primary" />
+        </button>
         <div className="location-picker__detected-position-address">
           {isDetectingPosition ? (
             this.renderDetectedPositionStatus(t('DetectingLocation'))
@@ -288,13 +293,15 @@ class LocationPicker extends Component {
             // const distance = this.computeDistanceFromStore(coords);
             return (
               <div
-                className="location-picker__historical-address"
+                className="location-picker__historical-address flex flex-top border__bottom-divider"
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <IconBookmarks className="location-picker__historical-address-icon" />
+                <div className="margin-smallest">
+                  <IconBookmarks className="icon icon__smaller icon__primary-light margin-smaller" />
+                </div>
                 <div
-                  className="location-picker__historical-address-content"
+                  className="location-picker__historical-container"
                   data-heap-name="common.location-picker.historical-location-item"
                 >
                   {this.renderAddressItem(mainText, secondaryText)}
@@ -314,10 +321,11 @@ class LocationPicker extends Component {
     const { searchResultList } = this.state;
 
     return (
-      <div className="location-picker__list">
+      <div>
         {searchResultList.map(searchResult => {
           return (
             <div
+              className="location-picker__result-item"
               key={searchResult.place_id}
               onClick={() => this.selectPlace(searchResult)}
               data-heap-name="common.location-picker.search-result-item"
@@ -336,6 +344,7 @@ class LocationPicker extends Component {
 
   renderPredictedPositions() {
     const { detectPosition } = this.props;
+
     return (
       <div>
         {detectPosition && this.renderDetectedPosition()}
@@ -360,8 +369,9 @@ class LocationPicker extends Component {
 
   render() {
     const { isSubmitting, errorToast } = this.state;
+
     return (
-      <div>
+      <div className="location-picker">
         {this.renderMainContent()}
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
         {isSubmitting && this.renderLoadingMask()}

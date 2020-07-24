@@ -8,6 +8,7 @@ import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import '../../../App.scss';
 import Utils from '../../../utils/utils';
+import './OrderingLocation.scss';
 
 class LocationPage extends Component {
   state = {
@@ -97,9 +98,13 @@ class LocationPage extends Component {
   renderInitError() {
     const { initError } = this.state;
     return (
-      <div className="location-page__error-screen">
-        <img className="location-page__error-screen-image" alt="Something went wrong" src={ErrorImage} />
-        <div className="location-page__error-screen-message">{initError}</div>
+      <div className="padding-top-bottom-normal text-center">
+        <img
+          className="ordering-location__error-screen-image margin-top-bottom-smaller"
+          alt="Something went wrong"
+          src={ErrorImage}
+        />
+        <p className="ordering-location__error-screen-message padding-normal">initError</p>
       </div>
     );
   }
@@ -107,7 +112,7 @@ class LocationPage extends Component {
   renderLoadingMask() {
     // a transparent mask to prevent user's input
     return (
-      <div className="location-page__loading-mask">
+      <div className="fixed-wrapper">
         <div className="loader theme page-loader" />
       </div>
     );
@@ -117,7 +122,7 @@ class LocationPage extends Component {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
     return (
-      <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
+      <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
