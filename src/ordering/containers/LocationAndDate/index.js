@@ -278,6 +278,9 @@ class LocationAndDate extends Component {
         item.distance < nearly.distance && (nearly = item);
       }
     });
+    if (!nearly) {
+      return { nearly: {} };
+    }
     let result = await this.props.homeActions.getStoreHashData(nearly.id);
     const h = result.response.redirectTo;
     return {
