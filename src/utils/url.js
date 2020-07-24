@@ -147,6 +147,10 @@ const API_URLS = {
     url: '/api/feedback',
     method: 'post',
   },
+  GET_VOUCHER_LIST: {
+    url: '/api/products/vouchers',
+    method: 'get',
+  },
   GET_TIME_SLOT: (shippingType, fulfillDate, storeid) => {
     return {
       url: `/api/transactions/timeslots?shippingType=${shippingType}&fulfillDate=${fulfillDate}&storeId=${storeid}`,
