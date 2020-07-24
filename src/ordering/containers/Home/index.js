@@ -403,10 +403,7 @@ export class Home extends Component {
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
       history.push({
-        pathname: enablePreOrder
-          ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
-          : // : Constants.ROUTER_PATHS.ORDERING_LOCATION,
-            Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
         search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };

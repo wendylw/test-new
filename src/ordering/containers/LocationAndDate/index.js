@@ -145,7 +145,6 @@ class LocationAndDate extends Component {
           h,
           nearlyStore: nearly,
         });
-        // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
     }
   };
@@ -177,7 +176,6 @@ class LocationAndDate extends Component {
           }
         } else {
           if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
-          this.setMethodsTime();
         }
         this.setMethodsTime();
       }
