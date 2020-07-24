@@ -313,14 +313,14 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={processing || !stripe}
           beforeCreateOrder={() => setIsFormTouched(true)}
-          afterCreateOrder={async () => {
+          afterCreateOrder={async orderId => {
             const payload = await stripe.createPaymentMethod({
               type: 'card',
               card: elements.getElement(CardNumberElement),
               billing_details: billingDetails,
             });
 
-            setProcessing(false);
+            setProcessing(!!orderId);
 
             if (payload.error) {
               setError(payload.error);

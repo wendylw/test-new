@@ -39,7 +39,22 @@ class Cart extends Component {
     window.scrollTo(0, 0);
     this.handleResizeEvent();
   }
+  componentDidUpdate() {
+    this.setListHeight();
+  }
+  setListHeight = () => {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    const asideOffset = document.querySelectorAll('.aside-bottom')[0].offsetTop;
+    const asideHeight = document.querySelectorAll('.aside-bottom')[0].offsetHeight;
+    const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
+    const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
+    const footerHeight = document.querySelectorAll('footer.footer-operation')[0].offsetHeight;
+    const scroll = textOffset - asideOffset + textHeight + 55;
+    const h = clientHeight - 50 - footerHeight - asideHeight;
 
+    document.querySelector('.list__container').style.height = h + 'px';
+  };
   handleResizeEvent() {
     window.addEventListener(
       'resize',
@@ -164,6 +179,12 @@ class Cart extends Component {
     }
   }
 
+  AdditionalCommentsFocus = () => {
+    setTimeout(() => {
+      document.querySelector('.list__container').scrollTop = document.querySelector('.list__container').scrollHeight;
+    }, 300);
+  };
+
   renderAdditionalComments() {
     const { t } = this.props;
     const { additionalComments } = this.state;
@@ -178,6 +199,7 @@ class Cart extends Component {
           value={additionalComments || ''}
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
+          onFocus={this.AdditionalCommentsFocus}
         ></textarea>
         {additionalComments ? (
           <IconClose
@@ -281,7 +303,7 @@ class Cart extends Component {
             <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="ordering-cart__container">
+        <div className="ordering-cart__container" style={{ overflowY: 'scroll' }}>
           <CartList isList={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
@@ -324,9 +346,11 @@ class Cart extends Component {
                 return;
               }
 
-              history.push({
-                pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                search: window.location.search,
+              this.handleGtmEventTracking(() => {
+                history.push({
+                  pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                  search: window.location.search,
+                });
               });
             }}
             disabled={!items || !items.length || isInvalidTotal}

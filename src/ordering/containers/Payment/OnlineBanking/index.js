@@ -32,6 +32,11 @@ class OnlineBanking extends Component {
     payNowLoading: false,
   };
 
+  componentDidMount() {
+    this.updateBankList();
+    this.props.homeActions.loadShoppingCart();
+  }
+
   getPaymentEntryRequestData = () => {
     const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
@@ -60,11 +65,6 @@ class OnlineBanking extends Component {
       agentCode,
     };
   };
-
-  componentDidMount() {
-    this.updateBankList();
-    this.props.homeActions.loadShoppingCart();
-  }
 
   updateBankList = async () => {
     const { paymentActions, merchantCountry } = this.props;
@@ -200,7 +200,7 @@ class OnlineBanking extends Component {
                 payNowLoading: true,
               });
             }}
-            afterCreateOrder={() => {
+            afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });

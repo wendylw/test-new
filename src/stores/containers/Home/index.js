@@ -12,6 +12,7 @@ import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
+import qs from 'qs';
 import './StoresHome.scss';
 
 import {
@@ -30,7 +31,11 @@ class App extends Component {
     await this.props.homeActions.loadCoreStores();
     if (Array.isArray(this.props.stores) && this.props.stores.length === 1) {
       const defaultSelectStore = this.props.stores[0];
-      this.selectStore(defaultSelectStore.id);
+      const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+      if (!(queries.s && queries.from === 'home')) {
+        this.selectStore(defaultSelectStore.id);
+      }
     }
   };
 
@@ -58,7 +63,8 @@ class App extends Component {
     });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
     if (isValidTimeToOrder || enablePreOrder) {
-      homeActions.setCurrentStore(storeId);
+      window.location.href = `${window.location.href}${window.location.search ? '&' : '?'}s=${storeId}&from=home`;
+      // homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);
       const { hashCode } = this.props;
@@ -69,11 +75,9 @@ class App extends Component {
   }
 
   gotoDine(storeId) {
-    this.props.homeActions.setCurrentStore(storeId);
-    this.props.history.push({
-      pathname: ROUTER_PATHS.DINE,
-      search: window.location.search,
-    });
+    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}${
+      window.location.search ? window.location.search + '&' : '?'
+    }s=${storeId}&from=home`;
   }
 
   selectStore = storeId => {
@@ -100,29 +104,31 @@ class App extends Component {
     }
 
     return (
-      <section className="store-list__content" data-heap-name="stores.home.container">
-        <Header
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          data-heap-name="stores.home.header"
-          isPage={true}
-          isStoreHome={true}
-          logo={logo}
-          title={storeName}
-        />
+      this.props.isHome && (
+        <section className="store-list__content" data-heap-name="stores.home.container">
+          <Header
+            className="flex-middle border__bottom-divider"
+            contentClassName="flex-middle"
+            data-heap-name="stores.home.header"
+            isPage={true}
+            isStoreHome={true}
+            logo={logo}
+            title={storeName}
+          />
 
-        <section>
-          <h2 className="padding-normal text-size-big text-center" data-testid="selectStoreDescription">
-            {t('SelectStoreDescription')}
-          </h2>
+          <section>
+            <h2 className="padding-normal text-size-big text-center" data-testid="selectStoreDescription">
+              {t('SelectStoreDescription')}
+            </h2>
 
-          {!stores || !stores.length ? (
-            <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
-          ) : (
-            <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
-          )}
+            {!stores || !stores.length ? (
+              <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
+            ) : (
+              <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
+            )}
+          </section>
         </section>
-      </section>
+      )
     );
   }
 }

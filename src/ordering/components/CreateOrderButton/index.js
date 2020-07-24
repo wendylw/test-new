@@ -37,6 +37,7 @@ class CreateOrderButton extends React.Component {
     const { tableId } = requestInfo;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    let newOrderId;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -48,6 +49,7 @@ class CreateOrderButton extends React.Component {
       const { currentOrder } = this.props;
       const { orderId } = currentOrder || {};
 
+      newOrderId = orderId;
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
         Utils.removeSessionVariable('deliveryComments');
@@ -63,7 +65,7 @@ class CreateOrderButton extends React.Component {
     }
 
     if (afterCreateOrder) {
-      afterCreateOrder();
+      afterCreateOrder(newOrderId);
     }
   };
 

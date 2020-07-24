@@ -142,6 +142,7 @@ const LOGIN_PROMPT = {
 const CREATE_ORDER_ERROR_CODES = {
   PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT: 4050,
   PROMOTION_INVALID: 4051,
+  CONTACT_DETAIL_INVALID: 40012,
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
@@ -211,7 +212,7 @@ const REPORT_DRIVER_REASON_CODE = {
   DRIVER_WAS_RUDE: 'driverWasRude',
   DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
   ORDER_WAS_MISSING_ITEM: 'orderWasMissingItem',
-  NEVER_RECEIVED_MY_ORDER: 'NeverReceivedMyOrder',
+  NEVER_RECEIVED_MY_ORDER: 'neverReceivedMyOrder',
   OTHERS: 'others',
 };
 
