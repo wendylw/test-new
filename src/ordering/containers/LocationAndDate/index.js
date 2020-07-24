@@ -145,7 +145,6 @@ class LocationAndDate extends Component {
           h,
           nearlyStore: nearly,
         });
-        // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
     }
   };
@@ -165,19 +164,10 @@ class LocationAndDate extends Component {
           });
 
           if (!isSupport) {
-            this.setState(
-              {
-                nearlyStore: {},
-              },
-              () => {
-                if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
-                this.setMethodsTime();
-              }
-            );
+            this.goStoreList();
           }
         } else {
           if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
-          this.setMethodsTime();
         }
         this.setMethodsTime();
       }
@@ -301,7 +291,7 @@ class LocationAndDate extends Component {
     const { allStore } = this.props;
 
     this.checkOnlyType(allStore);
-    if (Utils.getSessionVariable('deliveryAddress')) {
+    if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
       if (allStore.length) {
         let stores = allStore;
         let { type } = this.state.search;
@@ -318,11 +308,13 @@ class LocationAndDate extends Component {
         );
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
-    } else if (this.state.search.h) {
+    } else if (config.storeId) {
       let store = this.props.allStore.filter(item => item.id === config.storeId);
       this.setState({
         nearlyStore: store[0],
       });
+    } else if (this.state.search.type === DELIVERY_METHOD.PICKUP) {
+      this.goStoreList();
     }
   };
 
