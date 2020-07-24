@@ -52,19 +52,19 @@ class DeliverToBar extends Component {
             />
           ) : null}
           <div className={showBackButton ? '' : 'padding-left-right-smaller'}>
-            <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
-              {title}
-            </label>
+            {title ? (
+              <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
+                {title}
+              </label>
+            ) : null}
             <div className="flex flex-top">
               {icon}
               <div className="deliver-to-entry__detail-container">
-                <p className="deliver-to-entry__content padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
+                <p className="deliver-to-entry__content padding-top-bottom-small text-middle text-opacity text-omit__single-line">
                   {content}
                 </p>
                 {extraInfo ? (
-                  <p className="text-size-small padding-top-bottom-smaller text-weight-bolder text-omit__single-line">
-                    {extraInfo}
-                  </p>
+                  <p className="text-size-small text-weight-bolder text-omit__single-line">{extraInfo}</p>
                 ) : null}
               </div>
             </div>

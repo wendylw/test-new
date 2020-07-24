@@ -289,16 +289,15 @@ export class Home extends Component {
           heapContentName="ordering.home.delivery-bar"
           heapBackButtonName="order.home.delivery-bar-back-btn"
           className="ordering-home__deliver-to flex__shrink-fixed"
-          title={Utils.isDeliveryType() ? t('DeliverTo') : t('PickUpOn')}
           content={Utils.isDeliveryType() ? deliveryToAddress : this.getExpectedDeliveryTime()}
           navBackUrl={this.navBackUrl}
-          extraInfo={
+          extraInfo={`${Utils.isDeliveryType() ? t('DeliverOn') : t('PickUpOn')}${
             Utils.isDeliveryType()
               ? !enablePreOrder
-                ? t('DeliverNow', { separator: ' .' })
-                : this.getExpectedDeliveryTime()
-              : null
-          }
+                ? ` . ${t('DeliverNow', { separator: ' .' })}`
+                : ` . ${this.getExpectedDeliveryTime()}`
+              : ''
+          }`}
           showBackButton={showBackButton({
             isValidTimeToOrder,
             enablePreOrder,
@@ -307,7 +306,7 @@ export class Home extends Component {
           gotoLocationPage={fillInDeliverToAddress}
           icon={
             Utils.isDeliveryType() ? (
-              <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
+              <IconLocation className="icon icon__smaller margin-top-bottom-smallest text-middle flex__shrink-fixed" />
             ) : null
           }
         >
