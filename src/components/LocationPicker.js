@@ -113,12 +113,12 @@ class LocationPicker extends Component {
       let straightDistance;
       let directionDistance;
       if (mode === 'ORIGIN_STORE') {
-        try {
-          straightDistance = computeStraightDistance(origin, placeInfo.coords);
-        } catch (e) {
-          console.error('Fail to compute straight distance', e);
-          straightDistance = Infinity;
-        }
+        // try {
+        //   straightDistance = computeStraightDistance(origin, placeInfo.coords);
+        // } catch (e) {
+        //   console.error('Fail to compute straight distance', e);
+        //   straightDistance = Infinity;
+        // }
         // We will temporarily not get direction distance until we are confident enough that the distance is accurate.
         // try {
         //   directionDistance = await computeDirectionDistance(origin, placeInfo.coords);

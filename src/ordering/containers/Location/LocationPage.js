@@ -94,39 +94,36 @@ class LocationPage extends Component {
       storeInfo: { radius },
     } = this.state;
     const distance = placeInfo.straightDistance;
-    if (distance === Infinity) {
+    const address = {
+      location: {
+        longitude: placeInfo.coords.lng,
+        latitude: placeInfo.coords.lat,
+      },
+    };
+
+    let stores = await this.props.homeActions.loadCoreStores(address);
+    stores = stores.responseGql.data.business.stores;
+    if (!stores.length) {
+      const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
+
       this.setState({
-        errorToast: t(`OutOfDeliveryRangeWrongDistance`, {
-          distance: (radius / 1000).toFixed(1),
-        }),
-      });
-      return;
-    } else if (distance > radius) {
-      this.setState({
-        errorToast: t(`OutOfDeliveryRange`, { distance: (radius / 1000).toFixed(1) }),
+        errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
       });
       return;
     }
-
-    if (!config.storeId) {
-      const address = {
-        location: {
-          longitude: placeInfo.coords.lng,
-          latitude: placeInfo.coords.lat,
-        },
-      };
-
-      let stores = await this.props.homeActions.loadCoreStores(address);
-      stores = stores.responseGql.data.business.stores;
-      if (!stores.length) {
-        const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
-
-        this.setState({
-          errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
-        });
-        return;
-      }
-    }
+    // if (distance === Infinity) {
+    //   this.setState({
+    //     errorToast: t(`OutOfDeliveryRangeWrongDistance`, {
+    //       distance: (radius / 1000).toFixed(1),
+    //     }),
+    //   });
+    //   return;
+    // } else if (distance > radius) {
+    //   this.setState({
+    //     errorToast: t(`OutOfDeliveryRange`, { distance: (radius / 1000).toFixed(1) }),
+    //   });
+    //   return;
+    // }
 
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
     const callbackUrl = Utils.getQueryString('callbackUrl');
@@ -183,7 +180,7 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
-            mode={'ORIGIN_STORE'}
+            mode={config.storeId ? 'ORIGIN_STORE' : 'ORIGIN_DEVICE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
