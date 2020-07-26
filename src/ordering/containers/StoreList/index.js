@@ -22,7 +22,7 @@ const StoreListItem = props => (
   <div
     className="stores-list-item"
     onClick={() => props.select(props.store)}
-    data-heap-name="ordering.location-and-date.store-item"
+    data-heap-name="ordering.store-list.store-item"
   >
     <p>{props.store.name}</p>
     <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
