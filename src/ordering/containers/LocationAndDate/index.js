@@ -922,7 +922,7 @@ class LocationAndDate extends Component {
     );
   };
 
-  checkStoreStatus = (selectedHour, { enablePreOrder, disableOnDemandOrder, disableTodayPreOrder }) => {
+  checkStoreStatus = (selectedHour, { enablePreOrder, disableOnDemandOrder, disableTodayPreOrder }, selectDate) => {
     if (selectedHour.from === 'now') {
       if (enablePreOrder) {
         if (disableOnDemandOrder) {
@@ -935,8 +935,12 @@ class LocationAndDate extends Component {
       }
     } else {
       if (enablePreOrder) {
-        if (disableTodayPreOrder) {
-          return true;
+        if (selectDate.isToday) {
+          if (disableTodayPreOrder) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
           return false;
         }
@@ -959,13 +963,13 @@ class LocationAndDate extends Component {
 
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
-        return this.checkStoreStatus(selectedHour, deliveryInfo);
+        return this.checkStoreStatus(selectedHour, deliveryInfo, selectedDate.date);
       }
     }
 
     if (this.state.isPickUpType) {
       if (selectedDate.date && selectedHour.from) {
-        return this.checkStoreStatus(selectedHour, deliveryInfo);
+        return this.checkStoreStatus(selectedHour, deliveryInfo, selectedDate.date);
       }
     }
     return true;
