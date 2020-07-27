@@ -715,18 +715,17 @@ export class ThankYou extends PureComponent {
                 <PhoneLogin hideMessage={isTakeaway} history={history} />
               </div>
             </div>
-
-            <footer className="flex flex-middle flex-center">
-              <span>&copy; {date.getFullYear()} </span>
-              <a
-                className="ordering-thanks__button-footer-link button button__link padding-small"
-                href="https://www.storehub.com/"
-                data-heap-name="ordering.thank-you.storehub-link"
-              >
-                {t('StoreHub')}
-              </a>
-            </footer>
           </div>
+          <footer className="flex flex-middle flex-center">
+            <span>&copy; {date.getFullYear()} </span>
+            <a
+              className="ordering-thanks__button-footer-link button button__link padding-small"
+              href="https://www.storehub.com/"
+              data-heap-name="ordering.thank-you.storehub-link"
+            >
+              {t('StoreHub')}
+            </a>
+          </footer>
         </React.Fragment>
       </section>
     );
