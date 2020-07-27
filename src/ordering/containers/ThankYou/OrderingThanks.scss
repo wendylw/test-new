@@ -1,5 +1,7 @@
 @import "../../../Variables.scss";
 
+$total-text-size: 1.7142rem;
+
 .ordering-thanks {
   height: 100vh;
   background-color: $gray-6;
@@ -17,6 +19,10 @@
     margin-left: auto;
     margin-right: auto;
     max-width: 60%;
+  }
+
+  &__page-title {
+    color: $gray-2;
   }
 
   &__accepted &__title-dots,
@@ -64,6 +70,11 @@
     letter-spacing: 1.25px;
   }
 
+  &__pickup-number {
+    display: block;
+    color: $gray-2;
+  }
+
   &__card-prompt {
     position: relative;
     overflow: visible;
@@ -91,180 +102,21 @@
     color: $gray-2;
   }
 
+  &__total {
+    font-size: $total-text-size;
+  }
+
+  &__button-card-link {
+    border-top: 1px solid $gray-4;
+    color: $status-blue;
+    border-radius: 0;
+  }
+
   &__footer {
     bottom: 0;
   }
-}
 
-.thanks {
-  &__title {
-    margin: 4vw 0;
-    font-size: 2.4rem;
-    color: $gray-2;
-  }
-
-  &__prompt {
-    margin: auto;
-    max-width: 74%;
-    font-size: 1.1rem;
-    line-height: 1.5rem;
-  }
-
-  &__text {
-    font-size: 1.2rem;
-  }
-
-  &__text ~ &__text {
-    margin-left: 10px;
-  }
-
-  &__info-container {
-    margin: 4vw 0;
-
-    > * ~ * {
-      border-top: 1px solid $gray-4;
-    }
-  }
-
-  &__pickup {
-    margin-bottom: 16px;
-  }
-
-  &__pickup-time {
-    margin: 8px 0;
-    font-size: 1.2rem;
-  }
-
-  &__delivery-status-container {
-    padding: 2.4vw;
-    margin-top: 16px;
-  }
-
-  &__delivery-status-list {
-    padding: 0 1vw;
-  }
-
-  &__delivery-status-item {
-    position: relative;
-    padding-bottom: 30px;
-    padding-left: 16px;
-
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      display: block;
-      margin: 6px 0;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: $gray-4;
-    }
-
-    &.active::before {
-      background-color: $theme-color;
-    }
-
-    &.error::before {
-      background-color: $status-red;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 24%;
-      left: 3px;
-      display: block;
-      width: 1px;
-      height: 74%;
-      background-color: $gray-4;
-    }
-
-    &.finished::after {
-      background-color: $theme-color;
-    }
-
-    .access-time-icon {
-      display: inline-block;
-      font-size: 0;
-
-      svg {
-        fill: $theme-color;
-        width: 20px;
-        height: 20px;
-      }
-    }
-
-    &.error .access-time-icon {
-      svg {
-        fill: $status-red;
-      }
-    }
-
-    time {
-      margin-left: 6px;
-    }
-  }
-
-  &__delivery-status-item:last-child {
-    padding-bottom: 10px;
-    border-left: 0;
-
-    &::after {
-      content: none;
-    }
-  }
-
-  &__delivery-status-time {
-    margin: 10px 0;
-  }
-
-  &__delivery-status-label {
-    font-size: 1.2rem;
-  }
-
-  &__address-details,
-  &__address-pin {
-    padding: 12px 0;
-  }
-
-  &__link {
-    padding: 2.4vh 0;
-  }
-
-  &__phone-view,
-  &__receipt-info {
-    position: relative;
-    padding: 4vw;
-  }
-
-  &__receipt-title,
-  &__receipt-label,
-  &__receipt-number {
-    line-height: 1.5em;
-  }
-}
-
-.thanks-pickup {
-  &__id-container {
-    // @extend .border-radius-base;
-    background-color: #fafafa;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
-    margin-top: 23px;
-
-    padding: 4vw;
-
-    label {
-      display: block;
-      padding: 8px 0;
-      font-size: 1.2857rem;
-      color: $main-color;
-    }
-  }
-
-  &__id-number {
-    display: block;
-    font-size: 2.1428rem;
-    color: $gray-2;
+  &__button-footer-link {
+    color: $status-blue;
   }
 }

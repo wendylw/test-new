@@ -212,10 +212,15 @@ export class ThankYou extends PureComponent {
     }
 
     return (
-      <div className="thanks-pickup">
-        <div className="thanks-pickup__id-container">
-          <label className="text-uppercase text-weight-bolder">{t('OrderNumber')}</label>
-          <span className="thanks-pickup__id-number text-weight-bolder" data-testid="thanks__pickup-number">
+      <div className="">
+        <div className="card text-center padding-small">
+          <label className="text-size-big padding-top-bottom-smallest text-uppercase text-weight-bolder">
+            {t('OrderNumber')}
+          </label>
+          <span
+            className="ordering-thanks__pickup-number margin-top-bottom-smallest text-size-huge text-weight-bolder"
+            data-testid="thanks__pickup-number"
+          >
             {pickUpId}
           </span>
         </div>
@@ -238,11 +243,13 @@ export class ThankYou extends PureComponent {
 
     if (this.state.needReceipt === 'detail') {
       return (
-        <div className="thanks__receipt-info">
-          <h4 className="thanks__receipt-title text-weight-bolder">{t('PingStaffTitle')}</h4>
-          <div>
-            <label className="thanks__receipt-label">{t('ReceiptNumber')}: </label>
-            <span className="thanks__receipt-number text-weight-bolder">{orderId}</span>
+        <div className="padding-small">
+          <h4 className="padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder">
+            {t('PingStaffTitle')}
+          </h4>
+          <div className="padding-left-right-small">
+            <label>{t('ReceiptNumber')}: </label>
+            <span className="margin-left-right-smallest text-weight-bolder">{orderId}</span>
           </div>
         </div>
       );
@@ -250,7 +257,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <button
-        className="thanks__link link text-weight-bolder text-uppercase button__block"
+        className="ordering-thanks__button-card-link button button__block text-weight-bolder text-uppercase"
         onClick={this.handleClickViewReceipt}
         data-testid="thanks__view-receipt"
         data-heap-name="ordering.thank-you.view-receipt-btn"
@@ -262,9 +269,10 @@ export class ThankYou extends PureComponent {
 
   renderViewDetail() {
     const { t } = this.props;
+
     return (
       <button
-        className="thanks__link link text-weight-bolder text-uppercase button__block"
+        className="ordering-thanks__button-card-link button button__block text-weight-bolder text-uppercase"
         onClick={this.handleClickViewDetail}
         data-testid="thanks__view-receipt"
         data-heap-name="ordering.thank-you.view-detail-btn"
@@ -481,7 +489,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <div className="padding-small">
-        <div className="flex flex-middle flex-space-between">
+        <div className="padding-left-right-small flex flex-middle flex-space-between">
           <label className="margin-top-bottom-smaller text-size-big text-weight-bolder">{name}</label>
           {isPickUpType && !isPreOrder ? (
             <div className="margin-top-bottom-smaller">
@@ -492,33 +500,38 @@ export class ThankYou extends PureComponent {
         </div>
 
         {isPickUpType && isPreOrder ? (
-          <div className="thanks__pickup margin-bottom-zero ">
+          <div className="padding-left-right-small">
             <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
-              <span className="ordering-thanks__time padding-left-right-small text-weight-bolder text-line-height-base">
+              <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
                 {pickupTime}
               </span>
             </p>
           </div>
         ) : null}
 
-        {isDeliveryType ? <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('DeliveringTo')}</h4> : null}
-
-        {isPickUpType && isPreOrder ? (
-          <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('PickupAt')}</h4>
+        {isDeliveryType ? (
+          <h4 className="padding-left-right-small margin-top-bottom-smaller text-weight-bolder">{t('DeliveringTo')}</h4>
         ) : null}
 
-        <p className="flex flex-top padding-top-bottom-small">
+        {isPickUpType && isPreOrder ? (
+          <h4 className="padding-left-right-small margin-top-bottom-smaller text-weight-bolder">{t('PickupAt')}</h4>
+        ) : null}
+
+        <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
           <IconPin className="icon icon__small icon__primary" />
-          <span className="ordering-thanks__address padding-left-right-small text-line-height-base">
+          <span className="ordering-thanks__address padding-top-bottom-smaller padding-left-right-small text-line-height-base">
             {isPickUpType ? storeAddress : deliveryAddress}
           </span>
         </p>
 
-        <div className="thanks__total-container text-center">
-          <span className="thanks__total-text">{t('Total')}</span>
-          <CurrencyNumber className="thanks__total-text text-weight-bolder" money={total || 0} />
+        <div className="padding-normal text-center">
+          <span className="margin-left-right-smallest ordering-thanks__total">{t('Total')}</span>
+          <CurrencyNumber
+            className="ordering-thanks__total margin-left-right-smallest text-weight-bolder"
+            money={total || 0}
+          />
         </div>
       </div>
     );
@@ -643,7 +656,7 @@ export class ThankYou extends PureComponent {
       <React.Fragment>
         {this.isNowPaidPreOrder() ? (
           <img
-            className="ordering-thanks__image"
+            className="ordering-thanks__image padding-normal"
             src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
             alt="Beep Success"
           />
@@ -740,14 +753,18 @@ export class ThankYou extends PureComponent {
               this.renderDeliveryImageAndTimeLine()
             ) : (
               <img
-                className="ordering-thanks__image"
+                className="ordering-thanks__image padding-normal"
                 src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
                 alt="Beep Success"
               />
             )}
-            {isDeliveryType ? null : <h2 className="thanks__title text-weight-light">{t('ThankYou')}!</h2>}
             {isDeliveryType ? null : (
-              <p className="thanks__prompt">
+              <h2 className="ordering-thanks__page-title text-center padding-normal text-size-large text-weight-light">
+                {t('ThankYou')}!
+              </h2>
+            )}
+            {isDeliveryType ? null : (
+              <p className="padding-small margin-top-bottom-smaller text-center text-size-big">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
                   😋
@@ -770,7 +787,7 @@ export class ThankYou extends PureComponent {
               <li>
                 <span>&copy; {date.getFullYear()} </span>
                 <a
-                  className="button button__link"
+                  className="ordering-thanks__button-footer-link button button__link"
                   href="https://www.storehub.com/"
                   data-heap-name="ordering.thank-you.storehub-link"
                 >
