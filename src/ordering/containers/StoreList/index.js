@@ -62,7 +62,9 @@ class StoreList extends Component {
         },
       };
     }
-    await this.props.homeActions.loadCoreStores(address);
+    await this.props.homeActions.loadCoreStores(
+      this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
+    );
     // await this.props.appActions.fetchOnlineStoreInfo();
   }
 
