@@ -164,6 +164,8 @@ export class Home extends Component {
           } else {
             break;
           }
+          console.log('defaultTime', defaultTime);
+          debugger;
         }
         defaultTime = new Date(defaultTime);
         const currentTime = new Date(); //TODO 应该用商家本地时间
