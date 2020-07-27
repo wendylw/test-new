@@ -13,6 +13,7 @@
   }
 
   &__image {
+    display: block;
     margin-left: auto;
     margin-right: auto;
     max-width: 60%;
@@ -85,6 +86,11 @@
     max-width: 300px;
   }
 
+  &__address,
+  &__time {
+    color: $gray-2;
+  }
+
   &__footer {
     bottom: 0;
   }
@@ -95,10 +101,6 @@
     margin: 4vw 0;
     font-size: 2.4rem;
     color: $gray-2;
-  }
-
-  &__delivering-title {
-    margin-top: 20px;
   }
 
   &__prompt {
@@ -112,17 +114,8 @@
     font-size: 1.2rem;
   }
 
-  &__total-text {
-    margin: 0 5px;
-    font-size: 1.7142rem;
-  }
-
   &__text ~ &__text {
     margin-left: 10px;
-  }
-
-  &__total-container {
-    margin: 10px 0;
   }
 
   &__info-container {
@@ -131,14 +124,6 @@
     > * ~ * {
       border-top: 1px solid $gray-4;
     }
-  }
-
-  &__info-container-title {
-    margin-top: 24px;
-  }
-
-  &__info-container-title ~ &__info-container {
-    margin-top: 10px;
   }
 
   &__pickup {
@@ -245,26 +230,6 @@
 
   &__link {
     padding: 2.4vh 0;
-  }
-
-  &__pin-icon {
-    margin: 0 -4px;
-    fill: $theme-color;
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    ~ span {
-      padding-left: 20px;
-      line-height: 1.5em;
-      color: $gray-2;
-      word-break: break-word;
-      -webkit-hyphens: auto;
-      -ms-hyphens: auto;
-      hyphens: auto;
-    }
   }
 
   &__phone-view,

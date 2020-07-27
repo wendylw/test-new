@@ -482,34 +482,38 @@ export class ThankYou extends PureComponent {
     return (
       <div className="padding-small">
         <div className="flex flex-middle flex-space-between">
-          <label className="text-weight-bolder text-size-big">{name}</label>
+          <label className="margin-top-bottom-smaller text-size-big text-weight-bolder">{name}</label>
           {isPickUpType && !isPreOrder ? (
-            <div>
-              <span className="thanks__text">{t('Total')}</span>
-              <CurrencyNumber className="thanks__text text-weight-bolder" money={total || 0} />
+            <div className="margin-top-bottom-smaller">
+              <span className="margin-left-right-smaller text-size-bigger">{t('Total')}</span>
+              <CurrencyNumber className="text-size-bigger text-weight-bolder" money={total || 0} />
             </div>
           ) : null}
         </div>
 
         {isPickUpType && isPreOrder ? (
           <div className="thanks__pickup margin-bottom-zero ">
-            <h4 className="thanks__delivering-title text-weight-bolder">{t('PickUpOn')}</h4>
-            <p className="thanks__address-pin flex flex-middle">
+            <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('PickUpOn')}</h4>
+            <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
-              <span>{pickupTime}</span>
+              <span className="ordering-thanks__time padding-left-right-small text-weight-bolder text-line-height-base">
+                {pickupTime}
+              </span>
             </p>
           </div>
         ) : null}
 
-        {isDeliveryType ? <h4 className="thanks__delivering-title text-weight-bolder">{t('DeliveringTo')}</h4> : null}
+        {isDeliveryType ? <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('DeliveringTo')}</h4> : null}
 
         {isPickUpType && isPreOrder ? (
-          <h4 className="thanks__delivering-title text-weight-bolder margin-top-zero">{t('PickupAt')}</h4>
+          <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('PickupAt')}</h4>
         ) : null}
 
-        <p className="thanks__address-pin flex flex-middle">
+        <p className="flex flex-top padding-top-bottom-small">
           <IconPin className="icon icon__small icon__primary" />
-          <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
+          <span className="ordering-thanks__address padding-left-right-small text-line-height-base">
+            {isPickUpType ? storeAddress : deliveryAddress}
+          </span>
         </p>
 
         <div className="thanks__total-container text-center">
@@ -667,7 +671,7 @@ export class ThankYou extends PureComponent {
     if (isPreOrder && isDeliveryType) return null;
     const { t } = this.props;
     return (
-      <h4 className="thanks__info-container-title text-uppercase text-weight-bolder text-left text-size-big">
+      <h4 className="margin-top-bottom-smaller text-uppercase text-weight-bolder text-size-big">
         {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
       </h4>
     );
