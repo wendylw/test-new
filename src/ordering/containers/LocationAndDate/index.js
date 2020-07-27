@@ -506,7 +506,7 @@ class LocationAndDate extends Component {
 
     if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-        callbackUrl.split('?')[0]
+        this.state.search.callbackUrl.split('?')[0]
       }?${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
       // window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
     } else if (this.state.search.h) {
