@@ -151,6 +151,7 @@ export class Home extends Component {
         if (!validDays.length) {
           return;
         }
+
         while (true) {
           defaultTime = defaultTime.getTime();
           if (breakTimeFrom && breakTimeTo) {
@@ -163,7 +164,9 @@ export class Home extends Component {
           }
           defaultTime = new Date(defaultTime);
           if (validDays.indexOf(defaultTime.getDay()) === -1) {
-            defaultTime = new Date(defaultTime + 24 * 60 * 60 * 1000);
+            defaultTime = defaultTime + 24 * 60 * 60 * 1000;
+            console.log(defaultTime, 'defaultTime');
+            defaultTime = new Date(defaultTime);
           } else {
             break;
           }
