@@ -81,6 +81,10 @@ address {
   text-transform: uppercase;
 }
 
+.text-lowercase {
+  text-transform: lowercase;
+}
+
 .text-capitalize {
   text-transform: capitalize;
 }
@@ -119,6 +123,10 @@ address {
 
 .text-left {
   text-align: left;
+}
+
+.text-right {
+  text-align: right;
 }
 
 .text-middle {
@@ -734,50 +742,6 @@ img {
   &__error-message {
     display: inline-block;
     color: $status-red;
-  }
-}
-
-.radio {
-  position: relative;
-
-  &__check-icon {
-    position: relative;
-    display: block;
-    padding: 0;
-    border: 3px solid $gray-4;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-
-    &::before {
-      content: "";
-      position: absolute;
-      display: block;
-      border: 2px solid $white;
-      width: 14px;
-      height: 14px;
-      background-color: transparent;
-      border-radius: 50%;
-    }
-  }
-
-  input[type="radio"] {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-  }
-
-  &.active &__check-icon {
-    border-color: $theme-color;
-    background-color: $theme-color;
-
-    &::before,
-    &::after {
-      opacity: 1;
-    }
   }
 }
 

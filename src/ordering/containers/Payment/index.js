@@ -27,6 +27,7 @@ import { getPaymentName, getSupportCreditCardBrands } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import Radio from '../../../components/Radio';
 import './OrderingPayment.scss';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -212,14 +213,7 @@ class Payment extends Component {
                       {disabledPayment ? promptDom : null}
                     </div>
                   </div>
-                  <i
-                    className={`radio padding-small flex__shrink-fixed ${
-                      currentPayment === payment.label ? 'active' : ''
-                    }`}
-                  >
-                    <span className="radio__check-icon"></span>
-                    <input type="radio"></input>
-                  </i>
+                  <Radio checked={currentPayment === payment.label} />
                 </li>
               );
             })}
