@@ -9,6 +9,7 @@ import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import StoreList from '../home/components/StoreList';
 import JumpMenu from '../home/components/JumpMenu';
+import EmptySearch from './components/EmptySearch';
 import MvpNotFoundImage from '../../images/mvp-no-search.svg';
 import MvpStartSearchImage from '../../images/mvp-start-search.svg';
 import {
@@ -25,6 +26,15 @@ import { rootActionCreators } from '../redux/modules';
 import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
+import {
+  collectionCardActionCreators,
+  getOtherCollections,
+  getPopupCollections,
+  getStorePageInfo,
+} from '../redux/modules/entities/storeCollections';
+import constants from '../../utils/constants';
+
+const { COLLECTIONS_TYPE } = constants;
 
 class SearchPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -32,9 +42,16 @@ class SearchPage extends React.Component {
   sectionRef = React.createRef();
 
   componentDidMount = async () => {
+    const { otherCollections, popularCollections } = this.props;
     if (!checkStateRestoreStatus()) {
       this.props.searchActions.setShippingType('delivery');
       this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
+      if (otherCollections.length === 0) {
+        this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+      }
+      if (popularCollections.length === 0) {
+        this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+      }
     }
   };
 
@@ -82,17 +99,54 @@ class SearchPage extends React.Component {
     });
   };
 
+  handleLoadCollections = () => {
+    return this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+  };
+
   renderStoreList() {
-    const { t, stores, pageInfo, storeLinkInfo, searchInfo, currentPlaceInfo, loadedSearchingStores } = this.props;
+    const {
+      t,
+      stores,
+      pageInfo,
+      storeLinkInfo,
+      searchInfo,
+      currentPlaceInfo,
+      loadedSearchingStores,
+      storePageInfo,
+      popularCollections,
+      otherCollections,
+      shippingType,
+    } = this.props;
     const { keyword, scrollTop } = searchInfo;
 
     if (Boolean(keyword) && !loadedSearchingStores) {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
 
+    const existCollection = popularCollections.length > 0 || otherCollections.length > 0;
     return (
       <React.Fragment>
-        {!keyword && (
+        {(!existCollection || keyword) && (
+          <SwitchPanel shippingType={shippingType} handleSwitchTab={this.handleSwitchTab} />
+        )}
+        {!keyword && existCollection && (
+          <div>
+            <StoreListAutoScroll
+              getScrollParent={() => this.sectionRef.current}
+              defaultScrollTop={scrollTop}
+              onScroll={scrollTop => (this.scrollTop = scrollTop)}
+            >
+              <EmptySearch
+                populars={popularCollections}
+                others={otherCollections}
+                hasMore={storePageInfo.hasMore}
+                getScrollParent={() => this.sectionRef.current}
+                loadCollections={this.handleLoadCollections}
+              />
+            </StoreListAutoScroll>
+          </div>
+        )}
+        {!keyword && !existCollection && (
           <div className="text-center padding-top-bottom-normal">
             <img className="entry-home__hero-image" src={MvpStartSearchImage} alt="start search store" />
             <p className="entry-home__prompt-text text-size-big text-opacity">{t('StartSearchDescription')}</p>
@@ -131,7 +185,7 @@ class SearchPage extends React.Component {
   }
 
   render() {
-    const { shippingType, searchInfo } = this.props;
+    const { searchInfo } = this.props;
     const { keyword } = searchInfo;
     return (
       <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
@@ -149,7 +203,6 @@ class SearchPage extends React.Component {
             handleClearSearchText={this.handleClearSearchText}
           />
         </header>
-        <SwitchPanel shippingType={shippingType} handleSwitchTab={this.handleSwitchTab} />
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           {this.renderStoreList()}
         </section>
@@ -170,12 +223,16 @@ export default compose(
       storeLinkInfo: getStoreLinkInfo(state),
       currentPlaceInfo: getCurrentPlaceInfo(state),
       loadedSearchingStores: loadedSearchingStores(state),
+      storePageInfo: getStorePageInfo(state),
+      otherCollections: getOtherCollections(state),
+      popularCollections: getPopupCollections(state),
     }),
     dispatch => ({
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       searchActions: bindActionCreators(searchActions, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
     })
   )
 )(SearchPage);
