@@ -1,18 +1,22 @@
 import React, { Component, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import { IconNext } from '../../../components/Icons';
+import { IconNext, IconSearch } from '../../../components/Icons';
 
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
-
-const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE } = Constants;
+import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
+import { actions as appActionCreators } from '../../redux/modules/app';
+import qs from 'qs';
+import config from '../../../config';
+const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
 
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -29,7 +33,7 @@ const closestValidTime = (baseTime, timeGap = 0, timeUnit = 'm') => {
 
 // Accepts time format like 10:00, 10, and 10:40
 const getHourAndMinuteFromString = time => {
-  if (!time) return;
+  if (!time) return {};
   if (typeof time === 'number') return { hour: time };
   const hour = parseInt(time.split(':')[0], 10);
   const minute = parseInt(time.split(':')[1] || 0, 10);
@@ -64,6 +68,12 @@ class LocationAndDate extends Component {
     deliveryToAddress: '',
     selectedDate: {},
     selectedHour: {},
+    h: Utils.getQueryVariable('h'),
+    isDeliveryType: false,
+    isPickUpType: false,
+    nearlyStore: { name: '' },
+    search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+    onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -87,6 +97,228 @@ class LocationAndDate extends Component {
     this.setState({
       deliveryToAddress,
     });
+    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
+
+    if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
+      this.setDeliveryType();
+    } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
+      this.setPickUpType(false);
+    }
+  };
+
+  setDeliveryType = () => {
+    this.setState(
+      {
+        isDeliveryType: true,
+        isPickUpType: false,
+      },
+      async () => {
+        if (this.state.nearlyStore.id) {
+          let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+          let isSupport = false;
+          this.state.nearlyStore.fulfillmentOptions.forEach(item => {
+            if (item.toLowerCase() === type) isSupport = true;
+          });
+
+          if (!isSupport) {
+            await this.reSetStore();
+          }
+        }
+        this.setMethodsTime();
+      }
+    );
+  };
+
+  reSetStore = async () => {
+    await this.props.homeActions.loadCoreStores();
+    const { allStore } = this.props;
+
+    if (Utils.getSessionVariable('deliveryAddress')) {
+      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+      if (allStore.length) {
+        let stores = allStore;
+        let type = Constants.DELIVERY_METHOD.DELIVERY;
+        const { nearly, h } = await this.findNearyStore(stores, type);
+
+        this.setState({
+          h,
+          nearlyStore: nearly,
+        });
+      }
+    }
+  };
+
+  setPickUpType = (ischeckStore = true) => {
+    this.setState(
+      {
+        isPickUpType: true,
+        isDeliveryType: false,
+      },
+      () => {
+        if (this.state.nearlyStore.id && ischeckStore) {
+          let type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+          let isSupport = false;
+          this.state.nearlyStore.fulfillmentOptions.forEach(item => {
+            if (item.toLowerCase() === type) isSupport = true;
+          });
+
+          if (!isSupport) {
+            this.goStoreList();
+          }
+        } else {
+          if (!this.state.nearlyStore.id && ischeckStore) this.goStoreList();
+        }
+        this.setMethodsTime();
+      }
+    );
+  };
+
+  setMethodsTime = () => {
+    const { business, allBusinessInfo } = this.props;
+    const { validDays, validTimeFrom, validTimeTo } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    // Calculate rendering time data when everything is ready
+    if (validDays && validDays.length && typeof validTimeFrom === 'string' && typeof validTimeTo === 'string') {
+      // IST saved Sunday as 1, Monday as two
+      // Transfer sunday to 0, Monday to 1
+      this.initialValidDays = validDays;
+      this.validDays = Array.from(validDays, v => v - 1);
+      this.validTimeFrom = validTimeFrom;
+      this.validTimeTo = validTimeTo;
+      this.getValidTimeToOrder(validTimeFrom, validTimeTo);
+      this.setDeliveryDays(this.validDays);
+    }
+  };
+
+  setStoreFromSelect = async () => {
+    if (this.state.search.storeid) {
+      if (!this.props.allStore.length) {
+        await this.props.homeActions.loadCoreStores();
+      }
+      let store = this.props.allStore.filter(item => item.id === this.state.search.storeid);
+
+      this.setState({
+        nearlyStore: store[0],
+      });
+      await Promise.all([
+        this.props.appActions.loadCoreBusiness(this.state.search.storeid),
+        this.props.homeActions.getStoreHashData(this.state.search.storeid),
+      ]);
+
+      this.setMethodsTime();
+
+      this.setState({
+        h: this.props.storeHash,
+      });
+    }
+  };
+
+  checkOnlyType = (stores, type) => {
+    let isOnlyType = true,
+      onlyType;
+    for (let store of stores) {
+      if (store.fulfillmentOptions.length > 1) {
+        isOnlyType = false;
+        break;
+      }
+    }
+
+    if (isOnlyType) {
+      onlyType = stores[0].fulfillmentOptions[0].toLowerCase();
+      for (let store of stores) {
+        if (store.fulfillmentOptions[0].toLowerCase() !== onlyType) {
+          isOnlyType = false;
+          break;
+        }
+      }
+    }
+
+    if (isOnlyType) {
+      type = onlyType;
+      Utils.setLocalStorageVariable('ONLYTYPE', type);
+      if (type === DELIVERY_METHOD.DELIVERY) {
+        this.setDeliveryType();
+      } else if (type === DELIVERY_METHOD.PICKUP) {
+        this.setPickUpType(false);
+      }
+    } else {
+      Utils.removeLocalStorageVariable('ONLYTYPE');
+      this.setState({
+        onlyType: false,
+      });
+    }
+
+    return type;
+  };
+
+  findNearyStore = async (stores, type) => {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+
+    stores.forEach((item, idx, arr) => {
+      if (item.location) {
+        item.distance = computeStraightDistance(deliveryAddress.coords, {
+          lat: item.location.latitude,
+          lng: item.location.longitude,
+        });
+      }
+    });
+    stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+    stores = stores.filter(item => {
+      const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
+
+      return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    });
+    stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+    let nearly;
+    stores.forEach(item => {
+      if (!nearly) {
+        nearly = item;
+      } else {
+        item.distance < nearly.distance && (nearly = item);
+      }
+    });
+    if (!nearly) {
+      return { nearly: {} };
+    }
+    let result = await this.props.homeActions.getStoreHashData(nearly.id);
+    const h = result.response.redirectTo;
+    return {
+      nearly,
+      h,
+    };
+  };
+
+  setStore = async () => {
+    await this.props.homeActions.loadCoreStores();
+    const { allStore } = this.props;
+
+    this.checkOnlyType(allStore);
+    if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
+      if (allStore.length) {
+        let stores = allStore;
+        let { type } = this.state.search;
+        const { nearly, h } = await this.findNearyStore(stores, type);
+        this.setState(
+          {
+            h,
+            nearlyStore: nearly,
+          },
+          async () => {
+            await this.props.appActions.loadCoreBusiness(nearly.id);
+            this.setMethodsTime();
+          }
+        );
+        // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
+      }
+    } else if (config.storeId) {
+      let store = this.props.allStore.filter(item => item.id === config.storeId);
+      this.setState({
+        nearlyStore: store[0],
+      });
+    } else if (this.state.search.type === DELIVERY_METHOD.PICKUP) {
+      this.goStoreList();
+    }
   };
 
   // Create time with time string like '01:20', 01 is hour and 20 is minute
@@ -121,11 +353,10 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
-    const limit = useStorehubLogistics && Utils.isDeliveryType();
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(validTimeFrom);
     this.validTimeTo = validTimeTo;
 
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       // Calculate valid delivery time range
       this.validPreOrderTimeFrom = startMinute ? startHour + 2 : startHour + 1;
 
@@ -134,7 +365,7 @@ class LocationAndDate extends Component {
       }
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       const tempStartBaseTime = createTimeWithTimeString(validTimeFrom);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
@@ -162,12 +393,6 @@ class LocationAndDate extends Component {
         this.getValidTimeToOrder(validTimeFrom, validTimeTo);
         this.setDeliveryDays(this.validDays);
       }
-
-      if (business && allBusinessInfo && allBusinessInfo[business]) {
-        const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-
-        if (!enablePreOrder) window.location.href = '/';
-      }
     }
   };
 
@@ -182,7 +407,7 @@ class LocationAndDate extends Component {
     if (deliveryDates[0].isToday) {
       const list = this.getHoursList(deliveryDates[0]);
       if (list.length) {
-        if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder) {
+        if (list[0].from === 'now' && list.length === 1 && disableOnDemandOrder && enablePreOrder) {
           this.deliveryDates.shift();
         }
         if (list[0].from !== 'now' && disableTodayPreOrder) {
@@ -198,6 +423,14 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
+    let { date: initDate } = initialSelectedTime;
+    initDate = Utils.getDateNumber(initDate.date);
+    let currentDate = Utils.getDateNumber(new Date());
+    if (initDate < currentDate) {
+      Utils.removeSessionVariable('expectedDeliveryDate');
+      Utils.removeSessionVariable('expectedDeliveryHour');
+      this.setMethodsTime();
+    }
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
@@ -210,7 +443,8 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
-    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
+    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder, enablePreOrder } =
+      qrOrderingSettings || {};
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
       const weekday = (currentTime.getDay() + i) % 7;
@@ -224,20 +458,22 @@ class LocationAndDate extends Component {
         const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
         isOpen = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isOpen) continue;
+      } else {
+        !enablePreOrder && (isOpen = false);
       }
 
-      if (useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
+      if (useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
         const isBeforeStoreClose = isNoLaterThan(
           currentTime,
           this.createTimeWithTimeString(storehubLogisticsBusinessHours[1])
         );
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
-
         if (!isBeforeStoreClose && !i) continue;
       }
-
-      if (disableTodayPreOrder && disableOnDemandOrder && !i) {
-        continue;
+      if (enablePreOrder) {
+        if (disableTodayPreOrder && disableOnDemandOrder && !i) {
+          continue;
+        }
       }
 
       deliveryDates.push({
@@ -253,13 +489,12 @@ class LocationAndDate extends Component {
     const { history, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     let { search } = window.location;
+    search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
+    search = search.replace(/&?storeid=[^&]*/, '');
 
-    const callbackUrl = encodeURIComponent(
-      `${enablePreOrder ? ROUTER_PATHS.ORDERING_LOCATION_AND_DATE : ROUTER_PATHS.ORDERING_LOCATION}${search}`
-    );
+    const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}${search}`);
     // next page don't need current page's callbackUrl.
     search = search.replace(/&?callbackUrl=[^&]*/, '');
-
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
       search: `${search}&callbackUrl=${callbackUrl}`,
@@ -268,7 +503,14 @@ class LocationAndDate extends Component {
 
   handleBackClicked = () => {
     const { history } = this.props;
-    history.go(-1);
+
+    if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
+      window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
+    } else if (this.state.search.h) {
+      history.replace(this.state.search.callbackUrl);
+    } else {
+      history.go(-1);
+    }
   };
 
   getFirstItemFromTimeList = date => {
@@ -311,37 +553,46 @@ class LocationAndDate extends Component {
   getLocationDisplayTitle = () => {
     const { t } = this.props;
 
-    return Utils.isDeliveryType() ? t('DeliveryDetails') : t('PickUpDetails');
+    return this.state.isDeliveryType ? t('DeliveryDetails') : t('PickUpDetails');
   };
 
   renderDeliveryTo = () => {
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       const { deliveryToAddress } = this.state;
       const { t } = this.props;
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('DeliverTo')}</label>
+          <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
+            {t('DeliverTo')}
+          </label>
           <div
             className="location-page__search-box"
             onClick={this.showLocationSearch}
             data-heap-name="ordering.location-and-date.deliver-to"
           >
             <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
+              {!deliveryToAddress && (
+                <IconSearch
+                  className="location-picker__search-box-magnifier-icon delivery__next-icon delivery_search"
+                  style={{ display: 'flex', paddingRight: 0 }}
+                />
+              )}
               <input
                 className="input input__block"
                 data-testid="deliverTo"
                 type="text"
                 defaultValue={deliveryToAddress}
                 readOnly
+                placeholder={this.props.t('Where to deliver your food')}
               />
-              <IconNext className="delivery__next-icon" />
+              {deliveryToAddress && <IconNext className="delivery__next-icon" />}
             </div>
           </div>
         </div>
       );
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       const { t, business, allBusinessInfo = {} } = this.props;
       const businessInfo = allBusinessInfo[business] || {};
       const { stores = [] } = businessInfo;
@@ -351,7 +602,9 @@ class LocationAndDate extends Component {
       const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
         <div className="form__group">
-          <label className="form__label font-weight-bold">{t('PickupAt')}</label>
+          <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
+            {t('PickupAt')}
+          </label>
           <div className="form__textarea">{pickUpAddress}</div>
         </div>
       );
@@ -363,9 +616,9 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     return (
       <div className="form__group">
-        <label className="form__label font-weight-bold">
-          {Utils.isDeliveryType() && t('DeliverOn')}
-          {Utils.isPickUpType() && t('PickUpOn')}
+        <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
+          {this.state.isDeliveryType && t('DeliverOn')}
+          {this.state.isPickUpType && t('PickUpOn')}
         </label>
         <ul className="flex flex-middle flex-space-between location-display__date">
           {this.deliveryDates.map(deliverableTime => {
@@ -391,7 +644,7 @@ class LocationAndDate extends Component {
                   <span className="text-uppercase">{t('Today')}</span>
                 ) : (
                   <Fragment>
-                    <span>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
+                    <span style={{ fontWeight: '600' }}>{t(WEEK_DAYS_I18N_KEYS[weekday])}</span>
                     <span>{date}</span>
                   </Fragment>
                 )}
@@ -403,6 +656,10 @@ class LocationAndDate extends Component {
     );
   };
 
+  isDisplayImmediate = (disableOnDemandOrder, enablePreOrder) => {
+    return !enablePreOrder || !disableOnDemandOrder;
+  };
+
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
@@ -411,10 +668,10 @@ class LocationAndDate extends Component {
     const country = this.getBusinessCountry();
 
     const { qrOrderingSettings } = allBusinessInfo[business];
-    const { disableOnDemandOrder, disableTodayPreOrder } = qrOrderingSettings;
+    const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
-        return !disableOnDemandOrder ? (
+        return this.isDisplayImmediate(disableOnDemandOrder, enablePreOrder) ? (
           <li
             className={`location-display__hour-item text-center ${
               selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected' : ''
@@ -425,6 +682,7 @@ class LocationAndDate extends Component {
             onClick={() => {
               this.handleSelectHour({ ...item });
             }}
+            style={{ fontWeight: '600' }}
             key="deliveryOnDemandOrder"
           >
             {t('Immediate')}
@@ -434,11 +692,11 @@ class LocationAndDate extends Component {
 
       let timeToDisplay;
 
-      if (Utils.isDeliveryType()) {
+      if (this.state.isDeliveryType) {
         timeToDisplay = `${toNumericTime(new Date(item.from), country)} - ${toNumericTime(new Date(item.to), country)}`;
       }
 
-      if (Utils.isPickUpType()) {
+      if (this.state.isPickUpType) {
         timeToDisplay = `${toNumericTime(new Date(item.from), country)}`;
       }
 
@@ -446,13 +704,16 @@ class LocationAndDate extends Component {
       const from = getHourAndMinuteFromTime(item.from);
       const to = item.to && getHourAndMinuteFromTime(item.to);
       let isShowList = true;
-      if (this.state.selectedDate.isToday) {
-        if (disableTodayPreOrder) {
-          isShowList = false;
-        } else {
-          isShowList = true;
+      if (enablePreOrder) {
+        if (this.state.selectedDate.isToday) {
+          if (disableTodayPreOrder) {
+            isShowList = false;
+          }
         }
+      } else {
+        isShowList = false;
       }
+
       return (
         isShowList && (
           <li
@@ -461,6 +722,7 @@ class LocationAndDate extends Component {
             onClick={() => {
               this.handleSelectHour({ from, to });
             }}
+            style={{ fontWeight: '600' }}
             key={`${from} - ${to}`}
           >
             {timeToDisplay}
@@ -474,11 +736,11 @@ class LocationAndDate extends Component {
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(baseTimeString);
     let validStartingTime;
 
-    if (Utils.isDeliveryType()) {
+    if (this.state.isDeliveryType) {
       validStartingTime = `${startMinute ? startHour + 2 : startHour + 1} : 0`;
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       const tempStartBaseTime = createTimeWithTimeString(baseTimeString);
       const validStartBaseTime = closestValidTime(tempStartBaseTime, 30, 'm');
 
@@ -493,8 +755,8 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
-    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
-    const limit = useStorehubLogistics && Utils.isDeliveryType();
+    const { useStorehubLogistics } = qrOrderingSettings || {};
+    const limit = useStorehubLogistics && this.state.isDeliveryType;
     const currentTime = new Date();
     const storeOpenTime = createTimeWithTimeString(
       limit && this.validTimeFrom < storehubLogisticsBusinessHours[0]
@@ -528,7 +790,7 @@ class LocationAndDate extends Component {
       if (isAfterTime(storeCloseTime, createTimeWithTimeString(validStartingTimeString))) {
         return [PREORDER_IMMEDIATE_TAG];
       }
-      const timeUnitToCompare = Utils.isDeliveryType() ? ['h'] : ['h', 'm'];
+      const timeUnitToCompare = this.state.isDeliveryType ? ['h'] : ['h', 'm'];
       const startTimeInList = fullTimeList.findIndex(item =>
         isSameTime(item.from, createTimeWithTimeString(validStartingTimeString), timeUnitToCompare)
       );
@@ -558,19 +820,21 @@ class LocationAndDate extends Component {
     const { useStorehubLogistics } = qrOrderingSettings || {};
 
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(
-      useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[0] > this.validPreOrderTimeFrom
+      useStorehubLogistics &&
+        this.state.isDeliveryType &&
+        storehubLogisticsBusinessHours[0] > this.validPreOrderTimeFrom
         ? storehubLogisticsBusinessHours[0]
         : this.validPreOrderTimeFrom
     );
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(
-      useStorehubLogistics && Utils.isDeliveryType() && storehubLogisticsBusinessHours[1] < this.validTimeTo
+      useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo
         ? storehubLogisticsBusinessHours[1]
         : this.validTimeTo
     );
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0, 0);
     const endTime = new Date().setHours(endHour || 0, endMinute || 0, 0, 0);
     const timeIncrease = i =>
-      Utils.isDeliveryType() ? addTime(i, 1, 'h') : Utils.isPickUpType() ? addTime(i, 15, 'm') : 0;
+      this.state.isDeliveryType ? addTime(i, 1, 'h') : this.state.isPickUpType ? addTime(i, 15, 'm') : 0;
 
     const loopCheck = i => {
       // Assuming store closes at 10:00 pm
@@ -579,11 +843,11 @@ class LocationAndDate extends Component {
       // For delivery is { from: "21:00" , to: "22:00" }
       // For pickup is { from: "21:30" , to: "21:45" }
       // So for delivery should compare 'to' and for pickup should compare 'from'
-      if (Utils.isDeliveryType()) {
+      if (this.state.isDeliveryType) {
         return timeIncrease(i);
       }
 
-      if (Utils.isPickUpType()) {
+      if (this.state.isPickUpType) {
         return i;
       }
 
@@ -601,7 +865,7 @@ class LocationAndDate extends Component {
         from: i,
       };
 
-      if (Utils.isDeliveryType()) {
+      if (this.state.isDeliveryType) {
         timeItem.to = timeIncrease(i);
       }
       timeList.push(timeItem);
@@ -631,17 +895,26 @@ class LocationAndDate extends Component {
     }
 
     const timeList = this.getHoursList(selectedDate);
-    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
+    // const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    // const footerHeight = this.footerRef.current.clientHeight || this.footerRef.current.offsetHeight;
 
     return (
       <div className="form__group location-display__date-container">
-        {Utils.isDeliveryType() && <label className="form__label font-weight-bold">{t('DeliveryTime')}</label>}
-        {Utils.isPickUpType() && <label className="form__label font-weight-bold">{t('PickupTime')}</label>}
+        {this.state.isDeliveryType && (
+          <label className="form__label" style={{ fontWeight: '600' }}>
+            {t('DeliveryTime')}
+          </label>
+        )}
+        {this.state.isPickUpType && (
+          <label className="form__label" style={{ fontWeight: '600' }}>
+            {t('PickupTime')}
+          </label>
+        )}
         <ul
           ref={this.timeListRef}
-          className="location-display__hour"
-          style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
+          className=""
+          // style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
+          style={{ paddingBottom: '100px' }}
         >
           {this.renderHoursList(timeList)}
         </ul>
@@ -649,27 +922,56 @@ class LocationAndDate extends Component {
     );
   };
 
+  checkStoreStatus = (selectedHour, { enablePreOrder, disableOnDemandOrder, disableTodayPreOrder }, selectDate) => {
+    if (selectedHour.from === 'now') {
+      if (enablePreOrder) {
+        if (disableOnDemandOrder) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      if (enablePreOrder) {
+        if (selectDate.isToday) {
+          if (disableTodayPreOrder) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    }
+  };
+
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
     const { selectedHour = {} } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (!enablePreOrder || !selectedDate.isOpen) return true;
+    // if (!enablePreOrder || !selectedDate.isOpen) return true;
 
-    if (Utils.isDeliveryType()) {
+    if (!this.state.nearlyStore.id) return true;
+
+    if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
-        return false;
+        return this.checkStoreStatus(selectedHour, deliveryInfo, selectedDate.date);
       }
     }
 
-    if (Utils.isPickUpType()) {
+    if (this.state.isPickUpType) {
       if (selectedDate.date && selectedHour.from) {
-        return false;
+        return this.checkStoreStatus(selectedHour, deliveryInfo, selectedDate.date);
       }
     }
-
     return true;
   };
 
@@ -677,7 +979,7 @@ class LocationAndDate extends Component {
     const { history } = this.props;
     const { selectedDate, selectedHour } = this.state;
 
-    if (Utils.isPickUpType()) delete selectedHour.to;
+    if (this.state.isPickUpType) delete selectedHour.to;
 
     Utils.setExpectedDeliveryTime({
       date: selectedDate,
@@ -687,10 +989,74 @@ class LocationAndDate extends Component {
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
     if (typeof callbackUrl === 'string') {
-      history.push(callbackUrl);
+      if (callbackUrl.split('?')[0] === '/customer') {
+        // from customer
+        this.checkDetailChange(this.state.search);
+      } else {
+        // from ordering
+        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+          callbackUrl.split('?')[0]
+        }?${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+        // history.replace({
+        //   pathname: callbackUrl.split('?')[0],
+        //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
+        //     this.state.isPickUpType ? 'pickup' : 'delivery'
+        //   }`,
+        // });
+      }
     } else {
       history.go(-1);
     }
+  };
+
+  checkDetailChange = async search => {
+    const cachedeliveryAddress = Utils.getSessionVariable('cachedeliveryAddress');
+    const cacheexpectedDeliveryDate = Utils.getSessionVariable('cacheexpectedDeliveryDate');
+    const cacheexpectedDeliveryHour = Utils.getSessionVariable('cacheexpectedDeliveryHour');
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+
+    if (search.storeid && search.storeid !== config.storeId) {
+      let result = await this.props.homeActions.getStoreHashData(search.storeid);
+      const h = result.response.redirectTo;
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+        Constants.ROUTER_PATHS.ORDERING_CART
+      }?h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+      // this.props.history.replace({
+      //   pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      //   search: `h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
+      // });
+      return;
+    }
+    if (
+      cachedeliveryAddress !== deliveryAddress ||
+      cacheexpectedDeliveryDate !== expectedDeliveryDate ||
+      cacheexpectedDeliveryHour !== expectedDeliveryHour
+    ) {
+      Utils.removeSessionVariable('cachedeliveryAddress');
+      Utils.removeSessionVariable('cacheexpectedDeliveryDate');
+      Utils.removeSessionVariable('cacheexpectedDeliveryHour');
+
+      this.props.history.replace({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+        search: `h=${this.state.h}&type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }`,
+      });
+      return;
+    }
+    const type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+    if (type !== this.state.search.type.toLowerCase()) {
+      this.props.history.replace({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+        search: `h=${this.state.h}&type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }`,
+      });
+      return;
+    }
+    this.props.history.push(search.callbackUrl);
   };
 
   renderContinueButton = () => {
@@ -712,6 +1078,49 @@ class LocationAndDate extends Component {
     );
   };
 
+  goStoreList = () => {
+    if (this.state.search.storeid) {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+        search: `${this.state.search.h ? 'h=' + this.state.h + '&' : ''}storeid=${this.state.search.storeid}&type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+      });
+    } else {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+        search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}storeid=${this.state.nearlyStore.id}&type=${
+          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+      });
+    }
+  };
+  renderSelectStore = () => {
+    return (
+      <div
+        className="form__group"
+        onClick={this.goStoreList}
+        data-heap-name="ordering.location-and-date.selected-store"
+      >
+        <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
+          {this.props.t('Selected Store')}
+        </label>
+        <div className="location-page__search-box">
+          <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
+            <input
+              className="input input__block"
+              data-testid="deliverTo"
+              type="text"
+              value={this.state.nearlyStore.name}
+              readOnly
+            />
+            <IconNext className="delivery__next-icon" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   render() {
     return (
       <section className="table-ordering__location" data-heap-name="ordering.location-and-date.container">
@@ -722,10 +1131,43 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
+        {!this.state.onlyType && (
+          <div
+            style={{ margin: '30px 16px', height: '40px', boxShadow: '0px 1px 2px 1px #eee' }}
+            className="form__group flex flex-middle input-group outline border-radius-base"
+          >
+            <p
+              onClick={this.setDeliveryType}
+              style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
+              className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
+              data-heap-name="ordering.location-and-date.delivery"
+            >
+              {this.props.t('Delivery')}
+            </p>
+            <p
+              onClick={this.setPickUpType}
+              style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
+              className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
+              data-heap-name="ordering.location-and-date.pickup"
+            >
+              {this.props.t('Pickup')}
+            </p>
+          </div>
+        )}
         <div className="location-display__content">
+          {this.state.isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}
-          {this.renderDeliveryOn()}
-          {this.renderHourSelector()}
+          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderSelectStore() : null) : null}
+          {this.state.isDeliveryType
+            ? this.state.deliveryToAddress
+              ? this.renderDeliveryOn()
+              : null
+            : this.renderDeliveryOn()}
+          {this.state.isDeliveryType
+            ? this.state.deliveryToAddress
+              ? this.renderHourSelector()
+              : null
+            : this.renderHourSelector()}
         </div>
         {this.renderContinueButton()}
       </section>
@@ -739,7 +1181,12 @@ export default compose(
     state => ({
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
+      allStore: getStoresList(state),
+      storeHash: getStoreHashCode(state),
     }),
-    dispatch => ({})
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
   )
 )(LocationAndDate);
