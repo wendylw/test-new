@@ -148,7 +148,7 @@ export class Home extends Component {
         // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
 
         let defaultTime = new Date(); //TODO 应该用商家本地时间
-        while (true) {
+        for (let i = 0; i < 10; i++) {
           defaultTime = defaultTime.getTime();
           if (breakTimeFrom && breakTimeTo) {
             const breakTimeFromValue = new Date(breakTimeFrom).getTime();
