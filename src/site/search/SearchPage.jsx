@@ -100,7 +100,7 @@ class SearchPage extends React.Component {
   };
 
   handleLoadCollections = () => {
-    return this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+    return this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
   };
 
   renderStoreList() {
