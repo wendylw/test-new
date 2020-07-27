@@ -18,6 +18,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
+import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -245,7 +246,7 @@ class PhoneLogin extends React.Component {
       return (
         <BrowserRouter basename="/">
           <Link
-            className="button__fill link__non-underline link__block border-radius-base text-weight-bolder text-uppercase"
+            className="button button__block button__fill text-weight-bolder text-uppercase"
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             data-heap-name="ordering.thank-you.phone-login.check-balance-link"
             target="_blank"
@@ -258,7 +259,7 @@ class PhoneLogin extends React.Component {
 
     return (
       <button
-        className="button__fill button__block border-radius-base text-weight-bolder text-uppercase"
+        className="button button__block button__fill text-weight-bolder text-uppercase"
         data-heap-name="ordering.thank-you.phone-login.check-balance-btn"
         onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
       >
@@ -280,8 +281,8 @@ class PhoneLogin extends React.Component {
     }
 
     return (
-      <div className="thanks__phone-view" data-heap-name="ordering.thank-you.phone-login.container">
-        <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
+      <div className="phone-login padding-normal" data-heap-name="ordering.thank-you.phone-login.container">
+        <label className="text-size-big">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
 
         {/* <p className="terms-privacy text-center text-opacity">
@@ -300,7 +301,11 @@ class PhoneLogin extends React.Component {
             </BrowserRouter>
           </Trans>
         </p> */}
-        <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
+        <div
+          className={`ordering-thanks__card-prompt-congratulation absolute-wrapper ${
+            showCelebration && customerId ? 'active' : ''
+          }`}
+        >
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>

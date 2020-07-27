@@ -178,7 +178,7 @@ export class ThankYou extends PureComponent {
   renderCashbackUI = cashback => {
     const { t } = this.props;
     return (
-      <div className="ordering-thanks__card-prompt card text-center padding-small">
+      <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
         {this.state.cashbackSuccessImage && (
           <img
             src={this.state.cashbackSuccessImage}
@@ -201,6 +201,7 @@ export class ThankYou extends PureComponent {
       </div>
     );
   };
+
   renderPickupInfo() {
     const { t, order, businessInfo, cashbackInfo } = this.props;
     const { tableId, pickUpId } = order || {};
@@ -212,8 +213,8 @@ export class ThankYou extends PureComponent {
     }
 
     return (
-      <div className="">
-        <div className="card text-center padding-small">
+      <React.Fragment>
+        <div className="card text-center padding-small margin-normal">
           <label className="text-size-big padding-top-bottom-smallest text-uppercase text-weight-bolder">
             {t('OrderNumber')}
           </label>
@@ -225,7 +226,7 @@ export class ThankYou extends PureComponent {
           </span>
         </div>
         {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
-      </div>
+      </React.Fragment>
     );
   }
 
@@ -388,8 +389,12 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        <img className="ordering-thanks__image padding-normal" src={currentStatusObj.bannerImage} alt="Beep Success" />
-        <div className="card text-center">
+        <img
+          className="ordering-thanks__image padding-normal margin-normal"
+          src={currentStatusObj.bannerImage}
+          alt="Beep Success"
+        />
+        <div className="card text-center margin-normal">
           {currentStatusObj.status !== 'cancelled' ? (
             <div className="progress-bar__container">
               <i
@@ -550,18 +555,20 @@ export class ThankYou extends PureComponent {
     const { address } = deliveryInformation.address;
 
     return (
-      <div className="thanks__delivery-info text-left">
-        <div className="flex flex-middle flex-space-between">
-          <label className="thanks__text text-weight-bolder">{t('ThanksForOrderingWithUs')}</label>
-        </div>
-        <p className="thanks__address-details text-opacity">
+      <div className="padding-small">
+        <h4 className="padding-left-right-small margin-top-bottom-smaller text-weight-bolder">
+          {t('ThanksForOrderingWithUs')}
+        </h4>
+        <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
           {t('PreOrderDeliveryTimeDetails', {
             day: toDayDateMonth(new Date(expectDeliveryDateFrom)),
             dayAndTime: toNumericTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
             deliveryTo: address,
           })}
         </p>
-        <p className="thanks__address-details text-opacity">{t('PreOrderDeliverySMS')}</p>
+        <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
+          {t('PreOrderDeliverySMS')}
+        </p>
       </div>
     );
   };
@@ -570,81 +577,6 @@ export class ThankYou extends PureComponent {
     const { order = {} } = this.props;
     const { deliveryInformation = [] } = order;
     return deliveryInformation[0];
-  };
-
-  renderDeliveryOrderStatus = () => {
-    const { t, order, onlineStoreInfo } = this.props;
-
-    if (!order || !onlineStoreInfo) {
-      return null;
-    }
-
-    const { createdTime, logs, deliveryInformation } = order || {};
-    const { country } = onlineStoreInfo || {};
-
-    const paidStatusObj = this.getLogsInfoByStatus(logs, 'paid');
-    const pickingStatusObj = this.getLogsInfoByStatus(logs, 'logisticsConfirmed');
-    const cancelledStatusObj = this.getLogsInfoByStatus(logs, 'cancelled');
-    const paidStatusObjTime = new Date((paidStatusObj && paidStatusObj.time) || createdTime || '');
-    const pickingStatusObjTime = new Date((pickingStatusObj && pickingStatusObj.time) || '');
-    const cancelledStatusObjTime = new Date((cancelledStatusObj && cancelledStatusObj.time) || '');
-
-    const { useStorehubLogistics } = (deliveryInformation && deliveryInformation[0]) || {};
-
-    return (
-      <div className="thanks__delivery-status-container">
-        <ul className="thanks__delivery-status-list text-left">
-          <li
-            className={`thanks__delivery-status-item ${this.getStatusStyle('confirm', logs)} ${
-              this.getStatusStyle('picking', logs) !== 'hide' ? 'finished' : ''
-            }`}
-          >
-            <label className="thanks__delivery-status-label text-weight-bolder">{t('OrderConfirmed')}</label>
-            <div className="thanks__delivery-status-time">
-              <IconAccessTime className="access-time-icon text-middle" />
-              <time className="text-middle text-opacity">
-                {`${paidStatusObjTime ? toLocaleTimeString(paidStatusObjTime, country, TIME_OPTIONS) : ''}, ${
-                  paidStatusObjTime ? toLocaleDateString(paidStatusObjTime, country, DATE_OPTIONS) : ''
-                }`}
-              </time>
-            </div>
-          </li>
-          {this.getStatusStyle('riderPending', logs) !== 'hide' && useStorehubLogistics ? (
-            <li className={`thanks__delivery-status-item ${this.getStatusStyle('riderPending', logs)}`}>
-              <label className="thanks__delivery-status-label text-weight-bolder">{t('RiderPendingTips')}</label>
-            </li>
-          ) : null}
-          {this.getStatusStyle('picking', logs) !== 'hide' && useStorehubLogistics ? (
-            <li className={`thanks__delivery-status-item ${this.getStatusStyle('picking', logs)}`}>
-              <label className="thanks__delivery-status-label text-weight-bolder">{t('RiderOnTheWay')}</label>
-              <div className="thanks__delivery-status-time">
-                <IconAccessTime className="access-time-icon text-middle" />
-                <time className="text-middle text-opacity">
-                  {`${pickingStatusObjTime ? toLocaleTimeString(pickingStatusObjTime, country, TIME_OPTIONS) : ''}, ${
-                    pickingStatusObjTime ? toLocaleDateString(pickingStatusObjTime, country, DATE_OPTIONS) : ''
-                  }`}
-                </time>
-              </div>
-            </li>
-          ) : null}
-          {this.getStatusStyle('cancelled', logs) !== 'hide' && useStorehubLogistics ? (
-            <li className={`thanks__delivery-status-item ${this.getStatusStyle('cancelled', logs)}`}>
-              <label className="thanks__delivery-status-label text-weight-bolder">{t('OrderCancelledNoRide')}</label>
-              <div className="thanks__delivery-status-time">
-                <IconAccessTime className="access-time-icon text-middle" />
-                <time className="text-middle text-opacity">
-                  {`${
-                    cancelledStatusObjTime ? toLocaleTimeString(cancelledStatusObjTime, country, TIME_OPTIONS) : ''
-                  }, ${
-                    cancelledStatusObjTime ? toLocaleDateString(cancelledStatusObjTime, country, DATE_OPTIONS) : ''
-                  }`}
-                </time>
-              </div>
-            </li>
-          ) : null}
-        </ul>
-      </div>
-    );
   };
 
   renderDeliveryImageAndTimeLine() {
@@ -759,12 +691,12 @@ export class ThankYou extends PureComponent {
               />
             )}
             {isDeliveryType ? null : (
-              <h2 className="ordering-thanks__page-title text-center padding-normal text-size-large text-weight-light">
+              <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
                 {t('ThankYou')}!
               </h2>
             )}
             {isDeliveryType ? null : (
-              <p className="padding-small margin-top-bottom-smaller text-center text-size-big">
+              <p className="ordering-thanks__page-description padding-small margin-top-bottom-smaller text-center text-size-big">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
                   😋
@@ -774,28 +706,27 @@ export class ThankYou extends PureComponent {
             {isDeliveryType ? null : this.renderPickupInfo()}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
-            {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
+            <div className="padding-top-bottom-small margin-normal">
+              {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
 
-            <div className="card">
-              {orderInfo}
-              {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin hideMessage={isTakeaway} history={history} />
+              <div className="card">
+                {orderInfo}
+                {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
+                <PhoneLogin hideMessage={isTakeaway} history={history} />
+              </div>
             </div>
+
+            <footer className="flex flex-middle flex-center">
+              <span>&copy; {date.getFullYear()} </span>
+              <a
+                className="ordering-thanks__button-footer-link button button__link padding-small"
+                href="https://www.storehub.com/"
+                data-heap-name="ordering.thank-you.storehub-link"
+              >
+                {t('StoreHub')}
+              </a>
+            </footer>
           </div>
-          <footer>
-            <ul className="flex flex-middle flex-space-between">
-              <li>
-                <span>&copy; {date.getFullYear()} </span>
-                <a
-                  className="ordering-thanks__button-footer-link button button__link"
-                  href="https://www.storehub.com/"
-                  data-heap-name="ordering.thank-you.storehub-link"
-                >
-                  {t('StoreHub')}
-                </a>
-              </li>
-            </ul>
-          </footer>
         </React.Fragment>
       </section>
     );

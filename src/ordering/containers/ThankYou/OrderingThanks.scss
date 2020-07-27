@@ -12,6 +12,7 @@ $total-text-size: 1.7142rem;
 
   &__container {
     height: 100%;
+    overflow-y: scroll;
   }
 
   &__image {
@@ -23,6 +24,12 @@ $total-text-size: 1.7142rem;
 
   &__page-title {
     color: $gray-2;
+  }
+
+  &__page-description {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   &__accepted &__title-dots,
