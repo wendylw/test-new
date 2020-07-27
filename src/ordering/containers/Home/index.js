@@ -164,14 +164,12 @@ export class Home extends Component {
           }
           defaultTime = new Date(defaultTime);
           if (validDays.indexOf(defaultTime.getDay()) === -1) {
+            defaultTime = defaultTime.getTime();
             defaultTime = defaultTime + 24 * 60 * 60 * 1000;
-            console.log(defaultTime, 'defaultTime');
             defaultTime = new Date(defaultTime);
           } else {
             break;
           }
-          console.log('defaultTime', defaultTime, validDays, businessInfo.qrOrderingSettings);
-          debugger;
         }
         defaultTime = new Date(defaultTime);
         const currentTime = new Date(); //TODO 应该用商家本地时间
