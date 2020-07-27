@@ -168,13 +168,14 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  handleNeedHelp = () => {
+  handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
-      pathname: Constants.ROUTER_PATHS.NEED_HELP,
+      pathname: Constants.ROUTER_PATHS.MERCHANT_INFO,
       search: window.location.search,
     });
   };
+
   renderCashbackUI = cashback => {
     const { t } = this.props;
     return (
@@ -668,7 +669,7 @@ export class ThankYou extends PureComponent {
             {!isTakeaway ? (
               <button
                 className="ordering-thanks__button-contact-use button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-                onClick={this.handleNeedHelp}
+                onClick={this.handleVisitMerchantInfoPage}
                 data-heap-name="ordering.thank-you.contact-us-btn"
               >
                 <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>

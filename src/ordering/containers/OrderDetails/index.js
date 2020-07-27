@@ -24,10 +24,10 @@ export class OrderDetails extends Component {
     return query.get('receiptNumber');
   };
 
-  handleNeedHelp = () => {
+  handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
-      pathname: Constants.ROUTER_PATHS.NEED_HELP,
+      pathname: Constants.ROUTER_PATHS.MERCHANT_INFO,
       search: window.location.search,
     });
   };
@@ -101,7 +101,7 @@ export class OrderDetails extends Component {
         >
           <button
             className="flex__shrink-fixed text-uppercase"
-            onClick={this.handleNeedHelp}
+            onClick={this.handleVisitMerchantInfoPage}
             data-heap-name="ordering.order-detail.contact-us-btn"
           >
             <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>

@@ -1033,58 +1033,9 @@ img {
 }
 
 .input {
-  // @extend .border-radius-base;
-
-  // position: relative;
-  // padding: 6px 12px;
-  // border: 1px solid $gray-3;
-  // line-height: 24px;
-  // height: 40px;
-  // outline: none;
-  // box-shadow: none;
-  // -webkit-appearance: none;
-  // resize: none;
-
-  select + svg {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin: 12px;
-  }
-
-  > * {
-    line-height: 36px;
-  }
-
-  &__block {
-    display: block;
-    width: 100%;
-  }
-
-  &__group {
-    margin: 15px 0;
-  }
-
-  &__label {
-    display: block;
-    margin: 10px 0;
-    text-align: left;
-  }
-
   &__textarea {
     height: auto;
   }
-}
-
-.margin-bottom-zero {
-  margin-bottom: 0 !important;
-}
-.margin-top-zero {
-  margin-top: 0 !important;
-}
-
-.text-opacity {
-  opacity: 0.5;
 }
 
 .swipe {

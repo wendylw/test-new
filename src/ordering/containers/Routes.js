@@ -5,7 +5,7 @@ import Cart from './Cart';
 import Payment from './Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
-import NeedHelp from './NeedHelp';
+import MerchantInfo from './MerchantInfo';
 import OrderDetails from './OrderDetails';
 import NotFound from '../../NotFound';
 
@@ -44,7 +44,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
             <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />
-            <Route exact path={ROUTER_PATHS.NEED_HELP} component={NeedHelp} />
+            <Route exact path={ROUTER_PATHS.MERCHANT_INFO} component={MerchantInfo} />
             <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />

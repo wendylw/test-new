@@ -1,0 +1,132 @@
+import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
+import qs from 'qs';
+import Header from '../../../components/Header';
+import Constants from '../../../utils/constants';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import { IconNext } from '../../../components/Icons';
+import Utils from '../../../utils/utils';
+import {
+  actions as thankYouActionCreators,
+  getBusinessInfo,
+  getReceiptNumber,
+  getOrderStatus,
+  getIsUseStorehubLogistics,
+} from '../../redux/modules/thankYou';
+
+import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
+import './OrderingMerchantInfo.scss';
+
+export class MerchantInfo extends Component {
+  componentDidMount() {
+    const { thankYouActions, receiptNumber } = this.props;
+
+    thankYouActions.loadOrder(receiptNumber);
+  }
+
+  handleReportUnsafeDriver = () => {
+    const queryParams = {
+      receiptNumber: this.props.receiptNumber,
+    };
+
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  isReportUnsafeDriverButtonDisabled = () => {
+    const { orderStatus } = this.props;
+
+    return !CAN_REPORT_STATUS_LIST.includes(orderStatus);
+  };
+
+  render() {
+    const { history, businessInfo, t, isUseStorehubLogistics } = this.props;
+    const { stores } = businessInfo || '';
+    const { name, phone } = stores && stores[0] ? stores[0] : {};
+
+    return (
+      <section className="ordering-merchant-info flex flex-column" data-heap-name="ordering.need-help.container">
+        <Header
+          className="flex-middle"
+          contentClassName="flex-middle"
+          data-heap-name="ordering.need-help.header"
+          isPage={false}
+          title={t('ContactUs')}
+          navFunc={() => {
+            if (history.length) {
+              history.goBack();
+            } else {
+              history.push({
+                pathname: Constants.ROUTER_PATHS.THANK_YOU,
+                search: window.location.search,
+              });
+            }
+          }}
+        />
+
+        <div className="ordering-merchant-info__container padding-top-bottom-normal">
+          <ul className="card padding-left-right-small margin-normal">
+            <li className="ordering-merchant-info__item margin-left-right-smaller border__bottom-divider">
+              <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
+                {t('StoreName')}
+              </summary>
+              <span className="ordering-merchant-info__description padding-top-bottom-smaller text-line-height-base text-opacity">
+                {name}
+              </span>
+            </li>
+            <li className="ordering-merchant-info__item margin-left-right-smaller border__bottom-divider">
+              <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
+                {t('ContactInfo')}
+              </summary>
+              <a
+                className="ordering-merchant-info__button-link button button__link padding-top-bottom-smaller text-line-height-base"
+                href={`tel:${phone}`}
+              >
+                {phone}
+              </a>
+            </li>
+            <li className="ordering-merchant-info__item margin-left-right-smaller">
+              <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
+                {t('StoreAddress')}
+              </summary>
+              <span className="ordering-merchant-info__description padding-top-bottom-smaller text-line-height-base text-opacity">
+                {Utils.getValidAddress(stores && stores[0] ? stores[0] : {}, Constants.ADDRESS_RANGE.CITY)}
+              </span>
+            </li>
+          </ul>
+          {isUseStorehubLogistics ? (
+            <div className="card margin-normal">
+              <button
+                disabled={this.isReportUnsafeDriverButtonDisabled()}
+                onClick={this.handleReportUnsafeDriver}
+                className="button button__block flex flex-middle flex-space-between padding-small"
+                data-heap-name="ordering.need-help.report-driver-btn"
+              >
+                <span className="text-size-big text-weight-bolder padding-left-right-small">{t('ReportDriver')}</span>
+                <IconNext className="icon icon__small" />
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </section>
+    );
+  }
+}
+
+export default compose(
+  withTranslation(['OrderingDelivery']),
+  connect(
+    state => ({
+      businessInfo: getBusinessInfo(state),
+      receiptNumber: getReceiptNumber(state),
+      orderStatus: getOrderStatus(state),
+      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+    }),
+    dispatch => ({
+      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+    })
+  )
+)(MerchantInfo);
