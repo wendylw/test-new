@@ -148,6 +148,9 @@ export class Home extends Component {
         // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
 
         let defaultTime = new Date(); //TODO 应该用商家本地时间
+        if (!validDays.length) {
+          return;
+        }
         while (true) {
           defaultTime = defaultTime.getTime();
           if (breakTimeFrom && breakTimeTo) {
@@ -164,7 +167,7 @@ export class Home extends Component {
           } else {
             break;
           }
-          console.log('defaultTime', defaultTime);
+          console.log('defaultTime', defaultTime, validDays, businessInfo.qrOrderingSettings);
           debugger;
         }
         defaultTime = new Date(defaultTime);
