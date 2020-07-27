@@ -214,7 +214,7 @@ const REPORT_DRIVER_REASON_CODE = {
   DRIVER_WAS_RUDE: 'driverWasRude',
   DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
   ORDER_WAS_MISSING_ITEM: 'orderWasMissingItem',
-  NEVER_RECEIVED_MY_ORDER: 'NeverReceivedMyOrder',
+  NEVER_RECEIVED_MY_ORDER: 'neverReceivedMyOrder',
   OTHERS: 'others',
 };
 

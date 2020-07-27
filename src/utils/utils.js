@@ -287,6 +287,11 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
   };
 };
 
+Utils.isValidUrl = function(url) {
+  const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
+  return domainRegex.test(url);
+};
+
 Utils.removeHtmlTag = function removeHtmlTag(str) {
   if (!str) {
     return '';
