@@ -79,7 +79,7 @@
     "test:coverage": "react-app-rewired test --coverage",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand --no-cache",
     "eject": "react-app-rewired eject",
-    "deploy": "deploy-aws-s3-cloudfront --source ./build --cache-control index.html:no-cache static/**/*:max-age=2592000 i18n/**/*:max-age=2592000",
+    "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
     "i18n-sync": "i18n-sync",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"

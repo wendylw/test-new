@@ -12,8 +12,7 @@ import {
 import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
-import Utils from '../utils/utils';
-import qs from 'qs';
+
 class LocationPicker extends Component {
   static propTypes = {
     origin: PropTypes.exact({ lat: PropTypes.number.isRequired, lng: PropTypes.number.isRequired }),
@@ -51,11 +50,6 @@ class LocationPicker extends Component {
       this.detectDevicePosition();
     }
     this.getHistoricalAddresses();
-
-    this.props.outRangeSearchText &&
-      this.setState({
-        searchText: this.props.outRangeSearchText,
-      });
   }
 
   detectDevicePosition = async (withCache = true) => {
@@ -113,12 +107,12 @@ class LocationPicker extends Component {
       let straightDistance;
       let directionDistance;
       if (mode === 'ORIGIN_STORE') {
-        // try {
-        //   straightDistance = computeStraightDistance(origin, placeInfo.coords);
-        // } catch (e) {
-        //   console.error('Fail to compute straight distance', e);
-        //   straightDistance = Infinity;
-        // }
+        try {
+          straightDistance = computeStraightDistance(origin, placeInfo.coords);
+        } catch (e) {
+          console.error('Fail to compute straight distance', e);
+          straightDistance = Infinity;
+        }
         // We will temporarily not get direction distance until we are confident enough that the distance is accurate.
         // try {
         //   directionDistance = await computeDirectionDistance(origin, placeInfo.coords);
@@ -158,8 +152,7 @@ class LocationPicker extends Component {
     }
     this.setState({ isSearching: true });
     try {
-      let places = await getPlaceAutocompleteList(searchText, { location, origin, radius, country });
-
+      const places = await getPlaceAutocompleteList(searchText, { location, origin, radius, country });
       this.setState({
         searchResultList: places,
       });
@@ -215,21 +208,15 @@ class LocationPicker extends Component {
     );
   }
 
-  isRenderDistance = distance => {
-    return (
-      typeof distance === 'number' && distance !== Infinity && !isNaN(distance) && this.props.mode === 'ORIGIN_STORE'
-    );
-  };
-
   renderAddressItem(summary, detail, distance) {
     return (
       <div className="location-picker__address-item" data-testid="searchedAddressResult">
         <div className="location-picker__address-title">{summary}</div>
         <div className="location-picker__address-detail">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
-          {this.isRenderDistance(distance) && (
-            <span className="location-picker__address-distance">{distance.toFixed(1)} KM</span>
-          )}
+          {/* {typeof distance === 'number' && distance !== Infinity && (
+            <span className="location-picker__address-distance">{(distance / 1000).toFixed(1)} KM</span>
+          )} */}
           <span>{detail}</span>
         </div>
       </div>
@@ -337,8 +324,8 @@ class LocationPicker extends Component {
             >
               {this.renderAddressItem(
                 searchResult.structured_formatting.main_text,
-                searchResult.structured_formatting.secondary_text,
-                searchResult.distance_meters / 1000
+                searchResult.structured_formatting.secondary_text
+                // searchResult.distance_meters
               )}
             </div>
           );
