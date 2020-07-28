@@ -121,18 +121,7 @@ class Header extends Component {
                 ) : null}
               </ul>
             ) : null}
-            {isPickUpType ? (
-              <ul className="header__info-list">
-                {enableCashback && cashbackRatePercentage ? (
-                  <li className="header__info-item">
-                    <IconWallet className="header__motor-icon text-middle" />
-                    <span className="header__info-text text-middle font-weight-bolder">
-                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            ) : null}
+            {isPickUpType ? <p className="header__pickup-address gray-font-opacity omit-text">{storeAddress}</p> : null}
           </div>
         ) : (
           <h2 className="header__title font-weight-bolder text-middle" data-testid="headerTitle">
