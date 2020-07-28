@@ -149,9 +149,13 @@ export class Home extends Component {
         if (!validDays.length) {
           return;
         }
-
+        let times = 0;
         while (validDays.indexOf(defaultTime.getDay()) === -1) {
+          times++;
           defaultTime = defaultTime.setDate(defaultTime.getDate() + 1);
+          if (times > 30) {
+            break;
+          }
         }
 
         const currentTime = new Date(); //TODO 应该用商家本地时间
