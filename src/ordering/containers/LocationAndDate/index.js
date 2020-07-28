@@ -574,13 +574,11 @@ class LocationAndDate extends Component {
             data-heap-name="ordering.location-and-date.deliver-to"
             data-testid="deliverTo"
           >
-            <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-              {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
-              <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
-                {deliveryToAddress || t('Where to deliver your food')}
-              </p>
-              {deliveryToAddress && <IconNext className="icon icon__normal flex__shrink-fixed" />}
-            </div>
+            {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
+            <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
+              {deliveryToAddress || t('WhereToDeliverFood')}
+            </p>
+            {deliveryToAddress && <IconNext className="icon icon__normal flex__shrink-fixed" />}
           </div>
         </div>
       );
@@ -1099,27 +1097,25 @@ class LocationAndDate extends Component {
       });
     }
   };
+
   renderSelectStore = () => {
+    const { t } = this.props;
+
     return (
       <div
-        className="form__group"
+        className="padding-normal"
+        data-testid="deliverTo"
         onClick={this.goStoreList}
         data-heap-name="ordering.location-and-date.selected-store"
       >
-        <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
-          {this.props.t('Selected Store')}
+        <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
+          {t('SelectedStore')}
         </label>
-        <div className="location-page__search-box">
-          <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
-            <input
-              className="input input__block"
-              data-testid="deliverTo"
-              type="text"
-              value={this.state.nearlyStore.name}
-              readOnly
-            />
-            <IconNext className="delivery__next-icon" />
-          </div>
+        <div className="form__group flex flex-middle flex-space-between">
+          <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
+            {this.state.nearlyStore.name}
+          </p>
+          <IconNext className="icon icon__normal flex__shrink-fixed" />
         </div>
       </div>
     );
@@ -1138,27 +1134,26 @@ class LocationAndDate extends Component {
         />
         <div className="location-date__container">
           {!this.state.onlyType && (
-            <div
-              style={{ margin: '30px 16px', height: '40px', boxShadow: '0px 1px 2px 1px #eee' }}
-              className="form__group flex flex-middle input-group outline border-radius-base"
-            >
-              <p
+            <ul className="flex flex-middle padding-normal">
+              <li
+                className={`location-date__delivery text-center padding-small text-size-big text-weight-bolder ${
+                  this.state.isDeliveryType ? 'active' : ''
+                }`}
                 onClick={this.setDeliveryType}
-                style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
-                className={`font-weight-bold text-center ${this.state.isDeliveryType ? 'button__fill' : ''}`}
                 data-heap-name="ordering.location-and-date.delivery"
               >
                 {this.props.t('Delivery')}
-              </p>
-              <p
+              </li>
+              <li
+                className={`location-date__pickup text-center padding-small text-size-big text-weight-bolder ${
+                  this.state.isPickUpType ? 'active' : ''
+                }`}
                 onClick={this.setPickUpType}
-                style={{ flex: '1', fontSize: '16px', lineHeight: '40px', maxHeight: '40px', fontWeight: '600' }}
-                className={`font-weight-bold text-center ${this.state.isPickUpType ? 'button__fill' : ''}`}
                 data-heap-name="ordering.location-and-date.pickup"
               >
                 {this.props.t('Pickup')}
-              </p>
-            </div>
+              </li>
+            </ul>
           )}
           {this.state.isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}

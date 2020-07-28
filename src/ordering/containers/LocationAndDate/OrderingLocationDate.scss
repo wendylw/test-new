@@ -8,6 +8,18 @@
     width: 100%;
   }
 
+  &__delivery,
+  &__pickup {
+    width: 50%;
+    border: 1px solid $gray-4;
+
+    &.active {
+      color: $white;
+      background-color: $theme-color;
+      border-color: $theme-color;
+    }
+  }
+
   &__label {
     display: block;
   }
