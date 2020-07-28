@@ -115,16 +115,6 @@
     }
   }
 
-  &__receipt {
-    // @extend .main-section;
-
-    background-color: $white;
-
-    // .billing {
-    //   padding: 0 2.4vw;
-    // }
-  }
-
   &__cashback-receipt {
     margin-top: 50px;
   }
@@ -681,81 +671,7 @@
   }
 }
 
-.receipt {
-  &__content {
-    padding: 8vw 4vw;
-    background-color: $gray-5;
-    border-bottom: 1px solid $gray-4;
-  }
-
-  &__label,
-  &__id-number {
-    display: block;
-    padding: 8px 0;
-  }
-
-  &__id-number {
-    font-size: 1.7rem;
-    letter-spacing: 0.25rem;
-  }
-
-  &__note,
-  &__title,
-  &__text {
-    padding: 1.2vw;
-  }
-
-  &__note {
-    min-height: 80px;
-  }
-}
-
-.card-list {
-  padding: 0 16px;
-  overflow: hidden;
-
-  &__item {
-    padding: 4vw 6vw;
-    margin: 12px 0;
-  }
-
-  &__item-summary {
-    padding: 0 4vw;
-    width: 65vw;
-  }
-
-  &__icon {
-    display: inline-block;
-    height: 30px;
-    width: 30px;
-    background-repeat: no-repeat;
-    background-size: 100% auto;
-    background-position: center center;
-    opacity: 0.6;
-  }
-
-  &__icon-svg {
-    width: 100%;
-  }
-
-  &__title {
-    margin: 5px 0;
-  }
-
-  &__title-children {
-    display: inline-block;
-    font-size: 1.5rem;
-  }
-
-  &__time {
-    margin: 5px 0;
-    color: $gray-2;
-  }
-}
-
 .receipt-list {
-  // @extend .card-list;
-
   margin: -4px -2.4vw;
   padding: 0 16px;
   overflow: hidden;
@@ -768,41 +684,26 @@
   }
 
   &__item {
-    // @extend .card-list__item;
-
     box-shadow: 1px 1px 8px 1px rgba(0, 0, 0, 0.1);
-
-    summary {
-      // @extend .card-list__item-summary;
-    }
   }
 
   &__icon {
-    // @extend .card-list__icon;
-
     fill: $theme-color;
 
     svg {
-      // @extend .card-list__icon-svg;
     }
   }
 
   &__title {
-    // @extend .card-list__title;
-
     * {
-      // @extend .card-list__title-children;
     }
   }
 
   &__time {
-    // @extend .card-list__time;
   }
 }
 
 .activity {
-  // @extend .card-list;
-
   &__item {
     // @extend .card-list__item;
 
@@ -840,52 +741,7 @@
   }
 }
 
-.card-list {
-  padding: 0 16px;
-  overflow: hidden;
-
-  &__item {
-    padding: 4vw 6vw;
-    margin: 12px 0;
-  }
-
-  &__item-summary {
-    padding: 0 4vw;
-    width: 65vw;
-  }
-
-  &__icon {
-    display: inline-block;
-    height: 30px;
-    width: 30px;
-    background-repeat: no-repeat;
-    background-size: 100% auto;
-    background-position: center center;
-    opacity: 0.6;
-  }
-
-  &__icon-svg {
-    width: 100%;
-  }
-
-  &__title {
-    margin: 5px 0;
-  }
-
-  &__title-children {
-    display: inline-block;
-    font-size: 1.5rem;
-  }
-
-  &__time {
-    margin: 5px 0;
-    color: $gray-2;
-  }
-}
-
 .receipt-list {
-  // @extend .card-list;
-
   margin: -4px -2.4vw;
   padding: 0 16px;
   overflow: hidden;
@@ -898,30 +754,18 @@
   }
 
   &__item {
-    // @extend .card-list__item;
-
     box-shadow: 1px 1px 8px 1px rgba(0, 0, 0, 0.1);
-
-    summary {
-      // @extend .card-list__item-summary;
-    }
   }
 
   &__icon {
-    // @extend .card-list__icon;
-
     fill: $theme-color;
 
     svg {
-      // @extend .card-list__icon-svg;
     }
   }
 
   &__title {
-    // @extend .card-list__title;
-
     * {
-      // @extend .card-list__title-children;
     }
   }
 
@@ -1135,10 +979,6 @@ body.loading {
 
   .modal__detail {
     padding: 16px 0;
-  }
-
-  .card-list__item-summary {
-    padding: 0 16px;
   }
 
   .modal__header {

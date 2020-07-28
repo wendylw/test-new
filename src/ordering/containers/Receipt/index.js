@@ -17,7 +17,9 @@ import {
   getBusinessInfo,
   getPromotion,
 } from '../../redux/modules/thankYou';
+import { getUser } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
+import './Receipt.scss';
 
 const { DELIVERY_METHOD } = Constants;
 export class ReceiptDetail extends Component {
@@ -71,7 +73,7 @@ export class ReceiptDetail extends Component {
     const { items } = order || {};
 
     return (
-      <div className="list__container">
+      <div className="receipt__list">
         {(items || []).map(item => {
           const { id, title, variationTexts, displayPrice, unitPrice, quantity, image } = item;
 
@@ -106,11 +108,12 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, order, businessInfo, promotion } = this.props;
+    const { t, history, order, businessInfo, user, promotion } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
+    const { isLogin } = user || {};
 
     return (
-      <section className="table-ordering__receipt" data-heap-name="ordering.receipt.container">
+      <section className="receipt flex flex-column" data-heap-name="ordering.receipt.container">
         <Header
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -120,26 +123,33 @@ export class ReceiptDetail extends Component {
         >
           <span className="flex__shrink-fixed text-opacity">{this.getHeaderContent()}</span>
         </Header>
-        <div className="receipt__content text-center">
-          <label className="receipt__label text-opacity text-weight-bolder text-uppercase">{t('ReceiptNumber')}</label>
-          <span className="receipt__id-number">{orderId}</span>
+        <div className="receipt__container">
+          <div className="receipt__number-container text-center padding-normal border__bottom-divider">
+            <label className="receipt__number-label padding-top-bottom-small margin-top-bottom-smaller text-opacity text-uppercase">
+              {t('ReceiptNumber')}
+            </label>
+            <span className="receipt__number margin-top-bottom-smaller text-size-biggest">{orderId}</span>
+          </div>
+          {this.renderProductItem()}
+
+          {additionalComments ? (
+            <article className="padding-small border__bottom-divider">
+              <h4 className="margin-smaller text-weight-bolder text-uppercase">{t('Notes')}</h4>
+              <p className="margin-smaller text-opacity">{additionalComments}</p>
+            </article>
+          ) : null}
+          <Billing
+            history={history}
+            tax={tax}
+            businessInfo={businessInfo}
+            serviceCharge={serviceCharge}
+            subtotal={subtotal}
+            total={total}
+            promotion={promotion}
+            creditsBalance={this.getSpendCashback()}
+            isLogin={isLogin}
+          />
         </div>
-        {this.renderProductItem()}
-        {additionalComments ? (
-          <article className="receipt__note border__bottom-divider">
-            <h4 className="receipt__title text-weight-bolder text-uppercase">{t('Notes')}</h4>
-            <p className="receipt__text text-opacity">{additionalComments}</p>
-          </article>
-        ) : null}
-        <Billing
-          tax={tax}
-          businessInfo={businessInfo}
-          serviceCharge={serviceCharge}
-          subtotal={subtotal}
-          total={total}
-          promotion={promotion}
-          creditsBalance={this.getSpendCashback()}
-        />
       </section>
     );
   }
@@ -149,6 +159,7 @@ export default compose(
   withTranslation(),
   connect(
     state => ({
+      user: getUser(state),
       businessInfo: getBusinessInfo(state),
       order: getOrder(state),
       promotion: getPromotion(state),

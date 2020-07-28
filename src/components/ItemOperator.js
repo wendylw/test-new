@@ -38,7 +38,7 @@ export class ItemOperator extends Component {
 
         {quantity > 0 ? (
           <span
-            className="text-weight-bolder"
+            className="item-operator__quantity padding-small margin-smaller text-weight-bolder"
             data-testid="itemDetailQuantity"
             data-heap-name="common.item-operator.quantity"
           >

@@ -15,7 +15,7 @@
   &.exhibit {
     display: block;
     text-align: right;
-    top: 9px;
+    top: 0;
   }
 
   &--minus::before {
@@ -126,5 +126,9 @@
     &::after {
       background-color: $white;
     }
+  }
+
+  &__quantity {
+    display: block;
   }
 }

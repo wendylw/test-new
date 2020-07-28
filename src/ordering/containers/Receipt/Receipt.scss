@@ -1,0 +1,53 @@
+@import "../../../Variables.scss";
+
+$receipt-number-text-size: 1.7142rem;
+
+.receipt {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+  }
+
+  &__number-container {
+    padding-top: 4.2vw;
+    padding-bottom: 4.2vw;
+    background-color: $gray-5;
+  }
+
+  &__number-label {
+    display: block;
+  }
+
+  &__number {
+    display: block;
+    font-size: $receipt-number-text-size;
+    letter-spacing: 0.25rem;
+  }
+
+  &__list .item {
+    padding-left: 1.4vw;
+    padding-right: 1.4vw;
+  }
+
+  &__title,
+  &__text {
+    padding: 1.2vw;
+  }
+}
+
+@media (min-width: 420px) {
+  .receipt {
+    &__number-container {
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+
+    &__list .item {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+  }
+}
