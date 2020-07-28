@@ -236,6 +236,12 @@ const ORDER_STATUS = {
   PICKED_UP: 'pickedUp',
 };
 
+const COLLECTIONS_TYPE = {
+  ICON: 'Icon',
+  OTHERS: 'SearchOthers',
+  POPULAR: 'SearchPopular',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -268,4 +274,5 @@ export default {
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
+  COLLECTIONS_TYPE,
 };

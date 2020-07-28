@@ -5,13 +5,7 @@ import { withTranslation } from 'react-i18next';
 import StoreList from '../home/components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import ModalPageLayout from '../components/ModalPageLayout';
-import {
-  collectionsActions,
-  getCurrentCollection,
-  getPageInfo,
-  getStoreList,
-  getShippingType,
-} from '../redux/modules/collections';
+import { collectionsActions, getPageInfo, getStoreList, getShippingType } from '../redux/modules/collections';
 import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
@@ -20,7 +14,10 @@ import '../home/index.scss';
 import './CollectionPage.scss';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
-import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
+import { collectionCardActionCreators, getCurrentCollection } from '../redux/modules/entities/storeCollections';
+import constants from '../../utils/constants';
+
+const { COLLECTIONS_TYPE } = constants;
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -28,8 +25,9 @@ class CollectionPage extends React.Component {
   sectionRef = React.createRef();
 
   componentDidMount = async () => {
+    await this.props.collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
     if (!this.props.currentCollection) {
-      await this.props.collectionCardActions.getCollections();
+      await this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
     }
     const { currentCollection } = this.props;
     const { shippingType, urlPath } = currentCollection;
@@ -41,13 +39,12 @@ class CollectionPage extends React.Component {
     this.props.collectionsActions.getStoreList(urlPath);
   };
 
-  handleBackClicked = () => {
-    this.goBackHome();
-  };
+  backToPreviousPage = () => {
+    const { history, location } = this.props;
+    const pathname = (location.state && location.state.from) || '/home';
 
-  goBackHome = () => {
-    this.props.history.push({
-      pathname: '/home',
+    history.push({
+      pathname,
     });
   };
 
@@ -130,11 +127,11 @@ class CollectionPage extends React.Component {
 
   render() {
     const { currentCollection } = this.props;
-    if (!currentCollection) {
+    if (Object.keys(currentCollection).length === 0) {
       return null;
     }
     return (
-      <ModalPageLayout title={currentCollection.name} onGoBack={this.handleBackClicked}>
+      <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
         {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
         <section
           ref={this.sectionRef}
@@ -153,8 +150,8 @@ export default compose(
   withPlaceInfo(),
   withTranslation('SiteHome'),
   connect(
-    (state, ownProps) => ({
-      currentCollection: getCurrentCollection(state, ownProps),
+    state => ({
+      currentCollection: getCurrentCollection(state),
       stores: getStoreList(state),
       pageInfo: getPageInfo(state),
       storeLinkInfo: getStoreLinkInfo(state),
