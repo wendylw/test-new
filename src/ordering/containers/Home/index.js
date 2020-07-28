@@ -137,8 +137,6 @@ export class Home extends Component {
       const {
         validTimeFrom,
         validTimeTo,
-        breakTimeFrom,
-        breakTimeTo,
         validDays,
         enablePreOrder,
         disableOnDemandOrder,
