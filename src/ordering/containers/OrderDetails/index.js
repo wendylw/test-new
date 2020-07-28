@@ -33,29 +33,32 @@ export class OrderDetails extends Component {
     });
   };
 
-  renderOrderBillings() {
+  renderOrderDetails() {
     const { order } = this.props;
     const { items } = order || {};
 
     return (
-      <ul className="list">
+      <ul className="">
         {(items || []).map((value, index) => {
           const { title, displayPrice, quantity, variationTexts } = value;
 
           return (
-            <li key={`title-${index}`} className="item flex flex-space-between">
-              <div className="flex">
-                <span style={{ width: '6vw' }} className="text-opacity">
-                  {quantity} x
-                </span>
-                <div style={{ marginLeft: '2vw' }}>
-                  <span className="text-opacity">{title}</span>
+            <li key={`title-${index}`} className="flex flex-middle flex-space-between">
+              <summary className="flex flex-top">
+                <span className="padding-left-right-small flex__shrink-fixed text-opacity">{quantity} x</span>
+                <div className="ordering-details__item-content padding-left-right-small">
+                  <span className="ordering-details__item-title text-opacity">{title}</span>
                   <p>
-                    {variationTexts[0] ? <span className="order-detail__tag">{variationTexts.join(', ')}</span> : null}
+                    {variationTexts[0] ? (
+                      <span className="ordering-details__item-variations">{variationTexts.join(', ')}</span>
+                    ) : null}
                   </p>
                 </div>
-              </div>
-              <CurrencyNumber className="text-opacity" money={displayPrice * quantity} />
+              </summary>
+              <CurrencyNumber
+                className="padding-left-right-small flex__shrink-fixed text-opacity"
+                money={displayPrice * quantity}
+              />
             </li>
           );
         })}
@@ -86,7 +89,7 @@ export class OrderDetails extends Component {
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
-      <section className="order-detail" data-heap-name="ordering.order-detail.container">
+      <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
@@ -108,11 +111,13 @@ export class OrderDetails extends Component {
             <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
           </button>
         </Header>
-        <div className="order-detail__info-container">
-          <div className="border__bottom-divider">
-            <h3 className="order-detail__title text-weight-bolder text-uppercase">{t('YourOrder')}</h3>
-            {this.renderOrderBillings()}
+
+        <div className="ordering-details__container">
+          <div className="card">
+            <h3 className="text-size-big text-weight-bolder text-uppercase">{t('YourOrder')}</h3>
+            <div className="border__bottom-divider">{this.renderOrderDetails()}</div>
           </div>
+
           <div>
             <ul className="list">
               <li className="item flex flex-space-between flex-middle">

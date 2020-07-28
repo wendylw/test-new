@@ -1,8 +1,31 @@
 @import "../../../Variables.scss";
 
 .ordering-details {
+  height: 100vh;
+  background-color: $gray-6;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+  }
+
   &__button-contact-us {
     color: $status-blue;
+  }
+
+  &__item-content {
+    max-width: 90%;
+  }
+
+  &__item-title {
+    width: 100%;
+    word-break: break-all;
+    hyphens: auto;
+  }
+
+  &__item-variations {
+    color: $theme-color;
   }
 }
 

@@ -42,8 +42,6 @@
   }
 
   &__text {
-    // @extend .text-weight-bolder;
-
     line-height: $line-height-base;
   }
 
@@ -598,8 +596,6 @@
   }
 
   &__title {
-    // @extend .text-weight-bolder;
-
     margin: 20px 0;
     font-size: 1.4rem;
     line-height: $line-height-base;
@@ -651,8 +647,6 @@
 
 .location {
   svg {
-    // @extend .text-middle;
-
     fill: $gray-2;
   }
 
@@ -749,8 +743,6 @@
   }
 
   &__title-children {
-    // @extend .text-weight-bolder;
-
     display: inline-block;
     font-size: 1.5rem;
   }
@@ -881,8 +873,6 @@
   }
 
   &__title-children {
-    // @extend .text-weight-bolder;
-
     display: inline-block;
     font-size: 1.5rem;
   }
