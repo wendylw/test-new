@@ -150,16 +150,12 @@ export class Home extends Component {
           return;
         }
 
-        while (true) {
-          if (validDays.indexOf(defaultTime.getDay()) === -1) {
-            let defaultTimeValue = defaultTime.getTime();
-            defaultTimeValue = defaultTimeValue + 24 * 60 * 60 * 1000;
-            defaultTime = new Date(defaultTimeValue);
-          } else {
-            break;
-          }
+        while (validDays.indexOf(defaultTime.getDay()) === -1) {
+          let defaultTimeValue = defaultTime.getTime();
+          defaultTimeValue = defaultTimeValue + 24 * 60 * 60 * 1000;
+          defaultTime = new Date(defaultTimeValue);
         }
-        defaultTime = new Date(defaultTime);
+
         const currentTime = new Date(); //TODO 应该用商家本地时间
 
         if (defaultTime.getMonth() === currentTime.getMonth() && defaultTime.getDate() === currentTime.getDate()) {
