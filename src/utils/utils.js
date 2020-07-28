@@ -12,7 +12,17 @@ Utils.getQueryString = key => {
 
   return queries;
 };
-
+Utils.getQueryVariable = variable => {
+  var query = window.location.search.substring(1);
+  var vars = query.split('&');
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+    if (pair[0] == variable) {
+      return pair[1];
+    }
+  }
+  return false;
+};
 // Utils.isWebview = function isWebview() {
 //   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
 // };
@@ -333,6 +343,11 @@ Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
   }
 };
 
+// get valid time list fron qrsetting
+Utils.getValidTimeList = (qrOrderingSettings, type = Utils.isPickUpType() ? 'pickup' : 'delivery') => {
+  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, validDays } = qrOrderingSettings;
+};
+
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
@@ -396,6 +411,17 @@ Utils.formatHour = (hour = 0) => {
 Utils.isPreOrderPage = () => {
   const enablePreOrder = Utils.getQueryString('isPreOrder');
   return enablePreOrder === 'true' || false;
+};
+
+Utils.getDateNumber = date => {
+  date = new Date(date);
+  let y = date.getFullYear(),
+    m = date.getMonth() + 1,
+    d = date.getDate();
+  m = m < 10 ? '0' + m : m;
+  d = d < 10 ? '0' + d : d;
+
+  return +`${y}${m}${d}`;
 };
 
 Utils.isPreOrder = () => {
@@ -550,7 +576,126 @@ Utils.getFulfillDate = () => {
       expectDeliveryDateTo: d2 && d2.toISOString(),
     };
   };
+  Utils.zero = num => (num < 10 ? '0' + num : num + '');
+  Utils.getHourList = (validFrom, validTo, useSHLog, type, isToday) => {
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    const timeString = time => zero(new Date(time).getHours()) + ':' + zero(new Date(time).getMinutes());
 
+    const SHlogTime = ['09:00', '21:00'];
+    if (type === 'delivery') {
+      let start = useSHLog ? (validFrom < SHlogTime[0] ? SHlogTime[0] : validFrom) : validFrom;
+
+      let hasonDemand = timeString(new Date()) > start ? 'now' : '';
+
+      validFrom =
+        validFrom.split(':')[1] == '00'
+          ? zero(+validFrom.split(':')[0] + 1) + ':00'
+          : zero(+validFrom.split(':')[0] + 2) + ':00';
+
+      validFrom = useSHLog ? (validFrom < SHlogTime[0] ? SHlogTime[0] : validFrom) : validFrom;
+      validTo = useSHLog ? (validTo > SHlogTime[1] ? SHlogTime[1] : validTo) : validTo;
+      validTo = validTo.split(':')[1] === '00' ? validTo : validTo.split(':')[0] + ':00';
+      validTo = zero(+validTo.split(':')[0] - 1) + ':00';
+      let timeList = [];
+      let pusher = validFrom;
+      timeList.push(pusher);
+      while (pusher !== validTo) {
+        pusher = zero(+pusher.split(':')[0] + 1) + ':00';
+        timeList.push(pusher);
+      }
+      if (isToday) {
+        if (hasonDemand) {
+          let current = timeString(new Date());
+          current = zero(+current.split(':')[0] + 2) + ':00';
+          const index = timeList.indexOf(current);
+          timeList.unshift('now');
+          if (index !== -1) {
+            timeList.splice(1, index);
+            return timeList;
+          } else {
+            if (timeString(new Date()) >= zero(+validTo.split(':')[0] + 1) + ':00') {
+              return [];
+            } else {
+              timeList.length = 1;
+              return timeList;
+            }
+          }
+        } else {
+          return timeList;
+        }
+      } else {
+        return timeList;
+      }
+    } else {
+      let timeList = [];
+      let hasOnDemand = timeString(new Date()) >= validFrom ? 'now' : '';
+      let hour = validFrom.split(':')[0];
+      let minute = validFrom.split(':')[1];
+      hour = minute === '00' ? hour : zero(+hour + 1);
+      minute = minute === '00' ? '30' : '00';
+      validFrom = `${hour}:${minute}`;
+
+      hour = validTo.split(':')[0];
+      minute = validTo.split(':')[1];
+      hour = minute === '00' ? zero(+hour - 1) : hour;
+      minute = minute === '00' ? '30' : '00';
+      validTo = `${hour}:${minute}`;
+
+      let pusher = validFrom;
+      timeList.push(pusher);
+      while (pusher !== validTo) {
+        hour = +pusher.split(':')[0];
+        minute = +pusher.split(':')[1];
+        minute += 15;
+        minute = zero(minute === 60 ? 0 : minute);
+
+        hour = minute === '00' ? zero(hour + 1) : zero(hour);
+        pusher = `${hour}:${minute}`;
+        timeList.push(pusher);
+      }
+
+      if (isToday) {
+        if (hasOnDemand) {
+          let current = timeString(new Date());
+          hour = current.split(':')[0];
+          minute = current.split(':')[1];
+          if (minute >= '00' && minute <= '15') {
+            minute = '15';
+          } else if (minute > '15' && minute <= '30') {
+            minute = '30';
+          } else if (minute > '30' && minute <= '45') {
+            minute = '45';
+          } else if (minute > '45' && minute <= '60') {
+            minute = '60';
+          }
+
+          minute = +minute + 30;
+          if (minute >= 60) {
+            hour = zero(+hour + 1);
+            minute = zero(minute % 60);
+          }
+          current = `${hour}:${minute}`;
+          const index = timeList.indexOf(current);
+          timeList.unshift('now');
+          if (index !== -1) {
+            timeList.splice(1, index);
+            return timeList;
+          } else {
+            if (timeString(new Date()) >= validTo) {
+              return [];
+            } else {
+              timeList.length = 1;
+              return timeList;
+            }
+          }
+        } else {
+          return timeList;
+        }
+      } else {
+        return timeList;
+      }
+    }
+  };
   const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
   // => {"from":2,"to":3}
   const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};

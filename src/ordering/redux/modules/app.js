@@ -149,10 +149,10 @@ export const actions = {
     },
   }),
 
-  loadCoreBusiness: () => dispatch => {
+  loadCoreBusiness: id => dispatch => {
     const { storeId, business } = config;
 
-    return dispatch(fetchCoreBusiness({ business, storeId }));
+    return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
   },
 
   loadCustomerProfile: () => (dispatch, getState) => {
