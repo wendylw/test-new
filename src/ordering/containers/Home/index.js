@@ -137,8 +137,6 @@ export class Home extends Component {
       const {
         validTimeFrom,
         validTimeTo,
-        breakTimeFrom,
-        breakTimeTo,
         validDays,
         enablePreOrder,
         disableOnDemandOrder,
@@ -153,20 +151,10 @@ export class Home extends Component {
         }
 
         while (true) {
-          defaultTime = defaultTime.getTime();
-          if (breakTimeFrom && breakTimeTo) {
-            const breakTimeFromValue = new Date(breakTimeFrom).getTime();
-            const breakTimeToValue = new Date(breakTimeTo).getTime();
-            if (defaultTime >= breakTimeFromValue && defaultTime <= breakTimeToValue) {
-              defaultTime = new Date(defaultTime + 24 * 60 * 60 * 1000);
-              continue;
-            }
-          }
-          defaultTime = new Date(defaultTime);
           if (validDays.indexOf(defaultTime.getDay()) === -1) {
-            defaultTime = defaultTime.getTime();
-            defaultTime = defaultTime + 24 * 60 * 60 * 1000;
-            defaultTime = new Date(defaultTime);
+            let defaultTimeValue = defaultTime.getTime();
+            defaultTimeValue = defaultTimeValue + 24 * 60 * 60 * 1000;
+            defaultTime = new Date(defaultTimeValue);
           } else {
             break;
           }
