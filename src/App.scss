@@ -1113,14 +1113,9 @@ body.loading {
   }
 
   .need-help__info-container,
-  .order-detail__info-container,
   .aside__section-container,
   .cart-pane__operation {
     padding: 10px;
-  }
-
-  .order-detail .list {
-    padding: 10px 0;
   }
 
   .aside-bottom {
@@ -1146,10 +1141,7 @@ body.loading {
     padding: 0 16px;
   }
 
-  .need-help,
-  .order-detail,
-  .modal__header,
-  .customer-numbers {
+  .modal__header {
     padding: 20px;
   }
 
