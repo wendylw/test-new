@@ -8,6 +8,7 @@ import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { post, get } from '../../../utils/request';
 
 const { AUTH_INFO } = Constants;
 
@@ -44,26 +45,30 @@ export const types = APP_TYPES;
 //action creators
 export const actions = {
   loginApp: ({ accessToken, refreshToken }) => ({
-    [API_REQUEST]: {
-      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      ...Url.API_URLS.POST_LOGIN,
-      payload: {
-        accessToken,
-        refreshToken,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
-    },
+    types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
+    requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
+      accessToken,
+      refreshToken,
+      fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+    }).then(resp => {
+      if (resp && resp.consumerId) {
+        window.heap?.identify(resp.consumerId);
+      }
+      return resp;
+    }),
   }),
 
   phoneNumberLogin: ({ phone }) => ({
-    [API_REQUEST]: {
-      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      ...Url.API_URLS.PHONE_NUMBER_LOGIN,
-      payload: {
-        phone,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
-    },
+    types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
+    requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
+      phone,
+      fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+    }).then(resp => {
+      if (resp && resp.consumerId) {
+        window.heap?.identify(resp.consumerId);
+      }
+      return resp;
+    }),
   }),
 
   resetOtpStatus: () => ({
@@ -98,10 +103,17 @@ export const actions = {
   }),
 
   getLoginStatus: () => ({
-    [API_REQUEST]: {
-      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-      ...Url.API_URLS.GET_LOGIN_STATUS,
-    },
+    types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS).then(resp => {
+      if (resp) {
+        if (resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+        } else {
+          window.heap?.resetIdentity();
+        }
+      }
+      return resp;
+    }),
   }),
 
   clearError: () => ({

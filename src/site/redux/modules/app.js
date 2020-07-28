@@ -21,7 +21,16 @@ const types = {
 // @actions
 const queryPing = () => ({
   types: [types.PING_REQUEST, types.PING_SUCCESS, types.PING_FAILURE],
-  requestPromise: get('/api/ping'),
+  requestPromise: get('/api/ping').then(resp => {
+    if (resp) {
+      if (resp.consumerId) {
+        window.heap?.identify(resp.consumerId);
+      } else {
+        window.heap?.resetIdentity();
+      }
+    }
+    return resp;
+  }),
 });
 
 const actions = {

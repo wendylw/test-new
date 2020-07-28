@@ -7,6 +7,7 @@ import Url from '../../../utils/url';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { post, get } from '../../../utils/request';
 
 const { AUTH_INFO } = Constants;
 
@@ -51,28 +52,34 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => ({
-    [API_REQUEST]: {
+  loginApp: ({ accessToken, refreshToken }) => dispatch =>
+    dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      ...Url.API_URLS.POST_LOGIN,
-      payload: {
+      requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
-    },
-  }),
+      }).then(resp => {
+        if (resp && resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+        }
+        return resp;
+      }),
+    }),
 
-  phoneNumberLogin: ({ phone }) => ({
-    [API_REQUEST]: {
+  phoneNumberLogin: ({ phone }) => dispatch =>
+    dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      ...Url.API_URLS.PHONE_NUMBER_LOGIN,
-      payload: {
+      requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
         phone,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
-    },
-  }),
+      }).then(resp => {
+        if (resp && resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+        }
+        return resp;
+      }),
+    }),
 
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
@@ -106,10 +113,17 @@ export const actions = {
   }),
 
   getLoginStatus: () => ({
-    [API_REQUEST]: {
-      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-      ...Url.API_URLS.GET_LOGIN_STATUS,
-    },
+    types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
+      if (resp) {
+        if (resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+        } else {
+          window.heap?.resetIdentity();
+        }
+      }
+      return resp;
+    }),
   }),
 
   setLoginPrompt: prompt => ({

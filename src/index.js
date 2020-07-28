@@ -9,6 +9,7 @@ import './i18n';
 import Bootstrap from './Bootstrap';
 
 import './index.css';
+import Utils from './utils/utils';
 
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
@@ -16,13 +17,12 @@ try {
   // kick off the polyfill!
   smoothscroll.polyfill();
 
-  if (heap && heap.addUserProperties) {
-    heap.addUserProperties({
-      account: config.business,
-    });
-  } else {
-    throw new Error('heap or heap.addUserProperties not defined');
-  }
+  window.heap?.addUserProperties({
+    account: config.business,
+  });
+  window.heap?.addEventProperties({
+    businessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
+  });
 } catch (e) {
   throw e;
 } finally {
