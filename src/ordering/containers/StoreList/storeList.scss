@@ -77,6 +77,7 @@
       p:nth-child(3) {
         color: #303030;
         display: flex;
+        line-height: 24px;
         i {
           margin-right: 5px;
           display: flex;
@@ -88,8 +89,17 @@
           max-width: 100px;
         }
       }
+      p:nth-child(2) {
+        line-height: 18px;
+        margin-top: 3px;
+      }
+      p:nth-child(3) {
+        margin-top: 3px;
+      }
       p:nth-child(4) {
         color: #303030;
+        line-height: 24px;
+        margin-top: 4px;
       }
     }
   }
