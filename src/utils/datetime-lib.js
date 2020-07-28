@@ -128,6 +128,7 @@ export const toLocaleDateString = (date, countryCode, options) => {
 
 // only alias of toLocaleString
 export const toLocaleTimeString = (date, countryCode, options) => {
+  console.log(toLocaleString(date, countryCode, options));
   return toLocaleString(date, countryCode, options);
 };
 

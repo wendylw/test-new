@@ -5,15 +5,15 @@ describe('utils/datetime-lib', () => {
     const check = (str, value) => {
       expect(toNumericTime(new Date(str), 'MY')).toBe(value);
     };
-    check('2020-01-01T01:02:03+08:00', '1:02 AM');
-    check('2020-01-01T13:02:03+08:00', '1:02 PM');
+    check('2020-01-01T01:02:03+08:00', '01:02 AM');
+    check('2020-01-01T13:02:03+08:00', '01:02 PM');
   });
 
   it('toNumericTimeRange', () => {
     const check = (str1, str2, value) => {
       expect(toNumericTimeRange(new Date(str1), new Date(str2), 'MY')).toBe(value);
     };
-    check('2020-01-01T01:02:03+08:00', '2020-01-01T01:04:05+08:00', '1:02 AM - 0:04 AM');
+    check('2020-01-01T01:02:03+08:00', '2020-01-01T01:04:05+08:00', '01:02 AM - 01:04 AM');
   });
 
   it('toDayDateMonth', () => {

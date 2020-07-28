@@ -67,7 +67,6 @@ export const actions = {
 
 const error = (state = initialState.error, action) => {
   const { type, code, message } = action;
-
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
   } else if (code && code !== 401 && code < 40000) {
