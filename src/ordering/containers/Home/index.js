@@ -39,6 +39,8 @@ const localState = {
   blockScrollTop: 0,
 };
 
+const SCROLL_DEPTH_DENOMINATOR = 4;
+
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
   state = {
@@ -47,11 +49,32 @@ export class Home extends Component {
     offlineStoreModal: false,
     dScrollY: 0,
   };
+
+  scrollDepthNumerator = 0;
+
   handleScroll = () => {
     const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+    this.trackScrollDepth();
     this.setState({
       dScrollY: documentScrollY,
     });
+  };
+
+  // copied and modified from https://docs.heap.io/docs/scroll-tracking
+  trackScrollDepth = () => {
+    if (!this.props.categories || !this.props.categories.length) {
+      return;
+    }
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const segmentHeight = scrollHeight / SCROLL_DEPTH_DENOMINATOR;
+    const scrollDistance =
+      window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    const divisible = Math.trunc(scrollDistance / segmentHeight);
+    if (this.scrollDepthNumerator < divisible && divisible !== Infinity) {
+      const scrollPercent = divisible * (100 / SCROLL_DEPTH_DENOMINATOR);
+      window.heap?.track('ordering.home.product-list.scroll', { percent: scrollPercent });
+      this.scrollDepthNumerator += 1;
+    }
   };
 
   get navBackUrl() {
