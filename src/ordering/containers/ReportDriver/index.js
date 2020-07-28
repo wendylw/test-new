@@ -192,7 +192,7 @@ class ReportDriver extends Component {
 
   renderNotesField({ t, inputNotes, disabled, required }) {
     return (
-      <div className="">
+      <div className="padding-top-bottom-small margin-top-bottom-smaller">
         <h3 className="margin-smaller">
           <span className="text-weight-bolder">{t('Notes')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
@@ -218,7 +218,7 @@ class ReportDriver extends Component {
 
   renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled, required }) {
     return (
-      <div className="">
+      <div className="padding-top-bottom-small margin-top-bottom-smaller">
         <h3 className="margin-smaller">
           <span className="text-weight-bolder">{t('UploadPhoto')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
@@ -290,8 +290,8 @@ class ReportDriver extends Component {
           navFunc={this.handleGoBack}
         ></Header>
 
-        <div className="ordering-report-driver__container">
-          <div className="card">
+        <div className="ordering-report-driver__container padding-top-bottom-small">
+          <div className="card padding-small margin-normal">
             <h3 className="margin-smaller text-weight-bolder">{t('SelectAReportReason')}</h3>
             <ul className="margin-smaller">
               {REPORT_DRIVER_REASONS.map(reason => ({
@@ -341,14 +341,16 @@ class ReportDriver extends Component {
                 })
               : null}
 
-            <button
-              className="button button__block button__fill text-uppercase text-weight-bolder"
-              data-heap-name="ordering.report-driver.submit-btn"
-              disabled={this.isSubmitButtonDisable()}
-              onClick={this.handleSubmit}
-            >
-              {this.renderSubmitButtonContent()}
-            </button>
+            <div className="margin-smaller">
+              <button
+                className="button button__block button__fill text-uppercase text-weight-bolder"
+                data-heap-name="ordering.report-driver.submit-btn"
+                disabled={this.isSubmitButtonDisable()}
+                onClick={this.handleSubmit}
+              >
+                {this.renderSubmitButtonContent()}
+              </button>
+            </div>
           </div>
         </div>
       </section>

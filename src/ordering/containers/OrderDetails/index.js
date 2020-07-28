@@ -7,6 +7,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 
 import { actions as thankYouActionCreators, getOrder, getPromotion } from '../../redux/modules/thankYou';
+import './OrderingDetails.scss';
 
 export class OrderDetails extends Component {
   state = {};
@@ -100,7 +101,7 @@ export class OrderDetails extends Component {
           }
         >
           <button
-            className="flex__shrink-fixed text-uppercase"
+            className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
             onClick={this.handleVisitMerchantInfoPage}
             data-heap-name="ordering.order-detail.contact-us-btn"
           >
