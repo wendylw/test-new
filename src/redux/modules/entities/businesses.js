@@ -6,7 +6,7 @@ const reducer = (state = initialState, action) => {
   if (action.responseGql) {
     const { data } = action.responseGql;
 
-    if (data.business) {
+    if (data.business && data.business.country) {
       const { business } = data;
       return { ...state, [business.name]: business, loaded: true };
     }

@@ -4,7 +4,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLeftArrow, IconAccessTime } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLeftArrow } from '../../../components/Icons';
 import ProductDetail from './components/ProductDetail';
 import MiniCartListModal from './components/MiniCartListModal';
 import DeliveryDetailModal from './components/DeliveryDetailModal';
@@ -19,6 +19,8 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
+import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
+import { actions as appActionsCreators } from '../../redux/modules/app';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -33,8 +35,8 @@ import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
-import locationIcon from '../../../images/Pin.svg';
-
+import locationIcon from '../../../images/beep_home_location.svg';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 const localState = {
   blockScrollTop: 0,
 };
@@ -46,7 +48,10 @@ export class Home extends Component {
     alcoholModal: false,
     offlineStoreModal: false,
     dScrollY: 0,
+    deliveryBar: false,
+    alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
   };
+
   handleScroll = () => {
     const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
     this.setState({
@@ -63,13 +68,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { history, homeActions, requestInfo, deliveryInfo } = this.props;
-    const { tableId, storeId } = requestInfo;
-    const { h } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    if (!h || !storeId || tableId === 'DEMO') {
-      window.location.href = '/';
-    }
+    const { homeActions, deliveryInfo } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
@@ -78,14 +77,165 @@ export class Home extends Component {
 
     this.handleDeliveryTimeInSession();
 
-    homeActions.loadProductList();
+    await homeActions.loadProductList();
+
     window.addEventListener('scroll', this.handleScroll);
 
     const pageRf = this.getPageRf();
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
+
+    await this.props.appActions.loadCoreBusiness();
+
+    if (!this.props.deliveryInfo.enablePreOrder) {
+      Utils.setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from: 'now',
+          to: 'now',
+        })
+      );
+    }
+    this.checkRange();
+    this.checkOrderTime();
   };
+
+  checkRange = () => {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
+      const { businessInfo } = this.props;
+      let { stores, qrOrderingSettings } = businessInfo;
+      const { deliveryRadius } = qrOrderingSettings;
+      if (stores.length) {
+        stores = stores[0];
+        const { location } = stores;
+        const distance = computeStraightDistance(JSON.parse(Utils.getSessionVariable('deliveryAddress')).coords, {
+          lat: location.latitude,
+          lng: location.longitude,
+        });
+
+        if (distance / 1000 > deliveryRadius) {
+          let { search } = window.location;
+          // search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
+          const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+          Utils.setSessionVariable('outRange', deliveryRadius);
+          this.props.history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+            search: `${search}&callbackUrl=${callbackUrl}`,
+          });
+        }
+      }
+    }
+  };
+
+  checkOrderTime = async () => {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
+      const { businessInfo } = this.props;
+      const {
+        validTimeFrom,
+        validTimeTo,
+        validDays,
+        enablePreOrder,
+        disableOnDemandOrder,
+      } = businessInfo.qrOrderingSettings;
+
+      if (!Utils.getSessionVariable('expectedDeliveryDate')) {
+        // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
+
+        let defaultTime = new Date(); //TODO 应该用商家本地时间
+        if (!validDays.length) {
+          return;
+        }
+        let times = 0;
+        while (validDays.indexOf(defaultTime.getDay()) === -1) {
+          times++;
+          defaultTime = defaultTime.setDate(defaultTime.getDate() + 1);
+          if (times > 30) {
+            break;
+          }
+        }
+
+        const currentTime = new Date(); //TODO 应该用商家本地时间
+
+        if (defaultTime.getMonth() === currentTime.getMonth() && defaultTime.getDate() === currentTime.getDate()) {
+          Utils.setSessionVariable(
+            'expectedDeliveryDate',
+            JSON.stringify({
+              date: defaultTime.toISOString(),
+              isOpen: true,
+              isToday: true,
+            })
+          );
+        } else {
+          Utils.setSessionVariable(
+            'expectedDeliveryDate',
+            JSON.stringify({
+              date: defaultTime.toISOString(),
+              isOpen: true,
+              isToday: false,
+            })
+          );
+        }
+      }
+      if (!Utils.getSessionVariable('expectedDeliveryHour')) {
+        let deliverDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
+        if (deliverDate.isToday) {
+          const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, true);
+          if (timeList.length) {
+            let first = timeList[0];
+            let expectedDeliveryHour;
+            if (first === 'now') {
+              if (disableOnDemandOrder) {
+                first = timeList[1];
+                expectedDeliveryHour = {
+                  from: first,
+                  to: Utils.zero(+first.split(':')[0] + 1) + ':00',
+                };
+              } else {
+                expectedDeliveryHour = {
+                  from: 'now',
+                  to: 'now',
+                };
+              }
+            } else if (enablePreOrder) {
+              expectedDeliveryHour = {
+                from: first,
+                to: Utils.zero(+first.split(':')[0] + 1) + ':00',
+              };
+            }
+            Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
+          }
+        } else {
+          if (enablePreOrder) {
+            const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, false);
+            let first = timeList[0];
+            Utils.setSessionVariable(
+              'expectedDeliveryHour',
+              JSON.stringify({
+                from: first,
+                to: Utils.zero(+first.split(':')[0] + 1) + ':00',
+              })
+            );
+          } else {
+            Utils.setSessionVariable(
+              'expectedDeliveryHour',
+              JSON.stringify({
+                from: 'now',
+                to: 'now',
+              })
+            );
+          }
+        }
+      }
+      this.setState({
+        deliveryBar: true,
+      });
+    }
+  };
+
   setAlcoholModalState = val => {
     this.setState({
       alcoholModal: val,
@@ -101,8 +251,9 @@ export class Home extends Component {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
     const { deliveryInfo } = this.props;
     const pageRf = this.getPageRf();
+    const { sellAlcohol } = deliveryInfo;
+
     if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
-      const { sellAlcohol } = deliveryInfo;
       if (sellAlcohol) {
         this.setAlcoholModalState(sellAlcohol);
       }
@@ -225,7 +376,7 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { t, history, deliveryInfo } = this.props;
+    const { history, deliveryInfo } = this.props;
 
     if (!deliveryInfo) {
       return null;
@@ -244,15 +395,18 @@ export class Home extends Component {
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
       history.push({
-        pathname: enablePreOrder
-          ? Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE
-          : Constants.ROUTER_PATHS.ORDERING_LOCATION,
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
         search: `${search}&callbackUrl=${callbackUrl}`,
       });
     };
+    const { businessInfo } = this.props;
+    const { stores = [] } = businessInfo;
 
-    if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
-      return (
+    let pickupAddress = '';
+    if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
+    // if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
+    return (
+      config.storeId && (
         <div
           className="location-page__entry item"
           onClick={fillInDeliverToAddress}
@@ -275,25 +429,24 @@ export class Home extends Component {
               />
             ) : null}
             <div className="location-page__base-info">
-              <summary className="item__title text-uppercase font-weight-bolder">
-                {Utils.isDeliveryType() && t('DeliverTo')}
-                {Utils.isPickUpType() && t('PickUpOn')}
-              </summary>
-              {Utils.isDeliveryType() ? (
-                <p className="location-page__entry-address">
-                  {' '}
-                  <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
-                  {deliveryToAddress}
-                </p>
-              ) : null}
+              <p
+                className="location-page__entry-address"
+                style={{ fontSize: '14px', lineHeight: '22px', display: 'flex', maxHeight: '22px' }}
+              >
+                {' '}
+                <img className="location-page__entry-address__icon" src={locationIcon} alt="" />
+                {Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+              </p>
+
               {this.renderDeliveryDate()}
             </div>
-            {isValidTimeToOrder || enablePreOrder ? <IconEdit className="location-page__edit" /> : null}
+            <IconEdit className="location-page__edit" />
           </div>
         </div>
-      );
-    }
-    return null;
+      )
+    );
+    // }
+    // return null;
   }
 
   getExpectedDeliveryTime = () => {
@@ -329,16 +482,33 @@ export class Home extends Component {
 
     const { enablePreOrder } = deliveryInfo;
     let deliveryTimeText = t('DeliverNow');
-    const isPickUpType = Utils.isPickUpType();
 
     if (enablePreOrder) {
       deliveryTimeText = this.getExpectedDeliveryTime();
     }
 
     return (
-      <div className="location-page__entry-address pick-up flex flex-middle">
-        {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle" /> : null}
-        <p>{deliveryTimeText}</p>
+      <div
+        className="location-page__entry-address pick-up flex flex-middle"
+        style={{
+          color: '#333',
+          lineHeight: '100%',
+          paddingLeft: '20px',
+          maxHeight: '26px',
+          fontSize: '12px',
+          fontWeight: '500',
+        }}
+      >
+        <summary
+          className="item__title text-uppercase font-weight-bold inline-block"
+          style={{ lineHeight: '22px', fontWeight: '600', fontSize: '12px' }}
+        >
+          {Utils.isDeliveryType() && t('DeliverAt')}
+          {Utils.isPickUpType() && t('PickUpOn')}&nbsp;.&nbsp;
+          {deliveryTimeText}
+        </summary>
+        {/* {isPickUpType ? <IconAccessTime className="icon icon__small icon__gray text-middle flex" /> : null} */}
+        {/* <span style={{fontSize: '12px', fontWeight: '600'}}></span> */}
       </div>
     );
   };
@@ -421,6 +591,7 @@ export class Home extends Component {
     // this.setState({
     //   alcoholModal: !isAgeLegal,
     // });
+    Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
   isCountryNeedAlcoholPop = country => {
@@ -467,10 +638,10 @@ export class Home extends Component {
     }
     return (
       <section className={classList.join(' ')}>
-        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) ? (
+        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null}
-        {this.renderDeliverToBar()}
+        {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping &&
         freeShippingMinAmount &&
@@ -506,7 +677,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        {!Utils.isDeliveryType() && !Utils.isPickUpType() ? null : (
+        {(Utils.isDeliveryType() || Utils.isPickUpType()) && validTimeFrom && validTimeTo && (
           <DeliveryDetailModal
             onlineStoreInfo={onlineStoreInfo}
             businessInfo={businessInfo}
@@ -555,11 +726,14 @@ export default compose(
         businessLoaded: getBusinessIsLoaded(state),
         popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
+        // hashcode: getStoreHashCode(state)
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
+      storesActions: bindActionCreators(storesActionCreators, dispatch),
+      appActions: bindActionCreators(appActionsCreators, dispatch),
     })
   )
 )(Home);
