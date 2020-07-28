@@ -11,11 +11,15 @@ if (process.env.REACT_APP_SENTRY_DSN) {
   });
 
   // inject xhr and fetch to inspect error
+  const isRelativePath = url => {
+    // https://stackoverflow.com/questions/10687099/how-to-test-if-a-url-string-is-absolute-or-relative
+    return !/^(?:[a-z]+:)?\/\//.test(url);
+  };
   const originXHROpen = window.XMLHttpRequest.prototype.open;
   window.XMLHttpRequest.prototype.open = function() {
     const url = arguments[1];
     this.addEventListener('load', function() {
-      if (this.status >= 500) {
+      if (isRelativePath(url) && this.status >= 500) {
         Sentry.withScope(scope => {
           scope.setFingerprint(['{{default}}', url]);
           Sentry.captureException(new Error(`Encountered server error on url ${url}`));
@@ -28,10 +32,11 @@ if (process.env.REACT_APP_SENTRY_DSN) {
   const originFetch = window.fetch;
   window.fetch = function fetch(...args) {
     var promise = originFetch(...args).then(resp => {
-      if (resp.status >= 500) {
+      const { url } = resp;
+      if (isRelativePath(url) && resp.status >= 500) {
         Sentry.withScope(scope => {
-          scope.setFingerprint(['{{default}}', resp.url]);
-          Sentry.captureException(new Error(`Encountered server error on url ${resp.url}`));
+          scope.setFingerprint(['{{default}}', url]);
+          Sentry.captureException(new Error(`Encountered server error on url ${url}`));
         });
       }
       return resp;
