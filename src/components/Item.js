@@ -9,7 +9,6 @@ import './Item.scss';
 export class Item extends Component {
   render() {
     const {
-      t,
       children,
       className,
       contentClassName,

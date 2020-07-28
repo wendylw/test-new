@@ -5,10 +5,9 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
-import img from '../../../images/beep-logo.svg';
-import checked from '../../../images/select.svg';
+import Image from '../../../components/Image';
+import { IconChecked } from '../../../components/Icons';
 
-import './storeList.scss';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
@@ -16,6 +15,7 @@ import { IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import './storeList.scss';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
@@ -38,7 +38,7 @@ const StoreListItem = props => (
     <p>
       {props.t('openingHours')}: {props.openingHouers}
     </p>
-    <p>{props.storeId === props.store.id && <img src={checked} alt="" />}</p>
+    <p>{props.storeId === props.store.id && <IconChecked />}</p>
   </div>
 );
 class StoreList extends Component {
@@ -144,30 +144,36 @@ class StoreList extends Component {
       item =>
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
     );
+
+    const { t, history, onlineStoreInfo } = this.props;
+
     // stores = stores.filter(item => this.isShowStore(item));
     return (
-      (this.props.onlineStoreInfo && (
+      (onlineStoreInfo && (
         <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
           <Header
-            className="has-right flex-middle"
+            className="flex-middle"
+            contentClassName="flex-middle"
             isPage={true}
-            title={'Select store'}
             data-heap-name="ordering.store-list.header"
+            title={t('SelectStore')}
             navFunc={() => {
-              this.props.history.go(-1);
+              history.go(-1);
             }}
           />
-          <div className="stores-info">
-            <img src={this.props.onlineStoreInfo.logo} alt="" />
-            <div className="stores-info-detail">
-              <p>{this.props.onlineStoreInfo.storeName}</p>
-              <p>{this.props.onlineStoreInfo.businessType}</p>
-              <p>
+          <div className="flex flex-top padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider">
+            <Image className="logo logo__big margin-left-right-smaller" src={onlineStoreInfo.logo} />
+            <summary className="padding-left-right-small">
+              <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">
+                {onlineStoreInfo.storeName}
+              </h2>
+              <p className="margin-top-bottom-smaller text-size-smaller">{onlineStoreInfo.businessType}</p>
+              <p className="margin-top-bottom-smaller text-size-small">
                 {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
                   ? `${stores.length} outlets near you`
                   : `Total ${stores.length} outlets`}
               </p>
-            </div>
+            </summary>
           </div>
           <div className="stores-list">
             {stores.map(item => (

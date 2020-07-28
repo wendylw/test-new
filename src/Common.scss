@@ -329,6 +329,11 @@ img {
   margin-right: 2.4vw;
 }
 
+.margin-left-right-normal {
+  margin-left: 3.8vw;
+  margin-right: 3.8vw;
+}
+
 .margin-normal {
   margin: 3.8vw;
 }
@@ -838,9 +843,14 @@ img {
     object-position: center;
   }
 
-  &__big {
+  &__bigger {
     width: 100px;
     height: 100px;
+  }
+
+  &__big {
+    width: 72px;
+    height: 72px;
   }
 
   &__normal {
@@ -945,6 +955,11 @@ img {
   .margin-left-right-smaller {
     margin-left: 8px;
     margin-right: 8px;
+  }
+
+  .margin-left-right-normal {
+    margin-left: 16px;
+    margin-right: 16px;
   }
 
   .margin-normal {

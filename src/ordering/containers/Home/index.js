@@ -642,10 +642,7 @@ export class Home extends Component {
       <React.Fragment>
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping &&
-        freeShippingMinAmount &&
-        Utils.isDeliveryType() &&
-        this.state.dScrollY < adBarHeight ? (
+        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p className="ordering-home__delivery-fee padding-small text-center">
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above

@@ -132,8 +132,7 @@ class OnlineBanking extends Component {
   }
 
   render() {
-    const { t, match, history, bankingList, cartSummary, onlineStoreInfo, currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
+    const { t, match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const { agentCode, payNowLoading } = this.state;
@@ -159,7 +158,7 @@ class OnlineBanking extends Component {
         />
 
         <div className="ordering-banking__container padding-top-bottom-normal">
-          <Image className="ordering-banking__logo logo logo__big margin-normal" src={logo} />
+          <Image className="ordering-banking__logo logo logo__bigger margin-normal" src={logo} />
           <div className="text-center padding-top-bottom-normal">
             <CurrencyNumber className="text-center text-size-large text-weight-bolder" money={total || 0} />
           </div>

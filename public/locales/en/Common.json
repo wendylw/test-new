@@ -153,5 +153,6 @@
   "IncorrectCvc": "Incorrect Cvc",
   "UnknownError": "Unknown Error",
   "OnlineBanking": "Online Banking",
-  "CreditAndDebitCard": "Credit/Debit Card"
+  "CreditAndDebitCard": "Credit/Debit Card",
+  "SelectStore": "Select a Store"
 }
