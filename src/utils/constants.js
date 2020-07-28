@@ -28,6 +28,7 @@ const ROUTER_PATHS = {
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   MERCHANT_INFO: '/need-help',
+  ORDERING_STORE_LIST: '/storeList',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
@@ -234,6 +235,12 @@ const ORDER_STATUS = {
   PICKED_UP: 'pickedUp',
 };
 
+const COLLECTIONS_TYPE = {
+  ICON: 'Icon',
+  OTHERS: 'SearchOthers',
+  POPULAR: 'SearchPopular',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -266,4 +273,5 @@ export default {
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
+  COLLECTIONS_TYPE,
 };

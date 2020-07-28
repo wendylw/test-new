@@ -7,9 +7,11 @@ import { ScrollObserver, ScrollObservable } from '../../../../../components/Scro
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionsCreator, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
-
+import Utils from '../../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
-
+import Constants from '../../../../../utils/constants';
+import { withRouter } from 'react-router-dom';
+import config from '../../../../../config';
 class CategoryProductList extends Component {
   prevCategory = null;
 
@@ -30,6 +32,18 @@ class CategoryProductList extends Component {
   };
 
   handleIncreaseProductInCart = async product => {
+    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId) {
+      const { search } = window.location;
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        search: `${search}&callbackUrl=${callbackUrl}`,
+      });
+      return;
+    }
+
     const { onToggle } = this.props;
 
     try {
@@ -181,4 +195,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionsCreator, dispatch),
     })
   )
-)(CategoryProductList);
+)(withRouter(CategoryProductList));

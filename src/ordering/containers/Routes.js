@@ -21,6 +21,7 @@ const LocationAndDate = lazy(() => import('./LocationAndDate'));
 const Promotion = lazy(() => import('./Promotion'));
 const ReportDriver = lazy(() => import('./ReportDriver'));
 const PageLogin = lazy(() => import('./PageLogin'));
+const StoreList = lazy(() => import('./StoreList'));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -49,6 +50,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={PageLogin} />
+            <Route exact path={ROUTER_PATHS.ORDERING_STORE_LIST} component={StoreList} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>

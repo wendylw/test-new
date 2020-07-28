@@ -1,0 +1,26 @@
+.search-popular {
+  &__container {
+    flex-wrap: wrap;
+  }
+
+  &__category {
+    margin-right: 12px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+.search-other {
+  &__category {
+    border-bottom: 1px solid rgb(222, 222, 223);
+  }
+
+  &__name {
+    display: inline-block;
+    color: #8f9092;
+    height: 24px;
+    vertical-align: middle;
+    line-height: 24px;
+  }
+}
