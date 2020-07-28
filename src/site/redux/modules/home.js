@@ -106,6 +106,7 @@ const fetchStoreList = () => (dispatch, getState) => {
       { signal: refreshFetchStoreListAbortController() }
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
+        window.heap?.track('site.home.store-list.load-page', { Page: page });
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
       }
