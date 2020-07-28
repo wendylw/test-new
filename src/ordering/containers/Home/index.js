@@ -152,7 +152,7 @@ export class Home extends Component {
         let times = 0;
         while (validDays.indexOf(defaultTime.getDay()) === -1) {
           times++;
-          defaultTime = defaultTime.setDate(defaultTime.getDate() + 1);
+          defaultTime.setDate(defaultTime.getDate() + 1);
           if (times > 30) {
             break;
           }
