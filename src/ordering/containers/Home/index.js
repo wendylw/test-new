@@ -151,9 +151,7 @@ export class Home extends Component {
         }
 
         while (validDays.indexOf(defaultTime.getDay()) === -1) {
-          let defaultTimeValue = defaultTime.getTime();
-          defaultTimeValue = defaultTimeValue + 24 * 60 * 60 * 1000;
-          defaultTime = new Date(defaultTimeValue);
+          defaultTime = defaultTime.setDate(defaultTime.getDate() + 1);
         }
 
         const currentTime = new Date(); //TODO 应该用商家本地时间
