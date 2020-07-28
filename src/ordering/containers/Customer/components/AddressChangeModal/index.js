@@ -13,6 +13,7 @@ export class AddressChangeModal extends React.Component {
     this.setState({
       show: false,
     });
+    this.props.continue();
   };
   render() {
     const { t, deliveryFee, addressChange } = this.props;
@@ -42,6 +43,7 @@ export class AddressChangeModal extends React.Component {
 AddressChangeModal.propTypes = {
   deliveryFee: PropTypes.number,
   addressChange: PropTypes.bool,
+  continue: PropTypes.func,
 };
 
 AddressChangeModal.defaultProps = {

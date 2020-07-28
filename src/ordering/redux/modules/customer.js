@@ -63,6 +63,12 @@ export const actions = {
 
     dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
   },
+  updateAddressChange: addressChange => dispatch => {
+    dispatch({
+      type: types.PUT_ADDRESS_CHANGE,
+      addressChange,
+    });
+  },
   updateDeliveryDetails: fields => async (dispatch, getState) => {
     const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
