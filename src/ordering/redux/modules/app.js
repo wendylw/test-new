@@ -62,6 +62,11 @@ export const actions = {
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
+          window.heap?.addEventProperties({ LoggedIn: 'yes' });
+          const phone = Utils.getLocalStorageVariable('user.p');
+          if (phone) {
+            window.heap?.addUserProperties({ PhoneNumber: phone });
+          }
         }
         return resp;
       }),
@@ -76,6 +81,11 @@ export const actions = {
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
+          window.heap?.addEventProperties({ LoggedIn: 'yes' });
+          const phone = Utils.getLocalStorageVariable('user.p');
+          if (phone) {
+            window.heap?.addUserProperties({ PhoneNumber: phone });
+          }
         }
         return resp;
       }),
@@ -120,6 +130,7 @@ export const actions = {
           window.heap?.identify(resp.consumerId);
         } else {
           window.heap?.resetIdentity();
+          window.heap?.addEventProperties({ LoggedIn: 'no' });
         }
       }
       return resp;
