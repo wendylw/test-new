@@ -255,7 +255,9 @@ class Customer extends Component {
       </div>
     );
   };
-
+  AddressChangeModalContinue = () => {
+    this.props.customerActions.updateAddressChange(false);
+  };
   handleInputChange = e => {
     const inputValue = e.target.value;
     e.target.name === 'addressDetails' &&
@@ -502,7 +504,11 @@ class Customer extends Component {
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
-        <AddressChangeModal deliveryFee={shippingFee} addressChange={addressChange} />
+        <AddressChangeModal
+          deliveryFee={shippingFee}
+          addressChange={addressChange}
+          continue={this.AddressChangeModalContinue}
+        />
       </section>
     );
   }
@@ -528,7 +534,6 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
