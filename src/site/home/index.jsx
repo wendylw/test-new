@@ -176,9 +176,7 @@ class Home extends React.Component {
         <DeliverToBar
           heapContentName="site.home.delivery-bar"
           title={t('DeliverTo')}
-          icon={
-            <IconLocation className="icon icon__smaller margin-top-bottom-smallest text-middle flex__shrink-fixed" />
-          }
+          icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
           className={`entry__deliver-to base-box-shadow ${
             this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
           }`}

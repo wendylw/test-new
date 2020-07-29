@@ -238,6 +238,7 @@ export class Home extends Component {
           }
         }
       }
+
       this.setState({
         deliveryBar: true,
       });
@@ -430,7 +431,7 @@ export class Home extends Component {
     const { stores = [] } = businessInfo;
     const pickupAddress = stores.length ? Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY) : '';
 
-    if (config.storeId) {
+    if (!config.storeId) {
       return (
         <DeliverToBar
           deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
@@ -454,7 +455,7 @@ export class Home extends Component {
           gotoLocationPage={fillInDeliverToAddress}
           icon={
             Utils.isDeliveryType() ? (
-              <IconLocation className="icon icon__smaller margin-top-bottom-smallest text-middle flex__shrink-fixed" />
+              <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
             ) : null
           }
         >
