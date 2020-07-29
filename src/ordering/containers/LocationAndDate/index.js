@@ -465,7 +465,6 @@ class LocationAndDate extends Component {
       }
     });
     if (breakStartIndex !== undefined && breakEndIndex !== undefined) {
-      debugger;
       list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
     } else if (breakEndIndex !== undefined && breakInImd !== undefined) {
       list.splice(0, breakEndIndex + 1);
