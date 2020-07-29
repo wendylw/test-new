@@ -261,7 +261,7 @@ class LocationAndDate extends Component {
         });
       }
     });
-    stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+    stores = stores.filter(item => item.qrOrderingSettings && item.qrOrderingSettings.enableLiveOnline);
     stores = stores.filter(item => {
       const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
 

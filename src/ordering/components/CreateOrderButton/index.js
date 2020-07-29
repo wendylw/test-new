@@ -9,18 +9,43 @@ import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
+import Constants from '../../../utils/constants';
+
+const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
+  componentDidMount() {
+    this.visitCustomerPage();
+  }
+
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isLogin } = user || {};
     const { sentOtp, cartSummary } = this.props;
     const { total } = cartSummary || {};
 
+    if (!isLogin && isLogin !== this.props.user.isLogin) {
+      this.visitCustomerPage();
+    }
+
     if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
       this.handleCreateOrder();
     }
   }
+
+  visitCustomerPage = () => {
+    const { history, user } = this.props;
+    const { isLogin } = user || {};
+    const { location } = history || {};
+    const { pathname } = location || {};
+
+    if (!isLogin && pathname !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+      });
+    }
+  };
 
   handleCreateOrder = async () => {
     const {

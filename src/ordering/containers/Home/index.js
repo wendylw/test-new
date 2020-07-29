@@ -134,13 +134,8 @@ export class Home extends Component {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
-      const {
-        validTimeFrom,
-        validTimeTo,
-        validDays,
-        enablePreOrder,
-        disableOnDemandOrder,
-      } = businessInfo.qrOrderingSettings;
+      const { qrOrderingSettings } = businessInfo || {};
+      const { validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
 
       if (!Utils.getSessionVariable('expectedDeliveryDate')) {
         // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
@@ -400,11 +395,11 @@ export class Home extends Component {
       });
     };
     const { businessInfo } = this.props;
-    const { stores = [] } = businessInfo;
+    const { stores = [] } = businessInfo || {};
 
     let pickupAddress = '';
     if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    // if ((isValidTimeToOrder && !(Utils.isPickUpType() && !enablePreOrder)) || (!isValidTimeToOrder && enablePreOrder)) {
+
     return (
       config.storeId && (
         <div
@@ -445,8 +440,6 @@ export class Home extends Component {
         </div>
       )
     );
-    // }
-    // return null;
   }
 
   getExpectedDeliveryTime = () => {
