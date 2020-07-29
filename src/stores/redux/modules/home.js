@@ -15,6 +15,7 @@ export const initialState = {
   enableDelivery: false,
   storeIds: [],
   currentOrderMethod: '',
+  deliveryRadius: 0,
 };
 
 export const types = {
@@ -143,6 +144,8 @@ export const getOneStoreInfo = (state, storeId) => {
 export const getDeliveryStatus = state => state.home.enableDelivery;
 export const getCurrentStoreId = state => state.home.currentStoreId;
 export const getStoreHashCode = state => state.home.storeHashCode;
+export const getDeliveryRadius = state => state.home.deliveryRadius;
+
 export const showStores = state => !state.home.isFetching;
 
 export const isStoreClosed = state => {

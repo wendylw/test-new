@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E9568CD4-46CB-4EE8-9DEC-0A0EB3E7ABD5</title>
+    <defs>
+        <path d="M11.865,18.48 L12.315,17.955 C12.695,17.505 13.055,17.045 13.395,16.575 C13.885,15.905 14.32,15.26 14.7,14.64 C15.16,13.86 15.52,13.135 15.78,12.465 C16.08,11.675 16.23,10.975 16.23,10.365 C16.23,9.565 16.035,8.83 15.645,8.16 C15.255,7.5 14.73,6.975 14.07,6.585 C13.4,6.195 12.665,6 11.865,6 C11.065,6 10.33,6.195 9.66,6.585 C9,6.975 8.475,7.5 8.085,8.16 C7.695,8.83 7.5,9.565 7.5,10.365 C7.5,10.975 7.65,11.675 7.95,12.465 C8.21,13.135 8.57,13.86 9.03,14.64 C9.41,15.26 9.845,15.905 10.335,16.575 C10.675,17.045 11.035,17.505 11.415,17.955 L11.415,17.955 L11.865,18.48 Z M11.865,11.91 C11.435,11.91 11.07,11.76 10.77,11.46 C10.47,11.16 10.32,10.795 10.32,10.365 C10.32,10.085 10.39,9.825 10.53,9.585 C10.67,9.345 10.8575,9.155 11.0925,9.015 C11.3275,8.875 11.585,8.805 11.865,8.805 C12.145,8.805 12.405,8.875 12.645,9.015 C12.885,9.155 13.075,9.345 13.215,9.585 C13.355,9.825 13.425,10.085 13.425,10.365 C13.425,10.645 13.355,10.9025 13.215,11.1375 C13.075,11.3725 12.885,11.56 12.645,11.7 C12.405,11.84 12.145,11.91 11.865,11.91 Z" id="path-1"></path>
+    </defs>
+    <g id="Pre-Order-V3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="02---Add-To-Cart---Delivery---Empty" transform="translate(-8.000000, -10.000000)">
+            <g id="Organisms/Bars/Merchant/Direct/Delivery">
+                <g id="Molecules/Bars/Delivery/Address-+-No-Back">
+                    <g id="Delivery-Address" transform="translate(8.000000, 10.000000)">
+                        <g id="Variables/Icon/Pin">
+                            <g id="Icon">
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use id="" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                                <g id="Variables/Palette/Neutrals/05-Manatee" mask="url(#mask-2)" fill="#25272C">
+                                    <rect id="Color" x="0" y="0" width="24" height="24"></rect>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
