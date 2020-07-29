@@ -337,5 +337,6 @@ export const getMerchantCountry = state => {
   if (state.entities.businesses[state.app.business]) {
     return state.entities.businesses[state.app.business].country;
   }
+
   return null;
 };

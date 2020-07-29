@@ -15,7 +15,9 @@ const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount() {
-    this.visitCustomerPage();
+    console.log(this.props);
+
+    // this.visitCustomerPage();
   }
 
   componentDidUpdate(prevProps) {
@@ -24,9 +26,9 @@ class CreateOrderButton extends React.Component {
     const { sentOtp, cartSummary } = this.props;
     const { total } = cartSummary || {};
 
-    if (!isLogin && isLogin !== this.props.user.isLogin) {
-      this.visitCustomerPage();
-    }
+    // if (!isLogin && isLogin !== this.props.user.isLogin) {
+    //   this.visitCustomerPage();
+    // }
 
     if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
       this.handleCreateOrder();
