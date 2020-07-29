@@ -179,7 +179,7 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY' }) => {
     part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
   }
 
-  return `${part1}, ${part2}`;
+  return `${part1}  .  ${part2}`;
 };
 
 export const formatPickupAddress = ({ date, locale }) => {

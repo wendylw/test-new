@@ -196,7 +196,6 @@ const getStoreIds = state => {
   return state.collections[shippingType].storeIds;
 };
 
-export const getCurrentCollection = (state, ownProps) => getCollectionByPath(state, ownProps.match.params.urlPath);
 export const getStoreList = createSelector([getStoreIds, getAllStores], (storeIds, stores) => {
   return storeIds.map(id => stores[id]);
 });
