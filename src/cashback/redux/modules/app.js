@@ -118,6 +118,7 @@ export const actions = {
       if (resp) {
         if (resp.consumerId) {
           window.heap?.identify(resp.consumerId);
+          window.heap?.addEventProperties({ LoggedIn: 'yes' });
         } else {
           window.heap?.resetIdentity();
           window.heap?.addEventProperties({ LoggedIn: 'no' });
