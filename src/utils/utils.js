@@ -23,6 +23,7 @@ Utils.getQueryVariable = variable => {
   }
   return false;
 };
+
 // Utils.isWebview = function isWebview() {
 //   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
 // };

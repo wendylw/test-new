@@ -19,28 +19,30 @@ import './storeList.scss';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
-  <div
-    className="stores-list-item"
-    onClick={() => props.select(props.store)}
-    data-heap-name="ordering.location-and-date.store-item"
-  >
-    <p>{props.store.name}</p>
-    <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
+  <li className="" onClick={() => props.select(props.store)} data-heap-name="ordering.location-and-date.store-item">
+    <h3 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{props.store.name}</h3>
+    <p className="text-size-small text-opacity">{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
     {props.isDeliveryType && (
-      <p>
-        <IconLocation className="header__motor-icon text-middle" />
-        <span className="stores-list-item-distance">{props.store.distance} km</span>
-        <IconMotorcycle className="header__motor-icon text-middle" />
-        <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} />
-        {/* <span className="stores-list-item-fee">{props.store.deliveryFee}</span> */}
-      </p>
+      <ul className="store-info">
+        <li className="store-info__item text-middle">
+          <IconLocation className="icon icon__smaller text-middle" />
+          <span className="store-info__text text-size-smaller text-middle">
+            {props.t('DistanceText', { distance: props.store.distance })}
+          </span>
+        </li>
+        <li className="store-info__item text-middle">
+          <IconMotorcycle className="icon icon__smaller text-middle" />
+          <CurrencyNumber className="store-info__text text-size-smaller text-middle" money={props.store.deliveryFee} />
+        </li>
+      </ul>
     )}
     <p>
       {props.t('openingHours')}: {props.openingHouers}
     </p>
-    <p>{props.storeId === props.store.id && <IconChecked />}</p>
-  </div>
+    <p>{props.storeId === props.store.id && <IconChecked className="icon icon__small icon__primary" />}</p>
+  </li>
 );
+
 class StoreList extends Component {
   constructor(props) {
     super(props);
@@ -167,7 +169,7 @@ class StoreList extends Component {
               <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">
                 {onlineStoreInfo.storeName}
               </h2>
-              <p className="margin-top-bottom-smaller text-size-smaller">{onlineStoreInfo.businessType}</p>
+              <p className="margin-top-bottom-smaller text-size-smaller text-opacity">{onlineStoreInfo.businessType}</p>
               <p className="margin-top-bottom-smaller text-size-small">
                 {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
                   ? `${stores.length} outlets near you`
@@ -175,7 +177,7 @@ class StoreList extends Component {
               </p>
             </summary>
           </div>
-          <div className="stores-list">
+          <ul className="">
             {stores.map(item => (
               <StoreListItem
                 store={item}
@@ -187,7 +189,7 @@ class StoreList extends Component {
                 isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
               />
             ))}
-          </div>
+          </ul>
         </div>
       )) ||
       null

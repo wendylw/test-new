@@ -136,8 +136,6 @@ class LocationAndDate extends Component {
     const { allStore } = this.props;
 
     if (Utils.getSessionVariable('deliveryAddress')) {
-      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-
       if (allStore.length) {
         let stores = allStore;
         let type = Constants.DELIVERY_METHOD.DELIVERY;
@@ -978,9 +976,9 @@ class LocationAndDate extends Component {
 
   goToNext = () => {
     const { history } = this.props;
-    const { selectedDate, selectedHour } = this.state;
+    const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
 
-    if (this.state.isPickUpType) delete selectedHour.to;
+    if (isPickUpType) delete selectedHour.to;
 
     Utils.setExpectedDeliveryTime({
       date: selectedDate,
@@ -992,12 +990,12 @@ class LocationAndDate extends Component {
     if (typeof callbackUrl === 'string') {
       if (callbackUrl.split('?')[0] === '/customer') {
         // from customer
-        this.checkDetailChange(this.state.search);
+        this.checkDetailChange(search);
       } else {
         // from ordering
         window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
           callbackUrl.split('?')[0]
-        }?${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+        }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
         // history.replace({
         //   pathname: callbackUrl.split('?')[0],
         //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
@@ -1062,6 +1060,7 @@ class LocationAndDate extends Component {
 
   renderContinueButton = () => {
     const { t } = this.props;
+
     return (
       <footer
         ref={this.footerRef}
@@ -1081,25 +1080,30 @@ class LocationAndDate extends Component {
   };
 
   goStoreList = () => {
-    if (this.state.search.storeid) {
-      this.props.history.push({
+    const { history } = this.props;
+    const { search, h, isPickUpType, nearlyStore } = this.state;
+
+    if (search.storeid) {
+      history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-        search: `${this.state.search.h ? 'h=' + this.state.h + '&' : ''}storeid=${this.state.search.storeid}&type=${
-          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+        search: `${search.h ? 'h=' + h + '&' : ''}storeid=${search.storeid}&type=${
+          isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
       });
     } else {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-        search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}storeid=${this.state.nearlyStore.id}&type=${
-          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }&callbackUrl=${encodeURIComponent(this.state.search.callbackUrl)}`,
+        search: `${h ? 'h=' + h + '&' : ''}storeid=${nearlyStore.id}&type=${
+          isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+        }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
       });
     }
   };
 
   renderSelectStore = () => {
     const { t } = this.props;
+    const { nearlyStore } = this.state;
+    const { name } = nearlyStore || {};
 
     return (
       <div
@@ -1112,9 +1116,7 @@ class LocationAndDate extends Component {
           {t('SelectedStore')}
         </label>
         <div className="form__group flex flex-middle flex-space-between">
-          <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
-            {this.state.nearlyStore.name}
-          </p>
+          <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">{name}</p>
           <IconNext className="icon icon__normal flex__shrink-fixed" />
         </div>
       </div>
@@ -1122,6 +1124,9 @@ class LocationAndDate extends Component {
   };
 
   render() {
+    const { t } = this.props;
+    const { isDeliveryType, isPickUpType, onlyType, deliveryToAddress } = this.state;
+
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
         <Header
@@ -1133,41 +1138,33 @@ class LocationAndDate extends Component {
           navFunc={this.handleBackClicked}
         />
         <div className="location-date__container">
-          {!this.state.onlyType && (
+          {!onlyType && (
             <ul className="flex flex-middle padding-normal">
               <li
                 className={`location-date__delivery text-center padding-small text-size-big text-weight-bolder ${
-                  this.state.isDeliveryType ? 'active' : ''
+                  isDeliveryType ? 'active' : ''
                 }`}
                 onClick={this.setDeliveryType}
                 data-heap-name="ordering.location-and-date.delivery"
               >
-                {this.props.t('Delivery')}
+                {t('Delivery')}
               </li>
               <li
                 className={`location-date__pickup text-center padding-small text-size-big text-weight-bolder ${
-                  this.state.isPickUpType ? 'active' : ''
+                  isPickUpType ? 'active' : ''
                 }`}
                 onClick={this.setPickUpType}
                 data-heap-name="ordering.location-and-date.pickup"
               >
-                {this.props.t('Pickup')}
+                {t('Pickup')}
               </li>
             </ul>
           )}
-          {this.state.isPickUpType && this.renderSelectStore()}
+          {isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}
-          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderSelectStore() : null) : null}
-          {this.state.isDeliveryType
-            ? this.state.deliveryToAddress
-              ? this.renderDeliveryOn()
-              : null
-            : this.renderDeliveryOn()}
-          {this.state.isDeliveryType
-            ? this.state.deliveryToAddress
-              ? this.renderHourSelector()
-              : null
-            : this.renderHourSelector()}
+          {isDeliveryType ? (deliveryToAddress ? this.renderSelectStore() : null) : null}
+          {isDeliveryType ? (deliveryToAddress ? this.renderDeliveryOn() : null) : this.renderDeliveryOn()}
+          {isDeliveryType ? (deliveryToAddress ? this.renderHourSelector() : null) : this.renderHourSelector()}
         </div>
 
         {this.renderContinueButton()}
