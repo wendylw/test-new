@@ -80,9 +80,9 @@ class LocationPage extends Component {
       this.setState({ storeInfo });
     } catch (e) {
       console.error('fail to load storeInfo', e);
-      // this.setState({
-      //   initError: t('FailToLoadStoreInfo'),
-      // });
+      this.setState({
+        initError: t('FailToLoadStoreInfo'),
+      });
     } finally {
       this.setState({ initializing: false });
     }
