@@ -198,7 +198,3 @@ export default reducer;
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
 export const getStoreLinkInfo = state => state.home.storeLinkInfo;
-export const getStoreCollections = state => {
-  // todo
-  return Object.values(getAllStoreCollections(state));
-};

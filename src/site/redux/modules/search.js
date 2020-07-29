@@ -194,4 +194,3 @@ export const getPageInfo = state => state.search.paginationInfo;
 export const getShippingType = state => state.search.shippingType;
 export const loadedSearchingStores = state => state.search.loadedSearchingStoreList;
 export const getStoreList = state => state.search.storeIds.map(storeId => getStoreById(state, storeId));
-export const getSearchResult = state => state.search.storeIdsSearchResult.map(storeId => getStoreById(state, storeId));

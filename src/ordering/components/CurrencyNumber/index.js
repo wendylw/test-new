@@ -34,7 +34,7 @@ class CurrencyNumber extends React.Component {
 
     return (
       <span className={`text-nowrap ${className}`} data-testid="money">{`${
-        addonBefore ? `${addonBefore} ` : ''
+        addonBefore ? `${addonBefore}` : ''
       }${this.formatChildrenAsMoney()}`}</span>
     );
   }
