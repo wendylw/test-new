@@ -539,7 +539,6 @@ class LocationAndDate extends Component {
     const selectedHour = this.getFirstItemFromTimeList(date);
 
     this.setTimeSlot(date, selectedHour);
-    console.log(selectedHour, 'selectedHour');
     this.setState({
       selectedDate: date,
       selectedHour: '',
