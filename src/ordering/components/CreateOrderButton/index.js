@@ -34,13 +34,17 @@ class CreateOrderButton extends React.Component {
       validCreateOrder,
     } = this.props;
     const { isLogin } = user || {};
-    const { tableId } = requestInfo;
+    const { tableId, storeId } = requestInfo;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
+    }
+
+    if (!storeId) {
+      window.location.reload();
     }
 
     if ((isLogin || type === 'digital') && validCreateOrder) {

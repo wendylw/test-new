@@ -134,8 +134,6 @@ class LocationAndDate extends Component {
     const { allStore } = this.props;
 
     if (Utils.getSessionVariable('deliveryAddress')) {
-      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-
       if (allStore.length) {
         let stores = allStore;
         let type = Constants.DELIVERY_METHOD.DELIVERY;
@@ -486,8 +484,7 @@ class LocationAndDate extends Component {
   };
 
   showLocationSearch = () => {
-    const { history, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { history } = this.props;
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
     search = search.replace(/&?storeid=[^&]*/, '');
