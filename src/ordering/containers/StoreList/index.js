@@ -15,31 +15,45 @@ import { IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import './storeList.scss';
+import './OrderingStores.scss';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
-  <li className="" onClick={() => props.select(props.store)} data-heap-name="ordering.location-and-date.store-item">
-    <h3 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{props.store.name}</h3>
-    <p className="text-size-small text-opacity">{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
-    {props.isDeliveryType && (
-      <ul className="store-info">
-        <li className="store-info__item text-middle">
-          <IconLocation className="icon icon__smaller text-middle" />
-          <span className="store-info__text text-size-smaller text-middle">
-            {props.t('DistanceText', { distance: props.store.distance })}
-          </span>
-        </li>
-        <li className="store-info__item text-middle">
-          <IconMotorcycle className="icon icon__smaller text-middle" />
-          <CurrencyNumber className="store-info__text text-size-smaller text-middle" money={props.store.deliveryFee} />
-        </li>
-      </ul>
+  <li
+    className="flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider"
+    onClick={() => props.select(props.store)}
+    data-heap-name="ordering.location-and-date.store-item"
+  >
+    <summary className="padding-left-right-small">
+      <h3 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{props.store.name}</h3>
+      <p className="margin-top-bottom-smaller text-size-small text-opacity">
+        {Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}
+      </p>
+      {props.isDeliveryType && (
+        <ul className="store-info">
+          <li className="store-info__item text-middle">
+            <IconLocation className="icon icon__smaller text-middle" />
+            <span className="store-info__text text-size-smaller text-middle">
+              {props.t('DistanceText', { distance: props.store.distance })}
+            </span>
+          </li>
+          <li className="store-info__item text-middle">
+            <IconMotorcycle className="icon icon__smaller text-middle" />
+            <CurrencyNumber
+              className="store-info__text text-size-smaller text-middle"
+              money={props.store.deliveryFee}
+            />
+          </li>
+        </ul>
+      )}
+      <p className="margin-top-bottom-smaller text-size-small">
+        {props.t('openingHours')}: {props.openingHouers}
+      </p>
+    </summary>
+
+    {props.storeId === props.store.id && (
+      <IconChecked className="icon icon__small icon__primary flex__shrink-fixed margin-left-right-smallest" />
     )}
-    <p>
-      {props.t('openingHours')}: {props.openingHouers}
-    </p>
-    <p>{props.storeId === props.store.id && <IconChecked className="icon icon__small icon__primary" />}</p>
   </li>
 );
 
@@ -152,7 +166,7 @@ class StoreList extends Component {
     // stores = stores.filter(item => this.isShowStore(item));
     return (
       (onlineStoreInfo && (
-        <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
+        <section className="ordering-stores flex flex-column" data-heap-name="ordering.store-list.container">
           <Header
             className="flex-middle"
             contentClassName="flex-middle"
@@ -163,34 +177,39 @@ class StoreList extends Component {
               history.go(-1);
             }}
           />
-          <div className="flex flex-top padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider">
-            <Image className="logo logo__big margin-left-right-smaller" src={onlineStoreInfo.logo} />
-            <summary className="padding-left-right-small">
-              <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">
-                {onlineStoreInfo.storeName}
-              </h2>
-              <p className="margin-top-bottom-smaller text-size-smaller text-opacity">{onlineStoreInfo.businessType}</p>
-              <p className="margin-top-bottom-smaller text-size-small">
-                {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
-                  ? `${stores.length} outlets near you`
-                  : `Total ${stores.length} outlets`}
-              </p>
-            </summary>
+
+          <div className="ordering-stores__container">
+            <div className="flex flex-top padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider">
+              <Image className="logo logo__big margin-left-right-smaller" src={onlineStoreInfo.logo} />
+              <summary className="padding-left-right-small">
+                <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">
+                  {onlineStoreInfo.storeName}
+                </h2>
+                <p className="margin-top-bottom-smaller text-size-smaller text-opacity">
+                  {onlineStoreInfo.businessType}
+                </p>
+                <p className="margin-top-bottom-smaller text-size-small">
+                  {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
+                    ? `${stores.length} outlets near you`
+                    : `Total ${stores.length} outlets`}
+                </p>
+              </summary>
+            </div>
+            <ul className="">
+              {stores.map(item => (
+                <StoreListItem
+                  store={item}
+                  openingHouers={this.getOpeningHouers(item)}
+                  storeId={this.state.storeid}
+                  select={this.selectStore}
+                  key={item.id}
+                  t={this.props.t}
+                  isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+                />
+              ))}
+            </ul>
           </div>
-          <ul className="">
-            {stores.map(item => (
-              <StoreListItem
-                store={item}
-                openingHouers={this.getOpeningHouers(item)}
-                storeId={this.state.storeid}
-                select={this.selectStore}
-                key={item.id}
-                t={this.props.t}
-                isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
-              />
-            ))}
-          </ul>
-        </div>
+        </section>
       )) ||
       null
     );
