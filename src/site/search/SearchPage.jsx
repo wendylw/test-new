@@ -123,7 +123,9 @@ class SearchPage extends React.Component {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
 
-    const existCollection = popularCollections.length > 0 || otherCollections.length > 0;
+    const existCollection =
+      (popularCollections && popularCollections.length > 0) || (otherCollections && otherCollections.length > 0);
+
     return (
       <React.Fragment>
         {(!existCollection || keyword) && (
