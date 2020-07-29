@@ -8,6 +8,13 @@ import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import '../../../App.scss';
 import Utils from '../../../utils/utils';
+import qs from 'qs';
+import { bindActionCreators, compose } from 'redux';
+import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+
+import { connect } from 'react-redux';
 
 class LocationPage extends Component {
   state = {
@@ -15,10 +22,34 @@ class LocationPage extends Component {
     initError: null,
     storeInfo: {},
     errorToast: '',
+    outRange: Utils.getSessionVariable('outRange'),
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.loadStoreInfo();
+    if (!config.storeId) {
+      await this.props.appActions.loadCoreBusiness();
+      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business];
+
+      this.setState({
+        storeInfo: {
+          radius: qrOrderingSettings.deliveryRadius * 1000,
+          country,
+        },
+      });
+    }
+
+    if (this.state.outRange) {
+      this.setState(
+        {
+          errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
+        },
+        () => {
+          Utils.removeSessionVariable('deliveryAddress');
+          Utils.removeSessionVariable('outRange');
+        }
+      );
+    }
   }
 
   async loadStoreInfo() {
@@ -27,7 +58,7 @@ class LocationPage extends Component {
     try {
       const { business, storeId } = config;
       if (!business || !storeId) {
-        throw new Error('business id or store id is missing.');
+        return;
       }
       const response = await post('/api/gql/CoreBusiness', { business, storeId });
       const { qrOrderingSettings, country } = response.data.business;
@@ -57,29 +88,47 @@ class LocationPage extends Component {
     }
   }
 
-  onSelectPlace = placeInfo => {
+  onSelectPlace = async placeInfo => {
     const { t, history } = this.props;
     const {
       storeInfo: { radius },
     } = this.state;
     const distance = placeInfo.straightDistance;
-    if (distance === Infinity) {
+    const address = {
+      location: {
+        longitude: placeInfo.coords.lng,
+        latitude: placeInfo.coords.lat,
+      },
+    };
+
+    let stores = await this.props.homeActions.loadCoreStores(address);
+    stores = stores.responseGql.data.business.stores;
+    if (!stores.length) {
+      const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
+
       this.setState({
-        errorToast: t(`OutOfDeliveryRangeWrongDistance`, {
-          distance: (radius / 1000).toFixed(1),
-        }),
-      });
-      return;
-    } else if (distance > radius) {
-      this.setState({
-        errorToast: t(`OutOfDeliveryRange`, { distance: (radius / 1000).toFixed(1) }),
+        errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
       });
       return;
     }
+    // if (distance === Infinity) {
+    //   this.setState({
+    //     errorToast: t(`OutOfDeliveryRangeWrongDistance`, {
+    //       distance: (radius / 1000).toFixed(1),
+    //     }),
+    //   });
+    //   return;
+    // } else if (distance > radius) {
+    //   this.setState({
+    //     errorToast: t(`OutOfDeliveryRange`, { distance: (radius / 1000).toFixed(1) }),
+    //   });
+    //   return;
+    // }
+
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
-      history.push(callbackUrl);
+      history.replace(callbackUrl);
     } else {
       history.go(-1);
     }
@@ -116,6 +165,8 @@ class LocationPage extends Component {
   render() {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
         <Header
@@ -129,10 +180,12 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
-            mode="ORIGIN_STORE"
+            mode={config.storeId ? 'ORIGIN_STORE' : 'ORIGIN_DEVICE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
+            detectPosition={true}
+            outRangeSearchText={this.state.outRange && outRangeSearchText}
             onSelect={this.onSelectPlace}
           />
         )}
@@ -143,4 +196,16 @@ class LocationPage extends Component {
   }
 }
 
-export default withTranslation(['OrderingDelivery'])(LocationPage);
+export default compose(
+  withTranslation(['OrderingDelivery']),
+  connect(
+    state => ({
+      business: getBusiness(state),
+      allBusinesses: getAllBusinesses(state),
+    }),
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
+)(LocationPage);
