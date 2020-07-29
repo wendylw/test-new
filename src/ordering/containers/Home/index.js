@@ -150,7 +150,7 @@ export class Home extends Component {
           return;
         }
         let times = 0;
-        while (validDays.indexOf(defaultTime.getDay()) === -1) {
+        while (validDays.indexOf(defaultTime.getDay() || 7) === -1) {
           times++;
           defaultTime.setDate(defaultTime.getDate() + 1);
           if (times > 30) {
