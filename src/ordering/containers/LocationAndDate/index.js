@@ -302,7 +302,7 @@ class LocationAndDate extends Component {
     this.setTimeSlot(date, selectedHour);
     this.setState({
       selectedDate: date,
-      selectedHour,
+      selectedHour: '',
     });
   };
 
@@ -479,8 +479,8 @@ class LocationAndDate extends Component {
     breakTimeFrom = +breakTimeFrom.split(':').join('.');
     breakTimeTo = +breakTimeTo.split(':').join('.');
     const newTimeList = [];
-
-    list.forEach(time => {
+    let breakStartIndex, breakEndIndex, breakInImd;
+    list.forEach((time, index, arr) => {
       const { from, to } = time;
       if (from === 'now') {
         // immediate
@@ -492,33 +492,28 @@ class LocationAndDate extends Component {
         let nowNextHour = +(h + 1 + '.' + m);
 
         if (
-          !(now >= breakTimeFrom && now <= breakTimeTo) &&
-          !(nowNextHour >= breakTimeFrom && nowNextHour <= breakTimeTo)
+          (now >= breakTimeFrom && now <= breakTimeTo) ||
+          (nowNextHour >= breakTimeFrom && nowNextHour <= breakTimeTo)
         ) {
-          newTimeList.push(time);
+          breakInImd = true;
         }
       } else {
-        let timeFrom = new Date(from),
-          timeTo = new Date(to),
-          fh = timeFrom.getHours(),
-          fm = timeFrom.getMinutes(),
-          th = timeTo.getHours(),
-          tm = timeTo.getMinutes();
+        let timeFrom = getHourAndMinuteFromTime(new Date(from));
+        let timeTo = getHourAndMinuteFromTime(new Date(to));
+        let breakTimeFromString = breakTimeFrom + ':00';
+        let breakTimeToString = breakTimeTo + ':00';
 
-        timeFrom = +(fh + '.' + fm);
-        timeTo = +(th + '.' + tm);
-
-        if (
-          !(
-            (timeFrom >= breakTimeFrom && timeFrom <= breakTimeTo) ||
-            (timeTo >= breakTimeFrom && timeTo <= breakTimeTo)
-          )
-        ) {
-          newTimeList.push(time);
-        }
+        if (timeFrom === breakTimeFromString) breakStartIndex = index;
+        if (timeTo === breakTimeToString) breakEndIndex = index;
       }
     });
-    return newTimeList;
+    if (breakStartIndex !== undefined && breakEndIndex !== undefined) {
+      debugger;
+      list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
+    } else if (breakEndIndex !== undefined && breakInImd !== undefined) {
+      list.splice(0, breakEndIndex + 1);
+    }
+    return list;
   };
 
   renderHoursList = timeList => {
@@ -793,7 +788,9 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (!enablePreOrder || !selectedDate.isOpen) return true;
+    if (allBusinessInfo[business] && allBusinessInfo[business].qrOrderingSettings && !this.notVacation(selectedDate)) {
+      return true;
+    }
 
     if (Utils.isDeliveryType()) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
