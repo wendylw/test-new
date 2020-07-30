@@ -5,6 +5,7 @@ import config from '../../../config';
 import Utils from '../../../utils/utils';
 import { post } from '../../../utils/request';
 import { intersection, findIndex } from 'lodash';
+import { captureException } from '@sentry/react';
 
 export const saveDevicePosition = position => {
   return Utils.setSessionVariable('device.position', position);
@@ -21,6 +22,7 @@ export const fetchDevicePosition = () => {
       };
     }
   } catch (e) {
+    captureException(e);
     console.error(e);
     return null;
   }

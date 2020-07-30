@@ -37,6 +37,7 @@ import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import locationIcon from '../../../images/beep_home_location.svg';
 import { computeStraightDistance } from '../../../utils/geoUtils';
+import { captureException } from '@sentry/react';
 const localState = {
   blockScrollTop: 0,
 };
@@ -330,6 +331,7 @@ export class Home extends Component {
         sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
       }
     } catch (e) {
+      captureException(e);
       console.error(e);
     }
   };
