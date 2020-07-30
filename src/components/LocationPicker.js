@@ -229,9 +229,9 @@ class LocationPicker extends Component {
         <div className="location-picker__address-title">{summary}</div>
         <div className="location-picker__address-detail">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
-          {this.isRenderDistance(distance) && (
-            <span className="location-picker__address-distance">{distance.toFixed(1)} KM</span>
-          )}
+          {/*{this.isRenderDistance(distance) && (*/}
+          {/*  <span className="location-picker__address-distance">{distance.toFixed(1)} KM</span>*/}
+          {/*)}*/}
           <span>{detail}</span>
         </div>
       </div>
