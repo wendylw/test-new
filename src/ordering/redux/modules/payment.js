@@ -195,7 +195,6 @@ export const actions = {
         case CREATE_ORDER_ERROR_CODES.PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT:
           errorMessage = 'OrderingPayment:PromotionExceededTotalClaimLimit';
           break;
-
         case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
           errorMessage = 'OrderingPayment:PromotionInvalid';
           break;
@@ -230,6 +229,7 @@ export const actions = {
 
       dispatch(
         appActions.showError({
+          code: result.code,
           message: i18next.t(errorMessage),
         })
       );

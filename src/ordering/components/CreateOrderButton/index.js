@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo } from '../../redux/modules/app';
+import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
@@ -70,18 +70,35 @@ class CreateOrderButton extends React.Component {
 
     if (!Boolean(storeId)) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_STORE_LIST,
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
       });
+
+      return;
     }
 
     if ((isLogin || type === 'digital') && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
-      const { currentOrder } = this.props;
+      const { currentOrder, error } = this.props;
       const { orderId } = currentOrder || {};
+      const { code } = error || {};
+
+      if (code === 40003 || (code >= 40006 && code <= 40009) || (code >= 40012 && code <= 40012)) {
+        this.setTimeoutObject = setTimeout(() => {
+          clearTimeout(this.setTimeoutObject);
+
+          history.push({
+            pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+            search: window.location.search,
+          });
+        }, 2000);
+
+        return;
+      }
 
       newOrderId = orderId;
+
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
         Utils.removeSessionVariable('deliveryComments');
@@ -153,6 +170,7 @@ export default compose(
 
       return {
         user: getUser(state),
+        error: getError(state),
         requestInfo: getRequestInfo(state),
         cartSummary: getCartSummary(state),
         thankYouPageUrl: getThankYouPageUrl(state),
