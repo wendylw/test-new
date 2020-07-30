@@ -70,7 +70,7 @@ class CreateOrderButton extends React.Component {
 
     if (!Boolean(storeId)) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
         search: window.location.search,
       });
 
@@ -84,7 +84,18 @@ class CreateOrderButton extends React.Component {
       const { orderId } = currentOrder || {};
       const { code } = error || {};
 
-      if (code === 40003 || (code >= 40006 && code <= 40009) || (code >= 40012 && code <= 40012)) {
+      if (code === 40003 || code === 40012) {
+        this.setTimeoutObject = setTimeout(() => {
+          clearTimeout(this.setTimeoutObject);
+
+          history.push({
+            pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+            search: window.location.search,
+          });
+        }, 2000);
+
+        return;
+      } else if ((code >= 40006 && code <= 40009) || code === 40013) {
         this.setTimeoutObject = setTimeout(() => {
           clearTimeout(this.setTimeoutObject);
 
