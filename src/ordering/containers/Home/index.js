@@ -157,13 +157,14 @@ export class Home extends Component {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
+      const { qrOrderingSettings } = businessInfo || {};
       const {
         validTimeFrom,
         validTimeTo,
         validDays,
         enablePreOrder,
         disableOnDemandOrder,
-      } = businessInfo.qrOrderingSettings;
+      } = qrOrderingSettings || {};
 
       if (!Utils.getSessionVariable('expectedDeliveryDate')) {
         // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
@@ -263,7 +264,8 @@ export class Home extends Component {
     this.setState({
       alcoholModal: val,
     });
-    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry())) {
+
+    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide) {
       this.toggleBodyScroll(true);
     } else {
       this.toggleBodyScroll(false);
@@ -391,6 +393,7 @@ export class Home extends Component {
       this.setState({
         viewAside: null,
       });
+
       this.toggleBodyScroll(false);
     } else {
       this.setState({
@@ -424,7 +427,7 @@ export class Home extends Component {
       });
     };
     const { businessInfo } = this.props;
-    const { stores = [] } = businessInfo;
+    const { stores = [] } = businessInfo || {};
 
     let pickupAddress = '';
     if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
@@ -442,16 +445,16 @@ export class Home extends Component {
               enablePreOrder,
               backPosition: BackPosition.DELIVERY_TO,
             }) ? (
-              <IconLeftArrow
-                className="header__icon"
-                data-heap-name="order.home.delivery-bar-back-btn"
-                onClick={event => {
-                  event.preventDefault();
-                  window.location.href = this.navBackUrl;
-                  event.stopPropagation();
-                }}
-              />
-            ) : null}
+                <IconLeftArrow
+                  className="header__icon"
+                  data-heap-name="order.home.delivery-bar-back-btn"
+                  onClick={event => {
+                    event.preventDefault();
+                    window.location.href = this.navBackUrl;
+                    event.stopPropagation();
+                  }}
+                />
+              ) : null}
             <div className="location-page__base-info">
               <p
                 className="location-page__entry-address"
@@ -668,17 +671,17 @@ export class Home extends Component {
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping &&
-        freeShippingMinAmount &&
-        Utils.isDeliveryType() &&
-        this.state.dScrollY < adBarHeight ? (
-          <div className="top-message__second-level text-center">
-            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
-              <span>
-                Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
+          freeShippingMinAmount &&
+          Utils.isDeliveryType() &&
+          this.state.dScrollY < adBarHeight ? (
+            <div className="top-message__second-level text-center">
+              <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+                <span>
+                  Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
               </span>
-            </Trans>
-          </div>
-        ) : null}
+              </Trans>
+            </div>
+          ) : null}
 
         <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
         <CategoryProductList
