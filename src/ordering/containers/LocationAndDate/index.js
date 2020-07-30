@@ -547,7 +547,7 @@ class LocationAndDate extends Component {
     this.setTimeSlot(date, selectedHour);
     this.setState({
       selectedDate: date,
-      selectedHour: '',
+      selectedHour: selectedHour,
     });
   };
 
