@@ -97,7 +97,7 @@ class CreateOrderButton extends React.Component {
         return;
       } else if ((code >= 40006 && code <= 40009) || code === 40013) {
         if (type === 'dine' || type === 'takeaway') {
-          window.location.href = '/';
+          window.location.href = Constants.ROUTER_PATHS.DINE;
         } else {
           this.setTimeoutObject = setTimeout(() => {
             clearTimeout(this.setTimeoutObject);
