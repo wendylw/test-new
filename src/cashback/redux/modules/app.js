@@ -114,7 +114,7 @@ export const actions = {
 
   getLoginStatus: () => ({
     types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS).then(resp => {
+    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
       if (resp) {
         if (resp.consumerId) {
           window.heap?.identify(resp.consumerId);
