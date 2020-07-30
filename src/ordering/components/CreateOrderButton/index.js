@@ -68,7 +68,7 @@ class CreateOrderButton extends React.Component {
       await beforeCreateOrder();
     }
 
-    if (!storeId) {
+    if (!Boolean(storeId)) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_STORE_LIST,
         search: window.location.search,

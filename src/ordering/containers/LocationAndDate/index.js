@@ -1108,7 +1108,7 @@ class LocationAndDate extends Component {
               className="input input__block"
               data-testid="deliverTo"
               type="text"
-              value={config.storeId ? this.state.nearlyStore.name : ''}
+              value={Boolean(config.storeId) ? this.state.nearlyStore.name : ''}
               readOnly
             />
             <IconNext className="delivery__next-icon" />
