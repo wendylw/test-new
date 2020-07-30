@@ -1094,21 +1094,21 @@ class LocationAndDate extends Component {
   };
   renderSelectStore = () => {
     return (
-      <div
-        className="form__group"
-        onClick={this.goStoreList}
-        data-heap-name="ordering.location-and-date.selected-store"
-      >
+      <div className="form__group">
         <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
           {this.props.t('Selected Store')}
         </label>
-        <div className="location-page__search-box">
+        <div
+          className="location-page__search-box"
+          onClick={this.goStoreList}
+          data-heap-name="ordering.location-and-date.selected-store"
+        >
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
             <input
               className="input input__block"
               data-testid="deliverTo"
               type="text"
-              value={this.state.nearlyStore.name}
+              value={config.storeId ? this.state.nearlyStore.name : ''}
               readOnly
             />
             <IconNext className="delivery__next-icon" />

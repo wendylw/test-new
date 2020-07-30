@@ -15,9 +15,7 @@ const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount() {
-    console.log(this.props);
-
-    // this.visitCustomerPage();
+    this.visitCustomerPage();
   }
 
   componentDidUpdate(prevProps) {
@@ -26,9 +24,9 @@ class CreateOrderButton extends React.Component {
     const { sentOtp, cartSummary } = this.props;
     const { total } = cartSummary || {};
 
-    // if (!isLogin && isLogin !== this.props.user.isLogin) {
-    //   this.visitCustomerPage();
-    // }
+    if (!isLogin && isLogin !== this.props.user.isLogin) {
+      this.visitCustomerPage();
+    }
 
     if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
       this.handleCreateOrder();
@@ -43,7 +41,7 @@ class CreateOrderButton extends React.Component {
 
     if (!isLogin && pathname !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
         search: window.location.search,
       });
     }
@@ -71,7 +69,10 @@ class CreateOrderButton extends React.Component {
     }
 
     if (!storeId) {
-      window.location.reload();
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_STORE_LIST,
+        search: window.location.search,
+      });
     }
 
     if ((isLogin || type === 'digital') && validCreateOrder) {
