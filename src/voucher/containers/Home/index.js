@@ -16,7 +16,9 @@ import {
   getBusinessDisplayName,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
+import Image from '../../../components/Image';
 import VoucherAboutContent from '../../components/VoucherAboutContent';
+import './VoucherHome.scss';
 
 class Home extends Component {
   componentDidMount() {
@@ -54,49 +56,62 @@ class Home extends Component {
     const storeName = onlineStoreName || businessDisplayName;
 
     return (
-      <div className="gift-card__page" data-heap-name="voucher.home.container">
-        <div className="gift-card__card">
-          <h1 className="text-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
-          <div className="gift-card__card-container">
-            <div className="gift-card__store">
-              <div className="gift-card__store-item gift-card__store-logo">
-                {onlineStoreLogo ? <img alt={`${storeName} Logo`} src={onlineStoreLogo} /> : null}
-              </div>
+      <section className="voucher-home flex flex-column" data-heap-name="voucher.home.container">
+        <div className="voucher-home__container">
+          <div className="">
+            <h1 className="text-center text-size-huge text-weight-bolder">{t('GiveThePerfectGift')}</h1>
+            <div className="gift-card">
+              {onlineStoreLogo ? (
+                <Image
+                  className="gift-card__logo logo logo__normal margin-top-bottom-smaller margin-left-right-normal"
+                  src={onlineStoreLogo}
+                  alt={`${storeName} Logo`}
+                />
+              ) : null}
               {selectedVoucher ? (
-                <div className="gift-card__store-item gift-card__store-amount">
+                <span className="gift-card__price margin-normal text-size-huge text-weight-bolder">
                   {currencySymbol}
                   {selectedVoucher}
-                </div>
+                </span>
               ) : null}
-              <div className="gift-card__store-item gift-card__store-name">{storeName}</div>
+
+              <span className="gift-card__name margin-normal text-omit__multiple-line">{storeName}</span>
             </div>
-          </div>
-          <div className="gift-card__caption text-center">
-            {t('GiftCardFindOutMore')}
-            <a href={beepSiteUrl}>{storeName} &gt;</a>
-          </div>
-        </div>
-        <div className="gift-card__amount">
-          <h2 className="gift-card__amount-title">{t('GiftCardChooseAmount')}</h2>
-          <ul className="flex flex-middle flex-space-between gift-card__amount-items">
-            {voucherList.map(voucher => (
-              <li
-                key={voucher}
-                className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
-                  voucher === selectedVoucher ? 'selected' : ''
-                }`}
-                data-heap-name="voucher.home.voucher-item"
-                onClick={() => {
-                  this.handleSelectVoucher(voucher);
-                }}
+
+            <p className="voucher-home__prompt margin-normal text-center">
+              <span className="voucher-home__prompt-text">{t('GiftCardFindOutMore')}</span>
+              <a
+                className="voucher-home__button-prompt-link button button__link padding-top-bottom-normal margin-left-right-smallest text-weight-bolder"
+                href={beepSiteUrl}
               >
-                <span>{currencySymbol}</span>
-                <span className="text-weight-bolder gift-card__amount-number">{voucher}</span>
-              </li>
-            ))}
-          </ul>
+                {storeName} &gt;
+              </a>
+            </p>
+          </div>
+          <div className="padding-normal">
+            <h2 className="text-center text-size-big text-weight-bolder">{t('GiftCardChooseAmount')}</h2>
+            <ul className="flex flex-middle flex-space-between gift-card__amount-items">
+              {voucherList.map(voucher => (
+                <li
+                  key={voucher}
+                  className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
+                    voucher === selectedVoucher ? 'selected' : ''
+                  }`}
+                  data-heap-name="voucher.home.voucher-item"
+                  onClick={() => {
+                    this.handleSelectVoucher(voucher);
+                  }}
+                >
+                  <button>
+                    <span>{currencySymbol}</span>
+                    <span className="text-weight-bolder gift-card__amount-number">{voucher}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
         </div>
-        <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
@@ -107,7 +122,7 @@ class Home extends Component {
             {t('Continue')}
           </button>
         </footer>
-      </div>
+      </section>
     );
   }
 }

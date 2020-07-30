@@ -6,7 +6,6 @@ import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
-import '../../../App.scss';
 import Utils from '../../../utils/utils';
 import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';

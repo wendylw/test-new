@@ -4,7 +4,7 @@ class GiftCard extends Components {
   render() {
     const { storeLogo, storeName, amount, currencySymbol } = this.props;
     return (
-      <div className="gift-card">
+      <div className="voucher-gift-card">
         <div className="gift-card__store-logo">
           {storeLogo ? <img alt={`${storeName} Logo`} src={storeLogo} /> : null}
         </div>

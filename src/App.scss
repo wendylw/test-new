@@ -81,40 +81,6 @@
 }
 
 .table-ordering {
-  // @extend .flex;
-  // @extend .flex-center;
-
-  // padding-top: 50px;
-  // min-height: 100%;
-
-  &__home {
-    @extend .main-section;
-
-    transition: all 0.4s;
-    -webkit-transition: all 0.4s;
-
-    .aside {
-      top: 50px;
-      bottom: 18.8vw;
-    }
-  }
-
-  &__location {
-    background-color: $white;
-  }
-
-  &__order {
-    // @extend .main-section;
-    padding-bottom: 155px;
-
-    transition: transform 0.4s;
-    -webkit-transition: -webkit-transform 0.4s;
-
-    .aside-bottom {
-      bottom: 18.8vw;
-    }
-  }
-
   &__cashback-receipt {
     margin-top: 50px;
   }
@@ -840,10 +806,6 @@ main > section.hide {
   height: 100%;
   padding: 50px 0 0;
 
-  &.table-ordering__prompt-page {
-    display: none;
-  }
-
   .operation {
     position: absolute;
   }
@@ -938,10 +900,6 @@ body.loading {
 
   .category__list {
     border-right: 1px solid $gray-5;
-  }
-
-  .table-ordering__customer .aside {
-    bottom: 88px;
   }
 
   .payment-bank__card-type-icon.visa {

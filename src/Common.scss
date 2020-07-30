@@ -151,6 +151,8 @@ address {
     @extend .text-omit-base;
 
     display: -webkit-box;
+    word-break: break-all;
+    hyphens: auto;
   }
 }
 

@@ -16,7 +16,7 @@ class App extends Component {
   render() {
     const { favicon } = this.props;
     return (
-      <main className="voucher-ordering">
+      <main className="voucher fixed-wrapper fixed-wrapper__main">
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>

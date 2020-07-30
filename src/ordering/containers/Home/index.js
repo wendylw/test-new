@@ -628,15 +628,10 @@ export class Home extends Component {
 
     const { viewAside, alcoholModal, containerHeight } = this.state;
     const { tableId } = requestInfo || {};
-    const classList = ['table-ordering__home'];
     const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
-    }
-
-    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
-      classList.push('location-page__entry-container');
     }
 
     return (
