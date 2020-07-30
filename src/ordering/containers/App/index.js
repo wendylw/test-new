@@ -21,6 +21,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import config from '../../../config';
+import qs from 'qs';
 class App extends Component {
   state = {};
 
@@ -30,7 +31,11 @@ class App extends Component {
     this.visitErrorPage();
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
-    config.storeId && (await appActions.loadCoreBusiness());
+    console.log(window.location.pathname, 'location.pathname');
+    let search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    if (config.storeId || !(window.location.pathname === '/ordering/' || window.location.pathname === '/ordering')) {
+      await appActions.loadCoreBusiness();
+    }
 
     const { user, businessInfo } = this.props;
     const { isLogin } = user || {};
