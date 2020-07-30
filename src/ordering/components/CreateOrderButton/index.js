@@ -41,7 +41,7 @@ class CreateOrderButton extends React.Component {
 
     if (!isLogin && pathname !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
       });
     }
