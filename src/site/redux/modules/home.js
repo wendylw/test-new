@@ -3,7 +3,6 @@ import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { getCurrentPlaceInfo } from './app';
-import { getAllStoreCollections } from './entities/storeCollections';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 

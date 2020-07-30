@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import { getCollectionByPath } from './entities/storeCollections';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';

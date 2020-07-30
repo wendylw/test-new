@@ -42,14 +42,9 @@ class Cart extends Component {
     this.setListHeight();
   }
   setListHeight = () => {
-    const scrollHeight = document.documentElement.scrollHeight;
     const clientHeight = document.documentElement.clientHeight;
-    const asideOffset = document.querySelectorAll('.aside-bottom')[0].offsetTop;
     const asideHeight = document.querySelectorAll('.aside-bottom')[0].offsetHeight;
-    const textOffset = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetTop;
-    const textHeight = document.querySelectorAll('.cart__note.flex.flex-middle.flex-space-between')[0].offsetHeight;
     const footerHeight = document.querySelectorAll('footer.footer-operation')[0].offsetHeight;
-    const scroll = textOffset - asideOffset + textHeight + 55;
     const h = clientHeight - 50 - footerHeight - asideHeight;
 
     document.querySelector('.list__container').style.height = h + 'px';

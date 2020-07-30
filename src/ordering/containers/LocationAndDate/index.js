@@ -134,8 +134,6 @@ class LocationAndDate extends Component {
     const { allStore } = this.props;
 
     if (Utils.getSessionVariable('deliveryAddress')) {
-      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-
       if (allStore.length) {
         let stores = allStore;
         let type = Constants.DELIVERY_METHOD.DELIVERY;
@@ -263,7 +261,7 @@ class LocationAndDate extends Component {
         });
       }
     });
-    stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+    stores = stores.filter(item => item.qrOrderingSettings && item.qrOrderingSettings.enableLiveOnline);
     stores = stores.filter(item => {
       const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
 
@@ -486,8 +484,7 @@ class LocationAndDate extends Component {
   };
 
   showLocationSearch = () => {
-    const { history, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { history } = this.props;
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
     search = search.replace(/&?storeid=[^&]*/, '');
@@ -1097,21 +1094,21 @@ class LocationAndDate extends Component {
   };
   renderSelectStore = () => {
     return (
-      <div
-        className="form__group"
-        onClick={this.goStoreList}
-        data-heap-name="ordering.location-and-date.selected-store"
-      >
+      <div className="form__group">
         <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
           {this.props.t('Selected Store')}
         </label>
-        <div className="location-page__search-box">
+        <div
+          className="location-page__search-box"
+          onClick={this.goStoreList}
+          data-heap-name="ordering.location-and-date.selected-store"
+        >
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
             <input
               className="input input__block"
               data-testid="deliverTo"
               type="text"
-              value={this.state.nearlyStore.name}
+              value={Boolean(config.storeId) ? this.state.nearlyStore.name : ''}
               readOnly
             />
             <IconNext className="delivery__next-icon" />
