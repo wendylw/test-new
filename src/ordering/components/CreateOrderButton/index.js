@@ -96,14 +96,18 @@ class CreateOrderButton extends React.Component {
 
         return;
       } else if ((code >= 40006 && code <= 40009) || code === 40013) {
-        this.setTimeoutObject = setTimeout(() => {
-          clearTimeout(this.setTimeoutObject);
+        if (type === 'dine' || type === 'takeaway') {
+          window.location.href = '/';
+        } else {
+          this.setTimeoutObject = setTimeout(() => {
+            clearTimeout(this.setTimeoutObject);
 
-          history.push({
-            pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-            search: window.location.search,
-          });
-        }, 2000);
+            history.push({
+              pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+              search: window.location.search,
+            });
+          }, 2000);
+        }
 
         return;
       }

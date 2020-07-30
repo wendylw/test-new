@@ -985,13 +985,7 @@ class LocationAndDate extends Component {
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
-    console.log(callbackUrl);
-
     if (typeof callbackUrl === 'string') {
-      if (!Boolean(config.storeId)) {
-        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${callbackUrl}`;
-      }
-
       if (callbackUrl.split('?')[0] === '/customer') {
         // from customer
         this.checkDetailChange(this.state.search);
