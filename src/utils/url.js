@@ -147,6 +147,10 @@ const API_URLS = {
     url: '/api/feedback',
     method: 'post',
   },
+  GET_COLLECTION: {
+    url: '/api/stores/collection',
+    method: 'get',
+  },
 };
 
 export default {

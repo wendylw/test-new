@@ -10,15 +10,9 @@ import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
-import { collectionCardActionCreators } from '../redux/modules/entities/storeCollections';
+import { collectionCardActionCreators, getIconCollections } from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
-import {
-  getAllCurrentStores,
-  getPaginationInfo,
-  getStoreCollections,
-  getStoreLinkInfo,
-  homeActionCreators,
-} from '../redux/modules/home';
+import { getAllCurrentStores, getPaginationInfo, getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
 import CampaignBar from './containers/CampaignBar';
@@ -26,7 +20,7 @@ import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 
-const { ROUTER_PATHS /*ADDRESS_RANGE*/ } = Constants;
+const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
 
 class Home extends React.Component {
@@ -89,7 +83,7 @@ class Home extends React.Component {
 
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
-      this.props.collectionCardActions.getCollections();
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -248,7 +242,7 @@ export default compose(
       paginationInfo: getPaginationInfo(state),
       stores: getAllCurrentStores(state),
       storeLinkInfo: getStoreLinkInfo(state),
-      storeCollections: getStoreCollections(state),
+      storeCollections: getIconCollections(state),
     }),
     dispatch => ({
       rootActions: bindActionCreators(rootActionCreators, dispatch),
