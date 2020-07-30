@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfoFavicon } from '../../redux/modules/app';
+import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
