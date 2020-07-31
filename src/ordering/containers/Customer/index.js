@@ -368,22 +368,9 @@ class Customer extends Component {
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { total } = cartSummary || {};
-    // let textareaValue = '';
-    // let updateTextFunc = () => { };
-
-    // if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
-    //   // textareaValue = deliveryDetails.deliveryComments;
-    //   // updateTextFunc = this.handleDriverComments.bind(this);
-    // } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
-    //   // textareaValue = deliveryDetails.addressDetails;
-    //   // updateTextFunc = this.handleAddressDetails.bind(this);
-    // } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
-    //   // textareaValue = deliveryDetails.deliveryComments;
-    //   // updateTextFunc = this.handleDriverComments.bind(this);
-    // }
 
     return (
-      <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
+      <section className={`table-ordering__customer`} data-heap-name="ordering.customer.container">
         <Header
           className="text-center gray flex-middle"
           data-heap-name="ordering.customer.header"
