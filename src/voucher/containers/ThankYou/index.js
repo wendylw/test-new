@@ -26,7 +26,7 @@ class ThankYou extends Component {
     const receiptNumber = Utils.getQueryString('receiptNumber');
     this.props.appActions.loadOrder(receiptNumber);
   }
-  handlerClickBack = () => {
+  handleClickBack = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_HOME,
     });
