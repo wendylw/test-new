@@ -19,7 +19,12 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
+import {
+  getPaymentName,
+  getSupportCreditCardBrands,
+  creditCardDetector,
+  getPaymentRedirectAndWebHookUrl,
+} from '../utils';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import '../PaymentCreditCard.scss';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -63,24 +68,17 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const { onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const { card } = this.state;
     const { cardholderName } = card || {};
-    const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
       return null;
     }
 
+    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
-
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
 
     return {
       amount: currentOrder.total,

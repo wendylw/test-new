@@ -64,7 +64,7 @@ class RecentActivities extends React.Component {
     const { business, homeActions } = this.props;
     const pageSize = 10;
     homeActions.getReceiptList(business, page, pageSize);
-    window.heap.track('cashback.home.receipt-list.load-page', { Page: page });
+    window.heap?.track('cashback.home.receipt-list.load-page', { Page: page });
   }
 
   toggleFullScreen() {

@@ -185,11 +185,10 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
-            mode={config.storeId ? 'ORIGIN_STORE' : 'ORIGIN_DEVICE'}
+            mode={'ORIGIN_STORE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
-            detectPosition={true}
             outRangeSearchText={this.state.outRange && outRangeSearchText}
             onSelect={this.onSelectPlace}
           />

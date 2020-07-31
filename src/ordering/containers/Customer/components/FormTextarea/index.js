@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import Utils from '../../../../../utils/utils';
 import withDataAttributes from '../../../../../components/withDataAttributes';
+import { captureException } from '@sentry/react';
 
 class FormTextarea extends Component {
   state = {
@@ -30,6 +31,7 @@ class FormTextarea extends Component {
               this.addressAsideInnerRef.current.style.top = '20vh';
             } catch (e) {
               console.error(e);
+              captureException(e);
             }
           },
           false
@@ -42,6 +44,7 @@ class FormTextarea extends Component {
               try {
                 this.addressAsideInnerRef.current.style.top = '';
               } catch (e) {
+                captureException(e);
                 console.error(e);
               }
             }, 100);

@@ -22,7 +22,7 @@ const StoreListItem = props => (
   <li
     className="flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider"
     onClick={() => props.select(props.store)}
-    data-heap-name="ordering.location-and-date.store-item"
+    data-heap-name="ordering.store-list.store-item"
   >
     <summary className="padding-left-right-small">
       <h3 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{props.store.name}</h3>

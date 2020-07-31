@@ -8,6 +8,7 @@ import { getStoreById } from '../../../redux/modules/entities/stores';
 import { getBusiness } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import Utils from '../../../utils/utils';
+import { captureException } from '@sentry/react';
 
 export const initialState = {
   storeHashCode: null,
@@ -154,6 +155,7 @@ export const isStoreClosed = state => {
     const { validDays, validTimeFrom, validTimeTo } = businessInfo.qrOrderingSettings;
     return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }); // get negative status
   } catch (e) {
+    captureException(e);
     console.error(e);
     return false;
   }

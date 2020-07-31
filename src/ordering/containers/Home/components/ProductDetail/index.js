@@ -352,7 +352,7 @@ class ProductDetail extends Component {
   };
 
   handleSwipeProductImage(index) {
-    window.heap.track('ordering.home.product-detail-swipe', { ImageIndex: index });
+    window.heap?.track('ordering.home.product-detail-swipe', { ImageIndex: index });
     this.setState({ currentProductDescriptionImageIndex: index });
   }
 
