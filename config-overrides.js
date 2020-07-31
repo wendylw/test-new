@@ -17,7 +17,7 @@ const customization = override(
       config.mode === 'production',
     addWebpackPlugin(
       new SentryWebpackPlugin({
-        include: 'src',
+        include: './build/static/',
         ignore: ['node_modules', 'webpack.config.js'],
         urlPrefix: '~/static/js',
       })
