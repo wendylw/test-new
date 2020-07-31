@@ -31,7 +31,7 @@ class App extends Component {
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
-    if (this.checkpath()) {
+    if (this.notHomeAndLocationPath()) {
       await appActions.loadCoreBusiness();
     }
 
@@ -67,7 +67,7 @@ class App extends Component {
     }
   }
 
-  checkpath = () => {
+  notHomeAndLocationPath = () => {
     return (
       !(window.location.pathname === '/ordering/' || window.location.pathname === '/ordering') &&
       !(
