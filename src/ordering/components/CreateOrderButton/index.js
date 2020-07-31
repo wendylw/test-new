@@ -59,7 +59,7 @@ class CreateOrderButton extends React.Component {
       validCreateOrder,
     } = this.props;
     const { isLogin } = user || {};
-    const { tableId, storeId } = requestInfo;
+    const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
@@ -68,18 +68,18 @@ class CreateOrderButton extends React.Component {
       await beforeCreateOrder();
     }
 
-    if (!Boolean(storeId)) {
-      if (type === 'dine' || type === 'takeaway') {
-        window.location.href = Constants.ROUTER_PATHS.DINE;
-      } else {
-        history.push({
-          pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-          search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-        });
-      }
+    // if (!Boolean(storeId)) {
+    //   if (type === 'dine' || type === 'takeaway') {
+    //     window.location.href = Constants.ROUTER_PATHS.DINE;
+    //   } else {
+    //     history.push({
+    //       pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+    //       search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
+    //     });
+    //   }
 
-      return;
-    }
+    //   return;
+    // }
 
     if ((isLogin || type === 'digital') && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
