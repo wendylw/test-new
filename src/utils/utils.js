@@ -601,7 +601,7 @@ Utils.getFulfillDate = () => {
       let timeList = [];
       let pusher = validFrom;
       timeList.push(pusher);
-      while (pusher !== validTo) {
+      while (pusher < validTo) {
         pusher = zero(+pusher.split(':')[0] + 1) + ':00';
         timeList.push(pusher);
       }
@@ -645,7 +645,7 @@ Utils.getFulfillDate = () => {
 
       let pusher = validFrom;
       timeList.push(pusher);
-      while (pusher !== validTo) {
+      while (pusher < validTo) {
         hour = +pusher.split(':')[0];
         minute = +pusher.split(':')[1];
         minute += 15;
