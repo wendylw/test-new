@@ -1,22 +1,22 @@
 const { override, addWebpackPlugin } = require('customize-cra');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
-const withEnv = (env, overrideFunc) => config => {
-  if (config.mode === env) {
+const withCondition = (conditionFunc, overrideFunc) => config => {
+  if (conditionFunc(config)) {
     return overrideFunc(config);
   }
   return config;
 };
 
 const customization = override(
-  withEnv(
-    'production',
+  withCondition(
+    () => process.env.SENTRY_ORG && process.env.SENTRY_PROJECT && process.env.SENTRY_AUTH_TOKEN,
     addWebpackPlugin(
       new SentryWebpackPlugin({
-        include: '.',
-        ignoreFile: '.sentrycliignore',
+        include: 'src',
         ignore: ['node_modules', 'webpack.config.js'],
-        configFile: 'sentry.properties',
+        rewrite: false,
+        urlPrefix: '~/static/js',
       })
     )
   )
