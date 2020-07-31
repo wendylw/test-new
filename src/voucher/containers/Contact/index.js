@@ -102,9 +102,9 @@ class Contact extends Component {
             <p className="voucher-contact__description margin-top-bottom-smaller text-size-big text-line-height-base">
               {t('GiftCardEmailNote')}
             </p>
-            <div className="voucher-contact__group form__group">
+            <div className="voucher-contact__group form__group margin-top-bottom-normal">
               <input
-                className={`voucher-contact__input form__input ${invalidEmailClass}`}
+                className={`voucher-contact__input form__input padding-left-right-normal text-size-biggest ${invalidEmailClass}`}
                 data-heap-name="voucher.contact.email-input"
                 onChange={this.handleEmailChange}
                 value={contactEmail}

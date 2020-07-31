@@ -207,7 +207,7 @@ class Payment extends Component {
                       {disabledPayment ? promptDom : null}
                     </div>
                   </div>
-                  <Radio checked={currentPayment === payment.label} />
+                  <Radio className="margin-left-right-smaller" checked={currentPayment === payment.label} />
                 </li>
               );
             })}

@@ -874,6 +874,10 @@ img {
   &__white {
     background-color: $white;
   }
+
+  &__transparent {
+    background-color: transparent;
+  }
 }
 
 .store-info {
