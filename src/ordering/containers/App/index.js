@@ -21,6 +21,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import config from '../../../config';
+import Utils from '../../../utils/utils';
 class App extends Component {
   state = {};
 
@@ -31,7 +32,7 @@ class App extends Component {
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
-    if (this.notHomeAndLocationPath()) {
+    if (Utils.notHomeOrLocationPath(window.location.pathname)) {
       await appActions.loadCoreBusiness();
     }
 
@@ -66,16 +67,6 @@ class App extends Component {
       });
     }
   }
-
-  notHomeAndLocationPath = () => {
-    return (
-      !(window.location.pathname === '/ordering/' || window.location.pathname === '/ordering') &&
-      !(
-        window.location.pathname === '/ordering/location-date' ||
-        window.location.pathname === '/ordering/location-date/'
-      )
-    );
-  };
 
   setGtmData = ({ onlineStoreInfo, userInfo, businessInfo }) => {
     const userProperties = { onlineStoreInfo, userInfo };
