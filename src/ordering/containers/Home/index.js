@@ -136,6 +136,7 @@ export class Home extends Component {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo } = this.props;
+
       let { stores, qrOrderingSettings } = businessInfo;
       const { deliveryRadius } = qrOrderingSettings;
       if (stores.length) {
@@ -659,7 +660,10 @@ export class Home extends Component {
       <React.Fragment>
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        {enableConditionalFreeShipping &&
+        freeShippingMinAmount &&
+        Utils.isDeliveryType() &&
+        this.state.dScrollY < adBarHeight ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p className="ordering-home__delivery-fee padding-small text-center">
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above

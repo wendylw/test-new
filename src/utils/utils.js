@@ -547,6 +547,14 @@ Utils.removeParam = (key, sourceURL) => {
   }
   return rtn;
 };
+
+Utils.notHomeOrLocationPath = pathname => {
+  return !(
+    ['/ordering/', '/ordering'].includes(pathname) ||
+    ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
+  );
+};
+
 Utils.checkEmailIsValid = email => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return emailRegex.test(email);
@@ -619,9 +627,15 @@ Utils.getFulfillDate = () => {
       let timeList = [];
       let pusher = validFrom;
       timeList.push(pusher);
+      let loops = 0;
       while (pusher !== validTo) {
+        loops++;
         pusher = zero(+pusher.split(':')[0] + 1) + ':00';
         timeList.push(pusher);
+        if (loops > 96) {
+          // safety code to avoid endless loop by 'pusher' > 'validTo', maxNumber 96 =  four 15minute per hour * 24 hour
+          break;
+        }
       }
       if (isToday) {
         if (hasonDemand) {
@@ -663,6 +677,7 @@ Utils.getFulfillDate = () => {
 
       let pusher = validFrom;
       timeList.push(pusher);
+      let loops = 0;
       while (pusher !== validTo) {
         hour = +pusher.split(':')[0];
         minute = +pusher.split(':')[1];
@@ -672,6 +687,11 @@ Utils.getFulfillDate = () => {
         hour = minute === '00' ? zero(hour + 1) : zero(hour);
         pusher = `${hour}:${minute}`;
         timeList.push(pusher);
+        loops++;
+        if (loops > 96) {
+          //  safety code to avoid endless loop by 'pusher' > 'validTo', maxNumber 96 =  four 15minute per hour * 24 hour
+          break;
+        }
       }
 
       if (isToday) {
