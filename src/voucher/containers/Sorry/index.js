@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import beepErrorImage from '../../../images/beep-error.png';
 
@@ -17,7 +17,13 @@ class Sorry extends Component {
     const { t } = this.props;
     return (
       <section className="sorry-page" data-heap-name="voucher.sorry.container">
-        <Header clickBack={this.handleClickBack} data-heap-name="voucher.sorry.header" />
+        <Header
+          className="flex-middle"
+          contentClassName="flex-middle"
+          data-heap-name="voucher.sorry.header"
+          isPage={true}
+          navFunc={this.handleClickBack}
+        />
         <div className="sorry-page__title">{t('TransactionFailed')}</div>
         <div className="sorry-page__image">
           <img alt="Sorry" src={beepErrorImage} />

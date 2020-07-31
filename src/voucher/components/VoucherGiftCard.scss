@@ -1,2 +1,40 @@
+@import "../../Variables.scss";
+
 .voucher-gift-card {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  background-image: url("../../images/gift-card.png");
+  background-position: center;
+  background-size: 100% 100%;
+
+  &::before {
+    content: "";
+    display: block;
+    padding: 30% 0;
+  }
+
+  &__logo {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+  }
+
+  &__price {
+    position: absolute;
+    bottom: 2%;
+    left: 2%;
+    color: $white;
+  }
+
+  &__name {
+    position: absolute;
+    bottom: 5%;
+    right: 2%;
+    max-width: 50%;
+    color: $white;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+  }
 }

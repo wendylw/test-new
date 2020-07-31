@@ -4,7 +4,7 @@ import Utils from '../../../utils/utils';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 
 import {
@@ -17,7 +17,7 @@ import {
   getVoucherValidityPeriodDays,
 } from '../../redux/modules/app';
 import giftCardImage from '../../../images/thankyou-giftcard.svg';
-import VoucherAboutContent from '../../components/VoucherAboutContent';
+import VoucherIntroduction from '../../components/VoucherIntroduction';
 
 class ThankYou extends Component {
   componentDidMount() {
@@ -42,7 +42,13 @@ class ThankYou extends Component {
     } = this.props;
     return (
       <section className="thankyou-page" data-heap-name="voucher.thank-you.container">
-        <Header clickBack={this.handlerClickBack} data-heap-name="voucher.thank-you.header" />
+        <Header
+          className="flex-middle"
+          contentClassName="flex-middle"
+          data-heap-name="voucher.thank-you.header"
+          isPage={true}
+          navFunc={this.handleClickBack}
+        />
         <h1 className="thankyou-page__title">{t('ThankYou')}!</h1>
         <div className="thankyou-page__gifCard">
           <img alt="Gift Card" src={giftCardImage} />
@@ -70,7 +76,7 @@ class ThankYou extends Component {
             </p>
           </div>
         </div>
-        <VoucherAboutContent onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
+        <VoucherIntroduction onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
       </section>
     );
   }

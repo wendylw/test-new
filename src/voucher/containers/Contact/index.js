@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Constants from '../../../utils/constants';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -18,6 +18,8 @@ import {
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import Utils from '../../../utils/utils';
+import VoucherGiftCard from '../../components/VoucherGiftCard';
+import './VoucherContact.scss';
 
 class Contact extends Component {
   state = {
@@ -78,38 +80,40 @@ class Contact extends Component {
     const storeName = onlineStoreName || businessDisplayName;
 
     return (
-      <div className="update-contact__page" data-heap-name="voucher.contact.container">
-        <Header clickBack={this.handleClickBack} data-heap-name="voucher.contact.header" />
-        <div className="gift-card__page">
-          <div className="gift-card__card">
-            <h2 className="text-weight-bolder text-center gift-card__subtitle">{t('GiftCardSelected')}</h2>
-            <div className="gift-card__card-container">
-              <div className="gift-card__store">
-                <div className="gift-card__store-item gift-card__store-logo">
-                  {onlineStoreLogo ? <img alt={`${storeName} Logo`} src={onlineStoreLogo} /> : null}
-                </div>
-                {selectedVoucher ? (
-                  <div className="gift-card__store-item gift-card__store-amount">
-                    {currencySymbol}
-                    {selectedVoucher}
-                  </div>
-                ) : null}
-                <div className="gift-card__store-item gift-card__store-name">{storeName}</div>
-              </div>
+      <section className="voucher-contact flex flex-column" data-heap-name="voucher.contact.container">
+        <Header
+          className="flex-middle"
+          contentClassName="flex-middle"
+          data-heap-name="voucher.contact.header"
+          isPage={true}
+          navFunc={this.handleClickBack}
+        />
+
+        <div className="voucher-contact__container">
+          <h2 className="text-center padding-normal text-size-biggest text-weight-bolder">{t('GiftCardSelected')}</h2>
+          <VoucherGiftCard
+            onlineStoreLogo={onlineStoreLogo}
+            storeName={storeName}
+            currencySymbol={currencySymbol}
+            selectedVoucher={selectedVoucher}
+          />
+          <div className="padding-normal">
+            <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{t('SendGiftCardTo')}</h2>
+            <p className="voucher-contact__description margin-top-bottom-smaller text-size-big text-line-height-base">
+              {t('GiftCardEmailNote')}
+            </p>
+            <div className="voucher-contact__group form__group">
+              <input
+                className={`voucher-contact__input form__input ${invalidEmailClass}`}
+                data-heap-name="voucher.contact.email-input"
+                onChange={this.handleEmailChange}
+                value={contactEmail}
+              />
             </div>
-          </div>
-          <div className="gift-card__email">
-            <h2 className="gift-card__email-title">{t('SendGiftCardTo')}</h2>
-            <div className="gift-card__email-note">{t('GiftCardEmailNote')}</div>
-            <input
-              className={`gift-card__email-input input input__block ${invalidEmailClass}`}
-              data-heap-name="voucher.contact.email-input"
-              onChange={this.handleEmailChange}
-              value={contactEmail}
-            />
-            {invalidEmail ? <div className="input__error-message">{t('InvalidEmail')}</div> : null}
+            {invalidEmail ? <div className="form__error-message">{t('InvalidEmail')}</div> : null}
           </div>
         </div>
+
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
@@ -120,7 +124,7 @@ class Contact extends Component {
             {t('Continue')}
           </button>
         </footer>
-      </div>
+      </section>
     );
   }
 }

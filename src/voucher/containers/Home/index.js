@@ -16,8 +16,8 @@ import {
   getBusinessDisplayName,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
-import Image from '../../../components/Image';
-import VoucherAboutContent from '../../components/VoucherAboutContent';
+import VoucherIntroduction from '../../components/VoucherIntroduction';
+import VoucherGiftCard from '../../components/VoucherGiftCard';
 import './VoucherHome.scss';
 
 class Home extends Component {
@@ -58,25 +58,14 @@ class Home extends Component {
     return (
       <section className="voucher-home flex flex-column" data-heap-name="voucher.home.container">
         <div className="voucher-home__container">
-          <div className="">
+          <div>
             <h1 className="text-center text-size-huge text-weight-bolder">{t('GiveThePerfectGift')}</h1>
-            <div className="gift-card">
-              {onlineStoreLogo ? (
-                <Image
-                  className="gift-card__logo logo logo__normal margin-top-bottom-smaller margin-left-right-normal"
-                  src={onlineStoreLogo}
-                  alt={`${storeName} Logo`}
-                />
-              ) : null}
-              {selectedVoucher ? (
-                <span className="gift-card__price margin-normal text-size-huge text-weight-bolder">
-                  {currencySymbol}
-                  {selectedVoucher}
-                </span>
-              ) : null}
-
-              <span className="gift-card__name margin-normal text-omit__multiple-line">{storeName}</span>
-            </div>
+            <VoucherGiftCard
+              onlineStoreLogo={onlineStoreLogo}
+              storeName={storeName}
+              currencySymbol={currencySymbol}
+              selectedVoucher={selectedVoucher}
+            />
 
             <p className="voucher-home__prompt margin-normal text-center">
               <span className="voucher-home__prompt-text">{t('GiftCardFindOutMore')}</span>
@@ -88,29 +77,28 @@ class Home extends Component {
               </a>
             </p>
           </div>
-          <div className="padding-normal">
-            <h2 className="text-center text-size-big text-weight-bolder">{t('GiftCardChooseAmount')}</h2>
-            <ul className="flex flex-middle flex-space-between gift-card__amount-items">
+          <div>
+            <h2 className="text-center padding-normal text-size-big text-weight-bolder">{t('GiftCardChooseAmount')}</h2>
+            <ul className="flex flex-middle flex-space-between padding-normal margin-top-bottom-small">
               {voucherList.map(voucher => (
-                <li
-                  key={voucher}
-                  className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
-                    voucher === selectedVoucher ? 'selected' : ''
-                  }`}
-                  data-heap-name="voucher.home.voucher-item"
-                  onClick={() => {
-                    this.handleSelectVoucher(voucher);
-                  }}
-                >
-                  <button>
+                <li className="voucher-home__item-price padding-left-right-small" key={voucher}>
+                  <button
+                    className={`voucher-home__button-price button ${
+                      voucher === selectedVoucher ? 'button__fill' : 'button__outline'
+                    } padding-top-bottom-smaller padding-left-right-normal`}
+                    data-heap-name="voucher.home.voucher-item"
+                    onClick={() => {
+                      this.handleSelectVoucher(voucher);
+                    }}
+                  >
                     <span>{currencySymbol}</span>
-                    <span className="text-weight-bolder gift-card__amount-number">{voucher}</span>
+                    <span className="voucher-home__price-number text-size-big text-weight-bolder">{voucher}</span>
                   </button>
                 </li>
               ))}
             </ul>
           </div>
-          <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
+          <VoucherIntroduction onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
         </div>
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
