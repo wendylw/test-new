@@ -601,9 +601,14 @@ Utils.getFulfillDate = () => {
       let timeList = [];
       let pusher = validFrom;
       timeList.push(pusher);
-      while (pusher < validTo) {
+      let loops = 0;
+      while (pusher !== validTo) {
+        loops++;
         pusher = zero(+pusher.split(':')[0] + 1) + ':00';
         timeList.push(pusher);
+        if (loops > 96) {
+          break;
+        }
       }
       if (isToday) {
         if (hasonDemand) {
@@ -645,7 +650,8 @@ Utils.getFulfillDate = () => {
 
       let pusher = validFrom;
       timeList.push(pusher);
-      while (pusher < validTo) {
+      let loops = 0;
+      while (pusher !== validTo) {
         hour = +pusher.split(':')[0];
         minute = +pusher.split(':')[1];
         minute += 15;
@@ -654,6 +660,10 @@ Utils.getFulfillDate = () => {
         hour = minute === '00' ? zero(hour + 1) : zero(hour);
         pusher = `${hour}:${minute}`;
         timeList.push(pusher);
+        loops++;
+        if (loops > 96) {
+          break;
+        }
       }
 
       if (isToday) {
