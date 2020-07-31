@@ -1,5 +1,8 @@
 import _get from 'lodash/get';
+import qs from 'qs';
 import Constants from '../../../utils/constants';
+import config from '../../../config';
+import Utils from '../../../utils/utils';
 
 const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
 
@@ -132,3 +135,19 @@ export function creditCardDetector(cardNumberString) {
 
   return card;
 }
+
+export const getPaymentRedirectAndWebHookUrl = business => {
+  const h = config.h();
+  const tracker = Utils.getCookieVariable('__sh_tracker');
+  const type = Utils.getOrderTypeFromUrl();
+  const queryString = qs.stringify({ h, type, tracker: tracker || undefined }, { addQueryPrefix: true });
+
+  const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
+
+  const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
+
+  return {
+    redirectURL,
+    webhookURL,
+  };
+};
