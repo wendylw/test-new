@@ -128,6 +128,7 @@ export class Home extends Component {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo } = this.props;
+
       let { stores, qrOrderingSettings } = businessInfo;
       const { deliveryRadius } = qrOrderingSettings;
       if (stores.length) {
