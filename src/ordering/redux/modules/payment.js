@@ -191,7 +191,7 @@ export const actions = {
     if (result.type === types.CREATEORDER_FAILURE) {
       let errorMessage = '';
 
-      switch (result.code) {
+      switch (Number(result.code)) {
         case CREATE_ORDER_ERROR_CODES.PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT:
           errorMessage = 'OrderingPayment:PromotionExceededTotalClaimLimit';
           break;
@@ -229,7 +229,7 @@ export const actions = {
 
       dispatch(
         appActions.showError({
-          code: result.code,
+          code: Number(result.code),
           message: i18next.t(errorMessage),
         })
       );
