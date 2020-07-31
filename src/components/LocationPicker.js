@@ -14,6 +14,7 @@ import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 import Utils from '../utils/utils';
 import qs from 'qs';
+import { captureException } from '@sentry/react';
 class LocationPicker extends Component {
   static propTypes = {
     origin: PropTypes.exact({ lat: PropTypes.number.isRequired, lng: PropTypes.number.isRequired }),
@@ -132,6 +133,7 @@ class LocationPicker extends Component {
       onSelect(placeInfo);
     } catch (e) {
       console.error(e);
+      captureException(e);
       this.setState({ errorToast: t('FailToGetPlaceInfo'), isSubmitting: false });
     }
   }
@@ -319,6 +321,7 @@ class LocationPicker extends Component {
       );
     } catch (e) {
       console.error(e);
+      captureException(e);
       return null;
     }
   }

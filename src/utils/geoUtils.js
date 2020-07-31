@@ -1,5 +1,6 @@
 import { intersection, findIndex } from 'lodash';
 import Utils from './utils';
+import { captureException } from '@sentry/react';
 
 const googleMaps = window.google.maps;
 
@@ -167,6 +168,7 @@ export const getHistoricalDeliveryAddresses = async () => {
 
     return results;
   } catch (e) {
+    captureException(e);
     console.error('failed to get historical delivery addresses', e);
     return [];
   }
@@ -342,6 +344,7 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
     try {
       return JSON.parse(cachedDevicePositionInfo);
     } catch (e) {
+      captureException(e);
       console.error('failed to parse cached device position info', e);
       // continue to execute;
     }

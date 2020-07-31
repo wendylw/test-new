@@ -296,7 +296,7 @@ class LocationAndDate extends Component {
 
   setStore = async () => {
     await this.props.homeActions.loadCoreStores();
-    const { allStore } = this.props;
+    const { allStore = [] } = this.props;
 
     this.checkOnlyType(allStore);
     if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
@@ -317,10 +317,16 @@ class LocationAndDate extends Component {
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
     } else if (config.storeId) {
-      let store = this.props.allStore.filter(item => item.id === config.storeId);
-      this.setState({
-        nearlyStore: store[0],
-      });
+      let store = allStore.filter(item => item.id === config.storeId) || [];
+      this.setState(
+        {
+          nearlyStore: store[0] || {},
+        },
+        async () => {
+          await this.props.appActions.loadCoreBusiness(store[0].id);
+          this.setMethodsTime();
+        }
+      );
     } else if (this.state.search.type === DELIVERY_METHOD.PICKUP) {
       this.goStoreList();
     }
@@ -836,6 +842,8 @@ class LocationAndDate extends Component {
           <li
             className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
             data-testid="preOrderHour"
+            data-heap-name="ordering.location-and-date.time-item"
+            data-heap-is-immediate="no"
             onClick={() => {
               !isSoldOut && this.handleSelectHour({ from, to });
             }}

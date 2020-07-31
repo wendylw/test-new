@@ -25,7 +25,7 @@ import {
   getUnavailablePayments,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import { getPaymentName, getSupportCreditCardBrands } from './utils';
+import { getPaymentName, getSupportCreditCardBrands, getPaymentRedirectAndWebHookUrl } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -49,19 +49,13 @@ class Payment extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
-    const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const queryString = `?h=${encodeURIComponent(h)}`;
+    const { onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
+    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
 
     return {
       amount: currentOrder.total,
