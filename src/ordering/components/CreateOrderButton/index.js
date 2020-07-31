@@ -69,10 +69,14 @@ class CreateOrderButton extends React.Component {
     }
 
     if (!Boolean(storeId)) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-        search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-      });
+      if (type === 'dine' || type === 'takeaway') {
+        window.location.href = Constants.ROUTER_PATHS.DINE;
+      } else {
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+          search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
+        });
+      }
 
       return;
     }
