@@ -546,12 +546,14 @@ Utils.removeParam = (key, sourceURL) => {
   }
   return rtn;
 };
+
 Utils.notHomeOrLocationPath = pathname => {
   return !(
     ['/ordering/', '/ordering'].includes(pathname) ||
     ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
   );
 };
+
 Utils.checkEmailIsValid = email => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return emailRegex.test(email);
