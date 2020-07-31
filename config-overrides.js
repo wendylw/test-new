@@ -19,7 +19,6 @@ const customization = override(
       new SentryWebpackPlugin({
         include: 'src',
         ignore: ['node_modules', 'webpack.config.js'],
-        rewrite: false,
         urlPrefix: '~/static/js',
       })
     )
