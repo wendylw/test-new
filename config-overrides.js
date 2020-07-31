@@ -10,7 +10,11 @@ const withCondition = (conditionFunc, overrideFunc) => config => {
 
 const customization = override(
   withCondition(
-    () => process.env.SENTRY_ORG && process.env.SENTRY_PROJECT && process.env.SENTRY_AUTH_TOKEN,
+    config =>
+      process.env.SENTRY_ORG &&
+      process.env.SENTRY_PROJECT &&
+      process.env.SENTRY_AUTH_TOKEN &&
+      config.mode === 'production',
     addWebpackPlugin(
       new SentryWebpackPlugin({
         include: 'src',
