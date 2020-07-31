@@ -258,7 +258,8 @@ export class Home extends Component {
     this.setState({
       alcoholModal: val,
     });
-    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry())) {
+
+    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide) {
       this.toggleBodyScroll(true);
     } else {
       this.toggleBodyScroll(false);
@@ -386,6 +387,7 @@ export class Home extends Component {
       this.setState({
         viewAside: null,
       });
+
       this.toggleBodyScroll(false);
     } else {
       this.setState({

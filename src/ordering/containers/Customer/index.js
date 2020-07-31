@@ -54,7 +54,7 @@ class Customer extends Component {
     const { sentOtp } = this.state;
     const { total } = cartSummary || {};
 
-    if (sentOtp && total && isLogin && isLogin !== this.props.user.isLogin) {
+    if (sentOtp && total && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
