@@ -6,7 +6,6 @@ import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
-import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Utils from '../../../utils/utils';
@@ -123,36 +122,6 @@ class Customer extends Component {
       await appActions.getOtp({ phone });
       this.setState({ sentOtp: true });
     }
-  }
-
-  handleUpdateName(e) {
-    this.props.customerActions.patchDeliveryDetails({ username: e.target.value });
-  }
-
-  handleAddressDetails(addressDetails) {
-    this.props.customerActions.patchDeliveryDetails({ addressDetails });
-  }
-
-  handleDriverComments(deliveryComments) {
-    this.props.customerActions.patchDeliveryDetails({ deliveryComments });
-  }
-
-  handleToggleFormTextarea(asideName) {
-    const { t } = this.props;
-    let formTextareaTitle = '';
-
-    if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
-      formTextareaTitle = t('AddNoteToDriverPlaceholder');
-    } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
-      formTextareaTitle = t('AddAddressDetailsPlaceholder');
-    } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
-      formTextareaTitle = t('AddNoteToMerchantPlaceholder');
-    }
-
-    this.setState({
-      asideName,
-      formTextareaTitle,
-    });
   }
 
   getShippingType() {
@@ -377,15 +346,17 @@ class Customer extends Component {
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
         </div>
-        <div
-          className="form__group border-radius-base flex flex-middle flex-space-between"
-          data-heap-name="ordering.customer.pickup-note"
-          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
-        >
-          <p className={`${deliveryComments ? '' : 'gray-font-opacity'}`}>
-            {deliveryComments ||
-              `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          </p>
+        <div className="form__group border-radius-base form-field">
+          <input
+            className="input input__block"
+            data-heap-name="ordering.customer.pickup-note"
+            type="text"
+            maxLength="140"
+            value={deliveryComments}
+            name="deliveryComments"
+            onChange={this.handleInputChange}
+            placeholder={`${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
+          />
         </div>
       </React.Fragment>
     );
@@ -393,23 +364,23 @@ class Customer extends Component {
 
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
-    const { asideName, formTextareaTitle, errorToast } = this.state;
+    const { asideName, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { total } = cartSummary || {};
-    let textareaValue = '';
-    let updateTextFunc = () => { };
+    // let textareaValue = '';
+    // let updateTextFunc = () => { };
 
-    if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
-      textareaValue = deliveryDetails.deliveryComments;
-      updateTextFunc = this.handleDriverComments.bind(this);
-    } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
-      textareaValue = deliveryDetails.addressDetails;
-      updateTextFunc = this.handleAddressDetails.bind(this);
-    } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
-      textareaValue = deliveryDetails.deliveryComments;
-      updateTextFunc = this.handleDriverComments.bind(this);
-    }
+    // if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
+    //   // textareaValue = deliveryDetails.deliveryComments;
+    //   // updateTextFunc = this.handleDriverComments.bind(this);
+    // } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
+    //   // textareaValue = deliveryDetails.addressDetails;
+    //   // updateTextFunc = this.handleAddressDetails.bind(this);
+    // } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
+    //   // textareaValue = deliveryDetails.deliveryComments;
+    //   // updateTextFunc = this.handleDriverComments.bind(this);
+    // }
 
     return (
       <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
@@ -464,15 +435,6 @@ class Customer extends Component {
             {this.renderPickUpInfo()}
           </form>
         </div>
-
-        <FormTextarea
-          show={!!asideName}
-          onToggle={this.handleToggleFormTextarea.bind(this)}
-          title={formTextareaTitle}
-          textareaValue={textareaValue}
-          onUpdateText={updateTextFunc}
-          data-heap-name="ordering.customer.form-textarea"
-        />
 
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">
