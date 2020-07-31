@@ -607,6 +607,7 @@ Utils.getFulfillDate = () => {
         pusher = zero(+pusher.split(':')[0] + 1) + ':00';
         timeList.push(pusher);
         if (loops > 96) {
+          // four 15minute pre hour * 24 hour
           break;
         }
       }
@@ -662,6 +663,7 @@ Utils.getFulfillDate = () => {
         timeList.push(pusher);
         loops++;
         if (loops > 96) {
+          // four 15minute pre hour * 24 hour
           break;
         }
       }
