@@ -5,6 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../../components/Header';
+import Image from '../../../components/Image';
 import Constants from '../../../utils/constants';
 
 import {
@@ -65,23 +66,31 @@ class ThankYou extends Component {
             <span className="text-size-big text-weight-bolder">{contactEmail}</span>
           </div>
 
-          <div className="card">
-            <div className="voucher-code__container">
-              <p className="voucher-code__title">{t('YourGiftVoucherCode')}</p>
-              <p className="voucher-code__content">{voucherCode}</p>
+          <div className="card margin-normal">
+            <div className="text-center padding-small border__bottom-divider">
+              <h4 className="margin-smaller text-size-big text-weight-bolder">{t('YourGiftVoucherCode')}</h4>
+              <span className="voucher-thanks__voucher-code padding-small text-size-huge text-weight-bolder">
+                {voucherCode}23brirh4rn3o
+              </span>
             </div>
-            <div className="store-info__container">
+            <div className="padding-top-bottom-smaller">
               {onlineStoreLogo ? (
-                <p className="store-info__logo">
-                  <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} />
-                </p>
+                <Image
+                  className="voucher-thanks__logo logo logo__big margin-normal"
+                  alt={`${onlineStoreName} Logo`}
+                  src={onlineStoreLogo}
+                />
               ) : null}
 
-              <p className="store-info__site">
-                <a href={beepSiteUrl} data-heap-name="voucher.thank-you.visit-site-link">
+              <div className="text-center margin-normal">
+                <a
+                  class="voucher-thanks__button-link button button__link text-size-big text-weight-bolder"
+                  href={beepSiteUrl}
+                  data-heap-name="voucher.thank-you.visit-site-link"
+                >
                   {t('VisitSiteToUseVoucherNow', { onlineStoreName })}
                 </a>
-              </p>
+              </div>
             </div>
           </div>
           <VoucherIntroduction onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />

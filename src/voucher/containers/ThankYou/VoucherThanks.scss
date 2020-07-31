@@ -17,4 +17,19 @@
   &__image {
     max-width: 40%;
   }
+
+  &__voucher-code {
+    display: block;
+    color: $gray-2;
+    letter-spacing: 0.1em;
+  }
+
+  &__logo {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__button-link {
+    color: $status-blue;
+  }
 }
