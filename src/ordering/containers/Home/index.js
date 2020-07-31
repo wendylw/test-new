@@ -37,9 +37,12 @@ import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import locationIcon from '../../../images/beep_home_location.svg';
 import { computeStraightDistance } from '../../../utils/geoUtils';
+import { captureException } from '@sentry/react';
 const localState = {
   blockScrollTop: 0,
 };
+
+const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
@@ -52,11 +55,31 @@ export class Home extends Component {
     alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
   };
 
+  scrollDepthNumerator = 0;
+
   handleScroll = () => {
     const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+    this.trackScrollDepth();
     this.setState({
       dScrollY: documentScrollY,
     });
+  };
+
+  // copied and modified from https://docs.heap.io/docs/scroll-tracking
+  trackScrollDepth = () => {
+    if (!this.props.categories || !this.props.categories.length) {
+      return;
+    }
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const segmentHeight = scrollHeight / SCROLL_DEPTH_DENOMINATOR;
+    const scrollDistance =
+      window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    const divisible = Math.trunc(scrollDistance / segmentHeight);
+    if (this.scrollDepthNumerator < divisible && divisible !== Infinity) {
+      const scrollPercent = divisible * (100 / SCROLL_DEPTH_DENOMINATOR);
+      window.heap?.track('ordering.home.product-list.scroll', { percent: scrollPercent });
+      this.scrollDepthNumerator += 1;
+    }
   };
 
   get navBackUrl() {
@@ -105,6 +128,7 @@ export class Home extends Component {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo } = this.props;
+
       let { stores, qrOrderingSettings } = businessInfo;
       const { deliveryRadius } = qrOrderingSettings;
       if (stores.length) {
@@ -134,13 +158,8 @@ export class Home extends Component {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
-      const {
-        validTimeFrom,
-        validTimeTo,
-        validDays,
-        enablePreOrder,
-        disableOnDemandOrder,
-      } = businessInfo.qrOrderingSettings;
+      const { qrOrderingSettings } = businessInfo || {};
+      const { validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
 
       if (!Utils.getSessionVariable('expectedDeliveryDate')) {
         // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
@@ -240,7 +259,8 @@ export class Home extends Component {
     this.setState({
       alcoholModal: val,
     });
-    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry())) {
+
+    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide) {
       this.toggleBodyScroll(true);
     } else {
       this.toggleBodyScroll(false);
@@ -308,6 +328,7 @@ export class Home extends Component {
         sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
       }
     } catch (e) {
+      captureException(e);
       console.error(e);
     }
   };
@@ -367,6 +388,7 @@ export class Home extends Component {
       this.setState({
         viewAside: null,
       });
+
       this.toggleBodyScroll(false);
     } else {
       this.setState({
@@ -400,7 +422,7 @@ export class Home extends Component {
       });
     };
     const { businessInfo } = this.props;
-    const { stores = [] } = businessInfo;
+    const { stores = [] } = businessInfo || {};
 
     let pickupAddress = '';
     if (stores.length) pickupAddress = Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
