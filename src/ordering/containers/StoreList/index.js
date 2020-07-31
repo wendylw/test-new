@@ -22,7 +22,7 @@ const StoreListItem = props => (
   <div
     className="stores-list-item"
     onClick={() => props.select(props.store)}
-    data-heap-name="ordering.location-and-date.store-item"
+    data-heap-name="ordering.store-list.store-item"
   >
     <p>{props.store.name}</p>
     <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
@@ -30,8 +30,8 @@ const StoreListItem = props => (
       <p>
         <IconLocation className="header__motor-icon text-middle" />
         <span className="stores-list-item-distance">{props.store.distance} km</span>
-        <IconMotorcycle className="header__motor-icon text-middle" />
-        <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} />
+        {/* <IconMotorcycle className="header__motor-icon text-middle" /> */}
+        {/* <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} /> */}
         {/* <span className="stores-list-item-fee">{props.store.deliveryFee}</span> */}
       </p>
     )}

@@ -716,6 +716,8 @@ class LocationAndDate extends Component {
           <li
             className={`location-display__hour-item text-center ${selectedHour.from === from ? 'selected' : ''}`}
             data-testid="preOrderHour"
+            data-heap-name="ordering.location-and-date.time-item"
+            data-heap-is-immediate="no"
             onClick={() => {
               this.handleSelectHour({ from, to });
             }}

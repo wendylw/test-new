@@ -11,6 +11,9 @@ import {
 import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
+import Utils from '../utils/utils';
+import qs from 'qs';
+import { captureException } from '@sentry/react';
 
 class LocationPicker extends Component {
   static propTypes = {
@@ -130,6 +133,7 @@ class LocationPicker extends Component {
       onSelect(placeInfo);
     } catch (e) {
       console.error(e);
+      captureException(e);
       this.setState({ errorToast: t('FailToGetPlaceInfo'), isSubmitting: false });
     }
   }
@@ -225,9 +229,9 @@ class LocationPicker extends Component {
         <div className="location-picker__address-title">{summary}</div>
         <div className="location-picker__address-detail">
           {/* will not display distance for now, because this distance is straight line distance and doesn't fit vendor's requirement */}
-          {this.isRenderDistance(distance) && (
-            <span className="location-picker__address-distance">{distance.toFixed(1)} KM</span>
-          )}
+          {/*{this.isRenderDistance(distance) && (*/}
+          {/*  <span className="location-picker__address-distance">{distance.toFixed(1)} KM</span>*/}
+          {/*)}*/}
           <span>{detail}</span>
         </div>
       </div>
@@ -317,6 +321,7 @@ class LocationPicker extends Component {
       );
     } catch (e) {
       console.error(e);
+      captureException(e);
       return null;
     }
   }

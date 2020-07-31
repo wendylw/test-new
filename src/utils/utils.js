@@ -1,6 +1,7 @@
 import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
+import { captureException } from '@sentry/react';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -459,6 +460,7 @@ Utils.getDeliveryCoords = () => {
     return deliveryAddress.coords;
   } catch (e) {
     console.error('Cannot get delivery coordinate', e);
+    captureException(e);
     return undefined;
   }
 };
