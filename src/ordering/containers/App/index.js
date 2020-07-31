@@ -31,7 +31,7 @@ class App extends Component {
     await appActions.getLoginStatus();
     const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
-    if (config.storeId || !(window.location.pathname === '/ordering/' || window.location.pathname === '/ordering')) {
+    if (this.checkpath()) {
       await appActions.loadCoreBusiness();
     }
 
@@ -66,6 +66,16 @@ class App extends Component {
       });
     }
   }
+
+  checkpath = () => {
+    return (
+      !(window.location.pathname === '/ordering/' || window.location.pathname === '/ordering') &&
+      !(
+        window.location.pathname === '/ordering/location-date' ||
+        window.location.pathname === '/ordering/location-date/'
+      )
+    );
+  };
 
   setGtmData = ({ onlineStoreInfo, userInfo, businessInfo }) => {
     const userProperties = { onlineStoreInfo, userInfo };

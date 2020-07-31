@@ -313,9 +313,15 @@ class LocationAndDate extends Component {
       }
     } else if (config.storeId) {
       let store = this.props.allStore.filter(item => item.id === config.storeId);
-      this.setState({
-        nearlyStore: store[0],
-      });
+      this.setState(
+        {
+          nearlyStore: store[0],
+        },
+        async () => {
+          await this.props.appActions.loadCoreBusiness(store[0].id);
+          this.setMethodsTime();
+        }
+      );
     } else if (this.state.search.type === DELIVERY_METHOD.PICKUP) {
       this.goStoreList();
     }
