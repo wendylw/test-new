@@ -607,14 +607,26 @@ export class Home extends Component {
         return <span className="gray-font-opacity">{t('TAKE_AWAY')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
-        return <IconInfoOutline className="header__info-icon" />;
+        return this.renderDeliveryAndPickupIcon();
       default:
         return null;
     }
   }
 
+  renderDeliveryAndPickupIcon = () => {
+    const { allStore } = this.props;
+    const { search } = this.state;
+    const { h } = search;
+
+    if (h) {
+      return <IconInfoOutline className="header__info-icon" />;
+    } else {
+      return allStore.length === 1 ? <IconInfoOutline className="header__info-icon" /> : null;
+    }
+  };
+
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo } = this.props;
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
@@ -630,6 +642,22 @@ export class Home extends Component {
       classList.push('border__bottom-divider gray flex-middle');
     }
 
+    let isCanClickHandler = true;
+    const { search } = this.state;
+    const { h } = search;
+
+    if (!h) {
+      if (allStore.length) {
+        if (allStore.length === 1) {
+          isCanClickHandler = true;
+        } else {
+          isCanClickHandler = false;
+        }
+      } else {
+        isCanClickHandler = false;
+      }
+    }
+
     return (
       <Header
         className={classList.join(' ')}
@@ -638,7 +666,7 @@ export class Home extends Component {
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={this.handleToggleAside.bind(this)}
+        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => {}}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -663,6 +691,26 @@ export class Home extends Component {
   isCountryNeedAlcoholPop = country => {
     if (country === 'TH' || country === 'SG') return false;
     return true;
+  };
+
+  getItemFromStore = (itemValue, itemName) => {
+    const { search } = this.state;
+    const { h } = search;
+    const { allStore } = this.props;
+
+    if (h) {
+      return itemValue;
+    } else {
+      if (allStore.length) {
+        if (allStore.length === 1) {
+          const { qrOrderingSettings } = allStore[0];
+
+          return qrOrderingSettings[itemName];
+        }
+      } else {
+        return itemValue;
+      }
+    }
   };
 
   render() {
@@ -753,9 +801,9 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             storeAddress={storeAddress}
             telephone={telephone}
-            validDays={validDays}
-            validTimeFrom={validTimeFrom}
-            validTimeTo={validTimeTo}
+            validDays={this.getItemFromStore(validDays, 'validDays')}
+            validTimeFrom={this.getItemFromStore(validTimeFrom, 'validTimeFrom')}
+            validTimeTo={this.getItemFromStore(validTimeTo, 'validTimeTo')}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
         )}
