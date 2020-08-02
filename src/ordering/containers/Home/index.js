@@ -703,8 +703,6 @@ export class Home extends Component {
       classList.push('location-page__entry-container');
     }
 
-    const isclose = this.isValidTimeToOrder() || this.isPreOrderEnabled();
-    console.log(isclose, 'isclose');
     return (
       <section className={classList.join(' ')}>
         {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
@@ -758,7 +756,7 @@ export class Home extends Component {
             validDays={validDays}
             validTimeFrom={validTimeFrom}
             validTimeTo={validTimeTo}
-            isValidTimeToOrder={isclose}
+            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
         )}
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
