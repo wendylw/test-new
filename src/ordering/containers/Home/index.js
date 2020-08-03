@@ -708,6 +708,16 @@ export class Home extends Component {
     return itemValue;
   };
 
+  isRenderDetailModal = (validTimeFrom, validTimeTo, callApiFinish) => {
+    const { search } = this.state;
+    const { h } = search;
+    const { allStore } = this.props;
+
+    return !h
+      ? allStore && allStore.length === 1
+      : Utils.isDeliveryType() || (Utils.isPickUpType() && validTimeFrom && validTimeTo && callApiFinish);
+  };
+
   render() {
     const {
       categories,
@@ -787,7 +797,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        {(Utils.isDeliveryType() || Utils.isPickUpType()) && validTimeFrom && validTimeTo && callApiFinish && (
+        {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
           <DeliveryDetailModal
             onlineStoreInfo={onlineStoreInfo}
             businessInfo={businessInfo}
