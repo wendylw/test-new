@@ -691,43 +691,45 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business] || {};
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
     if (!breakTimeFrom || !breakTimeTo) return list;
-    breakTimeFrom = +breakTimeFrom.split(':').join('.');
-    breakTimeTo = +breakTimeTo.split(':').join('.');
-    const newTimeList = [];
-    let breakStartIndex, breakEndIndex, breakInImd;
-    list.forEach((time, index, arr) => {
-      const { from, to } = time;
-      if (from === 'now') {
-        // immediate
-        // TODO the date show use merchats localtime
-        let now = new Date(),
-          h = now.getHours(),
-          m = now.getMinutes();
-        now = +(h + '.' + m);
-        let nowNextHour = +(h + 1 + '.' + m);
 
-        if (
-          (now >= breakTimeFrom && now <= breakTimeTo) ||
-          (nowNextHour >= breakTimeFrom && nowNextHour <= breakTimeTo)
-        ) {
-          breakInImd = true;
-        }
-      } else {
+    const newTimeList = [];
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    let breakStartIndex, breakEndIndex, breakInImd;
+    if (list[0].from === 'now') {
+      let curr = getHourAndMinuteFromTime(new Date());
+      curr = curr.split(':')[0] + ':00';
+      let currEnd = zero(+curr.split(':')[0] + 2) + ':00';
+      if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd >= breakTimeFrom && currEnd <= breakTimeTo)) {
+        list.shift();
+      }
+      list.forEach((time, index, arr) => {
+        const { from, to } = time;
         let timeFrom = getHourAndMinuteFromTime(new Date(from));
         let timeTo = getHourAndMinuteFromTime(new Date(to));
-        let breakTimeFromString = breakTimeFrom + ':00';
-        let breakTimeToString = breakTimeTo + ':00';
-
-        if (timeFrom === breakTimeFromString) breakStartIndex = index;
-        if (timeTo === breakTimeToString) breakEndIndex = index;
+        if (timeFrom === breakTimeFrom) breakStartIndex = index;
+        if (timeTo === breakTimeTo) breakEndIndex = index;
+      });
+      if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
+        breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
+        breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
+        list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
       }
-    });
-    if (breakStartIndex !== undefined && breakEndIndex !== undefined) {
-      list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
-    } else if (breakEndIndex !== undefined && breakInImd !== undefined) {
-      list.splice(0, breakEndIndex + 1);
+      return list;
+    } else {
+      list.forEach((time, index, arr) => {
+        const { from, to } = time;
+        let timeFrom = getHourAndMinuteFromTime(new Date(from));
+        let timeTo = getHourAndMinuteFromTime(new Date(to));
+        if (timeFrom === breakTimeFrom) breakStartIndex = index;
+        if (timeTo === breakTimeTo) breakEndIndex = index;
+      });
+      if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
+        breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
+        breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
+        list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
+      }
+      return list;
     }
-    return list;
   };
 
   isDisplayImmediate = (disableOnDemandOrder, enablePreOrder) => {
