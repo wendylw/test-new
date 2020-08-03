@@ -764,7 +764,7 @@ class LocationAndDate extends Component {
     const businessInfo = allBusinessInfo[business] || {};
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
     if (!breakTimeFrom || !breakTimeTo) return list;
-
+    list = JSON.parse(JSON.stringify(list));
     const newTimeList = [];
     const zero = num => (num < 10 ? '0' + num : num + '');
     let breakStartIndex, breakEndIndex, breakInImd;
@@ -1132,13 +1132,17 @@ class LocationAndDate extends Component {
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
-    const { selectedHour = {}, displayHourList } = this.state;
+    const { selectedHour = {}, displayHourList, timeSlot } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     if (!selectedDate.isOpen) return true;
 
     if (!displayHourList.includes(selectedHour.from)) {
+      return true;
+    }
+
+    if (timeSlot.includes(selectedHour.from)) {
       return true;
     }
 
