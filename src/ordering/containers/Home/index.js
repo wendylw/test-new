@@ -8,8 +8,8 @@ import Header from '../../../components/Header';
 import { IconEdit, IconInfoOutline, IconAccessTime, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
 import ProductDetail from './components/ProductDetail';
-import MiniCartListModal from './components/MiniCartListModal';
-import DeliveryDetailModal from './components/DeliveryDetailModal';
+import CartListAside from './components/CartListAside';
+import StoreInfoAside from './components/StoreInfoAside';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
 import CategoryProductList from './components/CategoryProductList';
 import AlcoholModal from './components/AlcoholModal';
@@ -657,7 +657,7 @@ export class Home extends Component {
     }
 
     return (
-      <React.Fragment>
+      <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         {enableConditionalFreeShipping &&
@@ -671,10 +671,7 @@ export class Home extends Component {
           </Trans>
         ) : null}
 
-        <div
-          className="ordering-home fixed-wrapper__container wrapper flex flex-top"
-          style={containerHeight ? { height: containerHeight } : null}
-        >
+        <div className="ordering-home__container flex flex-top">
           <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
           <CategoryProductList
             isVerticalMenu={isVerticalMenu}
@@ -691,13 +688,21 @@ export class Home extends Component {
             viewAside={viewAside}
             onToggle={this.handleToggleAside.bind(this)}
           />
-          <MiniCartListModal
+           */}
+          {/*
+          {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
+            <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
+          ) : null} */}
+
+          <CartListAside
+            footerEl={this.footerEl}
             viewAside={viewAside}
             show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
             onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
           />
           {(Utils.isDeliveryType() || Utils.isPickUpType()) && validTimeFrom && validTimeTo && (
-            <DeliveryDetailModal
+            <StoreInfoAside
+              footerEl={this.footerEl}
               onlineStoreInfo={onlineStoreInfo}
               businessInfo={businessInfo}
               businessLoaded={businessLoaded}
@@ -706,11 +711,7 @@ export class Home extends Component {
               onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
               isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             />
-          )} */}
-          {/*
-          {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
-            <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
-          ) : null} */}
+          )}
         </div>
         <Footer
           {...otherProps}
@@ -726,7 +727,7 @@ export class Home extends Component {
         {/* {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null} */}
-      </React.Fragment>
+      </section>
     );
   }
 }

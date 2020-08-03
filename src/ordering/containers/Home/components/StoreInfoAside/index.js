@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 
-class DeliveryDetailModal extends Component {
+class StoreInfoAside extends Component {
   state = {
     initDom: true,
   };
@@ -43,11 +43,12 @@ class DeliveryDetailModal extends Component {
       storeAddress,
       telephone,
       isValidTimeToOrder,
+      footerEl,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const classList = ['store-info__aside aside'];
+    const classList = ['store-info__aside aside fixed-wrapper'];
 
     if (!businessLoaded) {
       return null;
@@ -61,6 +62,9 @@ class DeliveryDetailModal extends Component {
       <aside
         className={classList.join(' ')}
         data-heap-name="ordering.home.delivery-detail.container"
+        style={{
+          bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
+        }}
         onClick={() => {
           if (initDom) {
             this.setState({ initDom: false });
@@ -69,7 +73,7 @@ class DeliveryDetailModal extends Component {
           onToggle(null);
         }}
       >
-        <div className="store-info">
+        <div className="aside__content absolute-wrapper">
           <div className="store-info__header flex flex-top flex-space-between">
             <Image
               className="header__image-container text-middle"
@@ -114,4 +118,4 @@ class DeliveryDetailModal extends Component {
   }
 }
 
-export default withTranslation()(DeliveryDetailModal);
+export default withTranslation()(StoreInfoAside);

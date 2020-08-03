@@ -4,6 +4,16 @@ $gray-nav-item-text: #707070;
 .ordering-home {
   height: 100vh;
 
+  .footer {
+    z-index: 100;
+  }
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+  }
+
   &__deliver-to {
     top: 0;
   }

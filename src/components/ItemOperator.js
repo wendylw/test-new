@@ -36,15 +36,13 @@ export class ItemOperator extends Component {
           </button>
         ) : null}
 
-        {quantity > 0 ? (
-          <span
-            className="item-operator__quantity padding-small margin-smaller text-weight-bolder"
-            data-testid="itemDetailQuantity"
-            data-heap-name="common.item-operator.quantity"
-          >
-            {quantity}
-          </span>
-        ) : null}
+        <span
+          className="item-operator__quantity text-center margin-smallest text-weight-bolder"
+          data-testid="itemDetailQuantity"
+          data-heap-name="common.item-operator.quantity"
+        >
+          {quantity > 0 ? quantity : null}
+        </span>
 
         {onIncrease ? (
           <button

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import { IconCartII, IconDelete } from '../../../../../components/Icons';
+import { IconDelete } from '../../../../../components/Icons';
 import CartList from '../../../Cart/components/CartList';
 import Constants from '../../../../../utils/constants';
 
@@ -10,8 +10,9 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators, getShoppingCartItemsByProducts } from '../../../../redux/modules/home';
+import './CartListAside.scss';
 
-class MiniCartListModal extends Component {
+class CartListAside extends Component {
   handleClearAll = async () => {
     const { viewAside } = this.props;
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
@@ -34,14 +35,14 @@ class MiniCartListModal extends Component {
   }
 
   render() {
-    const { t, show, cartSummary, viewAside } = this.props;
+    const { t, show, cartSummary, viewAside, footerEl } = this.props;
     let { count } = cartSummary || {};
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       count = this.props.selectedProductCart.count;
     }
 
-    const className = ['aside'];
+    const className = ['cart-list-aside aside fixed-wrapper'];
 
     if (show) {
       className.push('active');
@@ -52,26 +53,31 @@ class MiniCartListModal extends Component {
         className={className.join(' ')}
         onClick={e => this.handleHideCart(e)}
         data-heap-name="ordering.home.mini-cart.container"
+        ref={ref => (this.aside = ref)}
+        style={{
+          bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
+        }}
       >
-        <div className="cart-pane">
-          <div className="cart-pane__operation border__bottom-divider flex flex-middle flex-space-between">
-            <h3 className="cart-pane__amount-container">
-              <IconCartII />
-              <span className="cart-pane__amount-label text-middle text-weight-bolder">
-                {t('CartItemsInCategory', { cartQuantity: count })}
-              </span>
-            </h3>
+        <div className="cart-list-aside__container aside__content absolute-wrapper">
+          <div className="cart-list-aside__operation border__bottom-divider flex flex-middle flex-space-between absolute-wrapper border-radius-base">
+            <span className="cart-list-aside__item-number text-middle padding-left-right-normal text-weight-bolder">
+              {t('CartItemsInCategory', { cartQuantity: count })}
+            </span>
             <button
-              className="warning__button"
+              className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
               onClick={this.handleClearAll.bind(this)}
               data-testid="clearAll"
               data-heap-name="ordering.home.mini-cart.clear-btn"
             >
-              <IconDelete />
-              <span className="warning__label text-middle">{t('ClearAll')}</span>
+              <IconDelete className="icon icon__normal icon__error text-middle" />
+              <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
             </button>
           </div>
-          <div className="cart-pane__list">
+          <div
+            style={{
+              maxHeight: this.aside ? `${(this.aside.clientHeight || this.aside.offsetHeight) * 0.8}px` : '0',
+            }}
+          >
             <CartList isList={false} viewAside={viewAside} />
           </div>
         </div>
@@ -80,12 +86,14 @@ class MiniCartListModal extends Component {
   }
 }
 
-MiniCartListModal.propTypes = {
+CartListAside.propTypes = {
   show: PropTypes.bool,
   onToggle: PropTypes.func,
+  viewAside: PropTypes.string,
+  footerEl: PropTypes.any,
 };
 
-MiniCartListModal.defaultProps = {
+CartListAside.defaultProps = {
   show: false,
   onToggle: () => {},
 };
@@ -104,4 +112,4 @@ export default compose(
       cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
   )
-)(MiniCartListModal);
+)(CartListAside);

@@ -282,42 +282,12 @@
     transition: opacity 0.01s, z-index 0.01s;
     -webkit-transition: opacity 0.01s, z-index 0.01s;
 
-    > .cart-pane,
     > .product-detail,
     > .product-description,
     > .form-text {
       transform: translateY(0%);
       -webkit-transform: translateY(0%);
     }
-  }
-}
-
-.cart-pane {
-  // @extend .aside-content;
-  // @extend .animation__slide-up;
-
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  max-height: 60%;
-
-  &__operation {
-    padding: 2.4vw;
-  }
-
-  &__amount-container {
-    svg {
-      vertical-align: middle;
-      fill: $status-blue;
-    }
-
-    svg ~ .cart-pane__amount-label {
-      margin-left: 8px;
-    }
-  }
-
-  &__amount-label {
-    color: $gray-2;
   }
 }
 
@@ -869,21 +839,6 @@ body.loading {
   }
 }
 
-@media (max-width: 374px) {
-  *,
-  html {
-    font-size: $mobile-font-size-base;
-  }
-
-  .store-info {
-    &__address,
-    &__phone,
-    &__delivery-hours {
-      padding: 0 2.4vw;
-    }
-  }
-}
-
 @media (min-width: 600px) {
   .back-drop,
   .aside-section,
@@ -902,21 +857,7 @@ body.loading {
     border-right: 1px solid $gray-5;
   }
 
-  .payment-bank__card-type-icon.visa {
-    max-width: 50px;
-  }
-
-  .payment-bank__card-type-icon.mastercard {
-    max-width: 42px;
-  }
-
-  .payment-bank__card-type-icon.JCB {
-    max-width: 30px;
-  }
-
-  .need-help__info-container,
-  .aside__section-container,
-  .cart-pane__operation {
+  .aside__section-container {
     padding: 10px;
   }
 
