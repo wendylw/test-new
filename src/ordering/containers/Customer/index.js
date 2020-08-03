@@ -54,7 +54,7 @@ class Customer extends Component {
     const { sentOtp } = this.state;
     const { total } = cartSummary || {};
 
-    if (sentOtp && total && isLogin && isLogin !== this.props.user.isLogin) {
+    if (sentOtp && total && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitPaymentPage();
     }
   }
@@ -238,6 +238,10 @@ class Customer extends Component {
           const { search } = window.location;
 
           const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+          // cache delivery address
+          Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
+          Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
+          Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
 
           history.push({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
@@ -351,6 +355,10 @@ class Customer extends Component {
           data-heap-name="ordering.customer.pickup-time"
           onClick={async () => {
             const { search } = window.location;
+
+            Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
+            Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
+            Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
 
             const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 

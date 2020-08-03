@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://wenjingzhang.beep.test15.shub.us",
+  "proxy": "https://storehubyougaga.beep.test5.shub.us",
   "engines": {
     "node": "12"
   },
@@ -34,6 +34,9 @@
     ]
   },
   "dependencies": {
+    "@sentry/apm": "^5.19.2",
+    "@sentry/integrations": "^5.19.2",
+    "@sentry/react": "^5.19.2",
     "@stripe/react-stripe-js": "^1.1.2",
     "@stripe/stripe-js": "^1.4.0",
     "apollo-boost": "^0.3.1",
@@ -79,13 +82,18 @@
     "test:coverage": "react-app-rewired test --coverage",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand --no-cache",
     "eject": "react-app-rewired eject",
-    "deploy": "deploy-aws-s3-cloudfront --source=./build/ --cache-control=static/**/*=max-age=2592000 index.html=no-cache i18n/**/*=max-age=2592000",
+    "deploy": "deploy-aws-s3-cloudfront --source ./build --cache-control index.html:no-cache static/**/*:max-age=2592000 i18n/**/*:max-age=2592000",
     "i18n-sync": "i18n-sync",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "no-unused-expressions": [
+        "off"
+      ]
+    }
   },
   "browserslist": [
     ">0.2%",
@@ -94,6 +102,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@sentry/cli": "^1.55.0",
+    "@sentry/webpack-plugin": "^1.12.0",
     "@storybook/addon-actions": "^5.3.19",
     "@storybook/addon-docs": "^5.3.19",
     "@storybook/addon-links": "^5.3.19",

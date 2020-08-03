@@ -82,6 +82,7 @@ const fetchStoreList = (page, pageSize, shippingType) => (dispatch, getState) =>
       `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&countryCode=${countryCode}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
+        window.heap?.track('site.search.store-list.load-page', { Page: page, Keyword: keyword });
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
       }
@@ -194,4 +195,3 @@ export const getPageInfo = state => state.search.paginationInfo;
 export const getShippingType = state => state.search.shippingType;
 export const loadedSearchingStores = state => state.search.loadedSearchingStoreList;
 export const getStoreList = state => state.search.storeIds.map(storeId => getStoreById(state, storeId));
-export const getSearchResult = state => state.search.storeIdsSearchResult.map(storeId => getStoreById(state, storeId));

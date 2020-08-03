@@ -153,6 +153,10 @@ const API_URLS = {
       method: 'get',
     };
   },
+  GET_COLLECTION: {
+    url: '/api/stores/collection',
+    method: 'get',
+  },
 };
 
 export default {

@@ -106,6 +106,7 @@ const fetchStoreList = () => (dispatch, getState) => {
       { signal: refreshFetchStoreListAbortController() }
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
+        window.heap?.track('site.home.store-list.load-page', { Page: page });
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
       }
@@ -198,7 +199,3 @@ export default reducer;
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
 export const getStoreLinkInfo = state => state.home.storeLinkInfo;
-export const getStoreCollections = state => {
-  // todo
-  return Object.values(getAllStoreCollections(state));
-};
