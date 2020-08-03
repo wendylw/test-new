@@ -80,6 +80,7 @@ class LocationAndDate extends Component {
     nearlyStore: { name: '' },
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
     onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
+    displayHourList: [],
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -117,6 +118,7 @@ class LocationAndDate extends Component {
       {
         isDeliveryType: true,
         isPickUpType: false,
+        displayHourList: [],
       },
       async () => {
         if (this.state.nearlyStore.id) {
@@ -160,6 +162,7 @@ class LocationAndDate extends Component {
       {
         isPickUpType: true,
         isDeliveryType: false,
+        displayHourList: [],
       },
       () => {
         if (this.state.nearlyStore.id && ischeckStore) {
@@ -435,7 +438,6 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
-    this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
     let { date: initDate } = initialSelectedTime;
     initDate = Utils.getDateNumber(initDate.date);
     let currentDate = Utils.getDateNumber(new Date());
@@ -788,6 +790,17 @@ class LocationAndDate extends Component {
     return !enablePreOrder || !disableOnDemandOrder;
   };
 
+  collectHourList = item => {
+    let timeString = item.from === 'now' ? 'now' : getHourAndMinuteFromTime(item.from);
+    if (!this.state.displayHourList.includes(timeString)) {
+      this.state.displayHourList.push(timeString);
+      this.setState({
+        displayHourList: this.state.displayHourList,
+      });
+    }
+    return true;
+  };
+
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
@@ -814,7 +827,7 @@ class LocationAndDate extends Component {
             style={{ fontWeight: '600' }}
             key="deliveryOnDemandOrder"
           >
-            {t('Immediate')}
+            {this.collectHourList(item) && 'Immediate'}
           </li>
         ) : null;
       }
@@ -857,7 +870,7 @@ class LocationAndDate extends Component {
             style={{ fontWeight: '600' }}
             key={`${from} - ${to}`}
           >
-            {timeToDisplay}
+            {this.collectHourList(item) && timeToDisplay}
             {isSoldOut && <span> {this.props.t('SOLDOUT')}</span>}
           </li>
         )
@@ -1100,7 +1113,7 @@ class LocationAndDate extends Component {
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
-    const { selectedHour = {} } = this.state;
+    const { selectedHour = {}, displayHourList } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
@@ -1108,6 +1121,10 @@ class LocationAndDate extends Component {
       return true;
     }
     // if (!enablePreOrder || !selectedDate.isOpen) return true;
+
+    if (!displayHourList.includes(selectedHour.from)) {
+      return true;
+    }
 
     if (!this.state.nearlyStore.id) return true;
 
