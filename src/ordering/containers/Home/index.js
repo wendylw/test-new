@@ -706,6 +706,8 @@ export class Home extends Component {
           const { qrOrderingSettings } = allStore[0];
 
           return qrOrderingSettings[itemName];
+        } else {
+          return itemValue;
         }
       } else {
         return itemValue;
