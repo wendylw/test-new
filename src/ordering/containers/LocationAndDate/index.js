@@ -561,7 +561,7 @@ class LocationAndDate extends Component {
     await this.props.homeActions.getTimeSlot(
       Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
       this.getFulfillDate(date, selectedHour),
-      config.storeId
+      this.state.nearlyStore.id
     );
     const { timeSlotList, allBusinessInfo, business } = this.props;
     const { stores } = allBusinessInfo[business];
