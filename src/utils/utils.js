@@ -318,34 +318,6 @@ Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
-Utils.checkMultipleStoreIsValidTimeToOrder = storeList => {
-  let isMultipleValidTimeToOrder = false;
-  storeList.forEach(item => {
-    const { qrOrderingSettings } = item;
-    const { validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-
-    if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
-      isMultipleValidTimeToOrder = true;
-    }
-  });
-
-  return isMultipleValidTimeToOrder;
-};
-
-Utils.checkMultipleStoreIsPreOrderEnabled = storeList => {
-  let isMultipleEnablePreOrder = false;
-  storeList.forEach(item => {
-    const { qrOrderingSettings } = item;
-    const { enablePreOrder } = qrOrderingSettings || {};
-
-    if (enablePreOrder) {
-      isMultipleEnablePreOrder = true;
-    }
-  });
-
-  return isMultipleEnablePreOrder;
-};
-
 Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
   // ValidDays received from api side, sunday is 1, monday is two
   // convert it to browser weekday format first, for which sunday is 0, monday is 1

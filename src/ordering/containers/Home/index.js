@@ -133,6 +133,34 @@ export class Home extends Component {
     this.checkOrderTime();
   };
 
+  checkMultipleStoreIsValidTimeToOrder = storeList => {
+    let isMultipleValidTimeToOrder = false;
+    storeList.forEach(item => {
+      const { qrOrderingSettings } = item;
+      const { validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+
+      if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
+        return true;
+      }
+    });
+
+    return isMultipleValidTimeToOrder;
+  };
+
+  checkMultipleStoreIsPreOrderEnabled = storeList => {
+    let isMultipleEnablePreOrder = false;
+    storeList.forEach(item => {
+      const { qrOrderingSettings } = item;
+      const { enablePreOrder } = qrOrderingSettings || {};
+
+      if (enablePreOrder) {
+        return true;
+      }
+    });
+
+    return isMultipleEnablePreOrder;
+  };
+
   getStatusFromMultipleStore = () => {
     const { allStore } = this.props;
     let enablePreOrderFroMulitpeStore = false,
@@ -142,11 +170,11 @@ export class Home extends Component {
 
     if (allStore && allStore.length) {
       enablePreOrderFroMulitpeStore =
-        allStore.length === 1 ? enablePreOrder : Utils.checkMultipleStoreIsPreOrderEnabled(allStore);
+        allStore.length === 1 ? enablePreOrder : this.checkMultipleStoreIsPreOrderEnabled(allStore);
       isValidToOrderFromMulitpeStore =
         allStore.length === 1
           ? Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })
-          : Utils.checkMultipleStoreIsValidTimeToOrder(allStore);
+          : this.checkMultipleStoreIsValidTimeToOrder(allStore);
     }
     this.setState({
       enablePreOrderFroMulitpeStore,
