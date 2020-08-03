@@ -447,11 +447,23 @@ class LocationAndDate extends Component {
       this.setMethodsTime();
     }
     this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
+
+    initialSelectedTime.date = this.updateDate(initialSelectedTime.date, this.deliveryDates);
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
     });
     // this.deliveryDates = deliveryDates;
+  };
+
+  updateDate = (date, list) => {
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i];
+      if (item.from === date) {
+        return item;
+      }
+    }
+    return date;
   };
 
   setDeliveryDays = (validDays = []) => {
@@ -472,10 +484,12 @@ class LocationAndDate extends Component {
       if (!i) {
         // Today option is open when user visits delivery time page before store is closed
         const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
-        isOpen = validDays.includes(weekday) && isBeforeStoreClose;
+        isOpen = validDays.includes(weekday) && isBeforeStoreClose && this.notVacation({ date: deliveryDate });
+
         if (!isOpen) continue;
       } else {
         !enablePreOrder && (isOpen = false);
+        !this.notVacation({ date: deliveryDate }) && (isOpen = false);
       }
 
       if (useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
@@ -1117,14 +1131,15 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (allBusinessInfo[business] && allBusinessInfo[business].qrOrderingSettings && !this.notVacation(selectedDate)) {
-      return true;
-    }
-    // if (!enablePreOrder || !selectedDate.isOpen) return true;
+    if (!selectedDate.isOpen) return true;
 
     if (!displayHourList.includes(selectedHour.from)) {
       return true;
     }
+
+    const dateList = this.deliveryDates.map(item => item.date);
+
+    if (!dateList.includes(selectedDate.date)) return true;
 
     if (!this.state.nearlyStore.id) return true;
 
