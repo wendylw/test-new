@@ -14,13 +14,14 @@ import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
 import {
   actions as homeActionCreators,
+  getTimeSlotList,
   getStoresList,
   getStoreHashCode,
-  getTimeSlotList,
 } from '../../redux/modules/home';
+import config from '../../../config';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import qs from 'qs';
-import config from '../../../config';
+
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -434,6 +435,7 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
+    this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
     let { date: initDate } = initialSelectedTime;
     initDate = Utils.getDateNumber(initDate.date);
     let currentDate = Utils.getDateNumber(new Date());
