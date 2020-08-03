@@ -441,8 +441,7 @@ class LocationAndDate extends Component {
       this.setMethodsTime();
     }
 
-    // initialSelectedTime.date = this.updateDate(initialSelectedTime.date, this.deliveryDates)
-    console.log(initialSelectedTime.date, this.deliveryDates);
+    initialSelectedTime.date = this.updateDate(initialSelectedTime.date, this.deliveryDates);
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
