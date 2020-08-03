@@ -118,7 +118,9 @@ export class Home extends Component {
 
     this.getStatusFromMultipleStore();
 
-    if (!this.props.deliveryInfo.enablePreOrder) {
+    const { deliveryInfo: NextdeliveryInfo } = this.props;
+    const { enablePreOrder } = NextdeliveryInfo || {};
+    if (!enablePreOrder) {
       Utils.setSessionVariable(
         'expectedDeliveryHour',
         JSON.stringify({
@@ -133,23 +135,19 @@ export class Home extends Component {
 
   getStatusFromMultipleStore = () => {
     const { allStore } = this.props;
-    let enablePreOrderFroMulitpeStore, isValidToOrderFromMulitpeStore;
-    if (allStore.length) {
-      if (allStore.length === 1) {
-        const { qrOrderingSettings } = allStore[0];
-        const { enablePreOrder, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
-
-        enablePreOrderFroMulitpeStore = enablePreOrder;
-        isValidToOrderFromMulitpeStore = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
-      } else {
-        enablePreOrderFroMulitpeStore = Utils.checkMultipleStoreIsPreOrderEnabled(allStore);
-        isValidToOrderFromMulitpeStore = Utils.checkMultipleStoreIsValidTimeToOrder(allStore);
-      }
-    } else {
-      enablePreOrderFroMulitpeStore = false;
+    let enablePreOrderFroMulitpeStore = false,
       isValidToOrderFromMulitpeStore = false;
-    }
+    const { qrOrderingSettings } = allStore[0] || {};
+    const { enablePreOrder, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
 
+    if (allStore && allStore.length) {
+      enablePreOrderFroMulitpeStore =
+        allStore.length === 1 ? enablePreOrder : Utils.checkMultipleStoreIsPreOrderEnabled(allStore);
+      isValidToOrderFromMulitpeStore =
+        allStore.length === 1
+          ? Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })
+          : Utils.checkMultipleStoreIsValidTimeToOrder(allStore);
+    }
     this.setState({
       enablePreOrderFroMulitpeStore,
       isValidToOrderFromMulitpeStore,
@@ -573,32 +571,29 @@ export class Home extends Component {
     const { search, enablePreOrderFroMulitpeStore } = this.state;
     const { h } = search;
 
-    if (!h) {
-      return enablePreOrderFroMulitpeStore;
-    }
-    return !!enablePreOrder;
+    return !h ? enablePreOrderFroMulitpeStore : !!enablePreOrder;
   };
 
   isValidTimeToOrder = () => {
     const { deliveryInfo } = this.props;
     const { search, isValidToOrderFromMulitpeStore } = this.state;
     const { h } = search;
+    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    if (!h) {
-      return isValidToOrderFromMulitpeStore;
-    }
-    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
-
-    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    return !h ? isValidToOrderFromMulitpeStore : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
   renderHeaderChildren() {
     const { requestInfo, t } = this.props;
     const type = Utils.getOrderTypeFromUrl();
+    const { allStore } = this.props;
+    const { search } = this.state;
+    const { h } = search;
+
     switch (type) {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
@@ -607,23 +602,11 @@ export class Home extends Component {
         return <span className="gray-font-opacity">{t('TAKE_AWAY')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
-        return this.renderDeliveryAndPickupIcon();
+        return h || (allStore && allStore.length === 1) ? <IconInfoOutline className="header__info-icon" /> : null;
       default:
         return null;
     }
   }
-
-  renderDeliveryAndPickupIcon = () => {
-    const { allStore } = this.props;
-    const { search } = this.state;
-    const { h } = search;
-
-    if (h) {
-      return <IconInfoOutline className="header__info-icon" />;
-    } else {
-      return allStore.length === 1 ? <IconInfoOutline className="header__info-icon" /> : null;
-    }
-  };
 
   renderHeader() {
     const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore } = this.props;
@@ -642,22 +625,10 @@ export class Home extends Component {
       classList.push('border__bottom-divider gray flex-middle');
     }
 
-    let isCanClickHandler = true;
     const { search } = this.state;
     const { h } = search;
 
-    if (!h) {
-      if (allStore.length) {
-        if (allStore.length === 1) {
-          isCanClickHandler = true;
-        } else {
-          isCanClickHandler = false;
-        }
-      } else {
-        isCanClickHandler = false;
-      }
-    }
-
+    let isCanClickHandler = !h ? !h && allStore.length && allStore.length === 1 : true;
     return (
       <Header
         className={classList.join(' ')}
@@ -697,22 +668,12 @@ export class Home extends Component {
     const { search } = this.state;
     const { h } = search;
     const { allStore } = this.props;
+    const { qrOrderingSettings } = allStore[0] || {};
 
-    if (h) {
-      return itemValue;
-    } else {
-      if (allStore.length) {
-        if (allStore.length === 1) {
-          const { qrOrderingSettings } = allStore[0];
-
-          return qrOrderingSettings[itemName];
-        } else {
-          return itemValue;
-        }
-      } else {
-        return itemValue;
-      }
+    if (!h && allStore && allStore.length === 1) {
+      return qrOrderingSettings[itemName];
     }
+    return itemValue;
   };
 
   render() {
