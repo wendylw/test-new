@@ -700,9 +700,14 @@ class LocationAndDate extends Component {
     for (let i = 0; i < vacations.length; i++) {
       let item = vacations[i];
       let { vacationTimeFrom, vacationTimeTo } = item;
-
-      vacationTimeFrom = +vacationTimeFrom.split('/').join('');
-      vacationTimeTo = +vacationTimeTo.split('/').join('');
+      vacationTimeFrom = +vacationTimeFrom
+        .split('/')
+        .reverse()
+        .join('');
+      vacationTimeTo = +vacationTimeTo
+        .split('/')
+        .reverse()
+        .join('');
       if (day >= vacationTimeFrom && day <= vacationTimeTo) {
         return false;
       }
