@@ -559,7 +559,7 @@ class LocationAndDate extends Component {
 
   setTimeSlot = async (date, selectedHour) => {
     await this.props.homeActions.getTimeSlot(
-      this.state.isDeliveryType ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
+      Utils.isDeliveryType() ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
       this.getFulfillDate(date, selectedHour),
       this.state.nearlyStore.id
     );
