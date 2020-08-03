@@ -565,7 +565,8 @@ class LocationAndDate extends Component {
     );
     const { timeSlotList, allBusinessInfo, business } = this.props;
     const { stores } = allBusinessInfo[business];
-    const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = stores[0].qrOrderingSettings;
+    const { qrOrderingSettings } = stores[0] || {};
+    const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = qrOrderingSettings;
 
     // timeSlotStartDate: { type: GraphQLString },
     // count: { type: GraphQLInt },
