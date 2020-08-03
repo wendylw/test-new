@@ -558,37 +558,39 @@ class LocationAndDate extends Component {
   };
 
   setTimeSlot = async (date, selectedHour) => {
-    await this.props.homeActions.getTimeSlot(
-      this.state.isDeliveryType ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
-      this.getFulfillDate(date, selectedHour),
-      this.state.nearlyStore.id
-    );
-    const { timeSlotList, allBusinessInfo, business } = this.props;
-    const { stores } = allBusinessInfo[business];
-    const { qrOrderingSettings } = stores[0] || {};
-    const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = qrOrderingSettings;
+    if (this.state.nearlyStore.id) {
+      await this.props.homeActions.getTimeSlot(
+        this.state.isDeliveryType ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
+        this.getFulfillDate(date, selectedHour),
+        this.state.nearlyStore.id
+      );
+      const { timeSlotList, allBusinessInfo, business } = this.props;
+      const { stores } = allBusinessInfo[business];
+      const { qrOrderingSettings } = stores[0] || {};
+      const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = qrOrderingSettings;
 
-    // timeSlotStartDate: { type: GraphQLString },
-    // count: { type: GraphQLInt },
-    if (!enablePerTimeSlotLimitForPreOrder) return;
+      // timeSlotStartDate: { type: GraphQLString },
+      // count: { type: GraphQLInt },
+      if (!enablePerTimeSlotLimitForPreOrder) return;
 
-    const list = [];
+      const list = [];
 
-    timeSlotList.forEach(item => {
-      if (item.count >= maxPreOrdersPerTimeSlot) {
-        let { timeSlotStartDate } = item || {};
-        timeSlotStartDate = new Date(timeSlotStartDate);
-        let hour, minute;
-        hour = timeSlotStartDate.getHours();
-        minute = timeSlotStartDate.getMinutes();
-        hour = hour < 10 ? '0' + hour : hour;
-        minute = minute < 10 ? '0' + minute : minute;
-        list.push(`${hour}:${minute}`);
-      }
-    });
-    this.setState({
-      timeSlot: list,
-    });
+      timeSlotList.forEach(item => {
+        if (item.count >= maxPreOrdersPerTimeSlot) {
+          let { timeSlotStartDate } = item || {};
+          timeSlotStartDate = new Date(timeSlotStartDate);
+          let hour, minute;
+          hour = timeSlotStartDate.getHours();
+          minute = timeSlotStartDate.getMinutes();
+          hour = hour < 10 ? '0' + hour : hour;
+          minute = minute < 10 ? '0' + minute : minute;
+          list.push(`${hour}:${minute}`);
+        }
+      });
+      this.setState({
+        timeSlot: list,
+      });
+    }
   };
 
   getFulfillDate = (date, hour) => {
