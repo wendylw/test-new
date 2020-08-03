@@ -966,7 +966,7 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    // if (!enablePreOrder || !selectedDate.isOpen) return true;
+    if (!selectedDate.isOpen) return true;
 
     if (!this.state.nearlyStore.id) return true;
 
