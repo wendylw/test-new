@@ -135,28 +135,30 @@ export class Home extends Component {
 
   checkMultipleStoreIsValidTimeToOrder = storeList => {
     let isMultipleValidTimeToOrder = false;
-    storeList.forEach(item => {
+    for (let i = 0; i < storeList.length; i++) {
+      let item = storeList[i];
       const { qrOrderingSettings } = item;
       const { validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
 
       if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
         return true;
       }
-    });
+    }
 
     return isMultipleValidTimeToOrder;
   };
 
   checkMultipleStoreIsPreOrderEnabled = storeList => {
     let isMultipleEnablePreOrder = false;
-    storeList.forEach(item => {
+    for (let i = 0; i < storeList.length; i++) {
+      let item = storeList[i];
       const { qrOrderingSettings } = item;
       const { enablePreOrder } = qrOrderingSettings || {};
 
       if (enablePreOrder) {
         return true;
       }
-    });
+    }
 
     return isMultipleEnablePreOrder;
   };
