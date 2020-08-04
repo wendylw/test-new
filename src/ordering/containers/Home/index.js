@@ -615,9 +615,11 @@ export class Home extends Component {
     // this.setState({
     //   alcoholModal: !isAgeLegal,
     // });
+
     Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
+
   isCountryNeedAlcoholPop = country => {
     if (country === 'TH' || country === 'SG') return false;
     return true;

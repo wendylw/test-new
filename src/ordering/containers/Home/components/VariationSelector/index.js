@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { variationOnProductType } from '../../../../../utils/propTypes';
+import './VariationSelector.scss';
 
 export class VariationSelector extends Component {
   static propTypes = {
@@ -114,35 +115,30 @@ export class VariationSelector extends Component {
     }
 
     return (
-      <li className="product-detail__options" key={variation.id}>
-        <h4 className="product-detail__options-title text-opacity text-uppercase">{variation.name}</h4>
+      <li className="variation-selector" key={variation.id}>
+        <h4 className="text-size-big text-uppercase">{variation.name}</h4>
+        <span className="text-error">{AmountLimitDescription}</span>
         {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-          <span className={`product-detail__max-minimum-text text-error`}>{AmountLimitDescription}</span>
+          <span className="text-error">{AmountLimitDescription}</span>
         ) : null}
-        <ul className="tag__cards">
+        <ul className="">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
-            const className = ['tag__card variation'];
-            const isDisabled = markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id]);
+            const className = ['variation-selector__button button', selected[id] ? 'button__fill' : 'button__outline'];
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
-            if (isDisabled) {
-              className.push('disabled');
-              selectedOptionFunc = () => {};
-            } else if (selected[id]) {
-              className.push('active');
-            }
-
             return (
-              <li
-                key={id}
-                className={className.join(' ')}
-                data-testid="itemDetailSimpleSelection"
-                data-heap-name="common.variation-selector.tag"
-                data-heap-tag-value={value}
-                onClick={selectedOptionFunc}
-              >
-                {value}
+              <li key={id}>
+                <button
+                  className={className.join(' ')}
+                  data-testid="itemDetailSimpleSelection"
+                  data-heap-name="common.variation-selector.tag"
+                  data-heap-tag-value={value}
+                  disabled={markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id])}
+                  onClick={selectedOptionFunc}
+                >
+                  {value}
+                </button>
               </li>
             );
           })}
