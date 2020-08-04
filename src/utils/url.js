@@ -22,7 +22,7 @@ const API_URLS = {
     if (isDeliveryType) {
       CartObj.url = `/api/cart?${queryString}`;
     } else {
-      expectDeliveryDateFrom && (CartObj.url = `/api/cart?fulfillDate=${expectDeliveryDateFrom}`);
+      CartObj.url = expectDeliveryDateFrom ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}` : `/api/cart`;
     }
     return CartObj;
   },
