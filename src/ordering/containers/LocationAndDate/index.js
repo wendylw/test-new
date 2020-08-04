@@ -1148,9 +1148,9 @@ class LocationAndDate extends Component {
       return true;
     }
 
-    const dateList = this.deliveryDates.map(item => item.date);
+    const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
 
-    if (!dateList.includes(selectedDate.date)) return true;
+    if (!dateList.includes(this.getDateFromTime(selectedDate.date))) return true;
 
     if (!this.state.nearlyStore.id) return true;
 
@@ -1168,6 +1168,13 @@ class LocationAndDate extends Component {
       }
     }
     return true;
+  };
+
+  getDateFromTime = date => {
+    let currDate = new Date(date);
+    const zero = num => (num < 10 ? '0' + num : num + '');
+
+    return `${currDate.getFullYear()}${zero(currDate.getMonth() + 1)}${zero(currDate.getDate())}`;
   };
 
   goToNext = () => {
