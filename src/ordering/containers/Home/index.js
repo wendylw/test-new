@@ -679,16 +679,6 @@ export class Home extends Component {
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
-          {/* <ProductDetail
-            onlineStoreInfo={onlineStoreInfo}
-            show={
-              viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
-              viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
-            }
-            viewAside={viewAside}
-            onToggle={this.handleToggleAside.bind(this)}
-          />
-           */}
           {/*
           {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
             <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
@@ -699,6 +689,16 @@ export class Home extends Component {
             viewAside={viewAside}
             show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
             onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
+          />
+          <ProductDetail
+            footerEl={this.footerEl}
+            onlineStoreInfo={onlineStoreInfo}
+            show={
+              viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
+              viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
+            }
+            viewAside={viewAside}
+            onToggle={this.handleToggleAside.bind(this)}
           />
           {(Utils.isDeliveryType() || Utils.isPickUpType()) && validTimeFrom && validTimeTo && (
             <StoreInfoAside

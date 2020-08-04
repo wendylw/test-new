@@ -19,6 +19,7 @@ import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+import './ProductDetail.scss';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -405,8 +406,8 @@ class ProductDetail extends Component {
     }
 
     return (
-      <div className="product-detail__options-container" style={{ maxHeight }}>
-        <ol className="product-detail__options-category">
+      <div className="" style={{ maxHeight }}>
+        <ol className="">
           {singleChoiceVariations.map(variation => (
             <VariationSelector
               key={variation.id}
@@ -631,8 +632,8 @@ class ProductDetail extends Component {
   }
 
   render() {
-    const className = ['aside', 'aside__product-detail flex flex-column flex-end'];
-    const { product, viewAside, show } = this.props;
+    const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
+    const { product, viewAside, show, footerEl } = this.props;
     const { resizeImage } = this.state;
 
     if (show && product && product.id && !product._needMore) {
@@ -645,9 +646,12 @@ class ProductDetail extends Component {
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
         data-heap-name="ordering.home.product-detail.container"
+        style={{
+          bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
+        }}
       >
         <div
-          className="product-detail"
+          className="product-detail__container aside__content absolute-wrapper"
           style={{
             opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
           }}
@@ -665,6 +669,7 @@ class ProductDetail extends Component {
 ProductDetail.propTypes = {
   show: PropTypes.bool,
   viewAside: PropTypes.string,
+  footerEl: PropTypes.any,
   onToggle: PropTypes.func,
 };
 
