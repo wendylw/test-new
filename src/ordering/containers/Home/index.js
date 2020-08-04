@@ -708,8 +708,9 @@ export class Home extends Component {
               businessLoaded={businessLoaded}
               show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
               onToggle={this.handleToggleAside.bind(this)}
+              enablePreOrder={this.isPreOrderEnabled()}
               onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-              isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
+              isValidTimeToOrder={this.isValidTimeToOrder()}
             />
           )}
         </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
+import './StoreInfoAside.scss';
 
 class StoreInfoAside extends Component {
   state = {
@@ -22,7 +23,7 @@ class StoreInfoAside extends Component {
 
     return (validDays || []).sort().map(day => {
       return (
-        <li key={day} className="store-info__item flex flex-middle flex-space-between">
+        <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-smaller">
           <span>{t(weekInfo[day])}</span>
           <time>
             {`${validTimeFrom}`} - {`${validTimeTo}`}
@@ -42,19 +43,20 @@ class StoreInfoAside extends Component {
       onToggle,
       storeAddress,
       telephone,
+      enablePreOrder,
       isValidTimeToOrder,
       footerEl,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const classList = ['store-info__aside aside fixed-wrapper'];
+    const classList = ['store-info-aside aside fixed-wrapper'];
 
     if (!businessLoaded) {
       return null;
     }
 
-    if (show || (initDom && !isValidTimeToOrder)) {
+    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
       classList.push('active');
     }
 
@@ -73,44 +75,42 @@ class StoreInfoAside extends Component {
           onToggle(null);
         }}
       >
-        <div className="aside__content absolute-wrapper">
-          <div className="store-info__header flex flex-top flex-space-between">
+        <div className="store-info-aside__container aside__content absolute-wrapper padding-normal">
+          <div className="flex flex-top">
             <Image
-              className="header__image-container text-middle"
+              className="logo logo__normal text-middle flex__shrink-fixed"
               src={onlineStoreInfo.logo}
               alt={onlineStoreInfo.title}
             />
-
-            <div className="header__title-container">
-              <h2 className="header__title">
-                <span
-                  className={`header__one-line-title text-weight-bolder text-middle ${
-                    !isValidTimeToOrder ? 'has-tag' : ''
-                  }`}
-                >
+            <summary className="store-info-aside__summary padding-left-right-small">
+              <div className="flex flex-middle">
+                <h2 className="text-size-big text-weight-bolder text-middle text-omit__single-line">
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
-                </span>
-                {isValidTimeToOrder ? null : (
-                  <div className="tag__card-container text-middle">
-                    <Tag text={t('Closed')} className="tag tag__error text-middle text-size-small"></Tag>
-                  </div>
+                </h2>
+                {isValidTimeToOrder ? null : enablePreOrder ? (
+                  <Tag
+                    text={t('PreOrder')}
+                    className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
+                  />
+                ) : (
+                  <Tag
+                    text={t('Closed')}
+                    className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+                  />
                 )}
-              </h2>
-              <p className="store-info__address">{storeAddress}</p>
+              </div>
+              <address className="text-size-big margin-top-bottom-smaller">{storeAddress}</address>
               <a
-                className="store-info__phone link link__non-underline"
+                className="store-info-aside__button-link button button__link text-size-big padding-top-bottom-small"
                 href={`tel:+${telephone}`}
                 data-heap-name="ordering.home.delivery-detail.phone-number"
               >
                 {telephone}
               </a>
-
-              <div className="store-info__delivery-hours">
-                <label className="text-weight-bold text-opacity">{t('DeliveryHours')}</label>
-                <ul className="store-info__list">{this.renderDeliveryHour()}</ul>
-              </div>
-            </div>
+              <h4 className="margin-top-bottom-normal text-weight-bolder text-opacity">{t('DeliveryHours')}</h4>
+              <ul>{this.renderDeliveryHour()}</ul>
+            </summary>
           </div>
         </div>
       </aside>

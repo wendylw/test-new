@@ -24,7 +24,7 @@ class CartListAside extends Component {
     }
   };
 
-  handleHideCart(e) {
+  handleHideCartAside(e) {
     const { onToggle } = this.props;
 
     if (e && e.target !== e.currentTarget) {
@@ -51,7 +51,7 @@ class CartListAside extends Component {
     return (
       <aside
         className={className.join(' ')}
-        onClick={e => this.handleHideCart(e)}
+        onClick={e => this.handleHideCartAside(e)}
         data-heap-name="ordering.home.mini-cart.container"
         ref={ref => (this.aside = ref)}
         style={{

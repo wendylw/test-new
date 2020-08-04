@@ -109,20 +109,16 @@ class Header extends Component {
                 <h1 className="header__store-name padding-top-bottom-smaller text-size-big text-weight-bolder text-middle text-omit__single-line">
                   {title}
                 </h1>
-                {isValidTimeToOrder ? null : (
-                  <div className="tag__card-container text-middle">
-                    {enablePreOrder ? (
-                      <Tag
-                        text={t('PreOrder')}
-                        className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
-                      />
-                    ) : (
-                      <Tag
-                        text={t('Closed')}
-                        className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
-                      />
-                    )}
-                  </div>
+                {isValidTimeToOrder ? null : enablePreOrder ? (
+                  <Tag
+                    text={t('PreOrder')}
+                    className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
+                  />
+                ) : (
+                  <Tag
+                    text={t('Closed')}
+                    className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+                  />
                 )}
               </div>
               {isDeliveryType ? (
@@ -151,7 +147,10 @@ class Header extends Component {
               ) : null}
             </div>
           ) : (
-            <h2 className="header__title text-size-big text-weight-bolder text-middle" data-testid="headerTitle">
+            <h2
+              className="header__title text-size-big text-weight-bolder text-middle text-middle text-omit__single-line"
+              data-testid="headerTitle"
+            >
               {title}
             </h2>
           )}
