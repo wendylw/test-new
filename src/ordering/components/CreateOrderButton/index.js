@@ -109,8 +109,8 @@ CreateOrderButton.defaultProps = {
   isPromotionValid: true,
   disabled: true,
   sentOtp: false,
-  beforeCreateOrder: () => { },
-  afterCreateOrder: () => { },
+  beforeCreateOrder: () => {},
+  afterCreateOrder: () => {},
 };
 
 export default compose(

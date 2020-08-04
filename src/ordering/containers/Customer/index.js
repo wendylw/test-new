@@ -398,7 +398,7 @@ class Customer extends Component {
     const { country } = onlineStoreInfo || {};
     const { total } = cartSummary || {};
     let textareaValue = '';
-    let updateTextFunc = () => { };
+    let updateTextFunc = () => {};
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
       textareaValue = deliveryDetails.deliveryComments;
