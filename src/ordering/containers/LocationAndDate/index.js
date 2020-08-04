@@ -749,7 +749,7 @@ class LocationAndDate extends Component {
       let curr = getHourAndMinuteFromTime(new Date());
       curr = curr.split(':')[0] + ':00';
       let currEnd = zero(+curr.split(':')[0] + 2) + ':00';
-      if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd >= breakTimeFrom && currEnd <= breakTimeTo)) {
+      if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd > breakTimeFrom && currEnd <= breakTimeTo)) {
         list.shift();
       }
       return this.patchTimeList(list, breakTimeFrom, breakTimeTo);
