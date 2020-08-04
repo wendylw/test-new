@@ -295,6 +295,7 @@ class LocationAndDate extends Component {
   setStore = async () => {
     await this.props.homeActions.loadCoreStores();
     const { allStore = [] } = this.props;
+    const { search } = this.state;
 
     this.checkOnlyType(allStore);
     if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
@@ -314,7 +315,7 @@ class LocationAndDate extends Component {
         );
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
-    } else if (config.storeId) {
+    } else if (search.h && config.storeId) {
       let store = allStore.filter(item => item.id === config.storeId) || [];
       this.setState(
         {
@@ -1064,8 +1065,6 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    if (!selectedDate.isOpen) return true;
-
     if (!displayHourList.includes(selectedHour.from)) {
       return true;
     }
@@ -1079,6 +1078,8 @@ class LocationAndDate extends Component {
     if (!dateList.includes(selectedDate.date)) return true;
 
     if (!this.state.nearlyStore.id) return true;
+
+    if (!selectedDate.isOpen || !this.state.nearlyStore.id) return true;
 
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
