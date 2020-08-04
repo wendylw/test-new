@@ -764,23 +764,27 @@ class LocationAndDate extends Component {
         sList = sList.concat(list.slice(0, 1));
         list.splice(0, 1);
       }
-      let timeFrom = getHourAndMinuteFromTime(new Date(list[0].from));
-      let timeTo = getHourAndMinuteFromTime(new Date(list[list.length - 1].to));
-      if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
-        return [];
-      }
+      if (list.length) {
+        let timeFrom = getHourAndMinuteFromTime(new Date(list[0].from));
+        let timeTo = getHourAndMinuteFromTime(new Date(list[list.length - 1].to || list[list.length - 1].from));
+        if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
+          return [];
+        }
 
-      list.forEach((time, index, arr) => {
-        const { from, to } = time;
-        let timeFrom = getHourAndMinuteFromTime(new Date(from));
-        let timeTo = getHourAndMinuteFromTime(new Date(to));
-        if (timeFrom === breakTimeFrom) breakStartIndex = index;
-        if (timeTo === breakTimeTo) breakEndIndex = index;
-      });
-      if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
-        breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
-        breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
-        list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
+        list.forEach((time, index, arr) => {
+          const { from, to } = time;
+          let timeFrom = getHourAndMinuteFromTime(new Date(from));
+          let timeTo = getHourAndMinuteFromTime(new Date(to || from));
+          console.log(timeFrom, timeTo, breakTimeFrom, breakTimeTo, 'list');
+
+          if (timeFrom === breakTimeFrom) breakStartIndex = index;
+          if (timeTo === breakTimeTo) breakEndIndex = index;
+        });
+        if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
+          breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
+          breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
+          list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
+        }
       }
       list = [...sList, ...list];
     }
