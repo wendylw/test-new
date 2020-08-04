@@ -565,6 +565,7 @@ class LocationAndDate extends Component {
     this.setState({
       selectedDate: date,
       selectedHour: selectedHour,
+      displayHourList: [],
     });
   };
 
@@ -682,13 +683,13 @@ class LocationAndDate extends Component {
             return (
               <li
                 className={`location-display__date-item flex flex-space-between flex-column text-center ${
-                  deliverableTime.isOpen && this.notVacation(deliverableTime) ? '' : 'disabled'
+                  deliverableTime.isOpen ? '' : 'disabled'
                 } ${isSelected ? 'selected' : ''}`}
                 data-testid="preOrderDate"
                 data-heap-name="ordering.location-and-date.date-item"
                 data-heap-is-today={deliverableTime.isToday ? 'yes' : 'no'}
                 onClick={() => {
-                  this.notVacation(deliverableTime) && this.handleSelectDate(deliverableTime);
+                  this.handleSelectDate(deliverableTime);
                 }}
                 key={date}
               >
