@@ -42,17 +42,8 @@ class ProductDetail extends Component {
     cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
     resizedImage: false,
     currentProductDescriptionImageIndex: 0,
-    productElHeight: 0,
     minimumVariations: [],
   };
-
-  setProductElHeight() {
-    if (this.productEl) {
-      this.setState({
-        productElHeight: this.productEl.clientHeight,
-      });
-    }
-  }
 
   componentDidMount() {
     const { product } = this.props;
@@ -63,7 +54,6 @@ class ProductDetail extends Component {
       this.swipeEl.stop();
     }
 
-    this.setProductElHeight();
     this.initMinimumVariationList();
   }
 
@@ -85,10 +75,6 @@ class ProductDetail extends Component {
         resizedImage: false,
         minimumVariations: [],
       });
-    }
-
-    if (prevState.productElHeight !== this.productEl.clientHeight) {
-      this.setProductElHeight();
     }
   }
 
@@ -389,7 +375,6 @@ class ProductDetail extends Component {
   renderVariations() {
     const { show } = this.props;
     const { variations } = this.props.product || {};
-    const { productElHeight } = this.state;
 
     if (!variations || !variations.length) {
       return null;
@@ -397,17 +382,10 @@ class ProductDetail extends Component {
 
     const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
     const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
-    let maxHeight = '30vh';
-
-    if (this.asideEl && this.productEl) {
-      const asideHeight = this.asideEl.clientHeight;
-
-      maxHeight = `${asideHeight * 0.9 - productElHeight}px`;
-    }
 
     return (
-      <div className="" style={{ maxHeight }}>
-        <ol className="">
+      <div className="product-detail__variations border__bottom-divider">
+        <ol className="padding-top-bottom-small">
           {singleChoiceVariations.map(variation => (
             <VariationSelector
               key={variation.id}
@@ -446,11 +424,11 @@ class ProductDetail extends Component {
     }
 
     return (
-      <div ref={ref => (this.productEl = ref)} className="aside__fix-bottom">
+      <div ref={ref => (this.productEl = ref)} className="product-detail__operator">
         <ProductItem
           isList={false}
           productDetailImageRef={ref => (this.productDetailImage = ref)}
-          className="aside__section-container border__top-divider"
+          className="product-detail__item"
           image={imageUrl}
           title={title}
           variation={this.getVariationText()}
@@ -461,9 +439,9 @@ class ProductDetail extends Component {
           onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
         />
 
-        <div ref={ref => (this.buttonEl = ref)} className="aside__section-container bottom">
+        <div ref={ref => (this.buttonEl = ref)} className="padding-normal">
           <button
-            className="button__fill button__block text-weight-bolder"
+            className="button button__fill button__block text-weight-bolder"
             type="button"
             data-testid="OK"
             data-heap-name="ordering.home.product-detail.ok-btn"
@@ -651,13 +629,12 @@ class ProductDetail extends Component {
         }}
       >
         <div
-          className="product-detail__container aside__content absolute-wrapper"
+          className="product-detail__container aside__content absolute-wrapper flex flex-column"
           style={{
             opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
           }}
         >
           {this.renderVariations()}
-
           {this.renderProductOperator()}
         </div>
         {this.renderProductDescription()}

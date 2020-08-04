@@ -115,20 +115,26 @@ export class VariationSelector extends Component {
     }
 
     return (
-      <li className="variation-selector" key={variation.id}>
-        <h4 className="text-size-big text-uppercase">{variation.name}</h4>
-        <span className="text-error">{AmountLimitDescription}</span>
-        {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-          <span className="text-error">{AmountLimitDescription}</span>
-        ) : null}
-        <ul className="">
+      <li className="variation-selector margin-smallest" key={variation.id}>
+        <div className="padding-left-right-small">
+          <h4 className="text-size-big text-uppercase padding-top-bottom-smaller margin-left-right-smallest">
+            {variation.name}
+          </h4>
+          {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
+            <span className="margin-left-right-smallest text-error">{AmountLimitDescription}</span>
+          ) : null}
+        </div>
+        <ul className="variation-selector__list flex flex-top margin-top-bottom-smallest">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
-            const className = ['variation-selector__button button', selected[id] ? 'button__fill' : 'button__outline'];
+            const className = [
+              'variation-selector__button button padding-top-bottom-small padding-left-right-normal margin-smallest',
+              selected[id] ? 'button__fill' : 'variation-selector__button-shadow',
+            ];
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
             return (
-              <li key={id}>
+              <li key={id} className="variation-selector__item margin-top-bottom-smallest margin-left-right-smaller">
                 <button
                   className={className.join(' ')}
                   data-testid="itemDetailSimpleSelection"
