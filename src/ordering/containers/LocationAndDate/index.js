@@ -755,15 +755,47 @@ class LocationAndDate extends Component {
     );
   };
 
+  patchTimeList = (list, breakTimeFrom, breakTimeTo) => {
+    let breakStartIndex, breakEndIndex;
+
+    if (list.length) {
+      let sList = [];
+      if (list[0].from === 'now') {
+        sList = sList.concat(list.slice(0, 1));
+        list.splice(0, 1);
+      }
+      let timeFrom = getHourAndMinuteFromTime(new Date(list[0].from));
+      let timeTo = getHourAndMinuteFromTime(new Date(list[list.length - 1].to));
+      if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
+        return [];
+      }
+
+      list.forEach((time, index, arr) => {
+        const { from, to } = time;
+        let timeFrom = getHourAndMinuteFromTime(new Date(from));
+        let timeTo = getHourAndMinuteFromTime(new Date(to));
+        if (timeFrom === breakTimeFrom) breakStartIndex = index;
+        if (timeTo === breakTimeTo) breakEndIndex = index;
+      });
+      if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
+        breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
+        breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
+        list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
+      }
+      list = [...sList, ...list];
+    }
+
+    return list;
+  };
+
   patchBreakTime = list => {
     const { t, business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
     if (!breakTimeFrom || !breakTimeTo) return list;
     list = JSON.parse(JSON.stringify(list));
-    const newTimeList = [];
     const zero = num => (num < 10 ? '0' + num : num + '');
-    let breakStartIndex, breakEndIndex, breakInImd;
+
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
       curr = curr.split(':')[0] + ':00';
@@ -771,33 +803,9 @@ class LocationAndDate extends Component {
       if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd >= breakTimeFrom && currEnd <= breakTimeTo)) {
         list.shift();
       }
-      list.forEach((time, index, arr) => {
-        const { from, to } = time;
-        let timeFrom = getHourAndMinuteFromTime(new Date(from));
-        let timeTo = getHourAndMinuteFromTime(new Date(to));
-        if (timeFrom === breakTimeFrom) breakStartIndex = index;
-        if (timeTo === breakTimeTo) breakEndIndex = index;
-      });
-      if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
-        breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
-        breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
-        list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
-      }
-      return list;
+      return this.patchTimeList(list, breakTimeFrom, breakTimeTo);
     } else {
-      list.forEach((time, index, arr) => {
-        const { from, to } = time;
-        let timeFrom = getHourAndMinuteFromTime(new Date(from));
-        let timeTo = getHourAndMinuteFromTime(new Date(to));
-        if (timeFrom === breakTimeFrom) breakStartIndex = index;
-        if (timeTo === breakTimeTo) breakEndIndex = index;
-      });
-      if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
-        breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
-        breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
-        list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
-      }
-      return list;
+      return this.patchTimeList(list, breakTimeFrom, breakTimeTo);
     }
   };
 
