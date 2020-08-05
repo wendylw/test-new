@@ -201,6 +201,7 @@ export const actions = {
           break;
         case CREATE_ORDER_ERROR_CODES.CONTACT_DETAIL_INVALID:
           errorMessage = 'OrderingPayment:ContactDetailInvalid';
+          break;
         default:
           errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
           break;
