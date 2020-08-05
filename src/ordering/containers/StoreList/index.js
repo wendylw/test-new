@@ -139,7 +139,7 @@ class StoreList extends Component {
 
     if (currTime < validTimeFrom || currTime > validTimeTo) return false;
 
-    if (currTime >= breakTimeFrom && currTime < breakTimeTo) return false;
+    if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
 
     return true;
   };
