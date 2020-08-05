@@ -57,29 +57,6 @@
   }
 }
 
-.main-section {
-  position: relative;
-  width: 100%;
-  background-color: $gray-5;
-}
-
-.succeed-animation {
-  display: none;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-
-  &.active {
-    display: block;
-  }
-}
-
-.has-header-container {
-  padding-top: 50px;
-  min-height: 100%;
-}
-
 .table-ordering {
   &__cashback-receipt {
     margin-top: 50px;
@@ -269,144 +246,13 @@
     }
   }
 
-  &__product-detail,
-  &__product-description {
-    display: -webkit-flex;
-    display: flex;
-  }
-
   &.active {
     opacity: 1;
     z-index: 100;
 
     transition: opacity 0.01s, z-index 0.01s;
     -webkit-transition: opacity 0.01s, z-index 0.01s;
-
-    > .product-detail,
-    > .product-description,
-    > .form-text {
-      transform: translateY(0%);
-      -webkit-transform: translateY(0%);
-    }
   }
-}
-
-.nav-pane {
-  // @extend .aside-content;
-  // @extend .animation__slide-up;
-
-  position: absolute;
-  bottom: 0;
-  padding: 15px 0;
-  max-height: 80%;
-  width: 100%;
-
-  &__link {
-    padding: 4vw 5vw;
-    background-color: transparent;
-    box-shadow: none;
-    outline: none;
-  }
-
-  &__label {
-    display: inline-block;
-    max-width: 90%;
-  }
-
-  &__item.active {
-    background-color: $gray-5;
-  }
-}
-
-.product-description {
-  // @extend .aside-content;
-  // @extend .animation__slide-up;
-
-  position: absolute;
-  width: 100%;
-
-  &__image-container {
-    position: relative;
-    border-radius: 4px 4px 0 0;
-    overflow: hidden;
-
-    transition: transform 0.3s;
-    -webkit-transition: -webkit-transform 0.3s;
-
-    figure {
-      height: 100%;
-    }
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: fill;
-    }
-  }
-
-  &__back-icon {
-    position: absolute;
-    top: 0;
-    z-index: 2;
-    display: inline-block;
-    padding: 8px;
-    margin: 10px;
-    width: 12vw;
-    height: 12vw;
-    max-width: 40px;
-    max-height: 40px;
-    background-color: rgba(0, 0, 0, 0.5);
-    fill: $white;
-    border-radius: 50%;
-
-    svg {
-      width: 100%;
-      height: auto;
-    }
-  }
-
-  &__dot-list {
-    position: absolute;
-    bottom: 0;
-    padding: 5px 0;
-    width: 100%;
-  }
-
-  &__dot {
-    display: inline-block;
-    margin: 0 2px;
-    width: 8px;
-    height: 8px;
-    border: 1px solid $white;
-    background-color: transparent;
-    border-radius: 50%;
-
-    &.active {
-      background-color: $white;
-    }
-  }
-
-  &.transition {
-    background-color: transparent;
-
-    transition: background-color 0.3s;
-    -webkit-transition: background-color 0.3s;
-
-    .aside__fix-bottom,
-    .product-description__back-icon {
-      opacity: 0;
-    }
-  }
-}
-
-.form-text {
-  // @extend .aside-content;
-  // @extend .animation__slide-up;
-
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 4vw;
 }
 
 .aside-section {
@@ -492,49 +338,6 @@
     font-size: 1.4rem;
     line-height: $line-height-base;
   }
-}
-
-.logo-default {
-  &__image-container {
-    position: relative;
-    display: inline-block;
-    margin: 6px 0;
-    width: 100px;
-    border-radius: 50%;
-    overflow: hidden;
-    background-color: $white;
-
-    &::before {
-      // @extend .w-h-same;
-    }
-
-    svg,
-    img {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      margin: auto;
-      fill: $white;
-    }
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
-  }
-
-  &__title {
-    padding: 6px 0;
-    line-height: $line-height-base;
-    color: $logo-default-title;
-  }
-}
-
-.customer-numbers {
-  padding: 4.8vw;
 }
 
 .location {
@@ -810,16 +613,11 @@ body.loading {
   .full-aside__content,
   .loyalty__claim,
   .loyalty__home,
-  .loyalty__activities,
-  .prompt-page__button-container {
+  .loyalty__activities {
     max-width: 414px;
     left: 0;
     right: 0;
     margin: 0 auto;
-  }
-
-  .category__list {
-    border-right: 1px solid $gray-5;
   }
 
   .aside__section-container {
@@ -830,14 +628,7 @@ body.loading {
     padding: 0 10px;
   }
 
-  .cart__note,
-  .prompt-page__button-container {
-    padding: 13px;
-  }
-
-  .top-message__close-button,
-  .form-text,
-  .product-detail__options-container {
+  .top-message__close-button {
     padding: 16px;
   }
 
@@ -860,10 +651,6 @@ body.loading {
 
   .aside__section-container.bottom {
     padding: 15px 22px;
-  }
-
-  .nav-pane__link {
-    padding: 16px 20px;
   }
 
   .payment-bank__money {

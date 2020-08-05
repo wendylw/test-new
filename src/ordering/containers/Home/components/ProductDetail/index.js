@@ -7,7 +7,7 @@ import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
-import { IconLeftArrow } from '../../../../../components/Icons';
+import { IconClose } from '../../../../../components/Icons';
 import ItemOperator from '../../../../../components/ItemOperator';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
@@ -488,7 +488,7 @@ class ProductDetail extends Component {
     const { currentProductDescriptionImageIndex } = this.state;
     const { images, title, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
-    const className = ['product-description'];
+    const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
     const resizeImageStyles = this.resizeImage();
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
@@ -498,12 +498,12 @@ class ProductDetail extends Component {
     let productDescriptionHeight = '17vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
-      className.push('hide');
+      className.push('product-description__hide');
     }
 
-    if (Object.keys(resizeImageStyles).length) {
-      className.push('transition');
-    }
+    // if (Object.keys(resizeImageStyles).length) {
+    //   className.push('transition');
+    // }
 
     if (this.asideEl && this.buttonEl && this.productEl) {
       const productHeight = this.productEl.clientHeight;
@@ -520,14 +520,10 @@ class ProductDetail extends Component {
       <div className={className.join(' ')}>
         <div
           ref={ref => (this.productDescriptionImage = ref)}
-          className="product-description__image-container"
-          style={{
-            height: imageContainerHeight,
-            ...resizeImageStyles,
-          }}
+          className="product-description__image-container flex__shrink-fixed"
         >
-          <IconLeftArrow
-            className="product-description__back-icon"
+          <IconClose
+            className="product-description__icon-close icon icon__normal margin-normal"
             onClick={() => onToggle()}
             data-heap-name="ordering.home.product-detail.back-btn"
           />
@@ -540,20 +536,26 @@ class ProductDetail extends Component {
               {images.map((imageItemUrl, key) => {
                 return (
                   <SwipeItem key={`swipe-${key}`}>
-                    <Image src={imageItemUrl} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
+                    <Image
+                      className="product-description__single-image"
+                      src={imageItemUrl}
+                      scalingRatioIndex={2}
+                      alt={`${storeName} ${title}`}
+                    />
                   </SwipeItem>
                 );
               })}
             </Swipe>
           ) : (
             <Image
+              className="product-description__single-image"
               src={images && images.length ? images[0] : null}
               scalingRatioIndex={2}
               alt={`${storeName} ${title}`}
             />
           )}
           {images && images.length > 1 ? (
-            <ul className="product-description__dot-list text-center">
+            <ul className="product-description__dot-list text-center padding-top-bottom-smaller">
               {images.map((imageItemUrl, key) => {
                 const dotClassList = ['product-description__dot'];
 
@@ -566,45 +568,41 @@ class ProductDetail extends Component {
             </ul>
           ) : null}
         </div>
-        <div className="aside__fix-bottom">
-          <div
-            className="item border__bottom-divider flex flex-space-between flex-top"
-            style={{ height: imageContainerMarginBottom }}
-          >
-            <div className="item__content flex flex-top">
-              <div className="item__detail flex flex-column flex-space-between">
-                <div className="item__detail-content">
-                  <summary className="item__title text-weight-bolder">{title}</summary>
-                </div>
-                <CurrencyNumber className="text-opacity text-weight-bolder" money={Number(this.displayPrice()) || 0} />
-              </div>
-            </div>
+        <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
+          <summary className="product-description__info-summary flex flex-column flex-space-between">
+            <h2 className="padding-small text-size-biggest text-weight-bolder">{title}</h2>
+            <CurrencyNumber
+              className="padding-small text-size-big text-opacity text-weight-bolder"
+              money={Number(this.displayPrice()) || 0}
+            />
+          </summary>
 
-            {Utils.isProductSoldOut(product || {}) ? (
-              <Tag text={t('SoldOut')} className="tag tag__default text-size-big" style={{ minWidth: '70px' }} />
-            ) : (
-              <ItemOperator
-                className="flex-middle"
-                decreaseDisabled={false}
-                data-heap-name="ordering.home.product-detail.item-adjuster"
-                onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
-              />
-            )}
-          </div>
-          <article
-            className="aside__section-container bottom"
-            style={{
-              maxHeight: productDescriptionHeight,
-              overflowY: 'auto',
-            }}
-          >
-            {Boolean(descriptionStr) ? (
-              <p className="product-description__text text-opacity" dangerouslySetInnerHTML={descriptionStr} />
-            ) : (
-              <p className="product-description__text text-opacity">{t('NoProductDescription')}</p>
-            )}
-          </article>
+          {Utils.isProductSoldOut(product || {}) ? (
+            <Tag
+              text={t('SoldOut')}
+              className="product-description__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
+            />
+          ) : (
+            <ItemOperator
+              className="flex-middle flex__shrink-fixed margin-smallest"
+              decreaseDisabled={false}
+              data-heap-name="ordering.home.product-detail.item-adjuster"
+              onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
+            />
+          )}
         </div>
+        <article className="product-description__article margin-top-bottom-normal">
+          {Boolean(descriptionStr) ? (
+            <p
+              className="text-opacity padding-left-right-normal margin-top-bottom-smaller"
+              dangerouslySetInnerHTML={descriptionStr}
+            />
+          ) : (
+            <p className="text-opacity padding-left-right-normal margin-top-bottom-smaller">
+              {t('NoProductDescription')}
+            </p>
+          )}
+        </article>
       </div>
     );
   }

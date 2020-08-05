@@ -2,9 +2,11 @@ import { intersection, findIndex } from 'lodash';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
 
-const googleMaps = window.google.maps;
+// const googleMaps = window.google.maps;
+const googleMaps = {};
 
-const latLng = ({ lat, lng }) => new googleMaps.LatLng(lat, lng);
+// const latLng = ({ lat, lng }) => new googleMaps.LatLng(lat, lng);
+const latLng = () => {};
 
 let autoCompleteSessionToken;
 export const getAutocompleteSessionToken = () => {
@@ -211,7 +213,8 @@ export const computeStraightDistance = (fromCoords, toCoords) => {
   }
   const from = latLng(fromCoords);
   const to = latLng(toCoords);
-  const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  // const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  const result = {};
   straightDistanceCache[key] = result;
   return result;
 };
