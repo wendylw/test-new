@@ -681,10 +681,6 @@ export class Home extends Component {
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
-          {/*
-          {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
-            <div className={`cover back-drop ${Utils.isPickUpType() ? 'pickup' : ''}`}></div>
-          ) : null} */}
 
           <CartListAside
             footerEl={this.footerEl}
@@ -715,6 +711,10 @@ export class Home extends Component {
               isValidTimeToOrder={this.isValidTimeToOrder()}
             />
           )}
+
+          {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
+            <div className="ordering-home__close-cover"></div>
+          ) : null}
         </div>
         <Footer
           {...otherProps}
@@ -727,9 +727,9 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-        {/* {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
+        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
-        ) : null} */}
+        ) : null}
       </section>
     );
   }
