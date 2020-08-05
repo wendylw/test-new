@@ -489,31 +489,10 @@ class ProductDetail extends Component {
     const { images, title, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
-    const resizeImageStyles = this.resizeImage();
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
-    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    let imageContainerHeight = '100vw';
-    let imageContainerMarginBottom = '-25vw';
-    // let swipeHeight = '80vw';
-    let productDescriptionHeight = '17vw';
 
     if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
       className.push('product-description__hide');
-    }
-
-    // if (Object.keys(resizeImageStyles).length) {
-    //   className.push('transition');
-    // }
-
-    if (this.asideEl && this.buttonEl && this.productEl) {
-      const productHeight = this.productEl.clientHeight;
-      const asideWidth = this.asideEl.clientWidth;
-      const buttonElHeight = this.buttonEl.clientHeight;
-      const footerHeight = document.querySelector('.footer').clientHeight;
-
-      imageContainerHeight = `${asideWidth * 0.8}px`;
-      imageContainerMarginBottom = `${productHeight - buttonElHeight}px`;
-      productDescriptionHeight = `${windowHeight - asideWidth * 0.8 - productHeight + buttonElHeight - footerHeight}px`;
     }
 
     return (

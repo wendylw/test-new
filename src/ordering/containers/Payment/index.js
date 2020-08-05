@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';

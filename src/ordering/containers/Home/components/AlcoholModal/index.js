@@ -93,7 +93,7 @@ export class AlcoholModal extends PureComponent {
       <Modal show={true} className="alcohol-modal" data-heap-name="ordering.home.alcohol-modal.reject-modal">
         <Modal.Body className="alcohol-modal__body text-center">
           <div className="alcohol-modal__image">
-            <img src={beepAlcoholImage} alt="Beep alcohol image" />
+            <img src={beepAlcoholImage} alt="Beep alcohol" />
           </div>
           <h2 className="text-size-biggest text-weight-bolder text-line-height-base">{t('AlcoholDenied')}</h2>
           <p className="alcohol-modal__policy text-center padding-left-right-small margin-top-bottom-smaller text-line-height-base">

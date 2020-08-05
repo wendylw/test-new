@@ -391,7 +391,7 @@ class Customer extends Component {
 
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
-    const { asideName, formTextareaTitle, errorToast } = this.state;
+    const { errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { total } = cartSummary || {};
