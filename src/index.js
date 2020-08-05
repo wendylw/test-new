@@ -22,7 +22,7 @@ try {
     account: config.business,
   });
   window.heap?.addEventProperties({
-    businessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
+    BusinessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
   });
 } catch (e) {
   throw e;
