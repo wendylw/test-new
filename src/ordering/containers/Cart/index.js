@@ -341,10 +341,11 @@ class Cart extends Component {
 
                   return;
                 }
-
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                  search: window.location.search,
+                this.handleGtmEventTracking(() => {
+                  history.push({
+                    pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                    search: window.location.search,
+                  });
                 });
               }}
               disabled={!items || !items.length || isInvalidTotal}

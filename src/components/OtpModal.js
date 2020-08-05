@@ -7,6 +7,7 @@ import Header from './Header';
 import Constants from '../utils/constants';
 import beepOtpImage from '../images/beep-otp.png';
 import Utils from '../utils/utils';
+import { captureException } from '@sentry/react';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -35,7 +36,7 @@ class OtpModal extends React.Component {
             const bottomValue = this.getScrollBottom();
             this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
           } catch (e) {
-            console.error(e);
+            captureException(e);
           }
         },
         false
@@ -47,7 +48,7 @@ class OtpModal extends React.Component {
             try {
               this.addressAsideInnerRef.current.style.transform = 'none';
             } catch (e) {
-              console.error(e);
+              captureException(e);
             }
           }, 100);
         },

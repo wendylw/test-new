@@ -27,6 +27,8 @@ const ROUTER_PATHS = {
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  ORDERING_STORE_LIST: '/storeList',
+
   NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
@@ -212,7 +214,7 @@ const REPORT_DRIVER_REASON_CODE = {
   DRIVER_WAS_RUDE: 'driverWasRude',
   DRIVER_ASKED_MORE_MONEY: 'driverAskedMoreMoney',
   ORDER_WAS_MISSING_ITEM: 'orderWasMissingItem',
-  NEVER_RECEIVED_MY_ORDER: 'NeverReceivedMyOrder',
+  NEVER_RECEIVED_MY_ORDER: 'neverReceivedMyOrder',
   OTHERS: 'others',
 };
 
@@ -232,6 +234,12 @@ const ORDER_STATUS = {
   CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
   PICKED_UP: 'pickedUp',
+};
+
+const COLLECTIONS_TYPE = {
+  ICON: 'Icon',
+  OTHERS: 'SearchOthers',
+  POPULAR: 'SearchPopular',
 };
 
 export default {
@@ -266,4 +274,5 @@ export default {
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
+  COLLECTIONS_TYPE,
 };

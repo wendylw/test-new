@@ -392,6 +392,11 @@
     .item__title {
       font-size: 1.2rem;
     }
+    .delivery_search {
+      svg {
+        fill: rgb(144, 144, 144);
+      }
+    }
   }
 
   &__order {

@@ -27,6 +27,7 @@ import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../re
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import withDataAttributes from '../../../../components/withDataAttributes';
+import { getPaymentRedirectAndWebHookUrl } from '../utils';
 // import '../styles/2-Card-Detailed.css';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
@@ -330,14 +331,14 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={processing || !stripe}
           beforeCreateOrder={() => setIsFormTouched(true)}
-          afterCreateOrder={async () => {
+          afterCreateOrder={async orderId => {
             const payload = await stripe.createPaymentMethod({
               type: 'card',
               card: elements.getElement(CardNumberElement),
               billing_details: billingDetails,
             });
 
-            setProcessing(false);
+            setProcessing(!!orderId);
 
             if (payload.error) {
               setError(payload.error);
@@ -371,20 +372,14 @@ class Stripe extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, business } = this.props;
+    const { onlineStoreInfo, currentOrder, business } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
-    const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
+    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
 
     return {
       amount: currentOrder.total,

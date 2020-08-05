@@ -62,7 +62,7 @@ class App extends Component {
     });
     const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
     if (isValidTimeToOrder || enablePreOrder) {
-      window.location.href = `${window.location.href}?s=${storeId}&from=home`;
+      window.location.href = `${window.location.href}${window.location.search ? '&' : '?'}s=${storeId}&from=home`;
       // homeActions.setCurrentStore(storeId);
     } else {
       await homeActions.getStoreHashData(storeId);
@@ -74,7 +74,9 @@ class App extends Component {
   }
 
   gotoDine(storeId) {
-    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}?s=${storeId}&from=home`;
+    window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}${
+      window.location.search ? window.location.search + '&' : '?'
+    }s=${storeId}&from=home`;
   }
 
   selectStore = storeId => {

@@ -2,5 +2,7 @@
   "CollectionPickUp": "Self Pickup",
   "CollectionIftarWithBeep": "Halal",
   "CollectionDesserts": "Desserts",
-  "CollectionWestern": "Western"
+  "CollectionWestern": "Western",
+  "PopularCategories": "Popular Categories",
+  "OtherCategories": "Other Categories"
 }
