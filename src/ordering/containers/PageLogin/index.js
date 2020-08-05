@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import beepLoginImage from './images/login.svg';
+import beepLoginImage from '../../../images/login.png';
 import './OrderingPageLogin.scss';
 
 class PageLogin extends React.Component {
