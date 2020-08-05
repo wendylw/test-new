@@ -5,7 +5,6 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
-import img from '../../../images/beep-logo.svg';
 import checked from '../../../images/select.svg';
 
 import './storeList.scss';
@@ -16,7 +15,6 @@ import { IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import Tag from '../../../components/Tag';
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
   <div
@@ -44,6 +42,7 @@ const StoreListItem = props => (
     <p>{props.storeId === props.store.id && <img src={checked} alt="" />}</p>
   </div>
 );
+
 class StoreList extends Component {
   constructor(props) {
     super(props);
