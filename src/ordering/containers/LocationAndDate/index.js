@@ -213,6 +213,7 @@ class LocationAndDate extends Component {
 
       this.setState({
         h: this.props.storeHash,
+        displayHourList: [],
       });
     }
   };
@@ -307,6 +308,7 @@ class LocationAndDate extends Component {
           {
             h,
             nearlyStore: nearly,
+            displayHourList: [],
           },
           async () => {
             await this.props.appActions.loadCoreBusiness(nearly.id);
@@ -320,6 +322,7 @@ class LocationAndDate extends Component {
       this.setState(
         {
           nearlyStore: store[0] || {},
+          displayHourList: [],
         },
         async () => {
           await this.props.appActions.loadCoreBusiness(store[0].id);
@@ -744,10 +747,13 @@ class LocationAndDate extends Component {
 
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
-      let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
-      let pickUpEnd = min >= 60 ? zero(+curr.split(':')[0] + 1) + ':' + (min % 60) : curr.split(':')[0] + ':' + min;
-      let currEnd = this.state.isPickUpType ? pickUpEnd : zero(+curr.split(':')[0] + 2) + ':00';
-      if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd > breakTimeFrom && currEnd <= breakTimeTo)) {
+      // let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
+      // let pickUpEnd = min >= 60 ? zero(+curr.split(':')[0] + 1) + ':' + (min % 60) : curr.split(':')[0] + ':' + min;
+      // let currEnd = this.state.isPickUpType ? pickUpEnd : zero(+curr.split(':')[0] + 2) + ':00';
+      // if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd > breakTimeFrom && currEnd <= breakTimeTo)) {
+      //   list.shift();
+      // }
+      if (curr >= breakTimeFrom && curr <= breakTimeTo) {
         list.shift();
       }
       return this.patchTimeList(list, breakTimeFrom, breakTimeTo);
@@ -801,7 +807,7 @@ class LocationAndDate extends Component {
             style={{ fontWeight: '600' }}
             key="deliveryOnDemandOrder"
           >
-            {this.collectHourList(item) && 'Immediate'}
+            {this.collectHourList(item, disableOnDemandOrder, enablePreOrder) && 'Immediate'}
           </li>
         ) : null;
       }
