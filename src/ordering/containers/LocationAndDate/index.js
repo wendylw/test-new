@@ -439,14 +439,7 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
-    let { date: initDate } = initialSelectedTime;
-    initDate = Utils.getDateNumber(initDate.date);
-    let currentDate = Utils.getDateNumber(new Date());
-    if (initDate < currentDate) {
-      Utils.removeSessionVariable('expectedDeliveryDate');
-      Utils.removeSessionVariable('expectedDeliveryHour');
-      this.setMethodsTime();
-    }
+
     this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
 
     initialSelectedTime.date = this.updateDate(initialSelectedTime.date, this.deliveryDates);
@@ -460,7 +453,7 @@ class LocationAndDate extends Component {
   updateDate = (date, list) => {
     for (let i = 0; i < list.length; i++) {
       let item = list[i];
-      if (item.from === date) {
+      if (item.date === date.date) {
         return item;
       }
     }
@@ -775,7 +768,6 @@ class LocationAndDate extends Component {
           const { from, to } = time;
           let timeFrom = getHourAndMinuteFromTime(new Date(from));
           let timeTo = getHourAndMinuteFromTime(new Date(to || from));
-          console.log(timeFrom, timeTo, breakTimeFrom, breakTimeTo, 'list');
 
           if (timeFrom === breakTimeFrom) breakStartIndex = index;
           if (timeTo === breakTimeTo) breakEndIndex = index;
@@ -802,8 +794,9 @@ class LocationAndDate extends Component {
 
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
-      curr = curr.split(':')[0] + ':00';
-      let currEnd = zero(+curr.split(':')[0] + 2) + ':00';
+      let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
+      let pickUpEnd = min >= 60 ? zero(+curr.split(':')[0] + 1) + ':' + (min % 60) : curr.split(':')[0] + ':' + min;
+      let currEnd = this.state.isPickUpType ? pickUpEnd : zero(+curr.split(':')[0] + 2) + ':00';
       if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd > breakTimeFrom && currEnd <= breakTimeTo)) {
         list.shift();
       }
@@ -832,12 +825,16 @@ class LocationAndDate extends Component {
     if (!timeList || !timeList.length) return;
 
     const { t, business, allBusinessInfo } = this.props;
-    const { selectedHour = {} } = this.state;
+    const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
 
     timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
+    const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
+
+    timeList = dateList.includes(this.getDateFromTime(selectedDate.date)) && selectedDate.isOpen ? timeList : [];
+
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
         return this.isDisplayImmediate(disableOnDemandOrder, enablePreOrder) ? (
