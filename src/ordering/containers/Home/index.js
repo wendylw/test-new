@@ -730,6 +730,7 @@ export class Home extends Component {
         {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null}
+        {this.renderOfflineModal(enableLiveOnline)}
       </section>
     );
   }
