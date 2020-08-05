@@ -5,7 +5,7 @@ $gray-nav-item-text: #707070;
   height: 100vh;
 
   .footer {
-    z-index: 100;
+    z-index: $z-index-base;
   }
 
   &__container {

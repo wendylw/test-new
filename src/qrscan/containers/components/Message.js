@@ -10,7 +10,7 @@ class Message extends Component {
       <div>
         {showMessage ? (
           <div className="top-message primary fixed">
-            <div className="top-message__text">{t('UseChromeMessage')}</div>
+            <div className="text-line-height-base">{t('UseChromeMessage')}</div>
           </div>
         ) : null}
       </div>
