@@ -29,6 +29,7 @@ import {
   getDeliveryInfo,
   getPopUpModal,
   isVerticalMenuBusiness,
+  getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
@@ -53,6 +54,10 @@ export class Home extends Component {
     dScrollY: 0,
     deliveryBar: false,
     alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
+    callApiFinish: false,
+    enablePreOrderFroMulitpeStore: false,
+    isValidToOrderFromMulitpeStore: false,
+    search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
   };
 
   scrollDepthNumerator = 0;
@@ -91,7 +96,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, deliveryInfo } = this.props;
+    const { homeActions, deliveryInfo, appActions } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
@@ -109,9 +114,13 @@ export class Home extends Component {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
-    await this.props.appActions.loadCoreBusiness();
+    await Promise.all([appActions.loadCoreBusiness(), homeActions.loadCoreStores()]);
 
-    if (!this.props.deliveryInfo.enablePreOrder) {
+    this.getStatusFromMultipleStore();
+
+    const { deliveryInfo: NextdeliveryInfo } = this.props;
+    const { enablePreOrder } = NextdeliveryInfo || {};
+    if (!enablePreOrder) {
       Utils.setSessionVariable(
         'expectedDeliveryHour',
         JSON.stringify({
@@ -122,6 +131,58 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
+  };
+
+  checkMultipleStoreIsValidTimeToOrder = storeList => {
+    let isMultipleValidTimeToOrder = false;
+    for (let i = 0; i < storeList.length; i++) {
+      let item = storeList[i];
+      const { qrOrderingSettings } = item;
+      const { validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+
+      if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
+        return true;
+      }
+    }
+
+    return isMultipleValidTimeToOrder;
+  };
+
+  checkMultipleStoreIsPreOrderEnabled = storeList => {
+    let isMultipleEnablePreOrder = false;
+    for (let i = 0; i < storeList.length; i++) {
+      let item = storeList[i];
+      const { qrOrderingSettings } = item;
+      const { enablePreOrder } = qrOrderingSettings || {};
+
+      if (enablePreOrder) {
+        return true;
+      }
+    }
+
+    return isMultipleEnablePreOrder;
+  };
+
+  getStatusFromMultipleStore = () => {
+    const { allStore } = this.props;
+    let enablePreOrderFroMulitpeStore = false,
+      isValidToOrderFromMulitpeStore = false;
+    const { qrOrderingSettings } = allStore[0] || {};
+    const { enablePreOrder, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+
+    if (allStore && allStore.length) {
+      enablePreOrderFroMulitpeStore =
+        allStore.length === 1 ? enablePreOrder : this.checkMultipleStoreIsPreOrderEnabled(allStore);
+      isValidToOrderFromMulitpeStore =
+        allStore.length === 1
+          ? Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })
+          : this.checkMultipleStoreIsValidTimeToOrder(allStore);
+    }
+    this.setState({
+      enablePreOrderFroMulitpeStore,
+      isValidToOrderFromMulitpeStore,
+      callApiFinish: true,
+    });
   };
 
   checkRange = () => {
@@ -169,7 +230,9 @@ export class Home extends Component {
           return;
         }
         let times = 0;
-        while (validDays.indexOf(defaultTime.getDay() || 7) === -1) {
+        const currentValidDays = Array.from(validDays, v => v - 1);
+
+        while (currentValidDays.indexOf(defaultTime.getDay()) === -1) {
           times++;
           defaultTime.setDate(defaultTime.getDate() + 1);
           if (times > 30) {
@@ -535,24 +598,32 @@ export class Home extends Component {
 
   isPreOrderEnabled = () => {
     const { enablePreOrder } = this.props.deliveryInfo;
-    return !!enablePreOrder;
+    const { search, enablePreOrderFroMulitpeStore } = this.state;
+    const { h } = search;
+
+    return !h ? enablePreOrderFroMulitpeStore : !!enablePreOrder;
   };
 
   isValidTimeToOrder = () => {
     const { deliveryInfo } = this.props;
+    const { search, isValidToOrderFromMulitpeStore } = this.state;
+    const { h } = search;
+    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
-
-    return Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    return !h ? isValidToOrderFromMulitpeStore : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
   };
 
   renderHeaderChildren() {
     const { requestInfo, t } = this.props;
     const type = Utils.getOrderTypeFromUrl();
+    const { allStore } = this.props;
+    const { search } = this.state;
+    const { h } = search;
+
     switch (type) {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
@@ -561,14 +632,14 @@ export class Home extends Component {
         return <span className="gray-font-opacity">{t('TAKE_AWAY')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
-        return <IconInfoOutline className="header__info-icon" />;
+        return h || (allStore && allStore.length === 1) ? <IconInfoOutline className="header__info-icon" /> : null;
       default:
         return null;
     }
   }
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo } = this.props;
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = [];
@@ -584,6 +655,10 @@ export class Home extends Component {
       classList.push('border__bottom-divider gray flex-middle');
     }
 
+    const { search } = this.state;
+    const { h } = search;
+
+    let isCanClickHandler = !h ? !h && allStore.length && allStore.length === 1 : true;
     return (
       <Header
         className={classList.join(' ')}
@@ -592,7 +667,7 @@ export class Home extends Component {
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={this.handleToggleAside.bind(this)}
+        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => {}}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -617,6 +692,28 @@ export class Home extends Component {
   isCountryNeedAlcoholPop = country => {
     if (country === 'TH' || country === 'SG') return false;
     return true;
+  };
+
+  getItemFromStore = (itemValue, itemName) => {
+    const { search } = this.state;
+    const { h } = search;
+    const { allStore } = this.props;
+    const { qrOrderingSettings } = allStore[0] || {};
+
+    if (!h && allStore && allStore.length === 1) {
+      return qrOrderingSettings[itemName];
+    }
+    return itemValue;
+  };
+
+  isRenderDetailModal = (validTimeFrom, validTimeTo, callApiFinish) => {
+    const { search } = this.state;
+    const { h } = search;
+    const { allStore } = this.props;
+
+    return !h
+      ? allStore && allStore.length === 1
+      : Utils.isDeliveryType() || (Utils.isPickUpType() && validTimeFrom && validTimeTo && callApiFinish);
   };
 
   render() {
@@ -644,7 +741,7 @@ export class Home extends Component {
       enableLiveOnline,
     } = deliveryInfo;
 
-    const { viewAside, alcoholModal } = this.state;
+    const { viewAside, alcoholModal, callApiFinish } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
     const adBarHeight = 30;
@@ -656,6 +753,7 @@ export class Home extends Component {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       classList.push('location-page__entry-container');
     }
+
     return (
       <section className={classList.join(' ')}>
         {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
@@ -697,7 +795,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        {(Utils.isDeliveryType() || Utils.isPickUpType()) && validTimeFrom && validTimeTo && (
+        {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
           <DeliveryDetailModal
             onlineStoreInfo={onlineStoreInfo}
             businessInfo={businessInfo}
@@ -706,9 +804,9 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             storeAddress={storeAddress}
             telephone={telephone}
-            validDays={validDays}
-            validTimeFrom={validTimeFrom}
-            validTimeTo={validTimeTo}
+            validDays={this.getItemFromStore(validDays, 'validDays')}
+            validTimeFrom={this.getItemFromStore(validTimeFrom, 'validTimeFrom')}
+            validTimeTo={this.getItemFromStore(validTimeTo, 'validTimeTo')}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
         )}
@@ -746,7 +844,7 @@ export default compose(
         businessLoaded: getBusinessIsLoaded(state),
         popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
-        // hashcode: getStoreHashCode(state)
+        allStore: getStoresList(state),
       };
     },
     dispatch => ({
