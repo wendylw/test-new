@@ -376,7 +376,7 @@ Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTi
         };
       })
     : [];
-  const validDaysArray = Array.from(validDays, v => v - 1);
+  const validDaysArray = Array.from(validDays || [], v => v - 1);
 
   if (isVacation(vacationList, currDate)) return false;
 

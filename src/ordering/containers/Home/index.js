@@ -188,11 +188,11 @@ export class Home extends Component {
   checkRange = () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
-      const { businessInfo } = this.props;
+      const { businessInfo = {} } = this.props;
 
-      let { stores, qrOrderingSettings } = businessInfo;
-      const { deliveryRadius } = qrOrderingSettings;
-      if (stores.length) {
+      let { stores = [], qrOrderingSettings } = businessInfo;
+      if (stores.length && qrOrderingSettings) {
+        const { deliveryRadius } = qrOrderingSettings;
         stores = stores[0];
         const { location } = stores;
         const distance = computeStraightDistance(JSON.parse(Utils.getSessionVariable('deliveryAddress')).coords, {
