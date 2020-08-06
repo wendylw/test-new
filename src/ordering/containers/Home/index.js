@@ -751,7 +751,7 @@ export class Home extends Component {
         ) : null}
 
         <div className="ordering-home__container flex flex-top">
-          <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
+          <CurrentCategoryBar containerId="product-list" categories={categories} isVerticalMenu={isVerticalMenu} />
           <CategoryProductList
             isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}

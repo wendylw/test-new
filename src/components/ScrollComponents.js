@@ -51,11 +51,10 @@ function getScrollToHeightInWindow(container, targetId) {
   return getScrollToHeight(container, targetId, categoryList);
 }
 
-function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
+function scrollToSmoothly({ direction, targetId, containerId, afterScroll }) {
   const userAgentInfo = Utils.getUserAgentInfo();
   const el = document.getElementById(targetId);
   const container = document.getElementById(containerId);
-  const isVerticalMenuProductList = isVerticalMenu && !containerId;
   const windowSize = {
     w: document.documentElement.clientWidth || document.body.clientWidth,
     h: document.documentElement.clientHeight || document.body.clientHeight,
@@ -92,7 +91,7 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
 
   const otherDistance = {
     x: 0,
-    y: topBarHeight + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
+    y: topBarHeight + CATEGORY_BAR_HEIGHT,
   };
   const elOffset = {
     x: containerScrolledDistance.x + el.getBoundingClientRect().left,
