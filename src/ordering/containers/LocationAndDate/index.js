@@ -870,9 +870,9 @@ class LocationAndDate extends Component {
     let timeString = item.from === 'now' ? 'now' : getHourAndMinuteFromTime(item.from);
     if (!this.state.displayHourList.includes(timeString)) {
       this.state.displayHourList.push(timeString);
-      this.setState({
-        displayHourList: this.state.displayHourList,
-      });
+      // this.setState({
+      //   displayHourList: this.state.displayHourList,
+      // });
     }
     return true;
   };
@@ -1197,6 +1197,7 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
+    console.log(displayHourList, 'displayHourList');
     if (!displayHourList.includes(selectedHour.from) || timeSlot.includes(selectedHour.from)) {
       return true;
     }
