@@ -117,6 +117,13 @@ class App extends Component {
     }
   };
 
+  checkStoreIsClose = store => {
+    const { qrOrderingSettings } = store;
+    const { enablePreOrder } = qrOrderingSettings;
+
+    return !(enablePreOrder || Utils.isValidTimeToOrder(qrOrderingSettings));
+  };
+
   getNearlyStore = async (stores, type, deliveryAddress) => {
     stores.forEach(item => {
       if (item.location) {
@@ -126,7 +133,10 @@ class App extends Component {
         });
       }
     });
-    stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
+    stores = stores.filter(
+      item =>
+        !this.checkStoreIsClose(item) && item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
+    );
     let nearly;
     stores.forEach(item => {
       if (!nearly) {
