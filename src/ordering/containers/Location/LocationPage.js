@@ -126,6 +126,7 @@ class LocationPage extends Component {
     // }
 
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
+    Utils.setSessionVariable('deliveryAddressUpdate', true);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
       history.replace(callbackUrl);

@@ -142,8 +142,6 @@ class LocationAndDate extends Component {
     const { allStore } = this.props;
 
     if (Utils.getSessionVariable('deliveryAddress')) {
-      const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-
       if (allStore.length) {
         let stores = allStore;
         let type = Constants.DELIVERY_METHOD.DELIVERY;
@@ -357,7 +355,11 @@ class LocationAndDate extends Component {
     const { search } = this.state;
 
     this.checkOnlyType(allStore);
-    if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
+    if (
+      Utils.getSessionVariable('deliveryAddress') &&
+      this.state.search.type === DELIVERY_METHOD.DELIVERY &&
+      (!search.h || Utils.getSessionVariable('deliveryAddressUpdate'))
+    ) {
       if (allStore.length) {
         let stores = allStore;
         let { type } = this.state.search;
@@ -582,6 +584,7 @@ class LocationAndDate extends Component {
 
   handleBackClicked = () => {
     const { history } = this.props;
+    Utils.removeSessionVariable('deliveryAddressUpdate');
 
     if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
@@ -1238,6 +1241,7 @@ class LocationAndDate extends Component {
       date: selectedDate,
       hour: selectedHour,
     });
+    Utils.removeSessionVariable('deliveryAddressUpdate');
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
