@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import './StoreInfoAside.scss';
+import Utils from '../../../../../utils/utils';
 
 class StoreInfoAside extends Component {
   state = {
@@ -100,14 +101,18 @@ class StoreInfoAside extends Component {
                   />
                 )}
               </div>
-              <address className="text-size-big margin-top-bottom-smaller">{storeAddress}</address>
-              <a
-                className="store-info-aside__button-link button button__link text-size-big padding-top-bottom-small"
-                href={`tel:+${telephone}`}
-                data-heap-name="ordering.home.delivery-detail.phone-number"
-              >
-                {telephone}
-              </a>
+              {storeAddress ? (
+                <address className="text-size-big margin-top-bottom-smaller">{storeAddress}</address>
+              ) : null}
+              {telephone ? (
+                <a
+                  className="store-info-aside__button-link button button__link text-size-big padding-top-bottom-small"
+                  href={`tel:+${telephone}`}
+                  data-heap-name="ordering.home.delivery-detail.phone-number"
+                >
+                  {telephone}
+                </a>
+              ) : null}
               <h4 className="margin-top-bottom-normal text-weight-bolder text-opacity">{t('DeliveryHours')}</h4>
               <ul>{this.renderDeliveryHour()}</ul>
             </summary>
