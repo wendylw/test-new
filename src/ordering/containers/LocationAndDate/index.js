@@ -766,7 +766,7 @@ class LocationAndDate extends Component {
         let timeFrom = getHourAndMinuteFromTime(new Date(list[0].from));
         let timeTo = getHourAndMinuteFromTime(new Date(list[list.length - 1].to || list[list.length - 1].from));
         if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
-          return [];
+          return [...sList];
         }
 
         list.forEach((time, index, arr) => {
@@ -785,7 +785,6 @@ class LocationAndDate extends Component {
       }
       list = [...sList, ...list];
     }
-
     return list;
   };
 
@@ -796,7 +795,6 @@ class LocationAndDate extends Component {
     if (!breakTimeFrom || !breakTimeTo) return list;
     list = JSON.parse(JSON.stringify(list));
     const zero = num => (num < 10 ? '0' + num : num + '');
-
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
       // let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
