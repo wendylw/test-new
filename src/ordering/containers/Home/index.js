@@ -190,8 +190,7 @@ export class Home extends Component {
     if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo } = this.props;
 
-      let { stores, qrOrderingSettings } = businessInfo || {};
-      console.log(businessInfo, 'businessInfo');
+      let { stores, qrOrderingSettings } = businessInfo;
       const { deliveryRadius } = qrOrderingSettings;
       if (stores.length) {
         stores = stores[0];
