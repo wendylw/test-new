@@ -491,12 +491,8 @@ export class Home extends Component {
   renderDeliverToBar() {
     const { history, deliveryInfo } = this.props;
 
-    if (!deliveryInfo) {
-      return null;
-    }
-
     // table ordering situation
-    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
+    if (!deliveryInfo || (!Utils.isDeliveryType() && !Utils.isPickUpType())) {
       return null;
     }
 
@@ -511,6 +507,8 @@ export class Home extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
         search: `${search}&callbackUrl=${callbackUrl}`,
       });
+
+      return;
     };
     const { t, businessInfo } = this.props;
     const { stores = [] } = businessInfo;
@@ -775,6 +773,9 @@ export class Home extends Component {
         <div className="ordering-home__container flex flex-top">
           <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
           <CategoryProductList
+            categoryHeaderStyle={{
+              top: this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight || this.deliveryEntryEl.offsetHeight : 0,
+            }}
             isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
@@ -802,6 +803,9 @@ export class Home extends Component {
               footerEl={this.footerEl}
               onlineStoreInfo={onlineStoreInfo}
               businessInfo={businessInfo}
+              storeAddress={storeAddress}
+              telephone={telephone}
+              validDays={validDays}
               businessLoaded={businessLoaded}
               show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
               onToggle={this.handleToggleAside.bind(this)}
