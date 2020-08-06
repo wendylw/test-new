@@ -4,6 +4,7 @@ import Modal from '../../../../../components/Modal';
 import { withTranslation, Trans } from 'react-i18next';
 import { compose } from 'redux';
 import { BrowserRouter, Link } from 'react-router-dom';
+import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
 import Constants from '../../../../../utils/constants';
 import './AlcoholModal.scss';
 
@@ -57,30 +58,7 @@ export class AlcoholModal extends PureComponent {
             </button>
           </div>
           <p className="alcohol-modal__policy text-center margin-top-bottom-smaller text-line-height-base">
-            <BrowserRouter basename="/">
-              <Trans i18nKey="TermsAndPrivacyDescription">
-                By tapping to continue, you agree to our
-                <br />
-                <Link
-                  className="alcohol-modal__button-link button button__link text-weight-bolder"
-                  target="_blank"
-                  to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                  data-heap-name="ordering.home.alcohol-modal.terms"
-                >
-                  Terms of Service
-                </Link>
-                , and{' '}
-                <Link
-                  className="alcohol-modal__button-link button button__link text-weight-bolder"
-                  target="_blank"
-                  to={Constants.ROUTER_PATHS.PRIVACY}
-                  data-heap-name="ordering.home.alcohol-modal.privacy-policy"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </Trans>
-            </BrowserRouter>
+            <TermsAndPrivacy buttonLinkClassName="alcohol-modal__button-link" />
           </p>
         </Modal.Footer>
       </Modal>

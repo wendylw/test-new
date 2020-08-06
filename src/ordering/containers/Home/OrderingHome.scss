@@ -132,7 +132,7 @@ $gray-nav-item-text: #707070;
 
 @media (min-width: 770px) {
   .ordering-home {
-    &__header::before {
+    &__deliver-to + &__header::before {
       margin: 0 8px;
     }
   }

@@ -4,6 +4,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import { BrowserRouter, Link } from 'react-router-dom';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
+import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
 
@@ -143,30 +144,7 @@ class PageLogin extends React.Component {
               onSubmit={this.handleSubmitPhoneNumber.bind(this)}
             >
               <p className="text-center margin-top-bottom-smaller text-size-big text-line-height-base text-opacity">
-                <BrowserRouter basename="/">
-                  <Trans i18nKey="TermsAndPrivacyDescription">
-                    By tapping to continue, you agree to our
-                    <br />
-                    <Link
-                      className="page-login__button-link button button__link text-size-big text-weight-bolder"
-                      target="_blank"
-                      data-heap-name="ordering.common.login.term-link"
-                      to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                    >
-                      Terms of Service
-                    </Link>
-                    , and{' '}
-                    <Link
-                      className="page-login__button-link button button__link text-size-big text-weight-bolder"
-                      target="_blank"
-                      data-heap-name="ordering.common.login.privacy-policy-link"
-                      to={Constants.ROUTER_PATHS.PRIVACY}
-                    >
-                      Privacy Policy
-                    </Link>
-                    .
-                  </Trans>
-                </BrowserRouter>
+                <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
             </PhoneViewContainer>
           </div>
