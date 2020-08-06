@@ -426,7 +426,7 @@ class ProductDetail extends Component {
     return (
       <div ref={ref => (this.productEl = ref)} className="product-detail__operator">
         <ProductItem
-          isList={false}
+          isLazyLoad={false}
           productDetailImageRef={ref => (this.productDetailImage = ref)}
           className="product-detail__item"
           image={imageUrl}

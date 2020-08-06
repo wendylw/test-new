@@ -78,7 +78,7 @@ class CartListAside extends Component {
               maxHeight: this.aside ? `${(this.aside.clientHeight || this.aside.offsetHeight) * 0.8}px` : '0',
             }}
           >
-            <CartList isList={false} viewAside={viewAside} />
+            <CartList isLazyLoad={false} viewAside={viewAside} />
           </div>
         </div>
       </aside>

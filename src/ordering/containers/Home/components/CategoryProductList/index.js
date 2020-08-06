@@ -110,7 +110,7 @@ class CategoryProductList extends Component {
     const { categories } = this.props;
 
     return (
-      <div id="product-list" className="category">
+      <div id="product-list" className="category" ref={ref => (this.productList = ref)}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
@@ -118,9 +118,10 @@ class CategoryProductList extends Component {
                 <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
                   <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
-                <ul className="list">
+                <div className="list">
                   {(category.products || []).map(product => (
                     <ProductItem
+                      scrollContainer="#product-list"
                       key={product.id}
                       image={product.images[0]}
                       title={product.title}
@@ -136,7 +137,7 @@ class CategoryProductList extends Component {
                       data-heap-name="ordering.home.product-item"
                     />
                   ))}
-                </ul>
+                </div>
               </ScrollObservable>
             </li>
           ))}

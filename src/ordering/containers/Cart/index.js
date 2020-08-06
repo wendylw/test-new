@@ -303,7 +303,7 @@ class Cart extends Component {
           </button>
         </Header>
         <div className="ordering-cart__container" style={{ overflowY: 'scroll' }}>
-          <CartList isList={true} shoppingCart={shoppingCart} />
+          <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
         <aside className="aside-bottom">
