@@ -256,6 +256,60 @@ class LocationAndDate extends Component {
     return type;
   };
 
+  checkStoreIsClose = store => {
+    const { qrOrderingSettings } = store;
+    const { enablePreOrder } = qrOrderingSettings;
+
+    return !(enablePreOrder || this.isValidTimeToOrder(qrOrderingSettings));
+  };
+
+  isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    const getDateStringFromTime = time => {
+      time = new Date(time);
+      return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
+    };
+    const getHourAndMinuteStringFromTime = time => {
+      time = new Date(time);
+      return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
+    };
+
+    const isVacation = (list, date) => {
+      let isVacationDay = false;
+
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
+          return true;
+        }
+      }
+      return isVacationDay;
+    };
+
+    const currTime = getHourAndMinuteStringFromTime(new Date());
+    const week = new Date().getDay();
+    const currDate = getDateStringFromTime(new Date());
+    const vacationList = vacations
+      ? vacations.map(item => {
+          return {
+            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+          };
+        })
+      : [];
+    const validDaysArray = Array.from(validDays, v => v - 1);
+
+    if (isVacation(vacationList, currDate)) return false;
+
+    if (!validDaysArray.includes(week)) return false;
+
+    if (currTime < validTimeFrom || currTime > validTimeTo) return false;
+
+    if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
+
+    return true;
+  };
+
   findNearyStore = async (stores, type) => {
     const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
 
@@ -269,9 +323,7 @@ class LocationAndDate extends Component {
     });
     stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
     stores = stores.filter(item => {
-      const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
-
-      return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+      return !this.checkStoreIsClose(item);
     });
     stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
     let nearly;
