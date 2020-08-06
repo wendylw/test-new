@@ -1197,7 +1197,6 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    console.log(displayHourList, 'displayHourList');
     if (!displayHourList.includes(selectedHour.from) || timeSlot.includes(selectedHour.from)) {
       return true;
     }
