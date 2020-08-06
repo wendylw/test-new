@@ -11,7 +11,7 @@ $gray-nav-item-text: #707070;
   &__container {
     height: 100%;
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: hidden;
   }
 
   &__deliver-to {
@@ -54,11 +54,12 @@ $gray-nav-item-text: #707070;
   background-color: $gray-6;
   width: 25%;
   height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 
   &__content {
     width: 100%;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
   }
 
   &__list {
@@ -80,10 +81,15 @@ $gray-nav-item-text: #707070;
 
 .category {
   width: 75%;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 
   &__header {
     top: 0;
     background-color: $gray-6;
+    z-index: 10;
   }
 }
 

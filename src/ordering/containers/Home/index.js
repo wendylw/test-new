@@ -58,7 +58,6 @@ export class Home extends Component {
     viewAside: null,
     alcoholModal: false,
     offlineStoreModal: false,
-    dScrollY: 0,
     containerHeight: null,
     deliveryBar: false,
     alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
@@ -69,14 +68,6 @@ export class Home extends Component {
   };
 
   scrollDepthNumerator = 0;
-
-  handleScroll = () => {
-    const documentScrollY = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
-    this.trackScrollDepth();
-    this.setState({
-      dScrollY: documentScrollY,
-    });
-  };
 
   // copied and modified from https://docs.heap.io/docs/scroll-tracking
   trackScrollDepth = () => {
@@ -114,8 +105,6 @@ export class Home extends Component {
     this.handleDeliveryTimeInSession();
 
     await homeActions.loadProductList();
-
-    window.addEventListener('scroll', this.handleScroll);
 
     const pageRf = this.getPageRf();
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
@@ -358,10 +347,6 @@ export class Home extends Component {
   getPageRf = () => {
     return Utils.getQueryString('pageRefer');
   };
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-  }
 
   setMainContainerHeight = containerHeight => {
     const isValid =
@@ -746,10 +731,8 @@ export class Home extends Component {
       enableConditionalFreeShipping,
       enableLiveOnline,
     } = deliveryInfo;
-
     const { viewAside, alcoholModal, callApiFinish } = this.state;
     const { tableId } = requestInfo || {};
-    const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -759,10 +742,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping &&
-        freeShippingMinAmount &&
-        Utils.isDeliveryType() &&
-        this.state.dScrollY < adBarHeight ? (
+        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p className="ordering-home__delivery-fee padding-small text-center">
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
@@ -773,9 +753,6 @@ export class Home extends Component {
         <div className="ordering-home__container flex flex-top">
           <CurrentCategoryBar categories={categories} isVerticalMenu={isVerticalMenu} />
           <CategoryProductList
-            categoryHeaderStyle={{
-              top: this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight || this.deliveryEntryEl.offsetHeight : 0,
-            }}
             isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}

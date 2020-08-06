@@ -74,7 +74,7 @@ export class Footer extends Component {
     return (
       <footer
         ref={footerRef}
-        className="footer padding-small flex flex-middle flex-space-between"
+        className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
         data-heap-name="ordering.home.footer.container"
       >
         <button

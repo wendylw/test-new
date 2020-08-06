@@ -102,7 +102,9 @@ class StoreInfoAside extends Component {
                 )}
               </div>
               {storeAddress ? (
-                <address className="text-size-big margin-top-bottom-smaller">{storeAddress}</address>
+                <address className="text-size-big margin-top-bottom-smaller text-line-height-base">
+                  {storeAddress}
+                </address>
               ) : null}
               {telephone ? (
                 <a

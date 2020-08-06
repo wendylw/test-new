@@ -107,37 +107,10 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { categories } = this.props;
+
     return (
       <div id="product-list" className="category">
-        {/* <ScrollObserver
-          render={scrollid => {
-            const categoryList = categories || [];
-            const currentTarget = categoryList.find(category => category.id === scrollid) || categoryList[0];
-            let target = currentTarget;
-
-            if (!currentTarget || !isVerticalMenu) {
-              return null;
-            }
-
-            if (
-              document
-                .getElementById('root')
-                .getAttribute('class')
-                .includes('fixed')
-            ) {
-              target = this.prevCategory || {};
-            } else {
-              this.prevCategory = currentTarget;
-            }
-
-            return (
-              <h2 className="category__header fixed flex flex-middle flex-space-between" data-testid="categoryRight">
-                <label>{target.name || ''}</label>
-              </h2>
-            );
-          }}
-        /> */}
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
