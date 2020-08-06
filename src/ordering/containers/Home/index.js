@@ -225,13 +225,28 @@ export class Home extends Component {
       time = new Date(time);
       return `${time.getFullYear()}${Utils.zero(time.getMonth() + 1)}${Utils.zero(time.getDate())}`;
     };
-    const currentValidDays = Array.from(validDays, v => v - 1);
-    const vacationsList = vacations ? vacations.map(item => item.split('/').join('')) : [];
+    const isVacation = (list, date) => {
+      let isVacationDay = false;
 
-    while (
-      currentValidDays.indexOf(defaultTime.getDay()) === -1 ||
-      vacationsList.includes(getDateStringFromTime(defaultTime))
-    ) {
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
+          return true;
+        }
+      }
+      return isVacationDay;
+    };
+    const currentValidDays = Array.from(validDays, v => v - 1);
+    const vacationList = vacations
+      ? vacations.map(item => {
+          return {
+            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+          };
+        })
+      : [];
+
+    while (currentValidDays.indexOf(defaultTime.getDay()) === -1 || isVacation(getDateStringFromTime(defaultTime))) {
       times++;
       defaultTime.setDate(defaultTime.getDate() + 1);
       if (times > 30) {
