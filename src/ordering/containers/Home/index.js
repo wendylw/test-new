@@ -140,7 +140,7 @@ export class Home extends Component {
       const { qrOrderingSettings } = item;
       const { validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
 
-      if (Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })) {
+      if (Utils.isValidTimeToOrder(qrOrderingSettings)) {
         return true;
       }
     }
@@ -168,14 +168,14 @@ export class Home extends Component {
     let enablePreOrderFroMulitpeStore = false,
       isValidToOrderFromMulitpeStore = false;
     const { qrOrderingSettings } = allStore[0] || {};
-    const { enablePreOrder, validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
+    const { enablePreOrder } = qrOrderingSettings || {};
 
     if (allStore && allStore.length) {
       enablePreOrderFroMulitpeStore =
         allStore.length === 1 ? enablePreOrder : this.checkMultipleStoreIsPreOrderEnabled(allStore);
       isValidToOrderFromMulitpeStore =
         allStore.length === 1
-          ? Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo })
+          ? Utils.isValidTimeToOrder(qrOrderingSettings)
           : this.checkMultipleStoreIsValidTimeToOrder(allStore);
     }
     this.setState({
@@ -190,7 +190,8 @@ export class Home extends Component {
     if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo } = this.props;
 
-      let { stores, qrOrderingSettings } = businessInfo;
+      let { stores, qrOrderingSettings } = businessInfo || {};
+      console.log(businessInfo, 'businessInfo');
       const { deliveryRadius } = qrOrderingSettings;
       if (stores.length) {
         stores = stores[0];
@@ -610,13 +611,15 @@ export class Home extends Component {
     const { deliveryInfo } = this.props;
     const { search, isValidToOrderFromMulitpeStore } = this.state;
     const { h } = search;
-    const { validDays, validTimeFrom, validTimeTo } = deliveryInfo;
+    const { validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations } = deliveryInfo;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    return !h ? isValidToOrderFromMulitpeStore : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    return !h
+      ? isValidToOrderFromMulitpeStore
+      : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations });
   };
 
   renderHeaderChildren() {

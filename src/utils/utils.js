@@ -318,30 +318,75 @@ Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
-Utils.isValidTimeToOrder = ({ validDays, validTimeFrom, validTimeTo }) => {
+Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
   // ValidDays received from api side, sunday is 1, monday is two
   // convert it to browser weekday format first, for which sunday is 0, monday is 1
-  if (!(Array.isArray(validDays) && validDays.length)) {
-    return false;
-  }
-  const localValidDays = Array.from(validDays, v => v - 1);
-  const weekInfo = new Date().getDay() % 7;
-  const hourInfo = new Date().getHours();
-  const minutesInfo = new Date().getMinutes();
-  const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
-  const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+  // if (!(Array.isArray(validDays) && validDays.length)) {
+  //   return false;
+  // }
+  // const localValidDays = Array.from(validDays, v => v - 1);
+  // const weekInfo = new Date().getDay() % 7;
+  // const hourInfo = new Date().getHours();
+  // const minutesInfo = new Date().getMinutes();
+  // const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
+  // const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
 
-  const isClosed =
-    hourInfo < Number(timeFrom[0]) ||
-    hourInfo > Number(timeTo[0]) ||
-    (hourInfo === Number(timeFrom[0]) && minutesInfo < Number(timeFrom[1])) ||
-    (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
+  // const isClosed =
+  //   hourInfo < Number(timeFrom[0]) ||
+  //   hourInfo > Number(timeTo[0]) ||
+  //   (hourInfo === Number(timeFrom[0]) && minutesInfo < Number(timeFrom[1])) ||
+  //   (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
 
-  if (localValidDays && localValidDays.includes(weekInfo) && !isClosed) {
-    return true;
-  } else {
-    return false;
-  }
+  // if (localValidDays && localValidDays.includes(weekInfo) && !isClosed) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
+
+  const zero = num => (num < 10 ? '0' + num : num + '');
+  const getDateStringFromTime = time => {
+    time = new Date(time);
+    return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
+  };
+  const getHourAndMinuteStringFromTime = time => {
+    time = new Date(time);
+    return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
+  };
+
+  const isVacation = (list, date) => {
+    let isVacationDay = false;
+
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i];
+      if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
+        return true;
+      }
+    }
+    return isVacationDay;
+  };
+
+  const currTime = getHourAndMinuteStringFromTime(new Date());
+  const week = new Date().getDay();
+  const currDate = getDateStringFromTime(new Date());
+  const vacationList = vacations
+    ? vacations.map(item => {
+        return {
+          vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+          vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+        };
+      })
+    : [];
+  const validDaysArray = Array.from(validDays, v => v - 1);
+
+  if (isVacation(vacationList, currDate)) return false;
+
+  if (!validDaysArray.includes(week)) return false;
+
+  if (currTime < validTimeFrom || currTime > validTimeTo) return false;
+
+  if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
+
+  return true;
 };
 
 // get valid time list fron qrsetting
@@ -365,6 +410,9 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     sellAlcohol,
     disableTodayPreOrder,
     disableOnDemandOrder,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
   } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
@@ -391,6 +439,9 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     sellAlcohol,
     disableTodayPreOrder,
     disableOnDemandOrder,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
   };
 };
 
