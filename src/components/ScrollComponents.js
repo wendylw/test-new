@@ -255,7 +255,9 @@ export class ScrollObserver extends React.Component {
       causeByNavClick = false;
       currentCategoryId = null;
     }, 50);
+
     let scrollid;
+
     if (currentCategoryId) {
       scrollid = currentCategoryId;
     } else {
@@ -281,11 +283,11 @@ export class ScrollObserver extends React.Component {
   };
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
+    document.getElementById('product-list').addEventListener('scroll', this.handleScroll);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    document.getElementById('product-list').removeEventListener('scroll', this.handleScroll);
   }
 
   handleRevertScrollEvent = () => {
