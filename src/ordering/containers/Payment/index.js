@@ -138,11 +138,9 @@ class Payment extends Component {
       payments,
       unavailablePaymentList,
       cartSummary,
-      currentOrder,
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();

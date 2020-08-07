@@ -27,5 +27,11 @@
   "TemporarilyUnavailable": "Temporarily Unavailable",
   "PromotionExceededTotalClaimLimit": "This promotion has exceeded the total claim limit",
   "PromotionInvalid": "This promotion code is invalid",
-  "ContactDetailInvalid": "There was an error while saving your contact details, please try again"
+  "ContactDetailInvalid": "There was an error while saving your contact details, please try again",
+  "NoPermission": "No Permission",
+  "NoStore": "No Store",
+  "NoStoreLocation": "No StoreLocation",
+  "NoDeliveryLocation": "No Delivery Location",
+  "OverDeliveryDistance": "Over Delivery Distance",
+  "CreateOrderError": "Create Order Error"
 }

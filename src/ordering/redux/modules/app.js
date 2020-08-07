@@ -287,7 +287,7 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401 && code < 40000) {
+  } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
 
     if (type === types.CREATE_OTP_FAILURE) {
@@ -363,5 +363,6 @@ export const getMerchantCountry = state => {
   if (state.entities.businesses[state.app.business]) {
     return state.entities.businesses[state.app.business].country;
   }
+
   return null;
 };
