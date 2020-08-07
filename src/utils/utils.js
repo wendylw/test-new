@@ -13,6 +13,10 @@ Utils.getQueryString = key => {
 
   return queries;
 };
+
+Utils.isWebview = function isWebview() {
+  return Boolean(window.androidInterface || window.webkit);
+};
 Utils.getQueryVariable = variable => {
   var query = window.location.search.substring(1);
   var vars = query.split('&');
@@ -312,6 +316,10 @@ Utils.isDeliveryType = () => {
 
 Utils.isPickUpType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.PICKUP;
+};
+
+Utils.isDineInType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN;
 };
 
 Utils.isDigitalType = () => {
