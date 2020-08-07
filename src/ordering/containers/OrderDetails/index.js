@@ -50,7 +50,9 @@ export class OrderDetails extends Component {
                 <div style={{ marginLeft: '2vw' }}>
                   <span className="gray-font-opacity">{title}</span>
                   <p>
-                    {variationTexts[0] ? <span className="order-detail__tag">{variationTexts.join(', ')}</span> : null}
+                    {variationTexts && variationTexts[0] ? (
+                      <span className="order-detail__tag">{variationTexts.join(', ')}</span>
+                    ) : null}
                   </p>
                 </div>
               </div>
