@@ -50,9 +50,7 @@ export class OrderDetails extends Component {
                 <div style={{ marginLeft: '2vw' }}>
                   <span className="gray-font-opacity">{title}</span>
                   <p>
-                    {variationTexts && variationTexts[0] ? (
-                      <span className="order-detail__tag">{variationTexts.join(', ')}</span>
-                    ) : null}
+                    {variationTexts[0] ? <span className="order-detail__tag">{variationTexts.join(', ')}</span> : null}
                   </p>
                 </div>
               </div>
@@ -90,8 +88,8 @@ export class OrderDetails extends Component {
       <section className="order-detail" data-heap-name="ordering.order-detail.container">
         <Header
           className="order-detail__header flex-middle"
-          isPage={true}
           data-heap-name="ordering.order-detail.header"
+          isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>
             history.replace({

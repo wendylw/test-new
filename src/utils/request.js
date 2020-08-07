@@ -32,6 +32,7 @@ function get(url, options = {}) {
 
 const fetchData = function(url, requestOptions) {
   const { method, data, options } = requestOptions;
+
   return fetch(url, {
     method,
     headers: headers,
@@ -74,18 +75,6 @@ function del(url, data, options) {
 async function handleResponse(url, response) {
   if (response.status === 200) {
     return response.json();
-  } else if (response.status === 401) {
-    return response
-      .json()
-      .catch(e => {
-        console.error(e);
-
-        return Promise.reject(new RequestError('Error Page', '50000'));
-      })
-      .then(function(body) {
-        const code = response.status;
-        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
-      });
   } else {
     return response
       .json()
