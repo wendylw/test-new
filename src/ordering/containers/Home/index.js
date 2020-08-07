@@ -641,13 +641,23 @@ export class Home extends Component {
     const { h } = search;
     const isCanClickHandler = !h ? !h && allStore.length && allStore.length === 1 : true;
 
+    console.log(enableCashback && defaultLoyaltyRatio);
+
     return (
       <Header
         headerRef={ref => (this.headerEl = ref)}
         className={
-          isDeliveryType || isPickUpType ? 'flex-top ordering-home__header' : 'flex-middle border__bottom-divider'
+          isDeliveryType || isPickUpType
+            ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
+            : 'flex-middle border__bottom-divider'
         }
-        contentClassName={`${isDeliveryType || isPickUpType ? 'flex-top' : 'flex-middle'} padding-left-right-small`}
+        contentClassName={`${
+          isDeliveryType || isPickUpType
+            ? enableCashback && defaultLoyaltyRatio
+              ? 'flex-top'
+              : 'flex-middle'
+            : 'flex-middle'
+        } padding-left-right-small`}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}

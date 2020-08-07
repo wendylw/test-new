@@ -8,8 +8,6 @@ import Tag from './Tag';
 import './Item.scss';
 
 export class Item extends Component {
-  scroll = () => {};
-
   render() {
     const {
       children,
@@ -40,7 +38,7 @@ export class Item extends Component {
 
     if (isLazyLoad) {
       return (
-        <LazyLoad offset={0} height={productItemMinHeight} scrollContainer={scrollContainer} scroll={this.scroll}>
+        <LazyLoad offset={0} height={productItemMinHeight} scrollContainer={scrollContainer}>
           <div className={classList.join(' ')} {...dataAttributes}>
             <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
               <div className="item__image-container flex__shrink-fixed margin-smaller">
