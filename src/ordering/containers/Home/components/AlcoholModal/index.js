@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react';
 import beepAlcoholImage from '../../../../../images/beep-alcohol-consent.png';
 import Modal from '../../../../../components/Modal';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
-import { BrowserRouter, Link } from 'react-router-dom';
 import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
-import Constants from '../../../../../utils/constants';
 import './AlcoholModal.scss';
 
 export class AlcoholModal extends PureComponent {
