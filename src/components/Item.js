@@ -50,7 +50,7 @@ export class Item extends Component {
               >
                 <div className="item__summary-content">
                   {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
-                  <h3 className="item__title margin-top-bottom-smallest text-omit__multiple-line text-weight-bolder">
+                  <h3 className="item__title margin-top-bottom-smallest text-line-height-base text-omit__multiple-line text-weight-bolder">
                     {title}
                   </h3>
                   {variation ? (
