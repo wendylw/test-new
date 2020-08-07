@@ -1130,12 +1130,11 @@ class LocationAndDate extends Component {
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
-    const { selectedHour = {}, displayHourList, timeSlot } = this.state;
+    const { selectedHour = {}, displayHourList, timeSlot, isDeliveryType } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    console.log(displayHourList, 'displayHourList');
-    if (!displayHourList.includes(selectedHour.from) || timeSlot.includes(selectedHour.from)) {
+    if (!displayHourList.includes(selectedHour.from) || (isDeliveryType && timeSlot.includes(selectedHour.from))) {
       return true;
     }
 
