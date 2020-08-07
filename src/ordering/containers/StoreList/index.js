@@ -11,10 +11,9 @@ import { IconChecked } from '../../../components/Icons';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import { IconLocation, IconMotorcycle } from '../../../components/Icons';
+import { IconLocation } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
-import CurrencyNumber from '../../components/CurrencyNumber';
 import './OrderingStores.scss';
 
 const { ADDRESS_RANGE } = Constants;
@@ -36,13 +35,6 @@ const StoreListItem = props => (
             <span className="store-info__text text-size-smaller text-middle">
               {props.t('DistanceText', { distance: props.store.distance })}
             </span>
-          </li>
-          <li className="store-info__item text-middle">
-            <IconMotorcycle className="icon icon__smaller text-middle" />
-            <CurrencyNumber
-              className="store-info__text text-size-smaller text-middle"
-              money={props.store.deliveryFee}
-            />
           </li>
         </ul>
       )}
