@@ -7,7 +7,6 @@ import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import Utils from '../../../utils/utils';
-import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
@@ -90,10 +89,6 @@ class LocationPage extends Component {
 
   onSelectPlace = async placeInfo => {
     const { t, history } = this.props;
-    const {
-      storeInfo: { radius },
-    } = this.state;
-    const distance = placeInfo.straightDistance;
     const address = {
       location: {
         longitude: placeInfo.coords.lng,
@@ -169,7 +164,6 @@ class LocationPage extends Component {
   render() {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">

@@ -500,44 +500,42 @@ export class Home extends Component {
     const pickupAddress = stores.length ? Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY) : '';
 
     if (!config.storeId) {
-      return (
-        <DeliverToBar
-          deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
-          heapContentName="ordering.home.delivery-bar"
-          heapBackButtonName="order.home.delivery-bar-back-btn"
-          className="ordering-home__deliver-to flex__shrink-fixed"
-          content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
-          navBackUrl={this.navBackUrl}
-          extraInfo={`${Utils.isDeliveryType() ? t('DeliverOn') : t('PickUpOn')}${
-            Utils.isDeliveryType()
-              ? !enablePreOrder
-                ? ` . ${t('DeliverNow', { separator: ' .' })}`
-                : ` . ${this.getExpectedDeliveryTime()}`
-              : ''
-          }`}
-          showBackButton={showBackButton({
-            isValidTimeToOrder,
-            enablePreOrder,
-            backPosition: BackPosition.DELIVERY_TO,
-          })}
-          gotoLocationPage={fillInDeliverToAddress}
-          icon={
-            Utils.isDeliveryType() ? (
-              <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />
-            ) : null
-          }
-        >
-          {isValidTimeToOrder || enablePreOrder ? (
-            <IconEdit
-              className="icon icon__small icon__primary flex flex-middle flex__shrink-fixed"
-              onClick={fillInDeliverToAddress}
-            />
-          ) : null}
-        </DeliverToBar>
-      );
+      return null;
     }
 
-    return null;
+    return (
+      <DeliverToBar
+        deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
+        heapContentName="ordering.home.delivery-bar"
+        heapBackButtonName="order.home.delivery-bar-back-btn"
+        className="ordering-home__deliver-to flex__shrink-fixed"
+        content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+        navBackUrl={this.navBackUrl}
+        extraInfo={`${Utils.isDeliveryType() ? t('DeliverOn') : t('PickUpOn')}${
+          Utils.isDeliveryType()
+            ? !enablePreOrder
+              ? ` . ${t('DeliverNow', { separator: ' .' })}`
+              : ` . ${this.getExpectedDeliveryTime()}`
+            : ''
+        }`}
+        showBackButton={showBackButton({
+          isValidTimeToOrder,
+          enablePreOrder,
+          backPosition: BackPosition.DELIVERY_TO,
+        })}
+        gotoLocationPage={fillInDeliverToAddress}
+        icon={
+          Utils.isDeliveryType() ? <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" /> : null
+        }
+      >
+        {isValidTimeToOrder || enablePreOrder ? (
+          <IconEdit
+            className="icon icon__small icon__primary flex flex-middle flex__shrink-fixed"
+            onClick={fillInDeliverToAddress}
+          />
+        ) : null}
+      </DeliverToBar>
+    );
   }
 
   getExpectedDeliveryTime = () => {

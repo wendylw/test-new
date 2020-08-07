@@ -493,8 +493,7 @@ class LocationAndDate extends Component {
   };
 
   showLocationSearch = () => {
-    const { history, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { history } = this.props;
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
     search = search.replace(/&?storeid=[^&]*/, '');

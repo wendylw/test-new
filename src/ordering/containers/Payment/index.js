@@ -136,11 +136,9 @@ class Payment extends Component {
       payments,
       unavailablePaymentList,
       cartSummary,
-      currentOrder,
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
