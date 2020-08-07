@@ -96,7 +96,6 @@
   "AddressDetailsPlaceholder": "House/floor/unit no. (optional)",
   "AddNoteToDriverPlaceholder": "Note to driver",
   "AddNoteToDriverOrMerchantPlaceholderExample": "e.g meet at lobby (optional)",
-  "AddNoteToMerchantPlaceholder": "Note to merchant",
   "AddAddressDetailsPlaceholder": "House/floor/unit no.",
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
