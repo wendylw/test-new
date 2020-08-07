@@ -766,46 +766,45 @@ export class Home extends Component {
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
-
-          <CartListAside
-            footerEl={this.footerEl}
-            viewAside={viewAside}
-            show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
-            onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
-          />
-          <ProductDetail
+        </div>
+        <CartListAside
+          footerEl={this.footerEl}
+          viewAside={viewAside}
+          show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
+          onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
+        />
+        <ProductDetail
+          footerEl={this.footerEl}
+          onlineStoreInfo={onlineStoreInfo}
+          show={
+            viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
+            viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
+          }
+          viewAside={viewAside}
+          onToggle={this.handleToggleAside.bind(this)}
+        />
+        {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
+          <StoreInfoAside
             footerEl={this.footerEl}
             onlineStoreInfo={onlineStoreInfo}
-            show={
-              viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
-              viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
-            }
-            viewAside={viewAside}
+            businessInfo={businessInfo}
+            storeAddress={storeAddress}
+            telephone={telephone}
+            validDays={validDays}
+            validTimeFrom={validTimeFrom}
+            validTimeTo={validTimeTo}
+            businessLoaded={businessLoaded}
+            show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
+            enablePreOrder={this.isPreOrderEnabled()}
+            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
+            isValidTimeToOrder={this.isValidTimeToOrder()}
           />
-          {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
-            <StoreInfoAside
-              footerEl={this.footerEl}
-              onlineStoreInfo={onlineStoreInfo}
-              businessInfo={businessInfo}
-              storeAddress={storeAddress}
-              telephone={telephone}
-              validDays={validDays}
-              validTimeFrom={validTimeFrom}
-              validTimeTo={validTimeTo}
-              businessLoaded={businessLoaded}
-              show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
-              onToggle={this.handleToggleAside.bind(this)}
-              enablePreOrder={this.isPreOrderEnabled()}
-              onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-              isValidTimeToOrder={this.isValidTimeToOrder()}
-            />
-          )}
+        )}
 
-          {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
-            <div className="ordering-home__close-cover"></div>
-          ) : null}
-        </div>
+        {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
+          <div className="ordering-home__close-cover"></div>
+        ) : null}
         <Footer
           {...otherProps}
           footerRef={ref => (this.footerEl = ref)}

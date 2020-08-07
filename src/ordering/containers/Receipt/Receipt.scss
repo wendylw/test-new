@@ -8,7 +8,7 @@ $receipt-number-text-size: 1.7142rem;
   &__container {
     height: 100%;
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   &__number-container {

@@ -6,6 +6,7 @@
   &__container {
     height: 100%;
     width: 100%;
+    overflow-y: auto;
   }
 
   &__delivery,
@@ -25,7 +26,9 @@
   }
 
   &__date {
+    height: 60px;
     overflow-x: scroll;
+    overflow-y: hidden;
   }
 
   &__button-date {
@@ -43,7 +46,7 @@
   }
 
   &__hour {
-    overflow-y: scroll;
+    // overflow-y: auto;
   }
 
   &__button-hour {
