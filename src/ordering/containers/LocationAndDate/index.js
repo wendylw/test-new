@@ -772,7 +772,7 @@ class LocationAndDate extends Component {
       } else {
         isShowList = false;
       }
-      const isSoldOut = this.isTimeSlot(from);
+      const isSoldOut = this.state.isDeliveryType ? this.isTimeSlot(from) : false;
 
       return (
         isShowList && (
