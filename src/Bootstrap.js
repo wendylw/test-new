@@ -50,7 +50,7 @@ class Bootstrap extends Component {
               return (
                 <Redirect
                   to={{
-                    pathname: ROUTER_PATHS.ORDERING_BASE,
+                    pathname: ROUTER_PATHS.ORDERING_BASE + ROUTER_PATHS.ORDERING_HOME,
                     search: qs.stringify(queries, { addQueryPrefix: true }),
                   }}
                 />
