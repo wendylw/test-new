@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Header from '../../../components/Header';
 import { withTranslation } from 'react-i18next';
 import beepQrScanImage from '../../../images/beep-qrscan.png';
+import './RedeemInfo.scss';
 
 class RedeemInfo extends React.Component {
   state = {
@@ -43,7 +44,7 @@ class RedeemInfo extends React.Component {
               <figure className="full-aside__image-container">
                 <img src={beepQrScanImage} alt="otp" />
               </figure>
-              <h2 className="full-aside__title">{t('HowToUseCashback')}</h2>
+              <h2 className="full-aside__title text-weight-bold">{t('HowToUseCashback')}</h2>
               <ol className="redeem__list">
                 <li className="redeem__item">{t('UseCashbackStep1')}</li>
                 <li className="redeem__item">{t('UseCashbackStep2')}</li>

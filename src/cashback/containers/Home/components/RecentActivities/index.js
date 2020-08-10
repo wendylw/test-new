@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
+import './RecentActivities.scss';
 
 const DATE_OPTIONS = {
   weekday: 'short',
@@ -83,21 +84,21 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-      <ul className="activity">
+      <ul className="loyalty-activity card-list">
         {(cashbackHistory || []).map((activity, i) => {
           const { eventType, eventTime } = activity;
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-          const type = this.getType(eventType, { className: `activity__icon ${eventType}` });
+          const type = this.getType(eventType, { className: `loyalty-activity__icon card-list__icon ${eventType}` });
 
           return (
-            <li key={`${i}`} className="activity__item flex flex-middle">
+            <li key={`${i}`} className="loyalty-activity__item card-list__item flex flex-middle">
               {type.icon}
-              <summary>
-                <h4 className="activity__title">
+              <summary className="card-list__item-summary">
+                <h4 className="card-list__title">
                   <label>{type.text}&nbsp;</label>
                   {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
                 </h4>
-                <time className="activity__time">{toLocaleDateString(eventDateTime, country, DATE_OPTIONS)}</time>
+                <time className="card-list__time">{toLocaleDateString(eventDateTime, country, DATE_OPTIONS)}</time>
               </summary>
             </li>
           );
@@ -111,7 +112,7 @@ class RecentActivities extends React.Component {
 
     return (
       <section
-        className="loyalty__activities"
+        className="loyalty-activities"
         style={
           {
             // backgroundImage: `url(${theImage})`,
@@ -120,7 +121,7 @@ class RecentActivities extends React.Component {
         data-heap-name="cashback.home.recent-activities.container"
       >
         <Header
-          className="flex-middle text-center"
+          className="loyalty-activities__header flex-middle text-center"
           contentClassName="flex-middle"
           data-heap-name="cashback.home.recent-activities.header"
           title={t('CashbackHistory')}
@@ -133,7 +134,7 @@ class RecentActivities extends React.Component {
             closeActivity();
           }}
         />
-        <article className="flex__shrink-fixed loyalty__content">{this.renderLogList()}</article>
+        <article className="flex__shrink-fixed">{this.renderLogList()}</article>
       </section>
     );
   }

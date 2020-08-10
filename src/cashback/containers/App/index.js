@@ -11,12 +11,13 @@ import {
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import Routes from '../Routes';
-import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
+import '../../../Common.scss';
+import './Loyalty.scss';
 
 class App extends Component {
   async componentDidMount() {

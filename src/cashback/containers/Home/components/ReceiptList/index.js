@@ -15,6 +15,7 @@ import {
   getReceiptList,
   getFetchState,
 } from '../../../../redux/modules/home';
+import './ReceiptList.scss';
 
 const DATE_OPTIONS = {
   weekday: 'short',
@@ -93,14 +94,16 @@ class RecentActivities extends React.Component {
             const receiptTime = new Date(createdTime);
 
             return (
-              <div className="receipt-list__item flex flex-middle" key={`${i}`}>
-                <IconTicket className="activity__icon ticket" />
-                <summary>
-                  <h4 className="receipt-list__title">
+              <div className="receipt-list__item card-list__item flex flex-middle" key={`${i}`}>
+                <IconTicket className="receipt-list__icon ticket" />
+                <summary className="card-list__item-summary">
+                  <h4 className="receipt-list__title card-list__title">
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>
-                  <time className="receipt-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
+                  <time className="receipt-list__time card-list__time">
+                    {toLocaleDateString(receiptTime, country, DATE_OPTIONS)}
+                  </time>
                 </summary>
               </div>
             );
@@ -132,7 +135,7 @@ class RecentActivities extends React.Component {
             ></i>
           ) : (
             <Header
-              className="flex-middle"
+              className="receipt-list__header flex-middle"
               contentClassName="flex-middle"
               navFunc={this.toggleFullScreen.bind(this)}
               data-heap-name="cashback.home.receipt-list.header"
@@ -145,7 +148,7 @@ class RecentActivities extends React.Component {
           >
             {t('Receipts')}
           </h3>
-          <div className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}>{this.renderLogList()}</div>
+          <div className={`receipt-list card-list ${this.state.fullScreen ? 'full' : ''}`}>{this.renderLogList()}</div>
         </aside>
       </div>
     );

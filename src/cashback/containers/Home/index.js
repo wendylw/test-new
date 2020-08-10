@@ -14,6 +14,7 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
+import './LoyaltyHome.scss';
 
 class PageLoyalty extends React.Component {
   state = {
@@ -56,14 +57,14 @@ class PageLoyalty extends React.Component {
     const { showRecentActivities } = this.state;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
-      <section className="loyalty__home" data-heap-name="cashback.home.container">
-        <div className="loyalty__content text-center">
+      <section className="loyalty-home flex flex-column flex-top" data-heap-name="cashback.home.container">
+        <div className="loyalty-home__content text-center">
           {logo ? (
             <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
           ) : null}
           <h5 className="logo-default__title text-uppercase">{t('TotalCashback')}</h5>
-          <div className="loyalty__money-info">
-            <CurrencyNumber className="loyalty__money" money={totalCredits || 0} />
+          <div className="loyalty-home__money-info">
+            <CurrencyNumber className="loyalty-home__money" money={totalCredits || 0} />
             <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
               <IconInfo />
             </span>
@@ -71,7 +72,7 @@ class PageLoyalty extends React.Component {
           {this.renderLocation()}
           <RedeemInfo
             className="redeem__button-container"
-            buttonClassName="redeem__button button__block button__block-link border-radius-base text-uppercase"
+            buttonClassName="button redeem__button button__block border-radius-base text-uppercase"
             buttonText={t('HowToUseCashback')}
           />
         </div>

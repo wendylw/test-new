@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { IconClose } from '../../../components/Icons';
+import './TopMessage.scss';
 
 class TopMessage extends React.Component {
   state = {};

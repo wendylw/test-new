@@ -1,0 +1,26 @@
+@import "src/Variables";
+
+.loyalty-activities {
+  max-height: 100%;
+  overflow: auto;
+
+  &__header {
+    position: fixed;
+    padding: 10px 3.8vw;
+    height: 50px;
+  }
+}
+
+.loyalty-activity {
+  &__item {
+    color: $white;
+  }
+
+  &__icon {
+    fill: $gray-5;
+
+    &.earned {
+      fill: $theme-color;
+    }
+  }
+}

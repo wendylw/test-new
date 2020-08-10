@@ -1,22 +1,22 @@
 // @import "Common";
 @import "./Variables.scss";
 
-.back-drop {
-  display: none;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  bottom: 0;
-  z-index: -100;
-  background-color: rgba($color: $black, $alpha: 0.5);
-
-  &.cover {
-    display: block;
-    top: 50px;
-    background-color: rgba($color: $white, $alpha: 0.5);
-    z-index: 290;
-  }
-}
+//.back-drop {
+//  display: none;
+//  position: fixed;
+//  width: 100%;
+//  top: 0;
+//  bottom: 0;
+//  z-index: -100;
+//  background-color: rgba($color: $black, $alpha: 0.5);
+//
+//  &.cover {
+//    display: block;
+//    top: 50px;
+//    background-color: rgba($color: $white, $alpha: 0.5);
+//    z-index: 290;
+//  }
+//}
 
 .top-message {
   display: block;
@@ -86,88 +86,88 @@
   }
 }
 
-.loyalty {
-  .aside {
-    background-color: transparent;
-  }
+//.loyalty {
+//  .aside {
+//    background-color: transparent;
+//  }
+//
+//  .location {
+//    margin: 3vw 0;
+//  }
+//
+//  &__claim,
+//  &__home,
+//  &__activities {
+//    position: fixed;
+//    width: 100%;
+//    height: 100%;
+//    background-repeat: no-repeat;
+//    background-size: cover;
+//    background-position: center center;
+//    background-color: $main-color;
+//  }
+//
+//  &__content {
+//    width: inherit;
+//  }
+//
+//  &__activities &__content {
+//    max-height: 100%;
+//    overflow: auto;
+//  }
+//
+//  .top-message {
+//    & ~ .loyalty__claim,
+//    & ~ .loyalty__home,
+//    & ~ .loyalty__activities {
+//      padding: 20px;
+//    }
+//  }
+//
+//  &__money-info {
+//    position: relative;
+//
+//    svg {
+//      position: absolute;
+//      top: 0;
+//      bottom: 0;
+//      padding: 10px;
+//      margin: auto;
+//      width: 40px;
+//      height: 40px;
+//      fill: $gray-2;
+//    }
+//  }
+//
+//  &__money {
+//    display: inline-block;
+//    padding: 6px 0;
+//    font-size: 3.5rem;
+//    font-weight: $font-weight-light;
+//    color: $white;
+//  }
+//}
 
-  .location {
-    margin: 3vw 0;
-  }
-
-  &__claim,
-  &__home,
-  &__activities {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
-    background-color: $main-color;
-  }
-
-  &__content {
-    width: inherit;
-  }
-
-  &__activities &__content {
-    max-height: 100%;
-    overflow: auto;
-  }
-
-  .top-message {
-    & ~ .loyalty__claim,
-    & ~ .loyalty__home,
-    & ~ .loyalty__activities {
-      padding: 20px;
-    }
-  }
-
-  &__money-info {
-    position: relative;
-
-    svg {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      padding: 10px;
-      margin: auto;
-      width: 40px;
-      height: 40px;
-      fill: $gray-2;
-    }
-  }
-
-  &__money {
-    display: inline-block;
-    padding: 6px 0;
-    font-size: 3.5rem;
-    font-weight: $font-weight-light;
-    color: $white;
-  }
-}
-
-.redeem {
-  &__button {
-    color: $gray-2;
-  }
-
-  &__list {
-    display: block;
-    text-align: left;
-    padding-left: 20px;
-    margin: 0 auto;
-    text-align: left;
-    max-width: 270px;
-    list-style-type: decimal;
-  }
-
-  &__item {
-    margin: 5px 0;
-    line-height: $line-height-base;
-  }
-}
+//.redeem {
+//  &__button {
+//    color: $gray-2;
+//  }
+//
+//  &__list {
+//    display: block;
+//    text-align: left;
+//    padding-left: 20px;
+//    margin: 0 auto;
+//    text-align: left;
+//    max-width: 270px;
+//    list-style-type: decimal;
+//  }
+//
+//  &__item {
+//    margin: 5px 0;
+//    line-height: $line-height-base;
+//  }
+//}
 
 .modal {
   // @extend .back-drop;
