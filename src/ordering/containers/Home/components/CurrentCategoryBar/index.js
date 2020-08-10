@@ -64,7 +64,7 @@ class CurrentCategoryBar extends PureComponent {
                         onClick={() =>
                           scrollToSmoothly({
                             targetId: c.id,
-                            containerId,
+                            containerId: 'product-list',
                           })
                         }
                       >
