@@ -971,7 +971,7 @@ class LocationAndDate extends Component {
 
     const time = `${hour}:${minute}`;
 
-    return this.state.timeSlot.indexOf(time) !== -1;
+    return this.state.timeSlot.includes(from);
   };
 
   getValidStartingTimeString = (baseTimeString = this.validTimeFrom) => {
