@@ -26,6 +26,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import { get } from '../../../utils/request';
+import Url from '../../../utils/url';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -36,10 +38,21 @@ class Customer extends Component {
     asideName: null,
     sentOtp: false,
     errorToast: '',
+    consumerInfo: {
+      phone: '',
+      firstName: '',
+    },
   };
 
   componentDidMount = async () => {
-    const { homeActions, customerActions } = this.props;
+    const { homeActions, customerActions, user } = this.props;
+    const { isWebview, consumerId, isLogin } = user || {};
+
+    if (isWebview && isLogin && consumerId) {
+      let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
+      let consumerInfo = await get(request.url);
+      this.props.customerActions.patchDeliveryDetails({ phone: consumerInfo.phone, username: consumerInfo.firstName });
+    }
 
     await homeActions.loadShoppingCart();
 
@@ -106,7 +119,6 @@ class Customer extends Component {
     const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
-
     const checkDistanceResult = this.checkDistanceError();
     if (checkDistanceResult) {
       this.setState({ errorToast: checkDistanceResult });
@@ -398,7 +410,7 @@ class Customer extends Component {
     const { country } = onlineStoreInfo || {};
     const { total } = cartSummary || {};
     let textareaValue = '';
-    let updateTextFunc = () => { };
+    let updateTextFunc = () => {};
 
     if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
       textareaValue = deliveryDetails.deliveryComments;

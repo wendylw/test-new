@@ -1,7 +1,6 @@
 import Constants from '../../../utils/constants';
 import { toISODateString } from '../../../utils/datetime-lib';
 import i18next from 'i18next';
-import { PROMOTION_TYPES } from '../../redux/types';
 
 const { PROMOTION_APPLIED_STATUS } = Constants;
 

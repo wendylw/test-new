@@ -319,7 +319,7 @@ class LocationAndDate extends Component {
         });
       }
     });
-    stores = stores.filter(item => item.qrOrderingSettings.enableLiveOnline);
+    stores = stores.filter(item => item.qrOrderingSettings && item.qrOrderingSettings.enableLiveOnline);
     stores = stores.filter(item => {
       return !this.checkStoreIsClose(item);
     });
@@ -561,8 +561,7 @@ class LocationAndDate extends Component {
   };
 
   showLocationSearch = () => {
-    const { history, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { history } = this.props;
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
     search = search.replace(/&?storeid=[^&]*/, '');
@@ -1288,15 +1287,15 @@ class LocationAndDate extends Component {
   };
   renderSelectStore = () => {
     return (
-      <div
-        className="form__group"
-        onClick={this.goStoreList}
-        data-heap-name="ordering.location-and-date.selected-store"
-      >
+      <div className="form__group">
         <label className="form__label font-weight-bold" style={{ fontWeight: '600' }}>
           {this.props.t('Selected Store')}
         </label>
-        <div className="location-page__search-box">
+        <div
+          className="location-page__search-box"
+          onClick={this.goStoreList}
+          data-heap-name="ordering.location-and-date.selected-store"
+        >
           <div className="input-group outline flex flex-middle flex-space-between border-radius-base">
             <input
               className="input input__block"
