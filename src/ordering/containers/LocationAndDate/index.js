@@ -1030,14 +1030,19 @@ class LocationAndDate extends Component {
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
-    const { selectedHour = {} } = this.state;
+    const { selectedHour = {}, displayHourList, timeSlot, isDeliveryType } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (!displayHourList.includes(selectedHour.from) || (isDeliveryType && timeSlot.includes(selectedHour.from))) {
+      return true;
+    }
+
+    const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
 
     if (!dateList.includes(this.getDateFromTime(selectedDate.date))) return true;
 
     if (!selectedDate.isOpen || !this.state.nearlyStore.id) return true;
-    if (!this.state.nearlyStore.id) return true;
 
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {
