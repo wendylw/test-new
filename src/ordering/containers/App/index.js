@@ -20,10 +20,39 @@ import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
-import config from '../../../config';
 import Utils from '../../../utils/utils';
+
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    if (Utils.isAndroidWebview()) {
+      const res = window.androidInterface.getAddress();
+      this.setAppAddressToSession(JSON.parse(res));
+    }
+
+    if (Utils.isIOSWebview()) {
+      const res = window.prompt('getAddress');
+      this.setAppAddressToSession(JSON.parse(res));
+    }
+  }
   state = {};
+
+  setAppAddressToSession = res => {
+    const { address, country, countryCode, lat, lng } = res;
+    const addressInfo = {
+      address: address,
+      addressComponents: {
+        country: country,
+        countryCode: countryCode,
+      },
+      coords: {
+        lat: lat,
+        lng: lng,
+      },
+    };
+    sessionStorage.setItem('deliveryAddress', JSON.stringify(addressInfo));
+  };
 
   async componentDidMount() {
     const { appActions } = this.props;
@@ -54,8 +83,6 @@ class App extends Component {
         });
       });
     }
-
-    this.getTokens(isLogin);
 
     const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
@@ -116,39 +143,6 @@ class App extends Component {
       return (window.location.href = errorPageUrl);
     }
   }
-
-  getTokens(isLogin) {
-    const { appActions } = this.props;
-
-    document.addEventListener(
-      'acceptTokens',
-      response => {
-        const { data } = response || {};
-
-        if (data) {
-          const tokenList = data.split(',');
-
-          if (!isLogin) {
-            appActions.loginApp({
-              accessToken: tokenList[0],
-              refreshToken: tokenList[1],
-            });
-          }
-        }
-      },
-      false
-    );
-  }
-
-  // postAppMessage(user) {
-  //   const { isWebview, isExpired } = user || {};
-
-  //   if (isWebview && isExpired) {
-  //     window.ReactNativeWebView.postMessage('tokenExpired');
-  //   } else if (isWebview && !isExpired) {
-  //     window.ReactNativeWebView.postMessage('getToken');
-  //   }
-  // }
 
   handleClearError = () => {
     this.props.appActions.clearError();

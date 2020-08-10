@@ -17,6 +17,7 @@ import {
   getBusinessInfo,
   getPromotion,
 } from '../../redux/modules/thankYou';
+import { getUser } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
 const { DELIVERY_METHOD } = Constants;
@@ -106,8 +107,9 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, order, businessInfo, promotion } = this.props;
+    const { t, order, businessInfo, promotion, user } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
+    const { isLogin } = user || {};
 
     return (
       <section className="table-ordering__receipt" data-heap-name="ordering.receipt.container">
@@ -139,6 +141,7 @@ export class ReceiptDetail extends Component {
           subtotal={subtotal}
           total={total}
           promotion={promotion}
+          isLogin={isLogin}
           creditsBalance={this.getSpendCashback()}
         />
       </section>
@@ -153,6 +156,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       order: getOrder(state),
       promotion: getPromotion(state),
+      user: getUser(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
