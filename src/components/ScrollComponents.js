@@ -165,32 +165,18 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll }) {
   _run();
 }
 
-export function getCurrentScrollId({ containerId }) {
-  const htmlDocumentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-  const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-  const windowScrolledTop = containerId
-    ? document.getElementById(containerId).scrollTo
-    : document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+export function getCurrentScrollId() {
   const elObjList = Object.values(observableContainer);
-  let topBarHeight = document.querySelector('.header')
-    ? document.querySelector('.header').clientHeight
+  const topBarHeight = document.querySelector('.ordering-home__container')
+    ? document.querySelector('.ordering-home__container').getBoundingClientRect().top
     : TOP_BAR_HEIGHT;
 
-  if (document.querySelector('.deliver-to-entry') && document.querySelector('.header')) {
-    topBarHeight =
-      document.querySelector('.deliver-to-entry').clientHeight + document.querySelector('.header').clientHeight;
-  }
-  const [, elObj] =
-    elObjList
-      .map(elObj => [Utils.elementPartialOffsetTop(elObj, topBarHeight, windowScrolledTop), elObj])
-      .sort(([nextDistance], [distance]) => nextDistance - distance)
-      .find(([distance]) => distance > 0) || [];
-
-  if (!elObj) {
-    return null;
+  if (!elObjList.length) {
+    return;
   }
 
-  const currentObj = windowScrolledTop >= htmlDocumentHeight - windowHeight ? elObjList[elObjList.length - 1] : elObj;
+  const scrolledCategoryList = elObjList.filter(elObj => elObj.getBoundingClientRect().top - topBarHeight <= 0);
+  const currentObj = scrolledCategoryList.length ? scrolledCategoryList[scrolledCategoryList.length - 1] : elObjList[0];
 
   return currentObj.getAttribute('scrollid');
 }
@@ -244,31 +230,32 @@ export class ScrollObserver extends React.Component {
   }
 
   handleScroll = () => {
-    // window.clearTimeout(isScrolling);
-    // isScrolling = setTimeout(function () {
-    //   causeByNavClick = false;
-    //   currentCategoryId = null;
-    // }, 50);
-    // let scrollid;
-    // if (currentCategoryId) {
-    //   scrollid = currentCategoryId;
-    // } else {
-    //   scrollid = getCurrentScrollId({ containerId: this.props.containerId });
-    // }
-    // if (!scrollid) {
-    //   return;
-    // }
-    // const { containerId, targetIdPrefix } = this.props;
-    // const { drivenToScroll } = this.state;
-    // if (drivenToScroll) {
-    //   return;
-    // }
-    // scrollToSmoothly({
-    //   direction: 'y',
-    //   targetId: `${targetIdPrefix}-${scrollid}`,
-    //   containerId,
-    // });
-    // this.setState({ scrollid });
+    window.clearTimeout(isScrolling);
+    isScrolling = setTimeout(function() {
+      causeByNavClick = false;
+      currentCategoryId = null;
+    }, 50);
+    let scrollid;
+    if (currentCategoryId) {
+      scrollid = currentCategoryId;
+    } else {
+      scrollid = getCurrentScrollId();
+    }
+
+    if (!scrollid) {
+      return;
+    }
+    const { containerId, targetIdPrefix } = this.props;
+    const { drivenToScroll } = this.state;
+    if (drivenToScroll) {
+      return;
+    }
+    scrollToSmoothly({
+      direction: 'y',
+      targetId: `${targetIdPrefix}-${scrollid}`,
+      containerId,
+    });
+    this.setState({ scrollid });
   };
 
   componentDidMount() {

@@ -34,7 +34,7 @@ import {
   getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceBeepitCom } from './utils';
+import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, mainBottom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
@@ -641,8 +641,6 @@ export class Home extends Component {
     const { h } = search;
     const isCanClickHandler = !h ? !h && allStore.length && allStore.length === 1 : true;
 
-    console.log(enableCashback && defaultLoyaltyRatio);
-
     return (
       <Header
         headerRef={ref => (this.headerEl = ref)}
@@ -752,15 +750,48 @@ export class Home extends Component {
         {this.renderHeader()}
         {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
-            <p className="ordering-home__delivery-fee padding-small text-center">
+            <p
+              ref={ref => (this.deliveryFeeEl = ref)}
+              className="ordering-home__delivery-fee padding-small text-center sticky-wrapper"
+              style={{
+                top: `${(this.headerEl ? this.headerEl.clientHeight : 0) +
+                  (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
+              }}
+            >
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
             </p>
           </Trans>
         ) : null}
 
-        <div className="ordering-home__container flex flex-top">
+        <div
+          className="ordering-home__container flex flex-top sticky-wrapper"
+          style={{
+            // bottom: `${mainBottom({
+            //   footerEls: [this.footerEl],
+            // })}px`,
+            top: `${mainTop({
+              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+            })}px`,
+            height: `${windowSize().height -
+              mainTop({
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              }) -
+              mainBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+            // marginBottom: Utils.isSafari && Utils.getUserAgentInfo().isMobile ? '75px' : '0',
+          }}
+        >
           <CurrentCategoryBar containerId="product-list" categories={categories} isVerticalMenu={isVerticalMenu} />
           <CategoryProductList
+            style={{
+              paddingBottom:
+                Utils.isSafari && Utils.getUserAgentInfo().isMobile
+                  ? `${mainBottom({
+                      footerEls: [this.footerEl],
+                    })}px`
+                  : '0',
+            }}
             isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
@@ -807,6 +838,12 @@ export class Home extends Component {
         ) : null}
         <Footer
           {...otherProps}
+          style={{
+            top: `${windowSize().height -
+              mainBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+          }}
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}

@@ -579,7 +579,7 @@ class LocationAndDate extends Component {
             data-testid="deliverTo"
           >
             {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
-            <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
+            <p className="location-date__input form__input flex flex-middle padding-top-bottom-normal text-size-big text-line-height-base text-omit__single-line">
               {deliveryToAddress || t('WhereToDeliverFood')}
             </p>
             {deliveryToAddress && <IconNext className="icon icon__normal flex__shrink-fixed" />}

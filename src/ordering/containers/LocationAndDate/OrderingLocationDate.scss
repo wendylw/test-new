@@ -25,6 +25,10 @@
     display: block;
   }
 
+  &__input {
+    height: 54px;
+  }
+
   &__date {
     height: 60px;
     overflow-x: scroll;

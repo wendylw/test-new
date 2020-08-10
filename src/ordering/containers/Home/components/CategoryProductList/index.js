@@ -107,10 +107,10 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { categories } = this.props;
+    const { categories, style } = this.props;
 
     return (
-      <div id="product-list" className="category" ref={ref => (this.productList = ref)}>
+      <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
@@ -151,6 +151,7 @@ CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
   isVerticalMenu: PropTypes.bool,
   isValidTimeToOrder: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 CategoryProductList.defaultProps = {
