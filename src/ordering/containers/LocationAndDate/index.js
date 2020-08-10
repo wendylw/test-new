@@ -806,7 +806,7 @@ class LocationAndDate extends Component {
 
     const time = `${hour}:${minute}`;
 
-    return this.state.timeSlot.indexOf(time) !== -1;
+    return this.state.timeSlot.includes(from);
   };
 
   getValidStartingTimeString = (baseTimeString = this.validTimeFrom) => {
@@ -1034,8 +1034,9 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    // if (!enablePreOrder || !selectedDate.isOpen) return true;
+    if (!dateList.includes(this.getDateFromTime(selectedDate.date))) return true;
 
+    if (!selectedDate.isOpen || !this.state.nearlyStore.id) return true;
     if (!this.state.nearlyStore.id) return true;
 
     if (this.state.isDeliveryType) {
