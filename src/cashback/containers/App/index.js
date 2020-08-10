@@ -19,6 +19,13 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 
 class App extends Component {
+  //TODO: loyalty page communicate with native app
+  // constructor(props) {
+  //   super(props);
+  //   window.sendToken = res => this.AuthTokens(res);
+  //   this.postAppMessage(props.user);
+  // }
+
   async componentDidMount() {
     const { appActions } = this.props;
 
@@ -33,9 +40,6 @@ class App extends Component {
     if (isLogin) {
       appActions.loadCustomerProfile();
     }
-
-    this.getTokens(isLogin);
-    // this.postAppMessage(user);
   }
 
   componentDidUpdate(prevProps) {
@@ -64,38 +68,48 @@ class App extends Component {
     }
   }
 
-  getTokens(isLogin) {
-    const { appActions } = this.props;
-
-    document.addEventListener(
-      'acceptTokens',
-      response => {
-        const { data } = response || {};
-
-        if (data) {
-          const tokenList = data.split(',');
-
-          if (!isLogin) {
-            appActions.loginApp({
-              accessToken: tokenList[0],
-              refreshToken: tokenList[1],
-            });
-          }
+  AuthTokens = async res => {
+    if (res) {
+      if (window.webkit) {
+        await this.loginBeepApp(res);
+      } else if (window.androidInterface) {
+        const data = JSON.parse(res) || {};
+        if (data.phone) {
+          sessionStorage.setItem('userPhone', data.phone);
         }
-      },
-      false
-    );
+        await this.loginBeepApp(data);
+      }
+    }
+  };
+
+  loginBeepApp = async res => {
+    const { appActions } = this.props;
+    if (res.access_token && res.refresh_token) {
+      await appActions.loginApp({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      });
+    }
+  };
+
+  postAppMessage(user) {
+    const { isExpired } = user || {};
+    if (window.androidInterface && isExpired) {
+      window.androidInterface.tokenExpired();
+    }
+    if (window.androidInterface && !isExpired) {
+      window.androidInterface.getToken();
+    }
+    if (window.webkit && isExpired) {
+      window.webkit.messageHandlers.shareAction.postMessage({
+        functionName: 'tokenExpired',
+        callbackName: 'sendToken',
+      });
+    }
+    if (window.webkit && !isExpired) {
+      window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'getToken', callbackName: 'sendToken' });
+    }
   }
-
-  // postAppMessage(user) {
-  //   const { isWebview, isExpired } = user || {};
-
-  //   if (isWebview && isExpired) {
-  //     window.ReactNativeWebView.postMessage('tokenExpired');
-  //   } else if (isWebview && !isExpired) {
-  //     window.ReactNativeWebView.postMessage('getToken');
-  //   }
-  // }
 
   handleClearError = () => {
     this.props.appActions.clearError();

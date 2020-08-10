@@ -13,6 +13,19 @@ Utils.getQueryString = key => {
 
   return queries;
 };
+
+Utils.isWebview = function isWebview() {
+  return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
+};
+
+Utils.isIOSWebview = function isIOSWebview() {
+  return Boolean(window.webkit && window.webkit.messageHandlers.shareAction);
+};
+
+Utils.isAndroidWebview = function isAndroidWebview() {
+  return Boolean(window.androidInterface);
+};
+
 Utils.getQueryVariable = variable => {
   var query = window.location.search.substring(1);
   var vars = query.split('&');
@@ -312,6 +325,10 @@ Utils.isDeliveryType = () => {
 
 Utils.isPickUpType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.PICKUP;
+};
+
+Utils.isDineInType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN;
 };
 
 Utils.isDigitalType = () => {
