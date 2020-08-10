@@ -50,14 +50,13 @@ function getScrollToHeightInWindow(container, targetId) {
   return getScrollToHeight(container, targetId, categoryList);
 }
 
-function scrollToSmoothly({ direction, targetId, containerId, afterScroll }) {
-  const userAgentInfo = Utils.getUserAgentInfo();
+function scrollToSmoothly({ targetId, containerId, afterScroll }) {
   const el = document.getElementById(targetId);
   const container = document.getElementById(containerId);
   const windowSize = {
-    w: document.documentElement.clientWidth || document.body.clientWidth,
     h: document.documentElement.clientHeight || document.body.clientHeight,
   };
+
   if (
     !el ||
     document
@@ -67,78 +66,65 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll }) {
   ) {
     return;
   }
+
   const containerScrolledDistance = {
-    x: document.body.scrollLeft || document.documentElement.scrollLeft || window.pageXOffset,
     y: document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset,
-    w: document.body.clientWidth || window.innerWidth,
   };
 
   if (container) {
-    containerScrolledDistance.x = container.scrollLeft;
     containerScrolledDistance.y = container.scrollTop;
-    containerScrolledDistance.w = container.offsetWidth || container.clientWidth;
   }
 
   let topBarHeight = document.querySelector('.header')
     ? document.querySelector('.header').clientHeight
     : TOP_BAR_HEIGHT;
 
-  if (document.querySelector('.deliver-to-entry') && document.querySelector('.header')) {
-    topBarHeight =
-      document.querySelector('.deliver-to-entry').clientHeight + document.querySelector('.header').clientHeight;
+  if (document.querySelector('.deliver-to-entry')) {
+    topBarHeight += document.querySelector('.deliver-to-entry').clientHeight;
   }
 
   const otherDistance = {
-    x: 0,
     y: topBarHeight,
   };
+
   const elOffset = {
-    x: containerScrolledDistance.x + el.getBoundingClientRect().left,
     y: containerScrolledDistance.y + el.getBoundingClientRect().top,
-    w: el.offsetWidth || el.clientWidth,
   };
 
-  if (!userAgentInfo.browser.includes('Safari')) {
+  if (!Utils.isSafari) {
     let currentParent = el.offsetParent;
 
-    elOffset.x = el.offsetLeft;
     elOffset.y = el.offsetTop;
 
     while (currentParent !== null) {
-      elOffset.x += currentParent.offsetLeft;
       elOffset.y += currentParent.offsetTop;
       currentParent = currentParent.offsetParent;
     }
   }
 
-  let scrollPosition = elOffset[direction] - otherDistance[direction];
-
-  if (direction === 'x') {
-    scrollPosition = scrollPosition - (windowSize.w - elOffset.w) / 2;
-  }
-
-  let changeTotalDistance = scrollPosition - containerScrolledDistance[direction];
+  let scrollPosition = elOffset.y - otherDistance.y;
+  let changeTotalDistance = scrollPosition - containerScrolledDistance.y;
   const changeSign = Math.sign(changeTotalDistance);
-  let scrollSpeed = SCROLL_SPEED[direction];
+  let scrollSpeed = SCROLL_SPEED.y;
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 1.5) {
+  if (Math.abs(changeTotalDistance) > windowSize.h * 1.5) {
     scrollSpeed = SCROLL_SPEED['faster_y'];
   }
 
   let changeDistance = changeSign * scrollSpeed;
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5) {
+  if (Math.abs(changeTotalDistance) > windowSize.h * 5) {
     changeDistance = changeTotalDistance;
   }
 
   const _run = function() {
-    containerScrolledDistance[direction] = containerScrolledDistance[direction] + changeDistance;
+    containerScrolledDistance.y = containerScrolledDistance.y + changeDistance;
 
     if (
-      (changeDistance === -scrollSpeed && containerScrolledDistance[direction] < scrollPosition) ||
-      (changeDistance === scrollSpeed && containerScrolledDistance[direction] > scrollPosition)
+      (changeDistance === -scrollSpeed && containerScrolledDistance.y < scrollPosition) ||
+      (changeDistance === scrollSpeed && containerScrolledDistance.y > scrollPosition)
     ) {
-      containerScrolledDistance[direction] = scrollPosition;
+      containerScrolledDistance.y = scrollPosition;
     }
 
     /** Side menu shouldn't scroll when user taps on it
@@ -155,7 +141,8 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll }) {
         window.scrollTo(containerScrolledDistance.x, targetHeight);
       }
     }
-    if (containerScrolledDistance[direction] !== scrollPosition) {
+
+    if (containerScrolledDistance.y !== scrollPosition) {
       requestAnimationFrame(_run);
     } else if (typeof afterScroll === 'function') {
       afterScroll();
