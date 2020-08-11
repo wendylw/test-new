@@ -646,8 +646,18 @@ img {
     background-color: $status-red;
   }
 
-  &__text {
-    line-height: $line-height-base;
+  &.fixed {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: $z-index-base * 2;
+  }
+
+  &__close-icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    fill: $white;
   }
 }
 

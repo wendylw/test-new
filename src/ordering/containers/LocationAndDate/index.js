@@ -292,6 +292,7 @@ class LocationAndDate extends Component {
   setStore = async () => {
     await this.props.homeActions.loadCoreStores();
     const { allStore = [] } = this.props;
+    const { search } = this.state;
 
     this.checkOnlyType(allStore);
     if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
@@ -311,7 +312,7 @@ class LocationAndDate extends Component {
         );
         // window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${h}&type=${type}`;
       }
-    } else if (config.storeId) {
+    } else if (search.h && config.storeId) {
       let store = allStore.filter(item => item.id === config.storeId) || [];
       this.setState(
         {
@@ -492,8 +493,7 @@ class LocationAndDate extends Component {
   };
 
   showLocationSearch = () => {
-    const { history, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { history } = this.props;
     let { search } = window.location;
     search = search.replace(/type=[^&]*/, `type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`);
     search = search.replace(/&?storeid=[^&]*/, '');
@@ -579,7 +579,7 @@ class LocationAndDate extends Component {
             data-testid="deliverTo"
           >
             {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
-            <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">
+            <p className="location-date__input form__input flex flex-middle padding-top-bottom-normal text-size-big text-line-height-base text-omit__single-line">
               {deliveryToAddress || t('WhereToDeliverFood')}
             </p>
             {deliveryToAddress && <IconNext className="icon icon__normal flex__shrink-fixed" />}
@@ -962,9 +962,7 @@ class LocationAndDate extends Component {
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
-    // if (!enablePreOrder || !selectedDate.isOpen) return true;
-
-    if (!this.state.nearlyStore.id) return true;
+    if (!selectedDate.isOpen || !this.state.nearlyStore.id) return true;
 
     if (this.state.isDeliveryType) {
       if (deliveryToAddress && selectedDate.date && selectedHour.from) {

@@ -284,23 +284,6 @@ class PhoneLogin extends React.Component {
       <div className="phone-login padding-normal" data-heap-name="ordering.thank-you.phone-login.container">
         <label className="text-size-big">{this.getMessage() || ''}</label>
         {this.renderPhoneView()}
-
-        {/* <p className="terms-privacy text-center text-opacity">
-          <Trans i18nKey="TermsAndPrivacyDescription">
-            By tapping to continue, you agree to our
-            <br />
-            <BrowserRouter basename="/">
-              <Link className="text-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
-                Terms of Service
-              </Link>
-              , and{' '}
-              <Link className="text-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
-                Privacy Policy
-              </Link>
-              .
-            </BrowserRouter>
-          </Trans>
-        </p> */}
         <div
           className={`ordering-thanks__card-prompt-congratulation absolute-wrapper ${
             showCelebration && customerId ? 'active' : ''

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import LazyLoad from 'react-lazyload';
 import Item from '../../../components/Item';
 import Tag from '../../../components/Tag';
 import ItemOperator from '../../../components/ItemOperator';
@@ -14,7 +13,7 @@ import { getProductItemMinHeight } from '../../redux/modules/home';
 import './ProductItem.scss';
 
 export class ProductItem extends Component {
-  renderItem() {
+  render() {
     const {
       t,
       className,
@@ -31,10 +30,16 @@ export class ProductItem extends Component {
       showProductDetail,
       productDetailImageRef,
       isValidTimeToOrder,
+      isLazyLoad,
+      productItemMinHeight,
+      scrollContainer,
     } = this.props;
 
     return (
       <Item
+        scrollContainer={scrollContainer}
+        isLazyLoad={isLazyLoad}
+        productItemMinHeight={productItemMinHeight}
         className={className}
         productDetailImageRef={productDetailImageRef}
         image={image}
@@ -61,18 +66,6 @@ export class ProductItem extends Component {
       </Item>
     );
   }
-
-  render() {
-    const { isList, productItemMinHeight } = this.props;
-
-    return isList ? (
-      <LazyLoad offset={150} height={productItemMinHeight}>
-        {this.renderItem()}
-      </LazyLoad>
-    ) : (
-      this.renderItem()
-    );
-  }
 }
 
 ProductItem.propTypes = {
@@ -89,7 +82,7 @@ ProductItem.propTypes = {
   showProductDetail: PropTypes.func,
   productDetailImageRef: PropTypes.any,
   isValidTimeToOrder: PropTypes.bool,
-  isList: PropTypes.bool,
+  isLazyLoad: PropTypes.bool,
 };
 
 ProductItem.defaultProps = {
@@ -102,7 +95,7 @@ ProductItem.defaultProps = {
   cartQuantity: 0,
   decreaseDisabled: false,
   isValidTimeToOrder: true,
-  isList: true,
+  isLazyLoad: true,
   productItemMinHeight: 100,
   onDecrease: () => {},
   onIncrease: () => {},

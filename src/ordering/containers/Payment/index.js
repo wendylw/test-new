@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
@@ -137,11 +136,9 @@ class Payment extends Component {
       payments,
       unavailablePaymentList,
       cartSummary,
-      currentOrder,
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { orderId } = currentOrder || {};
     const { payNowLoading } = this.state;
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();

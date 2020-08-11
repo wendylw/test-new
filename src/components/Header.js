@@ -63,7 +63,6 @@ class Header extends Component {
       style,
       isStoreHome,
       title,
-      storeAddress,
       children,
       onClickHandler,
       deliveryFee,
@@ -109,31 +108,29 @@ class Header extends Component {
                 <h1 className="header__store-name padding-top-bottom-smaller text-size-big text-weight-bolder text-middle text-omit__single-line">
                   {title}
                 </h1>
-                {isValidTimeToOrder ? null : (
-                  <div className="tag__card-container text-middle">
-                    {enablePreOrder ? (
-                      <Tag
-                        text={t('PreOrder')}
-                        className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
-                      />
-                    ) : (
-                      <Tag
-                        text={t('Closed')}
-                        className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
-                      />
-                    )}
-                  </div>
+                {isValidTimeToOrder ? null : enablePreOrder ? (
+                  <Tag
+                    text={t('PreOrder')}
+                    className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
+                  />
+                ) : (
+                  <Tag
+                    text={t('Closed')}
+                    className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+                  />
                 )}
               </div>
-              {isDeliveryType ? (
+              {isDeliveryType || isPickUpType ? (
                 <ul className="store-info">
-                  <li className="store-info__item">
-                    <IconMotorcycle className="icon icon__smaller text-middle" />
-                    <CurrencyNumber
-                      className="store-info__text text-size-smaller text-middle"
-                      money={deliveryFee || 0}
-                    />
-                  </li>
+                  {isDeliveryType ? (
+                    <li className="store-info__item">
+                      <IconMotorcycle className="icon icon__smaller text-middle" />
+                      <CurrencyNumber
+                        className="store-info__text text-size-smaller text-middle"
+                        money={deliveryFee || 0}
+                      />
+                    </li>
+                  ) : null}
                   {enableCashback && cashbackRatePercentage ? (
                     <li className="store-info__item">
                       <IconWallet className="icon icon__smaller text-middle" />
@@ -144,14 +141,12 @@ class Header extends Component {
                   ) : null}
                 </ul>
               ) : null}
-              {isPickUpType ? (
-                <p className="header__store-address padding-top-bottom-smaller text-size-small text-opacity text-omit__multiple-line">
-                  {storeAddress}
-                </p>
-              ) : null}
             </div>
           ) : (
-            <h2 className="header__title text-size-big text-weight-bolder text-middle" data-testid="headerTitle">
+            <h2
+              className="header__title text-size-big text-weight-bolder text-middle text-middle text-omit__single-line"
+              data-testid="headerTitle"
+            >
               {title}
             </h2>
           )}

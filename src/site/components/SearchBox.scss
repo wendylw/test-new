@@ -1,7 +1,9 @@
+@import "../Variables.scss";
+
 .common-search {
   position: relative;
   padding-right: 3.8vw;
-  z-index: 100;
+  z-index: $z-index-base;
   width: 100%;
 }
 

@@ -10,7 +10,6 @@ let currentCategoryId = null;
 let isScrolling = null;
 
 const TOP_BAR_HEIGHT = 50;
-const CATEGORY_BAR_HEIGHT = 36;
 const SCROLL_SPEED = {
   x: 30,
   y: 80,
@@ -51,15 +50,13 @@ function getScrollToHeightInWindow(container, targetId) {
   return getScrollToHeight(container, targetId, categoryList);
 }
 
-function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVerticalMenu }) {
-  const userAgentInfo = Utils.getUserAgentInfo();
+function scrollToSmoothly({ targetId, containerId, afterScroll }) {
   const el = document.getElementById(targetId);
   const container = document.getElementById(containerId);
-  const isVerticalMenuProductList = isVerticalMenu && !containerId;
   const windowSize = {
-    w: document.documentElement.clientWidth || document.body.clientWidth,
     h: document.documentElement.clientHeight || document.body.clientHeight,
   };
+
   if (
     !el ||
     document
@@ -69,78 +66,65 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
   ) {
     return;
   }
+
   const containerScrolledDistance = {
-    x: document.body.scrollLeft || document.documentElement.scrollLeft || window.pageXOffset,
     y: document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset,
-    w: document.body.clientWidth || window.innerWidth,
   };
 
   if (container) {
-    containerScrolledDistance.x = container.scrollLeft;
     containerScrolledDistance.y = container.scrollTop;
-    containerScrolledDistance.w = container.offsetWidth || container.clientWidth;
   }
 
   let topBarHeight = document.querySelector('.header')
     ? document.querySelector('.header').clientHeight
     : TOP_BAR_HEIGHT;
 
-  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
-    topBarHeight =
-      document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
+  if (document.querySelector('.deliver-to-entry')) {
+    topBarHeight += document.querySelector('.deliver-to-entry').clientHeight;
   }
 
   const otherDistance = {
-    x: 0,
-    y: topBarHeight + (isVerticalMenuProductList ? 0 : CATEGORY_BAR_HEIGHT),
-  };
-  const elOffset = {
-    x: containerScrolledDistance.x + el.getBoundingClientRect().left,
-    y: containerScrolledDistance.y + el.getBoundingClientRect().top,
-    w: el.offsetWidth || el.clientWidth,
+    y: topBarHeight,
   };
 
-  if (!userAgentInfo.browser.includes('Safari')) {
+  const elOffset = {
+    y: containerScrolledDistance.y + el.getBoundingClientRect().top,
+  };
+
+  if (!Utils.isSafari) {
     let currentParent = el.offsetParent;
 
-    elOffset.x = el.offsetLeft;
     elOffset.y = el.offsetTop;
 
     while (currentParent !== null) {
-      elOffset.x += currentParent.offsetLeft;
       elOffset.y += currentParent.offsetTop;
       currentParent = currentParent.offsetParent;
     }
   }
 
-  let scrollPosition = elOffset[direction] - otherDistance[direction];
-
-  if (direction === 'x') {
-    scrollPosition = scrollPosition - (windowSize.w - elOffset.w) / 2;
-  }
-
-  let changeTotalDistance = scrollPosition - containerScrolledDistance[direction];
+  let scrollPosition = elOffset.y - otherDistance.y;
+  let changeTotalDistance = scrollPosition - containerScrolledDistance.y;
   const changeSign = Math.sign(changeTotalDistance);
-  let scrollSpeed = SCROLL_SPEED[direction];
+  let scrollSpeed = SCROLL_SPEED.y;
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 1.5) {
+  if (Math.abs(changeTotalDistance) > windowSize.h * 1.5) {
     scrollSpeed = SCROLL_SPEED['faster_y'];
   }
 
   let changeDistance = changeSign * scrollSpeed;
 
-  if (direction === 'y' && Math.abs(changeTotalDistance) > windowSize.h * 5) {
+  if (Math.abs(changeTotalDistance) > windowSize.h * 5) {
     changeDistance = changeTotalDistance;
   }
 
   const _run = function() {
-    containerScrolledDistance[direction] = containerScrolledDistance[direction] + changeDistance;
+    containerScrolledDistance.y = containerScrolledDistance.y + changeDistance;
 
     if (
-      (changeDistance === -scrollSpeed && containerScrolledDistance[direction] < scrollPosition) ||
-      (changeDistance === scrollSpeed && containerScrolledDistance[direction] > scrollPosition)
+      (changeDistance === -scrollSpeed && containerScrolledDistance.y < scrollPosition) ||
+      (changeDistance === scrollSpeed && containerScrolledDistance.y > scrollPosition)
     ) {
-      containerScrolledDistance[direction] = scrollPosition;
+      containerScrolledDistance.y = scrollPosition;
     }
 
     /** Side menu shouldn't scroll when user taps on it
@@ -157,7 +141,8 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
         window.scrollTo(containerScrolledDistance.x, targetHeight);
       }
     }
-    if (containerScrolledDistance[direction] !== scrollPosition) {
+
+    if (containerScrolledDistance.y !== scrollPosition) {
       requestAnimationFrame(_run);
     } else if (typeof afterScroll === 'function') {
       afterScroll();
@@ -167,37 +152,18 @@ function scrollToSmoothly({ direction, targetId, containerId, afterScroll, isVer
   _run();
 }
 
-export function getCurrentScrollId(isVerticalMenu) {
-  const htmlDocumentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-  const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-  const windowScrolledTop = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset;
+export function getCurrentScrollId() {
   const elObjList = Object.values(observableContainer);
-  let topBarHeight = document.querySelector('.header')
-    ? document.querySelector('.header').clientHeight
+  const topBarHeight = document.querySelector('.ordering-home__container')
+    ? document.querySelector('.ordering-home__container').getBoundingClientRect().top
     : TOP_BAR_HEIGHT;
 
-  if (document.querySelector('.location-page__entry') && document.querySelector('.header')) {
-    topBarHeight =
-      document.querySelector('.location-page__entry').clientHeight + document.querySelector('.header').clientHeight;
-  }
-  const [, elObj] =
-    elObjList
-      .map(elObj => [
-        Utils.elementPartialOffsetTop(
-          elObj,
-          topBarHeight + (isVerticalMenu ? 0 : CATEGORY_BAR_HEIGHT * 2),
-          windowScrolledTop
-        ),
-        elObj,
-      ])
-      .sort(([nextDistance], [distance]) => nextDistance - distance)
-      .find(([distance]) => distance > 0) || [];
-
-  if (!elObj) {
-    return null;
+  if (!elObjList.length) {
+    return;
   }
 
-  const currentObj = windowScrolledTop >= htmlDocumentHeight - windowHeight ? elObjList[elObjList.length - 1] : elObj;
+  const scrolledCategoryList = elObjList.filter(elObj => elObj.getBoundingClientRect().top - topBarHeight <= 0);
+  const currentObj = scrolledCategoryList.length ? scrolledCategoryList[scrolledCategoryList.length - 1] : elObjList[0];
 
   return currentObj.getAttribute('scrollid');
 }
@@ -260,33 +226,31 @@ export class ScrollObserver extends React.Component {
     if (currentCategoryId) {
       scrollid = currentCategoryId;
     } else {
-      scrollid = getCurrentScrollId(document.getElementsByClassName('category-nav__vertical').length);
+      scrollid = getCurrentScrollId();
     }
+
     if (!scrollid) {
       return;
     }
-    const { isVerticalMenu, containerId, targetIdPrefix } = this.props;
+    const { containerId, targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
-
     if (drivenToScroll) {
       return;
     }
-
     scrollToSmoothly({
-      direction: isVerticalMenu ? 'y' : 'x',
+      direction: 'y',
       targetId: `${targetIdPrefix}-${scrollid}`,
       containerId,
     });
-
     this.setState({ scrollid });
   };
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
+    document.getElementById('product-list').addEventListener('scroll', this.handleScroll);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    document.getElementById('product-list').removeEventListener('scroll', this.handleScroll);
   }
 
   handleRevertScrollEvent = () => {
@@ -320,12 +284,10 @@ ScrollObserver.protoTypes = {
   defaultScrollId: PropTypes.string,
   containerId: PropTypes.string,
   targetIdPrefix: PropTypes.string,
-  isVerticalMenu: PropTypes.bool,
 };
 
 ScrollObserver.defaultProps = {
   defaultScrollId: '',
   containerId: '',
   targetIdPrefix: '',
-  isVerticalMenu: false,
 };

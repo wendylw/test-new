@@ -1,0 +1,112 @@
+@import "../../../../../Variables.scss";
+
+.product-detail {
+  height: auto;
+
+  &__container {
+    bottom: 0;
+    max-height: 80%;
+  }
+
+  &__variations {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  &__variations,
+  &__operator {
+    width: 100%;
+  }
+
+  &__item .item-operator {
+    padding: 0 0.7vw;
+  }
+}
+
+.product-description {
+  &__hide {
+    display: none;
+  }
+
+  &__container {
+    bottom: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &__image-container {
+    position: relative;
+    height: 30%;
+    overflow: hidden;
+  }
+
+  &__icon-close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    fill: $white;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+  }
+
+  &__single-image {
+    height: 100%;
+  }
+
+  &__single-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  &__dot-list {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+
+  &__dot {
+    display: inline-block;
+    margin: 0 2px;
+    width: 8px;
+    height: 8px;
+    border: 1px solid $white;
+    background-color: transparent;
+    border-radius: 50%;
+
+    &.active {
+      background-color: $white;
+    }
+  }
+
+  &__info {
+    position: relative;
+    height: 20%;
+  }
+
+  &__info-summary {
+    height: 100%;
+  }
+
+  &__info-tag {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: inline-block;
+  }
+
+  &__article {
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 420px) {
+  .product-detail {
+    &__item,
+    &__item .item-operator {
+      padding: 0 4px;
+    }
+  }
+}

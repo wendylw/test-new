@@ -67,6 +67,7 @@ export class Footer extends Component {
       isLiveOnline,
       enablePreOrder,
       footerRef,
+      style,
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -74,7 +75,8 @@ export class Footer extends Component {
     return (
       <footer
         ref={footerRef}
-        className="footer padding-small flex flex-middle flex-space-between"
+        className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        style={style}
         data-heap-name="ordering.home.footer.container"
       >
         <button
@@ -147,6 +149,7 @@ Footer.propTypes = {
   onClickCart: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enablePreOrder: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 Footer.defaultProps = {

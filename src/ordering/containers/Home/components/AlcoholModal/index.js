@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import beepAlcoholImage from '../../../../../images/beep-alcohol-consent.png';
 import Modal from '../../../../../components/Modal';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
-import { BrowserRouter, Link } from 'react-router-dom';
-import Constants from '../../../../../utils/constants';
+import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
+import './AlcoholModal.scss';
 
 export class AlcoholModal extends PureComponent {
   state = {
@@ -22,27 +22,24 @@ export class AlcoholModal extends PureComponent {
 
   renderAskContent() {
     const { t, country = 'MY' } = this.props;
+
     return (
-      <Modal
-        show={true}
-        className="modal align-middle alcohol-modal"
-        data-heap-name="ordering.home.alcohol-modal.confirm-modal"
-      >
-        <Modal.Body className="modal__content text-center">
+      <Modal className="alcohol-modal" show={true} data-heap-name="ordering.home.alcohol-modal.confirm-modal">
+        <Modal.Body className="alcohol-modal__body text-center">
           <div className="alcohol-modal__image">
             <img src={beepAlcoholImage} alt="" />
           </div>
-          <div className="alcohol-modal__title">{t('CheckIfDrinkingAge')}</div>
-          <div className="alcohol-modal__content">
+          <h2 className="text-size-biggest text-weight-bolder text-line-height-base">{t('CheckIfDrinkingAge')}</h2>
+          <p className="margin-smaller text-line-height-base">
             {country === 'MY' && t('AlcoholLimitationsMY')}
             {country === 'PH' && t('AlcoholLimitationsPH')}
-          </div>
+          </p>
         </Modal.Body>
 
         <Modal.Footer>
-          <div className="alcohol-modal__buttons text-center">
+          <div className="flex flex-middle">
             <button
-              className="btn"
+              className="button button__outline button__block margin-smaller "
               data-testid="noIamNot"
               data-heap-name="ordering.home.alcohol-modal.reject"
               onClick={this.handleClick.bind(null, false)}
@@ -50,7 +47,7 @@ export class AlcoholModal extends PureComponent {
               {t('AlcoholNo')}
             </button>
             <button
-              className="btn active"
+              className="button button__fill button__block margin-smaller "
               data-testid="yesIam"
               data-heap-name="ordering.home.alcohol-modal.accept"
               onClick={this.handleClick.bind(null, true)}
@@ -58,32 +55,9 @@ export class AlcoholModal extends PureComponent {
               {t('AlcoholYes')}
             </button>
           </div>
-          <div className="alcohol-modal__policy">
-            <BrowserRouter basename="/">
-              <Trans i18nKey="TermsAndPrivacyDescription">
-                By tapping to continue, you agree to our
-                <br />
-                <Link
-                  className="text-weight-bolder link__non-underline"
-                  target="_blank"
-                  to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                  data-heap-name="ordering.home.alcohol-modal.terms"
-                >
-                  Terms of Service
-                </Link>
-                , and{' '}
-                <Link
-                  className="text-weight-bolder link__non-underline"
-                  target="_blank"
-                  to={Constants.ROUTER_PATHS.PRIVACY}
-                  data-heap-name="ordering.home.alcohol-modal.privacy-policy"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </Trans>
-            </BrowserRouter>
-          </div>
+          <p className="alcohol-modal__policy text-center margin-top-bottom-smaller text-line-height-base">
+            <TermsAndPrivacy buttonLinkClassName="alcohol-modal__button-link" />
+          </p>
         </Modal.Footer>
       </Modal>
     );
@@ -92,17 +66,15 @@ export class AlcoholModal extends PureComponent {
   renderNotLegalContent() {
     const { t } = this.props;
     return (
-      <Modal
-        show={true}
-        className="modal align-middle alcohol-modal"
-        data-heap-name="ordering.home.alcohol-modal.reject-modal"
-      >
-        <Modal.Body className="modal__content text-center">
+      <Modal show={true} className="alcohol-modal" data-heap-name="ordering.home.alcohol-modal.reject-modal">
+        <Modal.Body className="alcohol-modal__body text-center">
           <div className="alcohol-modal__image">
-            <img src={beepAlcoholImage} alt="" />
+            <img src={beepAlcoholImage} alt="Beep alcohol" />
           </div>
-          <div className="alcohol-modal__title">{t('AlcoholDenied')}</div>
-          <div className="alcohol-modal__content">{t('AlcoholNotAllowed')}</div>
+          <h2 className="text-size-biggest text-weight-bolder text-line-height-base">{t('AlcoholDenied')}</h2>
+          <p className="alcohol-modal__policy text-center padding-left-right-small margin-top-bottom-smaller text-line-height-base">
+            {t('AlcoholNotAllowed')}
+          </p>
         </Modal.Body>
       </Modal>
     );
@@ -110,6 +82,7 @@ export class AlcoholModal extends PureComponent {
 
   render() {
     const { confirmNotLegal } = this.state;
+
     if (confirmNotLegal) {
       return this.renderNotLegalContent();
     } else {

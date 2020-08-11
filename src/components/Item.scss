@@ -5,10 +5,6 @@
   background-color: $white;
   list-style: none;
 
-  &__content {
-    padding-bottom: 2.4vw * 2;
-  }
-
   &__image-container {
     position: relative;
     width: 18vw;
@@ -26,6 +22,7 @@
   }
 
   &__title {
+    max-height: 2.8em;
     line-clamp: 2;
     -webkit-line-clamp: 2;
   }
@@ -38,14 +35,6 @@
 
   &__amount {
     min-width: 24px;
-  }
-}
-
-@media (min-width: 420px) {
-  .item {
-    &__content {
-      padding-bottom: 8px * 2;
-    }
   }
 }
 

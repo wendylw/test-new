@@ -8,7 +8,7 @@ class CurrentCategoryBar extends PureComponent {
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { categories, isVerticalMenu, containerId } = this.props;
     const defaultId = categories[0] ? categories[0].id : '';
 
     return (
@@ -63,10 +63,8 @@ class CurrentCategoryBar extends PureComponent {
                         data-heap-name="ordering.home.category-item"
                         onClick={() =>
                           scrollToSmoothly({
-                            direction: 'y',
                             targetId: c.id,
-                            isVerticalMenu,
-                            categoryId: c.id,
+                            containerId,
                           })
                         }
                       >
@@ -86,6 +84,7 @@ class CurrentCategoryBar extends PureComponent {
 
 CurrentCategoryBar.propTypes = {
   isVerticalMenu: PropTypes.bool,
+  containerId: PropTypes.bool,
 };
 
 CurrentCategoryBar.defaultProps = {

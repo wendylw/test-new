@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { variationOnProductType } from '../../../../../utils/propTypes';
+import './VariationSelector.scss';
 
 export class VariationSelector extends Component {
   static propTypes = {
@@ -114,35 +115,36 @@ export class VariationSelector extends Component {
     }
 
     return (
-      <li className="product-detail__options" key={variation.id}>
-        <h4 className="product-detail__options-title text-opacity text-uppercase">{variation.name}</h4>
-        {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-          <span className={`product-detail__max-minimum-text text-error`}>{AmountLimitDescription}</span>
-        ) : null}
-        <ul className="tag__cards">
+      <li className="variation-selector margin-smallest" key={variation.id}>
+        <div className="padding-left-right-small">
+          <h4 className="text-size-big text-uppercase padding-top-bottom-smaller margin-left-right-smallest">
+            {variation.name}
+          </h4>
+          {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
+            <span className="margin-left-right-smallest text-error">{AmountLimitDescription}</span>
+          ) : null}
+        </div>
+        <ul className="variation-selector__list flex flex-top margin-top-bottom-smallest">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
-            const className = ['tag__card variation'];
-            const isDisabled = markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id]);
+            const className = [
+              'variation-selector__button button padding-top-bottom-small padding-left-right-normal margin-smallest',
+              selected[id] ? 'button__fill' : 'variation-selector__button-shadow',
+            ];
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
-            if (isDisabled) {
-              className.push('disabled');
-              selectedOptionFunc = () => {};
-            } else if (selected[id]) {
-              className.push('active');
-            }
-
             return (
-              <li
-                key={id}
-                className={className.join(' ')}
-                data-testid="itemDetailSimpleSelection"
-                data-heap-name="common.variation-selector.tag"
-                data-heap-tag-value={value}
-                onClick={selectedOptionFunc}
-              >
-                {value}
+              <li key={id} className="variation-selector__item margin-top-bottom-smallest margin-left-right-smaller">
+                <button
+                  className={className.join(' ')}
+                  data-testid="itemDetailSimpleSelection"
+                  data-heap-name="common.variation-selector.tag"
+                  data-heap-tag-value={value}
+                  disabled={markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id])}
+                  onClick={selectedOptionFunc}
+                >
+                  {value}
+                </button>
               </li>
             );
           })}

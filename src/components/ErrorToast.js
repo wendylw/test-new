@@ -18,8 +18,8 @@ class ErrorToast extends Component {
     const { className, message } = this.props;
 
     return (
-      <div className={`top-message error fixed${className ? ` ${className}` : ''}`}>
-        <div className="top-message__text">{message}</div>
+      <div className={`top-message error fixed padding-normal ${className ? ` ${className}` : ''}`}>
+        <div className="text-line-height-base">{message}</div>
       </div>
     );
   }

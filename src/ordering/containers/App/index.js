@@ -20,7 +20,6 @@ import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
-import config from '../../../config';
 import Utils from '../../../utils/utils';
 class App extends Component {
   state = {};

@@ -12,6 +12,7 @@ import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm'
 import Constants from '../../../../../utils/constants';
 import { withRouter } from 'react-router-dom';
 import config from '../../../../../config';
+import qs from 'qs';
 class CategoryProductList extends Component {
   prevCategory = null;
 
@@ -33,7 +34,9 @@ class CategoryProductList extends Component {
 
   handleIncreaseProductInCart = async product => {
     let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId) {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+
+    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
       const { search } = window.location;
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
@@ -104,37 +107,10 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { categories, style } = this.props;
+
     return (
-      <div id="product-list" className="category">
-        {/* <ScrollObserver
-          render={scrollid => {
-            const categoryList = categories || [];
-            const currentTarget = categoryList.find(category => category.id === scrollid) || categoryList[0];
-            let target = currentTarget;
-
-            if (!currentTarget || !isVerticalMenu) {
-              return null;
-            }
-
-            if (
-              document
-                .getElementById('root')
-                .getAttribute('class')
-                .includes('fixed')
-            ) {
-              target = this.prevCategory || {};
-            } else {
-              this.prevCategory = currentTarget;
-            }
-
-            return (
-              <h2 className="category__header fixed flex flex-middle flex-space-between" data-testid="categoryRight">
-                <label>{target.name || ''}</label>
-              </h2>
-            );
-          }}
-        /> */}
+      <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
@@ -142,9 +118,10 @@ class CategoryProductList extends Component {
                 <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
                   <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
-                <ul className="list">
+                <div className="list">
                   {(category.products || []).map(product => (
                     <ProductItem
+                      scrollContainer="#product-list"
                       key={product.id}
                       image={product.images[0]}
                       title={product.title}
@@ -160,7 +137,7 @@ class CategoryProductList extends Component {
                       data-heap-name="ordering.home.product-item"
                     />
                   ))}
-                </ul>
+                </div>
               </ScrollObservable>
             </li>
           ))}
@@ -174,6 +151,7 @@ CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
   isVerticalMenu: PropTypes.bool,
   isValidTimeToOrder: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 CategoryProductList.defaultProps = {

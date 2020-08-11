@@ -76,7 +76,7 @@ class CartList extends Component {
         variation={(variationTexts || []).join(', ')}
         price={displayPrice}
         cartQuantity={quantity}
-        isList={isList}
+        isLazyLoad={isList}
         soldOut={isCartItemSoldOut(cartItem)}
         decreaseDisabled={!Boolean(quantity)}
         onDecrease={async () => {

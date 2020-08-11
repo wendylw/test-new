@@ -30,24 +30,8 @@ import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 
-import {
-  toDayDateMonth,
-  toNumericTimeRange,
-  toLocaleDateString,
-  toLocaleTimeString,
-  formatPickupAddress,
-} from '../../../utils/datetime-lib';
+import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
-
-const TIME_OPTIONS = {
-  hour: 'numeric',
-  minute: 'numeric',
-};
-const DATE_OPTIONS = {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-};
 
 const ANIMATION_TIME = 3600;
 
