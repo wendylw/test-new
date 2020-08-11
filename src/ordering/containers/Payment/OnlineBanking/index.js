@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import qs from 'qs';
 import _find from 'lodash/find';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';

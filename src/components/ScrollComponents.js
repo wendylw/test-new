@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Utils from '../utils/utils';
 
 let observableContainer = {};
 let causeByNavClick = false;
@@ -10,10 +9,6 @@ let currentCategoryId = null;
 let isScrolling = null;
 
 const TOP_BAR_HEIGHT = 50;
-const SCROLL_SPEED = {
-  y: 80,
-  faster_y: 120,
-};
 
 /** calculate container's scrollTo height
  * 1.find all children within container
@@ -21,33 +16,33 @@ const SCROLL_SPEED = {
  * 3.this total height is what container need to scrollTo to show the targetElement.(so we don't need to worry about whatever other DOM is around container)
  */
 
-function getScrollToHeight(container, targetId, categoryList) {
-  if (!container || !targetId) return 0;
-  let targetHeight = 0;
-  let hasFoundTarget = false;
-  let liIndex = 0;
-  while (liIndex < categoryList.length && !hasFoundTarget) {
-    let el = categoryList[liIndex];
-    let rectInfo = el.getBoundingClientRect();
-    if (el.id === targetId) {
-      hasFoundTarget = true;
-    } else {
-      targetHeight += rectInfo.height;
-    }
-    liIndex++;
-  }
-  return targetHeight;
-}
+// function getScrollToHeight(container, targetId, categoryList) {
+//   if (!container || !targetId) return 0;
+//   let targetHeight = 0;
+//   let hasFoundTarget = false;
+//   let liIndex = 0;
+//   while (liIndex < categoryList.length && !hasFoundTarget) {
+//     let el = categoryList[liIndex];
+//     let rectInfo = el.getBoundingClientRect();
+//     if (el.id === targetId) {
+//       hasFoundTarget = true;
+//     } else {
+//       targetHeight += rectInfo.height;
+//     }
+//     liIndex++;
+//   }
+//   return targetHeight;
+// }
 
-function getScrollToHeightInContainer(container, targetId) {
-  let categoryList = container.querySelectorAll('li');
-  return getScrollToHeight(container, targetId, categoryList);
-}
+// function getScrollToHeightInContainer(container, targetId) {
+//   let categoryList = container.querySelectorAll('li');
+//   return getScrollToHeight(container, targetId, categoryList);
+// }
 
-function getScrollToHeightInWindow(container, targetId) {
-  let categoryList = container.childNodes;
-  return getScrollToHeight(container, targetId, categoryList);
-}
+// function getScrollToHeightInWindow(container, targetId) {
+//   let categoryList = container.childNodes;
+//   return getScrollToHeight(container, targetId, categoryList);
+// }
 
 function scrollToSmoothly({ targetId, containerId, afterScroll }) {
   const el = document.getElementById(targetId);
@@ -151,7 +146,7 @@ export class ScrollObserver extends React.Component {
     if (!scrollid) {
       return;
     }
-    const { containerId, targetIdPrefix } = this.props;
+    const { targetIdPrefix } = this.props;
     const { drivenToScroll } = this.state;
     if (drivenToScroll) {
       return;

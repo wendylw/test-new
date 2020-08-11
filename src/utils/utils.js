@@ -13,6 +13,7 @@ Utils.getQueryString = key => {
 
   return queries;
 };
+
 Utils.getQueryVariable = variable => {
   var query = window.location.search.substring(1);
   var vars = query.split('&');

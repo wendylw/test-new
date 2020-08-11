@@ -8,7 +8,7 @@ class CurrentCategoryBar extends PureComponent {
   };
 
   render() {
-    const { categories, isVerticalMenu, containerId } = this.props;
+    const { categories, isVerticalMenu } = this.props;
     const defaultId = categories[0] ? categories[0].id : '';
 
     return (

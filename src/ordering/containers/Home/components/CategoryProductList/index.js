@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import ProductItem from '../../../../components/ProductItem';
-import { ScrollObserver, ScrollObservable } from '../../../../../components/ScrollComponents';
+import { ScrollObservable } from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
