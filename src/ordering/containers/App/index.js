@@ -47,8 +47,8 @@ class App extends Component {
         countryCode: countryCode,
       },
       coords: {
-        lat: lat,
-        lng: lng,
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
       },
     };
     sessionStorage.setItem('deliveryAddress', JSON.stringify(addressInfo));
