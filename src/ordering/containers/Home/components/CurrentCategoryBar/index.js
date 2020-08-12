@@ -84,7 +84,6 @@ class CurrentCategoryBar extends PureComponent {
 
 CurrentCategoryBar.propTypes = {
   isVerticalMenu: PropTypes.bool,
-  containerId: PropTypes.bool,
 };
 
 CurrentCategoryBar.defaultProps = {
