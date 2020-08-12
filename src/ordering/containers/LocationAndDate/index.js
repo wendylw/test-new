@@ -297,11 +297,11 @@ class LocationAndDate extends Component {
     const currDate = getDateStringFromTime(new Date());
     const vacationList = vacations
       ? vacations.map(item => {
-          return {
-            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
-            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
-          };
-        })
+        return {
+          vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+          vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+        };
+      })
       : [];
     const validDaysArray = Array.from(validDays, v => v - 1);
 
@@ -712,9 +712,8 @@ class LocationAndDate extends Component {
           >
             {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
             <p
-              className={`location-date__input form__input flex flex-middle text-size-big text-line-height-base text-omit__single-line ${
-                !deliveryToAddress ? '' : 'padding-normal'
-              }`}
+              className={`location-date__input form__input flex flex-middle text-size-big text-line-height-base text-omit__single-line ${!deliveryToAddress ? '' : 'padding-normal'
+                }`}
             >
               {deliveryToAddress || t('WhereToDeliverFood')}
             </p>
@@ -784,11 +783,9 @@ class LocationAndDate extends Component {
             return (
               <li key={date}>
                 <button
-                  className={`location-date__button-date button ${
-                    isSelected ? 'button__fill' : 'button__outline'
-                  } padding-top-bottom-smaller padding-left-right-normal margin-left-right-small ${
-                    deliverableTime.isToday ? 'text-uppercase' : ''
-                  }`}
+                  className={`location-date__button-date button ${isSelected ? 'button__fill' : 'button__outline'
+                    } padding-top-bottom-smaller padding-left-right-normal margin-left-right-small ${deliverableTime.isToday ? 'text-uppercase' : ''
+                    }`}
                   disabled={deliverableTime.isOpen ? '' : 'disabled'}
                   data-testid="preOrderDate"
                   data-heap-name="ordering.location-and-date.date-item"
@@ -800,13 +797,13 @@ class LocationAndDate extends Component {
                   {deliverableTime.isToday ? (
                     t('Today')
                   ) : (
-                    <Fragment>
-                      <span className="location-date__date-weekday text-weight-bolder">
-                        {t(WEEK_DAYS_I18N_KEYS[weekday])}
-                      </span>
-                      <time className="text-size-big">{date}</time>
-                    </Fragment>
-                  )}
+                      <Fragment>
+                        <span className="location-date__date-weekday text-weight-bolder">
+                          {t(WEEK_DAYS_I18N_KEYS[weekday])}
+                        </span>
+                        <time className="text-size-big">{date}</time>
+                      </Fragment>
+                    )}
                 </button>
               </li>
             );
@@ -900,16 +897,17 @@ class LocationAndDate extends Component {
     return true;
   };
 
-  deleteNextDayItem = list => {
-    if (!list || !list.length) return [];
-
-    const { isPickUpType } = this.state;
+  deleteNextDayItem = (list, selectedDate) => {
+    if (!list.length) return [];
     const lastItem = list[list.length - 1];
-    const lastItemDateString = lastItem.from === 'now' ? undefined : getHourAndMinuteFromTime(lastItem.from);
 
-    if (isPickUpType && lastItem.from !== 'now' && lastItemDateString === '00:00') {
-      list.pop();
-    }
+    if (lastItem.from === 'now') return list;
+
+    const lastItemDateString = this.getDateFromTime(lastItem.from);
+    const selectDateString = this.getDateFromTime(selectedDate);
+
+    if (lastItemDateString !== selectDateString) list.pop();
+
     return list;
   };
 
@@ -919,8 +917,7 @@ class LocationAndDate extends Component {
     const { t, business, allBusinessInfo } = this.props;
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
-
-    timeList = this.deleteNextDayItem(timeList);
+    timeList = this.deleteNextDayItem(timeList, selectedDate.date);
     timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
@@ -933,9 +930,8 @@ class LocationAndDate extends Component {
         return this.isDisplayImmediate(disableOnDemandOrder, enablePreOrder) ? (
           <li className="location-date__hour-item" key="deliveryOnDemandOrder">
             <button
-              className={`location-date__button-hour button button__block text-center text-size-big ${
-                selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected text-weight-bolder' : ''
-              }`}
+              className={`location-date__button-hour button button__block text-center text-size-big ${selectedHour.from === PREORDER_IMMEDIATE_TAG.from ? 'selected text-weight-bolder' : ''
+                }`}
               data-testid="preOrderHour"
               data-heap-name="ordering.location-and-date.time-item"
               data-heap-is-immediate="yes"
@@ -978,9 +974,8 @@ class LocationAndDate extends Component {
         isShowList && (
           <li className="location-date__hour-item" key={`${from} - ${to}`}>
             <button
-              className={`location-date__button-hour button button__block text-center text-size-big ${
-                selectedHour.from === from ? 'selected text-weight-bolder' : ''
-              }`}
+              className={`location-date__button-hour button button__block text-center text-size-big ${selectedHour.from === from ? 'selected text-weight-bolder' : ''
+                }`}
               data-testid="preOrderHour"
               data-heap-name="ordering.location-and-date.time-item"
               data-heap-is-immediate="no"
@@ -1182,7 +1177,7 @@ class LocationAndDate extends Component {
         <ul
           ref={this.timeListRef}
           className="location-date__hour"
-          // style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
+        // style={{ maxHeight: `${windowHeight - footerHeight - 332}px` }}
         >
           {this.renderHoursList(timeList)}
         </ul>
@@ -1280,9 +1275,8 @@ class LocationAndDate extends Component {
         this.checkDetailChange(search);
       } else {
         // from ordering
-        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-          callbackUrl ? callbackUrl.split('?')[0] : ''
-        }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
+        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${callbackUrl ? callbackUrl.split('?')[0] : ''
+          }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
         // history.replace({
         //   pathname: callbackUrl.split('?')[0],
         //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
@@ -1306,9 +1300,8 @@ class LocationAndDate extends Component {
     if (search.storeid && search.storeid !== config.storeId) {
       let result = await this.props.homeActions.getStoreHashData(search.storeid);
       const h = result.response.redirectTo;
-      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-        Constants.ROUTER_PATHS.ORDERING_CART
-      }?h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_CART
+        }?h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`;
       // this.props.history.replace({
       //   pathname: Constants.ROUTER_PATHS.ORDERING_CART,
       //   search: `h=${h}&type=${this.state.isPickUpType ? 'pickup' : 'delivery'}`,
@@ -1326,9 +1319,8 @@ class LocationAndDate extends Component {
 
       this.props.history.replace({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${this.state.h}&type=${
-          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }`,
+        search: `h=${this.state.h}&type=${this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+          }`,
       });
       return;
     }
@@ -1336,9 +1328,8 @@ class LocationAndDate extends Component {
     if (type !== this.state.search.type.toLowerCase()) {
       this.props.history.replace({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${this.state.h}&type=${
-          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }`,
+        search: `h=${this.state.h}&type=${this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+          }`,
       });
       return;
     }
@@ -1373,16 +1364,14 @@ class LocationAndDate extends Component {
     if (search.storeid) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-        search: `${search.h ? 'h=' + h + '&' : ''}storeid=${search.storeid}&type=${
-          isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
+        search: `${search.h ? 'h=' + h + '&' : ''}storeid=${search.storeid}&type=${isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+          }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
       });
     } else {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-        search: `${h ? 'h=' + h + '&' : ''}storeid=${nearlyStore.id}&type=${
-          isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
+        search: `${h ? 'h=' + h + '&' : ''}storeid=${nearlyStore.id}&type=${isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
+          }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
       });
     }
   };
@@ -1454,18 +1443,16 @@ class LocationAndDate extends Component {
           {!onlyType && (
             <ul className="flex flex-middle padding-normal">
               <li
-                className={`location-date__delivery text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
-                  isDeliveryType ? 'active' : ''
-                }`}
+                className={`location-date__delivery text-center padding-small text-size-big text-line-height-base text-weight-bolder ${isDeliveryType ? 'active' : ''
+                  }`}
                 onClick={this.setDeliveryType}
                 data-heap-name="ordering.location-and-date.delivery"
               >
                 {t('Delivery')}
               </li>
               <li
-                className={`location-date__pickup text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
-                  isPickUpType ? 'active' : ''
-                }`}
+                className={`location-date__pickup text-center padding-small text-size-big text-line-height-base text-weight-bolder ${isPickUpType ? 'active' : ''
+                  }`}
                 onClick={this.setPickUpType}
                 data-heap-name="ordering.location-and-date.pickup"
               >
