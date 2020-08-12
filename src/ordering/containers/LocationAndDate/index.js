@@ -900,13 +900,27 @@ class LocationAndDate extends Component {
     return true;
   };
 
+  deleteNextDayItem = (list, selectedDate) => {
+    if (!list.length) return [];
+    const lastItem = list[list.length - 1];
+
+    if (lastItem.from === 'now') return list;
+
+    const lastItemDateString = this.getDateFromTime(lastItem.from);
+    const selectDateString = this.getDateFromTime(selectedDate);
+
+    if (lastItemDateString !== selectDateString) list.pop();
+
+    return list;
+  };
+
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
     const { t, business, allBusinessInfo } = this.props;
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
-
+    timeList = this.deleteNextDayItem(timeList, selectedDate.date);
     timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
