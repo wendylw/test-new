@@ -26,6 +26,7 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
+import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
@@ -366,6 +367,18 @@ export class ThankYou extends PureComponent {
         firstNote: t('RiderPickUp'),
         secondNote: t('TrackYourOrder'),
         bannerImage: beepOrderStatusPickedUp,
+      };
+    }
+
+    if (status === DELIVERED) {
+      currentStatusObj = {
+        status: 'delivered',
+        style: {
+          width: '100%',
+        },
+        firstNote: t('OrderDelivered'),
+        secondNote: t('OrderDeliveredDescription'),
+        bannerImage: beepOrderStatusDelivered,
       };
     }
 

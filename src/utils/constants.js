@@ -184,6 +184,7 @@ const CONSUMERFLOW_STATUS = {
   ACCEPTED: 'accepted',
   LOGISTIC_CONFIRMED: 'logisticsConfirmed',
   CONFIMRMED: 'confirmed',
+  DELIVERED: 'delivered',
   PICKUP: 'pickedUp',
   CANCELLED: 'cancelled',
 };
