@@ -203,22 +203,21 @@ export class ThankYou extends PureComponent {
   };
   renderPickupInfo() {
     const { t, order, businessInfo, cashbackInfo } = this.props;
-    const { tableId, pickUpId } = order || {};
+    const { pickUpId } = order || {};
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
-
-    if (tableId) {
-      return null;
-    }
+    const isPickUpType = Utils.isPickUpType();
 
     return (
       <div className="thanks-pickup">
-        <div className="thanks-pickup__id-container">
-          <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
-          <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
-            {pickUpId}
-          </span>
-        </div>
+        {isPickUpType && (
+          <div className="thanks-pickup__id-container">
+            <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
+            <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
+              {pickUpId}
+            </span>
+          </div>
+        )}
         {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
       </div>
     );
@@ -688,12 +687,14 @@ export class ThankYou extends PureComponent {
     );
   }
   render() {
-    const { t, history, match, order, storeHashCode } = this.props;
+    const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId } = order || {};
+    const { orderId, tableId, pickUpId } = order || {};
+    const { isWebview } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
+    const isDineInType = Utils.isDineInType();
     const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
@@ -721,16 +722,24 @@ export class ThankYou extends PureComponent {
         <React.Fragment>
           <Header
             className="border__bottom-divider gray flex-middle"
+            isPage={isWebview ? false : true}
             data-heap-name="ordering.thank-you.header"
-            isPage={true}
             title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
-            navFunc={() =>
-              // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-              history.replace({
-                pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                search: `?${options.join('&')}`,
-              })
-            }
+            navFunc={() => {
+              if (isWebview) {
+                if (window.androidInterface) {
+                  window.androidInterface.gotoHome();
+                } else if (window.webkit) {
+                  window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                }
+              } else {
+                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+                history.replace({
+                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                  search: `?${options.join('&')}`,
+                });
+              }
+            }}
           >
             {isTakeaway ? (
               <button
@@ -774,7 +783,7 @@ export class ThankYou extends PureComponent {
             <div className="thanks__info-container">
               {orderInfo}
               {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin hideMessage={isTakeaway} history={history} />
+              <PhoneLogin hideMessage={isTakeaway || isDineInType} history={history} />
             </div>
           </div>
         </React.Fragment>
