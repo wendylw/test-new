@@ -35,12 +35,16 @@ export class ProductItem extends Component {
       <div className="price item__text">
         {originalDisplayPrice ? (
           <CurrencyNumber
-            className="text-size-smaller text-error text-line-through"
+            className="text-size-smaller text-line-through"
             money={originalDisplayPrice}
             numberOnly={true}
           />
         ) : null}
-        <CurrencyNumber className="text-size-small" money={price || 0} numberOnly={true} />
+        <CurrencyNumber
+          className={`text-size-small ${originalDisplayPrice ? 'text-error' : ''}`}
+          money={price || 0}
+          numberOnly={true}
+        />
       </div>
     );
 
