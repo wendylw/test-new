@@ -8,7 +8,6 @@ import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import '../../../App.scss';
 import Utils from '../../../utils/utils';
-import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
@@ -80,9 +79,9 @@ class LocationPage extends Component {
       this.setState({ storeInfo });
     } catch (e) {
       console.error('fail to load storeInfo', e);
-      this.setState({
-        initError: t('FailToLoadStoreInfo'),
-      });
+      // this.setState({
+      //   initError: t('FailToLoadStoreInfo'),
+      // });
     } finally {
       this.setState({ initializing: false });
     }
@@ -90,10 +89,6 @@ class LocationPage extends Component {
 
   onSelectPlace = async placeInfo => {
     const { t, history } = this.props;
-    const {
-      storeInfo: { radius },
-    } = this.state;
-    const distance = placeInfo.straightDistance;
     const address = {
       location: {
         longitude: placeInfo.coords.lng,
@@ -126,6 +121,7 @@ class LocationPage extends Component {
     // }
 
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
+    Utils.setSessionVariable('deliveryAddressUpdate', true);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
       history.replace(callbackUrl);
@@ -165,7 +161,6 @@ class LocationPage extends Component {
   render() {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
@@ -180,11 +175,10 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
-            mode={config.storeId ? 'ORIGIN_STORE' : 'ORIGIN_DEVICE'}
+            mode={'ORIGIN_STORE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}
             country={storeInfo.country}
-            detectPosition={true}
             outRangeSearchText={this.state.outRange && outRangeSearchText}
             onSelect={this.onSelectPlace}
           />

@@ -19,7 +19,7 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
-import { getPaymentName } from '../utils';
+import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -36,21 +36,15 @@ class OnlineBanking extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { history, onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const { onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
-    const h = config.h();
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const queryString = `?h=${encodeURIComponent(h)}`;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !agentCode) {
       return null;
     }
 
-    const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}${
-      type ? '&type=' + type : ''
-    }`;
-    const webhookURL = `${config.storehubPaymentBackendResponseURL.replace('%business%', business)}${queryString}`;
+    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
 
     return {
       amount: currentOrder.total,
@@ -130,8 +124,7 @@ class OnlineBanking extends Component {
   }
 
   render() {
-    const { t, match, history, bankingList, cartSummary, onlineStoreInfo, currentOrder } = this.props;
-    const { orderId } = currentOrder || {};
+    const { t, match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const { agentCode, payNowLoading } = this.state;

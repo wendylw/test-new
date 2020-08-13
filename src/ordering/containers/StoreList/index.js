@@ -5,7 +5,6 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
-import img from '../../../images/beep-logo.svg';
 import checked from '../../../images/select.svg';
 
 import './storeList.scss';
@@ -16,22 +15,24 @@ import { IconLocation, IconMotorcycle } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
 import CurrencyNumber from '../../components/CurrencyNumber';
-
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
   <div
-    className="stores-list-item"
+    className={props.isClose ? 'stores-list-item close-mask' : 'stores-list-item'}
     onClick={() => props.select(props.store)}
-    data-heap-name="ordering.location-and-date.store-item"
+    data-heap-name="ordering.store-list.store-item"
   >
-    <p>{props.store.name}</p>
+    <p>
+      {props.store.name}
+      {props.isClose && <span className="store-list-close-tag">{props.t('Closed').toUpperCase()}</span>}
+    </p>
     <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
     {props.isDeliveryType && (
       <p>
         <IconLocation className="header__motor-icon text-middle" />
         <span className="stores-list-item-distance">{props.store.distance} km</span>
-        <IconMotorcycle className="header__motor-icon text-middle" />
-        <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} />
+        {/* <IconMotorcycle className="header__motor-icon text-middle" /> */}
+        {/* <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} /> */}
         {/* <span className="stores-list-item-fee">{props.store.deliveryFee}</span> */}
       </p>
     )}
@@ -41,12 +42,14 @@ const StoreListItem = props => (
     <p>{props.storeId === props.store.id && <img src={checked} alt="" />}</p>
   </div>
 );
+
 class StoreList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       storeid: config.storeId,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+      storeList: [],
     };
     this.state.storeid = this.state.search.storeid || config.storeId;
   }
@@ -65,10 +68,85 @@ class StoreList extends Component {
     await this.props.homeActions.loadCoreStores(
       this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
     );
+
+    this.getStoreList();
     // await this.props.appActions.fetchOnlineStoreInfo();
   }
 
+  getStoreList = () => {
+    let stores = [];
+    const { allStore } = this.props;
+    stores = allStore.filter(
+      item =>
+        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
+    );
+
+    stores.forEach(store => {
+      store.isClose = this.checkStoreIsClose(store);
+    });
+
+    this.setState({
+      storeList: stores,
+    });
+  };
+
+  checkStoreIsClose = store => {
+    const { qrOrderingSettings } = store;
+    const { enablePreOrder } = qrOrderingSettings;
+
+    return !(enablePreOrder || this.isValidTimeToOrder(qrOrderingSettings));
+  };
+
+  isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    const getDateStringFromTime = time => {
+      time = new Date(time);
+      return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
+    };
+    const getHourAndMinuteStringFromTime = time => {
+      time = new Date(time);
+      return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
+    };
+
+    const isVacation = (list, date) => {
+      let isVacationDay = false;
+
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
+          return true;
+        }
+      }
+      return isVacationDay;
+    };
+
+    const currTime = getHourAndMinuteStringFromTime(new Date());
+    const week = new Date().getDay();
+    const currDate = getDateStringFromTime(new Date());
+    const vacationList = vacations
+      ? vacations.map(item => {
+          return {
+            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+          };
+        })
+      : [];
+    const validDaysArray = Array.from(validDays, v => v - 1);
+
+    if (isVacation(vacationList, currDate)) return false;
+
+    if (!validDaysArray.includes(week)) return false;
+
+    if (currTime < validTimeFrom || currTime > validTimeTo) return false;
+
+    if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
+
+    return true;
+  };
+
   selectStore = store => {
+    if (store.isClose) return;
+
     this.setState(
       {
         storeid: store.id,
@@ -129,22 +207,9 @@ class StoreList extends Component {
     return `${openingHouersStringFrom} - ${openingHouersStringTo}`;
   };
 
-  isShowStore = store => {
-    const { qrOrderingSettings } = store;
-    if (!qrOrderingSettings) return true;
-    const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
-    if (disableOnDemandOrder && disableTodayPreOrder && !enablePreOrder) {
-      return false;
-    }
-    return true;
-  };
   render() {
-    let stores = [];
-    stores = this.props.allStore.filter(
-      item =>
-        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
-    );
-    // stores = stores.filter(item => this.isShowStore(item));
+    const { storeList } = this.state;
+
     return (
       (this.props.onlineStoreInfo && (
         <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
@@ -164,13 +229,13 @@ class StoreList extends Component {
               <p>{this.props.onlineStoreInfo.businessType}</p>
               <p>
                 {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
-                  ? `${stores.length} outlets near you`
-                  : `Total ${stores.length} outlets`}
+                  ? `${storeList.length} outlets near you`
+                  : `Total ${storeList.length} outlets`}
               </p>
             </div>
           </div>
           <div className="stores-list">
-            {stores.map(item => (
+            {storeList.map(item => (
               <StoreListItem
                 store={item}
                 openingHouers={this.getOpeningHouers(item)}
@@ -179,6 +244,7 @@ class StoreList extends Component {
                 key={item.id}
                 t={this.props.t}
                 isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+                isClose={item.isClose}
               />
             ))}
           </div>

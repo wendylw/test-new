@@ -281,8 +281,8 @@ class PhoneLogin extends React.Component {
 
     return (
       <div className="thanks__phone-view" data-heap-name="ordering.thank-you.phone-login.container">
-        <label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>
-        {this.renderPhoneView()}
+        {/*<label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>*/}
+        {/*{this.renderPhoneView()}*/}
 
         {/* <p className="terms-privacy text-center gray-font-opacity">
           <Trans i18nKey="TermsAndPrivacyDescription">

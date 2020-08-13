@@ -42,6 +42,9 @@ export const initialState = {
   popUpModal: {
     userConfirmed: false,
   },
+  timeSlot: {
+    timeSlotList: [],
+  },
   coreStore: {
     isFetching: false,
     storeList: [],
@@ -51,6 +54,9 @@ export const initialState = {
 
 export const types = HOME_TYPES;
 
+types.FETCH_TIMESLOT_REQUEST = 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST';
+types.FETCH_TIMESLOT_SUCCESS = 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS';
+types.FETCH_TIMESLOT_FAILURE = 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE';
 types.FETCH_CORESTORES_REQUEST = 'STORES/HOME/FETCH_CORESTORES_REQUEST';
 types.FETCH_CORESTORES_SUCCESS = 'STORES/HOME/FETCH_CORESTORES_SUCCESS';
 types.FETCH_CORESTORES_FAILURE = 'STORES/HOME/FETCH_CORESTORES_FAILURE';
@@ -175,6 +181,15 @@ export const actions = {
   userConfirmPreOrder: () => ({
     type: types.SET_PRE_ORDER_MODAL_CONFIRM,
   }),
+
+  getTimeSlot: (shippingType, fulfillDate, storeid) => dispatch => {
+    return dispatch({
+      [API_REQUEST]: {
+        types: [types.FETCH_TIMESLOT_REQUEST, types.FETCH_TIMESLOT_SUCCESS, types.FETCH_TIMESLOT_FAILURE],
+        ...Url.API_URLS.GET_TIME_SLOT(shippingType, fulfillDate, storeid),
+      },
+    });
+  },
 };
 
 export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
@@ -325,6 +340,24 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
   }
 };
 
+const timeSlot = (state = initialState.timeSlot, action) => {
+  switch (action.type) {
+    case types.FETCH_TIMESLOT_REQUEST:
+      return { ...state, isFetching: true };
+    case types.FETCH_TIMESLOT_SUCCESS:
+      const timeSlotList = action.response;
+      return {
+        ...state,
+        isFetching: false,
+        timeSlotList,
+      };
+    case types.FETCH_TIMESLOT_FAILURE:
+      return { ...state, isFetching: false };
+    default:
+      return state;
+  }
+};
+
 const coreStore = (state = initialState.coreStore, action) => {
   switch (action.type) {
     case types.FETCH_CORESTORES_REQUEST:
@@ -362,6 +395,7 @@ export default combineReducers({
   shoppingCart,
   onlineCategory,
   popUpModal,
+  timeSlot,
   coreStore,
 });
 
@@ -514,3 +548,5 @@ export const isVerticalMenuBusiness = state => {
 };
 
 export const getPopUpModal = state => state.home.popUpModal;
+
+export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
