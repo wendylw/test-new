@@ -19,19 +19,20 @@ const glob = require('glob');
 const buildRoot = path.resolve(__dirname, '../build');
 const destination = options.destination || path.basename(process.env.PUBLIC_URL || '');
 
-const getFilesHasSourceMap = () => new Promise((resolve, reject) => {
-  glob(path.join(buildRoot, '**/*.map'), null, (err, files) => {
-    if (err) {
-      return reject(err);
-    }
-    return resolve(
-      files.map(file => {
-        const sourceFile = file.replace(/\.map$/, '');
-        return path.resolve(buildRoot, sourceFile);
-      })
-    );
-  })
-});
+const getFilesHasSourceMap = () =>
+  new Promise((resolve, reject) => {
+    glob(path.join(buildRoot, '**/*.map'), null, (err, files) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(
+        files.map(file => {
+          const sourceFile = file.replace(/\.map$/, '');
+          return path.resolve(buildRoot, sourceFile);
+        })
+      );
+    });
+  });
 
 const buildSourceMap = async () => {
   const filesHasSourceMap = await getFilesHasSourceMap();
@@ -55,10 +56,11 @@ const buildSourceMap = async () => {
       sourceFile,
       sourceContent.replace(
         'sourceMappingURL=',
-        `sourceMappingURL=${path.join(serveSourcemapUrl, '/', destination, '/', routePath)}`
+        `sourceMappingURL=${serveSourcemapUrl}${path.join('/', destination, '/', routePath)}`
       ),
-      'utf8');
-  })
-}
+      'utf8'
+    );
+  });
+};
 
 buildSourceMap();

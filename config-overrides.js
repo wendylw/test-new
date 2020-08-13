@@ -1,5 +1,6 @@
 const { override, addWebpackPlugin } = require('customize-cra');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const path = require('path');
 
 const withCondition = (conditionFunc, overrideFunc) => config => {
   if (conditionFunc(config)) {
