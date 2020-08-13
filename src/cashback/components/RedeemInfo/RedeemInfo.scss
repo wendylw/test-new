@@ -1,6 +1,6 @@
 @import "../../../Variables";
 
-.full-aside {
+.redeem-info {
   position: fixed;
   top: 0;
   left: 0;
@@ -23,22 +23,6 @@
     img {
       max-width: 100%;
     }
-  }
-
-  &__content {
-    padding: 4vh 5vw;
-    margin: 50px 0;
-  }
-
-  &__title {
-    margin: 20px 0;
-    font-size: 1.4rem;
-    line-height: $line-height-base;
-  }
-
-  &.login {
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 200;
   }
 }
 

@@ -79,7 +79,7 @@ class Login extends React.Component {
     const { country } = onlineStoreInfo || {};
     const { country: businessCountry } = businessInfo || {};
     const { phone } = this.state;
-    const classList = ['loyalty-login'];
+    const classList = ['login'];
 
     if (className) {
       classList.push(className);

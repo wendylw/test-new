@@ -66,7 +66,7 @@
   }
 }
 
-// phone input style
+//phone input style
 .input,
 .phone-view .react-phone-number-input--focus .react-phone-number-input__input,
 .phone-view .react-phone-number-input .react-phone-number-input__input:focus,
@@ -75,43 +75,4 @@
   font-size: 14px;
   font-weight: 600;
   height: 40px;
-}
-
-.react-phone-number-input {
-  margin: 8px 0;
-
-  .react-phone-number-input__row {
-    border: 1px solid $gray-4;
-    border-radius: 4px;
-    padding: 0 12px;
-  }
-
-  .react-phone-number-input__input,
-  .react-phone-number-input__input:focus {
-    position: relative;
-    padding: 6px 12px;
-    line-height: 24px;
-    outline: none;
-    box-shadow: none;
-    -webkit-appearance: none;
-    resize: none;
-
-    border: 0;
-    text-align: center;
-    color: $main-color;
-  }
-
-  .react-phone-number-input__icon {
-    border: 0;
-  }
-
-  ~ .form__error-message {
-    margin-top: 0;
-    margin-left: 3.4em;
-    margin-right: 3.4em;
-  }
-}
-
-.react-phone-number-input {
-  margin: 0;
 }
