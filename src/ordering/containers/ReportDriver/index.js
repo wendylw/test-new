@@ -8,7 +8,7 @@ import { compose, bindActionCreators } from 'redux';
 import Constants from '../../../utils/constants';
 import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
-import uploadImage from '../../../images/upload-image.svg';
+import { IconInsertPhoto } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import Radio from '../../../components/Radio';
 import {
@@ -246,7 +246,7 @@ class ReportDriver extends Component {
               data-heap-name="ordering.report-driver.add-image"
             />
             <div className="ordering-report-driver__upload padding-normal border-radius-large">
-              <img alt="upload" src={uploadImage} />
+              <IconInsertPhoto className="icon icon__small" />
               <p className="text-size-small">{t('UploadFileHere')}</p>
             </div>
           </div>
