@@ -282,8 +282,8 @@ class PhoneLogin extends React.Component {
 
     return (
       <div className="phone-login padding-normal" data-heap-name="ordering.thank-you.phone-login.container">
-        <label className="text-size-big">{this.getMessage() || ''}</label>
-        {this.renderPhoneView()}
+        {/* <label className="text-size-big">{this.getMessage() || ''}</label> */}
+        {/* {this.renderPhoneView()} */}
         <div
           className={`ordering-thanks__card-prompt-congratulation absolute-wrapper ${
             showCelebration && customerId ? 'active' : ''

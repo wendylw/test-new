@@ -12,6 +12,7 @@ import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
+import CurrencyNumber from '../../components/CurrencyNumber';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
@@ -19,7 +20,9 @@ import './OrderingStores.scss';
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
   <li
-    className="flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider"
+    className={`flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider ${
+      props.isClose ? 'close-mask' : ''
+    }`}
     onClick={() => props.select(props.store)}
     data-heap-name="ordering.store-list.store-item"
   >
@@ -55,6 +58,7 @@ class StoreList extends Component {
     this.state = {
       storeid: config.storeId,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+      storeList: [],
     };
     this.state.storeid = this.state.search.storeid || config.storeId;
   }
@@ -73,10 +77,85 @@ class StoreList extends Component {
     await this.props.homeActions.loadCoreStores(
       this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
     );
+
+    this.getStoreList();
     // await this.props.appActions.fetchOnlineStoreInfo();
   }
 
+  getStoreList = () => {
+    let stores = [];
+    const { allStore } = this.props;
+    stores = allStore.filter(
+      item =>
+        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
+    );
+
+    stores.forEach(store => {
+      store.isClose = this.checkStoreIsClose(store);
+    });
+
+    this.setState({
+      storeList: stores,
+    });
+  };
+
+  checkStoreIsClose = store => {
+    const { qrOrderingSettings } = store;
+    const { enablePreOrder } = qrOrderingSettings;
+
+    return !(enablePreOrder || this.isValidTimeToOrder(qrOrderingSettings));
+  };
+
+  isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    const getDateStringFromTime = time => {
+      time = new Date(time);
+      return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
+    };
+    const getHourAndMinuteStringFromTime = time => {
+      time = new Date(time);
+      return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
+    };
+
+    const isVacation = (list, date) => {
+      let isVacationDay = false;
+
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
+          return true;
+        }
+      }
+      return isVacationDay;
+    };
+
+    const currTime = getHourAndMinuteStringFromTime(new Date());
+    const week = new Date().getDay();
+    const currDate = getDateStringFromTime(new Date());
+    const vacationList = vacations
+      ? vacations.map(item => {
+          return {
+            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+          };
+        })
+      : [];
+    const validDaysArray = Array.from(validDays, v => v - 1);
+
+    if (isVacation(vacationList, currDate)) return false;
+
+    if (!validDaysArray.includes(week)) return false;
+
+    if (currTime < validTimeFrom || currTime > validTimeTo) return false;
+
+    if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
+
+    return true;
+  };
+
   selectStore = store => {
+    if (store.isClose) return;
+
     this.setState(
       {
         storeid: store.id,
@@ -137,25 +216,10 @@ class StoreList extends Component {
     return `${openingHouersStringFrom} - ${openingHouersStringTo}`;
   };
 
-  isShowStore = store => {
-    const { qrOrderingSettings } = store;
-    if (!qrOrderingSettings) return true;
-    const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
-    if (disableOnDemandOrder && disableTodayPreOrder && !enablePreOrder) {
-      return false;
-    }
-    return true;
-  };
   render() {
-    let stores = [];
-    stores = this.props.allStore.filter(
-      item =>
-        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
-    );
-
     const { t, history, onlineStoreInfo } = this.props;
+    const { storeList } = this.state;
 
-    // stores = stores.filter(item => this.isShowStore(item));
     return (
       (onlineStoreInfo && (
         <section className="ordering-stores flex flex-column" data-heap-name="ordering.store-list.container">
@@ -182,13 +246,13 @@ class StoreList extends Component {
                 </p>
                 <p className="margin-top-bottom-smaller text-size-small">
                   {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
-                    ? `${stores.length} outlets near you`
-                    : `Total ${stores.length} outlets`}
+                    ? `${storeList.length} outlets near you`
+                    : `Total ${storeList.length} outlets`}
                 </p>
               </summary>
             </div>
             <ul className="">
-              {stores.map(item => (
+              {storeList.map(item => (
                 <StoreListItem
                   store={item}
                   openingHouers={this.getOpeningHouers(item)}
@@ -197,6 +261,7 @@ class StoreList extends Component {
                   key={item.id}
                   t={this.props.t}
                   isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+                  isClose={item.isClose}
                 />
               ))}
             </ul>

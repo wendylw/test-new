@@ -95,7 +95,7 @@ class Contact extends Component {
             onlineStoreLogo={onlineStoreLogo}
             storeName={storeName}
             currencySymbol={currencySymbol}
-            selectedVoucher={selectedVoucher}
+            selectedVoucher={selectedVoucher.unitPrice}
           />
           <div className="padding-normal">
             <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{t('SendGiftCardTo')}</h2>

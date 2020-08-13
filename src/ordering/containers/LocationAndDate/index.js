@@ -12,14 +12,18 @@ import { bindActionCreators, compose } from 'redux';
 import { getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { toNumericTime, addTime, isSameTime, padZero } from '../../../utils/datetime-lib';
-import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
+import {
+  actions as homeActionCreators,
+  getTimeSlotList,
+  getStoresList,
+  getStoreHashCode,
+} from '../../redux/modules/home';
+import config from '../../../config';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import qs from 'qs';
-import config from '../../../config';
 import './OrderingLocationDate.scss';
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
-
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
 // If time is 8:14, should return valid time as 8:30
@@ -70,12 +74,14 @@ class LocationAndDate extends Component {
     deliveryToAddress: '',
     selectedDate: {},
     selectedHour: {},
+    timeSlot: [],
     h: Utils.getQueryVariable('h'),
     isDeliveryType: false,
     isPickUpType: false,
     nearlyStore: { name: '' },
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
     onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
+    displayHourList: [],
   };
   deliveryHours = [];
   deliveryDates = [];
@@ -113,6 +119,7 @@ class LocationAndDate extends Component {
       {
         isDeliveryType: true,
         isPickUpType: false,
+        displayHourList: [],
       },
       async () => {
         if (this.state.nearlyStore.id) {
@@ -154,6 +161,7 @@ class LocationAndDate extends Component {
       {
         isPickUpType: true,
         isDeliveryType: false,
+        displayHourList: [],
       },
       () => {
         if (this.state.nearlyStore.id && ischeckStore) {
@@ -210,6 +218,7 @@ class LocationAndDate extends Component {
 
       this.setState({
         h: this.props.storeHash,
+        displayHourList: [],
       });
     }
   };
@@ -252,6 +261,60 @@ class LocationAndDate extends Component {
     return type;
   };
 
+  checkStoreIsClose = store => {
+    const { qrOrderingSettings } = store;
+    const { enablePreOrder } = qrOrderingSettings;
+
+    return !(enablePreOrder || this.isValidTimeToOrder(qrOrderingSettings));
+  };
+
+  isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    const getDateStringFromTime = time => {
+      time = new Date(time);
+      return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
+    };
+    const getHourAndMinuteStringFromTime = time => {
+      time = new Date(time);
+      return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
+    };
+
+    const isVacation = (list, date) => {
+      let isVacationDay = false;
+
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
+          return true;
+        }
+      }
+      return isVacationDay;
+    };
+
+    const currTime = getHourAndMinuteStringFromTime(new Date());
+    const week = new Date().getDay();
+    const currDate = getDateStringFromTime(new Date());
+    const vacationList = vacations
+      ? vacations.map(item => {
+          return {
+            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
+            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
+          };
+        })
+      : [];
+    const validDaysArray = Array.from(validDays, v => v - 1);
+
+    if (isVacation(vacationList, currDate)) return false;
+
+    if (!validDaysArray.includes(week)) return false;
+
+    if (currTime < validTimeFrom || currTime > validTimeTo) return false;
+
+    if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
+
+    return true;
+  };
+
   findNearyStore = async (stores, type) => {
     const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
 
@@ -265,9 +328,7 @@ class LocationAndDate extends Component {
     });
     stores = stores.filter(item => item.qrOrderingSettings && item.qrOrderingSettings.enableLiveOnline);
     stores = stores.filter(item => {
-      const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = item.qrOrderingSettings;
-
-      return enablePreOrder || Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+      return !this.checkStoreIsClose(item);
     });
     stores = stores.filter(item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1);
     let nearly;
@@ -295,7 +356,11 @@ class LocationAndDate extends Component {
     const { search } = this.state;
 
     this.checkOnlyType(allStore);
-    if (Utils.getSessionVariable('deliveryAddress') && this.state.search.type === DELIVERY_METHOD.DELIVERY) {
+    if (
+      Utils.getSessionVariable('deliveryAddress') &&
+      this.state.search.type === DELIVERY_METHOD.DELIVERY &&
+      (!search.h || Utils.getSessionVariable('deliveryAddressUpdate'))
+    ) {
       if (allStore.length) {
         let stores = allStore;
         let { type } = this.state.search;
@@ -304,6 +369,7 @@ class LocationAndDate extends Component {
           {
             h,
             nearlyStore: nearly,
+            displayHourList: [],
           },
           async () => {
             await this.props.appActions.loadCoreBusiness(nearly.id);
@@ -317,6 +383,7 @@ class LocationAndDate extends Component {
       this.setState(
         {
           nearlyStore: store[0] || {},
+          displayHourList: [],
         },
         async () => {
           await this.props.appActions.loadCoreBusiness(store[0].id);
@@ -430,19 +497,25 @@ class LocationAndDate extends Component {
     const firstItemFromTimeList = this.getFirstItemFromTimeList(initialSelectedTime.date);
 
     // if selectedDate is today, should auto select immediate
-    let { date: initDate } = initialSelectedTime;
-    initDate = Utils.getDateNumber(initDate.date);
-    let currentDate = Utils.getDateNumber(new Date());
-    if (initDate < currentDate) {
-      Utils.removeSessionVariable('expectedDeliveryDate');
-      Utils.removeSessionVariable('expectedDeliveryHour');
-      this.setMethodsTime();
-    }
+
+    this.setTimeSlot(initialSelectedTime.date, initialSelectedTime.hour || firstItemFromTimeList);
+
+    initialSelectedTime.date = this.updateDate(initialSelectedTime.date, this.deliveryDates);
     this.setState({
       selectedDate: initialSelectedTime.date,
       selectedHour: initialSelectedTime.hour || firstItemFromTimeList,
     });
     // this.deliveryDates = deliveryDates;
+  };
+
+  updateDate = (date, list) => {
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i];
+      if (item.date === date.date) {
+        return item;
+      }
+    }
+    return date;
   };
 
   setDeliveryDays = (validDays = []) => {
@@ -463,10 +536,12 @@ class LocationAndDate extends Component {
       if (!i) {
         // Today option is open when user visits delivery time page before store is closed
         const isBeforeStoreClose = isNoLaterThan(currentTime, createTimeWithTimeString(this.validTimeTo));
-        isOpen = validDays.includes(weekday) && isBeforeStoreClose;
+        isOpen = validDays.includes(weekday) && isBeforeStoreClose && this.notVacation({ date: deliveryDate });
+
         if (!isOpen) continue;
       } else {
         !enablePreOrder && (isOpen = false);
+        !this.notVacation({ date: deliveryDate }) && (isOpen = false);
       }
 
       if (useStorehubLogistics && this.state.isDeliveryType && storehubLogisticsBusinessHours[1] < this.validTimeTo) {
@@ -509,6 +584,7 @@ class LocationAndDate extends Component {
 
   handleBackClicked = () => {
     const { history } = this.props;
+    Utils.removeSessionVariable('deliveryAddressUpdate');
 
     if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
@@ -544,10 +620,56 @@ class LocationAndDate extends Component {
     }
     const selectedHour = this.getFirstItemFromTimeList(date);
 
+    this.setTimeSlot(date, selectedHour);
     this.setState({
       selectedDate: date,
-      selectedHour,
+      selectedHour: selectedHour,
+      displayHourList: [],
     });
+  };
+
+  setTimeSlot = async (date, selectedHour) => {
+    if (this.state.nearlyStore.id) {
+      await this.props.homeActions.getTimeSlot(
+        this.state.isDeliveryType ? Constants.DELIVERY_METHOD.DELIVERY : Constants.DELIVERY_METHOD.PICKUP,
+        this.getFulfillDate(date, selectedHour),
+        this.state.nearlyStore.id
+      );
+      const { timeSlotList, allBusinessInfo, business } = this.props;
+      const { stores } = allBusinessInfo[business];
+      const { qrOrderingSettings } = stores[0] || {};
+      const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = qrOrderingSettings || {};
+
+      // timeSlotStartDate: { type: GraphQLString },
+      // count: { type: GraphQLInt },
+      if (!enablePerTimeSlotLimitForPreOrder) return;
+
+      const list = [];
+
+      timeSlotList.forEach(item => {
+        if (item.count >= maxPreOrdersPerTimeSlot) {
+          let { timeSlotStartDate } = item || {};
+          timeSlotStartDate = new Date(timeSlotStartDate);
+          let hour, minute;
+          hour = timeSlotStartDate.getHours();
+          minute = timeSlotStartDate.getMinutes();
+          hour = hour < 10 ? '0' + hour : hour;
+          minute = minute < 10 ? '0' + minute : minute;
+          list.push(`${hour}:${minute}`);
+        }
+      });
+      this.setState({
+        timeSlot: list,
+      });
+    }
+  };
+
+  getFulfillDate = (date, hour) => {
+    date = date.date;
+    let fufillDate = new Date(date);
+
+    // fufillDate.setHours(hours, min); // TODO need switch to marchat local time
+    return fufillDate.toISOString();
   };
 
   handleSelectHour = hour => {
@@ -607,6 +729,28 @@ class LocationAndDate extends Component {
     }
   };
 
+  notVacation = day => {
+    const { t, business, allBusinessInfo = {} } = this.props;
+    const businessInfo = allBusinessInfo[business] || {};
+    const { vacations } = businessInfo.qrOrderingSettings;
+    if (!vacations) return true;
+    day = new Date(day.date);
+    const y = day.getFullYear();
+    const m = day.getMonth() + 1;
+    const d = day.getDate();
+
+    day = +`${y}${m < 10 ? '0' + m : m}${d < 10 ? '0' + d : d}`;
+    for (let i = 0; i < vacations.length; i++) {
+      let item = vacations[i];
+      let { vacationTimeFrom, vacationTimeTo } = item;
+      vacationTimeFrom = +vacationTimeFrom.split('/').join('');
+      vacationTimeTo = +vacationTimeTo.split('/').join('');
+      if (day >= vacationTimeFrom && day <= vacationTimeTo) {
+        return false;
+      }
+    }
+    return true;
+  };
   renderDeliveryOn = () => {
     const { selectedDate } = this.state;
     const { t } = this.props;
@@ -658,19 +802,93 @@ class LocationAndDate extends Component {
     );
   };
 
+  patchTimeList = (list, breakTimeFrom, breakTimeTo) => {
+    let breakStartIndex, breakEndIndex;
+
+    if (list.length) {
+      let sList = [];
+      if (list[0].from === 'now') {
+        sList = sList.concat(list.slice(0, 1));
+        list.splice(0, 1);
+      }
+      if (list.length) {
+        let timeFrom = getHourAndMinuteFromTime(new Date(list[0].from));
+        let timeTo = getHourAndMinuteFromTime(new Date(list[list.length - 1].to || list[list.length - 1].from));
+        if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
+          return [...sList];
+        }
+
+        list.forEach((time, index, arr) => {
+          const { from, to } = time;
+          let timeFrom = getHourAndMinuteFromTime(new Date(from));
+          let timeTo = getHourAndMinuteFromTime(new Date(to || from));
+
+          if (timeFrom === breakTimeFrom) breakStartIndex = index;
+          if (timeTo === breakTimeTo) breakEndIndex = index;
+        });
+        if (breakStartIndex !== undefined || breakEndIndex !== undefined) {
+          breakStartIndex = breakStartIndex === undefined ? 0 : breakStartIndex;
+          breakEndIndex = breakEndIndex === undefined ? list.length - 1 : breakEndIndex;
+          list.splice(breakStartIndex, breakEndIndex - breakStartIndex + 1);
+        }
+      }
+      list = [...sList, ...list];
+    }
+    return list;
+  };
+
+  patchBreakTime = list => {
+    const { t, business, allBusinessInfo = {} } = this.props;
+    const businessInfo = allBusinessInfo[business] || {};
+    let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
+    if (!breakTimeFrom || !breakTimeTo) return list;
+    list = JSON.parse(JSON.stringify(list));
+    const zero = num => (num < 10 ? '0' + num : num + '');
+    if (list[0].from === 'now') {
+      let curr = getHourAndMinuteFromTime(new Date());
+      // let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
+      // let pickUpEnd = min >= 60 ? zero(+curr.split(':')[0] + 1) + ':' + (min % 60) : curr.split(':')[0] + ':' + min;
+      // let currEnd = this.state.isPickUpType ? pickUpEnd : zero(+curr.split(':')[0] + 2) + ':00';
+      // if ((curr >= breakTimeFrom && curr < breakTimeTo) || (currEnd > breakTimeFrom && currEnd <= breakTimeTo)) {
+      //   list.shift();
+      // }
+      if (curr >= breakTimeFrom && curr <= breakTimeTo) {
+        list.shift();
+      }
+      return this.patchTimeList(list, breakTimeFrom, breakTimeTo);
+    } else {
+      return this.patchTimeList(list, breakTimeFrom, breakTimeTo);
+    }
+  };
+
   isDisplayImmediate = (disableOnDemandOrder, enablePreOrder) => {
     return !enablePreOrder || !disableOnDemandOrder;
+  };
+
+  collectHourList = item => {
+    let timeString = item.from === 'now' ? 'now' : getHourAndMinuteFromTime(item.from);
+    if (!this.state.displayHourList.includes(timeString)) {
+      this.state.displayHourList.push(timeString);
+      // this.setState({
+      //   displayHourList: this.state.displayHourList,
+      // });
+    }
+    return true;
   };
 
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
     const { t, business, allBusinessInfo } = this.props;
-    const { selectedHour = {} } = this.state;
+    const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
 
+    timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
+    const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
+
+    timeList = dateList.includes(this.getDateFromTime(selectedDate.date)) && selectedDate.isOpen ? timeList : [];
 
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
@@ -687,7 +905,7 @@ class LocationAndDate extends Component {
                 this.handleSelectHour({ ...item });
               }}
             >
-              {t('Immediate')}
+              {this.collectHourList(item, disableOnDemandOrder, enablePreOrder) && t('Immediate')}
             </button>
           </li>
         ) : null;
@@ -716,6 +934,7 @@ class LocationAndDate extends Component {
       } else {
         isShowList = false;
       }
+      const isSoldOut = this.state.isDeliveryType ? this.isTimeSlot(from) : false;
 
       return (
         isShowList && (
@@ -726,16 +945,32 @@ class LocationAndDate extends Component {
               }`}
               data-testid="preOrderHour"
               data-heap-name="ordering.location-and-date.time-item"
+              data-heap-is-immediate="no"
               onClick={() => {
-                this.handleSelectHour({ from, to });
+                !isSoldOut && this.handleSelectHour({ from, to });
               }}
             >
-              {timeToDisplay}
+              {this.collectHourList(item) && timeToDisplay}
+              {isSoldOut && <span className="text-uppercase"> {`(${this.props.t('SoldOut')})`}</span>}
             </button>
           </li>
         )
       );
     });
+  };
+
+  isTimeSlot = from => {
+    const timeString = from.split(' ')[0];
+    let { hour, minute } = Utils.getHourAndMinuteFromString(timeString);
+
+    hour = +hour;
+    if (from.split(' ')[1] === 'PM') {
+      hour += 12;
+    }
+
+    const time = `${hour}:${minute}`;
+
+    return this.state.timeSlot.includes(from);
   };
 
   getValidStartingTimeString = (baseTimeString = this.validTimeFrom) => {
@@ -958,9 +1193,17 @@ class LocationAndDate extends Component {
   checkIfCanContinue = () => {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
-    const { selectedHour = {} } = this.state;
+    const { selectedHour = {}, displayHourList, timeSlot, isDeliveryType } = this.state;
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (!displayHourList.includes(selectedHour.from) || (isDeliveryType && timeSlot.includes(selectedHour.from))) {
+      return true;
+    }
+
+    const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
+
+    if (!dateList.includes(this.getDateFromTime(selectedDate.date))) return true;
 
     if (!selectedDate.isOpen || !this.state.nearlyStore.id) return true;
 
@@ -978,6 +1221,13 @@ class LocationAndDate extends Component {
     return true;
   };
 
+  getDateFromTime = date => {
+    let currDate = new Date(date);
+    const zero = num => (num < 10 ? '0' + num : num + '');
+
+    return `${currDate.getFullYear()}${zero(currDate.getMonth() + 1)}${zero(currDate.getDate())}`;
+  };
+
   goToNext = () => {
     const { history } = this.props;
     const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
@@ -988,6 +1238,7 @@ class LocationAndDate extends Component {
       date: selectedDate,
       hour: selectedHour,
     });
+    Utils.removeSessionVariable('deliveryAddressUpdate');
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
@@ -1185,7 +1436,9 @@ export default compose(
       allBusinessInfo: getAllBusinesses(state),
       allStore: getStoresList(state),
       storeHash: getStoreHashCode(state),
+      timeSlotList: getTimeSlotList(state),
     }),
+
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),

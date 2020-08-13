@@ -188,13 +188,9 @@ export class ThankYou extends PureComponent {
 
   renderPickupInfo() {
     const { t, order, businessInfo, cashbackInfo } = this.props;
-    const { tableId, pickUpId } = order || {};
+    const { pickUpId } = order || {};
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
-
-    if (tableId) {
-      return null;
-    }
 
     return (
       <React.Fragment>
@@ -606,12 +602,14 @@ export class ThankYou extends PureComponent {
     );
   }
   render() {
-    const { t, history, match, order, storeHashCode } = this.props;
+    const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId } = order || {};
+    const { orderId, tableId, pickUpId } = order || {};
+    const { isWebview } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
+    const isDineInType = Utils.isDineInType();
     const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
@@ -637,17 +635,25 @@ export class ThankYou extends PureComponent {
         <React.Fragment>
           <Header
             className="flex-middle border__bottom-divider"
+            isPage={!isWebview}
             contentClassName="flex-middle"
             data-heap-name="ordering.thank-you.header"
-            isPage={true}
             title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
-            navFunc={() =>
-              // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-              history.replace({
-                pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                search: `?${options.join('&')}`,
-              })
-            }
+            navFunc={() => {
+              if (isWebview) {
+                if (window.androidInterface) {
+                  window.androidInterface.gotoHome();
+                } else if (window.webkit) {
+                  window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                }
+              } else {
+                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+                history.replace({
+                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                  search: `?${options.join('&')}`,
+                });
+              }
+            }}
           >
             {!isTakeaway ? (
               <button
@@ -687,7 +693,7 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
-            {isDeliveryType ? null : this.renderPickupInfo()}
+            {isPickUpType ? this.renderPickupInfo() : null}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
             <div className="padding-top-bottom-small margin-normal">
@@ -696,7 +702,7 @@ export class ThankYou extends PureComponent {
               <div className="card">
                 {orderInfo}
                 {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-                <PhoneLogin hideMessage={isTakeaway} history={history} />
+                <PhoneLogin hideMessage={isTakeaway || isDineInType} history={history} />
               </div>
             </div>
           </div>

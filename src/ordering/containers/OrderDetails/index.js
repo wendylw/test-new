@@ -49,7 +49,7 @@ export class OrderDetails extends Component {
                 <div className="ordering-details__item-content padding-small">
                   <span className="ordering-details__item-title text-opacity">{title}</span>
                   <p>
-                    {variationTexts[0] ? (
+                    {variationTexts && variationTexts[0] ? (
                       <span className="ordering-details__item-variations">{variationTexts.join(', ')}</span>
                     ) : null}
                   </p>
@@ -94,8 +94,8 @@ export class OrderDetails extends Component {
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
+          isPage={true}
           data-heap-name="ordering.order-detail.header"
-          isPage={false}
           title={t('OrderDetails')}
           navFunc={() =>
             history.replace({

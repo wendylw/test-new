@@ -1,0 +1,523 @@
+@import "~normalize.css/normalize.css";
+@import "../Common.scss";
+
+.container {
+  position: relative;
+  margin: auto;
+  min-height: 100%;
+}
+
+.voucher-ordering {
+  padding-top: 50px;
+}
+
+.footer-operation {
+  position: fixed;
+  padding: 3.8vw;
+  left: 0;
+  bottom: 0;
+  z-index: 200;
+  width: 100%;
+  background-color: $dark;
+
+  .button {
+    @extend .border-radius-base;
+  }
+}
+
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  width: 100%;
+  background-color: $white;
+  padding: 10px;
+  height: 50px;
+  .header__back-button {
+    fill: #909090;
+  }
+}
+
+.gift-card {
+  &__page {
+    padding: 24px 16px;
+    padding-bottom: 30vw;
+  }
+
+  &__header {
+    font-size: 1.8rem;
+    padding-bottom: 24px;
+  }
+
+  &__subtitle {
+    font-size: 1.8rem;
+    font-weight: $font-weight-bolder;
+    margin-bottom: 24px;
+  }
+
+  &__card {
+    margin-bottom: 30px;
+  }
+
+  &__card-container {
+    width: 100%;
+  }
+
+  &__store {
+    margin: 0 auto;
+    position: relative;
+    height: 171px;
+    width: 300px;
+    background-image: url("../../src/images/gift-card.png");
+    position: relative;
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &-item {
+      position: absolute;
+    }
+
+    &-logo {
+      top: 15px;
+      left: 25px;
+      img {
+        height: 40px;
+      }
+    }
+
+    &-amount {
+      bottom: 20px;
+      left: 25px;
+      font-size: 1.8rem;
+      color: $white;
+      font-weight: $font-weight-bold;
+    }
+
+    &-name {
+      right: 25px;
+      bottom: 20px;
+      font-size: $font-size-base;
+      color: $white;
+      text-transform: uppercase;
+      width: 160px;
+      text-align: right;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  &__caption {
+    margin: 12px auto;
+    font-size: 1.1rem;
+    font-weight: $font-weight-bold;
+    color: $gray-1;
+    line-height: $line-height-base;
+
+    a {
+      display: inline-block;
+      font-size: inherit;
+      text-decoration: none;
+      color: #358ee9;
+      font-weight: $font-weight-bolder;
+    }
+  }
+
+  &__amount {
+    &-title {
+      font-weight: $font-weight-bolder;
+      text-align: center;
+      font-size: 1.2rem;
+      line-height: $line-height-base;
+    }
+
+    &-items {
+      margin-top: 32px;
+      margin-bottom: 48px;
+    }
+
+    &-item {
+      height: 56px;
+      width: 80px;
+      border: 1px solid #dededf;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      border-radius: 4px;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      &.selected {
+        color: $white;
+        background-color: $theme-color;
+        border: 1px solid $theme-color;
+      }
+    }
+
+    &-number {
+      font-size: 1.2rem;
+    }
+  }
+
+  &__email {
+    font-size: 1.2rem;
+
+    &-title {
+      font-weight: $font-weight-bolder;
+      font-size: inherit;
+      margin-bottom: 10px;
+    }
+
+    &-note {
+      color: $gray-1;
+      font-size: inherit;
+      line-height: $line-height-base;
+    }
+
+    &-input {
+      height: 56px;
+      padding: 4px 16px;
+      margin-top: 16px;
+      font-size: inherit;
+      font-weight: $font-weight-bolder;
+    }
+
+    &-input.input__error {
+      border-color: $red;
+    }
+
+    .input__error-message {
+      margin-top: 5px;
+      font-weight: $font-weight-bolder;
+    }
+  }
+}
+
+.gift-voucher-notes {
+  color: $gray-1;
+
+  &__note {
+    h2 {
+      font-weight: $font-weight-bold;
+      font-size: 1.2rem;
+    }
+
+    ul {
+      list-style: disc;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      margin-left: 30px;
+    }
+
+    li {
+      line-height: $line-height-base;
+    }
+  }
+}
+
+.thankyou-page {
+  background-color: $gray-4;
+
+  &__title {
+    font-size: 2.4rem;
+    text-align: center;
+    color: $gray-1;
+    padding-bottom: 1vh;
+    padding-top: 5vh;
+    font-weight: $font-weight-light;
+  }
+
+  &__gifCard {
+    text-align: center;
+    img {
+      width: 160px;
+      height: 160px;
+    }
+    margin: 15px 0;
+  }
+
+  &__contact-info {
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: $line-height-base;
+    .contact-info__email {
+      font-size: inherit;
+      font-weight: $font-weight-bolder;
+    }
+  }
+
+  &__order-info {
+    background-color: white;
+    border: 1px solid $gray-3;
+    margin: 15px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.1);
+
+    .voucher-code__container {
+      text-align: center;
+      padding: 20px 0px;
+      border-bottom: 1px solid $gray-3;
+    }
+
+    .voucher-code__title {
+      font-weight: $font-weight-bolder;
+      font-size: 1.2rem;
+    }
+
+    .voucher-code__content {
+      font-size: 1.8rem;
+      font-weight: $font-weight-bolder;
+      color: $gray-1;
+      padding-top: 10px;
+    }
+
+    .store-info__container {
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .store-info__logo {
+      img {
+        height: 80px;
+      }
+      margin-bottom: 15px;
+    }
+
+    .store-info__site {
+      a {
+        text-decoration: none;
+        font-weight: $font-weight-bolder;
+        color: $link-blue;
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .gift-voucher-notes {
+    padding: 15px;
+  }
+}
+
+.sorry-page {
+  position: absolute;
+  height: 100%;
+  background-color: $gray-4;
+  &__title {
+    font-size: 2.4rem;
+    text-align: center;
+    color: $gray-1;
+    padding-bottom: 3vh;
+    padding-top: 5vh;
+    font-weight: $font-weight-light;
+  }
+  &__image {
+    text-align: center;
+    margin: 30px 0;
+    img {
+      height: 150px;
+    }
+  }
+  &__content {
+    text-align: center;
+    font-size: 1.1em;
+    line-height: $line-height-base;
+    color: $gray-0;
+  }
+
+  footer {
+    background-color: transparent;
+  }
+}
+
+@-webkit-keyframes load6 {
+  0% {
+    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+  }
+  5%,
+  95% {
+    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+  }
+  10%,
+  59% {
+    box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em,
+      -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
+  }
+  20% {
+    box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em,
+      -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
+  }
+  38% {
+    box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em,
+      -0.82em -0.09em 0 -0.477em;
+  }
+  100% {
+    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+  }
+}
+
+@keyframes load6 {
+  0% {
+    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+  }
+  5%,
+  95% {
+    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+  }
+  10%,
+  59% {
+    box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em,
+      -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
+  }
+  20% {
+    box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em,
+      -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
+  }
+  38% {
+    box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em,
+      -0.82em -0.09em 0 -0.477em;
+  }
+  100% {
+    box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+  }
+}
+
+@-webkit-keyframes round {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes round {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.loader {
+  color: $gray-5;
+  font-size: 16px;
+  text-indent: -9999em;
+  overflow: hidden;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+  animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+
+  &.theme {
+    color: $theme-color;
+  }
+
+  &.page-loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-size: 40px;
+    z-index: 300;
+  }
+}
+
+.prompt-page {
+  padding: 10vh 0;
+  background-color: white;
+  width: 100%;
+
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
+  }
+
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__title {
+    margin: 3vh 0;
+    font-size: 2.2rem;
+    color: $gray-2;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    font-size: 1.2rem;
+    width: 80%;
+    max-width: 280px;
+
+    p {
+      font-size: inherit;
+      line-height: $line-height-base;
+    }
+  }
+
+  &__button-container {
+    position: fixed;
+    bottom: 0;
+    padding: 3.8vw;
+    width: 100%;
+
+    button {
+      height: 8vh;
+      max-height: 60px;
+      background-color: $theme-color;
+      color: white;
+    }
+  }
+
+  &__self-pickup {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 600px) {
+  .container {
+    position: relative;
+    max-width: 414px;
+    margin: auto;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .prompt-page__button-container,
+  .footer-operation {
+    max-width: 414px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .continue__button {
+    max-height: 50px;
+    line-height: 50px;
+  }
+
+  .gift-card__page {
+    padding-bottom: 90px;
+  }
+
+  .header {
+    max-width: 414px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+}

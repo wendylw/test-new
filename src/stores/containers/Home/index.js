@@ -22,10 +22,13 @@ import {
   getAllStores,
   showStores,
 } from '../../redux/modules/home';
+import OfflineStoreModal from '../../../ordering/containers/Home/components/OfflineStoreModal';
 
 const { ROUTER_PATHS } = Constants;
 class App extends Component {
-  state = {};
+  state = {
+    creatOfflineStoreOrderName: '',
+  };
 
   componentDidMount = async () => {
     await this.props.homeActions.loadCoreStores();
@@ -37,6 +40,10 @@ class App extends Component {
         this.selectStore(defaultSelectStore.id);
       }
     }
+
+    this.setState({
+      creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
+    });
   };
 
   async visitStore(storeId) {
@@ -57,11 +64,26 @@ class App extends Component {
     await homeActions.loadCoreBusiness();
     // if store is closed,go straight to ordering page and let it display store is closed
     const { allBusinessInfo, business } = this.props;
-    const { validDays, validTimeFrom, validTimeTo, enablePreOrder } = Utils.getDeliveryInfo({
+    const {
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      enablePreOrder,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+    } = Utils.getDeliveryInfo({
       business,
       allBusinessInfo,
     });
-    const isValidTimeToOrder = Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo });
+    const isValidTimeToOrder = Utils.isValidTimeToOrder({
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+    });
     if (isValidTimeToOrder || enablePreOrder) {
       window.location.href = `${window.location.href}${window.location.search ? '&' : '?'}s=${storeId}&from=home`;
       // homeActions.setCurrentStore(storeId);
@@ -94,7 +116,10 @@ class App extends Component {
       this.gotoDine(storeId);
     }
   };
-
+  renderOfflineModal = () => {
+    Utils.removeSessionVariable('creatOfflineStoreOrderName');
+    return <OfflineStoreModal currentStoreName={this.state.creatOfflineStoreOrderName} enableLiveOnline={false} />;
+  };
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};

@@ -2,36 +2,40 @@ import Utils from '../utils/utils';
 
 const VOUCHER_ORDERING_INFO_KEY = 'VOUCHER_ORDERING_INFO';
 
-const getShoppingCartTemplateObject = amount => ({
-  total: amount,
-  subtotal: amount,
-  count: 1,
-  discount: 0,
-  tax: 0,
-  serviceCharge: 0,
-  serviceChargeTax: 0,
-  shippingFee: 0,
-  shippingFeeDiscount: 0,
-  loyaltyDiscounts: [],
-  items: [
-    {
-      id: 'Voucher-' + amount,
-      productId: 'Voucher-' + amount,
-      parentProductId: null,
-      title: 'Voucher ' + amount,
-      variationTexts: [],
-      variations: [],
-      markedSoldOut: false,
-      displayPrice: amount,
-      quantity: 1,
-      image: '',
-    },
-  ],
-  unavailableItems: [],
-  voucher: null,
-  cashback: 0,
-  totalCashback: 0,
-});
+const getShoppingCartTemplateObject = voucher => {
+  const { id, title, unitPrice } = voucher;
+
+  return {
+    total: unitPrice,
+    subtotal: unitPrice,
+    count: 1,
+    discount: 0,
+    tax: 0,
+    serviceCharge: 0,
+    serviceChargeTax: 0,
+    shippingFee: 0,
+    shippingFeeDiscount: 0,
+    loyaltyDiscounts: [],
+    items: [
+      {
+        id: id,
+        productId: id,
+        parentProductId: null,
+        title: title,
+        variationTexts: [],
+        variations: [],
+        markedSoldOut: false,
+        displayPrice: unitPrice,
+        quantity: 1,
+        image: '',
+      },
+    ],
+    unavailableItems: [],
+    voucher: null,
+    cashback: 0,
+    totalCashback: 0,
+  };
+};
 
 export const generatorVirtualShoppingCart = voucher => {
   let shoppingCart = getShoppingCartTemplateObject(voucher);

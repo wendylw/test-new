@@ -10,10 +10,27 @@ import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
 import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
-import { getBusiness } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getBusiness, getUser } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import Utils from '../../../../../utils/utils';
+import { del, get } from '../../../../../utils/request';
+import Url from '../../../../../utils/url';
 export class Footer extends Component {
+  constructor(props) {
+    super(props);
+    window.sendToken = async res => await this.authTokens(res);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { user } = this.props;
+    const { isExpired, isWebview } = user || {};
+
+    // token过期重新发postMessage
+    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+      this.postAppMessage(user);
+    }
+  }
+
   getDisplayPrice() {
     const { shoppingCart } = this.props;
     const { items } = shoppingCart || {};
@@ -26,10 +43,79 @@ export class Footer extends Component {
     return totalPrice;
   }
 
+  authTokens = async res => {
+    if (res) {
+      if (Utils.isIOSWebview()) {
+        await this.loginBeepApp(res);
+      } else if (Utils.isAndroidWebview()) {
+        const data = JSON.parse(res) || {};
+        await this.loginBeepApp(data);
+      }
+    }
+  };
+
+  getLoginOrNot = async () => {
+    const res = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
+    const { login } = res;
+    return login;
+  };
+
+  getKongTokenFromNative = async () => {
+    await del(Url.API_URLS.LOGOUT.url);
+  };
+
+  loginBeepApp = async res => {
+    const { appActions } = this.props;
+    let isLogin = await this.getLoginOrNot();
+    let isValidToken = Boolean(res.access_token && res.refresh_token);
+    if (isValidToken && isLogin) {
+      this.handleWebRedirect();
+    } else if (isValidToken && !isLogin) {
+      await appActions.loginApp({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      });
+      isLogin = await this.getLoginOrNot();
+      if (isLogin) {
+        this.handleWebRedirect();
+      }
+    } else if (!isValidToken && isLogin) {
+      await this.getKongTokenFromNative();
+    }
+  };
+
+  postAppMessage(user) {
+    const { isExpired } = user || {};
+    if (Utils.isAndroidWebview() && isExpired) {
+      window.androidInterface.tokenExpired();
+    }
+    if (Utils.isAndroidWebview() && !isExpired) {
+      window.androidInterface.getToken();
+    }
+    if (Utils.isIOSWebview() && isExpired) {
+      window.webkit.messageHandlers.shareAction.postMessage({
+        functionName: 'tokenExpired',
+        callbackName: 'sendToken',
+      });
+    }
+    if (Utils.isIOSWebview() && !isExpired) {
+      window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'getToken', callbackName: 'sendToken' });
+    }
+  }
+
   handleRedirect = () => {
+    const { user } = this.props;
+    const { isWebview } = user || {};
+    if (isWebview) {
+      this.postAppMessage(user);
+    } else {
+      this.handleWebRedirect();
+    }
+  };
+
+  handleWebRedirect = () => {
     const { history, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-
     if (enablePreOrder) {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
@@ -169,12 +255,14 @@ export default compose(
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
         business: getBusiness(state),
+        user: getUser(state),
         allBusinessInfo: getAllBusinesses(state),
       };
     },
     dispatch => ({
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(Footer);

@@ -41,7 +41,7 @@ let METHODS_LIST = [
 
 class DeliveryMethods extends Component {
   componentDidMount = async () => {
-    await this.props.homeActions.loadCoreBusiness();
+    await this.props.homeActions.loadCoreBusiness(this.props.store.id);
     await this.props.homeActions.getStoreHashData(this.props.store.id);
   };
 
