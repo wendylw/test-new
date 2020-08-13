@@ -76,7 +76,7 @@ export function getCurrentScrollId() {
     return;
   }
 
-  const scrolledCategoryList = elObjList.filter(elObj => elObj.getBoundingClientRect().top - topBarHeight <= 0);
+  const scrolledCategoryList = elObjList.filter(elObj => elObj.getBoundingClientRect().top - topBarHeight <= 5);
   const currentObj = scrolledCategoryList.length ? scrolledCategoryList[scrolledCategoryList.length - 1] : elObjList[0];
 
   return currentObj.getAttribute('scrollid');
@@ -146,7 +146,7 @@ export class ScrollObserver extends React.Component {
     if (!scrollid) {
       return;
     }
-    const { targetIdPrefix } = this.props;
+    const { targetIdPrefix, containerId } = this.props;
     const { drivenToScroll } = this.state;
     if (drivenToScroll) {
       return;
@@ -155,6 +155,7 @@ export class ScrollObserver extends React.Component {
     scrollToSmoothly({
       direction: 'y',
       targetId: `${targetIdPrefix}-${scrollid}`,
+      containerId: containerId || 'product-list',
     });
     this.setState({ scrollid });
   };
