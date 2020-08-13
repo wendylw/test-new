@@ -15,6 +15,7 @@ it('src/ordering/redux/store.js', () => {
         hasOtp: false,
         isExpired: false,
         isLogin: false,
+        isWebview: false,
         showLoginPage: false,
         storeCreditsBalance: 0,
       },
@@ -22,6 +23,7 @@ it('src/ordering/redux/store.js', () => {
     cart: { pendingTransactionsIds: [] },
     customer: {
       deliveryDetails: {
+        addressChange: false,
         addressDetails: '',
         deliveryComments: '',
         deliveryToAddress: '',
@@ -104,6 +106,9 @@ it('src/ordering/redux/store.js', () => {
         userConfirmed: false,
       },
       shoppingCart: { isFetching: false, itemIds: [], unavailableItemIds: [] },
+      timeSlot: {
+        timeSlotList: [],
+      },
     },
     payment: { bankingList: [], braintreeToken: '', currentPayment: '', orderId: '', thankYouPageUrl: '' },
     promotion: {

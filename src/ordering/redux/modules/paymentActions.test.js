@@ -55,7 +55,7 @@ describe('src/ordering/redux/modules/payment.js: actions', () => {
         const expectedActions = [
           { type: types.CREATEORDER_REQUEST },
           { type: types.CREATEORDER_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-          { type: APP_TYPES.SHOW_ERROR, code: 500, message: undefined },
+          { type: APP_TYPES.SHOW_ERROR, code: 401, message: undefined },
         ];
         return caseStore.dispatch(actions.createOrder({ cashback: '100' })).then(() => {
           expect(caseStore.getActions()).toEqual(expectedActions);
