@@ -16,8 +16,12 @@ const path = require('path');
 const fs = require('fs');
 const options = require('yargs').argv;
 const glob = require('glob');
+const { URL } = require('url');
 const buildRoot = path.resolve(__dirname, '../build');
-const destination = options.destination || path.basename(process.env.PUBLIC_URL || '');
+let destination = options.destination || '';
+if (!destination && process.env.PUBLIC_URL) {
+  destination = new URL(process.env.PUBLIC_URL).pathname;
+}
 
 const getFilesHasSourceMap = () =>
   new Promise((resolve, reject) => {

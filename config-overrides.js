@@ -1,6 +1,7 @@
 const { override, addWebpackPlugin } = require('customize-cra');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const path = require('path');
+const { URL } = require('url');
 
 const withCondition = (conditionFunc, overrideFunc) => config => {
   if (conditionFunc(config)) {
@@ -19,7 +20,9 @@ const customization = override(
     addWebpackPlugin(
       new SentryWebpackPlugin({
         include: './build/static/js/',
-        urlPrefix: 'http://localhost:8080/' + path.join(path.basename(process.env.PUBLIC_URL || ''), 'static/js'),
+        urlPrefix:
+          'http://localhost:8080/' +
+          path.join(process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).pathname : '', 'static/js'),
       })
     )
   )
