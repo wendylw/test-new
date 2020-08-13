@@ -84,14 +84,16 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-      <ul className="loyalty-activity card-list">
+      <ul className="card-list">
         {(cashbackHistory || []).map((activity, i) => {
           const { eventType, eventTime } = activity;
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
-          const type = this.getType(eventType, { className: `loyalty-activity__icon card-list__icon ${eventType}` });
+          const type = this.getType(eventType, {
+            className: `recent-activities__list-icon card-list__icon ${eventType}`,
+          });
 
           return (
-            <li key={`${i}`} className="loyalty-activity__item card-list__item flex flex-middle">
+            <li key={`${i}`} className="recent-activities__list-item card-list__item flex flex-middle">
               {type.icon}
               <summary className="card-list__item-summary">
                 <h4 className="card-list__title">
@@ -112,7 +114,7 @@ class RecentActivities extends React.Component {
 
     return (
       <section
-        className="loyalty-activities"
+        className="recent-activities"
         style={
           {
             // backgroundImage: `url(${theImage})`,
@@ -121,7 +123,7 @@ class RecentActivities extends React.Component {
         data-heap-name="cashback.home.recent-activities.container"
       >
         <Header
-          className="loyalty-activities__header flex-middle text-center"
+          className="flex-middle text-center"
           contentClassName="flex-middle"
           data-heap-name="cashback.home.recent-activities.header"
           title={t('CashbackHistory')}

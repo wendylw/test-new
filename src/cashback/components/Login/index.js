@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
 import { actions as appActionCreators, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
+import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
   state = {
@@ -78,7 +79,7 @@ class Login extends React.Component {
     const { country } = onlineStoreInfo || {};
     const { country: businessCountry } = businessInfo || {};
     const { phone } = this.state;
-    const classList = ['login'];
+    const classList = ['loyalty-login'];
 
     if (className) {
       classList.push(className);

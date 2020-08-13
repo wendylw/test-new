@@ -35,8 +35,8 @@ class PageLoyalty extends React.Component {
     const { businessInfo } = this.props;
     const { displayBusinessName, name } = businessInfo || {};
     return (
-      <div className="location">
-        <span className="location__text text-opacity text-middle">{displayBusinessName || name}</span>
+      <div className="margin-top-bottom-normal">
+        <span className="loyalty__location text-size-big text-opacity text-middle">{displayBusinessName || name}</span>
       </div>
     );
   }
@@ -49,33 +49,46 @@ class PageLoyalty extends React.Component {
     this.setState({ showRecentActivities: false });
   }
 
+  renderCashback() {
+    const { cashbackHistorySummary } = this.props;
+    const { totalCredits } = cashbackHistorySummary || {};
+
+    return (
+      <div className="loyalty-money">
+        <CurrencyNumber
+          className="loyalty-money__currency padding-left-right-small text-size-large"
+          money={totalCredits || 0}
+        />
+        <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
+          <IconInfo />
+        </span>
+      </div>
+    );
+  }
+
   render() {
-    const { history, businessInfo, onlineStoreInfo, cashbackHistorySummary, t } = this.props;
+    const { history, businessInfo, onlineStoreInfo, t } = this.props;
     const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
-    const { totalCredits } = cashbackHistorySummary || {};
     const { showRecentActivities } = this.state;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
-      <section className="loyalty-home flex flex-column flex-top" data-heap-name="cashback.home.container">
-        <div className="loyalty-home__content text-center">
+      <section className="loyalty__container flex flex-center" data-heap-name="cashback.home.container">
+        <article className="text-center">
           {logo ? (
-            <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+            <Image className="loyalty-logo margin-top-bottom-normal" src={logo} alt={displayBusinessName || name} />
           ) : null}
-          <h5 className="logo-default__title text-uppercase">{t('TotalCashback')}</h5>
-          <div className="loyalty-home__money-info">
-            <CurrencyNumber className="loyalty-home__money" money={totalCredits || 0} />
-            <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
-              <IconInfo />
-            </span>
-          </div>
+          <h5 className="loyalty-logo__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
+
+          {this.renderCashback()}
+
           {this.renderLocation()}
           <RedeemInfo
             className="redeem__button-container"
             buttonClassName="button redeem__button button__block border-radius-base text-uppercase"
             buttonText={t('HowToUseCashback')}
           />
-        </div>
+        </article>
         <ReceiptList history={history} />
       </section>
     ) : (

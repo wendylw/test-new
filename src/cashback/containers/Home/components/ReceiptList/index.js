@@ -97,13 +97,11 @@ class RecentActivities extends React.Component {
               <div className="receipt-list__item card-list__item flex flex-middle" key={`${i}`}>
                 <IconTicket className="receipt-list__icon ticket" />
                 <summary className="card-list__item-summary">
-                  <h4 className="receipt-list__title card-list__title">
+                  <h4 className="card-list__title">
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>
-                  <time className="receipt-list__time card-list__time">
-                    {toLocaleDateString(receiptTime, country, DATE_OPTIONS)}
-                  </time>
+                  <time className="card-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
                 </summary>
               </div>
             );
@@ -123,32 +121,25 @@ class RecentActivities extends React.Component {
 
     return (
       <div
-        className={`aside-section ${this.state.fullScreen ? 'full' : ''}`}
+        className={`receipt-list  ${this.state.fullScreen ? 'full' : ''}`}
         data-heap-name="cashback.home.receipt-list.container"
       >
-        <aside className="aside-bottom">
-          {!this.state.fullScreen ? (
-            <i
-              className="aside-bottom__slide-button"
-              onClick={this.toggleFullScreen.bind(this)}
-              data-heap-name="cashback.home.receipt-list.screen-toggler"
-            ></i>
-          ) : (
-            <Header
-              className="receipt-list__header flex-middle"
-              contentClassName="flex-middle"
-              navFunc={this.toggleFullScreen.bind(this)}
-              data-heap-name="cashback.home.receipt-list.header"
-            />
-          )}
+        <aside className="receipt-list__container aside-bottom">
+          <i
+            className="receipt-list__slide-button"
+            onClick={this.toggleFullScreen.bind(this)}
+            data-heap-name="cashback.home.receipt-list.screen-toggler"
+          />
           <h3
-            className="aside-bottom__title text-center"
+            className="receipt-list__title text-center"
             onClick={this.toggleFullScreen.bind(this)}
             data-heap-name="cashback.home.receipt-list.title"
           >
             {t('Receipts')}
           </h3>
-          <div className={`receipt-list card-list ${this.state.fullScreen ? 'full' : ''}`}>{this.renderLogList()}</div>
+          <div className={`receipt-list__content card-list ${this.state.fullScreen ? 'full' : ''}`}>
+            {this.renderLogList()}
+          </div>
         </aside>
       </div>
     );

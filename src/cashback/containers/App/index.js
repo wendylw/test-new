@@ -116,7 +116,7 @@ class App extends Component {
       <main className="loyalty">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         <Message />
-        {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
+        {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>

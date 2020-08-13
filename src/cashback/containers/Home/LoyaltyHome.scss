@@ -1,22 +1,5 @@
 @import "../../../Variables";
 
-.loyalty-home {
-  &__money-info {
-    position: relative;
-
-    svg {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      padding: 10px;
-      margin: auto;
-      width: 40px;
-      height: 40px;
-      fill: $gray-2;
-    }
-  }
-}
-
 .card-list {
   padding: 0 16px;
   overflow: hidden;

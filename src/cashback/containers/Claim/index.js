@@ -136,10 +136,16 @@ class PageClaim extends React.Component {
     }
 
     if (!isNaN(cashbackNumber) && cashbackNumber) {
-      return <CurrencyNumber className="loyalty-claim__money" money={cashback} />;
+      return (
+        <CurrencyNumber className="loyalty-money__currency padding-left-right-small text-size-large" money={cashback} />
+      );
     }
 
-    return <span className="loyalty-claim__money">{t('CashbackPercentage', { percentage })}</span>;
+    return (
+      <span className="loyalty-money__currency padding-left-right-small text-size-large">
+        {t('CashbackPercentage', { percentage })}
+      </span>
+    );
   }
 
   renderLocation() {
@@ -150,9 +156,9 @@ class PageClaim extends React.Component {
     const addressInfo = [displayBusinessName || name, city].filter(v => v);
 
     return (
-      <div className="location">
+      <div className="margin-top-bottom-normal">
         <IconLocation />
-        <span className="location__text text-opacity text-middle">{addressInfo.join(', ')}</span>
+        <span className="loyalty__location text-size-big text-opacity text-middle">{addressInfo.join(', ')}</span>
       </div>
     );
   }
@@ -172,21 +178,12 @@ class PageClaim extends React.Component {
     }
 
     return (
-      <section
-        className="loyalty-claim flex flex-column flex-top"
-        style={
-          {
-            // backgroundImage: `url(${theImage})`,
-          }
-        }
-        data-heap-name="cashback.claim.container"
-      >
-        <article className="loyalty-claim__content text-center">
+      <section className="loyalty__container flex flex-center" data-heap-name="cashback.claim.container">
+        <article className="text-center">
           {logo ? (
-            <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+            <Image className="loyalty-logo margin-top-bottom-normal" src={logo} alt={displayBusinessName || name} />
           ) : null}
-          <h5 className="logo-default__title text-uppercase">{t('EarnCashbackNow')}</h5>
-
+          <h5 className="loyalty-logo__title padding-top-bottom-small text-uppercase">{t('EarnCashbackNow')}</h5>
           {this.renderCashback()}
 
           {this.renderLocation()}

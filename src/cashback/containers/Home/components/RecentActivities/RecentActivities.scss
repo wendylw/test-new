@@ -1,22 +1,15 @@
 @import "src/Variables";
 
-.loyalty-activities {
+.recent-activities {
   max-height: 100%;
   overflow: auto;
+  background-color: $main-color;
 
-  &__header {
-    position: fixed;
-    padding: 10px 3.8vw;
-    height: 50px;
-  }
-}
-
-.loyalty-activity {
-  &__item {
+  &__list-item {
     color: $white;
   }
 
-  &__icon {
+  &__list-icon {
     fill: $gray-5;
 
     &.earned {
