@@ -21,7 +21,7 @@ const customization = override(
       new SentryWebpackPlugin({
         include: './build/static/js/',
         urlPrefix:
-          'http://localhost:8080/' +
+          'http://localhost:8080' +
           path.join(process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).pathname : '', 'static/js'),
       })
     )
