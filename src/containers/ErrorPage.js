@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import config from '../config';
 import beepErrorImage from '../images/beep-error.png';
+import Utils from '../utils/utils';
 
 export class ErrorPage extends PureComponent {
   getCurrentErrorType(type) {
@@ -30,7 +31,7 @@ export class ErrorPage extends PureComponent {
     const { t, error } = this.props;
     const { message } = error || {};
     const { title, description } = this.getCurrentErrorType(message);
-
+    const isWebView = Utils.isWebview();
     return (
       <section className="table-ordering__prompt-page" data-heap-name="common.error-page.container">
         <figure className="prompt-page__image-container text-center">
@@ -48,7 +49,16 @@ export class ErrorPage extends PureComponent {
             className="button button__block button__fill font-weight-bolder text-center text-uppercase border-radius-base"
             data-heap-name="common.error-page.back-btn"
             onClick={() => {
-              return (window.location.href = config.qrScanPageUrl);
+              if (isWebView) {
+                if (Utils.isAndroidWebview()) {
+                  window.androidInterface.gotoHome();
+                } else if (Utils.isIOSWebview()) {
+                  window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                }
+              } else {
+                window.location.href = config.qrScanPageUrl;
+                return;
+              }
             }}
           >
             {t('BackToHome')}

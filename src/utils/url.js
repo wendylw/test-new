@@ -22,7 +22,7 @@ const API_URLS = {
     if (isDeliveryType) {
       CartObj.url = `/api/cart?${queryString}`;
     } else {
-      expectDeliveryDateFrom && (CartObj.url = `/api/cart?fulfillDate=${expectDeliveryDateFrom}`);
+      CartObj.url = expectDeliveryDateFrom ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}` : `/api/cart`;
     }
     return CartObj;
   },
@@ -139,6 +139,10 @@ const API_URLS = {
     url: '/api/stores/collections',
     method: 'get',
   },
+  LOGOUT: {
+    url: '/api/logout',
+    method: 'del',
+  },
   QUERY_FEED_BACK: {
     url: `/api/feedback`,
     method: 'get',
@@ -147,6 +151,20 @@ const API_URLS = {
     url: '/api/feedback',
     method: 'post',
   },
+  GET_VOUCHER_LIST: {
+    url: '/api/products/vouchers',
+    method: 'get',
+  },
+  GET_TIME_SLOT: (shippingType, fulfillDate, storeid) => {
+    return {
+      url: `/api/transactions/timeslots?shippingType=${shippingType}&fulfillDate=${fulfillDate}&storeId=${storeid}`,
+      method: 'get',
+    };
+  },
+  GET_CONSUMER_PROFILE: consumerId => ({
+    url: `/api/consumers/${consumerId}/profile`,
+    method: 'get',
+  }),
   GET_COLLECTION: {
     url: '/api/stores/collection',
     method: 'get',

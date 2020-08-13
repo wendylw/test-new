@@ -14,7 +14,7 @@ const { AUTH_INFO } = Constants;
 export const initialState = {
   user: {
     showLoginPage: false,
-    // isWebview: Utils.isWebview(),
+    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,
@@ -212,7 +212,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt } = action;
+  const { type, response, code, prompt, error } = action;
   const { consumerId, login } = response || {};
 
   switch (type) {
@@ -266,7 +266,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (code && code === 401) {
+      if (error && error.code === 401) {
         return { ...state, isExpired: true, isFetching: false };
       }
 
@@ -287,7 +287,7 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401 && code < 40000) {
+  } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
 
     if (type === types.CREATE_OTP_FAILURE) {
@@ -363,5 +363,6 @@ export const getMerchantCountry = state => {
   if (state.entities.businesses[state.app.business]) {
     return state.entities.businesses[state.app.business].country;
   }
+
   return null;
 };

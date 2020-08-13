@@ -152,8 +152,15 @@ export const showStores = state => !state.home.isFetching;
 export const isStoreClosed = state => {
   try {
     const businessInfo = getBusinessByName(state, getBusiness(state));
-    const { validDays, validTimeFrom, validTimeTo } = businessInfo.qrOrderingSettings;
-    return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo }); // get negative status
+    const {
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+    } = businessInfo.qrOrderingSettings;
+    return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations }); // get negative status
   } catch (e) {
     captureException(e);
     console.error(e);
