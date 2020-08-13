@@ -805,10 +805,6 @@ class LocationAndDate extends Component {
     );
   };
 
-  isSameDay = (dayOne, dayTwo) => {
-    return this.getDateFromTime(dayOne) === this.getDateFromTime(dayTwo);
-  };
-
   patchTimeList = (list, breakTimeFrom, breakTimeTo) => {
     let breakStartIndex, breakEndIndex;
 
@@ -818,14 +814,14 @@ class LocationAndDate extends Component {
         sList = sList.concat(list.slice(0, 1));
         list.splice(0, 1);
       }
+
       if (list.length) {
         const timeFromValue = new Date(list[0].from);
         const timeToValue = new Date(list[list.length - 1].to || list[list.length - 1].from);
-        const { selectDate } = this.state;
-        const { date: selectDateValue } = selectDate;
 
         let timeFrom = getHourAndMinuteFromTime(timeFromValue);
-        let timeTo = this.isSameDay(timeToValue, selectDateValue) ? getHourAndMinuteFromTime(timeToValue) : '24:00';
+        let timeTo =
+          getHourAndMinuteFromTime(timeToValue) === '00:00' ? '24:00' : getHourAndMinuteFromTime(timeToValue);
 
         if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
           return [...sList];
