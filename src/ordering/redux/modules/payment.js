@@ -64,11 +64,12 @@ export const actions = {
     const isDigital = Utils.isDigitalType();
     if (isDigital) {
       const business = getBusiness(getState());
-      const { total } = getCartSummary(getState());
+      const cartItemIds = getCartItemIds(getState());
+      const productId = cartItemIds[0];
       const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
       const payload = {
         businessName: business,
-        amount: total,
+        productId: productId,
         email: voucherOrderingInfo.contactEmail,
       };
       const result = await dispatch(createVoucherOrder(payload));

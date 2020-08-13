@@ -12,7 +12,6 @@ import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
-import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -23,8 +22,12 @@ import { getBusinessInfo } from '../../redux/modules/cart';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
+import { getDeliveryDetails, getAddressChange, actions as customerActionCreators } from '../../redux/modules/customer';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import AddressChangeModal from './components/AddressChangeModal';
+import { actions as homeActionCreators, getShoppingCart } from '../../redux/modules/home';
+import { get } from '../../../utils/request';
+import Url from '../../../utils/url';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -35,15 +38,29 @@ class Customer extends Component {
     asideName: null,
     sentOtp: false,
     errorToast: '',
+    consumerInfo: {
+      phone: '',
+      firstName: '',
+    },
   };
 
   componentDidMount = async () => {
-    const { homeActions, customerActions } = this.props;
+    const { homeActions, customerActions, user } = this.props;
+    const { isWebview, consumerId, isLogin } = user || {};
+
+    if (isWebview && isLogin && consumerId) {
+      let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
+      let consumerInfo = await get(request.url);
+      this.props.customerActions.patchDeliveryDetails({ phone: consumerInfo.phone, username: consumerInfo.firstName });
+    }
 
     await homeActions.loadShoppingCart();
 
     // init username, phone, deliveryToAddress, deliveryDetails
+
     await customerActions.initDeliveryDetails(this.getShippingType());
+
+    this.props.addressChange && this.props.homeActions.loadShoppingCart();
   };
 
   componentDidUpdate(prevProps) {
@@ -105,7 +122,6 @@ class Customer extends Component {
     const { appActions, user, deliveryDetails } = this.props;
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
-
     const checkDistanceResult = this.checkDistanceError();
     if (checkDistanceResult) {
       this.setState({ errorToast: checkDistanceResult });
@@ -236,7 +252,9 @@ class Customer extends Component {
       </div>
     );
   };
-
+  AddressChangeModalContinue = () => {
+    this.props.customerActions.updateAddressChange(false);
+  };
   handleInputChange = e => {
     const inputValue = e.target.value;
     e.target.name === 'addressDetails' &&
@@ -362,10 +380,11 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
-    const { errorToast } = this.state;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart, cartSummary } = this.props;
+    const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
+    const { shippingFee } = shoppingCart.summary;
     const { total } = cartSummary || {};
 
     return (
@@ -452,6 +471,11 @@ class Customer extends Component {
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        <AddressChangeModal
+          deliveryFee={shippingFee}
+          addressChange={addressChange}
+          continue={this.AddressChangeModalContinue}
+        />
       </section>
     );
   }
@@ -472,13 +496,15 @@ export default compose(
         business: getBusiness(state),
         allBusinessInfo: getAllBusinesses(state),
         businessInfo: getBusinessInfo(state),
+        addressChange: getAddressChange(state),
+        shoppingCart: getShoppingCart(state),
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(Customer);

@@ -91,7 +91,7 @@ class Contact extends Component {
                 {selectedVoucher ? (
                   <div className="gift-card__store-item gift-card__store-amount">
                     {currencySymbol}
-                    {selectedVoucher}
+                    {selectedVoucher.unitPrice}
                   </div>
                 ) : null}
                 <div className="gift-card__store-item gift-card__store-name">{storeName}</div>

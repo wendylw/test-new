@@ -65,7 +65,7 @@ class Home extends Component {
               {selectedVoucher ? (
                 <div className="gift-card__store-item gift-card__store-amount">
                   {currencySymbol}
-                  {selectedVoucher}
+                  {selectedVoucher.unitPrice}
                 </div>
               ) : null}
               <div className="gift-card__store-item gift-card__store-name">{storeName}</div>
@@ -81,9 +81,9 @@ class Home extends Component {
           <ul className="flex flex-middle flex-space-between gift-card__amount-items">
             {voucherList.map(voucher => (
               <li
-                key={voucher}
+                key={voucher.id}
                 className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
-                  voucher === selectedVoucher ? 'selected' : ''
+                  selectedVoucher && selectedVoucher.id === voucher.id ? 'selected' : ''
                 }`}
                 data-heap-name="voucher.home.voucher-item"
                 onClick={() => {
@@ -91,7 +91,7 @@ class Home extends Component {
                 }}
               >
                 <span>{currencySymbol}</span>
-                <span className="font-weight-bolder gift-card__amount-number">{voucher}</span>
+                <span className="font-weight-bolder gift-card__amount-number">{voucher.unitPrice}</span>
               </li>
             ))}
           </ul>
