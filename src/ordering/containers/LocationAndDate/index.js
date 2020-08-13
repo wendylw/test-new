@@ -805,6 +805,10 @@ class LocationAndDate extends Component {
     );
   };
 
+  isSameDay = (dayOne, dayTwo) => {
+    return this.getDateFromTime(dayOne) === this.getDateFromTime(dayTwo);
+  };
+
   patchTimeList = (list, breakTimeFrom, breakTimeTo) => {
     let breakStartIndex, breakEndIndex;
 
@@ -815,13 +819,19 @@ class LocationAndDate extends Component {
         list.splice(0, 1);
       }
       if (list.length) {
-        let timeFrom = getHourAndMinuteFromTime(new Date(list[0].from));
-        let timeTo = getHourAndMinuteFromTime(new Date(list[list.length - 1].to || list[list.length - 1].from));
+        const timeFromValue = new Date(list[0].from);
+        const timeToValue = new Date(list[list.length - 1].to || list[list.length - 1].from);
+        const { selectDate } = this.state;
+        const { date: selectDateValue } = selectDate;
+
+        let timeFrom = getHourAndMinuteFromTime(timeFromValue);
+        let timeTo = this.isSameDay(timeToValue, selectDateValue) ? getHourAndMinuteFromTime(timeToValue) : '24:00';
+
         if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
           return [...sList];
         }
 
-        list.forEach((time, index, arr) => {
+        list.forEach((time, index) => {
           const { from, to } = time;
           let timeFrom = getHourAndMinuteFromTime(new Date(from));
           let timeTo = getHourAndMinuteFromTime(new Date(to || from));
@@ -843,12 +853,16 @@ class LocationAndDate extends Component {
   patchBreakTime = list => {
     const { t, business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
+
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
     if (!breakTimeFrom || !breakTimeTo) return list;
     list = JSON.parse(JSON.stringify(list));
-    const zero = num => (num < 10 ? '0' + num : num + '');
+    // const zero = num => (num < 10 ? '0' + num : num + '');
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
+
+      // below comment is for pickup (now is only for delivery)
+
       // let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
       // let pickUpEnd = min >= 60 ? zero(+curr.split(':')[0] + 1) + ':' + (min % 60) : curr.split(':')[0] + ':' + min;
       // let currEnd = this.state.isPickUpType ? pickUpEnd : zero(+curr.split(':')[0] + 2) + ':00';
