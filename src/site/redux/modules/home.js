@@ -3,7 +3,6 @@ import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { getCurrentPlaceInfo } from './app';
-import { getAllStoreCollections } from './entities/storeCollections';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
 
@@ -106,6 +105,7 @@ const fetchStoreList = () => (dispatch, getState) => {
       { signal: refreshFetchStoreListAbortController() }
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
+        window.heap?.track('site.home.store-list.load-page', { Page: page });
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
       }

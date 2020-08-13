@@ -64,11 +64,12 @@ export const actions = {
     const isDigital = Utils.isDigitalType();
     if (isDigital) {
       const business = getBusiness(getState());
-      const { total } = getCartSummary(getState());
+      const cartItemIds = getCartItemIds(getState());
+      const productId = cartItemIds[0];
       const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
       const payload = {
         businessName: business,
-        amount: total,
+        productId: productId,
         email: voucherOrderingInfo.contactEmail,
       };
       const result = await dispatch(createVoucherOrder(payload));
@@ -191,16 +192,37 @@ export const actions = {
     if (result.type === types.CREATEORDER_FAILURE) {
       let errorMessage = '';
 
-      switch (result.code) {
+      switch (Number(result.code)) {
         case CREATE_ORDER_ERROR_CODES.PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT:
           errorMessage = 'OrderingPayment:PromotionExceededTotalClaimLimit';
           break;
-
         case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
           errorMessage = 'OrderingPayment:PromotionInvalid';
           break;
+        case CREATE_ORDER_ERROR_CODES.NO_PERMISSION:
+          errorMessage = 'OrderingPayment:NoPermission';
+          break;
+        case CREATE_ORDER_ERROR_CODES.NO_STORE:
+          errorMessage = 'OrderingPayment:NoStore';
+          break;
+        case CREATE_ORDER_ERROR_CODES.NO_STORE_LOCATION:
+          errorMessage = 'OrderingPayment:NoStoreLocation';
+          break;
+        case CREATE_ORDER_ERROR_CODES.NO_DELIVERY_LOCATION:
+          errorMessage = 'OrderingPayment:NoDeliveryLocation';
+          break;
+        case CREATE_ORDER_ERROR_CODES.OVER_DELIVERY_DISTANCE:
+          errorMessage = 'OrderingPayment:OverDeliveryDistance';
+          break;
+        case CREATE_ORDER_ERROR_CODES.CREATE_ORDER_ERROR:
+          errorMessage = 'OrderingPayment:CreateOrderError';
+          break;
         case CREATE_ORDER_ERROR_CODES.CONTACT_DETAIL_INVALID:
           errorMessage = 'OrderingPayment:ContactDetailInvalid';
+          break;
+        case CREATE_ORDER_ERROR_CODES.STORE_IS_ON_VACATION:
+          errorMessage = 'OrderingPayment:StoreIsOnVacation';
+          break;
         default:
           errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
           break;
@@ -208,6 +230,7 @@ export const actions = {
 
       dispatch(
         appActions.showError({
+          code: Number(result.code),
           message: i18next.t(errorMessage),
         })
       );

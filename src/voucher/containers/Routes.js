@@ -4,6 +4,7 @@ import NotFound from '../../NotFound';
 import Constants from '../../utils/constants';
 import Home from './Home';
 import Contact from './Contact';
+import PageLoader from '../components/PageLoader';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -14,7 +15,7 @@ class Routes extends Component {
   render() {
     return (
       <Router>
-        <Suspense fallback={<div className="loader theme page-loader"></div>}>
+        <Suspense fallback={<PageLoader />}>
           <Switch>
             <Route exact path={ROUTER_PATHS.VOUCHER_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.VOUCHER_CONTACT} component={Contact} />

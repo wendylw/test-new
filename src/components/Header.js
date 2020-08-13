@@ -52,7 +52,6 @@ class Header extends Component {
       className,
       isStoreHome,
       title,
-      storeAddress,
       children,
       onClickHandler,
       deliveryFee,

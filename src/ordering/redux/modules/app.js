@@ -7,13 +7,14 @@ import Url from '../../../utils/url';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { post, get } from '../../../utils/request';
 
 const { AUTH_INFO } = Constants;
 
 export const initialState = {
   user: {
     showLoginPage: false,
-    // isWebview: Utils.isWebview(),
+    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,
@@ -51,28 +52,44 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => ({
-    [API_REQUEST]: {
+  loginApp: ({ accessToken, refreshToken }) => dispatch =>
+    dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      ...Url.API_URLS.POST_LOGIN,
-      payload: {
+      requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
-    },
-  }),
+      }).then(resp => {
+        if (resp && resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+          window.heap?.addEventProperties({ LoggedIn: 'yes' });
+          const phone = Utils.getLocalStorageVariable('user.p');
+          if (phone) {
+            window.heap?.addUserProperties({ PhoneNumber: phone });
+          }
+        }
+        return resp;
+      }),
+    }),
 
-  phoneNumberLogin: ({ phone }) => ({
-    [API_REQUEST]: {
+  phoneNumberLogin: ({ phone }) => dispatch =>
+    dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      ...Url.API_URLS.PHONE_NUMBER_LOGIN,
-      payload: {
+      requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
         phone,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-      },
-    },
-  }),
+      }).then(resp => {
+        if (resp && resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+          window.heap?.addEventProperties({ LoggedIn: 'yes' });
+          const phone = Utils.getLocalStorageVariable('user.p');
+          if (phone) {
+            window.heap?.addUserProperties({ PhoneNumber: phone });
+          }
+        }
+        return resp;
+      }),
+    }),
 
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
@@ -106,10 +123,19 @@ export const actions = {
   }),
 
   getLoginStatus: () => ({
-    [API_REQUEST]: {
-      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-      ...Url.API_URLS.GET_LOGIN_STATUS,
-    },
+    types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
+      if (resp) {
+        if (resp.consumerId) {
+          window.heap?.identify(resp.consumerId);
+          window.heap?.addEventProperties({ LoggedIn: 'yes' });
+        } else {
+          window.heap?.resetIdentity();
+          window.heap?.addEventProperties({ LoggedIn: 'no' });
+        }
+      }
+      return resp;
+    }),
   }),
 
   setLoginPrompt: prompt => ({
@@ -186,7 +212,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt } = action;
+  const { type, response, code, prompt, error } = action;
   const { consumerId, login } = response || {};
 
   switch (type) {
@@ -240,7 +266,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (code && code === 401) {
+      if (error && error.code === 401) {
         return { ...state, isExpired: true, isFetching: false };
       }
 
@@ -261,7 +287,7 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401 && code < 40000) {
+  } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
 
     if (type === types.CREATE_OTP_FAILURE) {
@@ -337,5 +363,6 @@ export const getMerchantCountry = state => {
   if (state.entities.businesses[state.app.business]) {
     return state.entities.businesses[state.app.business].country;
   }
+
   return null;
 };

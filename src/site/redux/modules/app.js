@@ -21,7 +21,18 @@ const types = {
 // @actions
 const queryPing = () => ({
   types: [types.PING_REQUEST, types.PING_SUCCESS, types.PING_FAILURE],
-  requestPromise: get('/api/ping'),
+  requestPromise: get('/api/ping').then(resp => {
+    if (resp) {
+      if (resp.consumerId) {
+        window.heap?.identify(resp.consumerId);
+        window.heap?.addEventProperties({ LoggedIn: 'yes' });
+      } else {
+        window.heap?.resetIdentity();
+        window.heap?.addEventProperties({ LoggedIn: 'no' });
+      }
+    }
+    return resp;
+  }),
 });
 
 const actions = {

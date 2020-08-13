@@ -49,8 +49,8 @@ export class NeedHelp extends Component {
       <section className="need-help" data-heap-name="ordering.need-help.container">
         <Header
           className="has-right flex-middle"
+          isPage={true}
           data-heap-name="ordering.need-help.header"
-          isPage={false}
           title={t('ContactUs')}
           navFunc={() => {
             if (history.length) {
@@ -69,12 +69,14 @@ export class NeedHelp extends Component {
               <summary className="item__title store-info__item font-weight-bolder">{t('StoreName')}</summary>
               <span className="item__text gray-font-opacity">{name}</span>
             </li>
-            <li className="item border__bottom-divider">
-              <summary className="item__title store-info__item font-weight-bolder">{t('ContactInfo')}</summary>
-              <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
-                {phone}
-              </a>
-            </li>
+            {phone && (
+              <li className="item border__bottom-divider">
+                <summary className="item__title store-info__item font-weight-bolder">{t('ContactInfo')}</summary>
+                <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
+                  {phone}
+                </a>
+              </li>
+            )}
             <li className="item">
               <summary className="item__title store-info__item font-weight-bolder">{t('StoreAddress')}</summary>
               <span className="item__text gray-font-opacity">{street1}</span>

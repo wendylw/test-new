@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import { getCollectionByPath } from './entities/storeCollections';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';
@@ -80,6 +79,7 @@ const fetchStoreList = (page, pageSize, shippingType, urlPath) => (dispatch, get
       `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&countryCode=${countryCode}&urlPath=${urlPath}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
+        window.heap?.track('site.collection.store-list.load-page', { Page: page });
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;
       }

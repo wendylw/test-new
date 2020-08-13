@@ -7,13 +7,14 @@ import {
   getHistoricalDeliveryAddresses,
   getPlaceAutocompleteList,
   getPlaceInfoFromPlaceId,
-  computeStraightDistance,
 } from '../utils/geoUtils';
 import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 import Utils from '../utils/utils';
 import qs from 'qs';
+import { captureException } from '@sentry/react';
+
 class LocationPicker extends Component {
   static propTypes = {
     origin: PropTypes.exact({ lat: PropTypes.number.isRequired, lng: PropTypes.number.isRequired }),
@@ -99,7 +100,7 @@ class LocationPicker extends Component {
   }
 
   async selectPlace(placeInfoOrSearchResult) {
-    const { t, mode, origin, onSelect } = this.props;
+    const { t, mode, onSelect } = this.props;
     try {
       let placeInfo;
       this.setState({ isSubmitting: true });
@@ -132,6 +133,7 @@ class LocationPicker extends Component {
       onSelect(placeInfo);
     } catch (e) {
       console.error(e);
+      captureException(e);
       this.setState({ errorToast: t('FailToGetPlaceInfo'), isSubmitting: false });
     }
   }
@@ -319,6 +321,7 @@ class LocationPicker extends Component {
       );
     } catch (e) {
       console.error(e);
+      captureException(e);
       return null;
     }
   }
