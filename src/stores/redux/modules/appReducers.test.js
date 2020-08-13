@@ -28,14 +28,12 @@ describe('src/stores/redux/modules/app.js:reducers', () => {
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(null);
     });
-    it('not clear_arror', () => {
+    it('not clear_error', () => {
       const action = {
         type: 'whatever',
         ...errorActionInfo,
       };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        info: 'mockError',
-      });
+      expect(getReducerNewState(appReducers, action, nameField)).toEqual(null);
     });
   });
   describe('business', () => {
