@@ -818,10 +818,10 @@ class LocationAndDate extends Component {
       if (list.length) {
         const timeFromValue = new Date(list[0].from);
         const timeToValue = new Date(list[list.length - 1].to || list[list.length - 1].from);
+        const timeToString = getHourAndMinuteFromTime(timeToValue);
 
         let timeFrom = getHourAndMinuteFromTime(timeFromValue);
-        let timeTo =
-          getHourAndMinuteFromTime(timeToValue) === '00:00' ? '24:00' : getHourAndMinuteFromTime(timeToValue);
+        let timeTo = timeToString === '00:00' ? '24:00' : timeToString;
 
         if (breakTimeFrom <= timeFrom && breakTimeTo >= timeTo) {
           return [...sList];
