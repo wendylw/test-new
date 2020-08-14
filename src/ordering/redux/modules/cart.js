@@ -89,7 +89,7 @@ export default reducer;
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
 
-  return getBusinessByName(state, business);
+  return getBusinessByName(state, business) || {};
 };
 
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;

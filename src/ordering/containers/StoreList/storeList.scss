@@ -78,6 +78,7 @@
         color: #303030;
         display: flex;
         line-height: 24px;
+        align-items: center;
         i {
           margin-right: 5px;
           display: flex;
@@ -100,6 +101,34 @@
         color: #303030;
         line-height: 24px;
         margin-top: 4px;
+      }
+      span.store-list-close-tag {
+        font-size: 10px;
+        line-height: 16px;
+        color: #fff;
+        background: #000;
+        text-align: center;
+        border-radius: 5px;
+        background: #fa4133;
+        display: inline-block;
+        transform: scale(0.8);
+        padding: 3px 10px;
+        text-align: center;
+      }
+    }
+    div.close-mask {
+      p:nth-child(1) {
+        color: #ccc;
+      }
+      p:nth-child(2) {
+        color: #e3e4e4;
+      }
+      p:nth-child(3),
+      p:nth-child(4) {
+        color: #ccc;
+        svg {
+          fill: #ccc;
+        }
       }
     }
   }

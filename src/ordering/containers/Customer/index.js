@@ -13,7 +13,6 @@ import Utils from '../../../utils/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
-import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -24,8 +23,10 @@ import { getBusinessInfo } from '../../redux/modules/cart';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
+import { getDeliveryDetails, getAddressChange, actions as customerActionCreators } from '../../redux/modules/customer';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import AddressChangeModal from './components/AddressChangeModal';
+import { actions as homeActionCreators, getShoppingCart } from '../../redux/modules/home';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 
@@ -57,7 +58,10 @@ class Customer extends Component {
     await homeActions.loadShoppingCart();
 
     // init username, phone, deliveryToAddress, deliveryDetails
+
     await customerActions.initDeliveryDetails(this.getShippingType());
+
+    this.props.addressChange && this.props.homeActions.loadShoppingCart();
   };
 
   componentDidUpdate(prevProps) {
@@ -267,7 +271,9 @@ class Customer extends Component {
       </div>
     );
   };
-
+  AddressChangeModalContinue = () => {
+    this.props.customerActions.updateAddressChange(false);
+  };
   handleInputChange = e => {
     const inputValue = e.target.value;
     e.target.name === 'addressDetails' &&
@@ -404,11 +410,13 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart, cartSummary } = this.props;
     const { asideName, formTextareaTitle, errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
+    const { shippingFee } = shoppingCart.summary;
     const { total } = cartSummary || {};
+
     let textareaValue = '';
     let updateTextFunc = () => {};
 
@@ -516,6 +524,11 @@ class Customer extends Component {
           </div>
         </footer>
         {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        <AddressChangeModal
+          deliveryFee={shippingFee}
+          addressChange={addressChange}
+          continue={this.AddressChangeModalContinue}
+        />
       </section>
     );
   }
@@ -536,13 +549,15 @@ export default compose(
         business: getBusiness(state),
         allBusinessInfo: getAllBusinesses(state),
         businessInfo: getBusinessInfo(state),
+        addressChange: getAddressChange(state),
+        shoppingCart: getShoppingCart(state),
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(Customer);

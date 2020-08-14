@@ -79,9 +79,9 @@ class LocationPage extends Component {
       this.setState({ storeInfo });
     } catch (e) {
       console.error('fail to load storeInfo', e);
-      this.setState({
-        initError: t('FailToLoadStoreInfo'),
-      });
+      // this.setState({
+      //   initError: t('FailToLoadStoreInfo'),
+      // });
     } finally {
       this.setState({ initializing: false });
     }
@@ -121,6 +121,7 @@ class LocationPage extends Component {
     // }
 
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
+    Utils.setSessionVariable('deliveryAddressUpdate', true);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
       history.replace(callbackUrl);

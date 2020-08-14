@@ -10,6 +10,8 @@ import config from '../../../config';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as appActionCreators } from '../../redux/modules/app';
+import { getDeliveryInfo } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
@@ -27,6 +29,7 @@ import { getPaymentName, getSupportCreditCardBrands, getPaymentRedirectAndWebHoo
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { getBusinessInfo } from '../../redux/modules/cart';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -254,6 +257,7 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        deliveryInfo: getDeliveryInfo(state),
         payments: getPayments(state),
         currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
         currentPaymentInfo: getCurrentPaymentInfo(state),
@@ -261,6 +265,7 @@ export default compose(
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
+        businessInfo: getBusinessInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),
@@ -269,6 +274,7 @@ export default compose(
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(PaymentContainer);
