@@ -2,6 +2,30 @@
 
 $total-text-size: 1.7142rem;
 
+@keyframes dots {
+  to {
+    width: 18px;
+  }
+}
+
+@-webkit-keyframes dots {
+  to {
+    width: 18px;
+  }
+}
+
+@keyframes dotsMore {
+  to {
+    width: 26px;
+  }
+}
+
+@-webkit-keyframes dotsMore {
+  to {
+    width: 26px;
+  }
+}
+
 .ordering-thanks {
   height: 100vh;
   background-color: $gray-6;
