@@ -1,9 +1,232 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Table } from '@storybook/addon-docs/blocks';
 
 <Meta title="Fonts" />
 
+<style>{`
+.fonts-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.fonts-sb__item {
+  margin-bottom: 20px;
+}
+
+.fonts-sb__label {
+  display: inline-block;
+  vertical-align: top;
+  width: 320px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.fonts-sb__content {
+  display: inline-block;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.fonts-sb__smaller-label,
+.fonts-sb__smaller {
+  font-size: 0.7142rem;
+}
+
+.fonts-sb__small-label,
+.fonts-sb__small {
+  font-size: 0.8571rem;
+}
+
+.fonts-sb__big-label,
+.fonts-sb__big {
+  font-size: 1.1428rem;
+}
+
+.fonts-sb__bigger-label,
+.fonts-sb__bigger {
+  font-size: 1.2857rem;
+}
+
+.fonts-sb__biggest-label,
+.fonts-sb__biggest {
+  font-size: 1.4285rem;
+}
+
+.fonts-sb__huge-label,
+.fonts-sb__huge {
+  font-size: 2.1428rem;
+}
+
+.fonts-sb__large-label,
+.fonts-sb__large {
+  font-size: 2.5714rem;
+}
+
+.fonts-sb__larger-label,
+.fonts-sb__larger {
+  font-size: 2.8571rem;
+}
+
+.fonts-sb__code {
+  font-size: 14px;
+}
+
+.fonts-sb__single-line {
+  width: 400px;
+  line-clamp: 1;    
+  -webkit-line-clamp: 1;
+}
+
+.fonts-sb__multiple-line {
+  width: 400px;
+  line-clamp: 2;    
+  -webkit-line-clamp: 2;
+}
+`}</style>
+
 # Fonts
 
-<div>
-  <span style={{fontSize: '1.42rem'}}>Heading</span>
+<p>
+  <strong>Font Family: </strong> Open Sans
+</p>
+
+<h2>
+  <strong class="fonts-sb__biggest-label">Font Size</strong>
+</h2>
+
+<div class="fonts-sb__card">
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__smaller-label">text-size-smaller</label>
+    <div class="fonts-sb__content fonts-sb__smaller">Heading (font-size: 10px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__small-label">text-size-small</label>
+    <div class="fonts-sb__content fonts-sb__small">Heading (font-size: 12px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__big-label">text-size-big</label>
+    <div class="fonts-sb__content fonts-sb__big">Heading (font-size: 16px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__bigger-label">text-size-bigger</label>
+    <div class="fonts-sb__content fonts-sb__bigger">Heading (font-size: 18px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__biggest-label">text-size-biggest</label>
+    <div class="fonts-sb__content fonts-sb__biggest">Heading (font-size: 20px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__huge-label">text-size-huge</label>
+    <div class="fonts-sb__content fonts-sb__huge">Heading (font-size: 30px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__large-label">text-size-large</label>
+    <div class="fonts-sb__content fonts-sb__large">Heading (font-size: 36px)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label fonts-sb__larger-label">text-size-larger</label>
+    <div class="fonts-sb__content fonts-sb__larger">Heading (font-size: 40px)</div>
+  </div>
+</div>
+
+<p>
+  <strong>Weights: </strong>300(light), 400(regular), 600(bold)
+</p>
+
+<h2>
+  <strong class="fonts-sb__biggest-label">Font Weight</strong>
+</h2>
+
+<div class="fonts-sb__card">
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label text-weight-light">text-weight-light</label>
+    <div class="fonts-sb__content text-weight-light">Heading (font-weight: 200)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label text-weight-bold">text-weight-bold</label>
+    <div class="fonts-sb__content text-weight-bold">Heading (font-weight: 500)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label text-weight-bolder">text-weight-bolder</label>
+    <div class="fonts-sb__content text-weight-bolder">Heading (font-weight: 600)</div>
+  </div>
+</div>
+
+<h2>
+  <strong class="fonts-sb__biggest-label">Font Color</strong>
+</h2>
+
+<div class="fonts-sb__card">
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-opacity</label>
+    <div class="fonts-sb__content text-opacity">Text Opacity</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-error</label>
+    <div class="fonts-sb__content text-error">Text Error</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-success</label>
+    <div class="fonts-sb__content text-success">Text Success</div>
+  </div>
+</div>
+
+<h2>
+  <strong class="fonts-sb__biggest-label">Font Other Settings</strong>
+</h2>
+
+<div class="fonts-sb__card">
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-line-height-base</label>
+    <div class="fonts-sb__content text-line-height-base">Text Line Height Base (line-height: 1.4em;)</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-uppercase</label>
+    <div class="fonts-sb__content text-uppercase">Text Uppercase</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-lowercase</label>
+    <div class="fonts-sb__content text-lowercase">Text Lowercase</div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-capitalize</label>
+    <div class="fonts-sb__content text-capitalize">text capitalize</div>
+  </div>
+</div>
+
+<h2>
+  <strong class="fonts-sb__biggest-label">Text Omit</strong>
+</h2>
+
+<div class="fonts-sb__card">
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-omit__single-line</label>
+    <div class="fonts-sb__content">
+      <div class="text-omit__single-line fonts-sb__single-line">text omit single line text omit single line text omit single line text omit single line text omit single Line</div>
+      <pre style={{backgroundColor: '#dededf', padding: '16px', margin: '16px 0'}}>
+        &#123;<br />
+        &nbsp;&nbsp;width: 400px;<br />
+        &nbsp;&nbsp;line-clamp: 1;<br />
+        &nbsp;&nbsp;-webkit-line-clamp: 1;<br />
+        &#125;
+      </pre>
+    </div>
+  </div>
+  <div class="fonts-sb__item">
+    <label class="fonts-sb__label">text-omit__multiple-line</label>
+    <div class="fonts-sb__content">
+      <div class="text-omit__multiple-line fonts-sb__multiple-line">text omit multiple line text omit multiple line text omit multiple line text omit multiple line text omit multiple line text omit multiple line</div>
+      <pre style={{backgroundColor: '#dededf', padding: '16px', margin: '16px 0'}}>
+        &#123;<br />
+        &nbsp;&nbsp;width: 400px;<br />
+        &nbsp;&nbsp;line-clamp: 2;<br />
+        &nbsp;&nbsp;-webkit-line-clamp: 2;<br />
+        &#125;
+      </pre>
+    </div>
+  </div>
 </div>
