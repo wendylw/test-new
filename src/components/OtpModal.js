@@ -127,6 +127,7 @@ class OtpModal extends React.Component {
                   maxLength={Constants.OTP_CODE_SIZE}
                   type="tel"
                   placeholder="00000"
+                  autocomplete="off"
                 />
               </div>
             ) : (
