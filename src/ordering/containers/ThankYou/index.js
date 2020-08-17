@@ -676,7 +676,7 @@ export class ThankYou extends PureComponent {
   render() {
     const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId, pickUpId } = order || {};
+    const { orderId, tableId } = order || {};
     const { isWebview } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();

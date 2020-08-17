@@ -140,18 +140,6 @@ class Customer extends Component {
     }
   }
 
-  handleUpdateName(e) {
-    this.props.customerActions.patchDeliveryDetails({ username: e.target.value });
-  }
-
-  handleAddressDetails(addressDetails) {
-    this.props.customerActions.patchDeliveryDetails({ addressDetails });
-  }
-
-  handleDriverComments(deliveryComments) {
-    this.props.customerActions.patchDeliveryDetails({ deliveryComments });
-  }
-
   getShippingType() {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -381,14 +369,14 @@ class Customer extends Component {
 
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart, cartSummary } = this.props;
-    const { asideName, formTextareaTitle, errorToast } = this.state;
+    const { errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { shippingFee } = shoppingCart.summary;
     const { total } = cartSummary || {};
 
     return (
-      <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
+      <section className={`table-ordering__customer`} data-heap-name="ordering.customer.container">
         <Header
           className="text-center gray flex-middle"
           data-heap-name="ordering.customer.header"
