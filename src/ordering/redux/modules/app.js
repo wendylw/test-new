@@ -290,9 +290,13 @@ const error = (state = initialState.error, action) => {
   } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
 
-    if (type === types.CREATE_OTP_FAILURE) {
-      errorMessage = Constants.LOGIN_PROMPT[code];
-    }
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
+  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
+    let errorMessage = Constants.LOGIN_PROMPT[code];
 
     return {
       ...state,

@@ -3,8 +3,9 @@ import thunk from 'redux-thunk';
 import api from '../redux/middlewares/api';
 import apiGql from '../redux/middlewares/apiGql';
 import { RequestError } from './request';
+import requestPromise from '../redux/middlewares/requestPromise';
 
-const middlewares = [thunk, apiGql, api];
+const middlewares = [thunk, apiGql, api, requestPromise];
 const configureMiddlewareStore = configureMockStore(middlewares);
 const store = configureMiddlewareStore({});
 
