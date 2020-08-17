@@ -6,7 +6,6 @@ import 'react-phone-number-input/style.css';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { IconNext } from '../../../components/Icons';
 import Header from '../../../components/Header';
-import FormTextarea from './components/FormTextarea';
 import ErrorToast from '../../../components/ErrorToast';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Utils from '../../../utils/utils';
@@ -32,7 +31,7 @@ import Url from '../../../utils/url';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-const { ROUTER_PATHS, ASIDE_NAMES, DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 class Customer extends Component {
   state = {
     formTextareaTitle: null,
@@ -151,24 +150,6 @@ class Customer extends Component {
 
   handleDriverComments(deliveryComments) {
     this.props.customerActions.patchDeliveryDetails({ deliveryComments });
-  }
-
-  handleToggleFormTextarea(asideName) {
-    const { t } = this.props;
-    let formTextareaTitle = '';
-
-    if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
-      formTextareaTitle = t('AddNoteToDriverPlaceholder');
-    } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
-      formTextareaTitle = t('AddAddressDetailsPlaceholder');
-    } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
-      formTextareaTitle = t('AddNoteToMerchantPlaceholder');
-    }
-
-    this.setState({
-      asideName,
-      formTextareaTitle,
-    });
   }
 
   getShippingType() {
@@ -348,7 +329,6 @@ class Customer extends Component {
     const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
     const { stores = [], country: locale } = businessInfo;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    const { deliveryComments } = this.props.deliveryDetails;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
@@ -395,16 +375,6 @@ class Customer extends Component {
             {pickUpAddress || t('PickUpAtPlaceholder')}
           </p>
         </div>
-        <div
-          className="form__group border-radius-base flex flex-middle flex-space-between"
-          data-heap-name="ordering.customer.pickup-note"
-          onClick={this.handleToggleFormTextarea.bind(this, ASIDE_NAMES.ADD_MERCHANT_NOTE)}
-        >
-          <p className={`${deliveryComments ? '' : 'gray-font-opacity'}`}>
-            {deliveryComments ||
-              `${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          </p>
-        </div>
       </React.Fragment>
     );
   }
@@ -416,20 +386,6 @@ class Customer extends Component {
     const { country } = onlineStoreInfo || {};
     const { shippingFee } = shoppingCart.summary;
     const { total } = cartSummary || {};
-
-    let textareaValue = '';
-    let updateTextFunc = () => {};
-
-    if (asideName === ASIDE_NAMES.ADD_DRIVER_NOTE) {
-      textareaValue = deliveryDetails.deliveryComments;
-      updateTextFunc = this.handleDriverComments.bind(this);
-    } else if (asideName === ASIDE_NAMES.ADD_ADDRESS_DETAIL) {
-      textareaValue = deliveryDetails.addressDetails;
-      updateTextFunc = this.handleAddressDetails.bind(this);
-    } else if (asideName === ASIDE_NAMES.ADD_MERCHANT_NOTE) {
-      textareaValue = deliveryDetails.deliveryComments;
-      updateTextFunc = this.handleDriverComments.bind(this);
-    }
 
     return (
       <section className={`table-ordering__customer` /* hide */} data-heap-name="ordering.customer.container">
@@ -484,15 +440,6 @@ class Customer extends Component {
             {this.renderPickUpInfo()}
           </form>
         </div>
-
-        <FormTextarea
-          show={!!asideName}
-          onToggle={this.handleToggleFormTextarea.bind(this)}
-          title={formTextareaTitle}
-          textareaValue={textareaValue}
-          onUpdateText={updateTextFunc}
-          data-heap-name="ordering.customer.form-textarea"
-        />
 
         <footer className="footer-operation grid flex flex-middle flex-space-between">
           <div className="footer-operation__item width-1-3">

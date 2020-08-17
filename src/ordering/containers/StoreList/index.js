@@ -11,10 +11,9 @@ import './storeList.scss';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import { IconLocation, IconMotorcycle } from '../../../components/Icons';
+import { IconLocation } from '../../../components/Icons';
 import config from '../../../config';
 import qs from 'qs';
-import CurrencyNumber from '../../components/CurrencyNumber';
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
   <div
