@@ -40,6 +40,7 @@ class App extends Component {
     if (isLogin) {
       appActions.loadCustomerProfile();
     }
+    this.postAppMessage(user);
   }
 
   componentDidUpdate(prevProps) {
