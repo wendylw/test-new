@@ -101,7 +101,9 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         const action = {
           type: types.CREATE_LOGIN_FAILURE,
           ...userActionInfo,
-          code: 401,
+          error: {
+            code: 401,
+          },
         };
         const expectedState = {
           ...initialState.user,
