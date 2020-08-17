@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { captureException } from '@sentry/react';
 
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
@@ -142,7 +143,8 @@ export const actions = {
         }
       }
     } catch (e) {
-      console.error('failed to create expectDeliveryDateInfo');
+      console.error('failed to create expectDeliveryDateInfo', e.toString());
+      captureException(e);
     }
     // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
 
