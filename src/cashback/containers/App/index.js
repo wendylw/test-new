@@ -17,14 +17,14 @@ import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
+import Utils from '../../../utils/utils';
 
 class App extends Component {
-  //TODO: loyalty page communicate with native app
-  // constructor(props) {
-  //   super(props);
-  //   window.sendToken = res => this.AuthTokens(res);
-  //   this.postAppMessage(props.user);
-  // }
+  constructor(props) {
+    super(props);
+    window.sendToken = res => this.authTokens(res);
+    this.postAppMessage(props.user);
+  }
 
   async componentDidMount() {
     const { appActions } = this.props;
@@ -52,7 +52,7 @@ class App extends Component {
     }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      // this.postAppMessage(user);
+      this.postAppMessage(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
@@ -68,15 +68,12 @@ class App extends Component {
     }
   }
 
-  AuthTokens = async res => {
+  authTokens = async res => {
     if (res) {
-      if (window.webkit) {
+      if (Utils.isIOSWebview()) {
         await this.loginBeepApp(res);
-      } else if (window.androidInterface) {
+      } else if (Utils.isAndroidWebview()) {
         const data = JSON.parse(res) || {};
-        if (data.phone) {
-          sessionStorage.setItem('userPhone', data.phone);
-        }
         await this.loginBeepApp(data);
       }
     }
@@ -94,19 +91,19 @@ class App extends Component {
 
   postAppMessage(user) {
     const { isExpired } = user || {};
-    if (window.androidInterface && isExpired) {
+    if (Utils.isAndroidWebview() && isExpired) {
       window.androidInterface.tokenExpired();
     }
-    if (window.androidInterface && !isExpired) {
+    if (Utils.isAndroidWebview() && !isExpired) {
       window.androidInterface.getToken();
     }
-    if (window.webkit && isExpired) {
+    if (Utils.isIOSWebview() && isExpired) {
       window.webkit.messageHandlers.shareAction.postMessage({
         functionName: 'tokenExpired',
         callbackName: 'sendToken',
       });
     }
-    if (window.webkit && !isExpired) {
+    if (Utils.isIOSWebview() && !isExpired) {
       window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'getToken', callbackName: 'sendToken' });
     }
   }
