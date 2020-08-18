@@ -22,16 +22,15 @@ class SiteFooter extends Component {
       <footer className="entry__bar wrapper" data-heap-name="site.common.footer.container">
         <ul className="flex flex-middle flex-space-around">
           {tabs.map(tab => (
-            <li
-              key={tab.pathname}
-              className={`entry__item icon__item ${this.isIconActive(tab.pathname) ? 'active' : ''}`}
-            >
+            <li key={tab.pathname} className="entry__item">
               <Link
                 to={tab.pathname}
                 data-heap-name="site.common.footer.tab-icon"
                 data-heap-tab-pathname={tab.pathname}
               >
-                <tab.component className="icon icon__default" />
+                <tab.component
+                  className={`icon ${this.isIconActive(tab.pathname) ? 'icon__primary' : 'icon__default'}`}
+                />
               </Link>
             </li>
           ))}

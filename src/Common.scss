@@ -602,12 +602,6 @@ img {
       height: 14px;
     }
   }
-
-  &__item.active {
-    .icon__default {
-      fill: $theme-color;
-    }
-  }
 }
 
 .card {
