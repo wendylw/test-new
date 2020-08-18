@@ -128,7 +128,7 @@ export const actions = {
     // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
     let expectDeliveryDateInfo = null;
     try {
-      if (enablePreOrder) {
+      if (enablePreOrder && !(shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY)) {
         const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
         // => {"from":2,"to":3}
         const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
