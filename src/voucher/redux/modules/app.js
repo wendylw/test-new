@@ -341,3 +341,7 @@ export const getShowPageLoader = state => {
 export const getPageErrorCode = state => {
   return _get(state.app, 'pageErrorCode', null);
 };
+
+export const getBusinessInfo = state => {
+  return _get(state.app, 'businessInfo', null);
+};
