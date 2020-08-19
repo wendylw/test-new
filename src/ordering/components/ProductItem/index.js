@@ -21,6 +21,7 @@ export class ProductItem extends Component {
       image,
       title,
       price,
+      originalDisplayPrice,
       soldOut,
       cartQuantity,
       decreaseDisabled,
@@ -34,6 +35,22 @@ export class ProductItem extends Component {
       productItemMinHeight,
       scrollContainer,
     } = this.props;
+    const PricesDom = (
+      <div className="price item__text">
+        {originalDisplayPrice ? (
+          <CurrencyNumber
+            className="text-size-small text-line-through"
+            money={originalDisplayPrice}
+            numberOnly={true}
+          />
+        ) : null}
+        <CurrencyNumber
+          className={`${originalDisplayPrice ? 'text-error' : ''}`}
+          money={price || 0}
+          numberOnly={true}
+        />
+      </div>
+    );
 
     return (
       <Item
@@ -45,7 +62,7 @@ export class ProductItem extends Component {
         image={image}
         title={title}
         variation={variation}
-        detail={<CurrencyNumber className="price text-opacity" money={price || 0} numberOnly={true} />}
+        detail={PricesDom}
         operateItemDetail={showProductDetail}
         tagText={isFeaturedProduct ? t('BestSeller') : null}
         data-heap-name="ordering.common.product-item.container"
