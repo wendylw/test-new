@@ -17,6 +17,7 @@ import {
   getReceiptNumber,
   isFetchingCashbackInfo,
 } from '../../redux/modules/claim';
+import './LoyaltyClaim.scss';
 
 class PageClaim extends React.Component {
   state = {
@@ -136,10 +137,19 @@ class PageClaim extends React.Component {
     }
 
     if (!isNaN(cashbackNumber) && cashbackNumber) {
-      return <CurrencyNumber className="loyalty__money" money={cashback} />;
+      return (
+        <CurrencyNumber
+          className="loyalty-claim__money-currency padding-left-right-small text-size-large"
+          money={cashback}
+        />
+      );
     }
 
-    return <span className="loyalty__money">{t('CashbackPercentage', { percentage })}</span>;
+    return (
+      <span className="loyalty-claim__money-currency padding-left-right-small text-size-large">
+        {t('CashbackPercentage', { percentage })}
+      </span>
+    );
   }
 
   renderLocation() {
@@ -150,9 +160,11 @@ class PageClaim extends React.Component {
     const addressInfo = [displayBusinessName || name, city].filter(v => v);
 
     return (
-      <div className="location">
-        <IconLocation />
-        <span className="location__text text-opacity text-middle">{addressInfo.join(', ')}</span>
+      <div className="margin-top-bottom-normal">
+        <IconLocation className="icon icon__normal text-middle" />
+        <span className="loyalty-claim__location margin-left-right-smaller text-size-big text-opacity text-middle">
+          {addressInfo.join(', ')}
+        </span>
       </div>
     );
   }
@@ -172,21 +184,16 @@ class PageClaim extends React.Component {
     }
 
     return (
-      <section
-        className="loyalty__claim"
-        style={
-          {
-            // backgroundImage: `url(${theImage})`,
-          }
-        }
-        data-heap-name="cashback.claim.container"
-      >
-        <article className="loyalty__content text-center">
+      <section className="loyalty-claim__container flex flex-column" data-heap-name="cashback.claim.container">
+        <article className="text-center">
           {logo ? (
-            <Image className="logo-default__image-container" src={logo} alt={displayBusinessName || name} />
+            <Image
+              className="loyalty-claim__logo logo logo__big margin-top-bottom-normal"
+              src={logo}
+              alt={displayBusinessName || name}
+            />
           ) : null}
-          <h5 className="logo-default__title text-uppercase">{t('EarnCashbackNow')}</h5>
-
+          <h5 className="loyalty-claim__title padding-top-bottom-small text-uppercase">{t('EarnCashbackNow')}</h5>
           {this.renderCashback()}
 
           {this.renderLocation()}

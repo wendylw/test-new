@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Header from '../../../components/Header';
 import { withTranslation } from 'react-i18next';
 import beepQrScanImage from '../../../images/beep-qrscan.png';
+import './RedeemInfo.scss';
 
 class RedeemInfo extends React.Component {
   state = {
@@ -30,7 +31,7 @@ class RedeemInfo extends React.Component {
           {buttonText}
         </button>
         {showModal ? (
-          <div className="full-aside" data-heap-name="cashback.common.redeem-info.modal">
+          <div className="redeem-info fixed-wrapper" data-heap-name="cashback.common.redeem-info.modal">
             <Header
               className="flex-middle"
               contentClassName="flex-middle"
@@ -39,14 +40,14 @@ class RedeemInfo extends React.Component {
               data-heap-name="cashback.common.redeem-info.header"
             />
 
-            <section className="full-aside__content text-center">
-              <figure className="full-aside__image-container">
+            <section className="padding-normal margin-top-bottom-normal text-center">
+              <figure className="redeem-info__image-container">
                 <img src={beepQrScanImage} alt="otp" />
               </figure>
-              <h2 className="full-aside__title">{t('HowToUseCashback')}</h2>
-              <ol className="redeem__list">
-                <li className="redeem__item">{t('UseCashbackStep1')}</li>
-                <li className="redeem__item">{t('UseCashbackStep2')}</li>
+              <h2 className="padding-small text-size-big text-weight-bold">{t('HowToUseCashback')}</h2>
+              <ol className="redeem-info__list">
+                <li className="margin-top-bottom-smaller text-line-height-base">{t('UseCashbackStep1')}</li>
+                <li className="margin-top-bottom-smaller text-line-height-base">{t('UseCashbackStep2')}</li>
               </ol>
             </section>
           </div>

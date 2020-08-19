@@ -7,7 +7,7 @@ class TopMessage extends React.Component {
 
   render() {
     const { className, message, hideMessage } = this.props;
-    const classList = ['top-message'];
+    const classList = ['top-message padding-normal'];
 
     if (className) {
       classList.push(className);
