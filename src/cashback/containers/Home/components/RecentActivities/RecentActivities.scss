@@ -10,15 +10,9 @@
   }
 
   &__list-icon {
-    fill: $gray-5;
-
     svg {
       height: 30px;
       width: 30px;
-    }
-
-    &.earned {
-      fill: $theme-color;
     }
   }
 

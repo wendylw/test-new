@@ -162,7 +162,9 @@ class PageClaim extends React.Component {
     return (
       <div className="margin-top-bottom-normal">
         <IconLocation className="icon icon__normal text-middle" />
-        <span className="loyalty-claim__location text-size-big text-opacity text-middle">{addressInfo.join(', ')}</span>
+        <span className="loyalty-claim__location margin-left-right-smaller text-size-big text-opacity text-middle">
+          {addressInfo.join(', ')}
+        </span>
       </div>
     );
   }

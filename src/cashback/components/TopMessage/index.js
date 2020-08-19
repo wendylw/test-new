@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { IconClose } from '../../../components/Icons';
-import './TopMessage.scss';
 
 class TopMessage extends React.Component {
   state = {};
 
   render() {
     const { className, message, hideMessage } = this.props;
-    const classList = ['top-message'];
+    const classList = ['top-message padding-normal'];
 
     if (className) {
       classList.push(className);

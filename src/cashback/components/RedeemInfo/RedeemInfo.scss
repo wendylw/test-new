@@ -18,11 +18,8 @@
 
   &__image-container {
     max-width: 45%;
-    margin: 0 auto;
-
-    img {
-      max-width: 100%;
-    }
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -39,10 +36,5 @@
     margin: 0 auto;
     max-width: 270px;
     list-style-type: decimal;
-  }
-
-  &__item {
-    margin: 5px 0;
-    line-height: $line-height-base;
   }
 }

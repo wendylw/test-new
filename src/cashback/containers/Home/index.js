@@ -36,7 +36,7 @@ class PageLoyalty extends React.Component {
     const { displayBusinessName, name } = businessInfo || {};
     return (
       <div className="margin-top-bottom-normal">
-        <span className="loyalty-home__location text-size-big text-opacity text-middle">
+        <span className="loyalty-home__location margin-left-right-smaller text-size-big text-opacity text-middle">
           {displayBusinessName || name}
         </span>
       </div>
@@ -56,13 +56,13 @@ class PageLoyalty extends React.Component {
     const { totalCredits } = cashbackHistorySummary || {};
 
     return (
-      <div className="loyalty-home__money">
+      <div>
         <CurrencyNumber
           className="loyalty-home__money-currency padding-left-right-small text-size-large"
           money={totalCredits || 0}
         />
         <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
-          <IconInfo />
+          <IconInfo className="icon icon__default" />
         </span>
       </div>
     );

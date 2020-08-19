@@ -89,7 +89,9 @@ class RecentActivities extends React.Component {
           const { eventType, eventTime } = activity;
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
           const type = this.getType(eventType, {
-            className: `recent-activities__list-icon icon  ${eventType}`,
+            className: `recent-activities__list-icon icon  ${
+              eventType === 'earned' ? 'icon__primary' : 'icon__default'
+            }`,
           });
 
           return (

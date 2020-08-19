@@ -8,7 +8,6 @@
   }
 
   &__location {
-    margin: 0 10px;
     color: $white;
   }
 
@@ -19,14 +18,6 @@
 
   &__title {
     color: $logo-default-title;
-  }
-
-  &__money {
-    position: relative;
-
-    svg {
-      fill: $gray-2;
-    }
   }
 
   &__money-currency {
