@@ -92,7 +92,7 @@ class Login extends React.Component {
     return (
       <section className={classList.join(' ')} data-heap-name="cashback.login.container">
         <PhoneViewContainer
-          className="aside-bottom not-full"
+          className="absolute-wrapper login__container"
           title={title}
           phone={phone}
           country={country || businessCountry}

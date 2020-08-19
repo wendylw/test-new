@@ -2,8 +2,6 @@ import React from 'react';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import InfiniteScroll from 'react-infinite-scroller';
 import { IconTicket } from '../../../../../components/Icons';
-import Header from '../../../../../components/Header';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -94,14 +92,14 @@ class RecentActivities extends React.Component {
             const receiptTime = new Date(createdTime);
 
             return (
-              <div className="receipt-list__item card-list__item flex flex-middle" key={`${i}`}>
-                <IconTicket className="receipt-list__icon ticket" />
-                <summary className="card-list__item-summary">
-                  <h4 className="card-list__title">
+              <div className="flex flex-middle padding-normal margin-top-bottom-smaller base-box-shadow" key={`${i}`}>
+                <IconTicket className="icon__primary ticket" />
+                <summary className="padding-left-right-normal">
+                  <h4 className="margin-top-bottom-smaller">
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>
-                  <time className="card-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
+                  <time className="receipt-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
                 </summary>
               </div>
             );
@@ -121,23 +119,23 @@ class RecentActivities extends React.Component {
 
     return (
       <div
-        className={`receipt-list aside-section ${this.state.fullScreen ? 'full' : ''}`}
+        className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}
         data-heap-name="cashback.home.receipt-list.container"
       >
-        <aside className="receipt-list__container aside-bottom">
+        <aside className="receipt-list__container padding-left-right-small">
           <i
             className="receipt-list__slide-button padding-small"
             onClick={this.toggleFullScreen.bind(this)}
             data-heap-name="cashback.home.receipt-list.screen-toggler"
           />
           <h3
-            className="receipt-list__title text-center"
+            className="padding-top-bottom-small text-center text-size-bigger"
             onClick={this.toggleFullScreen.bind(this)}
             data-heap-name="cashback.home.receipt-list.title"
           >
             {t('Receipts')}
           </h3>
-          <div className={`receipt-list__content card-list ${this.state.fullScreen ? 'full' : ''}`}>
+          <div className={`receipt-list__content padding-left-right-small ${this.state.fullScreen ? 'full' : ''}`}>
             {this.renderLogList()}
           </div>
         </aside>

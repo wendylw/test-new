@@ -1,6 +1,6 @@
 @import "../../../Variables";
 
-.loyalty-home {
+.loyalty-claim {
   &__container {
     height: 100%;
     width: 100%;
@@ -19,14 +19,6 @@
 
   &__title {
     color: $logo-default-title;
-  }
-
-  &__money {
-    position: relative;
-
-    svg {
-      fill: $gray-2;
-    }
   }
 
   &__money-currency {

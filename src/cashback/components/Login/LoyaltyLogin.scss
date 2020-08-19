@@ -1,3 +1,12 @@
-section.login {
-  background-color: inherit;
+@import "../../../Variables";
+
+section {
+  &.login {
+    background-color: rgba(0, 0, 0, 0);
+
+    &__container {
+      bottom: 0;
+      background-color: $white;
+    }
+  }
 }

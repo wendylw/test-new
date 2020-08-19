@@ -36,7 +36,9 @@ class PageLoyalty extends React.Component {
     const { displayBusinessName, name } = businessInfo || {};
     return (
       <div className="margin-top-bottom-normal">
-        <span className="loyalty__location text-size-big text-opacity text-middle">{displayBusinessName || name}</span>
+        <span className="loyalty-home__location text-size-big text-opacity text-middle">
+          {displayBusinessName || name}
+        </span>
       </div>
     );
   }
@@ -54,9 +56,9 @@ class PageLoyalty extends React.Component {
     const { totalCredits } = cashbackHistorySummary || {};
 
     return (
-      <div className="loyalty-money">
+      <div className="loyalty-home__money">
         <CurrencyNumber
-          className="loyalty-money__currency padding-left-right-small text-size-large"
+          className="loyalty-home__money-currency padding-left-right-small text-size-large"
           money={totalCredits || 0}
         />
         <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
@@ -73,12 +75,16 @@ class PageLoyalty extends React.Component {
     const { showRecentActivities } = this.state;
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
-      <section className="loyalty__container flex flex-center" data-heap-name="cashback.home.container">
+      <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
         <article className="text-center">
           {logo ? (
-            <Image className="loyalty-logo margin-top-bottom-normal" src={logo} alt={displayBusinessName || name} />
+            <Image
+              className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
+              src={logo}
+              alt={displayBusinessName || name}
+            />
           ) : null}
-          <h5 className="loyalty-logo__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
+          <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
 
           {this.renderCashback()}
 

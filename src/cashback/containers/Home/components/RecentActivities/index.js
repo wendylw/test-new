@@ -84,23 +84,28 @@ class RecentActivities extends React.Component {
     const { country } = onlineStoreInfo || {};
 
     return (
-      <ul className="card-list">
+      <ul className="padding-left-right-small">
         {(cashbackHistory || []).map((activity, i) => {
           const { eventType, eventTime } = activity;
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
           const type = this.getType(eventType, {
-            className: `recent-activities__list-icon card-list__icon ${eventType}`,
+            className: `recent-activities__list-icon icon  ${eventType}`,
           });
 
           return (
-            <li key={`${i}`} className="recent-activities__list-item card-list__item flex flex-middle">
+            <li
+              key={`${i}`}
+              className="recent-activities__list-item padding-normal margin-top-bottom-smaller flex flex-middle"
+            >
               {type.icon}
-              <summary className="card-list__item-summary">
-                <h4 className="card-list__title">
+              <summary className="padding-left-right-normal">
+                <h4 className="margin-top-bottom-smaller">
                   <label>{type.text}&nbsp;</label>
                   {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
                 </h4>
-                <time className="card-list__time">{toLocaleDateString(eventDateTime, country, DATE_OPTIONS)}</time>
+                <time className="recent-activities__time padding-top-bottom-smaller">
+                  {toLocaleDateString(eventDateTime, country, DATE_OPTIONS)}
+                </time>
               </summary>
             </li>
           );
