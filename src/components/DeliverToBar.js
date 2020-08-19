@@ -1,16 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { IconLeftArrow } from './Icons';
+import withDataAttributes from './withDataAttributes';
 import './DeliverToBar.scss';
 
 class DeliverToBar extends Component {
   render() {
     const {
-      heapContentName,
-      heapBackButtonName,
       title,
       icon,
-      navBackUrl,
+      backIcon,
       content,
       extraInfo,
       className,
@@ -18,6 +16,7 @@ class DeliverToBar extends Component {
       gotoLocationPage,
       backLeftPosition,
       deliverToBarRef,
+      dataAttributes,
       children,
     } = this.props;
     const classList = ['deliver-to-entry flex flex-space-between sticky-wrapper'];
@@ -30,8 +29,8 @@ class DeliverToBar extends Component {
       <section ref={deliverToBarRef} className={classList.join(' ')}>
         <div
           className="deliver-to-entry__content"
+          {...dataAttributes}
           data-testid="DeliverToBar"
-          data-heap-name={heapContentName}
           onClick={() => {
             if (backLeftPosition) {
               backLeftPosition();
@@ -40,17 +39,7 @@ class DeliverToBar extends Component {
             gotoLocationPage();
           }}
         >
-          {showBackButton ? (
-            <IconLeftArrow
-              className="icon icon__big icon__default text-middle flex__shrink-fixed"
-              data-heap-name={heapBackButtonName}
-              onClick={event => {
-                event.preventDefault();
-                window.location.href = navBackUrl;
-                event.stopPropagation();
-              }}
-            />
-          ) : null}
+          {backIcon}
           <div className={showBackButton ? '' : 'padding-left-right-smaller'}>
             {title ? (
               <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
@@ -80,13 +69,10 @@ class DeliverToBar extends Component {
 
 DeliverToBar.propTypes = {
   deliverToBarRef: PropTypes.any,
-  heapContentName: PropTypes.string,
-  heapBackButtonName: PropTypes.string,
   className: PropTypes.string,
   title: PropTypes.string,
   icon: PropTypes.node,
   content: PropTypes.string,
-  navBackUrl: PropTypes.string,
   extraInfo: PropTypes.string,
   showBackButton: PropTypes.bool,
   gotoLocationPage: PropTypes.func,
@@ -104,4 +90,4 @@ DeliverToBar.defaultProps = {
   backLeftPosition: () => {},
 };
 
-export default DeliverToBar;
+export default withDataAttributes(DeliverToBar);

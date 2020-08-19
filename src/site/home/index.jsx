@@ -174,7 +174,7 @@ class Home extends React.Component {
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
-          heapContentName="site.home.delivery-bar"
+          data-heap-name="site.home.delivery-bar"
           title={t('DeliverTo')}
           icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
           className={`entry__deliver-to base-box-shadow ${

@@ -5,7 +5,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLocation } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
 import ProductDetail from './components/ProductDetail';
 import CartListAside from './components/CartListAside';
@@ -537,11 +537,26 @@ export class Home extends Component {
     return (
       <DeliverToBar
         deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
-        heapContentName="ordering.home.delivery-bar"
-        heapBackButtonName="order.home.delivery-bar-back-btn"
+        data-heap-name="ordering.home.delivery-bar"
         className="ordering-home__deliver-to flex__shrink-fixed"
         content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
-        navBackUrl={this.navBackUrl}
+        backIcon={
+          showBackButton({
+            isValidTimeToOrder,
+            enablePreOrder,
+            backPosition: BackPosition.DELIVERY_TO,
+          }) ? (
+            <IconLeftArrow
+              className="icon icon__big icon__default text-middle flex__shrink-fixed"
+              data-heap-name="order.home.delivery-bar-back-btn"
+              onClick={event => {
+                event.preventDefault();
+                window.location.href = this.navBackUrl;
+                event.stopPropagation();
+              }}
+            />
+          ) : null
+        }
         extraInfo={`${Utils.isDeliveryType() ? t('DeliverOn') : t('PickUpOn')}${
           Utils.isDeliveryType()
             ? !enablePreOrder

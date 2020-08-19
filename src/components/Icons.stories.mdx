@@ -44,6 +44,10 @@ import {
     padding: 5px;
     width: 20%;
   }
+
+  .icon-sb__label {
+    width: 100px;
+  }
 `}</style>
 
 # Icons
@@ -51,8 +55,86 @@ Almost all icons come from <a target="_blank" href="https://material.io/resource
 
 `<{Icon name} className="icon [icon color class name] [icon size class name]"/>`
 
+## Icon color setting
+
 <Preview>
-  <Story name="icons">
+  <Story name="icon colors">
+    <div>
+      <List>
+        <Item className="flex flex-middle">
+          {/* Icon Primary */}
+          <IconPending className="icon icon__primary" />
+          {/* end of Icon Primary */}
+          <label className="padding-small">Primary Icon</label>
+        </Item>
+        <Item className="flex flex-middle">
+          {/* Icon Primary Light */}
+          <IconPending className="icon icon__primary-light" />
+          {/* end of Icon Primary Light */}
+          <label className="padding-small">Primary Light Icon</label>
+        </Item>
+        <Item className="flex flex-middle">
+          {/* Icon Default */}
+          <IconPending className="icon icon__default" />
+          {/* end of Icon Default */}
+          <label className="padding-small">Default Icon</label>
+        </Item>
+        <Item className="flex flex-middle">
+          {/* Icon Error */}
+          <IconPending className="icon icon__error" />
+          {/* end of Icon Error */}
+          <label className="padding-small">Error Icon</label>
+        </Item>
+        <Item className="flex flex-middle">
+          {/* Icon White */}
+          <IconPending className="icon icon__white" style={{backgroundColor: '#303030', borderRadius: '50%'}}/>
+          {/* end of Icon White */}
+          <label className="padding-small">White Icon</label>
+        </Item>
+      </List>
+    </div>
+  </Story>
+</Preview>
+
+## Icon size setting
+
+<Preview>
+  <Story name="icon sizes">
+    <div>
+      <List>
+        <Item className="flex flex-middle">
+          <label className="icon-sb__label padding-small">Big Icon</label>
+          {/* Icon Big */}
+          <IconPending className="icon icon__big" />
+          {/* end of Icon Big */}
+        </Item>
+        <Item className="flex flex-middle">
+          <label className="icon-sb__label padding-small">Normal Icon</label>
+          {/* Icon Normal */}
+          <IconPending className="icon icon__normal" />
+          {/* end of Icon Normal */}
+        </Item>
+        <Item className="flex flex-middle">
+          <label className="icon-sb__label padding-small">Small Icon</label>
+          {/* Icon Small */}
+          <IconPending className="icon icon__small" />
+          {/* end of Icon Small */}
+        </Item>
+        <Item className="flex flex-middle">
+          <label className="icon-sb__label padding-small">smaller Icon</label>
+          {/* Icon smaller */}
+          <IconPending className="icon icon__smaller" />
+          {/* end of Icon smaller */}
+        </Item>
+      </List>
+    </div>
+  </Story>
+</Preview>
+
+## All icons
+
+<Preview>
+  <Story name="all icons">
     <div className="icons-sb__list flex flex-middle flex-space-between">
       <div className="icons-sb__item flex flex-middle">
         {/* IconPending component */}
