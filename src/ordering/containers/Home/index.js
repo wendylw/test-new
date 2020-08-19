@@ -814,9 +814,6 @@ export class Home extends Component {
         <div
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
-            // bottom: `${mainBottom({
-            //   footerEls: [this.footerEl],
-            // })}px`,
             top: `${mainTop({
               headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
             })}px`,
@@ -827,7 +824,6 @@ export class Home extends Component {
               mainBottom({
                 footerEls: [this.footerEl],
               })}px`,
-            // marginBottom: Utils.isSafari && Utils.getUserAgentInfo().isMobile ? '75px' : '0',
           }}
         >
           <CurrentCategoryBar containerId="product-list" categories={categories} isVerticalMenu={isVerticalMenu} />
