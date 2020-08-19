@@ -180,7 +180,9 @@ class Cart extends Component {
 
   AdditionalCommentsFocus = () => {
     setTimeout(() => {
-      document.querySelector('.list__container').scrollTop = document.querySelector('.list__container').scrollHeight;
+      const container = document.querySelector('div.ordering-cart__container');
+
+      container.scrollTop = container.scrollHeight;
     }, 300);
   };
 
