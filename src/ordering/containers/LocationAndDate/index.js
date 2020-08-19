@@ -701,7 +701,11 @@ class LocationAndDate extends Component {
             data-testid="deliverTo"
           >
             {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
-            <p className="location-date__input form__input flex flex-middle padding-normal text-size-big text-line-height-base text-omit__single-line">
+            <p
+              className={`location-date__input form__input flex flex-middle text-size-big text-line-height-base text-omit__single-line ${
+                !deliveryToAddress ? '' : 'padding-normal'
+              }`}
+            >
               {deliveryToAddress || t('WhereToDeliverFood')}
             </p>
             {deliveryToAddress && <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />}
@@ -1371,7 +1375,9 @@ class LocationAndDate extends Component {
           {t('SelectedStore')}
         </label>
         <div className="form__group flex flex-middle flex-space-between">
-          <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">{name}</p>
+          <p className="location-date__input padding-normal text-size-big text-line-height-base text-omit__single-line">
+            {name}
+          </p>
           <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
         </div>
       </div>

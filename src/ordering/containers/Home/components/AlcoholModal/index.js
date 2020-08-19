@@ -39,7 +39,7 @@ export class AlcoholModal extends PureComponent {
         <Modal.Footer>
           <div className="flex flex-middle">
             <button
-              className="button button__outline button__block margin-smaller "
+              className="button button__outline button__block margin-smaller text-weight-bolder"
               data-testid="noIamNot"
               data-heap-name="ordering.home.alcohol-modal.reject"
               onClick={this.handleClick.bind(null, false)}
@@ -47,7 +47,7 @@ export class AlcoholModal extends PureComponent {
               {t('AlcoholNo')}
             </button>
             <button
-              className="button button__fill button__block margin-smaller "
+              className="button button__fill button__block margin-smaller text-weight-bolder"
               data-testid="yesIam"
               data-heap-name="ordering.home.alcohol-modal.accept"
               onClick={this.handleClick.bind(null, true)}
