@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import Constants from '../../../utils/constants';
+import './OrderingTables.scss';
 
 import { actions as homeActionCreators, getCurrentStoreId } from '../../redux/modules/home';
 import {
@@ -43,7 +44,7 @@ class Tables extends Component {
     const { t, tables, currentTableId } = this.props;
 
     return (
-      <section className="tables" data-heap-name="stores.tables.container">
+      <section className="ordering-tables padding-left-right-small" data-heap-name="stores.tables.container">
         <Header
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -52,8 +53,8 @@ class Tables extends Component {
           title={t('SelectTableNumber')}
           navFunc={this.handleClickBack}
         />
-        <div className="tables__title">{t('PleasePickOne')}</div>
-        <div className="tables__list">
+        <div className="ordering-tables__title text-size-big text-weight-bolder">{t('PleasePickOne')}</div>
+        <div className="ordering-tables__list margin-top-bottom-smaller">
           {tables.map(table => {
             const active = table.id === currentTableId ? 'active' : '';
             return (
@@ -61,10 +62,10 @@ class Tables extends Component {
                 onClick={() => this.handleSelectTable(table.id)}
                 data-heap-name="stores.tables.table-btn"
                 key={table.id}
-                className={`tables__list-item ${active}`}
+                className={`ordering-tables__list-item margin-smaller text-line-height-base border-radius-large ${active}`}
               >
-                <div className="tables__list-table-title">{t('Table')}</div>
-                <div className="tables__list-table-name">{table.name}</div>
+                <div className="ordering-tables__list-table-title">{t('Table')}</div>
+                <div className="ordering-tables__list-table-name text-weight-bolder">{table.name}</div>
               </button>
             );
           })}
