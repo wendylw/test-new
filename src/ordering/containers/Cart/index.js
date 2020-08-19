@@ -39,9 +39,9 @@ class Cart extends Component {
     window.scrollTo(0, 0);
     this.handleResizeEvent();
   }
-  componentDidUpdate() {
-    this.setListHeight();
-  }
+  // componentDidUpdate() {
+  //   this.setListHeight();
+  // }
   // setListHeight = () => {
   // const scrollHeight = document.documentElement.scrollHeight;
   // const clientHeight = document.documentElement.clientHeight;
