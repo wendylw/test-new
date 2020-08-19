@@ -31,7 +31,7 @@ class RedeemInfo extends React.Component {
           {buttonText}
         </button>
         {showModal ? (
-          <div className="redeem-info" data-heap-name="cashback.common.redeem-info.modal">
+          <div className="redeem-info fixed-wrapper" data-heap-name="cashback.common.redeem-info.modal">
             <Header
               className="flex-middle"
               contentClassName="flex-middle"
@@ -45,7 +45,7 @@ class RedeemInfo extends React.Component {
                 <img src={beepQrScanImage} alt="otp" />
               </figure>
               <h2 className="padding-small text-size-big text-weight-bold">{t('HowToUseCashback')}</h2>
-              <ol className="redeem__list">
+              <ol className="redeem-info__list">
                 <li className="margin-top-bottom-smaller text-line-height-base">{t('UseCashbackStep1')}</li>
                 <li className="margin-top-bottom-smaller text-line-height-base">{t('UseCashbackStep2')}</li>
               </ol>

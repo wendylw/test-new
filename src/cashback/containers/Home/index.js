@@ -90,8 +90,7 @@ class PageLoyalty extends React.Component {
 
           {this.renderLocation()}
           <RedeemInfo
-            className="redeem__button-container"
-            buttonClassName="button redeem__button button__block border-radius-base text-uppercase"
+            buttonClassName="redeem-info__button-link button border-radius-base text-uppercase"
             buttonText={t('HowToUseCashback')}
           />
         </article>

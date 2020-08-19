@@ -1,6 +1,5 @@
 import React from 'react';
 import Modal from './Modal';
-import '../App.scss';
 import { action } from '@storybook/addon-actions';
 
 export default {
