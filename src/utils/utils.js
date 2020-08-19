@@ -303,7 +303,7 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
 };
 
 Utils.isSafari = function isSafari() {
-  Utils.getUserAgentInfo().browser.includes('Safari');
+  return Utils.getUserAgentInfo().browser.includes('Safari');
 };
 
 Utils.isValidUrl = function(url) {
