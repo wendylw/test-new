@@ -126,6 +126,7 @@ class CategoryProductList extends Component {
                       image={product.images[0]}
                       title={product.title}
                       price={product.displayPrice}
+                      originalDisplayPrice={product.originalDisplayPrice}
                       cartQuantity={product.cartQuantity}
                       soldOut={product.soldOut}
                       decreaseDisabled={false}

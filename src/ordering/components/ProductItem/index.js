@@ -34,6 +34,22 @@ export class ProductItem extends Component {
       productItemMinHeight,
       scrollContainer,
     } = this.props;
+    const PricesDom = (
+      <div className="price item__text">
+        {originalDisplayPrice ? (
+          <CurrencyNumber
+            className="text-size-small text-line-through"
+            money={originalDisplayPrice}
+            numberOnly={true}
+          />
+        ) : null}
+        <CurrencyNumber
+          className={`${originalDisplayPrice ? 'text-error' : ''}`}
+          money={price || 0}
+          numberOnly={true}
+        />
+      </div>
+    );
 
     return (
       <Item
