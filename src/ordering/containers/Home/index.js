@@ -854,9 +854,9 @@ export class Home extends Component {
             businessInfo={businessInfo}
             storeAddress={storeAddress}
             telephone={telephone}
-            validDays={validDays}
-            validTimeFrom={validTimeFrom}
-            validTimeTo={validTimeTo}
+            validDays={this.getItemFromStore(validDays, 'validDays')}
+            validTimeFrom={this.getItemFromStore(validTimeFrom, 'validTimeFrom')}
+            validTimeTo={this.getItemFromStore(validTimeTo, 'validTimeTo')}
             businessLoaded={businessLoaded}
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
