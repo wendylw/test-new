@@ -35,7 +35,7 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
           { type: types.FETCH_ONLINECATEGORY_REQUEST },
           { type: types.FETCH_ONLINECATEGORY_SUCCESS, responseGql: commonSuccessData },
         ];
-        return expectedActionsCheck(fetchOnlineCategory(), expectedActions);
+        return expectedActionsCheck(fetchOnlineCategory({}), expectedActions);
       });
     });
     describe('loadShoppingCart', () => {

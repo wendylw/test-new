@@ -24,10 +24,10 @@ module.exports = config => {
     collectCoverageFrom,
     coverageThreshold: {
       'global': {
-        branches: 80,
-        functions: 90,
-        lines: 90,
-        statements: 90,
+        branches: 40,
+        functions: 50,
+        lines: 50,
+        statements: 50,
       }
       // 'src/utils': {
       //   branches: 70,
