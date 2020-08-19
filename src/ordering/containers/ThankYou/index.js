@@ -459,6 +459,12 @@ export class ThankYou extends PureComponent {
             </div>
           ) : null}
 
+          {currentStatusObj.status === 'delivered' ? (
+            <div className="thanks__status-description flex flex-middle flex-center">
+              <p className="text-size-big">{currentStatusObj.secondNote}</p>
+            </div>
+          ) : null}
+
           {!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (
             <div className="thanks__status-description flex flex-middle flex-center">
               <p className="text-size-big">{t('SelfDeliveryDescription')}</p>
@@ -680,16 +686,18 @@ export class ThankYou extends PureComponent {
   renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType }) {
     if (isPreOrder && isDeliveryType) return null;
     const { t } = this.props;
+
     return (
       <h4 className="thanks__info-container-title text-uppercase font-weight-bolder text-left text-size-big">
         {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
       </h4>
     );
   }
+
   render() {
     const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId, pickUpId } = order || {};
+    const { orderId, tableId } = order || {};
     const { isWebview } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
