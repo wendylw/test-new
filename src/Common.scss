@@ -88,6 +88,10 @@ address {
   text-transform: capitalize;
 }
 
+.text-line-through {
+  text-decoration: line-through;
+}
+
 .text-error {
   color: $status-red;
 }
