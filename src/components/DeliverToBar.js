@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { IconLeftArrow } from './Icons';
 import withDataAttributes from './withDataAttributes';
 import './DeliverToBar.scss';
 

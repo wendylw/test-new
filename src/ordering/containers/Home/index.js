@@ -5,7 +5,7 @@ import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
-import { IconEdit, IconInfoOutline, IconLocation } from '../../../components/Icons';
+import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
 import ProductDetail from './components/ProductDetail';
 import CartListAside from './components/CartListAside';

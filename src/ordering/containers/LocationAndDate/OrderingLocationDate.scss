@@ -13,12 +13,23 @@
   &__pickup {
     width: 50%;
     border: 1px solid $gray-4;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.2);
 
     &.active {
       color: $white;
       background-color: $theme-color;
       border-color: $theme-color;
     }
+  }
+
+  &__delivery {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+
+  &__pickup {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
 
   &__label {

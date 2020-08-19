@@ -12,7 +12,7 @@ import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
-import CurrencyNumber from '../../components/CurrencyNumber';
+import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
@@ -20,14 +20,24 @@ import './OrderingStores.scss';
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
   <li
-    className={`flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider ${
-      props.isClose ? 'close-mask' : ''
+    className={`flex flex-middle flex-space-between padding-top-bottom-normal margin-left-right-normal border__bottom-divider ${
+      props.isClose ? 'ordering-stores__item-disabled' : ''
     }`}
     onClick={() => props.select(props.store)}
     data-heap-name="ordering.store-list.store-item"
   >
-    <summary className="padding-left-right-small">
-      <h3 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{props.store.name}</h3>
+    <summary className="ordering-stores__summary padding-left-right-small">
+      <div className="flex flex-middle">
+        <h3 className="ordering-stores__title margin-top-bottom-smaller text-size-big text-weight-bolder text-omit__single-line">
+          {props.store.name}
+        </h3>
+        {props.isClose ? (
+          <Tag
+            text={props.t('Closed')}
+            className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+          />
+        ) : null}
+      </div>
       <p className="margin-top-bottom-smaller text-size-small text-opacity">
         {Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}
       </p>
@@ -47,7 +57,7 @@ const StoreListItem = props => (
     </summary>
 
     {props.storeId === props.store.id && (
-      <IconChecked className="icon icon__small icon__primary flex__shrink-fixed margin-left-right-smallest" />
+      <IconChecked className="icon icon__primary flex__shrink-fixed margin-left-right-smallest" />
     )}
   </li>
 );

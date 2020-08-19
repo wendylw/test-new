@@ -701,10 +701,10 @@ class LocationAndDate extends Component {
             data-testid="deliverTo"
           >
             {!deliveryToAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
-            <p className="location-date__input form__input flex flex-middle padding-top-bottom-normal text-size-big text-line-height-base text-omit__single-line">
+            <p className="location-date__input form__input flex flex-middle padding-normal text-size-big text-line-height-base text-omit__single-line">
               {deliveryToAddress || t('WhereToDeliverFood')}
             </p>
-            {deliveryToAddress && <IconNext className="icon icon__normal flex__shrink-fixed" />}
+            {deliveryToAddress && <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />}
           </div>
         </div>
       );
@@ -723,7 +723,7 @@ class LocationAndDate extends Component {
           <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
             {t('PickupAt')}
           </label>
-          <p>{pickUpAddress}</p>
+          <p className="text-line-height-base">{pickUpAddress}</p>
         </div>
       );
     }
@@ -1372,7 +1372,7 @@ class LocationAndDate extends Component {
         </label>
         <div className="form__group flex flex-middle flex-space-between">
           <p className="padding-normal text-size-big text-line-height-base text-omit__single-line">{name}</p>
-          <IconNext className="icon icon__normal flex__shrink-fixed" />
+          <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
         </div>
       </div>
     );
@@ -1396,7 +1396,7 @@ class LocationAndDate extends Component {
           {!onlyType && (
             <ul className="flex flex-middle padding-normal">
               <li
-                className={`location-date__delivery text-center padding-small text-size-big text-weight-bolder ${
+                className={`location-date__delivery text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
                   isDeliveryType ? 'active' : ''
                 }`}
                 onClick={this.setDeliveryType}
@@ -1405,7 +1405,7 @@ class LocationAndDate extends Component {
                 {t('Delivery')}
               </li>
               <li
-                className={`location-date__pickup text-center padding-small text-size-big text-weight-bolder ${
+                className={`location-date__pickup text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
                   isPickUpType ? 'active' : ''
                 }`}
                 onClick={this.setPickUpType}
