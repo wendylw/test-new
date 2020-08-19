@@ -171,7 +171,7 @@ export class Footer extends Component {
           onClick={onClickCart}
         >
           <div className="home-cart__icon-container text-middle">
-            <IconCart className={`home-cart__icon-cart icon ${count !== 0 ? 'non-empty' : ''}`} />
+            <IconCart className={`home-cart__icon-cart icon icon__white ${count !== 0 ? 'non-empty' : ''}`} />
             {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
           </div>
 
