@@ -36,16 +36,16 @@ export class ProductItem extends Component {
       scrollContainer,
     } = this.props;
     const PricesDom = (
-      <div className="price item__text">
+      <div>
         {originalDisplayPrice ? (
           <CurrencyNumber
-            className="text-size-small text-line-through"
+            className="product-item__price text-size-small text-line-through"
             money={originalDisplayPrice}
             numberOnly={true}
           />
         ) : null}
         <CurrencyNumber
-          className={`${originalDisplayPrice ? 'text-error' : ''}`}
+          className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={price || 0}
           numberOnly={true}
         />
