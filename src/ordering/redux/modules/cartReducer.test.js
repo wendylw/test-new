@@ -35,7 +35,7 @@ describe('src/ordering/redux/modules/cart.js: reducers', () => {
 describe('src/ordering/redux/modules/cart.js:selectors', () => {
   const state = rootReducer(undefined, { type: null });
   it('getBusinessInfo', () => {
-    expect(getBusinessInfo(state)).toEqual(undefined);
+    expect(getBusinessInfo(state)).toEqual({});
   });
   it('getPendingTransactionIds', () => {
     expect(getPendingTransactionIds(state)).toEqual([]);
