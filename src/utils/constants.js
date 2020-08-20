@@ -204,6 +204,9 @@ const PROMOTION_APPLIED_STATUS = {
   NOT_EXISTED: 'not_existed',
   UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
   REACH_MAX_CLAIM_COUNT: 'reach_max_claim_count',
+  REACH_CUSTOMER_CLAIM_COUNT_LIMIT: 'reach_customer_claim_count_limit',
+  REQUIRE_CUSTOMER: 'require_customer',
+  REQUIRE_FIRST_TIME_PURCHASE: 'require_first_time_purchase',
 };
 
 const PREORDER_IMMEDIATE_TAG = {
