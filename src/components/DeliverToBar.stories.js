@@ -1,6 +1,6 @@
 import React from 'react';
 import DeliverToBar from './DeliverToBar';
-import { IconLocation, IconLeftArrow, IconEdit, IconScanner } from './Icons';
+import { IconLocation, IconLeftArrow, IconEdit } from './Icons';
 
 export default {
   title: 'Common/DeliverToBar',
@@ -13,7 +13,7 @@ export const OrderingHomeTemplate = Template.bind({});
 OrderingHomeTemplate.args = {
   className: 'ordering-home__deliver-to flex__shrink-fixed',
   content: 'Petaling Jaya, Selangor, Malaysia',
-  extraInfo: 'Deliver At . TODAY . immediate',
+  extraInfo: 'Deliver at . today . immediate',
   icon: <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />,
   backIcon: <IconLeftArrow className="icon icon__big icon__default text-middle flex__shrink-fixed" />,
   showBackButton: false,
@@ -23,7 +23,7 @@ OrderingHomeTemplate.args = {
 export const MVPTemplate = Template.bind({});
 MVPTemplate.args = {
   className: 'entry__deliver-to base-box-shadow',
-  title: 'Deliver To',
+  title: 'Deliver to',
   content: 'Petaling Jaya, Selangor, Malaysia',
   icon: <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />,
 };
