@@ -135,7 +135,6 @@ export class Home extends Component {
     for (let i = 0; i < storeList.length; i++) {
       let item = storeList[i];
       const { qrOrderingSettings } = item;
-      const { validDays, validTimeFrom, validTimeTo } = qrOrderingSettings || {};
 
       if (Utils.isValidTimeToOrder(qrOrderingSettings)) {
         return true;
@@ -234,14 +233,6 @@ export class Home extends Component {
       return isVacationDay;
     };
     const currentValidDays = Array.from(validDays, v => v - 1);
-    const vacationList = vacations
-      ? vacations.map(item => {
-          return {
-            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
-            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
-          };
-        })
-      : [];
 
     while (currentValidDays.indexOf(defaultTime.getDay()) === -1 || isVacation(getDateStringFromTime(defaultTime))) {
       times++;
@@ -467,7 +458,6 @@ export class Home extends Component {
         listEl.style.top = `${listElOffsetTop - currentScrollTop}px`;
 
         Object.assign(localState, { blockScrollTop: currentScrollTop });
-        rootEl.setAttribute('class', `${rootClassName} fixed`);
       } else {
         const { blockScrollTop } = localState;
 
@@ -726,10 +716,6 @@ export class Home extends Component {
   }
 
   handleLegalAge = isAgeLegal => {
-    // this.setState({
-    //   alcoholModal: !isAgeLegal,
-    // });
-
     Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };

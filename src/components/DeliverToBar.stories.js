@@ -7,9 +7,7 @@ export default {
   component: DeliverToBar,
 };
 
-// const Template = args => <DeliverToBar {...args} />;
-
-export const OrderingHomeDeliverToBar = args => (
+export const OrderingHome = args => (
   <DeliverToBar
     className="ordering-home__deliver-to flex__shrink-fixed"
     icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
