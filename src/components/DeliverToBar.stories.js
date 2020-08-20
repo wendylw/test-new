@@ -1,5 +1,6 @@
 import React from 'react';
 import DeliverToBar from './DeliverToBar';
+import { IconLocation } from './Icons';
 
 export default {
   title: 'Common/DeliverToBar',
@@ -8,17 +9,13 @@ export default {
 
 // const Template = args => <DeliverToBar {...args} />;
 
-// export const Title = Template.bind({});
-// Title.args = {
-//   title: 'Cookie',
-// };
-
-export const Template = () => (
+export const OrderingHomeDeliverToBar = args => (
   <DeliverToBar
     className="ordering-home__deliver-to flex__shrink-fixed"
-    content="SS2, Petaling Jaya, Selangor, Malaysia"
+    icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
+    extraInfo="Deliver to time"
+    content="Address"
     backIcon={null}
-    extraInfo="TODAY . immediate"
     showBackButton={false}
     icon={null}
   >
