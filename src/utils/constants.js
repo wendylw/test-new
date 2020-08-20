@@ -152,6 +152,7 @@ const CREATE_ORDER_ERROR_CODES = {
   CREATE_ORDER_ERROR: 40010,
   CONTACT_DETAIL_INVALID: 40012,
   STORE_IS_ON_VACATION: 40013,
+  PRODUCT_SOLD_OUT: 54013,
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
