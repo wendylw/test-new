@@ -27,6 +27,7 @@ class DeliverToBar extends Component {
 
     return (
       <section ref={deliverToBarRef} className={classList.join(' ')}>
+        {showBackButton ? backIcon : null}
         <div
           className="deliver-to-entry__content"
           {...dataAttributes}
@@ -39,7 +40,6 @@ class DeliverToBar extends Component {
             gotoLocationPage();
           }}
         >
-          {backIcon}
           <div className={showBackButton ? '' : 'padding-left-right-smaller'}>
             {title ? (
               <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
@@ -53,7 +53,7 @@ class DeliverToBar extends Component {
                   {content}
                 </p>
                 {extraInfo ? (
-                  <p className="text-size-small text-weight-bolder padding-top-bottom-smaller text-omit__single-line">
+                  <p className="padding-top-bottom-smaller text-size-small text-weight-bolder text-uppercase text-omit__single-line">
                     {extraInfo}
                   </p>
                 ) : null}
@@ -72,6 +72,7 @@ DeliverToBar.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
   icon: PropTypes.node,
+  backIcon: PropTypes.node,
   content: PropTypes.string,
   extraInfo: PropTypes.string,
   showBackButton: PropTypes.bool,
@@ -82,12 +83,12 @@ DeliverToBar.propTypes = {
 DeliverToBar.defaultProps = {
   title: '',
   content: '',
-  navBackUrl: '',
   extraInfo: '',
   icon: null,
+  backIcon: null,
   showBackButton: false,
-  toLocationPage: () => {},
   backLeftPosition: () => {},
+  gotoLocationPage: () => {},
 };
 
 export default withDataAttributes(DeliverToBar);

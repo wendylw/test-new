@@ -531,21 +531,15 @@ export class Home extends Component {
         className="ordering-home__deliver-to flex__shrink-fixed"
         content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
         backIcon={
-          showBackButton({
-            isValidTimeToOrder,
-            enablePreOrder,
-            backPosition: BackPosition.DELIVERY_TO,
-          }) ? (
-            <IconLeftArrow
-              className="icon icon__big icon__default text-middle flex__shrink-fixed"
-              data-heap-name="order.home.delivery-bar-back-btn"
-              onClick={event => {
-                event.preventDefault();
-                window.location.href = this.navBackUrl;
-                event.stopPropagation();
-              }}
-            />
-          ) : null
+          <IconLeftArrow
+            className="icon icon__big icon__default text-middle flex__shrink-fixed"
+            data-heap-name="order.home.delivery-bar-back-btn"
+            onClick={event => {
+              event.preventDefault();
+              window.location.href = this.navBackUrl;
+              event.stopPropagation();
+            }}
+          />
         }
         extraInfo={`${Utils.isDeliveryType() ? t('DeliverOn') : t('PickUpOn')}${
           Utils.isDeliveryType()
