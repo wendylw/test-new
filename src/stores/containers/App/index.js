@@ -62,7 +62,7 @@ class App extends Component {
   checkOnlyType = type => {
     const { stores } = this.props;
 
-    if (!stores.length) return type;
+    if (!(stores || []).length) return type;
     let isOnlyType = true,
       onlyType;
     for (let store of stores) {
