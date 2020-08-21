@@ -268,6 +268,10 @@ img {
   }
 }
 
+.padding-smaller {
+  padding: 1.4vw;
+}
+
 .padding-top-bottom-smaller {
   padding-top: 1.4vw;
   padding-bottom: 1.4vw;
@@ -909,6 +913,10 @@ img {
 }
 
 @media (min-width: 420px) {
+  .padding-smaller {
+    padding: 4px;
+  }
+
   .padding-top-bottom-smaller {
     padding-top: 4px;
     padding-bottom: 4px;

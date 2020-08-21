@@ -45,7 +45,7 @@ export class Item extends Component {
                 <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
               </div>
               <summary
-                className="item__summary flex flex-column flex-space-between padding-small"
+                className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smallest"
                 data-testid="itemDetail"
               >
                 <div className="item__summary-content">
@@ -78,7 +78,10 @@ export class Item extends Component {
           <div className="item__image-container flex__shrink-fixed margin-smaller">
             <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
           </div>
-          <summary className="item__summary flex flex-column flex-space-between padding-small" data-testid="itemDetail">
+          <summary
+            className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smallest"
+            data-testid="itemDetail"
+          >
             <div className="item__summary-content">
               {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
               <h3 className="item__title margin-top-bottom-smallest text-omit__multiple-line text-weight-bolder">
