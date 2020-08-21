@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useLayoutEffect, Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
@@ -129,6 +129,22 @@ export class Home extends Component {
     this.checkRange();
     this.checkOrderTime();
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    const { deliveryInfo: prevDeliveryInfo } = prevProps;
+    const { containerHeight } = prevState;
+    const { deliveryInfo } = this.props;
+    const pageRf = this.getPageRf();
+    const { sellAlcohol } = deliveryInfo;
+
+    if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
+      if (sellAlcohol) {
+        this.setAlcoholModalState(sellAlcohol);
+      }
+    }
+
+    this.setMainContainerHeight(containerHeight);
+  }
 
   checkMultipleStoreIsValidTimeToOrder = storeList => {
     let isMultipleValidTimeToOrder = false;
@@ -349,22 +365,6 @@ export class Home extends Component {
       this.toggleBodyScroll(false);
     }
   };
-
-  componentDidUpdate(prevProps, prevState) {
-    const { deliveryInfo: prevDeliveryInfo } = prevProps;
-    const { containerHeight } = prevState;
-    const { deliveryInfo } = this.props;
-    const pageRf = this.getPageRf();
-    const { sellAlcohol } = deliveryInfo;
-
-    if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
-      if (sellAlcohol) {
-        this.setAlcoholModalState(sellAlcohol);
-      }
-    }
-
-    this.setMainContainerHeight(containerHeight);
-  }
 
   getPageRf = () => {
     return Utils.getQueryString('pageRefer');
