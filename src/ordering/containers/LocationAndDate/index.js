@@ -883,7 +883,7 @@ class LocationAndDate extends Component {
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
-    const { business, allBusinessInfo } = this.props;
+    const { t, business, allBusinessInfo } = this.props;
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
 
