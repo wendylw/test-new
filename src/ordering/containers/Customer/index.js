@@ -100,7 +100,7 @@ class Customer extends Component {
   checkDistanceError = () => {
     const { businessInfo: business, deliveryDetails, t } = this.props;
     const { stores } = business;
-    const [store = {}] = stores;
+    const [store = {}] = stores || [];
     const { location } = store;
     const { latitude, longitude } = location || {};
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
@@ -109,6 +109,13 @@ class Customer extends Component {
     if (latitude === undefined || longitude === undefined) {
       return null;
     }
+    latitude = +latitude;
+    longitude = +longitude;
+
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+      return null;
+    }
+
     const from = {
       lat: latitude,
       lng: longitude,
