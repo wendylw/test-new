@@ -65,6 +65,7 @@ export class Home extends Component {
     enablePreOrderFroMulitpeStore: false,
     isValidToOrderFromMulitpeStore: false,
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+    windowSize: windowSize(),
   };
 
   scrollDepthNumerator = 0;
@@ -128,6 +129,7 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
+    window.addEventListener('resize', () => this.setState({ windowSize: windowSize() }));
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -144,6 +146,10 @@ export class Home extends Component {
     }
 
     this.setMainContainerHeight(containerHeight);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', () => this.setState({ windowSize: windowSize() }));
   }
 
   checkMultipleStoreIsValidTimeToOrder = storeList => {
@@ -765,7 +771,7 @@ export class Home extends Component {
       enableConditionalFreeShipping,
       enableLiveOnline,
     } = deliveryInfo;
-    const { viewAside, alcoholModal, callApiFinish } = this.state;
+    const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
 
     if (!onlineStoreInfo || !categories) {
@@ -797,7 +803,7 @@ export class Home extends Component {
             top: `${mainTop({
               headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
             })}px`,
-            height: `${windowSize().height -
+            height: `${windowSize.height -
               mainTop({
                 headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
               }) -
@@ -863,7 +869,7 @@ export class Home extends Component {
         <Footer
           {...otherProps}
           style={{
-            top: `${windowSize().height -
+            top: `${windowSize.height -
               mainBottom({
                 footerEls: [this.footerEl],
               })}px`,

@@ -586,15 +586,15 @@ img {
   }
 
   &__big {
-    padding: 12px;
+    padding: 3.8vw;
   }
 
   &__normal {
-    padding: 8px;
+    padding: 2.4vw;
   }
 
   &__small {
-    padding: 4px;
+    padding: 1.4vw;
 
     svg {
       width: 18px;
@@ -603,7 +603,7 @@ img {
   }
 
   &__smaller {
-    padding: 4px;
+    padding: 1.4vw;
 
     svg {
       width: 14px;
@@ -995,6 +995,24 @@ img {
 
   .margin-normal {
     margin: 16px;
+  }
+
+  .icon {
+    &__big {
+      padding: 12px;
+    }
+
+    &__normal {
+      padding: 8px;
+    }
+
+    &__small {
+      padding: 4px;
+    }
+
+    &__smaller {
+      padding: 4px;
+    }
   }
 }
 
