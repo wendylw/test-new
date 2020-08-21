@@ -157,10 +157,20 @@ class Cart extends Component {
   };
 
   handleGotoPromotion = () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
-      search: window.location.search,
-    });
+    const { user } = this.props;
+    const { isLogin } = user || {};
+
+    if (isLogin) {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
+        search: window.location.search,
+      });
+    } else {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+      });
+    }
   };
 
   showShortPromoCode() {

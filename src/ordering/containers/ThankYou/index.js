@@ -25,6 +25,7 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
 import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
+import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif';
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
@@ -292,7 +293,7 @@ export class ThankYou extends PureComponent {
     cancelOperator,
     order,
   }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED } = CONSUMERFLOW_STATUS;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     const { total, storeInfo, status, isPreOrder } = order || {};
@@ -356,6 +357,18 @@ export class ThankYou extends PureComponent {
         firstNote: t('RiderPickUp'),
         secondNote: t('TrackYourOrder'),
         bannerImage: beepOrderStatusPickedUp,
+      };
+    }
+
+    if (status === DELIVERED) {
+      currentStatusObj = {
+        status: 'delivered',
+        style: {
+          width: '100%',
+        },
+        firstNote: t('OrderDelivered'),
+        secondNote: t('OrderDeliveredDescription'),
+        bannerImage: beepOrderStatusDelivered,
       };
     }
 
@@ -441,8 +454,14 @@ export class ThankYou extends PureComponent {
               </div>
             ) : null}
 
+            {currentStatusObj.status === 'delivered' ? (
+              <div className="thanks__status-description flex flex-middle flex-center">
+                <p className="text-size-big">{currentStatusObj.secondNote}</p>
+              </div>
+            ) : null}
+
             {!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
+              <div className="thanks__status-description flex flex-middle flex-center">
                 <p className="text-size-big">{t('SelfDeliveryDescription')}</p>
               </div>
             ) : null}
@@ -595,12 +614,14 @@ export class ThankYou extends PureComponent {
   renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType }) {
     if (isPreOrder && isDeliveryType) return null;
     const { t } = this.props;
+
     return (
       <h4 className="margin-top-bottom-smaller text-uppercase text-weight-bolder text-size-big">
         {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
       </h4>
     );
   }
+
   render() {
     const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();

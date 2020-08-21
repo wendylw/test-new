@@ -332,7 +332,6 @@ class Customer extends Component {
     const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
     const { stores = [], country: locale } = businessInfo;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    const { deliveryComments } = this.props.deliveryDetails;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
@@ -386,27 +385,12 @@ class Customer extends Component {
             </p>
           </div>
         </div>
-
-        <div className="padding-top-bottom-small">
-          <div className="form__group">
-            <input
-              className="ordering-customer__input form__input padding-left-right-normal text-size-big"
-              data-heap-name="ordering.customer.pickup-note"
-              type="text"
-              maxLength="140"
-              value={deliveryComments}
-              name="deliveryComments"
-              onChange={this.handleInputChange}
-              placeholder={`${t('AddNoteToMerchantPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-            />
-          </div>
-        </div>
       </React.Fragment>
     );
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, cartSummary, addressChange, shoppingCart } = this.props;
+    const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart, cartSummary } = this.props;
     const { errorToast } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};

@@ -734,7 +734,7 @@ class LocationAndDate extends Component {
   };
 
   notVacation = day => {
-    const { t, business, allBusinessInfo = {} } = this.props;
+    const { business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     const { vacations } = businessInfo.qrOrderingSettings;
     if (!vacations) return true;
@@ -842,12 +842,12 @@ class LocationAndDate extends Component {
   };
 
   patchBreakTime = list => {
-    const { t, business, allBusinessInfo = {} } = this.props;
+    const { business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
     if (!breakTimeFrom || !breakTimeTo) return list;
     list = JSON.parse(JSON.stringify(list));
-    const zero = num => (num < 10 ? '0' + num : num + '');
+    // const zero = num => (num < 10 ? '0' + num : num + '');
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
       // let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
@@ -883,7 +883,7 @@ class LocationAndDate extends Component {
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
-    const { t, business, allBusinessInfo } = this.props;
+    const { business, allBusinessInfo } = this.props;
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
 
@@ -964,16 +964,6 @@ class LocationAndDate extends Component {
   };
 
   isTimeSlot = from => {
-    const timeString = from.split(' ')[0];
-    let { hour, minute } = Utils.getHourAndMinuteFromString(timeString);
-
-    hour = +hour;
-    if (from.split(' ')[1] === 'PM') {
-      hour += 12;
-    }
-
-    const time = `${hour}:${minute}`;
-
     return this.state.timeSlot.includes(from);
   };
 
