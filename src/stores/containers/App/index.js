@@ -180,8 +180,10 @@ class App extends Component {
 
     this.visitErrorPage();
     fetchOnlineStoreInfo().then(({ responseGql }) => {
-      const { data } = responseGql;
-      const { onlineStoreInfo } = data;
+      const { data } = responseGql || {};
+      const { onlineStoreInfo } = data || {};
+
+      if (!onlineStoreInfo) return;
       gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
 
