@@ -102,7 +102,8 @@ class Customer extends Component {
     const { stores } = business;
     const [store = {}] = stores || [];
     const { location } = store;
-    const { latitude, longitude } = location || {};
+
+    let { latitude, longitude } = location || {};
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
     }
