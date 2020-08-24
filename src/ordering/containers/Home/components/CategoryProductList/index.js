@@ -97,6 +97,19 @@ class CategoryProductList extends Component {
 
   handleShowProductDetail = async product => {
     const { onToggle } = this.props;
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+
+    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
+      const { search } = window.location;
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        search: `${search}&callbackUrl=${callbackUrl}`,
+      });
+      return;
+    }
 
     const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
     const { data: productDetail = {} } = responseGql;
