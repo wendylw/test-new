@@ -14,7 +14,7 @@ const { AUTH_INFO } = Constants;
 
 export const initialState = {
   user: {
-    // isWebview: Utils.isWebview(),
+    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,
