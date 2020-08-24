@@ -15,7 +15,7 @@ it('src/cashback/redux/store.js', () => {
         hasOtp: false,
         isExpired: false,
         isLogin: false,
-        // isWebview: false,
+        isWebview: false,
         prompt: 'Do you have a Beep account? Login with your mobile phone number.',
         storeCreditsBalance: 0,
       },
