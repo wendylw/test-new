@@ -100,7 +100,7 @@ export const getDeviceCoordinates = option => {
         resolve(position);
       },
       error => {
-        console.error('Fail to detect location', error);
+        console.warn('Fail to detect location', error);
         reject(error);
       },
       option
