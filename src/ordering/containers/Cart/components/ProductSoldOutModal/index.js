@@ -5,18 +5,9 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 
 export class ProductSoldOuteModal extends PureComponent {
-  state = {
-    // show: true,
-  };
-
-  handleHideOfflineStoreModal = () => {
-    // this.setState({ show: false });
-  };
-
   render() {
-    const { show, t, editHanlder } = this.props;
+    const { show, t, editHandler } = this.props;
 
-    // if (!show) return null;
     return (
       <Modal show={!!show} className="align-middle" data-heap-name="ordering.home.product-sold-out.container">
         <Modal.Body className="modal__content text-center">
@@ -27,15 +18,12 @@ export class ProductSoldOuteModal extends PureComponent {
           <button
             className="button__fill button__block border-radius-base text-uppercase font-weight-bolder"
             data-heap-name="ordering.home.offline-store-modal.dismiss-btn"
-            onClick={editHanlder}
+            onClick={editHandler}
           >
             {t('EditCart')}
           </button>
         </Modal.Footer>
       </Modal>
-      // <div>
-      //   testaaa
-      // </div>
     );
   }
 }

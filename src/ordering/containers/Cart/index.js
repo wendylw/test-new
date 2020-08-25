@@ -353,7 +353,7 @@ class Cart extends Component {
         </footer>
         <ProductSoldOutModal
           show={isHaveProductSoldOut}
-          editHanlder={() => {
+          editHandler={() => {
             this.setState({
               isHaveProductSoldOut: null,
             });
