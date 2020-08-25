@@ -21,7 +21,7 @@ import {
 import config from '../../../config';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import qs from 'qs';
-import deliveryHelpImage from '../../../images/order-delivery-help.png';
+import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -1371,7 +1371,7 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     return (
       <div className="flex flex-middle flex-space-between flex-column form__group">
-        <img src={deliveryHelpImage} alt="delivery no address image" className="block" style={{ width: '94%' }} />
+        <img src={beepLocationdateHint} alt="delivery no address image" className="block" style={{ width: '94%' }} />
         <p style={{ width: '56%', marginTop: '14px', color: '#8F9092' }} className="text-center text-size-big">
           {t('DeliveryHelpText')}
         </p>
