@@ -504,14 +504,14 @@ class ProductDetail extends Component {
   }
 
   renderProductDescription() {
-    const { t, show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
+    const { t, show, product, onToggle, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
     const { images, title, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
 
-    if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
+    if (show) {
       className.push('product-description__hide');
     }
 

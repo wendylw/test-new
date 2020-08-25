@@ -102,8 +102,6 @@ class CategoryProductList extends Component {
     const { data: productDetail = {} } = responseGql;
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
-
-    onToggle('PRODUCT_DESCRIPTION');
   };
 
   render() {
@@ -132,7 +130,7 @@ class CategoryProductList extends Component {
                       decreaseDisabled={false}
                       onDecrease={this.handleDecreaseProductInCart.bind(this, product)}
                       onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
-                      showProductDetail={this.handleShowProductDetail.bind(this, product)}
+                      showProductDetail={this.handleIncreaseProductInCart.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
                       data-heap-name="ordering.home.product-item"
