@@ -21,6 +21,7 @@ import {
 import config from '../../../config';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import qs from 'qs';
+import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import './OrderingLocationDate.scss';
 
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
@@ -1374,6 +1375,18 @@ class LocationAndDate extends Component {
     );
   };
 
+  renderDeliveryHelpText = () => {
+    const { t } = this.props;
+    return (
+      <div className="flex flex-middle flex-space-between flex-column form__group">
+        <img src={beepLocationdateHint} alt="delivery no address image" className="block" style={{ width: '94%' }} />
+        <p style={{ width: '56%', marginTop: '14px', color: '#8F9092' }} className="text-center text-size-big">
+          {t('DeliveryHelpText')}
+        </p>
+      </div>
+    );
+  };
+
   render() {
     const { t } = this.props;
     const { isDeliveryType, isPickUpType, onlyType, deliveryToAddress } = this.state;
@@ -1413,9 +1426,18 @@ class LocationAndDate extends Component {
           )}
           {isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}
-          {isDeliveryType ? (deliveryToAddress ? this.renderSelectStore() : null) : null}
-          {isDeliveryType ? (deliveryToAddress ? this.renderDeliveryOn() : null) : this.renderDeliveryOn()}
-          {isDeliveryType ? (deliveryToAddress ? this.renderHourSelector() : null) : this.renderHourSelector()}
+          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderSelectStore() : null) : null}
+          {this.state.isDeliveryType
+            ? this.state.deliveryToAddress
+              ? this.renderDeliveryOn()
+              : null
+            : this.renderDeliveryOn()}
+          {this.state.isDeliveryType
+            ? this.state.deliveryToAddress
+              ? this.renderHourSelector()
+              : null
+            : this.renderHourSelector()}
+          {isDeliveryType && !deliveryToAddress && this.renderDeliveryHelpText()}
         </div>
 
         {this.renderContinueButton()}
