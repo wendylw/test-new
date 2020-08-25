@@ -116,13 +116,13 @@ class OtpModal extends React.Component {
         />
 
         <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
-          <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-smaller">
+          <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
             <img src={beepOtpImage} alt="otp" />
           </figure>
           <h2 className="padding-normal text-size-biggest text-line-height-base text-weight-bolder">
             {t('OTPSentTitle', { phone })}
           </h2>
-          <div className="margin-smaller">
+          <div className="margin-small">
             {isNewInput ? (
               <div className="otp-modal__group form__group flex flex-middle flex-space-between text-size-larger">
                 <input
@@ -153,7 +153,7 @@ class OtpModal extends React.Component {
             )}
           </div>
           <button
-            className="otp-modal__button-resend button button__link padding-normal margin-top-bottom-smaller text-size-big text-uppercase text-weight-bolder"
+            className="otp-modal__button-resend button button__link padding-normal margin-top-bottom-small text-size-big text-uppercase text-weight-bolder"
             data-heap-name="common.otp-modal.resend-btn"
             disabled={!!currentOtpTime}
             onClick={() => {

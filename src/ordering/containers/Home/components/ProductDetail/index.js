@@ -563,7 +563,7 @@ class ProductDetail extends Component {
             />
           ) : (
             <ItemOperator
-              className="flex-middle flex__shrink-fixed margin-smallest"
+              className="flex-middle flex__shrink-fixed margin-smaller"
               decreaseDisabled={false}
               data-heap-name="ordering.home.product-detail.item-adjuster"
               onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
@@ -573,11 +573,11 @@ class ProductDetail extends Component {
         <article className="product-description__article margin-top-bottom-normal">
           {Boolean(descriptionStr) ? (
             <p
-              className="text-opacity padding-left-right-normal margin-top-bottom-smaller"
+              className="text-opacity padding-left-right-normal margin-top-bottom-small"
               dangerouslySetInnerHTML={descriptionStr}
             />
           ) : (
-            <p className="text-opacity padding-left-right-normal margin-top-bottom-smaller">
+            <p className="text-opacity padding-left-right-normal margin-top-bottom-small">
               {t('NoProductDescription')}
             </p>
           )}

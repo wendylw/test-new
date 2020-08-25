@@ -1,13 +1,82 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 
 <Meta title="Layout" />
 
 # Layout
 
-Almost all pages contain header, footer and container section. 
+Almost all pages contain header, footer and container section. The outermost layer is `<main></main>` of every project.
 
-<div className="flex flex-column" style={{backgroundColor: '#ff9419', height: '763px', width: '414px', margin: '0 auto'}}>
-  <header className="header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper flex-top" style={{backgroundColor: '#de8115', height: '50px'}}></header>
-  <div style={{height: '100%'}}></div>
-  <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal" style={{height: '90px'}}></footer>
-</div>
+## Layout CSS
+Beep includes `absolute` `sticky` and `fixed` positioning methods.
+
+```js live=true
+.absolute-wrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.sticky-wrapper {
+  position: -webkit-sticky;
+  position: sticky;
+}
+
+.fixed-wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 100%;
+
+  &__main {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+```
+
+## Layout Sample
+
+### 
+### Layout Design
+<Canvas>
+  <main>
+    <section className="flex flex-column" style={{backgroundColor: '#ff9419', height: '763px', width: '414px', margin: '0 auto'}}>
+      <header className="header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper flex-top" style={{backgroundColor: '#de8115', height: '50px'}}></header>
+      <div style={{height: '100%'}}></div>
+      <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal" style={{height: '90px'}}></footer>
+    </section>
+  </main>
+</Canvas>
+
+### CSS
+```js live=true
+.ordering-payment {
+  height: 100vh; // section wrapper CSS
+
+  &__container { // container CSS
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+}
+```
+
+### DOM
+```js live=true
+import Header from '{src/components/Header path}';
+
+<main className="fixed-wrapper fixed-wrapper__main">
+  <section className="ordering-payment flex flex-column">
+    <Header className="flex-middle" />
+    <div className="ordering-payment__container"></div>
+    <footer className="footer flex__shrink-fixed"></footer>
+  </section>
+</main>
+```

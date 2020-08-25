@@ -30,7 +30,7 @@ export class AlcoholModal extends PureComponent {
             <img src={beepAlcoholImage} alt="" />
           </div>
           <h2 className="text-size-biggest text-weight-bolder text-line-height-base">{t('CheckIfDrinkingAge')}</h2>
-          <p className="margin-smaller text-line-height-base">
+          <p className="margin-small text-line-height-base">
             {country === 'MY' && t('AlcoholLimitationsMY')}
             {country === 'PH' && t('AlcoholLimitationsPH')}
           </p>
@@ -39,7 +39,7 @@ export class AlcoholModal extends PureComponent {
         <Modal.Footer>
           <div className="flex flex-middle">
             <button
-              className="button button__outline button__block margin-smaller text-weight-bolder"
+              className="button button__outline button__block margin-small text-weight-bolder"
               data-testid="noIamNot"
               data-heap-name="ordering.home.alcohol-modal.reject"
               onClick={this.handleClick.bind(null, false)}
@@ -47,7 +47,7 @@ export class AlcoholModal extends PureComponent {
               {t('AlcoholNo')}
             </button>
             <button
-              className="button button__fill button__block margin-smaller text-weight-bolder"
+              className="button button__fill button__block margin-small text-weight-bolder"
               data-testid="yesIam"
               data-heap-name="ordering.home.alcohol-modal.accept"
               onClick={this.handleClick.bind(null, true)}
@@ -55,7 +55,7 @@ export class AlcoholModal extends PureComponent {
               {t('AlcoholYes')}
             </button>
           </div>
-          <p className="alcohol-modal__policy text-center margin-top-bottom-smaller text-line-height-base">
+          <p className="alcohol-modal__policy text-center margin-top-bottom-small text-line-height-base">
             <TermsAndPrivacy buttonLinkClassName="alcohol-modal__button-link" />
           </p>
         </Modal.Footer>
@@ -72,7 +72,7 @@ export class AlcoholModal extends PureComponent {
             <img src={beepAlcoholImage} alt="Beep alcohol" />
           </div>
           <h2 className="text-size-biggest text-weight-bolder text-line-height-base">{t('AlcoholDenied')}</h2>
-          <p className="alcohol-modal__policy text-center padding-left-right-small margin-top-bottom-smaller text-line-height-base">
+          <p className="alcohol-modal__policy text-center padding-left-right-small margin-top-bottom-small text-line-height-base">
             {t('AlcoholNotAllowed')}
           </p>
         </Modal.Body>

@@ -78,7 +78,7 @@ const Field = withDataAttributes(
 );
 
 const ErrorMessage = ({ children }) => (
-  <span className="form__error-message padding-left-right-normal margin-top-bottom-smaller" role="alert">
+  <span className="form__error-message padding-left-right-normal margin-top-bottom-small" role="alert">
     {children}
   </span>
 );
@@ -307,7 +307,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
 
       <footer className="payment-credit-card__footer flex__shrink-fixed footer padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
-          className="margin-top-bottom-smallest"
+          className="margin-top-bottom-smaller"
           history={history}
           buttonType="submit"
           data-heap-name="ordering.payment.stripe.pay-btn"

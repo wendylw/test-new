@@ -115,26 +115,26 @@ export class VariationSelector extends Component {
     }
 
     return (
-      <li className="variation-selector margin-smallest" key={variation.id}>
+      <li className="variation-selector margin-smaller" key={variation.id}>
         <div className="padding-left-right-small">
-          <h4 className="text-size-big text-uppercase padding-top-bottom-smaller margin-left-right-smallest">
+          <h4 className="text-size-big text-uppercase padding-top-bottom-smaller margin-left-right-smaller">
             {variation.name}
           </h4>
           {enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-            <span className="margin-left-right-smallest text-error">{AmountLimitDescription}</span>
+            <span className="margin-left-right-smaller text-error">{AmountLimitDescription}</span>
           ) : null}
         </div>
-        <ul className="variation-selector__list flex flex-top margin-top-bottom-smallest">
+        <ul className="variation-selector__list flex flex-top margin-top-bottom-smaller">
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
             const className = [
-              'variation-selector__button button padding-top-bottom-small padding-left-right-normal margin-smallest',
+              'variation-selector__button button padding-top-bottom-small padding-left-right-normal margin-smaller',
               selected[id] ? 'button__fill' : 'variation-selector__button-shadow',
             ];
             let selectedOptionFunc = this.handleSelectedOption.bind(this, option);
 
             return (
-              <li key={id} className="variation-selector__item margin-top-bottom-smallest margin-left-right-smaller">
+              <li key={id} className="variation-selector__item margin-top-bottom-smaller margin-left-right-small">
                 <button
                   className={className.join(' ')}
                   data-testid="itemDetailSimpleSelection"

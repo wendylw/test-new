@@ -41,7 +41,7 @@ class Sorry extends Component {
         </div>
         <footer className="footer__transparent footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-heap-name="voucher.sorry.try-again-btn"
             onClick={this.handleClickBack}
           >

@@ -69,7 +69,7 @@ export class MerchantInfo extends Component {
 
         <div className="ordering-merchant-info__container padding-top-bottom-normal">
           <ul className="card padding-left-right-small margin-normal">
-            <li className="ordering-merchant-info__item margin-left-right-smaller border__bottom-divider">
+            <li className="ordering-merchant-info__item margin-left-right-small border__bottom-divider">
               <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
                 {t('StoreName')}
               </summary>
@@ -77,7 +77,7 @@ export class MerchantInfo extends Component {
                 {name}
               </span>
             </li>
-            <li className="ordering-merchant-info__item margin-left-right-smaller border__bottom-divider">
+            <li className="ordering-merchant-info__item margin-left-right-small border__bottom-divider">
               <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
                 {t('ContactInfo')}
               </summary>
@@ -88,7 +88,7 @@ export class MerchantInfo extends Component {
                 {phone}
               </a>
             </li>
-            <li className="ordering-merchant-info__item margin-left-right-smaller">
+            <li className="ordering-merchant-info__item margin-left-right-small">
               <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
                 {t('StoreAddress')}
               </summary>

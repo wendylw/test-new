@@ -180,7 +180,7 @@ export class ThankYou extends PureComponent {
           <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
           <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
         </h3>
-        <p className="ordering-thanks__card-prompt-description margin-top-bottom-smaller text-line-height-base">
+        <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
           {t('EarnedCashBackDescription')}
         </p>
       </div>
@@ -200,7 +200,7 @@ export class ThankYou extends PureComponent {
             {t('OrderNumber')}
           </label>
           <span
-            className="ordering-thanks__pickup-number margin-top-bottom-smallest text-size-huge text-weight-bolder"
+            className="ordering-thanks__pickup-number margin-top-bottom-smaller text-size-huge text-weight-bolder"
             data-testid="thanks__pickup-number"
           >
             {pickUpId}
@@ -226,12 +226,12 @@ export class ThankYou extends PureComponent {
     if (this.state.needReceipt === 'detail') {
       return (
         <div className="padding-small">
-          <h4 className="padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder">
+          <h4 className="padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
             {t('PingStaffTitle')}
           </h4>
           <div className="padding-left-right-small">
             <label>{t('ReceiptNumber')}: </label>
-            <span className="margin-left-right-smallest text-weight-bolder">{orderId}</span>
+            <span className="margin-left-right-smaller text-weight-bolder">{orderId}</span>
           </div>
         </div>
       );
@@ -494,10 +494,10 @@ export class ThankYou extends PureComponent {
     return (
       <div className="padding-small">
         <div className="padding-left-right-small flex flex-middle flex-space-between">
-          <label className="margin-top-bottom-smaller text-size-big text-weight-bolder">{name}</label>
+          <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
           {isPickUpType && !isPreOrder ? (
-            <div className="margin-top-bottom-smaller">
-              <span className="margin-left-right-smaller text-size-bigger">{t('Total')}</span>
+            <div className="margin-top-bottom-small">
+              <span className="margin-left-right-small text-size-bigger">{t('Total')}</span>
               <CurrencyNumber className="text-size-bigger text-weight-bolder" money={total || 0} />
             </div>
           ) : null}
@@ -505,7 +505,7 @@ export class ThankYou extends PureComponent {
 
         {isPickUpType && isPreOrder ? (
           <div className="padding-left-right-small">
-            <h4 className="margin-top-bottom-smaller text-weight-bolder">{t('PickUpOn')}</h4>
+            <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
               <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
@@ -516,11 +516,11 @@ export class ThankYou extends PureComponent {
         ) : null}
 
         {isDeliveryType ? (
-          <h4 className="padding-left-right-small margin-top-bottom-smaller text-weight-bolder">{t('DeliveringTo')}</h4>
+          <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('DeliveringTo')}</h4>
         ) : null}
 
         {isPickUpType && isPreOrder ? (
-          <h4 className="padding-left-right-small margin-top-bottom-smaller text-weight-bolder">{t('PickupAt')}</h4>
+          <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('PickupAt')}</h4>
         ) : null}
 
         <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
@@ -531,9 +531,9 @@ export class ThankYou extends PureComponent {
         </p>
 
         <div className="padding-normal text-center">
-          <span className="margin-left-right-smallest ordering-thanks__total">{t('Total')}</span>
+          <span className="margin-left-right-smaller ordering-thanks__total">{t('Total')}</span>
           <CurrencyNumber
-            className="ordering-thanks__total margin-left-right-smallest text-weight-bolder"
+            className="ordering-thanks__total margin-left-right-smaller text-weight-bolder"
             money={total || 0}
           />
         </div>
@@ -555,7 +555,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <div className="padding-small">
-        <h4 className="padding-left-right-small margin-top-bottom-smaller text-weight-bolder">
+        <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">
           {t('ThanksForOrderingWithUs')}
         </h4>
         <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
@@ -616,7 +616,7 @@ export class ThankYou extends PureComponent {
     const { t } = this.props;
 
     return (
-      <h4 className="margin-top-bottom-smaller text-uppercase text-weight-bolder text-size-big">
+      <h4 className="margin-top-bottom-small text-uppercase text-weight-bolder text-size-big">
         {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
       </h4>
     );
@@ -707,7 +707,7 @@ export class ThankYou extends PureComponent {
               </h2>
             )}
             {isDeliveryType ? null : (
-              <p className="ordering-thanks__page-description padding-small margin-top-bottom-smaller text-center text-size-big">
+              <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
                   😋

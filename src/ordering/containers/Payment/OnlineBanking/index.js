@@ -172,9 +172,7 @@ class OnlineBanking extends Component {
                 </div>
               </div>
               {payNowLoading && !agentCode ? (
-                <span className="form__error-message margin-top-bottom-smaller">
-                  {t('PleaseSelectABankToContinue')}
-                </span>
+                <span className="form__error-message margin-top-bottom-small">{t('PleaseSelectABankToContinue')}</span>
               ) : null}
             </div>
           </form>
@@ -183,7 +181,7 @@ class OnlineBanking extends Component {
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}

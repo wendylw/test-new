@@ -46,7 +46,7 @@ const PaymentCardBrands = ({ country, brand: originalBrand, vendor = '' }) => {
     <div className="payment-credit-card__icon-container padding-left-right-small">
       {brandsSupported.includes(CREDIT_CARD_BRANDS.VISA) ? (
         <i
-          className={`payment-credit-card__icon text-middle margin-smallest text-size-reset ${
+          className={`payment-credit-card__icon text-middle margin-smaller text-size-reset ${
             brand === CREDIT_CARD_BRANDS.VISA ? 'active' : ''
           }`}
         >
@@ -56,7 +56,7 @@ const PaymentCardBrands = ({ country, brand: originalBrand, vendor = '' }) => {
 
       {brandsSupported.includes(CREDIT_CARD_BRANDS.MASTER_CARD) ? (
         <i
-          className={`payment-credit-card__icon text-middle margin-smallest text-size-reset ${
+          className={`payment-credit-card__icon text-middle margin-smaller text-size-reset ${
             brand === CREDIT_CARD_BRANDS.MASTER_CARD ? 'active' : ''
           }`}
         >
@@ -66,7 +66,7 @@ const PaymentCardBrands = ({ country, brand: originalBrand, vendor = '' }) => {
 
       {brandsSupported.includes(CREDIT_CARD_BRANDS.JCB) ? (
         <i
-          className={`payment-credit-card__icon text-middle margin-smallest text-size-reset ${
+          className={`payment-credit-card__icon text-middle margin-smaller text-size-reset ${
             brand === CREDIT_CARD_BRANDS.JCB ? 'active' : ''
           }`}
         >

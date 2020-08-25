@@ -10,7 +10,7 @@ class VoucherGiftCard extends Component {
       <div className="voucher-gift-card">
         {onlineStoreLogo ? (
           <Image
-            className="voucher-gift-card__logo logo logo__normal margin-top-bottom-smaller margin-left-right-normal"
+            className="voucher-gift-card__logo logo logo__normal margin-top-bottom-small margin-left-right-normal"
             src={onlineStoreLogo}
             alt={`${storeName} Logo`}
           />

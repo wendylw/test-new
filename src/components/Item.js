@@ -41,21 +41,21 @@ export class Item extends Component {
         <LazyLoad offset={0} height={productItemMinHeight} scrollContainer={scrollContainer}>
           <div className={classList.join(' ')} {...dataAttributes}>
             <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-              <div className="item__image-container flex__shrink-fixed margin-smaller">
+              <div className="item__image-container flex__shrink-fixed margin-small">
                 <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
               </div>
               <summary
-                className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smallest"
+                className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
                 data-testid="itemDetail"
               >
                 <div className="item__summary-content">
                   {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
-                  <h3 className="item__title margin-top-bottom-smallest text-line-height-base text-omit__multiple-line text-weight-bolder">
+                  <h3 className="item__title margin-top-bottom-smaller text-line-height-base text-omit__multiple-line text-weight-bolder">
                     {title}
                   </h3>
                   {variation ? (
                     <p
-                      className="item__description margin-top-bottom-smaller text-omit__multiple-line"
+                      className="item__description margin-top-bottom-small text-omit__multiple-line"
                       data-testid="itemDetailSummary"
                     >
                       {variation}
@@ -75,21 +75,21 @@ export class Item extends Component {
     return (
       <div className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-          <div className="item__image-container flex__shrink-fixed margin-smaller">
+          <div className="item__image-container flex__shrink-fixed margin-small">
             <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
           </div>
           <summary
-            className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smallest"
+            className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
             data-testid="itemDetail"
           >
             <div className="item__summary-content">
               {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
-              <h3 className="item__title margin-top-bottom-smallest text-omit__multiple-line text-weight-bolder">
+              <h3 className="item__title margin-top-bottom-smaller text-omit__multiple-line text-weight-bolder">
                 {title}
               </h3>
               {variation ? (
                 <p
-                  className="item__description margin-top-bottom-smaller text-omit__multiple-line"
+                  className="item__description margin-top-bottom-small text-omit__multiple-line"
                   data-testid="itemDetailSummary"
                 >
                   {variation}

@@ -92,10 +92,10 @@ class RecentActivities extends React.Component {
             const receiptTime = new Date(createdTime);
 
             return (
-              <div className="flex flex-middle padding-normal margin-top-bottom-smaller base-box-shadow" key={`${i}`}>
+              <div className="flex flex-middle padding-normal margin-top-bottom-small base-box-shadow" key={`${i}`}>
                 <IconTicket className="icon__primary ticket" />
                 <summary className="padding-left-right-normal">
-                  <h4 className="margin-top-bottom-smaller">
+                  <h4 className="margin-top-bottom-small">
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>

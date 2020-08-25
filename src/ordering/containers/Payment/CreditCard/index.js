@@ -431,7 +431,7 @@ class CreditCard extends Component {
                 }
 
                 return (
-                  <span key={key} className="form__error-message padding-left-right-normal margin-top-bottom-smaller">
+                  <span key={key} className="form__error-message padding-left-right-normal margin-top-bottom-small">
                     {cardInfoError.messages[key]}
                   </span>
                 );
@@ -460,7 +460,7 @@ class CreditCard extends Component {
             />
           </div>
           {cardHolderNameError.key !== FormValidate.errorNames.required ? (
-            <span className="form__error-message padding-left-right-normal margin-top-bottom-smaller">
+            <span className="form__error-message padding-left-right-normal margin-top-bottom-small">
               {cardHolderNameError.message}
             </span>
           ) : null}
@@ -510,7 +510,7 @@ class CreditCard extends Component {
         <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="margin-top-bottom-smallest"
+            className="margin-top-bottom-smaller"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}

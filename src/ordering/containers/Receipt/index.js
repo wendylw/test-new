@@ -125,17 +125,17 @@ export class ReceiptDetail extends Component {
         </Header>
         <div className="receipt__container">
           <div className="receipt__number-container text-center padding-normal border__bottom-divider">
-            <label className="receipt__number-label padding-top-bottom-small margin-top-bottom-smaller text-opacity text-uppercase">
+            <label className="receipt__number-label padding-top-bottom-small margin-top-bottom-small text-opacity text-uppercase">
               {t('ReceiptNumber')}
             </label>
-            <span className="receipt__number margin-top-bottom-smaller text-size-biggest">{orderId}</span>
+            <span className="receipt__number margin-top-bottom-small text-size-biggest">{orderId}</span>
           </div>
           {this.renderProductItem()}
 
           {additionalComments ? (
             <article className="padding-small border__bottom-divider">
-              <h4 className="margin-smaller text-weight-bolder text-uppercase">{t('Notes')}</h4>
-              <p className="margin-smaller text-opacity">{additionalComments}</p>
+              <h4 className="margin-small text-weight-bolder text-uppercase">{t('Notes')}</h4>
+              <p className="margin-small text-opacity">{additionalComments}</p>
             </article>
           ) : null}
           <Billing

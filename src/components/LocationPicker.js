@@ -193,7 +193,7 @@ class LocationPicker extends Component {
     const { t } = this.props;
     return (
       <div className="location-picker__search-box sticky-wrapper padding-normal">
-        <div className="form__group flex flex-middle flex-space-between margin-top-bottom-smaller">
+        <div className="form__group flex flex-middle flex-space-between margin-top-bottom-small">
           <IconSearch className="icon icon__big icon__default" onClick={this.tryGeolocation} />
           <input
             className="location-picker__input form__input text-size-big"
@@ -313,8 +313,8 @@ class LocationPicker extends Component {
                 onClick={() => this.selectPlace(positionInfo)}
                 key={positionInfo.address}
               >
-                <div className="margin-smallest">
-                  <IconBookmarks className="icon icon__smaller icon__primary-light margin-smaller" />
+                <div className="margin-smaller">
+                  <IconBookmarks className="icon icon__smaller icon__primary-light margin-small" />
                 </div>
                 <div
                   className="location-picker__historical-container"

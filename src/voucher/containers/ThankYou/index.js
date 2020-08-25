@@ -54,7 +54,7 @@ class ThankYou extends Component {
         />
 
         <div className="voucher-thanks__container">
-          <h2 className="voucher-thanks__title text-center padding-normal margin-top-bottom-smaller text-size-large text-weight-light">
+          <h2 className="voucher-thanks__title text-center padding-normal margin-top-bottom-small text-size-large text-weight-light">
             {t('ThankYou')}!
           </h2>
           <div className="text-center padding-left-right-normal">
@@ -68,7 +68,7 @@ class ThankYou extends Component {
 
           <div className="card margin-normal">
             <div className="text-center padding-small border__bottom-divider">
-              <h4 className="margin-smaller text-size-big text-weight-bolder">{t('YourGiftVoucherCode')}</h4>
+              <h4 className="margin-small text-size-big text-weight-bolder">{t('YourGiftVoucherCode')}</h4>
               <span className="voucher-thanks__voucher-code padding-small text-size-huge text-weight-bolder">
                 {voucherCode}
               </span>

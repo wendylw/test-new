@@ -148,9 +148,9 @@ class Payment extends Component {
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
     const promptDom =
       total >= minimumFpxTotal ? (
-        <p className="margin-top-bottom-smallest">{t('TemporarilyUnavailable')}</p>
+        <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
       ) : (
-        <p className="margin-top-bottom-smallest">
+        <p className="margin-top-bottom-smaller">
           ({' '}
           <Trans i18nKey="MinimumConsumption">
             <span>Min</span>
@@ -197,7 +197,7 @@ class Payment extends Component {
                   onClick={() => this.setCurrentPayment(payment)}
                 >
                   <div className="ordering-payment__item-content">
-                    <figure className="ordering-payment__image-container text-middle margin-smaller">
+                    <figure className="ordering-payment__image-container text-middle margin-small">
                       <PaymentLogo payment={payment} />
                     </figure>
                     <div className="ordering-payment__description text-middle padding-left-right-normal">
@@ -207,7 +207,7 @@ class Payment extends Component {
                       {disabledPayment ? promptDom : null}
                     </div>
                   </div>
-                  <Radio className="margin-left-right-smaller" checked={currentPayment === payment.label} />
+                  <Radio className="margin-left-right-small" checked={currentPayment === payment.label} />
                 </li>
               );
             })}
@@ -217,7 +217,7 @@ class Payment extends Component {
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
             disabled={payNowLoading}

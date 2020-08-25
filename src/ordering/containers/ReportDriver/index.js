@@ -192,12 +192,12 @@ class ReportDriver extends Component {
 
   renderNotesField({ t, inputNotes, disabled, required }) {
     return (
-      <div className="padding-top-bottom-small margin-top-bottom-smaller">
-        <h3 className="margin-smaller">
+      <div className="padding-top-bottom-small margin-top-bottom-small">
+        <h3 className="margin-small">
           <span className="text-weight-bolder">{t('Notes')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
-        <div className="ordering-report-driver__group form__group margin-left-right-smaller border-radius-large">
+        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-large">
           <textarea
             className="ordering-report-driver__textarea form__textarea padding-small"
             data-heap-name="ordering.report-driver.notes-input"
@@ -218,13 +218,13 @@ class ReportDriver extends Component {
 
   renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled, required }) {
     return (
-      <div className="padding-top-bottom-small margin-top-bottom-smaller">
-        <h3 className="margin-smaller">
+      <div className="padding-top-bottom-small margin-top-bottom-small">
+        <h3 className="margin-small">
           <span className="text-weight-bolder">{t('UploadPhoto')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
         {uploadPhotoFile ? (
-          <div className="ordering-report-driver__upload-image-container margin-smaller border-radius-large">
+          <div className="ordering-report-driver__upload-image-container margin-small border-radius-large">
             <img alt="upload file" src={uploadPhotoUrl} />
             {disabled ? null : (
               <button
@@ -237,7 +237,7 @@ class ReportDriver extends Component {
             )}
           </div>
         ) : (
-          <div className="ordering-report-driver__upload-container text-center margin-smaller">
+          <div className="ordering-report-driver__upload-container text-center margin-small">
             <input
               className="ordering-report-driver__input"
               onChange={this.handleUploadPhoto}
@@ -292,8 +292,8 @@ class ReportDriver extends Component {
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
           <div className="card padding-small margin-normal">
-            <h3 className="margin-smaller text-weight-bolder">{t('SelectAReportReason')}</h3>
-            <ul className="margin-smaller">
+            <h3 className="margin-small text-weight-bolder">{t('SelectAReportReason')}</h3>
+            <ul className="margin-small">
               {REPORT_DRIVER_REASONS.map(reason => ({
                 ...reason,
                 label: t(reason.i18n_key),
@@ -320,7 +320,7 @@ class ReportDriver extends Component {
                         name="reason"
                         disabled={disabled}
                       />
-                      <label className="padding-left-right-small margin-smallest" htmlFor={`reason_${code}`}>
+                      <label className="padding-left-right-small margin-smaller" htmlFor={`reason_${code}`}>
                         {label}
                       </label>
                     </li>
@@ -341,7 +341,7 @@ class ReportDriver extends Component {
                 })
               : null}
 
-            <div className="margin-smaller">
+            <div className="margin-small">
               <button
                 className="button button__block button__fill text-uppercase text-weight-bolder"
                 data-heap-name="ordering.report-driver.submit-btn"

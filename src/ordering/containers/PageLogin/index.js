@@ -128,7 +128,7 @@ class PageLogin extends React.Component {
             }}
           />
           <div className="page-login__container">
-            <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-smaller">
+            <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
               <img src={beepLoginImage} alt="otp" />
             </figure>
             <PhoneViewContainer
@@ -142,7 +142,7 @@ class PageLogin extends React.Component {
               updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
               onSubmit={this.handleSubmitPhoneNumber.bind(this)}
             >
-              <p className="text-center margin-top-bottom-smaller text-size-big text-line-height-base text-opacity">
+              <p className="text-center margin-top-bottom-small text-size-big text-line-height-base text-opacity">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
             </PhoneViewContainer>

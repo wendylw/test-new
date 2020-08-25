@@ -144,7 +144,7 @@ class LocationPage extends Component {
     return (
       <div className="padding-top-bottom-normal text-center">
         <img
-          className="ordering-location__error-screen-image margin-top-bottom-smaller"
+          className="ordering-location__error-screen-image margin-top-bottom-small"
           alt="Something went wrong"
           src={ErrorImage}
         />

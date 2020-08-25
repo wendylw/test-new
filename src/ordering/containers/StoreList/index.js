@@ -28,17 +28,17 @@ const StoreListItem = props => (
   >
     <summary className="ordering-stores__summary padding-left-right-small">
       <div className="flex flex-middle">
-        <h3 className="ordering-stores__title margin-top-bottom-smaller text-size-big text-weight-bolder text-omit__single-line">
+        <h3 className="ordering-stores__title margin-top-bottom-small text-size-big text-weight-bolder text-omit__single-line">
           {props.store.name}
         </h3>
         {props.isClose ? (
           <Tag
             text={props.t('Closed')}
-            className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+            className="tag__small tag__error margin-left-right-small text-middle text-size-small"
           />
         ) : null}
       </div>
-      <p className="margin-top-bottom-smaller text-size-small text-opacity">
+      <p className="margin-top-bottom-small text-size-small text-opacity">
         {Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}
       </p>
       {props.isDeliveryType && (
@@ -51,13 +51,13 @@ const StoreListItem = props => (
           </li>
         </ul>
       )}
-      <p className="margin-top-bottom-smaller text-size-small">
+      <p className="margin-top-bottom-small text-size-small">
         {props.t('openingHours')}: {props.openingHouers}
       </p>
     </summary>
 
     {props.storeId === props.store.id && (
-      <IconChecked className="icon icon__primary flex__shrink-fixed margin-left-right-smallest" />
+      <IconChecked className="icon icon__primary flex__shrink-fixed margin-left-right-smaller" />
     )}
   </li>
 );
@@ -246,15 +246,13 @@ class StoreList extends Component {
 
           <div className="ordering-stores__container">
             <div className="flex flex-top padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider">
-              <Image className="logo logo__big margin-left-right-smaller" src={onlineStoreInfo.logo} />
+              <Image className="logo logo__big margin-left-right-small" src={onlineStoreInfo.logo} />
               <summary className="padding-left-right-small">
-                <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">
+                <h2 className="margin-top-bottom-small text-size-big text-weight-bolder">
                   {onlineStoreInfo.storeName}
                 </h2>
-                <p className="margin-top-bottom-smaller text-size-smaller text-opacity">
-                  {onlineStoreInfo.businessType}
-                </p>
-                <p className="margin-top-bottom-smaller text-size-small">
+                <p className="margin-top-bottom-small text-size-smaller text-opacity">{onlineStoreInfo.businessType}</p>
+                <p className="margin-top-bottom-small text-size-small">
                   {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
                     ? `${storeList.length} outlets near you`
                     : `Total ${storeList.length} outlets`}

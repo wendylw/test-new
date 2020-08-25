@@ -97,11 +97,11 @@ class RecentActivities extends React.Component {
           return (
             <li
               key={`${i}`}
-              className="recent-activities__list-item padding-normal margin-top-bottom-smaller flex flex-middle"
+              className="recent-activities__list-item padding-normal margin-top-bottom-small flex flex-middle"
             >
               {type.icon}
               <summary className="padding-left-right-normal">
-                <h4 className="margin-top-bottom-smaller">
+                <h4 className="margin-top-bottom-small">
                   <label>{type.text}&nbsp;</label>
                   {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
                 </h4>

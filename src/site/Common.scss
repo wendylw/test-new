@@ -301,30 +301,30 @@ img {
   padding-bottom: 3.8vw;
 }
 
-.margin-smallest {
+.margin-smaller {
   margin: 1.4vw;
 }
 
-.margin-top-bottom-smallest {
+.margin-top-bottom-smaller {
   margin-top: 1.4vw;
   margin-bottom: 1.4vw;
 }
 
-.margin-left-right-smallest {
+.margin-left-right-smaller {
   margin-left: 1.4vw;
   margin-right: 1.4vw;
 }
 
-.margin-smaller {
+.margin-small {
   margin: 2.4vw;
 }
 
-.margin-top-bottom-smaller {
+.margin-top-bottom-small {
   margin-top: 2.4vw;
   margin-bottom: 2.4vw;
 }
 
-.margin-left-right-smaller {
+.margin-left-right-small {
   margin-left: 2.4vw;
   margin-right: 2.4vw;
 }
@@ -757,7 +757,7 @@ img {
 
 /* react Phone number input box */
 .react-phone-number-input {
-  @extend .margin-top-bottom-smaller;
+  @extend .margin-top-bottom-small;
 
   .react-phone-number-input__row {
     @extend .form__group;
@@ -766,7 +766,7 @@ img {
   }
 
   .react-phone-number-input__country--native {
-    @extend .margin-left-right-smaller;
+    @extend .margin-left-right-small;
   }
 
   .react-phone-number-input__icon {
@@ -934,30 +934,30 @@ img {
     padding-bottom: 8px * 2;
   }
 
-  .margin-smallest {
+  .margin-smaller {
     margin: 4px;
   }
 
-  .margin-top-bottom-smallest {
+  .margin-top-bottom-smaller {
     margin-top: 4px;
     margin-bottom: 4px;
   }
 
-  .margin-left-right-smallest {
+  .margin-left-right-smaller {
     margin-left: 4px;
     margin-right: 4px;
   }
 
-  .margin-smaller {
+  .margin-small {
     margin: 8px;
   }
 
-  .margin-top-bottom-smaller {
+  .margin-top-bottom-small {
     margin-top: 8px;
     margin-bottom: 8px;
   }
 
-  .margin-left-right-smaller {
+  .margin-left-right-small {
     margin-left: 8px;
     margin-right: 8px;
   }

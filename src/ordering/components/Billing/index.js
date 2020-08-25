@@ -16,7 +16,7 @@ export class Billing extends Component {
 
     return (
       <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-        <label className="margin-top-bottom-smallest text-size-big">
+        <label className="margin-top-bottom-smaller text-size-big">
           {t('ServiceChargeTitle', {
             serviceChargeRate:
               typeof serviceChargeRate === 'number' ? `${(serviceChargeRate * 100).toFixed(2)}%` : null,
@@ -35,7 +35,7 @@ export class Billing extends Component {
 
     return (
       <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-        <label className="margin-top-bottom-smallest text-size-big">
+        <label className="margin-top-bottom-smaller text-size-big">
           <span className="text-weight-bolder">
             {t(promotion.promoType)} ({promotion.promoCode})
           </span>
@@ -82,7 +82,7 @@ export class Billing extends Component {
       <section className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
         <ul className="billing__list">
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-            <label className="margin-top-bottom-smallest text-size-big">{t('Subtotal')}</label>
+            <label className="margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
             <CurrencyNumber className="text-size-big" money={subtotal || 0} />
           </li>
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
@@ -92,7 +92,7 @@ export class Billing extends Component {
           {this.renderServiceCharge()}
           {isDeliveryType ? (
             <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-              <label className="margin-top-bottom-smallest text-size-big">{t('DeliveryFee')}</label>
+              <label className="margin-top-bottom-smaller text-size-big">{t('DeliveryFee')}</label>
               {shippingFee ? (
                 <CurrencyNumber className="text-size-big" money={shippingFee || 0} />
               ) : (
@@ -103,10 +103,10 @@ export class Billing extends Component {
           {enableCashback ? (
             <li
               className={`padding-top-bottom-small padding-left-right-normal border-radius-base flex flex-middle flex-space-between ${
-                isLogin ? 'margin-smaller billing__item-primary' : ''
+                isLogin ? 'margin-small billing__item-primary' : ''
               }`}
             >
-              <label className="margin-top-bottom-smallest text-size-big text-weight-bolder">{t('BeepCashback')}</label>
+              <label className="margin-top-bottom-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</label>
               {isLogin ? (
                 <span>
                   - <CurrencyNumber className="text-size-big text-weight-bolder" money={creditsBalance || 0} />
@@ -125,7 +125,7 @@ export class Billing extends Component {
           {this.renderPromotion()}
           {children}
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-            <label className="margin-top-bottom-smallest text-size-biggest">{t('Total')}</label>
+            <label className="margin-top-bottom-smaller text-size-biggest">{t('Total')}</label>
             <CurrencyNumber className="text-size-biggest text-weight-bolder" money={total || 0} />
           </li>
         </ul>

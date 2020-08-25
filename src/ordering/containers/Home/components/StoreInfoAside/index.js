@@ -23,7 +23,7 @@ class StoreInfoAside extends Component {
 
     return (validDays || []).sort().map(day => {
       return (
-        <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-smaller">
+        <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
           <span>{t(weekInfo[day])}</span>
           <time>
             {`${validTimeFrom}`} - {`${validTimeTo}`}
@@ -91,17 +91,17 @@ class StoreInfoAside extends Component {
                 {isValidTimeToOrder ? null : enablePreOrder ? (
                   <Tag
                     text={t('PreOrder')}
-                    className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
+                    className="tag__small tag__info margin-left-right-small text-middle text-size-small"
                   />
                 ) : (
                   <Tag
                     text={t('Closed')}
-                    className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+                    className="tag__small tag__error margin-left-right-small text-middle text-size-small"
                   />
                 )}
               </div>
               {storeAddress ? (
-                <address className="text-size-big margin-top-bottom-smaller text-line-height-base">
+                <address className="text-size-big margin-top-bottom-small text-line-height-base">
                   {storeAddress}
                 </address>
               ) : null}

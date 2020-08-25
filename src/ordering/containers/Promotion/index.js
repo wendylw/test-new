@@ -96,7 +96,7 @@ class Promotion extends Component {
         ></Header>
 
         <div className="ordering-promotion__container padding-top-bottom-normal padding-left-right-small">
-          <div className={'form__group flex flex-middle flex-space-between margin-smallest ' + inputContainerStatus}>
+          <div className={'form__group flex flex-middle flex-space-between margin-smaller ' + inputContainerStatus}>
             <input
               ref={ref => {
                 this.promoCodeInput = ref;
@@ -105,7 +105,7 @@ class Promotion extends Component {
               onChange={this.handleInputChange}
               value={promoCode}
               autoFocus
-              className="form__input form__input-big padding-left-right-smaller margin-left-right-smaller text-size-biggest"
+              className="form__input form__input-big padding-left-right-smaller margin-left-right-small text-size-biggest"
               data-heap-name="ordering.promotion.promotion-input"
               placeholder={t('EnterPromoCodeHere')}
             />
@@ -120,13 +120,13 @@ class Promotion extends Component {
             ) : null}
           </div>
           {Boolean(this.getMessage()) ? (
-            <p className="form__error-message margin-smaller text-weight-bolder">{this.getMessage()}</p>
+            <p className="form__error-message margin-small text-weight-bolder">{this.getMessage()}</p>
           ) : null}
         </div>
 
         <footer className="footer flex__shrink-fixed padding-small flex flex-middle flex-space-between">
           <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder"
+            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-heap-name="ordering.promotion.apply-btn"
             disabled={promoCode === '' || inProcess || isAppliedSuccess}
             onClick={this.handleApplyPromotion}

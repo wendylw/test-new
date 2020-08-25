@@ -691,7 +691,7 @@ class LocationAndDate extends Component {
 
       return (
         <div className="padding-normal">
-          <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
+          <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
             {t('DeliverTo')}
           </label>
           <div
@@ -724,7 +724,7 @@ class LocationAndDate extends Component {
       const pickUpAddress = Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
       return (
         <div className="padding-normal">
-          <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
+          <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
             {t('PickupAt')}
           </label>
           <p className="text-line-height-base">{pickUpAddress}</p>
@@ -760,7 +760,7 @@ class LocationAndDate extends Component {
     const { t } = this.props;
     return (
       <div className="padding-small">
-        <label className="location-date__label padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder">
+        <label className="location-date__label padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
           {this.state.isDeliveryType && t('DeliverOn')}
           {this.state.isPickUpType && t('PickUpOn')}
         </label>
@@ -776,7 +776,7 @@ class LocationAndDate extends Component {
                 <button
                   className={`location-date__button-date button ${
                     isSelected ? 'button__fill' : 'button__outline'
-                  } padding-top-bottom-smaller padding-left-right-normal margin-left-right-smaller ${
+                  } padding-top-bottom-smaller padding-left-right-normal margin-left-right-small ${
                     deliverableTime.isToday ? 'text-uppercase' : ''
                   }`}
                   disabled={deliverableTime.isOpen ? '' : 'disabled'}
@@ -1136,12 +1136,12 @@ class LocationAndDate extends Component {
     return (
       <div className="padding-top-bottom-normal">
         {this.state.isDeliveryType && (
-          <label className="location-date__label padding-left-right-normal margin-top-bottom-smaller text-size-big text-weight-bolder">
+          <label className="location-date__label padding-left-right-normal margin-top-bottom-small text-size-big text-weight-bolder">
             {t('DeliveryTime')}
           </label>
         )}
         {this.state.isPickUpType && (
-          <label className="location-date__label padding-left-right-normal margin-top-bottom-smaller text-size-big text-weight-bolder">
+          <label className="location-date__label padding-left-right-normal margin-top-bottom-small text-size-big text-weight-bolder">
             {t('PickupTime')}
           </label>
         )}
@@ -1316,7 +1316,7 @@ class LocationAndDate extends Component {
         className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
       >
         <button
-          className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+          className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
           data-testid="continue"
           data-heap-name="ordering.location-and-date.continue-btn"
           disabled={this.checkIfCanContinue()}
@@ -1361,7 +1361,7 @@ class LocationAndDate extends Component {
         onClick={this.goStoreList}
         data-heap-name="ordering.location-and-date.selected-store"
       >
-        <label className="location-date__label margin-top-bottom-smaller text-size-big text-weight-bolder">
+        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
           {t('SelectedStore')}
         </label>
         <div className="form__group flex flex-middle flex-space-between">

@@ -28,7 +28,7 @@ export class OfflineStoreModal extends PureComponent {
           <h2 className="padding-small text-size-biggest text-weight-bolder">
             {t('OfflinePromptTitle', { storeName: currentStoreName })}
           </h2>
-          <p className="padding-left-right-smaller margin-smaller text-size-big">{t('OfflinePromptDescription')}</p>
+          <p className="padding-left-right-smaller margin-small text-size-big">{t('OfflinePromptDescription')}</p>
         </Modal.Body>
         <Modal.Footer className="padding-small">
           <button

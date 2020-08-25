@@ -98,8 +98,8 @@ class Contact extends Component {
             selectedVoucher={selectedVoucher.unitPrice}
           />
           <div className="padding-normal">
-            <h2 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{t('SendGiftCardTo')}</h2>
-            <p className="voucher-contact__description margin-top-bottom-smaller text-size-big text-line-height-base">
+            <h2 className="margin-top-bottom-small text-size-big text-weight-bolder">{t('SendGiftCardTo')}</h2>
+            <p className="voucher-contact__description margin-top-bottom-small text-size-big text-line-height-base">
               {t('GiftCardEmailNote')}
             </p>
             <div className="voucher-contact__group form__group margin-top-bottom-normal">
@@ -116,7 +116,7 @@ class Contact extends Component {
 
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             onClick={this.handleContinue}
             disabled={!contactEmail}
             data-heap-name="voucher.contact.continue-btn"

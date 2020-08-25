@@ -42,7 +42,7 @@ class DeliverToBar extends Component {
         >
           <div className={showBackButton ? '' : 'padding-left-right-smaller'}>
             {title ? (
-              <label className="deliver-to-entry__label margin-smallest text-size-small text-uppercase text-weight-bolder">
+              <label className="deliver-to-entry__label margin-smaller text-size-small text-uppercase text-weight-bolder">
                 {title}
               </label>
             ) : null}

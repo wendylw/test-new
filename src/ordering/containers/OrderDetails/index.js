@@ -115,7 +115,7 @@ export class OrderDetails extends Component {
 
         <div className="ordering-details__container">
           <div className="card padding-top-bottom-small padding-left-right-normal margin-normal">
-            <h3 className="margin-top-bottom-smaller text-size-big text-weight-bolder text-uppercase">
+            <h3 className="margin-top-bottom-small text-size-big text-weight-bolder text-uppercase">
               {t('YourOrder')}
             </h3>
             <div className="border__bottom-divider">{this.renderOrderDetails()}</div>

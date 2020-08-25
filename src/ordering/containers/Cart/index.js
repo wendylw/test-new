@@ -189,7 +189,7 @@ class Cart extends Component {
     return (
       <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
         <textarea
-          className="ordering-cart__textarea form__textarea padding-small margin-left-right-smaller"
+          className="ordering-cart__textarea form__textarea padding-small margin-left-right-small"
           rows="2"
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
@@ -220,7 +220,7 @@ class Cart extends Component {
               <IconLocalOffer className="icon icon__small icon__primary text-middle" />
               <div>
                 <div className="flex flex-middle text-omit__single-line">
-                  <span className="margin-left-right-smaller text-size-big text-weight-bolder">
+                  <span className="margin-left-right-small text-size-big text-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button
@@ -232,7 +232,7 @@ class Cart extends Component {
                   </button>
                 </div>
                 {Boolean(this.getPromotionErrorMessage()) ? (
-                  <p className="form__error-message margin-left-right-smaller text-omit__single-line text-weight-bolder">
+                  <p className="form__error-message margin-left-right-small text-omit__single-line text-weight-bolder">
                     {this.getPromotionErrorMessage()}
                   </p>
                 ) : null}
@@ -249,7 +249,7 @@ class Cart extends Component {
             data-heap-name="ordering.cart.add-promo"
           >
             <IconLocalOffer className="icon icon__small icon__primary text-middle" />
-            <span className="margin-left-right-smaller text-size-big text-middle">{t('AddPromoCode')}</span>
+            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
         )}
       </li>
@@ -329,7 +329,7 @@ class Cart extends Component {
             {t('Back')}
           </button>
           <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder"
+            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {

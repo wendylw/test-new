@@ -166,7 +166,7 @@ export class Footer extends Component {
         data-heap-name="ordering.home.footer.container"
       >
         <button
-          className="button button__block text-left margin-top-bottom-smallest margin-left-right-smaller flex flex-middle"
+          className="button button__block text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle"
           data-heap-name="ordering.home.footer.cart-btn"
           onClick={onClickCart}
         >
@@ -178,7 +178,7 @@ export class Footer extends Component {
           <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
             <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
             {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
-              <label className="home-cart__money-minimum margin-top-bottom-smallest">
+              <label className="home-cart__money-minimum margin-top-bottom-smaller">
                 {count ? (
                   <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
                     <span className="text-opacity">Remaining</span>
@@ -202,7 +202,7 @@ export class Footer extends Component {
         </button>
         {tableId !== 'DEMO' ? (
           <button
-            className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smallest margin-left-right-smaller text-uppercase text-weight-bolder flex__shrink-fixed"
+            className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder flex__shrink-fixed"
             data-testid="orderNow"
             data-heap-name="ordering.home.footer.order-btn"
             disabled={

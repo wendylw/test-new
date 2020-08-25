@@ -70,22 +70,6 @@ import { Meta } from '@storybook/addon-docs/blocks';
 .fonts-sb__larger {
   font-size: 2.8571rem;
 }
-
-.fonts-sb__code {
-  font-size: 14px;
-}
-
-.fonts-sb__single-line {
-  width: 400px;
-  line-clamp: 1;    
-  -webkit-line-clamp: 1;
-}
-
-.fonts-sb__multiple-line {
-  width: 400px;
-  line-clamp: 2;    
-  -webkit-line-clamp: 2;
-}
 `}</style>
 
 # Fonts
@@ -153,84 +137,5 @@ import { Meta } from '@storybook/addon-docs/blocks';
   <div class="fonts-sb__item">
     <label class="fonts-sb__label text-weight-bolder">text-weight-bolder</label>
     <div class="fonts-sb__content text-weight-bolder">Heading (font-weight: 600)</div>
-  </div>
-</div>
-
-<h2>
-  <strong class="fonts-sb__biggest-label">Font Color</strong>
-</h2>
-
-<div class="fonts-sb__card">
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-opacity</label>
-    <div class="fonts-sb__content text-opacity">Text Opacity</div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-error</label>
-    <div class="fonts-sb__content text-error">Text Error</div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-success</label>
-    <div class="fonts-sb__content text-success">Text Success</div>
-  </div>
-</div>
-
-<h2>
-  <strong class="fonts-sb__biggest-label">Font Other Settings</strong>
-</h2>
-
-<div class="fonts-sb__card">
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-line-height-base</label>
-    <div class="fonts-sb__content text-line-height-base">Text Line Height Base (line-height: 1.4em;)</div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-uppercase</label>
-    <div class="fonts-sb__content text-uppercase">Text Uppercase</div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-lowercase</label>
-    <div class="fonts-sb__content text-lowercase">Text Lowercase</div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-capitalize</label>
-    <div class="fonts-sb__content text-capitalize">text capitalize</div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-line-through</label>
-    <div class="fonts-sb__content text-line-through">text line through</div>
-  </div>
-</div>
-
-<h2>
-  <strong class="fonts-sb__biggest-label">Text Omit</strong>
-</h2>
-
-<div class="fonts-sb__card">
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-omit__single-line</label>
-    <div class="fonts-sb__content">
-      <div class="text-omit__single-line fonts-sb__single-line">text omit single line text omit single line text omit single line text omit single line text omit single Line</div>
-      <pre style={{backgroundColor: '#dededf', padding: '16px', margin: '16px 0'}}>
-        &#123;<br />
-        &nbsp;&nbsp;width: [width];<br />
-        &nbsp;&nbsp;line-clamp: 1;<br />
-        &nbsp;&nbsp;-webkit-line-clamp: 1;<br />
-        &#125;
-      </pre>
-    </div>
-  </div>
-  <div class="fonts-sb__item">
-    <label class="fonts-sb__label">text-omit__multiple-line</label>
-    <div class="fonts-sb__content">
-      <div class="text-omit__multiple-line fonts-sb__multiple-line">text omit multiple line text omit multiple line text omit multiple line text omit multiple line text omit multiple line text omit multiple line</div>
-      <pre style={{backgroundColor: '#dededf', padding: '16px', margin: '16px 0'}}>
-        &#123;<br />
-        &nbsp;&nbsp;width: [width];<br />
-        &nbsp;&nbsp;line-clamp: [line number];<br />
-        &nbsp;&nbsp;-webkit-line-clamp: [line number];<br />
-        &#125;
-      </pre>
-    </div>
   </div>
 </div>

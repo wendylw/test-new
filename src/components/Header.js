@@ -46,7 +46,7 @@ class Header extends Component {
         {renderPageAction()}
         {isStoreHome ? (
           <Image
-            className="logo logo__normal text-middle margin-top-bottom-smallest margin-left-right-smaller flex__shrink-fixed"
+            className="logo logo__normal text-middle margin-top-bottom-smaller margin-left-right-small flex__shrink-fixed"
             src={logo}
             alt={title}
           />
@@ -111,12 +111,12 @@ class Header extends Component {
                 {isValidTimeToOrder ? null : enablePreOrder ? (
                   <Tag
                     text={t('PreOrder')}
-                    className="tag__small tag__info margin-left-right-smaller text-middle text-size-small"
+                    className="tag__small tag__info margin-left-right-small text-middle text-size-small"
                   />
                 ) : (
                   <Tag
                     text={t('Closed')}
-                    className="tag__small tag__error margin-left-right-smaller text-middle text-size-small"
+                    className="tag__small tag__error margin-left-right-small text-middle text-size-small"
                   />
                 )}
               </div>

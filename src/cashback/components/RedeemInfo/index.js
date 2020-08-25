@@ -46,8 +46,8 @@ class RedeemInfo extends React.Component {
               </figure>
               <h2 className="padding-small text-size-big text-weight-bold">{t('HowToUseCashback')}</h2>
               <ol className="redeem-info__list">
-                <li className="margin-top-bottom-smaller text-line-height-base">{t('UseCashbackStep1')}</li>
-                <li className="margin-top-bottom-smaller text-line-height-base">{t('UseCashbackStep2')}</li>
+                <li className="margin-top-bottom-small text-line-height-base">{t('UseCashbackStep1')}</li>
+                <li className="margin-top-bottom-small text-line-height-base">{t('UseCashbackStep2')}</li>
               </ol>
             </section>
           </div>

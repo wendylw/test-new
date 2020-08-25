@@ -25,10 +25,10 @@ class Error extends React.Component {
           <figure className="error__image-container margin-normal text-center">
             <img src={beepErrorImage} alt="Error found" />
           </figure>
-          <div className="error__content padding-small margin-top-bottom-smaller">
+          <div className="error__content padding-small margin-top-bottom-small">
             {title ? <h2 className="error__title text-center text-size-large">{title}</h2> : null}
             {description ? (
-              <div className="error__description margin-smaller text-center">
+              <div className="error__description margin-small text-center">
                 <p className="text-size-big text-line-height-base">{description}</p>
               </div>
             ) : null}

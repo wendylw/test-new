@@ -36,7 +36,7 @@ class PageLoyalty extends React.Component {
     const { displayBusinessName, name } = businessInfo || {};
     return (
       <div className="margin-top-bottom-normal">
-        <span className="loyalty-home__location margin-left-right-smaller text-size-big text-opacity text-middle">
+        <span className="loyalty-home__location margin-left-right-small text-size-big text-opacity text-middle">
           {displayBusinessName || name}
         </span>
       </div>

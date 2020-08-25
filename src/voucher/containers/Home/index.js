@@ -70,7 +70,7 @@ class Home extends Component {
             <p className="voucher-home__prompt margin-normal text-center">
               <span className="voucher-home__prompt-text">{t('GiftCardFindOutMore')}</span>
               <a
-                className="voucher-home__button-prompt-link button button__link padding-top-bottom-normal margin-left-right-smallest text-weight-bolder"
+                className="voucher-home__button-prompt-link button button__link padding-top-bottom-normal margin-left-right-smaller text-weight-bolder"
                 href={beepSiteUrl}
               >
                 {storeName} &gt;
@@ -104,7 +104,7 @@ class Home extends Component {
         </div>
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             onClick={this.handleContinue}
             disabled={!selectedVoucher}
             data-heap-name="voucher.home.continue-btn"

@@ -54,7 +54,7 @@ class Tables extends Component {
           navFunc={this.handleClickBack}
         />
         <div className="ordering-tables__title text-size-big text-weight-bolder">{t('PleasePickOne')}</div>
-        <div className="ordering-tables__list margin-top-bottom-smaller">
+        <div className="ordering-tables__list margin-top-bottom-small">
           {tables.map(table => {
             const active = table.id === currentTableId ? 'active' : '';
             return (
@@ -62,7 +62,7 @@ class Tables extends Component {
                 onClick={() => this.handleSelectTable(table.id)}
                 data-heap-name="stores.tables.table-btn"
                 key={table.id}
-                className={`ordering-tables__list-item margin-smaller text-line-height-base border-radius-large ${active}`}
+                className={`ordering-tables__list-item margin-small text-line-height-base border-radius-large ${active}`}
               >
                 <div className="ordering-tables__list-table-title">{t('Table')}</div>
                 <div className="ordering-tables__list-table-name text-weight-bolder">{table.name}</div>
@@ -72,7 +72,7 @@ class Tables extends Component {
         </div>
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smallest text-weight-bolder text-uppercase"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             disabled={currentTableId === ''}
             onClick={this.handleContinue}
             data-heap-name="stores.tables.continue"

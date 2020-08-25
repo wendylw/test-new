@@ -30,7 +30,7 @@ export class ItemOperator extends Component {
             data-testid="itemDecrease"
             data-heap-name="common.item-operator.decrease"
           >
-            <i className="item-operator__ctrl item-operator__minus margin-smallest">
+            <i className="item-operator__ctrl item-operator__minus margin-smaller">
               <span className="item-operator__icon"></span>
             </i>
           </button>
@@ -52,7 +52,7 @@ export class ItemOperator extends Component {
             data-testid="itemIncrease"
             data-heap-name="common.item-operator.increase"
           >
-            <i className="item-operator__ctrl item-operator__add margin-smallest">
+            <i className="item-operator__ctrl item-operator__add margin-smaller">
               <span className="item-operator__icon"></span>
             </i>
           </button>
