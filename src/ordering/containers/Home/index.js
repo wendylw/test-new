@@ -547,12 +547,8 @@ export class Home extends Component {
             }}
           />
         }
-        extraInfo={`${Utils.isDeliveryType() ? t('DeliverOn') : t('PickUpOn')}${
-          Utils.isDeliveryType()
-            ? !enablePreOrder
-              ? ` . ${t('DeliverNow', { separator: ' .' })}`
-              : ` . ${this.getExpectedDeliveryTime()}`
-            : ''
+        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${
+          enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
         }`}
         showBackButton={showBackButton({
           isValidTimeToOrder,
@@ -560,9 +556,7 @@ export class Home extends Component {
           backPosition: BackPosition.DELIVERY_TO,
         })}
         gotoLocationPage={fillInDeliverToAddress}
-        icon={
-          Utils.isDeliveryType() ? <IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" /> : null
-        }
+        icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
       >
         {isValidTimeToOrder || enablePreOrder ? (
           <IconEdit

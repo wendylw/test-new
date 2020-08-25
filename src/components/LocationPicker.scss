@@ -30,11 +30,25 @@
     width: 100%;
   }
 
+  &__result-item > &__address-summary {
+    padding-left: 3.8vw;
+    padding-right: 3.8vw;
+  }
+
   &__detected-position-address {
     overflow: hidden;
   }
 
   &__historical-address {
     overflow: hidden;
+  }
+}
+
+@media (min-width: 420px) {
+  .location-picker {
+    &__result-item > &__address-summary {
+      padding-left: 8px * 2;
+      padding-right: 8px * 2;
+    }
   }
 }
