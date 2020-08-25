@@ -11,7 +11,8 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, CREATE_ORDER_ERROR_CODES } = Constants;
+const { PRODUCT_SOLD_OUT } = CREATE_ORDER_ERROR_CODES;
 
 class CreateOrderButton extends React.Component {
   componentDidMount() {
@@ -113,6 +114,10 @@ class CreateOrderButton extends React.Component {
           }, 2000);
         }
 
+        return;
+      } else if (code === PRODUCT_SOLD_OUT) {
+        Utils.setSessionVariable('isHaveProductSoldOut', true);
+        window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_CART}${window.location.search}`;
         return;
       }
 

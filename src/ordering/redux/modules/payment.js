@@ -225,10 +225,6 @@ export const actions = {
         case CREATE_ORDER_ERROR_CODES.STORE_IS_ON_VACATION:
           errorMessage = 'OrderingPayment:StoreIsOnVacation';
           break;
-        case CREATE_ORDER_ERROR_CODES.PRODUCT_SOLD_OUT:
-          Utils.setSessionVariable('isHaveProductSoldOut', true);
-          window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_CART}${window.location.search}`;
-          return;
         default:
           errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
           break;
