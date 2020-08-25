@@ -117,7 +117,15 @@ class CreateOrderButton extends React.Component {
         return;
       } else if (code === PRODUCT_SOLD_OUT) {
         Utils.setSessionVariable('isHaveProductSoldOut', true);
-        window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_CART}${window.location.search}`;
+
+        this.setTimeoutObject = setTimeout(() => {
+          clearTimeout(this.setTimeoutObject);
+
+          history.push({
+            pathname: ROUTER_PATHS.ORDERING_CART,
+            search: window.location.search,
+          });
+        }, 2000);
         return;
       }
 
