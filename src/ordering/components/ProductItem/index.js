@@ -32,7 +32,7 @@ export class ProductItem extends Component {
       isValidTimeToOrder,
     } = this.props;
     const PricesDom = (
-      <div className="price item__text">
+      <div className="price">
         {originalDisplayPrice ? (
           <CurrencyNumber
             className="text-size-small text-line-through"

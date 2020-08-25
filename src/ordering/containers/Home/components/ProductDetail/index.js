@@ -19,6 +19,8 @@ import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+import qs from 'qs';
+import { withRouter } from 'react-router-dom';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -360,6 +362,24 @@ class ProductDetail extends Component {
     const { onToggle, homeActions } = this.props;
     const { variations } = product;
 
+    const { history } = this.props;
+    const { storeId } = config;
+
+    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const { h } = search;
+
+    if ((!deliveryAddress && Utils.isDeliveryType()) || !storeId || !h) {
+      const { search } = window.location;
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        search: `${search}&callbackUrl=${callbackUrl}`,
+      });
+      return;
+    }
+
     if (!variations || !variations.length) {
       await homeActions.addOrUpdateShoppingCartItem({
         action: 'add',
@@ -691,4 +711,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(ProductDetail);
+)(withRouter(ProductDetail));
