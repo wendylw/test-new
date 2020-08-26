@@ -1,5 +1,5 @@
 import qs from 'qs';
-import React, { Component, useState } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   CardNumberElement,
@@ -144,6 +144,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
   };
 
   // 'onfocus', (e ) => e.target.checkValidity()
+  const isFormComplete = cardNumberComplete && cardExpiryComplete && cardCvcComplete && billingDetails.name;
 
   return (
     <form className="form" onSubmit={handleSubmit}>
@@ -331,6 +332,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={processing || !stripe}
           beforeCreateOrder={() => setIsFormTouched(true)}
+          validCreateOrder={isFormComplete}
           afterCreateOrder={async orderId => {
             const payload = await stripe.createPaymentMethod({
               type: 'card',
