@@ -906,10 +906,9 @@ class LocationAndDate extends Component {
 
     if (lastItem.from === 'now') return list;
 
-    const lastItemDateString = this.getDateFromTime(lastItem.from);
-    const selectDateString = this.getDateFromTime(selectedDate);
+    const lastItemDateString = getHourAndMinuteFromTime(lastItem.from);
 
-    if (lastItemDateString !== selectDateString) list.pop();
+    if (lastItemDateString === '00:00') list.pop();
 
     return list;
   };
@@ -920,7 +919,8 @@ class LocationAndDate extends Component {
     const { t, business, allBusinessInfo } = this.props;
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
-    timeList = this.deleteNextDayItem(timeList, selectedDate.date);
+
+    timeList = this.deleteNextDayItem(timeList);
     timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
