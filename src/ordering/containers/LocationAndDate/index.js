@@ -901,7 +901,7 @@ class LocationAndDate extends Component {
   };
 
   deleteNextDayItem = (list, selectedDate) => {
-    if (!list.length) return [];
+    if (!(list || []).length) return [];
     const lastItem = list[list.length - 1];
 
     if (lastItem.from === 'now') return list;
