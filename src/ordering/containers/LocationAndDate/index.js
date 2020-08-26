@@ -901,19 +901,15 @@ class LocationAndDate extends Component {
   };
 
   deleteNextDayItem = list => {
+    if (!list || !list.length) return [];
+
     const { isPickUpType } = this.state;
-
-    if (!isPickUpType) return list;
-
-    if (!(list || []).length) return [];
     const lastItem = list[list.length - 1];
+    const lastItemDateString = lastItem.from === 'now' ? undefined : getHourAndMinuteFromTime(lastItem.from);
 
-    if (lastItem.from === 'now') return list;
-
-    const lastItemDateString = getHourAndMinuteFromTime(lastItem.from);
-
-    if (lastItemDateString === '00:00') list.pop();
-
+    if (isPickUpType && lastItem.from !== 'now' && lastItemDateString === '00:00') {
+      list.pop();
+    }
     return list;
   };
 
