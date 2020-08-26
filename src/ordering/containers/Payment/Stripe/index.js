@@ -1,5 +1,5 @@
 import qs from 'qs';
-import React, { Component, useEffect, useRef, useState } from 'react';
+import React, { Component, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   CardNumberElement,
