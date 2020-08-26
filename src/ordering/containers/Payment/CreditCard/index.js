@@ -249,6 +249,10 @@ class CreditCard extends Component {
   };
 
   async handleBeforeCreateOrder() {
+    this.setState({
+      payNowLoading: true,
+    });
+
     await this.validateForm();
 
     const { t } = this.props;
@@ -502,7 +506,7 @@ class CreditCard extends Component {
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-            validCreateOrder={this.isFromComplete()}
+            validCreateOrder={Boolean(this.isFromComplete())}
             afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
