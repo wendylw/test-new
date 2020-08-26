@@ -39,9 +39,9 @@ class App extends Component {
   };
 
   loginBeepApp = async res => {
-    const { actions } = this.props;
+    const { appActions } = this.props;
     if (res.access_token && res.refresh_token) {
-      await actions.loginApp({
+      await appActions.loginApp({
         accessToken: res.access_token,
         refreshToken: res.refresh_token,
       });
@@ -119,11 +119,11 @@ class App extends Component {
   }
 
   render() {
-    const { user, appActions } = this.props;
+    const { user } = this.props;
     const { isWebview } = user || {};
     const appLogin = getAppLoginStatus();
 
-    return !appLogin && isWebview ? <RequestLogin user={user} actions={appActions} /> : this.renderMainContent();
+    return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
   }
 }
 
