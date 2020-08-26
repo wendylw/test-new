@@ -8,6 +8,8 @@ export const getAppLoginStatus = () => {
     console.log('iosLogin====>', window.prompt('isLogin'));
     return window.prompt('isLogin');
   } else {
+    const isIos = Utils.isIOSWebview();
+    console.log('isIos====>', isIos);
     return false;
   }
 };
