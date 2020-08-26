@@ -86,8 +86,8 @@
     "i18n-sync": "i18n-sync",
     "build:sourcemap": "node scripts/build-sourcemap --serve-sourcemap-url http://localhost:8080",
     "serve:sourcemap": "node scripts/serve-sourcemap --port 8080",
-    "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "storybook": "start-storybook -p 9009 -s src/images",
+    "build-storybook": "build-storybook -s src/images"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -111,9 +111,10 @@
     "@storybook/addon-links": "^6.0.14",
     "@storybook/addon-storysource": "^6.0.14",
     "@storybook/addon-viewport": "^6.0.14",
-    "@storybook/addons": "^6.0.14",
+    "@storybook/addons": "^6.0.18",
     "@storybook/preset-create-react-app": "^3.1.4",
     "@storybook/react": "^6.0.14",
+    "@storybook/theming": "^6.0.18",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
