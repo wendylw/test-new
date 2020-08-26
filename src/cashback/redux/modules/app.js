@@ -207,7 +207,7 @@ const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt } = action;
+  const { type, response, code, prompt, error } = action;
   const { login, consumerId } = response || {};
 
   switch (type) {
@@ -255,7 +255,12 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
+      console.log('actions', action);
       if (code && code === 401 && code < 40000) {
+        return { ...state, isExpired: true, isFetching: false };
+      }
+
+      if (error && error.code === 401) {
         return { ...state, isExpired: true, isFetching: false };
       }
 

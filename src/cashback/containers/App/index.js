@@ -103,6 +103,7 @@ class App extends Component {
     const { isFetching, prompt, isLogin, isWebview } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
+
     if (!isLogin && isWebview) {
       postAppMessage(user);
     }
