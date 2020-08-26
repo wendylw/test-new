@@ -17,9 +17,37 @@ import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
-import RequestLogin from '../../components/RequestLogin';
+import RequestLogin from './components/RequestLogin';
+import Utils from '../../../utils/utils';
+import { getAppLoginStatus, postAppMessage } from '../utils';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    window.sendToken = res => this.authTokens(res);
+  }
+
+  authTokens = async res => {
+    if (res) {
+      if (Utils.isIOSWebview()) {
+        await this.loginBeepApp(res);
+      } else if (Utils.isAndroidWebview()) {
+        const data = JSON.parse(res) || {};
+        await this.loginBeepApp(data);
+      }
+    }
+  };
+
+  loginBeepApp = async res => {
+    const { actions } = this.props;
+    if (res.access_token && res.refresh_token) {
+      await actions.loginApp({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      });
+    }
+  };
+
   async componentDidMount() {
     const { appActions } = this.props;
 
@@ -46,7 +74,7 @@ class App extends Component {
     }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+      // this.postAppMessage(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
@@ -72,29 +100,30 @@ class App extends Component {
 
   renderMainContent() {
     const { user, error, onlineStoreInfo } = this.props;
-    const { isFetching, prompt, isLogin } = user || {};
+    const { isFetching, prompt, isLogin, isWebview } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
+    if (!isLogin && isWebview) {
+      postAppMessage(user);
+    }
+
     return (
-      <section>
+      <main className="loyalty">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         <Message />
         {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
-      </section>
+      </main>
     );
   }
 
   render() {
     const { user, appActions } = this.props;
-    const { isLogin, isWebview } = user || {};
+    const { isWebview } = user || {};
+    const appLogin = getAppLoginStatus();
 
-    return (
-      <main className="loyalty">
-        {isWebview && !isLogin ? <RequestLogin user={user} actions={appActions} /> : this.renderMainContent()}
-      </main>
-    );
+    return !appLogin && isWebview ? <RequestLogin user={user} actions={appActions} /> : this.renderMainContent();
   }
 }
 
