@@ -154,5 +154,6 @@
   "IncorrectCvc": "Incorrect Cvc",
   "UnknownError": "Unknown Error",
   "OnlineBanking": "Online Banking",
-  "CreditAndDebitCard": "Credit/Debit Card"
+  "CreditAndDebitCard": "Credit/Debit Card",
+  "DeliveryHelpText": "Please key in your address to add items to your cart"
 }
