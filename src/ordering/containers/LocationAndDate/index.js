@@ -897,7 +897,11 @@ class LocationAndDate extends Component {
     return true;
   };
 
-  deleteNextDayItem = (list, selectedDate) => {
+  deleteNextDayItem = list => {
+    const { isPickUpType } = this.state;
+
+    if (!isPickUpType) return list;
+
     if (!(list || []).length) return [];
     const lastItem = list[list.length - 1];
 
