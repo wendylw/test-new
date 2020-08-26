@@ -50,7 +50,6 @@ class CreditCard extends Component {
       key: null,
       message: null,
     },
-    test: false,
   };
 
   componentDidMount() {
