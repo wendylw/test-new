@@ -86,8 +86,8 @@
     "i18n-sync": "i18n-sync",
     "build:sourcemap": "node scripts/build-sourcemap --serve-sourcemap-url http://localhost:8080",
     "serve:sourcemap": "node scripts/serve-sourcemap --port 8080",
-    "storybook": "start-storybook -p 9009 -s src/images",
-    "build-storybook": "build-storybook -s src/images"
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app",
