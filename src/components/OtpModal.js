@@ -35,6 +35,8 @@ class OtpModal extends React.Component {
         () => {
           try {
             const bottomValue = this.getScrollBottom();
+
+            if (!this.addressAsideInnerRef || !this.addressAsideInnerRef.current) return;
             this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
           } catch (e) {
             captureException(e);
@@ -47,6 +49,7 @@ class OtpModal extends React.Component {
         () => {
           setTimeout(() => {
             try {
+              if (!this.addressAsideInnerRef || !this.addressAsideInnerRef.current) return;
               this.addressAsideInnerRef.current.style.transform = 'none';
             } catch (e) {
               captureException(e);

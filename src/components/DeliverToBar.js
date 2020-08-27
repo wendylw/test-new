@@ -3,6 +3,11 @@ import React, { Component } from 'react';
 import withDataAttributes from './withDataAttributes';
 import './DeliverToBar.scss';
 
+/**
+ * `<DeliverToBar />` is used on the homepage of beepit.com and ordering.
+ *
+ * A entry of search location and delivery details
+ */
 class DeliverToBar extends Component {
   render() {
     const {

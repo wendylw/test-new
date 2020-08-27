@@ -98,12 +98,27 @@ class Customer extends Component {
 
   checkDistanceError = () => {
     const { businessInfo: business, deliveryDetails, t } = this.props;
+    const { stores } = business;
+    const [store = {}] = stores || [];
+    const { location } = store;
+
+    let { latitude, longitude } = location || {};
     if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
       return null;
     }
+    if (latitude === undefined || longitude === undefined) {
+      return null;
+    }
+    latitude = +latitude;
+    longitude = +longitude;
+
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+      return null;
+    }
+
     const from = {
-      lat: business.stores[0].location.latitude,
-      lng: business.stores[0].location.longitude,
+      lat: latitude,
+      lng: longitude,
     };
     const to = {
       lat: deliveryDetails.deliveryToLocation.latitude,

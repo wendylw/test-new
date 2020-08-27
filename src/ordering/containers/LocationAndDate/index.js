@@ -1378,9 +1378,9 @@ class LocationAndDate extends Component {
   renderDeliveryHelpText = () => {
     const { t } = this.props;
     return (
-      <div className="flex flex-middle flex-space-between flex-column form__group">
-        <img src={beepLocationdateHint} alt="delivery no address image" className="block" style={{ width: '94%' }} />
-        <p style={{ width: '56%', marginTop: '14px', color: '#8F9092' }} className="text-center text-size-big">
+      <div className="padding-normal">
+        <img src={beepLocationdateHint} alt="Delivery no address" />
+        <p className="location-date__help-text text-center text-size-big margin-top-bottom-normal">
           {t('DeliveryHelpText')}
         </p>
       </div>

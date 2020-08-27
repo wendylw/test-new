@@ -66,6 +66,7 @@ class CategoryProductList extends Component {
   };
 
   handleGtmEventTracking = (eventName, data) => {
+    if (!data) return;
     let gtmTrackingData = {};
     if (eventName === GTM_TRACKING_EVENTS.VIEW_PRODUCT) {
       gtmTrackingData = {
