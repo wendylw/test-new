@@ -504,12 +504,11 @@ class ProductDetail extends Component {
   }
 
   renderProductDescription() {
-    const { t, show, product, onToggle, onlineStoreInfo } = this.props;
+    const { t, show, product, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title, description } = product || {};
+    const { images, title } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
-    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
 
     if (show) {
       className.push('product-description__hide');
@@ -521,11 +520,6 @@ class ProductDetail extends Component {
           ref={ref => (this.productDescriptionImage = ref)}
           className="product-description__image-container flex__shrink-fixed"
         >
-          <IconClose
-            className="product-description__icon-close icon icon__normal margin-normal"
-            onClick={() => onToggle()}
-            data-heap-name="ordering.home.product-detail.back-btn"
-          />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}
@@ -568,14 +562,6 @@ class ProductDetail extends Component {
           ) : null}
         </div>
         <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
-          <summary className="product-description__info-summary flex flex-column flex-space-between">
-            <h2 className="padding-small text-size-biggest text-weight-bolder">{title}</h2>
-            <CurrencyNumber
-              className="padding-small text-size-big text-opacity text-weight-bolder"
-              money={Number(this.displayPrice()) || 0}
-            />
-          </summary>
-
           {Utils.isProductSoldOut(product || {}) ? (
             <Tag
               text={t('SoldOut')}
@@ -590,28 +576,19 @@ class ProductDetail extends Component {
             />
           )}
         </div>
-        <article className="product-description__article margin-top-bottom-normal">
-          {Boolean(descriptionStr) ? (
-            <p
-              className="text-opacity padding-left-right-normal margin-top-bottom-small"
-              dangerouslySetInnerHTML={descriptionStr}
-            />
-          ) : (
-            <p className="text-opacity padding-left-right-normal margin-top-bottom-small">
-              {t('NoProductDescription')}
-            </p>
-          )}
-        </article>
       </div>
     );
   }
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { product, viewAside, show, footerEl } = this.props;
+    const { t, onlineStoreInfo, product, viewAside, show, footerEl, onToggle } = this.props;
+    const { storeName } = onlineStoreInfo || {};
+    const { id, _needMore, images, title, description } = product || {};
     const { resizeImage } = this.state;
+    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
 
-    if (show && product && product.id && !product._needMore) {
+    if (show && product && id && !_needMore) {
       className.push('active');
     }
 
@@ -631,6 +608,49 @@ class ProductDetail extends Component {
             opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
           }}
         >
+          <IconClose
+            className="product-detail__icon-close icon icon__normal margin-normal"
+            onClick={() => onToggle()}
+            data-heap-name="ordering.home.product-detail.back-btn"
+          />
+
+          <div className="product-detail__image-container flex__shrink-fixed">
+            <Image
+              className="product-detail__image"
+              src={images && images.length ? images[0] : null}
+              scalingRatioIndex={2}
+              alt={`${storeName} ${title}`}
+            />
+          </div>
+          <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
+            <summary className="product-detail__info-summary flex flex-column flex-space-between">
+              <h2 className="padding-small text-size-biggest text-weight-bolder">{title}</h2>
+              <CurrencyNumber
+                className="padding-small text-size-big text-opacity text-weight-bolder"
+                money={Number(this.displayPrice()) || 0}
+              />
+            </summary>
+
+            {Utils.isProductSoldOut(product || {}) ? (
+              <Tag
+                text={t('SoldOut')}
+                className="product-detail__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
+              />
+            ) : null}
+          </div>
+          <article className="product-description__article margin-top-bottom-normal">
+            {Boolean(descriptionStr) ? (
+              <p
+                className="text-opacity padding-left-right-normal margin-top-bottom-small"
+                dangerouslySetInnerHTML={descriptionStr}
+              />
+            ) : (
+              <p className="text-opacity padding-left-right-normal margin-top-bottom-small">
+                {t('NoProductDescription')}
+              </p>
+            )}
+          </article>
+
           {this.renderVariations()}
           {this.renderProductOperator()}
         </div>
