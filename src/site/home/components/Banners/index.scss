@@ -1,0 +1,18 @@
+@import "../../../Variables";
+
+.banners-container {
+  width: 350px;
+  height: 120px;
+  display: block;
+}
+
+.banners-item {
+  position: relative;
+  display: inline-block;
+
+  img {
+    width: 350px;
+    height: 120px;
+    border-radius: $border-radius-large;
+  }
+}
