@@ -9,6 +9,7 @@ import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
 import { IconClose } from '../../../../../components/Icons';
 import ItemOperator from '../../../../../components/ItemOperator';
+import CheckBox from '../../../../../components/CheckBox';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
 import Utils from '../../../../../utils/utils';
@@ -592,6 +593,8 @@ class ProductDetail extends Component {
       className.push('active');
     }
 
+    console.log(product);
+
     return (
       <aside
         ref={ref => (this.asideEl = ref)}
@@ -622,12 +625,13 @@ class ProductDetail extends Component {
               alt={`${storeName} ${title}`}
             />
           </div>
-          <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
-            <summary className="product-detail__info-summary flex flex-column flex-space-between">
-              <h2 className="padding-small text-size-biggest text-weight-bolder">{title}</h2>
+          <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
+            <summary className="product-detail__info-summary flex flex-top flex-space-between">
+              <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
               <CurrencyNumber
-                className="padding-small text-size-big text-opacity text-weight-bolder"
+                className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
                 money={Number(this.displayPrice()) || 0}
+                numberOnly={true}
               />
             </summary>
 
@@ -638,14 +642,14 @@ class ProductDetail extends Component {
               />
             ) : null}
           </div>
-          <article className="product-description__article margin-top-bottom-normal">
+          <article className="product-detail__article margin-top-bottom-normal">
             {Boolean(descriptionStr) ? (
               <p
-                className="text-opacity padding-left-right-normal margin-top-bottom-small"
+                className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
                 dangerouslySetInnerHTML={descriptionStr}
               />
             ) : (
-              <p className="text-opacity padding-left-right-normal margin-top-bottom-small">
+              <p className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big">
                 {t('NoProductDescription')}
               </p>
             )}
@@ -654,7 +658,7 @@ class ProductDetail extends Component {
           {this.renderVariations()}
           {this.renderProductOperator()}
         </div>
-        {this.renderProductDescription()}
+        {/* {this.renderProductDescription()} */}
       </aside>
     );
   }
