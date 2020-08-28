@@ -156,4 +156,3 @@ export const getCurrentCollection = state => state.entities.storeCollections.cur
 export const getOtherCollections = state => getAllStoreCollections(state)['SearchOthers'];
 export const getPopupCollections = state => getAllStoreCollections(state)['SearchPopular'];
 export const getIconCollections = state => getAllStoreCollections(state)['Icon'];
-export const getBannerCollections = state => getAllStoreCollections(state)['Banner'];
