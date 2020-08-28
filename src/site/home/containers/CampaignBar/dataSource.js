@@ -112,12 +112,11 @@ const dataSource = [
         subject: 'Terms & conditions',
         fields: {
           conditions: [
-            'This giveaway is only applicable to purchases made on beepit.com.',
-            'In order to be eligible for this promotion, you must spend the set promo amount within the promotional timeframe.',
-            'The Giveaway includes: Spend more than RM250 within a frame of 7 days and stand a chance to win a RM25 beepit.com voucher.',
-            'Winners will be selected at random within the campaign period.',
-            'Winners will be notified 3-5 working days following the last date of the promotion.',
-            'Winners will be notified via SMS and the next steps of claiming the vouchers will be explained.',
+            'The Giveaway Prize for this campaign is a RM25 Beep cash voucher. The voucher cannot be redeemable or exchangeable for cash.',
+            'In order to be eligible for this promotion, you must spend a minimum of RM250 on any store on Beepit.com in seven (7) consecutive days within the Campaign period.',
+            'The RM250 spend can be accrued across multiple purchases within the seven (7) consecutive days, as long as the seven (7) days fall within the Campaign Period.',
+            'Winners will be selected at random and notified within 3-5 working days following the end of the Campaign Period.',
+            'Winners will be notified via SMS and be instructed on how to claim their giveaway prize.',
           ],
         },
       },
