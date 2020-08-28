@@ -104,7 +104,7 @@ const dataSource = [
         type: 'campaign_period',
         subject: 'Campaign Period',
         fields: {
-          activeDateRange: '24th August 2020 - 25th September 2020',
+          activeDateRange: '24th August 2020 - 6th September 2020',
         },
       },
       {
@@ -113,10 +113,10 @@ const dataSource = [
         fields: {
           conditions: [
             'This giveaway is only applicable to purchases made on beepit.com.',
-            'In order to be eligible for this promotion, you must spend the set promo amount within the promotional timeframe.\n',
-            'The Giveaway includes: (i) Spend more than RM250 in a week and stand a chance to win a RM25 beepit.com voucher (ii) Order from 3 different restaurants/merchants on beepit.com this week and stand a chance to win a RM30 beepit.com voucher.',
-            'Winners will be selected at random and will be categorized in a first-come-first-serve basis during the Promotion Period.\n',
-            'Winners will be notified 3-5 working days following the last date of the promotion. \n',
+            'In order to be eligible for this promotion, you must spend the set promo amount within the promotional timeframe.',
+            'The Giveaway includes: Spend more than RM250 within a frame of 7 days and stand a chance to win a RM25 beepit.com voucher.',
+            'Winners will be selected at random within the campaign period.',
+            'Winners will be notified 3-5 working days following the last date of the promotion.',
             'Winners will be notified via SMS and the next steps of claiming the vouchers will be explained.',
           ],
         },
