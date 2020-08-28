@@ -251,6 +251,7 @@ const COLLECTIONS_TYPE = {
   ICON: 'Icon',
   OTHERS: 'SearchOthers',
   POPULAR: 'SearchPopular',
+  BANNER: 'Banner',
 };
 
 export default {
