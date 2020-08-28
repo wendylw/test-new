@@ -42,7 +42,7 @@ class Banners extends Component {
                 data-heap-name="site.home.collection-banners"
                 className="banners-item"
               >
-                <Image src={image} alt={name} scalingRatioIndex={1} />
+                <Image src={image} alt={name} />
               </SwiperSlide>
             );
           })}
