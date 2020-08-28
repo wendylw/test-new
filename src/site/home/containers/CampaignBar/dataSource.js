@@ -2,6 +2,8 @@ import bannerImage from './components/images/Banner.jpg';
 import promoBanner from './components/images/PromoBanner.jpg';
 import rhbBanner from './components/images/RHBbanner@2x.jpg';
 import rhbBoard from './components/images/RHBboard@2x.jpg';
+import makanTogetherBoard from './components/images/MakanTogetherMalaysiaRHBboard.jpg';
+import makanTogetherBanner from './components/images/MakanTogetherMalaysiaBanner.jpg';
 
 // ordered by id DESC
 const dataSource = [
@@ -87,6 +89,35 @@ const dataSource = [
             'The Promotion is limited to two thousand (2,000) cashback claims per month to eligible cardholders on a first-come-first-serve basis during the Promotion Period.',
             'Promotion terms and conditions apply.',
             'RHB general terms and conditions apply.',
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'campaign-3',
+    barImage: makanTogetherBanner,
+    bannerImage: makanTogetherBoard,
+    subject: '#MakanTogetherMalaysia Giveaway',
+    sections: [
+      {
+        type: 'campaign_period',
+        subject: 'Campaign Period',
+        fields: {
+          activeDateRange: '24th August 2020 - 25th September 2020',
+        },
+      },
+      {
+        type: 'terms_and_conditions',
+        subject: 'Terms & conditions',
+        fields: {
+          conditions: [
+            'This giveaway is only applicable to purchases made on beepit.com.',
+            'In order to be eligible for this promotion, you must spend the set promo amount within the promotional timeframe.\n',
+            'The Giveaway includes: (i) Spend more than RM250 in a week and stand a chance to win a RM25 beepit.com voucher (ii) Order from 3 different restaurants/merchants on beepit.com this week and stand a chance to win a RM30 beepit.com voucher.',
+            'Winners will be selected at random and will be categorized in a first-come-first-serve basis during the Promotion Period.\n',
+            'Winners will be notified 3-5 working days following the last date of the promotion. \n',
+            'Winners will be notified via SMS and the next steps of claiming the vouchers will be explained.',
           ],
         },
       },
