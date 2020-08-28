@@ -230,9 +230,7 @@ class Home extends React.Component {
             <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
           </Suspense>
 
-          <Suspense fallback={null}>
-            <Banners collections={bannerCollections} />
-          </Suspense>
+          <Banners collections={bannerCollections} />
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}

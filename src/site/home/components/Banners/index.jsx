@@ -39,6 +39,7 @@ class Banners extends Component {
                     pathname: `/collections/${urlPath}`,
                   });
                 }}
+                data-heap-name="site.home.collection-banners"
                 className="banners-item"
               >
                 <Image src={image} alt={name} />
