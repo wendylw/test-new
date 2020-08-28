@@ -21,7 +21,7 @@ class Banners extends Component {
         <Swiper
           className="margin-top-bottom-smaller"
           slidesPerView={'auto'}
-          spaceBetween={10}
+          spaceBetween={12}
           loop={true}
           centeredSlides={true}
           autoplay={{
@@ -42,7 +42,7 @@ class Banners extends Component {
                 data-heap-name="site.home.collection-banners"
                 className="banners-item"
               >
-                <Image src={image} alt={name} />
+                <Image src={image} alt={name} scalingRatioIndex={2} />
               </SwiperSlide>
             );
           })}
