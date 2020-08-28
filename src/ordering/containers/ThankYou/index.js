@@ -16,6 +16,7 @@ import {
   getCashbackInfo,
   getBusinessInfo,
   getReceiptNumber,
+  getLoadOrderStatus,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
@@ -72,6 +73,11 @@ export class ThankYou extends PureComponent {
     }
 
     thankYouActions.loadOrder(receiptNumber);
+
+    // setInterval(() => {
+    thankYouActions.loadOrderStatus();
+
+    // },1000)
   }
 
   componentDidUpdate(prevProps) {
@@ -654,13 +660,15 @@ export class ThankYou extends PureComponent {
     const { t, order, cashbackInfo, businessInfo } = this.props;
     const { status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
+    const { loadOrderStatus } = this.props;
 
+    order && (order.status = loadOrderStatus || order.status);
     return (
       <React.Fragment>
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
+            src={`${(loadOrderStatus || status) === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
             alt="Beep Success"
           />
         ) : (
@@ -680,6 +688,7 @@ export class ThankYou extends PureComponent {
 
   isNowPaidPreOrder() {
     const { order } = this.props;
+    //TODO
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
@@ -825,6 +834,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
+      loadOrderStatus: getLoadOrderStatus(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

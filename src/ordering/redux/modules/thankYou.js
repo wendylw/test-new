@@ -17,6 +17,7 @@ export const initialState = {
   orderId: null,
   cashbackInfo: null /* included: customerId, consumerId, status */,
   storeHashCode: null,
+  orderStatus: null,
 };
 
 export const types = THANK_YOU_TYPES;
@@ -24,6 +25,13 @@ export const types = THANK_YOU_TYPES;
 export const actions = {
   loadOrder: orderId => dispatch => {
     return dispatch(fetchOrder({ orderId }));
+  },
+
+  loadOrderStatus: orderId => dispatch => {
+    dispatch({
+      type: 'TEST_FETCH_ORDER_STATUS',
+    });
+    return dispatch(fetchOrderStatus({ orderId }));
   },
 
   getCashbackInfo: receiptNumber => ({
@@ -62,6 +70,14 @@ export const actions = {
 };
 
 const fetchOrder = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
+    endpoint: Url.apiGql('Order'),
+    variables,
+  },
+});
+
+const fetchOrderStatus = variables => ({
   [FETCH_GRAPHQL]: {
     types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
     endpoint: Url.apiGql('Order'),
@@ -126,6 +142,11 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: redirectTo };
     }
+    case 'TEST_FETCH_ORDER_STATUS':
+      return {
+        ...state,
+        orderStatus: Math.random(),
+      };
     default:
       return state;
   }
@@ -165,6 +186,8 @@ export const getBusinessInfo = state => {
 
 export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;
+
+export const getLoadOrderStatus = state => state.thankYou.orderStatus;
 
 export const getOrderStatus = createSelector([getOrder], order => {
   return _get(order, 'status', '');
