@@ -24,6 +24,10 @@
 }
 
 .product-description {
+  .swipe {
+    height: 100%;
+  }
+
   &__hide {
     display: none;
   }
@@ -50,7 +54,8 @@
   }
 
   &__single-image {
-    height: 100%;
+    position: absolute;
+    width: 100%;
   }
 
   &__single-image img {
