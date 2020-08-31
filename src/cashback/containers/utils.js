@@ -2,14 +2,16 @@ import Utils from '../../utils/utils';
 
 export const getAppLoginStatus = () => {
   if (Utils.isAndroidWebview()) {
-    console.log('appLogin====>', window.androidInterface.isLogin());
     return window.androidInterface.isLogin();
   } else if (Utils.isIOSWebview()) {
-    console.log('iosLogin====>', window.prompt('isLogin'));
-    return window.prompt('isLogin');
+    try {
+      let iosLoginStr = window.prompt('isLogin');
+      return JSON.parse(iosLoginStr);
+    } catch (e) {
+      console.error('Get login status from app is failed');
+      return false;
+    }
   } else {
-    const isIos = Utils.isIOSWebview();
-    console.log('isIos====>', isIos);
     return false;
   }
 };
