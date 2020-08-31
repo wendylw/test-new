@@ -192,17 +192,6 @@ class PhoneLogin extends React.Component {
     appActions.phoneNumberLogin({ phone });
   }
 
-  // handlePostLoyaltyPageMessage() {
-  //   const { user } = this.props;
-  //   const { isWebview } = user;
-
-  //   if (isWebview) {
-  //     window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-  //   }
-
-  //   return;
-  // }
-
   renderCurrencyNumber() {
     const { cashbackInfo } = this.props;
     const { cashback } = cashbackInfo || {};

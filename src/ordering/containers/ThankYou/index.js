@@ -176,29 +176,34 @@ export class ThankYou extends PureComponent {
     });
   };
   renderCashbackUI = cashback => {
-    const { t } = this.props;
+    const { t, cashbackInfo } = this.props;
+    const { status } = cashbackInfo || {};
+    const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
+
     return (
-      <div className="thanks__delivery-status-container">
-        {this.state.cashbackSuccessImage && (
-          <img
-            src={this.state.cashbackSuccessImage}
-            alt="cashback Earned"
-            onLoad={this.cashbackSuccessStop}
-            className="thanks__earned-cashback-image"
+      statusCanGetCashback.includes(status) && (
+        <div className="thanks__delivery-status-container">
+          {this.state.cashbackSuccessImage && (
+            <img
+              src={this.state.cashbackSuccessImage}
+              alt="cashback Earned"
+              onLoad={this.cashbackSuccessStop}
+              className="thanks__earned-cashback-image"
+            />
+          )}
+          <CurrencyNumber
+            className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+            money={cashback || 0}
           />
-        )}
-        <CurrencyNumber
-          className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
-          money={cashback || 0}
-        />
-        <h3 className="flex flex-middle flex-center">
-          <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
-            {t('EarnedCashBackTitle')}
-          </span>
-          <img src={IconCelebration} alt="Beep Celebration" />
-        </h3>
-        <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
-      </div>
+          <h3 className="flex flex-middle flex-center">
+            <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+              {t('EarnedCashBackTitle')}
+            </span>
+            <img src={IconCelebration} alt="Beep Celebration" />
+          </h3>
+          <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
+        </div>
+      )
     );
   };
   renderPickupInfo() {
