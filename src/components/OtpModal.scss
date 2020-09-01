@@ -28,11 +28,10 @@
   }
 
   &__input {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
     height: 56px;
     line-height: 42px;
-    letter-spacing: 1em;
+    letter-spacing: 0.8em;
+    text-indent: 0.8em;
   }
 
   &__button-resend:not(:disabled) {
