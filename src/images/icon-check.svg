@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>B5BEC888-0BBC-4643-AB63-6B0B85F59325</title>
+    <defs>
+        <polygon id="path-1" points="10.125 16.365 17.625 8.865 16.74 7.98 10.125 14.61 7.515 12 6.645 12.885"></polygon>
+    </defs>
+    <g id="Experiment" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="02---Item-Details---Multi-Variant-Option" transform="translate(-374.000000, -736.000000)">
+            <g id="Pick-your-two-toppings" transform="translate(0.000000, 667.000000)">
+                <g id="Molecules/Variant/Selector" transform="translate(0.000000, 49.000000)">
+                    <g id="Icon" transform="translate(374.000000, 20.000000)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        <g id="Variables/Palette/Neutrals/05-Manatee" mask="url(#mask-2)" fill="#FFFFFF">
+                            <rect id="Color" x="0" y="0" width="24" height="24"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

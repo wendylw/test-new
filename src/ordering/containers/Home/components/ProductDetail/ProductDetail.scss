@@ -7,6 +7,15 @@
     bottom: 0;
     height: 100%;
     overflow-y: auto;
+    //padding-bottom: 80px;
+  }
+
+  &__wrapper {
+    overflow-y: auto;
+  }
+
+  &.cover {
+    z-index: 101;
   }
 
   &__icon-close {
@@ -56,8 +65,12 @@
   }
 
   &__variations {
-    max-height: 100%;
-    overflow-y: auto;
+    //max-height: 100%;
+    //overflow-y: auto;
+  }
+  .border-top {
+    height: 8px;
+    border-top: 8px solid $gray-5;
   }
 
   &__variations,
@@ -65,8 +78,31 @@
     width: 100%;
   }
 
+  &__operators {
+    position: fixed;
+    width: 100%;
+    background: #ffffff;
+
+    .item-operator {
+      position: static;
+      height: 66px;
+      transform: scale(1.3);
+    }
+  }
+
   &__item .item-operator {
     padding: 0 0.7vw;
+  }
+
+  &__footer {
+    width: 100%;
+    bottom: 0;
+    position: fixed;
+    background-color: $main-color;
+  }
+
+  .add__button {
+    width: 100%;
   }
 }
 

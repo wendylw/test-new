@@ -17,5 +17,7 @@
   "AlcoholDenied": "Access Denied",
   "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42",
   "OfflinePromptTitle": "{{storeName}} is currently offline",
-  "OfflinePromptDescription": "Apologies, our store is not ready to go online yet, but we will be back soon! Please try again later."
+  "OfflinePromptDescription": "Apologies, our store is not ready to go online yet, but we will be back soon! Please try again later.",
+  "Selected": "{{quantity}} Selected",
+  "AddCart": "add to cart"
 }

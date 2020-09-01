@@ -46,6 +46,7 @@ class ProductDetail extends Component {
     resizedImage: false,
     currentProductDescriptionImageIndex: 0,
     minimumVariations: [],
+    optionQuantity: {},
   };
 
   componentDidMount() {
@@ -77,6 +78,7 @@ class ProductDetail extends Component {
       this.setState({
         resizedImage: false,
         minimumVariations: [],
+        optionQuantity: {},
       });
     }
   }
@@ -144,17 +146,19 @@ class ProductDetail extends Component {
   displayPrice() {
     const { product } = this.props;
     const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
-    const { variationsByIdMap } = this.state;
+    const { variationsByIdMap, optionQuantity } = this.state;
     const selectedValues = [];
     const selectedVariations = [];
     let totalPriceDiff = 0;
 
-    Object.values(variationsByIdMap).forEach(function(options) {
-      Object.values(options).forEach(item => {
+    Object.keys(variationsByIdMap).forEach(function(id) {
+      const options = variationsByIdMap[id];
+      Object.keys(options).forEach(key => {
+        const item = options[key];
         if (item.value) {
           selectedVariations.push(item);
 
-          totalPriceDiff += item.priceDiff;
+          totalPriceDiff += optionQuantity[key] > 1 ? optionQuantity[key] * item.priceDiff : item.priceDiff;
           selectedValues.push(item.value);
         }
       });
@@ -209,14 +213,26 @@ class ProductDetail extends Component {
     }
 
     for (let i = 0; i < minimumVariations.length; i++) {
-      const { id, minSelectionAmount } = minimumVariations[i];
+      const { id, minSelectionAmount, allowMultiQty } = minimumVariations[i];
+      const { optionQuantity } = this.state;
 
-      if (
+      if (allowMultiQty) {
+        let selectTotal = 0;
+        let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXECLUDE_KEYS[0]);
+
+        optionKeyList.forEach(key => {
+          selectTotal += optionQuantity[key];
+        });
+        if (!variationsByIdMap[id] || (variationsByIdMap[id] && selectTotal < minSelectionAmount)) {
+          return true;
+        }
+      } else if (
         !variationsByIdMap[id] ||
         (variationsByIdMap[id] && Object.keys(variationsByIdMap[id]).length - 1 < minSelectionAmount)
       ) {
         return true;
       }
+      return;
     }
 
     return false;
@@ -277,6 +293,15 @@ class ProductDetail extends Component {
 
     this.setState({ variationsByIdMap: newMap });
   }
+
+  updateOptionQuantity = updateOptionQuantity => {
+    this.setState({
+      optionQuantity: {
+        ...this.state.optionQuantity,
+        ...updateOptionQuantity,
+      },
+    });
+  };
 
   getChoiceVariations(type) {
     const { variations } = this.props.product || {};
@@ -405,7 +430,7 @@ class ProductDetail extends Component {
     const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
 
     return (
-      <div className="product-detail__variations border__bottom-divider">
+      <div className="product-detail__variations">
         <ol className="padding-top-bottom-small">
           {singleChoiceVariations.map(variation => (
             <VariationSelector
@@ -425,6 +450,7 @@ class ProductDetail extends Component {
               isInvalidMinimum={this.isInvalidMinimumVariations()}
               data-heap-name="ordering.home.product-detail.multi-choice"
               data-heap-variation-name={variation.name}
+              updateOptionQuantity={this.updateOptionQuantity}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
           ))}
@@ -435,7 +461,7 @@ class ProductDetail extends Component {
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity, minimumVariations } = this.state;
+    const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -445,34 +471,38 @@ class ProductDetail extends Component {
     }
 
     return (
-      <div ref={ref => (this.productEl = ref)} className="product-detail__operator">
-        <ProductItem
-          isLazyLoad={false}
-          productDetailImageRef={ref => (this.productDetailImage = ref)}
-          className="product-detail__item"
-          image={imageUrl}
-          title={title}
-          variation={this.getVariationText()}
-          price={Number(this.displayPrice())}
-          cartQuantity={cartQuantity}
-          decreaseDisabled={cartQuantity === 1}
-          onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-          onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
-        />
-
-        <div ref={ref => (this.buttonEl = ref)} className="padding-normal">
+      <React.Fragment>
+        <div
+          className="product-detail__operators flex padding-small flex-center"
+          ref={ref => (this.opeartoresEl = ref)}
+          style={{
+            bottom: this.footerEl ? `${this.footerEl.clientHeight || this.footerEl.offsetHeight}px` : '0',
+          }}
+        >
+          <ItemOperator
+            className="flex-middle"
+            data-heap-name="ordering.common.product-item.item-operator"
+            quantity={cartQuantity}
+            from="productDetail"
+            decreaseDisabled={cartQuantity <= 1}
+            onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+            onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
+            increaseDisabled={false}
+          />
+        </div>
+        <footer
+          className="product-detail__footer footer flex flex-middle flex-center padding-normal"
+          ref={ref => (this.footerEl = ref)}
+        >
           <button
-            className="button button__fill button__block text-weight-bolder"
-            type="button"
-            data-testid="OK"
-            data-heap-name="ordering.home.product-detail.ok-btn"
+            className="button add__button button__fill text-uppercase text-weight-bolder "
             disabled={
               !this.isSubmitable() ||
               Utils.isProductSoldOut(product || {}) ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
-            onClick={async () => {
-              const { variationsByIdMap } = this.state;
+            onClick={() => {
+              const { variationsByIdMap, optionQuantity } = this.state;
               let variations = [];
 
               Object.keys(variationsByIdMap).forEach(function(variationId) {
@@ -486,6 +516,15 @@ class ProductDetail extends Component {
                 });
               });
 
+              variations.forEach(item => {
+                const { optionId } = item;
+
+                if (optionQuantity[optionId]) {
+                  // item.quantity = optionQuantity[optionId]
+                  // TODO "quantity" should update to api params
+                }
+              });
+
               if (this.isSubmitable()) {
                 this.handleAddOrUpdateShoppingCartItem({
                   action: 'add',
@@ -497,10 +536,71 @@ class ProductDetail extends Component {
               }
             }}
           >
-            {t('OK')}
+            {t('AddCart')} -
+            <CurrencyNumber
+              className="padding-small text-weight-bolder flex__shrink-fixed"
+              money={Number(this.displayPrice()) || 0}
+            />
           </button>
-        </div>
-      </div>
+        </footer>
+      </React.Fragment>
+
+      // <div ref={ref => (this.productEl = ref)} className="product-detail__operator">
+      //   <ProductItem
+      //     isLazyLoad={false}
+      //     productDetailImageRef={ref => (this.productDetailImage = ref)}
+      //     className="product-detail__item"
+      //     image={imageUrl}
+      //     title={title}
+      //     variation={this.getVariationText()}
+      //     price={Number(this.displayPrice())}
+      //     cartQuantity={cartQuantity}
+      //     decreaseDisabled={cartQuantity === 1}
+      //     onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+      //     onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
+      //   />
+      //
+      //   <div ref={ref => (this.buttonEl = ref)} className="padding-normal">
+      //     <button
+      //       className="button button__fill button__block text-weight-bolder"
+      //       type="button"
+      //       data-testid="OK"
+      //       data-heap-name="ordering.home.product-detail.ok-btn"
+      //       disabled={
+      //         !this.isSubmitable() ||
+      //         Utils.isProductSoldOut(product || {}) ||
+      //         (hasMinimumVariations && this.isInvalidMinimumVariations())
+      //       }
+      //       onClick={async () => {
+      //         const { variationsByIdMap } = this.state;
+      //         let variations = [];
+      //
+      //         Object.keys(variationsByIdMap).forEach(function(variationId) {
+      //           Object.keys(variationsByIdMap[variationId]).forEach(key => {
+      //             if (!EXECLUDE_KEYS.includes(key)) {
+      //               variations.push({
+      //                 variationId,
+      //                 optionId: key,
+      //               });
+      //             }
+      //           });
+      //         });
+      //
+      //         if (this.isSubmitable()) {
+      //           this.handleAddOrUpdateShoppingCartItem({
+      //             action: 'add',
+      //             business: config.business,
+      //             productId: this.currentProductId || productId,
+      //             quantity: cartQuantity,
+      //             variations,
+      //           });
+      //         }
+      //       }}
+      //     >
+      //       {t('OK')}
+      //     </button>
+      //   </div>
+      // </div>
     );
   }
 
@@ -583,79 +683,86 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { t, onlineStoreInfo, product, viewAside, show, footerEl, onToggle } = this.props;
+    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
     const { storeName } = onlineStoreInfo || {};
     const { id, _needMore, images, title, description } = product || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: Utils.removeHtmlTag(description) };
 
     if (show && product && id && !_needMore) {
-      className.push('active');
+      className.push('active cover');
     }
 
-    console.log(product);
-
+    const footerEl = this.footerEl;
     return (
       <aside
         ref={ref => (this.asideEl = ref)}
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
         data-heap-name="ordering.home.product-detail.container"
-        style={{
-          bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
-        }}
       >
         <div
-          className="product-detail__container aside__content absolute-wrapper flex flex-column"
+          className="product-detail__container aside__content absolute-wrapper flex flex-column cover"
           style={{
             opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
+            paddingBottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
           }}
         >
-          <IconClose
-            className="product-detail__icon-close icon icon__normal margin-normal"
-            onClick={() => onToggle()}
-            data-heap-name="ordering.home.product-detail.back-btn"
-          />
-
-          <div className="product-detail__image-container flex__shrink-fixed">
-            <Image
-              className="product-detail__image"
-              src={images && images.length ? images[0] : null}
-              scalingRatioIndex={2}
-              alt={`${storeName} ${title}`}
+          <div
+            className="product-detail__wrapper"
+            style={{
+              height:
+                this.footerEl && this.opeartoresEl
+                  ? `${document.documentElement.clientHeight -
+                      (footerEl.offsetHeight + this.opeartoresEl.offsetHeight)}px`
+                  : '100vh',
+            }}
+          >
+            <IconClose
+              className="product-detail__icon-close icon icon__normal margin-normal"
+              onClick={() => onToggle()}
+              data-heap-name="ordering.home.product-detail.back-btn"
             />
-          </div>
-          <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
-            <summary className="product-detail__info-summary flex flex-top flex-space-between">
-              <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
-              <CurrencyNumber
-                className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
-                money={Number(this.displayPrice()) || 0}
-                numberOnly={true}
-              />
-            </summary>
 
-            {Utils.isProductSoldOut(product || {}) ? (
-              <Tag
-                text={t('SoldOut')}
-                className="product-detail__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
+            <div className="product-detail__image-container flex__shrink-fixed">
+              <Image
+                className="product-detail__image"
+                src={images && images.length ? images[0] : null}
+                scalingRatioIndex={2}
+                alt={`${storeName} ${title}`}
               />
-            ) : null}
-          </div>
-          <article className="product-detail__article margin-top-bottom-normal">
-            {Boolean(descriptionStr) ? (
-              <p
-                className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
-                dangerouslySetInnerHTML={descriptionStr}
-              />
-            ) : (
-              <p className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big">
-                {t('NoProductDescription')}
-              </p>
-            )}
-          </article>
+            </div>
+            <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
+              <summary className="product-detail__info-summary flex flex-top flex-space-between">
+                <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
+                <CurrencyNumber
+                  className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
+                  money={Number(this.displayPrice()) || 0}
+                  numberOnly={true}
+                />
+              </summary>
 
-          {this.renderVariations()}
+              {Utils.isProductSoldOut(product || {}) ? (
+                <Tag
+                  text={t('SoldOut')}
+                  className="product-detail__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
+                />
+              ) : null}
+            </div>
+            <article className="product-detail__article margin-top-bottom-normal">
+              {Boolean(descriptionStr) ? (
+                <p
+                  className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
+                  dangerouslySetInnerHTML={descriptionStr}
+                />
+              ) : (
+                <p className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big">
+                  {t('NoProductDescription')}
+                </p>
+              )}
+            </article>
+            {this.renderVariations()}
+          </div>
           {this.renderProductOperator()}
         </div>
         {/* {this.renderProductDescription()} */}

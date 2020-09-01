@@ -4,10 +4,69 @@
   &__list {
     flex-wrap: wrap;
   }
+  border-top: 8px solid #eff2f3;
+  padding-top: 20px;
 
   &__item {
+    //display: inline-block;
+    //max-width: 80%;
+    border-bottom: 1px solid $gray-4;
+    height: 64px;
+    &:last-child {
+      border: 0;
+    }
+    color: $status-gray;
+  }
+
+  .text-gray {
+    color: $status-gray;
+  }
+
+  .active {
+    color: $main-color;
+  }
+
+  &__operator {
+    position: relative;
+  }
+
+  &__check {
+    width: 24px;
+    height: 24px;
+
+    border: 2px solid $gray-5;
     display: inline-block;
-    max-width: 80%;
+    &.active__circle {
+      border-color: $theme-color;
+      //padding: 2px;
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: $theme-color;
+        border-radius: 50%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+      }
+    }
+
+    &.active__square {
+      background-color: $theme-color;
+      border-color: $theme-color;
+    }
+
+    &.border__circle {
+      border-radius: 50%;
+    }
+
+    &.border__square {
+      border-radius: 4px;
+    }
   }
 
   &__button {
