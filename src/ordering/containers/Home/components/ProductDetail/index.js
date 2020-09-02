@@ -473,7 +473,7 @@ class ProductDetail extends Component {
     return (
       <React.Fragment>
         <div
-          className="product-detail__operators flex flex-center flex__shrink-fixed border__top-divider"
+          className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
           ref={ref => (this.opeartoresEl = ref)}
         >
           <ItemOperator

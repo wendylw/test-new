@@ -1,21 +1,20 @@
 @import "../../../../../Variables.scss";
 
 .variation-selector {
+  border-top: 8px solid $gray-5;
+  padding-top: 4.8vw;
+
   &__list {
     flex-wrap: wrap;
   }
-  border-top: 8px solid #eff2f3;
-  padding-top: 4.8vw;
 
   &__item {
-    //display: inline-block;
-    //max-width: 80%;
     border-bottom: 1px solid $gray-4;
-    height: 64px;
+    color: $status-gray;
+
     &:last-child {
       border: 0;
     }
-    color: $status-gray;
   }
 
   .text-gray {
@@ -45,6 +44,7 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
   }
 }
+
 @media (min-width: 420px) {
   .variation-selector {
     padding-top: 20px;

@@ -78,11 +78,11 @@
   &__operators {
     width: 100%;
     background: $white;
-    padding: 3.38vw;
-    .item-operator {
-      position: static;
-      transform: scale(1.3);
-    }
+  }
+
+  &__operators .item-operator {
+    position: static;
+    transform: scale(1.3);
   }
 
   &__item .item-operator {
@@ -121,14 +121,6 @@
 
     &.active {
       background-color: $white;
-    }
-  }
-}
-
-@media (min-width: 420px) {
-  .product-detail {
-    &__operators {
-      padding: 14px;
     }
   }
 }
