@@ -473,15 +473,12 @@ class ProductDetail extends Component {
     return (
       <React.Fragment>
         <div
-          className="product-detail__operators flex padding-small flex-center"
+          className="product-detail__operators flex flex-center flex__shrink-fixed border__top-divider"
           ref={ref => (this.opeartoresEl = ref)}
-          style={{
-            bottom: this.footerEl ? `${this.footerEl.clientHeight || this.footerEl.offsetHeight}px` : '0',
-          }}
         >
           <ItemOperator
             className="flex-middle"
-            data-heap-name="ordering.common.product-item.item-operator"
+            data-heap-name="ordering.common.product-item.item-operator "
             quantity={cartQuantity}
             from="productDetail"
             decreaseDisabled={cartQuantity <= 1}
@@ -491,7 +488,7 @@ class ProductDetail extends Component {
           />
         </div>
         <footer
-          className="product-detail__footer footer flex flex-middle flex-center padding-normal"
+          className="product-detail__footer flex flex-middle flex-center padding-normal flex__shrink-fixed "
           ref={ref => (this.footerEl = ref)}
         >
           <button
@@ -702,22 +699,12 @@ class ProductDetail extends Component {
         data-heap-name="ordering.home.product-detail.container"
       >
         <div
-          className="product-detail__container aside__content absolute-wrapper flex flex-column cover"
+          className="product-detail__container aside__content flex flex-column cover"
           style={{
             opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
-            paddingBottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
           }}
         >
-          <div
-            className="product-detail__wrapper"
-            style={{
-              height:
-                this.footerEl && this.opeartoresEl
-                  ? `${document.documentElement.clientHeight -
-                      (footerEl.offsetHeight + this.opeartoresEl.offsetHeight)}px`
-                  : '100vh',
-            }}
-          >
+          <div className="product-detail__wrapper">
             <IconClose
               className="product-detail__icon-close icon icon__normal margin-normal"
               onClick={() => onToggle()}

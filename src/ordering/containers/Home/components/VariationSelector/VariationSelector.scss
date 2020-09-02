@@ -5,7 +5,7 @@
     flex-wrap: wrap;
   }
   border-top: 8px solid #eff2f3;
-  padding-top: 20px;
+  padding-top: 4.8vw;
 
   &__item {
     //display: inline-block;
@@ -43,5 +43,10 @@
 
   &__button-shadow {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+@media (min-width: 420px) {
+  .variation-selector {
+    padding-top: 20px;
   }
 }

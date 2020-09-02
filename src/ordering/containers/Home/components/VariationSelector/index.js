@@ -203,9 +203,11 @@ export class VariationSelector extends Component {
     return (
       <li className="variation-selector " key={variation.id}>
         <div className="padding-left-right-normal">
-          <h4 className="text-size-big text-uppercase padding-top-bottom-smaller flex flex-space-between">
-            <span>{variation.name}</span>
-            {this.isMultipleChoice() && quantitySumMoney ? <span>+ {quantitySumMoney}</span> : null}
+          <h4 className="text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between">
+            <span className="text-weight-bolder">{variation.name}</span>
+            {this.isMultipleChoice() && quantitySumMoney ? (
+              <span className="text-weight-bolder">+ {quantitySumMoney}</span>
+            ) : null}
           </h4>
           <div className="flex flex-space-between">
             {this.isMultipleChoice() && enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
@@ -234,7 +236,7 @@ export class VariationSelector extends Component {
             return (
               <li
                 key={id}
-                className={` variation-selector__item flex-space-between flex-center margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-smaller`}
+                className={` variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-smaller`}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
@@ -254,7 +256,9 @@ export class VariationSelector extends Component {
                   } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-small`}
                 >
                   <span>{value}</span>
-                  {priceDiff ? <span className="margin-top-bottom-smaller">+{priceDiff}</span> : null}
+                  {priceDiff ? (
+                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff}</span>
+                  ) : null}
                 </p>
                 <div className="variation-selector__operator padding-top-bottom-small margin-left-right-smaller ">
                   {this.isSingleChoice() && <Radio checked={selected[id]} />}
