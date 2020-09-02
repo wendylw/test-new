@@ -243,13 +243,23 @@ class CreditCard extends Component {
     });
   }
 
+  isFromComplete = () => {
+    const { cardInfoError, cardHolderNameError } = this.state;
+
+    return !(cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length));
+  };
+
   async handleBeforeCreateOrder() {
+    this.setState({
+      payNowLoading: true,
+    });
+
     await this.validateForm();
 
     const { t } = this.props;
-    const { cardInfoError, cardHolderNameError } = this.state;
+    const { cardInfoError } = this.state;
 
-    if (cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length)) {
+    if (!this.isFromComplete()) {
       return;
     }
 
@@ -515,7 +525,8 @@ class CreditCard extends Component {
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-            afterCreateOrder={() => {
+            validCreateOrder={Boolean(this.isFromComplete())}
+            afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });

@@ -161,29 +161,34 @@ export class ThankYou extends PureComponent {
   };
 
   renderCashbackUI = cashback => {
-    const { t } = this.props;
+    const { t, cashbackInfo } = this.props;
+    const { status } = cashbackInfo || {};
+    const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
+
     return (
-      <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
-        {this.state.cashbackSuccessImage && (
-          <img
-            src={this.state.cashbackSuccessImage}
-            alt="cashback Earned"
-            onLoad={this.cashbackSuccessStop}
-            className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
+      statusCanGetCashback.includes(status) && (
+        <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
+          {this.state.cashbackSuccessImage && (
+            <img
+              src={this.state.cashbackSuccessImage}
+              alt="cashback Earned"
+              onLoad={this.cashbackSuccessStop}
+              className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
+            />
+          )}
+          <CurrencyNumber
+            className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
+            money={cashback || 0}
           />
-        )}
-        <CurrencyNumber
-          className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
-          money={cashback || 0}
-        />
-        <h3 className="flex flex-middle flex-center">
-          <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
-          <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
-        </h3>
-        <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
-          {t('EarnedCashBackDescription')}
-        </p>
-      </div>
+          <h3 className="flex flex-middle flex-center">
+            <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
+            <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
+          </h3>
+          <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
+            {t('EarnedCashBackDescription')}
+          </p>
+        </div>
+      )
     );
   };
 

@@ -48,16 +48,7 @@ class CreateOrderButton extends React.Component {
   };
 
   handleCreateOrder = async () => {
-    const {
-      history,
-      paymentActions,
-      user,
-      requestInfo,
-      cartSummary,
-      afterCreateOrder,
-      beforeCreateOrder,
-      validCreateOrder,
-    } = this.props;
+    const { history, paymentActions, user, requestInfo, cartSummary, afterCreateOrder, beforeCreateOrder } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartSummary || {};
@@ -67,7 +58,7 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
-
+    const { validCreateOrder } = this.props;
     // if (!Boolean(storeId)) {
     //   if (type === 'dine' || type === 'takeaway') {
     //     window.location.href = Constants.ROUTER_PATHS.DINE;

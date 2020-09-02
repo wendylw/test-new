@@ -710,7 +710,7 @@ export class Home extends Component {
   }
 
   handleLegalAge = isAgeLegal => {
-    Utils.setSessionVariable('AlcoholHide', true);
+    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
 

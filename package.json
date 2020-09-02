@@ -66,6 +66,7 @@
     "smoothscroll-polyfill": "^0.4.4",
     "source-map-explorer": "^2.3.1",
     "swipejs": "^2.2.14",
+    "swiper": "^6.1.2",
     "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
