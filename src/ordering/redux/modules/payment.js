@@ -177,7 +177,7 @@ export const actions = {
     } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
       variables = {
         ...variables,
-        shippingType: shippingType === DELIVERY_METHOD.DINE_IN ? 'dine' : shippingType,
+        shippingType: Utils.mapString2camelCase(shippingType),
         contactDetail,
       };
     }
