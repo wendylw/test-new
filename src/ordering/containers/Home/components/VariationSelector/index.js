@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { variationOnProductType } from '../../../../../utils/propTypes';
 import './VariationSelector.scss';
-import iconCheck from '../../../../../images/icon-check.svg';
 import ItemOperator from '../../../../../components/ItemOperator';
 import Radio from '../../../../../components/Radio';
 import CheckBox from '../../../../../components/CheckBox';
