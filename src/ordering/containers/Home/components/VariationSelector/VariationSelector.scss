@@ -30,45 +30,6 @@
     position: relative;
   }
 
-  &__check {
-    width: 24px;
-    height: 24px;
-
-    border: 2px solid $gray-5;
-    display: inline-block;
-    &.active__circle {
-      border-color: $theme-color;
-      //padding: 2px;
-      position: relative;
-      &::after {
-        content: "";
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        background-color: $theme-color;
-        border-radius: 50%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-      }
-    }
-
-    &.active__square {
-      background-color: $theme-color;
-      border-color: $theme-color;
-    }
-
-    &.border__circle {
-      border-radius: 50%;
-    }
-
-    &.border__square {
-      border-radius: 4px;
-    }
-  }
-
   &__button {
     min-width: 70px;
     height: 38px;

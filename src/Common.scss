@@ -180,6 +180,10 @@ img {
   display: none;
 }
 
+.block {
+  display: block;
+}
+
 .flex {
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -190,10 +194,6 @@ img {
     -webkit-flex-shrink: 0;
     flex-shrink: 0;
   }
-}
-
-.flex-grow {
-  flex-grow: 1;
 }
 
 .flex-middle {
@@ -893,10 +893,6 @@ img {
   &__transparent {
     background-color: transparent;
   }
-}
-
-.block {
-  display: block;
 }
 
 .store-info {

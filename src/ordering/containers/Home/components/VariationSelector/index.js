@@ -5,6 +5,8 @@ import { variationOnProductType } from '../../../../../utils/propTypes';
 import './VariationSelector.scss';
 import iconCheck from '../../../../../images/icon-check.svg';
 import ItemOperator from '../../../../../components/ItemOperator';
+import Radio from '../../../../../components/Radio';
+import CheckBox from '../../../../../components/CheckBox';
 export class VariationSelector extends Component {
   static propTypes = {
     variation: variationOnProductType,
@@ -166,6 +168,12 @@ export class VariationSelector extends Component {
       allowMultiQty: enableQuantity,
       optionValues,
     } = variation || {};
+    // TODO  test code   should remove it
+    // enableSelectionAmountLimit = true;
+    // minSelectionAmount = 2;
+    // maxSelectionAmount = 5;
+    // enableQuantity = true;
+
     const optionQuantityValue = Object.values(optionQuantity);
     const selectedValue = Object.values(selected).filter(item => item);
     const quantity = !enableQuantity
@@ -173,12 +181,6 @@ export class VariationSelector extends Component {
       : optionQuantityValue.length
       ? optionQuantityValue.reduce((sum, curr) => sum + (curr || 0))
       : 0;
-
-    // TODO  test code   should remove it
-    // enableSelectionAmountLimit = true;
-    // minSelectionAmount = 2;
-    // maxSelectionAmount = 5;
-    // enableQuantity = true;
 
     let AmountLimitDescription = minSelectionAmount
       ? t('MinimumChoicesDescription', { minSelectionAmount })
@@ -208,13 +210,11 @@ export class VariationSelector extends Component {
           </h4>
           <div className="flex flex-space-between">
             {this.isMultipleChoice() && enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
-              <span
-                className={` flex-grow ${isRequireMin && quantity < minSelectionAmount ? 'text-error' : 'text-gray '}`}
-              >
+              <span className={`${isRequireMin && quantity < minSelectionAmount ? 'text-error' : 'text-gray '}`}>
                 {AmountLimitDescription}
               </span>
             ) : (
-              <span className="flex-grow"></span>
+              <span></span>
             )}
             {this.isMultipleChoice() && <span>{t('Selected', { quantity })}</span>}
           </div>
@@ -258,16 +258,8 @@ export class VariationSelector extends Component {
                   {priceDiff ? <span className="margin-top-bottom-smaller">+{priceDiff}</span> : null}
                 </p>
                 <div className="variation-selector__operator padding-top-bottom-small margin-left-right-smaller ">
-                  {this.isSingleChoice() && (
-                    <i
-                      className={`${selected[id] ? 'active__circle' : ''} variation-selector__check border__circle`}
-                    ></i>
-                  )}
-                  {this.isMultipleChoice() && !enableQuantity && (
-                    <i className={`${selected[id] ? 'active__square' : ''} variation-selector__check border__square`}>
-                      {selected[id] && <img src={iconCheck} alt="multiple variation check" className="block" />}
-                    </i>
-                  )}
+                  {this.isSingleChoice() && <Radio checked={selected[id]} />}
+                  {this.isMultipleChoice() && !enableQuantity && <CheckBox checked={selected[id]} />}
                   {this.isMultipleChoice() && enableQuantity && (
                     <ItemOperator
                       className="flex-middle"
@@ -280,7 +272,6 @@ export class VariationSelector extends Component {
                       increaseDisabled={isRequireMax && quantity >= maxSelectionAmount}
                     />
                   )}
-                  <div>{enableQuantity}</div>
                 </div>
               </li>
             );
