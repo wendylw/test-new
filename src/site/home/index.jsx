@@ -10,7 +10,11 @@ import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
-import { collectionCardActionCreators, getIconCollections } from '../redux/modules/entities/storeCollections';
+import {
+  collectionCardActionCreators,
+  getIconCollections,
+  getBannerCollections,
+} from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import { getAllCurrentStores, getPaginationInfo, getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
@@ -19,6 +23,7 @@ import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 import { checkStateRestoreStatus } from '../redux/modules/index';
+import Banners from './components/Banners';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -84,6 +89,7 @@ class Home extends React.Component {
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
       this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.BANNER);
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -162,7 +168,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, storeCollections } = this.props;
+    const { t, currentPlaceInfo, storeCollections, bannerCollections } = this.props;
 
     if (!currentPlaceInfo) {
       return <i className="loader theme full-page text-size-huge" />;
@@ -224,6 +230,8 @@ class Home extends React.Component {
             <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
           </Suspense>
 
+          <Banners collections={bannerCollections} />
+
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}
           </div>
@@ -243,6 +251,7 @@ export default compose(
       stores: getAllCurrentStores(state),
       storeLinkInfo: getStoreLinkInfo(state),
       storeCollections: getIconCollections(state),
+      bannerCollections: getBannerCollections(state),
     }),
     dispatch => ({
       rootActions: bindActionCreators(rootActionCreators, dispatch),

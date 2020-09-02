@@ -719,7 +719,7 @@ export class Home extends Component {
     // this.setState({
     //   alcoholModal: !isAgeLegal,
     // });
-    Utils.setSessionVariable('AlcoholHide', true);
+    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
   isCountryNeedAlcoholPop = country => {
