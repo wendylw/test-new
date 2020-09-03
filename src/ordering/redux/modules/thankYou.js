@@ -138,11 +138,16 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: redirectTo };
     }
-    case 'TEST_FETCH_ORDER_STATUS':
+    case types.FETCH_ORDER_STATUS_SUCCESS: {
+      const { response } = action;
+      const { status } = response;
+      console.log(action);
       return {
         ...state,
-        orderStatus: Math.random(),
+        orderStatus: status,
       };
+    }
+
     default:
       return state;
   }

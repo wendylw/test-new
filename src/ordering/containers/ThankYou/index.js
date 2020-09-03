@@ -88,7 +88,7 @@ export class ThankYou extends PureComponent {
       if (updatedStatus !== status) {
         await this.loadOrder();
       }
-    }, 1000);
+    }, 60000);
   };
 
   componentDidUpdate(prevProps) {
