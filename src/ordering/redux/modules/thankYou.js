@@ -28,9 +28,6 @@ export const actions = {
   },
 
   loadOrderStatus: orderId => dispatch => {
-    dispatch({
-      type: 'TEST_FETCH_ORDER_STATUS',
-    });
     return dispatch(fetchOrderStatus({ orderId }));
   },
 
@@ -78,10 +75,9 @@ const fetchOrder = variables => ({
 });
 
 const fetchOrderStatus = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
-    endpoint: Url.apiGql('Order'),
-    variables,
+  [API_REQUEST]: {
+    types: [types.FETCH_ORDER_STATUS_REQUEST, types.FETCH_ORDER_STATUS_SUCCESS, types.FETCH_ORDER_STATUS_FAILURE],
+    ...Url.API_URLS.GET_ORDER_STATUS(variables),
   },
 });
 

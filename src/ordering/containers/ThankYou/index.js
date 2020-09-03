@@ -57,7 +57,7 @@ export class ThankYou extends PureComponent {
     cashbackSuccessImage,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
@@ -71,14 +71,25 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-
-    thankYouActions.loadOrder(receiptNumber);
-
-    // setInterval(() => {
-    thankYouActions.loadOrderStatus();
-
-    // },1000)
+    this.loadOrder();
   }
+
+  loadOrder = async () => {
+    const { thankYouActions, receiptNumber } = this.props;
+
+    clearInterval(this.timer);
+    await thankYouActions.loadOrder(receiptNumber);
+
+    this.timer = setInterval(async () => {
+      await thankYouActions.loadOrderStatus(receiptNumber);
+      const { updatedStatus, order } = this.props;
+      const { status } = order;
+
+      if (updatedStatus !== status) {
+        await this.loadOrder();
+      }
+    }, 1000);
+  };
 
   componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
@@ -660,15 +671,13 @@ export class ThankYou extends PureComponent {
     const { t, order, cashbackInfo, businessInfo } = this.props;
     const { status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
-    const { loadOrderStatus } = this.props;
 
-    order && (order.status = loadOrderStatus || order.status);
     return (
       <React.Fragment>
         {this.isNowPaidPreOrder() ? (
           <img
             className="thanks__image"
-            src={`${(loadOrderStatus || status) === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
+            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
             alt="Beep Success"
           />
         ) : (
@@ -834,7 +843,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
-      loadOrderStatus: getLoadOrderStatus(state),
+      updatedStatus: getLoadOrderStatus(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
