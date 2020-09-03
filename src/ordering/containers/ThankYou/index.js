@@ -50,6 +50,9 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
+const { ORDER_STATUS } = Constants;
+const { DELIVERED, CANCELLED } = ORDER_STATUS;
+
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
@@ -77,18 +80,19 @@ export class ThankYou extends PureComponent {
   loadOrder = async () => {
     const { thankYouActions, receiptNumber } = this.props;
 
-    clearInterval(this.timer);
     await thankYouActions.loadOrder(receiptNumber);
+    if (Utils.isDeliveryType()) {
+      clearInterval(this.timer);
+      this.timer = setInterval(async () => {
+        await thankYouActions.loadOrderStatus(receiptNumber);
+        const { updatedStatus, order } = this.props;
+        const { status } = order;
 
-    this.timer = setInterval(async () => {
-      await thankYouActions.loadOrderStatus(receiptNumber);
-      const { updatedStatus, order } = this.props;
-      const { status } = order;
-
-      if (updatedStatus !== status) {
-        await this.loadOrder();
-      }
-    }, 60000);
+        if (updatedStatus !== status && status !== DELIVERED && status !== CANCELLED) {
+          await this.loadOrder();
+        }
+      }, 60000);
+    }
   };
 
   componentDidUpdate(prevProps) {
