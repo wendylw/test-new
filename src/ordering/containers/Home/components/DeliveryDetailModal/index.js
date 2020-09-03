@@ -8,21 +8,6 @@ class DeliveryDetailModal extends Component {
     initDom: true,
   };
 
-  formatHour = hourString => {
-    const [hour, minute] = hourString.split(':');
-    if (hour === '12') {
-      return minute === '00' ? `${hour}pm` : `${hour}:${minute}pm`;
-    }
-    if (hour === '24' || hour === '00') {
-      return minute === '00' ? '0am' : `00:${minute}am`;
-    }
-    if (hour > 12) {
-      return minute === '00' ? `${hour - 12}pm` : `${hour - 12}:${minute}pm`;
-    } else {
-      return minute === '00' ? `${+hour}am` : `${hour}:${minute}am`;
-    }
-  };
-
   renderDeliveryHour = () => {
     const weekInfo = {
       2: 'Mon',
@@ -42,8 +27,7 @@ class DeliveryDetailModal extends Component {
             <span>{t(weekInfo[day])}</span>
             {validDays.includes(+day) ? (
               <time>
-                {`${this.formatHour(validTimeFrom)}`} - {`${this.formatHour(breakTimeFrom)}`},{' '}
-                {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
+                {`${validTimeFrom}`} - {`${breakTimeFrom}`}, {`${breakTimeTo}`} - {`${validTimeTo}`}
               </time>
             ) : (
                 <span>{t('Closed')}</span>
