@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import { IconDelete } from '../../../../../components/Icons';
+import { IconDelete, IconCart } from '../../../../../components/Icons';
 import CartList from '../../../Cart/components/CartList';
 import Constants from '../../../../../utils/constants';
 
@@ -60,9 +60,12 @@ class CartListAside extends Component {
       >
         <div className="cart-list-aside__container aside__content absolute-wrapper">
           <div className="cart-list-aside__operation border__bottom-divider flex flex-middle flex-space-between absolute-wrapper border-radius-base">
-            <span className="cart-list-aside__item-number text-middle padding-left-right-normal text-weight-bolder">
-              {t('CartItemsInCategory', { cartQuantity: count })}
-            </span>
+            <div className="cart-list-aside__icon-cart padding-left-right-small margin-left-right-smaller">
+              <IconCart className="icon icon__small text-middle" />
+              <span className="cart-list-aside__item-number text-middle margin-left-right-smaller text-weight-bolder">
+                {t('CartItemsInCategory', { cartQuantity: count })}
+              </span>
+            </div>
             <button
               className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
               onClick={this.handleClearAll.bind(this)}
