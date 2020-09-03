@@ -83,12 +83,18 @@ export class ThankYou extends PureComponent {
     await thankYouActions.loadOrder(receiptNumber);
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       clearInterval(this.timer);
+      const { order } = this.props;
+      const { status } = order;
+
+      if (FINALLY.includes(status)) {
+        return;
+      }
+
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
-        const { updatedStatus, order } = this.props;
-        const { status } = order;
+        const { updatedStatus } = this.props;
 
-        if (updatedStatus !== status && !FINALLY.includes(status)) {
+        if (updatedStatus !== status) {
           await this.loadOrder();
         }
       }, 60000);
