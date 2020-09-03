@@ -722,17 +722,10 @@ export class Home extends Component {
             : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
         contentClassName={`${isDeliveryType || isPickUpType
-<<<<<<< HEAD
           ? enableCashback && defaultLoyaltyRatio
             ? 'flex-top'
             : 'flex-middle'
           : 'flex-middle'
-=======
-            ? enableCashback && defaultLoyaltyRatio
-              ? 'flex-top'
-              : 'flex-middle'
-            : 'flex-middle'
->>>>>>> add break time info
           } padding-left-right-small`}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
