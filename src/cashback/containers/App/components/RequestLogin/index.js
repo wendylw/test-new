@@ -33,4 +33,4 @@ class RequestLogin extends Component {
   }
 }
 
-export default -withTranslation('Cashback')(RequestLogin);
+export default withTranslation('Cashback')(RequestLogin);
