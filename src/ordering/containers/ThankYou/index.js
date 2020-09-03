@@ -57,7 +57,7 @@ export class ThankYou extends PureComponent {
     cashbackSuccessImage,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
@@ -697,7 +697,7 @@ export class ThankYou extends PureComponent {
 
   isNowPaidPreOrder() {
     const { order } = this.props;
-    //TODO
+
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
