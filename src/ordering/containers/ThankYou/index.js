@@ -178,7 +178,7 @@ export class ThankYou extends PureComponent {
   renderCashbackUI = cashback => {
     const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
-    const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime', 'Claimed_Repeat'];
+    const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 
     return (
       statusCanGetCashback.includes(status) && (
