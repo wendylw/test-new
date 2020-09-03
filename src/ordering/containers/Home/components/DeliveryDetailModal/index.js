@@ -8,6 +8,7 @@ class DeliveryDetailModal extends Component {
     initDom: true,
   };
 
+<<<<<<< HEAD
   formatHour = hourString => {
     const [hour, minute] = hourString.split(':');
     if (hour === '12') {
@@ -23,6 +24,8 @@ class DeliveryDetailModal extends Component {
     }
   };
 
+=======
+>>>>>>> add break time info
   renderDeliveryHour = () => {
     const weekInfo = {
       2: 'Mon',
@@ -42,8 +45,12 @@ class DeliveryDetailModal extends Component {
             <span>{t(weekInfo[day])}</span>
             {validDays.includes(+day) ? (
               <time>
+<<<<<<< HEAD
                 {`${this.formatHour(validTimeFrom)}`} - {`${this.formatHour(breakTimeFrom)}`},{' '}
                 {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
+=======
+                {`${validTimeFrom}`} - {`${breakTimeFrom}`}, {`${breakTimeTo}`} - {`${validTimeTo}`}
+>>>>>>> add break time info
               </time>
             ) : (
               <span>{t('Closed')}</span>
