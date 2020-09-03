@@ -81,7 +81,7 @@ export class ThankYou extends PureComponent {
     const { thankYouActions, receiptNumber } = this.props;
 
     await thankYouActions.loadOrder(receiptNumber);
-    if (Utils.isDeliveryType()) {
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       clearInterval(this.timer);
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
