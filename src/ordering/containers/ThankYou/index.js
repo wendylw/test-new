@@ -51,8 +51,8 @@ const DATE_OPTIONS = {
 };
 
 const { ORDER_STATUS } = Constants;
-const { DELIVERED, CANCELLED } = ORDER_STATUS;
-
+const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
+const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
@@ -88,7 +88,7 @@ export class ThankYou extends PureComponent {
         const { updatedStatus, order } = this.props;
         const { status } = order;
 
-        if (updatedStatus !== status && status !== DELIVERED && status !== CANCELLED) {
+        if (updatedStatus !== status && !FINALLY.includes(status)) {
           await this.loadOrder();
         }
       }, 60000);
