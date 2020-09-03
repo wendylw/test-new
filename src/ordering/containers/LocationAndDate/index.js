@@ -21,7 +21,7 @@ import {
 import config from '../../../config';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import qs from 'qs';
-
+import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
@@ -739,7 +739,7 @@ class LocationAndDate extends Component {
   };
 
   notVacation = day => {
-    const { t, business, allBusinessInfo = {} } = this.props;
+    const { business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     const { vacations } = businessInfo.qrOrderingSettings;
     if (!vacations) return true;
@@ -841,12 +841,12 @@ class LocationAndDate extends Component {
   };
 
   patchBreakTime = list => {
-    const { t, business, allBusinessInfo = {} } = this.props;
+    const { business, allBusinessInfo = {} } = this.props;
     const businessInfo = allBusinessInfo[business] || {};
     let { breakTimeFrom, breakTimeTo } = businessInfo.qrOrderingSettings;
     if (!breakTimeFrom || !breakTimeTo) return list;
     list = JSON.parse(JSON.stringify(list));
-    const zero = num => (num < 10 ? '0' + num : num + '');
+    // const zero = num => (num < 10 ? '0' + num : num + '');
     if (list[0].from === 'now') {
       let curr = getHourAndMinuteFromTime(new Date());
       // let min = Math.ceil(+curr.split(':')[1] / 15) * 15 + 30;
@@ -882,7 +882,7 @@ class LocationAndDate extends Component {
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
-    const { t, business, allBusinessInfo } = this.props;
+    const { business, allBusinessInfo } = this.props;
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
 
@@ -961,16 +961,6 @@ class LocationAndDate extends Component {
   };
 
   isTimeSlot = from => {
-    const timeString = from.split(' ')[0];
-    let { hour, minute } = Utils.getHourAndMinuteFromString(timeString);
-
-    hour = +hour;
-    if (from.split(' ')[1] === 'PM') {
-      hour += 12;
-    }
-
-    const time = `${hour}:${minute}`;
-
     return this.state.timeSlot.includes(from);
   };
 
@@ -1377,7 +1367,21 @@ class LocationAndDate extends Component {
     );
   };
 
+  renderDeliveryHelpText = () => {
+    const { t } = this.props;
+    return (
+      <div className="flex flex-middle flex-space-between flex-column form__group">
+        <img src={beepLocationdateHint} alt="delivery no address image" className="block" style={{ width: '94%' }} />
+        <p style={{ width: '56%', marginTop: '14px', color: '#8F9092' }} className="text-center text-size-big">
+          {t('DeliveryHelpText')}
+        </p>
+      </div>
+    );
+  };
+
   render() {
+    const { isDeliveryType, deliveryToAddress } = this.state;
+
     return (
       <section className="table-ordering__location" data-heap-name="ordering.location-and-date.container">
         <Header
@@ -1424,6 +1428,7 @@ class LocationAndDate extends Component {
               ? this.renderHourSelector()
               : null
             : this.renderHourSelector()}
+          {isDeliveryType && !deliveryToAddress && this.renderDeliveryHelpText()}
         </div>
         {this.renderContinueButton()}
       </section>

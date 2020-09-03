@@ -2,6 +2,8 @@ import bannerImage from './components/images/Banner.jpg';
 import promoBanner from './components/images/PromoBanner.jpg';
 import rhbBanner from './components/images/RHBbanner@2x.jpg';
 import rhbBoard from './components/images/RHBboard@2x.jpg';
+import makanTogetherBoard from './components/images/MakanTogetherMalaysiaRHBboard.jpg';
+import makanTogetherBanner from './components/images/MakanTogetherMalaysiaBanner.jpg';
 
 // ordered by id DESC
 const dataSource = [
@@ -87,6 +89,34 @@ const dataSource = [
             'The Promotion is limited to two thousand (2,000) cashback claims per month to eligible cardholders on a first-come-first-serve basis during the Promotion Period.',
             'Promotion terms and conditions apply.',
             'RHB general terms and conditions apply.',
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'campaign-3',
+    barImage: makanTogetherBanner,
+    bannerImage: makanTogetherBoard,
+    subject: '#MakanTogetherMalaysia Giveaway',
+    sections: [
+      {
+        type: 'campaign_period',
+        subject: 'Campaign Period',
+        fields: {
+          activeDateRange: '24th August 2020 - 6th September 2020',
+        },
+      },
+      {
+        type: 'terms_and_conditions',
+        subject: 'Terms & conditions',
+        fields: {
+          conditions: [
+            'The Giveaway Prize for this campaign is a RM25 Beep cash voucher. The voucher cannot be redeemable or exchangeable for cash.',
+            'In order to be eligible for this promotion, you must spend a minimum of RM250 on any store on Beepit.com in seven (7) consecutive days within the Campaign period.',
+            'The RM250 spend can be accrued across multiple purchases within the seven (7) consecutive days, as long as the seven (7) days fall within the Campaign Period.',
+            'Winners will be selected at random and notified within 3-5 working days following the end of the Campaign Period.',
+            'Winners will be notified via SMS and be instructed on how to claim their giveaway prize.',
           ],
         },
       },

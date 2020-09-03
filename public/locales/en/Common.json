@@ -97,7 +97,6 @@
   "AddressDetailsPlaceholder": "House/floor/unit no. (optional)",
   "AddNoteToDriverPlaceholder": "Note to driver",
   "AddNoteToDriverOrMerchantPlaceholderExample": "e.g meet at lobby (optional)",
-  "AddNoteToMerchantPlaceholder": "Note to merchant",
   "AddAddressDetailsPlaceholder": "House/floor/unit no.",
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
@@ -155,5 +154,6 @@
   "IncorrectCvc": "Incorrect Cvc",
   "UnknownError": "Unknown Error",
   "OnlineBanking": "Online Banking",
-  "CreditAndDebitCard": "Credit/Debit Card"
+  "CreditAndDebitCard": "Credit/Debit Card",
+  "DeliveryHelpText": "Please key in your address to add items to your cart"
 }
