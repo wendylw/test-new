@@ -681,7 +681,7 @@ export class ThankYou extends PureComponent {
               }
             }}
           >
-            {!isTakeaway ? (
+            {!isDineInType ? (
               <button
                 className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
                 onClick={this.handleVisitMerchantInfoPage}
