@@ -19,7 +19,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import Utils from '../../../utils/utils';
-import { getAppLoginStatus, postAppMessage } from '../utils';
+import { getAppLoginStatus, getAppToken } from '../utils';
 
 class App extends Component {
   constructor(props) {
@@ -50,17 +50,24 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
-
     this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.fetchBusiness();
 
     const { user } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin, isWebview } = user || {};
+    const appLogin = getAppLoginStatus();
 
     if (isLogin) {
       appActions.loadCustomerProfile();
+    }
+
+    // appLogin is true, isLogin is false
+    if (isWebview) {
+      if (appLogin && !isLogin) {
+        getAppToken(user);
+      }
     }
   }
 
@@ -74,7 +81,7 @@ class App extends Component {
     }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      postAppMessage(user);
+      getAppToken(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
@@ -100,13 +107,9 @@ class App extends Component {
 
   renderMainContent() {
     const { user, error, onlineStoreInfo } = this.props;
-    const { isFetching, prompt, isLogin, isWebview } = user || {};
+    const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
-
-    if (!isLogin && isWebview) {
-      postAppMessage(user);
-    }
 
     return (
       <main className="loyalty">

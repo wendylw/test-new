@@ -16,7 +16,7 @@ export const getAppLoginStatus = () => {
   }
 };
 
-export const postAppMessage = user => {
+export const getAppToken = user => {
   const { isExpired } = user || {};
   if (Utils.isAndroidWebview() && isExpired) {
     window.androidInterface.tokenExpired();
