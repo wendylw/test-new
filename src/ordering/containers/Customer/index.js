@@ -198,6 +198,9 @@ class Customer extends Component {
       if (!date.date) {
         return false;
       }
+      if (type === DELIVERY_METHOD.DELIVERY && !date.hour) {
+        return false;
+      }
     }
 
     switch (type) {
