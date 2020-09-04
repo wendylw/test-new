@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, Component } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';

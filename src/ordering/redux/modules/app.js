@@ -212,7 +212,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt, error } = action;
+  const { type, response, prompt, error } = action;
   const { consumerId, login } = response || {};
 
   switch (type) {

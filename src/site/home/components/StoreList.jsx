@@ -11,7 +11,6 @@ import {
 import Image from '../../../components/Image';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import giftCard from '../../../images/gift-card.png';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -34,19 +33,7 @@ class StoreList extends Component {
   };
 
   renderStoreItems = () => {
-    // const tagClassName = 'tag__card text-size-small text-weight-bolder margin-normal';
     const { t, stores } = this.props;
-
-    // const storeStatus = {
-    //   open: {
-    //     text: t('Open'),
-    //     className: `${tagClassName} text-success`,
-    //   },
-    //   close: {
-    //     text: t('Closed'),
-    //     className: `${tagClassName} text-error`,
-    //   },
-    // };
 
     return (
       <React.Fragment>
@@ -69,7 +56,6 @@ class StoreList extends Component {
             products,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
-          // const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
             <li
@@ -115,13 +101,6 @@ class StoreList extends Component {
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  {/* {isOutOfDeliveryRange ? (
-                    <li className="store-info__item text-middle">
-                      <IconBookmark className="icon icon__smaller text-middle" />
-                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
-                    </li>
-                  ) : null
-                  } */}
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">

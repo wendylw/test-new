@@ -485,9 +485,8 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary, currentOrder } = this.props;
+    const { t, match, history, cartSummary } = this.props;
     const { payNowLoading, domLoaded } = this.state;
-    const { orderId } = currentOrder || {};
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
 

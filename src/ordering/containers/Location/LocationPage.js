@@ -52,7 +52,6 @@ class LocationPage extends Component {
   }
 
   async loadStoreInfo() {
-    const { t } = this.props;
     this.setState({ initializing: true });
     try {
       const { business, storeId } = config;
