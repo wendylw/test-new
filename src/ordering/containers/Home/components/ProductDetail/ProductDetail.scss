@@ -51,6 +51,7 @@
     fill: $white;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 50%;
+    z-index: 1;
   }
 
   &__single-image {
@@ -87,11 +88,16 @@
 
   &__info {
     position: relative;
-    height: 20%;
+    min-height: 20%;
   }
 
   &__info-summary {
     height: 100%;
+  }
+
+  &__info-title {
+    word-break: break-all;
+    hyphens: auto;
   }
 
   &__info-tag {
