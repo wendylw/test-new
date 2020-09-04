@@ -21,7 +21,7 @@ const ErrorPage = lazy(() => Utils.retry(() => import('./Error')));
 const LocationAndDate = lazy(() => Utils.retry(() => import('./LocationAndDate')));
 const Promotion = lazy(() => Utils.retry(() => import('./Promotion')));
 const ReportDriver = lazy(() => Utils.retry(() => import('./ReportDriver')));
-const Login = lazy(() => Utils.retry(() => import('./Login')));
+const PageLogin = lazy(() => Utils.retry(() => import('./PageLogin')));
 const StoreList = lazy(() => Utils.retry(() => import('./StoreList')));
 
 const { ROUTER_PATHS } = Constants;
