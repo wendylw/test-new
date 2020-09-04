@@ -1,11 +1,12 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
+import Utils from '../../utils/utils';
 import NotFound from '../../NotFound';
 
-const RecentActivities = lazy(() => import('./Home/components/RecentActivities'));
-const Claim = lazy(() => import('./Claim'));
-const Home = lazy(() => import('./Home'));
-const Error = lazy(() => import('./Error'));
+const RecentActivities = lazy(() => Utils.retry(() => import('./Home/components/RecentActivities')));
+const Claim = lazy(() => Utils.retry(() => import('./Claim')));
+const Home = lazy(() => Utils.retry(() => import('./Home')));
+const Error = lazy(() => Utils.retry(() => import('../../components/Error')));
 
 class Routes extends Component {
   render() {

@@ -11,6 +11,7 @@ import {
 import Image from '../../../components/Image';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import giftCard from '../../../images/gift-card.png';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -49,7 +50,7 @@ class StoreList extends Component {
 
     return (
       <React.Fragment>
-        {stores.map(store => {
+        {stores.map((store, index) => {
           const {
             name,
             avatar,
@@ -65,6 +66,7 @@ class StoreList extends Component {
             enableCashback,
             enablePreOrder,
             cashbackRate,
+            products,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
           // const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
@@ -76,6 +78,7 @@ class StoreList extends Component {
               data-testid="deliverStore"
               data-heap-name="site.common.store-item"
               data-heap-store-name={name}
+              data-heap-store-index={index}
               onClick={() => {
                 this.handleStoreClicked(store);
               }}
@@ -144,6 +147,29 @@ class StoreList extends Component {
                     </Trans>
                   </div>
                 ) : null}
+                {products.length > 0 && (
+                  <div className="flex padding-top-bottom-small">
+                    {(products || []).map(product => {
+                      const { id, title, images, price } = product;
+                      return (
+                        <div className="flex flex-column padding-left-right-smaller" key={id}>
+                          <Image className="store-card-list__product-image" src={images[0]} />
+                          <summary
+                            className="padding-left-right-smaller margin-top-bottom-smaller"
+                            style={{ width: 65 }}
+                          >
+                            <span className="store-card-list__product-title padding-top-bottom-smaller text-size-small text-omit__single-line">
+                              {title}
+                            </span>
+                            <span className="store-card-list__product-price font-weight-bolder">
+                              {Math.floor(price * 100) / 100}
+                            </span>
+                          </summary>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </summary>
             </li>
           );
