@@ -821,7 +821,7 @@ Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
           if (retriesLeft === 1) {
             reject(error);
           } else {
-            retry(fn, retriesLeft - 1, interval).then(resolve, reject);
+            Utils.retry(fn, retriesLeft - 1, interval).then(resolve, reject);
           }
         }, interval);
       });
