@@ -106,6 +106,7 @@ class StoreInfoAside extends Component {
             <summary className="store-info-aside__summary padding-left-right-small">
               <div className="flex flex-middle">
                 <h2 className="text-size-big text-weight-bolder text-middle text-omit__single-line">
+
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
                 </h2>
