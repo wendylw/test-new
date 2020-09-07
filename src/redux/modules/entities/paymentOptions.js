@@ -10,12 +10,12 @@ const initialState = {
       label: PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY,
       pathname: ROUTER_PATHS.ORDERING_STRIPE_PAYMENT,
     },
-    onlineBanking: {
-      key: 'onlineBanking',
-      logo: 'paymentBankingImage', // refer to imports in file PaymentLogo/index.js
-      label: PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY,
-      pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
-    },
+    // onlineBanking: {
+    //   key: 'onlineBanking',
+    //   logo: 'paymentBankingImage', // refer to imports in file PaymentLogo/index.js
+    //   label: PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY,
+    //   pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
+    // },
     creditCard: {
       key: 'creditCard',
       logo: 'paymentCreditImage', // refer to imports in file PaymentLogo/index.js
