@@ -2,10 +2,25 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
-
+import Utils from '../../../../../utils/utils';
 class DeliveryDetailModal extends Component {
   state = {
     initDom: true,
+  };
+
+  formatHour = hourString => {
+    const [hour, minute] = hourString.split(':');
+    if (hour === '12') {
+      return minute === '00' ? `${hour}pm` : `${hour}:${minute}pm`;
+    }
+    if (hour === '24' || hour === '00') {
+      return minute === '00' ? '0am' : `00:${minute}am`;
+    }
+    if (hour > 12) {
+      return minute === '00' ? `${hour - 12}pm` : `${hour - 12}:${minute}pm`;
+    } else {
+      return minute === '00' ? `${+hour}am` : `${hour}:${minute}am`;
+    }
   };
 
   renderDeliveryHour = () => {
@@ -27,7 +42,8 @@ class DeliveryDetailModal extends Component {
             <span>{t(weekInfo[day])}</span>
             {validDays.includes(+day) ? (
               <time>
-                {`${validTimeFrom}`} - {`${breakTimeFrom}`}, {`${breakTimeTo}`} - {`${validTimeTo}`}
+                {`${this.formatHour(validTimeFrom)}`} - {`${this.formatHour(breakTimeFrom)}`},{' '}
+                {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
               </time>
             ) : (
                 <span>{t('Closed')}</span>
