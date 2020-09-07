@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
-import Utils from '../../../../../utils/utils';
+
 class DeliveryDetailModal extends Component {
   state = {
     initDom: true,
