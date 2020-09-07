@@ -198,7 +198,7 @@ class Customer extends Component {
       if (!date.date) {
         return false;
       }
-      if (type === DELIVERY_METHOD.DELIVERY && !hour.from && !hour.to) {
+      if (!hour.from) {
         return false;
       }
     }
