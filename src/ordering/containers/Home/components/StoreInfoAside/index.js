@@ -4,9 +4,25 @@ import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import './StoreInfoAside.scss';
 
+import Utils from '../../../../../utils/utils';
 class StoreInfoAside extends Component {
   state = {
     initDom: true,
+  };
+
+  formatHour = hourString => {
+    const [hour, minute] = hourString.split(':');
+    if (hour === '12') {
+      return minute === '00' ? `${hour}pm` : `${hour}:${minute}pm`;
+    }
+    if (hour === '24' || hour === '00') {
+      return minute === '00' ? '0am' : `00:${minute}am`;
+    }
+    if (hour > 12) {
+      return minute === '00' ? `${hour - 12}pm` : `${hour - 12}:${minute}pm`;
+    } else {
+      return minute === '00' ? `${+hour}am` : `${hour}:${minute}am`;
+    }
   };
 
   renderDeliveryHour = () => {
@@ -19,18 +35,25 @@ class StoreInfoAside extends Component {
       7: 'Sat',
       1: 'Sun',
     };
-    const { t, validDays, validTimeFrom, validTimeTo } = this.props;
+    const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
 
-    return (validDays || []).sort().map(day => {
-      return (
-        <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
-          <span>{t(weekInfo[day])}</span>
-          <time>
-            {`${validTimeFrom}`} - {`${validTimeTo}`}
-          </time>
-        </li>
-      );
-    });
+    return Object.keys(weekInfo)
+      .sort()
+      .map(day => {
+        return (
+          <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
+            <span>{t(weekInfo[day])}</span>
+            {validDays.includes(+day) ? (
+              <time>
+                {`${this.formatHour(validTimeFrom)}`} - {`${this.formatHour(breakTimeFrom)}`},{' '}
+                {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
+              </time >
+            ) : (
+                <span>{t('Closed')}</span>
+              )}
+          </li >
+        );
+      });
   };
 
   render() {
@@ -43,9 +66,7 @@ class StoreInfoAside extends Component {
       onToggle,
       storeAddress,
       telephone,
-      enablePreOrder,
       isValidTimeToOrder,
-      footerEl,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
@@ -56,7 +77,7 @@ class StoreInfoAside extends Component {
       return null;
     }
 
-    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
+    if (show || (initDom && !isValidTimeToOrder)) {
       classList.push('active');
     }
 
@@ -82,6 +103,7 @@ class StoreInfoAside extends Component {
               src={onlineStoreInfo.logo}
               alt={onlineStoreInfo.title}
             />
+
             <summary className="store-info-aside__summary padding-left-right-small">
               <div className="flex flex-middle">
                 <h2 className="text-size-big text-weight-bolder text-middle text-omit__single-line">
@@ -94,11 +116,11 @@ class StoreInfoAside extends Component {
                     className="tag__small tag__info margin-left-right-small text-middle text-size-small"
                   />
                 ) : (
-                  <Tag
-                    text={t('Closed')}
-                    className="tag__small tag__error margin-left-right-small text-middle text-size-small"
-                  />
-                )}
+                    <Tag
+                      text={t('Closed')}
+                      className="tag__small tag__error margin-left-right-small text-middle text-size-small"
+                    />
+                  )}
               </div>
               {storeAddress ? (
                 <address className="text-size-big margin-top-bottom-small text-line-height-base">
@@ -116,7 +138,7 @@ class StoreInfoAside extends Component {
               ) : null}
               <h4 className="margin-top-bottom-normal text-weight-bolder text-opacity">{t('DeliveryHours')}</h4>
               <ul>{this.renderDeliveryHour()}</ul>
-            </summary>
+            </summary >
           </div>
         </div>
       </aside>
