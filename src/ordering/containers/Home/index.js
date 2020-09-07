@@ -889,9 +889,9 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
+            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
             breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
-            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
           />
         )}
 
