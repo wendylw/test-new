@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
-
+import Utils from '../../../../../utils/utils';
 class DeliveryDetailModal extends Component {
   state = {
     initDom: true,
@@ -46,8 +46,8 @@ class DeliveryDetailModal extends Component {
                 {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
               </time>
             ) : (
-              <span>{t('Closed')}</span>
-            )}
+                <span>{t('Closed')}</span>
+              )}
           </li>
         );
       });
@@ -103,9 +103,8 @@ class DeliveryDetailModal extends Component {
             <div className="header__title-container">
               <h2 className="header__title">
                 <span
-                  className={`header__one-line-title font-weight-bolder text-middle ${
-                    !isValidTimeToOrder ? 'has-tag' : ''
-                  }`}
+                  className={`header__one-line-title font-weight-bolder text-middle ${!isValidTimeToOrder ? 'has-tag' : ''
+                    }`}
                 >
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
