@@ -4,7 +4,6 @@ import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import './StoreInfoAside.scss';
 
-import Utils from '../../../../../utils/utils';
 class StoreInfoAside extends Component {
   state = {
     initDom: true,
