@@ -13,7 +13,16 @@ export default {
 
 // The Primary slot is computed from the first user-defined story for the component.
 export const AllTags = () => (
-  <React.Fragment>
+  <div
+    style={{
+      margin: '0 auto',
+      display: 'flex',
+      justifyContent: 'space-between',
+      flexDirection: 'column',
+      height: '500px',
+      width: '100px',
+    }}
+  >
     <Tag text="Block Tag" className="tag tag__primary tag__block" />
     <Tag text="Small Tag" className="tag tag__primary tag__small" />
     <Tag text="Tag Primary" className="tag tag__primary" />
@@ -22,5 +31,5 @@ export const AllTags = () => (
     <Tag text="Tag Error" className="tag tag__error" />
     <Tag text="Tag Info" className="tag tag__info" />
     <Tag text="Tag Default" className="tag tag__default" />
-  </React.Fragment>
+  </div>
 );

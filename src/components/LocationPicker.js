@@ -398,5 +398,5 @@ class LocationPicker extends Component {
 }
 
 export * from '../utils/geoUtils';
-
+export const LocationPickerComponent = LocationPicker;
 export default withTranslation(['OrderingDelivery'])(LocationPicker);
