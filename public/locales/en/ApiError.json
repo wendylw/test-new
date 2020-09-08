@@ -1,0 +1,5 @@
+{
+  "41000Title": "Time slot exceeded order limit (Error: {{error_code}})",
+  "41000Description": "The selected time slot is no longer available. We have selected the next available time.",
+  "Continue": "Continue"
+}

@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getMessageModal,
   getError,
   getUser,
+  getApiError,
 } from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getPageError } from '../../../redux/modules/entities/error';
@@ -153,15 +155,23 @@ class App extends Component {
   };
 
   render() {
-    const { user, error, messageModal, onlineStoreInfo } = this.props;
+    let { user, error, messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { message } = error || {};
     const { prompt } = user || {};
     const { favicon } = onlineStoreInfo || {};
-
+    console.log(apiErrorMessage, 'apiErrorMessage');
     return (
       <main className="table-ordering" data-heap-name="ordering.app.container">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
+        {apiErrorMessage.show ? (
+          <MessageModal
+            data={apiErrorMessage}
+            onHide={() => {
+              this.props.appActions.hideApiMessageModal();
+            }}
+          />
+        ) : null}
         <Routes />
         <Login className="aside" title={prompt} />
         <DocumentFavicon icon={favicon || faviconImage} />
@@ -170,17 +180,23 @@ class App extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    businessInfo: getBusinessInfo(state),
-    user: getUser(state),
-    error: getError(state),
-    pageError: getPageError(state),
-    messageModal: getMessageModal(state),
-  }),
-  dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['ApiError']),
+  connect(
+    state => {
+      return {
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        businessInfo: getBusinessInfo(state),
+        user: getUser(state),
+        error: getError(state),
+        pageError: getPageError(state),
+        messageModal: getMessageModal(state),
+        apiErrorMessage: getApiError(state),
+      };
+    },
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(App);

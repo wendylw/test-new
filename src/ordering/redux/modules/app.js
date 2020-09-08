@@ -8,6 +8,7 @@ import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { post, get } from '../../../utils/request';
+import i18next from 'i18next';
 
 const { AUTH_INFO } = Constants;
 
@@ -29,6 +30,12 @@ export const initialState = {
     description: '',
     buttonText: '',
   }, // message modal
+  apiError: {
+    show: false,
+    message: '',
+    description: '',
+    buttonText: '',
+  },
   business: config.business,
   onlineStoreInfo: {
     id: '',
@@ -163,6 +170,9 @@ export const actions = {
   hideMessageModal: () => ({
     type: types.HIDE_MESSAGE_MODAL,
   }),
+  hideApiMessageModal: () => ({
+    type: types.CLEAR_API_ERROR,
+  }),
 
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
@@ -283,7 +293,9 @@ const user = (state = initialState.user, action) => {
 };
 
 const error = (state = initialState.error, action) => {
-  const { type, code, message } = action;
+  const { type, code, message, response, responseGql } = action;
+  const result = response || (responseGql || {}).data;
+  const errorCode = code || (result || {}).code;
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
@@ -329,6 +341,37 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   }
 };
 
+const apiError = (state = initialState.apiError, action) => {
+  const { type, code, message, response, responseGql } = action;
+  const result = response || (responseGql || {}).data;
+  const errorCode = code || (result || {}).code;
+  const { ERROR_CODE_MAP } = Constants;
+  const error = ERROR_CODE_MAP[errorCode];
+
+  if (type === types.CLEAR_API_ERROR) {
+    return {
+      ...state,
+      show: false,
+      message: '',
+      description: '',
+      buttonText: '',
+    };
+  }
+
+  if (error) {
+    return {
+      ...state,
+      show: true,
+      message: i18next.t(error.title, { error_code: errorCode }),
+      description: i18next.t(error.desc),
+      buttonText: i18next.t(error.buttonText),
+    };
+  } else {
+    // TODO add default error message
+    return state;
+  }
+};
+
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
     case types.SET_MESSAGE_INFO: {
@@ -352,6 +395,7 @@ export default combineReducers({
   business,
   onlineStoreInfo,
   requestInfo,
+  apiError,
 });
 
 // selectors
@@ -370,3 +414,4 @@ export const getMerchantCountry = state => {
 
   return null;
 };
+export const getApiError = state => state.app.apiError;

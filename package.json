@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://storehubyougaga.beep.test5.shub.us",
+  "proxy": "https://wenjingzhang.beep.test16.shub.us",
   "engines": {
     "node": "12"
   },
