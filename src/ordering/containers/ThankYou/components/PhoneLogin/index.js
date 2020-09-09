@@ -54,7 +54,6 @@ class PhoneLogin extends React.Component {
   loginBeepApp = async res => {
     const { appActions } = this.props;
     if (res.access_token && res.refresh_token) {
-      console.log('======>send token');
       await appActions.loginApp({
         accessToken: res.access_token,
         refreshToken: res.refresh_token,
@@ -69,11 +68,10 @@ class PhoneLogin extends React.Component {
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
-    const { isWebview } = user || {};
+    const { isWebview, isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
 
-    if (isWebview) {
-      console.log('isWebview', isWebview);
+    if (!isLogin && isWebview) {
       getAppToken(user);
     }
 
