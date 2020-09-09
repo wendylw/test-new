@@ -157,13 +157,95 @@ const CREATE_ORDER_ERROR_CODES = {
 };
 console.log(i18next.t('Common:PreOrderTag'), 'i18next.t("ApiError:41000Title")');
 const ERROR_CODE_MAP = {
-  40023: {},
-  40008: {},
+  40000: {
+    title: 'ApiError:40000Title',
+    desc: 'ApiError:40000Description',
+    redirectUrl: '',
+    buttonText: 'Common:TryAgain',
+  },
+  40001: {
+    title: 'ApiError:40001Title',
+    desc: 'ApiError:40001Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40002: {
+    title: 'ApiError:40002Title',
+    desc: 'ApiError:40002Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40003: {
+    title: 'ApiError:40003Title',
+    desc: 'ApiError:40003Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40009: {
+    title: 'ApiError:40009Title',
+    desc: 'ApiError:40009Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40012: {
+    title: 'ApiError:40012Title',
+    desc: 'ApiError:40012Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40013: {
+    title: 'ApiError:40013Title',
+    desc: 'ApiError:40013Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40015: {
+    title: 'ApiError:40015Title',
+    desc: 'ApiError:40015Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40016: {
+    title: 'ApiError:40016Title',
+    desc: 'ApiError:40016Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40017: {
+    title: 'ApiError:40017Title',
+    desc: 'ApiError:40017Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40018: {
+    title: 'ApiError:40018Title',
+    desc: 'ApiError:40018Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40019: {
+    title: 'ApiError:40019Title',
+    desc: 'ApiError:40019Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40020: {
+    title: 'ApiError:40020Title',
+    desc: 'ApiError:40020Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
+  40022: {
+    title: 'ApiError:40022Title',
+    desc: 'ApiError:40022Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+  },
   41000: {
     title: 'ApiError:41000Title',
     desc: 'ApiError:41000Description',
     redirectUrl: '',
-    buttonText: 'ApiError:Continue',
+    buttonText: 'Common:Continue',
   },
 };
 

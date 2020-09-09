@@ -110,9 +110,10 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo } = this.props;
+    const { appActions, user, pageError, businessInfo, apiErrorMessage } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
+    const { code: errorCode } = apiErrorMessage;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
@@ -130,6 +131,12 @@ class App extends Component {
           businessInfo,
         });
       });
+    }
+    console.log(apiErrorMessage, 'apiErrorMessage');
+
+    if (errorCode) {
+      // window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE + Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${window.location.search}`
+      console.log(errorCode, 'errocode');
     }
   }
 
@@ -159,7 +166,6 @@ class App extends Component {
     const { message } = error || {};
     const { prompt } = user || {};
     const { favicon } = onlineStoreInfo || {};
-    console.log(apiErrorMessage, 'apiErrorMessage');
     return (
       <main className="table-ordering" data-heap-name="ordering.app.container">
         {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
@@ -181,7 +187,7 @@ class App extends Component {
 }
 
 export default compose(
-  withTranslation(['ApiError']),
+  withTranslation(['ApiError', 'Common']),
   connect(
     state => {
       return {

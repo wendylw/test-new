@@ -35,6 +35,7 @@ export const initialState = {
     message: '',
     description: '',
     buttonText: '',
+    code: null,
   },
   business: config.business,
   onlineStoreInfo: {
@@ -355,6 +356,7 @@ const apiError = (state = initialState.apiError, action) => {
       message: '',
       description: '',
       buttonText: '',
+      code: null,
     };
   }
 
@@ -362,6 +364,7 @@ const apiError = (state = initialState.apiError, action) => {
     return {
       ...state,
       show: true,
+      code: errorCode,
       message: i18next.t(error.title, { error_code: errorCode }),
       description: i18next.t(error.desc),
       buttonText: i18next.t(error.buttonText),
