@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://wenjingzhang.beep.test12.shub.us",
+  "proxy": "https://cathy6.beep.test12.shub.us",
   "engines": {
     "node": "12"
   },
