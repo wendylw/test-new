@@ -38,6 +38,7 @@ import {
   toLocaleTimeString,
   formatPickupAddress,
 } from '../../../utils/datetime-lib';
+import { getAppToken } from '../../../cashback/containers/utils';
 
 const TIME_OPTIONS = {
   hour: 'numeric',
@@ -56,12 +57,39 @@ export class ThankYou extends PureComponent {
     cashbackSuccessImage,
   };
 
+  constructor(props) {
+    super(props);
+    window.sendToken = res => this.authTokens(res);
+  }
+
+  authTokens = async res => {
+    if (res) {
+      if (Utils.isIOSWebview()) {
+        await this.loginBeepApp(res);
+      } else if (Utils.isAndroidWebview()) {
+        const data = JSON.parse(res) || {};
+        await this.loginBeepApp(data);
+      }
+    }
+  };
+
+  loginBeepApp = async res => {
+    const { appActions } = this.props;
+    if (res.access_token && res.refresh_token) {
+      await appActions.loginApp({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      });
+    }
+  };
+
   componentDidMount() {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     const { thankYouActions, order, onlineStoreInfo, user, receiptNumber } = this.props;
     const { storeId } = order || {};
+    const { isWebview } = user || {};
 
     if (storeId) {
       thankYouActions.getStoreHashData(storeId);
@@ -69,6 +97,10 @@ export class ThankYou extends PureComponent {
 
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
+    }
+
+    if (isWebview) {
+      getAppToken(user);
     }
 
     thankYouActions.loadOrder(receiptNumber);
