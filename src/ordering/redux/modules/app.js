@@ -36,6 +36,7 @@ export const initialState = {
     description: '',
     buttonText: '',
     code: null,
+    redirectUrl: '',
   },
   business: config.business,
   onlineStoreInfo: {
@@ -357,6 +358,7 @@ const apiError = (state = initialState.apiError, action) => {
       description: '',
       buttonText: '',
       code: null,
+      redirectUrl: '',
     };
   }
 
@@ -368,6 +370,7 @@ const apiError = (state = initialState.apiError, action) => {
       message: i18next.t(error.title, { error_code: errorCode }),
       description: i18next.t(error.desc),
       buttonText: i18next.t(error.buttonText),
+      redirectUrl: error.redirectUrl,
     };
   } else {
     // TODO add default error message
