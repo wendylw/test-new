@@ -162,6 +162,10 @@ class Customer extends Component {
     return type;
   }
 
+  getApiRequestShippingType = () => {
+    return Utils.mapString2camelCase(Utils.getShippingType().toLowerCase());
+  };
+
   clearErrorToast = () => {
     this.setState({ errorToast: null });
   };

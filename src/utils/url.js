@@ -14,15 +14,19 @@ const API_URLS = {
       }
     }
     const { expectDeliveryDateFrom } = Utils.getFulfillDate();
-
+    const shippingType = Utils.getApiRequestShippingType();
     expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
+
+    params.shippingType = shippingType;
     const queryString = Object.keys(params)
       .map(key => `${key}=${params[key]}`)
       .join('&');
     if (isDeliveryType) {
       CartObj.url = `/api/cart?${queryString}`;
     } else {
-      CartObj.url = expectDeliveryDateFrom ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}` : `/api/cart`;
+      CartObj.url = expectDeliveryDateFrom
+        ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}&shippingType=${shippingType}`
+        : `/api/cart?shippingType=${shippingType}`;
     }
     return CartObj;
   },

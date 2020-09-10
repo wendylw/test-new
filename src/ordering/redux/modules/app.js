@@ -59,6 +59,7 @@ export const actions = {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
