@@ -185,8 +185,10 @@ OtpModal.propTypes = {
 };
 
 OtpModal.defaultProps = {
+  phone: '',
   buttonText: '',
   ResendOtpTime: 0,
+  isLoading: false,
   onClose: () => {},
   sendOtp: () => {},
 };

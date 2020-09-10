@@ -28,10 +28,13 @@ class ErrorToast extends Component {
 ErrorToast.propTypes = {
   className: PropTypes.string,
   clearError: PropTypes.func,
+  message: PropTypes.string,
 };
 
 ErrorToast.defaultProps = {
   clearError: () => {},
+  className: '',
+  message: '',
 };
 
 export default ErrorToast;
