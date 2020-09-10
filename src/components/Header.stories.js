@@ -1,7 +1,6 @@
 import React from 'react';
 import Header, { HeaderComponent } from './Header';
-import { IconDelete, IconEdit, IconLeftArrow, IconLocation } from './Icons';
-import DeliverToBar from './DeliverToBar';
+import { IconDelete } from './Icons';
 
 export default {
   title: 'Common/Header',

@@ -1,8 +1,5 @@
 import React from 'react';
 import { ItemOperatorComponent } from './ItemOperator';
-import { IconDelete, IconEdit, IconLeftArrow, IconLocation } from './Icons';
-import DeliverToBar from './DeliverToBar';
-import PropTypes from 'prop-types';
 
 export default {
   title: 'Common/ItemOperator',

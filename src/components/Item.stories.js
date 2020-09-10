@@ -1,7 +1,5 @@
 import React from 'react';
 import { ItemComponent } from './Item';
-import { IconDelete, IconEdit, IconLeftArrow, IconLocation } from './Icons';
-import DeliverToBar from './DeliverToBar';
 
 export default {
   title: 'Common/Item',
