@@ -13,17 +13,17 @@ import './Error.scss';
 
 class Error extends React.Component {
   render() {
-    const { dataAttributes } = this.props;
+    const { t, dataAttributes } = this.props;
     const { title, description, children } = this.props || {};
     const error = {
       title,
       description,
     };
 
-    // if (!title && !description) {
-    //   error.title = `${t('Eep')}!`;
-    //   error.description = t('ErrorPageDescription');
-    // }
+    if (!title && !description) {
+      error.title = `${t('Eep')}!`;
+      error.description = t('ErrorPageDescription');
+    }
 
     return (
       <section className="error flex flex-column" {...dataAttributes}>
@@ -56,4 +56,4 @@ Error.defaultProps = {
   description: '',
 };
 
-export default withDataAttributes(Error);
+export default withDataAttributes(withTranslation()(Error));
