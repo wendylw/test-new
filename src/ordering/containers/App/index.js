@@ -175,6 +175,12 @@ class App extends Component {
             data={apiErrorMessage}
             onHide={() => {
               this.props.appActions.hideApiMessageModal();
+
+              if (apiErrorMessage.redirectUrl) {
+                window.location.href = `${window.location.origin}${
+                  apiErrorMessage.redirectUrl
+                }?h=${Utils.getQueryVariable('h')}&type=${Utils.getQueryVariable('type')}`;
+              }
             }}
           />
         ) : null}

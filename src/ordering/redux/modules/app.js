@@ -365,7 +365,7 @@ const apiError = (state = initialState.apiError, action) => {
   if (error) {
     return {
       ...state,
-      show: true,
+      show: error.showModal,
       code: errorCode,
       message: i18next.t(error.title, { error_code: errorCode }),
       description: i18next.t(error.desc),
