@@ -1,0 +1,22 @@
+$white: #ffffff;
+$theme-color: #ff9419;
+
+.request-login {
+  height: 100vh;
+}
+
+.login-button {
+  width: 200px;
+  height: 8vh;
+  max-height: 56px;
+  background-color: transparent;
+  border-color: transparent;
+  border-radius: 4px;
+  margin: 20px auto;
+
+  &__fill {
+    border: 0;
+    color: $white;
+    background-color: $theme-color;
+  }
+}
