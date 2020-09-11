@@ -211,18 +211,15 @@ export class ThankYou extends PureComponent {
     const { pickUpId } = order || {};
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
-    const isPickUpType = Utils.isPickUpType();
 
     return (
       <div className="thanks-pickup">
-        {isPickUpType && (
-          <div className="thanks-pickup__id-container">
-            <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
-            <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
-              {pickUpId}
-            </span>
-          </div>
-        )}
+        <div className="thanks-pickup__id-container">
+          <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
+          <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
+            {pickUpId}
+          </span>
+        </div>
         {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
       </div>
     );
@@ -709,7 +706,7 @@ export class ThankYou extends PureComponent {
     const isPickUpType = Utils.isPickUpType();
     const isDineInType = Utils.isDineInType();
     const isTakeaway = isDeliveryType || isPickUpType;
-    let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
+    let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
 
@@ -775,12 +772,12 @@ export class ThankYou extends PureComponent {
             ) : (
               <img
                 className="thanks__image"
-                src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
+                src={isDineInType ? beepSuccessImage : beepPreOrderSuccessImage}
                 alt="Beep Success"
               />
             )}
             {isDeliveryType ? null : <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>}
-            {isDeliveryType ? null : (
+            {isDeliveryType || (!isPickUpType && !isDineInType) ? null : (
               <p className="thanks__prompt">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
@@ -788,15 +785,15 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
-            {isDeliveryType ? null : this.renderPickupInfo()}
+            {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
             {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
 
             <div className="thanks__info-container">
               {orderInfo}
-              {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin hideMessage={isTakeaway || isDineInType} history={history} />
+              {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+              <PhoneLogin hideMessage={true} history={history} />
             </div>
           </div>
         </React.Fragment>
