@@ -14,6 +14,10 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+Utils.getApiRequestShippingType = () => {
+  return Utils.mapString2camelCase(Utils.getQueryVariable('type').toLowerCase());
+};
+
 Utils.isWebview = function isWebview() {
   return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
 };
