@@ -751,7 +751,7 @@ export class ThankYou extends PureComponent {
               }
             }}
           >
-            {isTakeaway ? (
+            {!isDineInType ? (
               <button
                 className="link text-uppercase"
                 onClick={this.handleNeedHelp}
