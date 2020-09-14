@@ -815,7 +815,7 @@ Utils.getFulfillDate = () => {
 Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
   let timer = null;
 
-  function timerSetting() {
+  function timerSetting(resolve, reject) {
     timer = setTimeout(() => {
       clearTimeout(timer);
 
@@ -830,10 +830,10 @@ Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
   return new Promise((resolve, reject) => {
     fn()
       .then(resolve, () => {
-        timerSetting();
+        timerSetting(resolve, reject);
       })
       .catch(error => {
-        timerSetting();
+        timerSetting(resolve, reject);
       });
   });
 };
