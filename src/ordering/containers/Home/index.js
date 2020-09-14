@@ -47,6 +47,11 @@ const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
+  constructor(props) {
+    super(props);
+
+    this.checkUrlType();
+  }
   state = {
     viewAside: null,
     alcoholModal: false,
@@ -68,6 +73,15 @@ export class Home extends Component {
     this.setState({
       dScrollY: documentScrollY,
     });
+  };
+
+  checkUrlType = () => {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    const { type } = search;
+
+    if (!type) {
+      window.location.href = window.location.origin;
+    }
   };
 
   // copied and modified from https://docs.heap.io/docs/scroll-tracking
