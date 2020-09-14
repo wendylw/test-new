@@ -18,7 +18,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
-import { clearCookie, getAppToken } from '../../../../../cashback/containers/utils';
+import { getAppToken } from '../../../../../cashback/containers/utils';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -72,8 +72,6 @@ class PhoneLogin extends React.Component {
     const { enableCashback } = businessInfo || {};
 
     if (!isLogin && isWebview) {
-      // 清除之前的登陆信息
-      clearCookie('sid');
       getAppToken(user);
     }
 
