@@ -161,6 +161,28 @@ class App extends Component {
     this.props.appActions.hideMessageModal();
   };
 
+  handleApiErrorHide = apiErrorMessage => {
+    const { appActions } = this.props;
+    const { redirectUrl } = apiErrorMessage;
+    const { ROUTER_PATHS } = Constants;
+    const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
+    const h = Utils.getQueryVariable('h');
+    const type = Utils.getQueryVariable('type');
+    let callback_url;
+
+    appActions.hideApiMessageModal();
+    if (redirectUrl) {
+      switch (redirectUrl) {
+        case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
+          callback_url = encodeURIComponent(ORDERING_HOME);
+          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}&callbackUrl=${callback_url}`;
+          break;
+        default:
+          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
+      }
+    }
+  };
+
   render() {
     let { user, error, messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { message } = error || {};
@@ -174,13 +196,7 @@ class App extends Component {
           <MessageModal
             data={apiErrorMessage}
             onHide={() => {
-              this.props.appActions.hideApiMessageModal();
-
-              if (apiErrorMessage.redirectUrl) {
-                window.location.href = `${window.location.origin}${
-                  apiErrorMessage.redirectUrl
-                }?h=${Utils.getQueryVariable('h')}&type=${Utils.getQueryVariable('type')}`;
-              }
+              this.handleApiErrorHide(apiErrorMessage);
             }}
           />
         ) : null}
