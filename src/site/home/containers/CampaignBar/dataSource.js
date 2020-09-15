@@ -1,24 +1,20 @@
-import bannerImage from './components/images/Banner.jpg';
-import promoBanner from './components/images/PromoBanner.jpg';
-import rhbBanner from './components/images/RHBbanner@2x.jpg';
-import rhbBoard from './components/images/RHBboard@2x.jpg';
-import makanTogetherBoard from './components/images/MakanTogetherMalaysiaRHBboard.jpg';
-import makanTogetherBanner from './components/images/MakanTogetherMalaysiaBanner.jpg';
+import makanTogetherBanner2 from './components/images/MakanTogetherMalaysiaBanner2.jpg';
+import makanTogetherBoard2 from './components/images/MakanTogetherMalaysiaRHBboard2.jpg';
 
 // ordered by id DESC
 const dataSource = [
   {
-    id: 'campaign-1',
-    barImage: bannerImage,
-    bannerImage: promoBanner,
-    subject: "StoreHub x Touch 'n Go eWallet Cashback Offer",
-    description: "Order food from any store on Beepit.com and earn RM3 Cashback when you pay via Touch 'n Go eWallet!",
+    id: 'campaign-4',
+    barImage: makanTogetherBanner2,
+    bannerImage: makanTogetherBoard2,
+    subject: 'Campaign',
+    description: 'Order from 3 different restaurants this week and stand a chance to win a RM30 voucher',
     sections: [
       {
         type: 'campaign_period',
         subject: 'Campaign Period',
         fields: {
-          activeDateRange: '23 April 2020 - 8 May 2020',
+          activeDateRange: '7th September - 23rd September 2020',
         },
       },
       {
@@ -26,97 +22,19 @@ const dataSource = [
         subject: 'Terms & conditions',
         fields: {
           conditions: [
-            "Applicable to all Touch 'n Go eWallet users",
-            "The RM3 Cashback will be credited back to the eligible Touch 'n Go eWallet user's account within three(3) working days from the transaction date.",
-            'Each user is only entitled to receive the RM3 Cashback once throughout the Promotion Period.',
-            'This offer is limited to the first 3,000 transactions. The Promotion will end once there has been 3,000 Transactions carried out or on expiry of the Promotion Period, whichever is earlier.',
-          ],
-        },
-      },
-    ],
-  },
-  {
-    id: 'campaign-0',
-    barImage: 'https://d24lyus32iwlxh.cloudfront.net/beep/boost-campaign-bar.jpg',
-    bannerImage: 'https://d24lyus32iwlxh.cloudfront.net/beep/mvp-promo-banner.jpg',
-    subject: 'StoreHub x Boost Cashback Offer',
-    description: 'Order food from any store on Beepit.com and earn 10% cashback up to RM5 when you pay via Boost!',
-    sections: [
-      {
-        type: 'campaign_period',
-        subject: 'Campaign Period',
-        fields: {
-          activeDateRange: '8 April 2020 - 31 May 2020',
-        },
-      },
-      {
-        type: 'terms_and_conditions',
-        subject: 'Terms & conditions',
-        fields: {
-          conditions: [
-            'Applicable to all Boost users',
-            '10% cashback to be capped at RM5',
-            'Each eligible customer may only receive maximum of two (2) cashback transactions under this campaign',
-            'This offer is limited to the first 1,000 transactions',
-          ],
-        },
-      },
-    ],
-  },
-  {
-    id: 'campaign-2',
-    barImage: rhbBanner,
-    bannerImage: rhbBoard,
-    subject: 'Beep x RHB Credit Card/-i Cashback Offer',
-    description:
-      'Spend at least RM30 from any store on Beepit.com and earn RM5 cashback when you pay with your RHB Credit Card/-i account!',
-    sections: [
-      {
-        type: 'campaign_period',
-        subject: 'Campaign Period',
-        fields: {
-          activeDateRange: '15th June 2020 - 14th September 2020',
-        },
-      },
-      {
-        type: 'terms_and_conditions',
-        subject: 'Terms & conditions',
-        fields: {
-          conditions: [
-            'Applicable to payments made using RHB Credit Card/-i only.',
-            'To qualify, a minimum spend of RM30 on total net purchase price in a single receipt (exclusive of delivery charges) is required to earn the RM5 cashback (Promotion).',
-            'The cashback under this Promotion will be credited into the RHB Credit Card/-i account within four (4) to six (6) weeks after each month during the Promotion Period and will be reflected in the next monthly statement.',
-            'The Promotion is limited to two thousand (2,000) cashback claims per month to eligible cardholders on a first-come-first-serve basis during the Promotion Period.',
-            'Promotion terms and conditions apply.',
-            'RHB general terms and conditions apply.',
-          ],
-        },
-      },
-    ],
-  },
-  {
-    id: 'campaign-3',
-    barImage: makanTogetherBanner,
-    bannerImage: makanTogetherBoard,
-    subject: '#MakanTogetherMalaysia Giveaway',
-    sections: [
-      {
-        type: 'campaign_period',
-        subject: 'Campaign Period',
-        fields: {
-          activeDateRange: '24th August 2020 - 6th September 2020',
-        },
-      },
-      {
-        type: 'terms_and_conditions',
-        subject: 'Terms & conditions',
-        fields: {
-          conditions: [
-            'The Giveaway Prize for this campaign is a RM25 Beep cash voucher. The voucher cannot be redeemable or exchangeable for cash.',
-            'In order to be eligible for this promotion, you must spend a minimum of RM250 on any store on Beepit.com in seven (7) consecutive days within the Campaign period.',
-            'The RM250 spend can be accrued across multiple purchases within the seven (7) consecutive days, as long as the seven (7) days fall within the Campaign Period.',
-            'Winners will be selected at random and notified within 3-5 working days following the end of the Campaign Period.',
+            'The winner of the Giveaway Prize for this campaign will get a RM30 Beep cash voucher. The voucher cannot be redeemable or exchangeable for cash.',
+            'In order to be eligible for this giveaway, you must purchase from 3 different stores on Beepit.com in seven (7) consecutive days within the Campaign period. ',
+            'No minimum spend',
+            'Multi-store purchase spend can be accrued across multiple purchases within the seven (7) consecutive days, as long as the seven (7) days fall within the Campaign Period.',
+            '100 winners will be selected at random and notified within 3-5 working days following the end of the Campaign Period.',
             'Winners will be notified via SMS and be instructed on how to claim their giveaway prize.',
+            'This #MakanTogetherMalaysia giveaway is organised by StoreHub and is open to everyone in Malaysia.',
+            'Prize forfeit date: 30th September 2020',
+            'StoreHub reserves the right to cancel or amend the contest and these terms and conditions without notice in the event of a catastrophe, war, civil or military disturbance, act of God or any actual or anticipated breach of any applicable law or regulation or any other event outside of the promoter’s control.',
+            'StoreHub is not responsible for inaccurate details supplied by the winners.',
+            "StoreHub's decision in respect of all matters to do with the giveaway will be final and no correspondence will be entered into.",
+            'StoreHub is not obliged to give any reasons for its decision, and will not engage in any conversation or correspondence with any person regarding its decision.',
+            'By entering this giveaway, you are indicating your agreement to be bound by these terms and conditions.',
           ],
         },
       },
