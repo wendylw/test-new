@@ -16,6 +16,7 @@ import {
   getCashbackInfo,
   getBusinessInfo,
   getReceiptNumber,
+  getLoadOrderStatus,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
@@ -49,6 +50,9 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
+// const { ORDER_STATUS } = Constants;
+// const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
+// const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
@@ -70,9 +74,28 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-
-    thankYouActions.loadOrder(receiptNumber);
+    this.loadOrder();
   }
+
+  loadOrder = async () => {
+    const { thankYouActions, receiptNumber } = this.props;
+
+    await thankYouActions.loadOrder(receiptNumber);
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+      clearInterval(this.timer);
+      const { order } = this.props;
+      const { status } = order;
+
+      this.timer = setInterval(async () => {
+        await thankYouActions.loadOrderStatus(receiptNumber);
+        const { updatedStatus } = this.props;
+
+        if (updatedStatus !== status) {
+          await this.loadOrder();
+        }
+      }, 60000);
+    }
+  };
 
   componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
@@ -685,6 +708,7 @@ export class ThankYou extends PureComponent {
 
   isNowPaidPreOrder() {
     const { order } = this.props;
+
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
@@ -830,6 +854,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
+      updatedStatus: getLoadOrderStatus(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
