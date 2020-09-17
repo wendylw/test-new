@@ -132,12 +132,6 @@ class App extends Component {
         });
       });
     }
-    console.log(apiErrorMessage, 'apiErrorMessage');
-
-    if (errorCode) {
-      // window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE + Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${window.location.search}`
-      console.log(errorCode, 'errocode');
-    }
   }
 
   visitErrorPage() {
