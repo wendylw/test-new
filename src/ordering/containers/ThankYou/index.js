@@ -505,6 +505,7 @@ export class ThankYou extends PureComponent {
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
     const isDeliveryType = Utils.isDeliveryType();
+    const isDineInType = Utils.isDineInType();
     const { t, order, onlineStoreInfo = {} } = this.props;
     const { isPreOrder } = order || {};
 
@@ -554,7 +555,7 @@ export class ThankYou extends PureComponent {
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
-          <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
+          <span>{!isDineInType && !isDeliveryType ? storeAddress : deliveryAddress}</span>
         </p>
 
         <div className="thanks__total-container text-center">
