@@ -603,6 +603,18 @@ Utils.addParamToSearch = (key, value) => {
   }
 };
 
+Utils.mapString2camelCase = string => {
+  const stringList = string.split('-');
+  if (stringList.length > 1) {
+    for (let i = 1; i < stringList.length; i++) {
+      const itemList = stringList[i].split('');
+      itemList[0] = itemList[0].toUpperCase();
+      stringList[i] = itemList.join('');
+    }
+  }
+  return stringList.join('');
+};
+
 Utils.removeParam = (key, sourceURL) => {
   let rtn = sourceURL.split('?')[0];
   let param;
@@ -813,17 +825,27 @@ Utils.getFulfillDate = () => {
 };
 
 Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
+  let timer = null;
+
+  function timerSetting() {
+    timer = setTimeout(() => {
+      clearTimeout(timer);
+
+      if (retriesLeft === 1) {
+        reject(error);
+      } else {
+        Utils.retry(fn, retriesLeft - 1, interval).then(resolve, reject);
+      }
+    }, interval);
+  }
+
   return new Promise((resolve, reject) => {
     fn()
-      .then(resolve)
+      .then(resolve, () => {
+        timerSetting();
+      })
       .catch(error => {
-        setTimeout(() => {
-          if (retriesLeft === 1) {
-            reject(error);
-          } else {
-            retry(fn, retriesLeft - 1, interval).then(resolve, reject);
-          }
-        }, interval);
+        timerSetting();
       });
   });
 };

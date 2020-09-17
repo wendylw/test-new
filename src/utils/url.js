@@ -165,6 +165,10 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/profile`,
     method: 'get',
   }),
+  GET_ORDER_STATUS: ({ orderId }) => ({
+    url: `/api/transactions/${orderId}/status`,
+    method: 'get',
+  }),
   GET_COLLECTION: {
     url: '/api/stores/collection',
     method: 'get',
