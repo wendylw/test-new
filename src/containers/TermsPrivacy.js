@@ -5,6 +5,7 @@ import config from '../config';
 import DocumentHeadInfo from '../components/DocumentHeadInfo';
 
 import '../Common.scss';
+import Utils from '../utils/utils';
 
 // Example1 URL: http://nike.storehub.local:3000/#/terms-conditions
 // Example1 URL: http://nike.storehub.local:3000/#/privacy
@@ -13,6 +14,15 @@ export class TermsPrivacy extends Component {
   state = {
     termsPrivacyData: null,
   };
+
+  // remove fixed style in beepit.com
+  constructor(props) {
+    super(props);
+    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+      document.body.style.position = '';
+      document.body.style.overflow = '';
+    }
+  }
 
   async componentWillMount() {
     const { pageName } = this.props;
