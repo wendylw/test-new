@@ -129,7 +129,14 @@
       })();
     </script>
 
-    <!-- keep this code, since always get error "maps of undefined" -->
+
+    <script>
+      // This code is trying to gain more information to debug on FB-1755
+      // https://developers.google.com/maps/documentation/javascript/events#auth-errors
+      function gm_authFailure() {
+        window.heap && window.heap.track('common.google-maps-auth-errors');
+      }
+    </script>
     <script src="https://maps.googleapis.com/maps/api/js?v=quarterly&key=%REACT_APP_GOOGLE_MAPS_API_KEY%&libraries=geometry,places"></script>
   </body>
 
