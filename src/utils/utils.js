@@ -15,7 +15,8 @@ Utils.getQueryString = key => {
 };
 
 Utils.getApiRequestShippingType = () => {
-  return Utils.mapString2camelCase(Utils.getQueryVariable('type').toLowerCase());
+  const type = Utils.getQueryVariable('type');
+  return type ? Utils.mapString2camelCase(type) : undefined;
 };
 
 Utils.isWebview = function isWebview() {

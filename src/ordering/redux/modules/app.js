@@ -79,6 +79,7 @@ export const actions = {
       requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
         phone,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
