@@ -26,7 +26,9 @@ const API_URLS = {
     } else {
       CartObj.url = expectDeliveryDateFrom
         ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}&shippingType=${shippingType}`
-        : `/api/cart?shippingType=${shippingType}`;
+        : shippingType
+        ? `/api/cart?shippingType=${shippingType}`
+        : `/api/cart`;
     }
     return CartObj;
   },
