@@ -141,7 +141,7 @@ const reducer = (state = initialState, action) => {
     case types.FETCH_ORDER_STATUS_SUCCESS: {
       const { response } = action;
       const { status } = response;
-      console.log(action);
+
       return {
         ...state,
         orderStatus: status,

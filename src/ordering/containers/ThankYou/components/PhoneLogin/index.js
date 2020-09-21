@@ -18,6 +18,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
+import { getAppToken } from '../../../../../cashback/containers/utils';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -34,6 +35,32 @@ class PhoneLogin extends React.Component {
     claimedAnimationGifSrc: null,
   };
 
+  constructor(props) {
+    super(props);
+    window.sendToken = res => this.authTokens(res);
+  }
+
+  authTokens = async res => {
+    if (res) {
+      if (Utils.isIOSWebview()) {
+        await this.loginBeepApp(res);
+      } else if (Utils.isAndroidWebview()) {
+        const data = JSON.parse(res) || {};
+        await this.loginBeepApp(data);
+      }
+    }
+  };
+
+  loginBeepApp = async res => {
+    const { appActions } = this.props;
+    if (res.access_token && res.refresh_token) {
+      await appActions.loginApp({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      });
+    }
+  };
+
   async componentDidMount() {
     const { history, thankYouActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -41,7 +68,12 @@ class PhoneLogin extends React.Component {
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
+    const { isWebview, isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
+
+    if (!isLogin && isWebview) {
+      getAppToken(user);
+    }
 
     if (enableCashback) {
       this.canClaimCheck(user);
