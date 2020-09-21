@@ -6,33 +6,19 @@ const API_URLS = {
   },
   GET_CART_TYPE: (isDeliveryType, deliveryCoords) => {
     let CartObj = API_URLS.GET_CART;
-    const params = {};
-    if (isDeliveryType) {
-      params.shippingType = 'delivery';
-      if (deliveryCoords) {
-        params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
-      }
-    }
     const { expectDeliveryDateFrom } = Utils.getFulfillDate();
+    const params = {
+      shippingType: Utils.getApiRequestShippingType(),
+    };
 
-    expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
-    const shippingType = Utils.getApiRequestShippingType();
-
-    params.shippingType = shippingType;
-
-    if (isDeliveryType) {
-      CartObj.params = params;
-    } else {
-      CartObj.params = {
-        expectDeliveryDateFrom,
-        shippingType,
-      };
+    if (isDeliveryType && deliveryCoords) {
+      params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
     }
-    Object.keys(CartObj.params).forEach(key => {
-      if (!CartObj.params[key]) {
-        delete CartObj.params[key];
-      }
-    });
+
+    if (expectDeliveryDateFrom) {
+      params.fulfillDate = expectDeliveryDateFrom;
+    }
+    CartObj.params = params;
     return CartObj;
   },
   GET_BRAINTREE_TOKEN: {
