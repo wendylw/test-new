@@ -14,8 +14,9 @@ const API_URLS = {
       }
     }
     const { expectDeliveryDateFrom } = Utils.getFulfillDate();
-    const shippingType = Utils.getApiRequestShippingType();
+
     expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
+    const shippingType = Utils.getApiRequestShippingType();
 
     params.shippingType = shippingType;
 
