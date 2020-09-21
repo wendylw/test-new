@@ -18,18 +18,20 @@ const API_URLS = {
     expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
 
     params.shippingType = shippingType;
-    const queryString = Object.keys(params)
-      .map(key => `${key}=${params[key]}`)
-      .join('&');
+
     if (isDeliveryType) {
-      CartObj.url = `/api/cart?${queryString}`;
+      CartObj.params = params;
     } else {
-      CartObj.url = expectDeliveryDateFrom
-        ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}&shippingType=${shippingType}`
-        : shippingType
-        ? `/api/cart?shippingType=${shippingType}`
-        : `/api/cart`;
+      CartObj.params = {
+        expectDeliveryDateFrom,
+        shippingType,
+      };
     }
+    Object.keys(CartObj.params).forEach(key => {
+      if (!CartObj.params[key]) {
+        delete CartObj.params[key];
+      }
+    });
     return CartObj;
   },
   GET_BRAINTREE_TOKEN: {
