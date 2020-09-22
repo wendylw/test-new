@@ -31,7 +31,7 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
-
+import config from '../../../config';
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -68,7 +68,9 @@ export class ThankYou extends PureComponent {
     const { storeId } = order || {};
 
     if (storeId) {
-      thankYouActions.getStoreHashData(storeId);
+      Utils.isDineInType()
+        ? thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
+        : thankYouActions.getStoreHashData(storeId);
     }
 
     if (onlineStoreInfo && onlineStoreInfo.id) {
@@ -104,7 +106,9 @@ export class ThankYou extends PureComponent {
     const { onlineStoreInfo, user } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
-      this.props.thankYouActions.getStoreHashData(storeId);
+      Utils.isDineInType()
+        ? this.props.thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
+        : this.props.thankYouActions.getStoreHashData(storeId);
     }
     const tySourceCookie = this.getThankYouSource();
     if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
