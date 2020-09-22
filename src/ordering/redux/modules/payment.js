@@ -407,8 +407,8 @@ export const getUnavailablePayments = state => {
   ) {
     return [...unavailablePayments, 'onlineBanking'];
   }
-  // TODO: Temporarily closed onlineBanking
-  return [...unavailablePayments, 'onlineBanking'];
+
+  return unavailablePayments;
 };
 
 export const getPayments = createSelector(
