@@ -408,7 +408,7 @@ export const getUnavailablePayments = state => {
     return [...unavailablePayments, 'onlineBanking'];
   }
 
-  return unavailablePayments;
+  return [...unavailablePayments, 'onlineBanking'];
 };
 
 export const getPayments = createSelector(

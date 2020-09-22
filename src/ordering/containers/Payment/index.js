@@ -144,19 +144,20 @@ class Payment extends Component {
     const className = ['table-ordering__payment' /*, 'hide' */];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
-    const promptDom =
-      total >= minimumFpxTotal ? (
-        <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>
-      ) : (
-        <span className="payment__prompt">
-          ({' '}
-          <Trans i18nKey="MinimumConsumption">
-            <span>Min</span>
-            <CurrencyNumber money={minimumFpxTotal} />
-          </Trans>{' '}
-          )
-        </span>
-      );
+    // const promptDom =
+    //   total >= minimumFpxTotal ? (
+    //     <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>
+    //   ) : (
+    //     <span className="payment__prompt">
+    //       ({' '}
+    //       <Trans i18nKey="MinimumConsumption">
+    //         <span>Min</span>
+    //         <CurrencyNumber money={minimumFpxTotal} />
+    //       </Trans>{' '}
+    //       )
+    //     </span>
+    //   );
+    const promptDom = <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>;
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
