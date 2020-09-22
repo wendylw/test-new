@@ -157,6 +157,7 @@ class Payment extends Component {
     //       )
     //     </span>
     //   );
+    // TODO: Temporarily closed onlineBanking
     const promptDom = <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>;
 
     return (
