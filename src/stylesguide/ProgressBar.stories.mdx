@@ -1,0 +1,145 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Utilities/Progress Bar" />
+
+<style>{`
+.progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #ff9419;
+}
+
+.progress-bar__container {
+  width: 100%;
+  height: 8px;
+  background-color: #dededf;
+}
+
+.progress-bar.start {
+  width: 20%;
+}
+
+.progress-bar.not-on-way {
+  border-radius: 0 4px 4px 0;
+}
+
+.progress-bar__container {
+  width: 100%;
+  height: 8px;
+  background-color: #dededf;
+}
+
+.progress-bar.none {
+  width: 0;
+}
+
+.progress-bar.quarter {
+  width: 25%;
+}
+
+.progress-bar.half {
+  width: 50%;
+}
+
+.progress-bar.three-quarter {
+  width: 75%;
+}
+
+.progress-bar.full {
+  width: 100%;
+}
+
+.progress-bar.animation {
+  animation: large 5s linear infinite;
+}
+
+@keyframes large {
+  0%{
+    width: 0;
+  }
+  100%{
+    width: 100%;
+  }
+}
+
+.progress-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.progress-sb__item {
+  margin-bottom: 20px;
+}
+
+.progress-sb__label {
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 20px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.progress-sb__content {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+`}</style>
+
+# Progress Bar
+
+<div class="progress-sb__card">
+  <div class="progress-sb__item">
+    <label class="progress-sb__label">progress bar none</label>
+    <div class="progress-sb__content">
+      <div className="progress-bar__container">
+        <i className="progress-bar none"></i>
+      </div>
+    </div>
+  </div>
+  <div class="progress-sb__item">
+    <label class="progress-sb__label">progress bar quarter</label>
+    <div class="progress-sb__content">
+      <div className="progress-bar__container">
+        <i className="progress-bar quarter"></i>
+      </div>
+    </div>
+  </div>
+  <div class="progress-sb__item">
+    <label class="progress-sb__label">progress bar half</label>
+    <div class="progress-sb__content">
+      <div className="progress-bar__container">
+        <i className="progress-bar half"></i>
+      </div>
+    </div>
+  </div>
+  <div class="progress-sb__item">
+    <label class="progress-sb__label">progress bar three quarter</label>
+    <div class="progress-sb__content">
+      <div className="progress-bar__container">
+        <i className="progress-bar three-quarter"></i>
+      </div>
+    </div>
+  </div>
+  <div class="progress-sb__item">
+    <label class="progress-sb__label">progress bar full</label>
+    <div class="progress-sb__content">
+      <div className="progress-bar__container">
+        <i className="progress-bar full"></i>
+      </div>
+    </div>
+  </div>
+  <div class="progress-sb__item">
+    <label class="progress-sb__label">progress bar animation</label>
+    <div class="progress-sb__content">
+      <div className="progress-bar__container">
+        <i className="progress-bar animation"></i>
+      </div>
+    </div>
+  </div>
+</div>
