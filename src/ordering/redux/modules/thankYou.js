@@ -64,6 +64,20 @@ export const actions = {
       ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
     },
   }),
+
+  getStoreHashDataWithTableId: ({ storeId, tableId }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_WITH_TABLEID_REQUEST,
+        types.FETCH_STORE_HASHCODE_WITH_TABLEID_SUCCESS,
+        types.FETCH_STORE_HASHCODE_WITH_TABLEID_FAILURE,
+      ],
+      payload: {
+        tableId,
+      },
+      ...Url.API_URLS.POST_STORE_HASH_DATA(storeId),
+    },
+  }),
 };
 
 const fetchOrder = variables => ({
@@ -138,10 +152,16 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: redirectTo };
     }
+    case types.FETCH_STORE_HASHCODE_WITH_TABLEID_SUCCESS: {
+      const { response } = action;
+      const { hex } = response || {};
+
+      return { ...state, storeHashCode: hex };
+    }
     case types.FETCH_ORDER_STATUS_SUCCESS: {
       const { response } = action;
       const { status } = response;
-      console.log(action);
+
       return {
         ...state,
         orderStatus: status,

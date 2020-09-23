@@ -830,17 +830,27 @@ Utils.getFulfillDate = () => {
 };
 
 Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
+  let timer = null;
+
+  function timerSetting() {
+    timer = setTimeout(() => {
+      clearTimeout(timer);
+
+      if (retriesLeft === 1) {
+        reject(error);
+      } else {
+        Utils.retry(fn, retriesLeft - 1, interval).then(resolve, reject);
+      }
+    }, interval);
+  }
+
   return new Promise((resolve, reject) => {
     fn()
-      .then(resolve)
+      .then(resolve, () => {
+        timerSetting();
+      })
       .catch(error => {
-        setTimeout(() => {
-          if (retriesLeft === 1) {
-            reject(error);
-          } else {
-            retry(fn, retriesLeft - 1, interval).then(resolve, reject);
-          }
-        }, interval);
+        timerSetting();
       });
   });
 };

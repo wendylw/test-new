@@ -14,7 +14,7 @@ const { AUTH_INFO } = Constants;
 
 export const initialState = {
   user: {
-    // isWebview: Utils.isWebview(),
+    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     hasOtp: false,
@@ -209,7 +209,7 @@ const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt } = action;
+  const { type, response, code, prompt, error } = action;
   const { login, consumerId } = response || {};
 
   switch (type) {
@@ -258,6 +258,10 @@ const user = (state = initialState.user, action) => {
       };
     case types.CREATE_LOGIN_FAILURE:
       if (code && code === 401 && code < 40000) {
+        return { ...state, isExpired: true, isFetching: false };
+      }
+
+      if (error && error.code === 401) {
         return { ...state, isExpired: true, isFetching: false };
       }
 
