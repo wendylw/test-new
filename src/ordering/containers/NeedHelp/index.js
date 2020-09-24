@@ -8,10 +8,11 @@ import { bindActionCreators, compose } from 'redux';
 import { IconNext } from '../../../components/Icons';
 import {
   actions as thankYouActionCreators,
-  getBusinessInfo,
   getReceiptNumber,
   getOrderStatus,
+  getWebViewStatus,
   getIsUseStorehubLogistics,
+  getOrder,
 } from '../../redux/modules/thankYou';
 
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
@@ -41,9 +42,9 @@ export class NeedHelp extends Component {
   };
 
   render() {
-    const { history, businessInfo, t, isUseStorehubLogistics } = this.props;
-    const { stores } = businessInfo || '';
-    const { name, phone, street1 } = stores && stores[0] ? stores[0] : [];
+    const { history, t, isUseStorehubLogistics, order, isWebView } = this.props;
+    const { storeInfo } = order || {};
+    const { name, phone, street1 } = storeInfo || {};
 
     return (
       <section className="need-help" data-heap-name="ordering.need-help.container">
@@ -72,9 +73,13 @@ export class NeedHelp extends Component {
             {phone && (
               <li className="item border__bottom-divider">
                 <summary className="item__title store-info__item font-weight-bolder">{t('ContactInfo')}</summary>
-                <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
-                  {phone}
-                </a>
+                {isWebView ? (
+                  <span className="item__text gray-font-opacity">{phone}</span>
+                ) : (
+                  <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
+                    {phone}
+                  </a>
+                )}
               </li>
             )}
             <li className="item">
@@ -105,9 +110,10 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
-      businessInfo: getBusinessInfo(state),
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
+      order: getOrder(state),
+      isWebView: getWebViewStatus(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
     dispatch => ({
