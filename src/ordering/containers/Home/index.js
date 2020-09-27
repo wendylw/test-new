@@ -508,6 +508,11 @@ export class Home extends Component {
       return null;
     }
 
+    if (isSourceBeepitCom()) {
+      const source = Utils.getQueryString('source');
+      sessionStorage.setItem('orderSource', source);
+    }
+
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder, deliveryToAddress } = deliveryInfo;
 

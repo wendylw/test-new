@@ -129,6 +129,6 @@ it('src/ordering/redux/store.js', () => {
         url: '',
       },
     },
-    thankYou: { cashbackInfo: null, orderId: null, storeHashCode: null },
+    thankYou: { cashbackInfo: null, orderId: null, storeHashCode: null, orderStatus: null, isWebView: false },
   });
 });

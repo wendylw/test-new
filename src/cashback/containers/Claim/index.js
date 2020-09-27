@@ -93,9 +93,8 @@ class PageClaim extends React.Component {
   }
 
   async handleCreateCustomerCashbackInfo() {
-    const { user, history, claimActions } = this.props;
+    const { history, claimActions } = this.props;
     const { claimed } = this.state;
-    const { isWebview } = user || {};
 
     if (!claimed) {
       await this.setState({ claimed: true });
@@ -104,27 +103,12 @@ class PageClaim extends React.Component {
       const { cashbackInfo } = this.props;
       const { customerId } = cashbackInfo || {};
 
-      if (isWebview) {
-        // this.handlePostLoyaltyPageMessage();
-      } else {
-        history.push({
-          pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-          search: `?customerId=${this.props.user.customerId || customerId || ''}`,
-        });
-      }
+      history.push({
+        pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
+        search: `?customerId=${this.props.user.customerId || customerId || ''}`,
+      });
     }
   }
-
-  // handlePostLoyaltyPageMessage() {
-  //   const { user } = this.props;
-  //   const { isWebview } = user || {};
-
-  //   if (isWebview) {
-  //     window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-  //   }
-
-  //   return;
-  // }
 
   renderCashback() {
     const { cashbackInfo, t } = this.props;
