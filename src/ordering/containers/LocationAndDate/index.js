@@ -890,8 +890,10 @@ class LocationAndDate extends Component {
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
     const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
+    const haveAvailableDate = this.deliveryDates.some(item => item.isOpen);
 
     timeList = dateList.includes(this.getDateFromTime(selectedDate.date)) && selectedDate.isOpen ? timeList : [];
+    timeList = haveAvailableDate ? timeList : [];
 
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
