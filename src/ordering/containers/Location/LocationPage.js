@@ -147,7 +147,7 @@ class LocationPage extends Component {
           alt="Something went wrong"
           src={ErrorImage}
         />
-        <p className="ordering-location__error-screen-message padding-normal">initError</p>
+        <p className="ordering-location__error-screen-message padding-normal">{initError}</p>
       </div>
     );
   }

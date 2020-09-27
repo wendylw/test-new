@@ -136,6 +136,7 @@ export class ScrollObserver extends React.Component {
       causeByNavClick = false;
       currentCategoryId = null;
     }, 50);
+
     let scrollid;
     if (currentCategoryId) {
       scrollid = currentCategoryId;
@@ -174,6 +175,7 @@ export class ScrollObserver extends React.Component {
 
   handleSelectedTarget = async options => {
     const { targetId, categoryId } = options;
+
     causeByNavClick = true;
     currentCategoryId = categoryId;
     this.setState({ drivenToScroll: true, scrollid: targetId });

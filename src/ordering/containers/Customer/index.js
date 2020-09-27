@@ -184,7 +184,7 @@ class Customer extends Component {
   getCanContinue = () => {
     const { isFetching, deliveryDetails, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    const { date = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     const type = Utils.getOrderTypeFromUrl();
     const username = (deliveryDetails.username || '').trim();
     const phone = deliveryDetails.phone;
@@ -195,6 +195,9 @@ class Customer extends Component {
 
     if (enablePreOrder && (type === DELIVERY_METHOD.DELIVERY || type === DELIVERY_METHOD.PICKUP)) {
       if (!date.date) {
+        return false;
+      }
+      if (!hour.from) {
         return false;
       }
     }
