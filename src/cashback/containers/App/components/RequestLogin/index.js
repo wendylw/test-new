@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import beepLoginImage from '../../../../../ordering/containers/Login/images/login.svg';
+import beepLoginImage from './images/login.svg';
 import { getAppToken } from '../../../utils';
 import './RequestLogin.scss';
 
