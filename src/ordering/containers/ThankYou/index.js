@@ -16,6 +16,7 @@ import {
   getCashbackInfo,
   getBusinessInfo,
   getReceiptNumber,
+  getLoadOrderStatus,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
@@ -29,10 +30,29 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
+import config from '../../../config';
+import {
+  toDayDateMonth,
+  toNumericTimeRange,
+  toLocaleDateString,
+  toLocaleTimeString,
+  formatPickupAddress,
+} from '../../../utils/datetime-lib';
 
-import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
+const TIME_OPTIONS = {
+  hour: 'numeric',
+  minute: 'numeric',
+};
+const DATE_OPTIONS = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
 import './OrderingThanks.scss';
 
+// const { ORDER_STATUS } = Constants;
+// const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
+// const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
@@ -48,15 +68,36 @@ export class ThankYou extends PureComponent {
     const { storeId } = order || {};
 
     if (storeId) {
-      thankYouActions.getStoreHashData(storeId);
+      Utils.isDineInType()
+        ? thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
+        : thankYouActions.getStoreHashData(storeId);
     }
 
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-
-    thankYouActions.loadOrder(receiptNumber);
+    this.loadOrder();
   }
+
+  loadOrder = async () => {
+    const { thankYouActions, receiptNumber } = this.props;
+
+    await thankYouActions.loadOrder(receiptNumber);
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+      clearInterval(this.timer);
+      const { order } = this.props;
+      const { status } = order;
+
+      this.timer = setInterval(async () => {
+        await thankYouActions.loadOrderStatus(receiptNumber);
+        const { updatedStatus } = this.props;
+
+        if (updatedStatus !== status) {
+          await this.loadOrder();
+        }
+      }, 60000);
+    }
+  };
 
   componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
@@ -65,7 +106,9 @@ export class ThankYou extends PureComponent {
     const { onlineStoreInfo, user } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
-      this.props.thankYouActions.getStoreHashData(storeId);
+      Utils.isDineInType()
+        ? this.props.thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
+        : this.props.thankYouActions.getStoreHashData(storeId);
     }
     const tySourceCookie = this.getThankYouSource();
     if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
@@ -481,6 +524,7 @@ export class ThankYou extends PureComponent {
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
     const isDeliveryType = Utils.isDeliveryType();
+    const isDineInType = Utils.isDineInType();
     const { t, order, onlineStoreInfo = {} } = this.props;
     const { isPreOrder } = order || {};
 
@@ -531,7 +575,7 @@ export class ThankYou extends PureComponent {
         <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
           <IconPin className="icon icon__small icon__primary" />
           <span className="ordering-thanks__address padding-top-bottom-smaller padding-left-right-small text-line-height-base">
-            {isPickUpType ? storeAddress : deliveryAddress}
+            {!isDineInType && !isDeliveryType ? storeAddress : deliveryAddress}
           </span>
         </p>
 
@@ -613,6 +657,7 @@ export class ThankYou extends PureComponent {
 
   isNowPaidPreOrder() {
     const { order } = this.props;
+
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
@@ -637,7 +682,7 @@ export class ThankYou extends PureComponent {
     const isPickUpType = Utils.isPickUpType();
     const isDineInType = Utils.isDineInType();
     const isTakeaway = isDeliveryType || isPickUpType;
-    let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
+    let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
 
@@ -702,7 +747,7 @@ export class ThankYou extends PureComponent {
             ) : (
               <img
                 className="ordering-thanks__image padding-normal"
-                src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
+                src={isDineInType ? beepSuccessImage : beepPreOrderSuccessImage}
                 alt="Beep Success"
               />
             )}
@@ -711,7 +756,7 @@ export class ThankYou extends PureComponent {
                 {t('ThankYou')}!
               </h2>
             )}
-            {isDeliveryType ? null : (
+            {isDeliveryType || (!isPickUpType && !isDineInType) ? null : (
               <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
@@ -719,7 +764,7 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
-            {isPickUpType ? this.renderPickupInfo() : null}
+            {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
             <div className="padding-top-bottom-small margin-normal">
@@ -727,8 +772,8 @@ export class ThankYou extends PureComponent {
 
               <div className="card">
                 {orderInfo}
-                {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-                <PhoneLogin hideMessage={isTakeaway || isDineInType} history={history} />
+                {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+                <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
           </div>
@@ -759,6 +804,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
+      updatedStatus: getLoadOrderStatus(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

@@ -10,6 +10,7 @@ import {
   getCurrentStoreId,
   getCurrentOrderMethod,
 } from '../../redux/modules/home';
+import { actions as tablesActionCreators, getTables } from '../../redux/modules/tables';
 import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
 import DineInImage from '../../../images/icon-dine-in.svg';
@@ -36,6 +37,29 @@ let METHODS_LIST = [
 ];
 
 class DineMethods extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      afterLoadTables: false,
+    };
+    this.loadTables();
+  }
+
+  loadTables = async () => {
+    const { tableActions } = this.props;
+
+    await tableActions.loadStoreTables();
+    const { tables } = this.props;
+
+    if (!tables || !tables.length) {
+      this.handleSelectMethod(DELIVERY_METHOD.TAKE_AWAY);
+    } else {
+      this.setState({
+        afterLoadTables: true,
+      });
+    }
+  };
+
   handleClickBack = () => {
     this.props.homeActions.clearCurrentStore();
     const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
@@ -66,39 +90,42 @@ class DineMethods extends Component {
 
   render() {
     const { t } = this.props;
+    const { afterLoadTables } = this.state;
 
     return (
-      <section className="dine" data-heap-name="stores.dine-methods.container">
-        <Header
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          data-heap-name="stores.dine-methods.header"
-          isPage={true}
-          title={t('SelectYourPreference')}
-          navFunc={this.handleClickBack}
-        />
-        <ul className="delivery__list">
-          {METHODS_LIST.map(method => {
-            return (
-              <li
-                key={method.name}
-                className="border__bottom-divider flex flex-middle flex-space-between"
-                onClick={() => this.handleSelectMethod(method.name)}
-                data-heap-name="stores.dine-methods.method-item"
-                data-heap-method-name={method.name}
-              >
-                <summary className="taking-meal-method__summary">
-                  <figure className="taking-meal-method__image-container text-middle margin-normal">
-                    <img src={method.logo} alt={t(method.labelKey)}></img>
-                  </figure>
-                  <label className="text-middle text-size-big text-weight-bolder">{t(method.labelKey)}</label>
-                </summary>
-                <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      afterLoadTables && (
+        <section className="dine" data-heap-name="stores.dine-methods.container">
+          <Header
+            className="flex-middle border__bottom-divider"
+            contentClassName="flex-middle"
+            data-heap-name="stores.dine-methods.header"
+            isPage={true}
+            title={t('SelectYourPreference')}
+            navFunc={this.handleClickBack}
+          />
+          <ul className="delivery__list">
+            {METHODS_LIST.map(method => {
+              return (
+                <li
+                  key={method.name}
+                  className="border__bottom-divider flex flex-middle flex-space-between"
+                  onClick={() => this.handleSelectMethod(method.name)}
+                  data-heap-name="stores.dine-methods.method-item"
+                  data-heap-method-name={method.name}
+                >
+                  <summary className="taking-meal-method__summary">
+                    <figure className="taking-meal-method__image-container text-middle margin-normal">
+                      <img src={method.logo} alt={t(method.labelKey)}></img>
+                    </figure>
+                    <label className="text-middle text-size-big text-weight-bolder">{t(method.labelKey)}</label>
+                  </summary>
+                  <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )
     );
   }
 }
@@ -118,9 +145,11 @@ export default compose(
       hashCode: getStoreHashCode(state),
       currentStoreId: getCurrentStoreId(state),
       currentOrderMethod: getCurrentOrderMethod(state),
+      tables: getTables(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      tableActions: bindActionCreators(tablesActionCreators, dispatch),
     })
   )
 )(withRouter(DineMethodsContainer));

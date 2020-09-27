@@ -146,7 +146,7 @@ export class ReceiptDetail extends Component {
             subtotal={subtotal}
             total={total}
             promotion={promotion}
-            isLogin={isLogin}
+            isLogin={true}
             creditsBalance={this.getSpendCashback()}
           />
         </div>

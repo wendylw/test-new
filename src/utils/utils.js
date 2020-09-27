@@ -14,6 +14,11 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+Utils.getApiRequestShippingType = () => {
+  const type = Utils.getQueryVariable('type');
+  return type ? Utils.mapString2camelCase(type) : undefined;
+};
+
 Utils.isWebview = function isWebview() {
   return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
 };
@@ -608,6 +613,18 @@ Utils.addParamToSearch = (key, value) => {
   }
 };
 
+Utils.mapString2camelCase = string => {
+  const stringList = string.split('-');
+  if (stringList.length > 1) {
+    for (let i = 1; i < stringList.length; i++) {
+      const itemList = stringList[i].split('');
+      itemList[0] = itemList[0].toUpperCase();
+      stringList[i] = itemList.join('');
+    }
+  }
+  return stringList.join('');
+};
+
 Utils.removeParam = (key, sourceURL) => {
   let rtn = sourceURL.split('?')[0];
   let param;
@@ -837,7 +854,7 @@ Utils.getFulfillDate = () => {
 Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
   let timer = null;
 
-  function timerSetting() {
+  function timerSetting(resolve, reject) {
     timer = setTimeout(() => {
       clearTimeout(timer);
 
@@ -852,10 +869,10 @@ Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
   return new Promise((resolve, reject) => {
     fn()
       .then(resolve, () => {
-        timerSetting();
+        timerSetting(resolve, reject);
       })
       .catch(error => {
-        timerSetting();
+        timerSetting(resolve, reject);
       });
   });
 };
