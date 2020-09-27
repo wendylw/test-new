@@ -10,6 +10,6 @@ const Template = args => <TopMessage {...args} />;
 
 export const TopMessageTemplate = Template.bind({});
 TopMessageTemplate.args = {
-  className: '',
+  className: 'primary',
   message: 'You have earned the cashback',
 };
