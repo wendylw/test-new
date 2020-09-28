@@ -38,6 +38,7 @@ import {
   toLocaleTimeString,
   formatPickupAddress,
 } from '../../../utils/datetime-lib';
+import './OrderingThanks.scss';
 
 const TIME_OPTIONS = {
   hour: 'numeric',
@@ -48,7 +49,6 @@ const DATE_OPTIONS = {
   month: 'short',
   day: 'numeric',
 };
-import './OrderingThanks.scss';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
