@@ -476,6 +476,7 @@ img {
 }
 
 .loader-wave {
+  position: relative;
   .dot {
     transform-origin: 50% 50%;
     height: 8px;
