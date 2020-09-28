@@ -13,32 +13,39 @@ export default {
 
 // The Primary slot is computed from the first user-defined story for the component.
 export const AllTags = () => (
-  <div>
+  <div className="flex flex-column flex-space-between" style={{ height: '300px' }}>
     <div>
+      {/*Block Tag*/}
       <Tag text="Block Tag" className="tag tag__primary tag__block" />
     </div>
 
     <div>
+      {/*Small Tag*/}
       <Tag text="Small Tag" className="tag tag__primary tag__small" />
     </div>
 
     <div>
+      {/*Tag Primary*/}
       <Tag text="Tag Primary" className="tag tag__primary" />
     </div>
 
     <div>
+      {/*Tag Reverse Primary*/}
       <Tag text="Tag Reverse Primary" className="tag tag__reverse-primary" />
     </div>
 
     <div>
+      {/*Tag Primary Blue*/}
       <Tag text="Tag Primary Blue" className="tag tag__primary-blue" />
     </div>
 
     <div>
+      {/*Tag Error*/}
       <Tag text="Tag Error" className="tag tag__error" />
     </div>
 
     <div>
+      {/*Tag Info*/}
       <Tag text="Tag Info" className="tag tag__info" />
     </div>
 
