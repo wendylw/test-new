@@ -517,8 +517,7 @@ class ProductDetail extends Component {
                 const { optionId } = item;
 
                 if (optionQuantity[optionId]) {
-                  // item.quantity = optionQuantity[optionId]
-                  // TODO "quantity" should update to api params
+                  item.quantity = optionQuantity[optionId];
                 }
               });
 
