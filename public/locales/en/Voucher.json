@@ -19,7 +19,7 @@
     "PleaseUpdateAndTryAgain": "Please update your details or use a new payment method and try again.",
     "ValidityPeriodNote": "Validity period: {{validityPeriodDays}} days from purchase date",
     "CanPurchasesBusinessNote": "Gift voucher(s) can only be applied to purchases made on {{onlineStoreName}}'s online store at beepit.com",
-    "GiftCardToKnow_1": "The gift voucher purchased is digital only and will be will be emailed to you or any designated recipient upon successful purchase.",
+    "GiftCardToKnow_1": "The gift voucher purchased is digital only and will be emailed to you or any designated recipient upon successful purchase.",
     "GiftCardToKnow_2": "The gift voucher is only available for one-time use, and are valid for {{validityPeriodDays}} days from purchase date.",
     "GiftCardToKnow_3": "To utilize the gift voucher, please place your order at the partner’s beepit.com online store.",
     "GiftCardToKnow_4": "Apply the gift voucher's code to your order upon check out and the gift voucher's value will be deducted automatically.",
