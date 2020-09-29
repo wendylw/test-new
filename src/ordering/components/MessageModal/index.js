@@ -31,10 +31,4 @@ class MessageModal extends Component {
   }
 }
 
-const styles = {
-  section: {
-    display: 'block',
-  },
-};
-
 export default withTranslation()(MessageModal);

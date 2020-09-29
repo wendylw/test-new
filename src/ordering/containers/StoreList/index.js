@@ -26,7 +26,11 @@ const StoreListItem = props => (
     onClick={() => props.select(props.store)}
     data-heap-name="ordering.store-list.store-item"
   >
-    <summary className="ordering-stores__summary padding-left-right-small">
+    <summary
+      className={`${
+        props.storeId === props.store.id ? 'ordering-stores__summary--selected' : 'ordering-stores__summary'
+      } padding-left-right-small`}
+    >
       <div className="flex flex-middle">
         <h3 className="ordering-stores__title margin-top-bottom-small text-size-big text-weight-bolder text-omit__single-line">
           {props.store.name}

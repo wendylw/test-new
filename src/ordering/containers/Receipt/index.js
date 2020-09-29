@@ -146,8 +146,7 @@ export class ReceiptDetail extends Component {
             subtotal={subtotal}
             total={total}
             promotion={promotion}
-            creditsBalance={this.getSpendCashback()}
-            isLogin={isLogin}
+            isLogin={true}
             creditsBalance={this.getSpendCashback()}
           />
         </div>
@@ -164,7 +163,6 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       order: getOrder(state),
       promotion: getPromotion(state),
-      user: getUser(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

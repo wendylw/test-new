@@ -1,5 +1,6 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
+import Utils from '../../utils/utils';
 import Home from './Home';
 import Cart from './Cart';
 import Payment from './Payment';
@@ -9,19 +10,19 @@ import MerchantInfo from './MerchantInfo';
 import OrderDetails from './OrderDetails';
 import NotFound from '../../NotFound';
 
-const Location = lazy(() => import('./Location/LocationPage'));
-const Receipt = lazy(() => import('./Receipt'));
-const StripePayment = lazy(() => import('./Payment/Stripe'));
-const CreditCard = lazy(() => import('./Payment/CreditCard'));
-const BankingPayment = lazy(() => import('./Payment/OnlineBanking'));
-const ThankYou = lazy(() => import('./ThankYou'));
-const Sorry = lazy(() => import('./Sorry'));
-const ErrorPage = lazy(() => import('./Error'));
-const LocationAndDate = lazy(() => import('./LocationAndDate'));
-const Promotion = lazy(() => import('./Promotion'));
-const ReportDriver = lazy(() => import('./ReportDriver'));
-const PageLogin = lazy(() => import('./PageLogin'));
-const StoreList = lazy(() => import('./StoreList'));
+const Location = lazy(() => Utils.retry(() => import('./Location/LocationPage')));
+const Receipt = lazy(() => Utils.retry(() => import('./Receipt')));
+const StripePayment = lazy(() => Utils.retry(() => import('./Payment/Stripe')));
+const CreditCard = lazy(() => Utils.retry(() => import('./Payment/CreditCard')));
+const BankingPayment = lazy(() => Utils.retry(() => import('./Payment/OnlineBanking')));
+const ThankYou = lazy(() => Utils.retry(() => import('./ThankYou')));
+const Sorry = lazy(() => Utils.retry(() => import('./Sorry')));
+const ErrorPage = lazy(() => Utils.retry(() => import('./Error')));
+const LocationAndDate = lazy(() => Utils.retry(() => import('./LocationAndDate')));
+const Promotion = lazy(() => Utils.retry(() => import('./Promotion')));
+const ReportDriver = lazy(() => Utils.retry(() => import('./ReportDriver')));
+const PageLogin = lazy(() => Utils.retry(() => import('./PageLogin')));
+const StoreList = lazy(() => Utils.retry(() => import('./StoreList')));
 
 const { ROUTER_PATHS } = Constants;
 

@@ -45,6 +45,7 @@
     fill: $white;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 50%;
+    z-index: 1;
   }
 
   &__image-container {
@@ -65,6 +66,7 @@
 
   &__info {
     position: relative;
+    min-height: 20%;
   }
 
   &__info-summary {
@@ -74,6 +76,11 @@
   &__title {
     width: 70%;
     word-break: break-word;
+  }
+
+  &__info-title {
+    word-break: break-all;
+    hyphens: auto;
   }
 
   &__info-tag {

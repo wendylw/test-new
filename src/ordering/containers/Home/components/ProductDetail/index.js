@@ -659,6 +659,16 @@ class ProductDetail extends Component {
           ) : null}
         </div>
         <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
+          <summary className="product-description__info-summary flex flex-column flex-space-between">
+            <h2 className="product-description__info-title padding-small text-size-biggest text-weight-bolder ">
+              {title}
+            </h2>
+            <CurrencyNumber
+              className="padding-small text-size-big text-opacity text-weight-bolder"
+              money={Number(this.displayPrice()) || 0}
+            />
+          </summary>
+
           {Utils.isProductSoldOut(product || {}) ? (
             <Tag
               text={t('SoldOut')}

@@ -52,7 +52,6 @@ class LocationPage extends Component {
   }
 
   async loadStoreInfo() {
-    const { t } = this.props;
     this.setState({ initializing: true });
     try {
       const { business, storeId } = config;
@@ -148,7 +147,7 @@ class LocationPage extends Component {
           alt="Something went wrong"
           src={ErrorImage}
         />
-        <p className="ordering-location__error-screen-message padding-normal">initError</p>
+        <p className="ordering-location__error-screen-message padding-normal">{initError}</p>
       </div>
     );
   }

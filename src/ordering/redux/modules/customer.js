@@ -42,8 +42,8 @@ export const actions = {
       }
 
       const { customer } = getState();
-      const { deliveryDetails } = customer;
-      const { deliveryToAddress } = deliveryDetails;
+      const { deliveryDetails: nextDeliveryDetails } = customer;
+      const { deliveryToAddress } = nextDeliveryDetails;
       const { longitude, latitude } = deliveryDetails.deliveryToLocation;
       if (!deliveryToAddress && !longitude && !latitude) {
       } else {

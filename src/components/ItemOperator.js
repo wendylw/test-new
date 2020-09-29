@@ -82,5 +82,5 @@ ItemOperator.defaultProps = {
   increaseDisabled: false,
   from: 'home',
 };
-
+export const ItemOperatorComponent = ItemOperator;
 export default withDataAttributes(ItemOperator);

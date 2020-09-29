@@ -169,7 +169,7 @@ class ReportDriver extends Component {
   renderThankYou() {
     const { t } = this.props;
     return (
-      <section className="table-ordering__report-driver-thankyou">
+      <section className="ordering-report-thanks">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
@@ -178,13 +178,22 @@ class ReportDriver extends Component {
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></Header>
-        <div className="report-driver-thankyou__image">
-          <img alt="Thank your feedback" src={feedBackThankyou} />
-        </div>
-        <h3 className="report-driver-thankyou__title">{t('Thankyou')}</h3>
-        <main className="report-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
-        <div className="report-driver-thankyou__done-button">
-          <button onClick={this.handleDone}>{t('Done')}</button>
+        <div className="padding-normal">
+          <div className="text-center padding-left-right-normal">
+            <img className="ordering-report-thanks__image" alt="Thank your feedback" src={feedBackThankyou} />
+          </div>
+          <h2 className="ordering-report-thanks__page-title text-center text-size-large text-weight-light">
+            {t('ThankYou')}!
+          </h2>
+          <p className="ordering-report-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
+            {t('ThankyouYourFeedbackContent')}
+          </p>
+          <button
+            className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
+            onClick={this.handleDone}
+          >
+            {t('Done')}
+          </button>
         </div>
       </section>
     );

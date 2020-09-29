@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, Component } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
@@ -506,6 +506,11 @@ export class Home extends Component {
       return null;
     }
 
+    if (isSourceBeepitCom()) {
+      const source = Utils.getQueryString('source');
+      sessionStorage.setItem('orderSource', source);
+    }
+
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder, deliveryToAddress } = deliveryInfo;
 
@@ -708,7 +713,7 @@ export class Home extends Component {
   }
 
   handleLegalAge = isAgeLegal => {
-    Utils.setSessionVariable('AlcoholHide', true);
+    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
 
