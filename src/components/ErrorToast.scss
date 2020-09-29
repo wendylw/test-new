@@ -1,0 +1,14 @@
+@import "../Variables";
+
+.error-toast {
+  display: block;
+  position: relative;
+  padding: 9vw;
+  width: 100%;
+  color: #fff;
+  z-index: 1;
+
+  &__error {
+    background-color: $status-red;
+  }
+}
