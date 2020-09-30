@@ -14,6 +14,7 @@ import {
   collectionCardActionCreators,
   getIconCollections,
   getBannerCollections,
+  getCarouselCollections,
 } from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import { getAllCurrentStores, getPaginationInfo, getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
@@ -24,6 +25,7 @@ import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import Banners from './components/Banners';
+import Carousel from './components/Carousel';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -90,6 +92,7 @@ class Home extends React.Component {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
       this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
       this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.BANNER);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.CAROUSEL);
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -168,7 +171,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, storeCollections, bannerCollections } = this.props;
+    const { t, currentPlaceInfo, storeCollections, bannerCollections, carouselCollections } = this.props;
 
     if (!currentPlaceInfo) {
       return <i className="loader theme full-page text-size-huge" />;
@@ -232,6 +235,8 @@ class Home extends React.Component {
 
           <Banners collections={bannerCollections} />
 
+          <Carousel collections={carouselCollections} currentPlaceInfo={currentPlaceInfo} />
+
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}
           </div>
@@ -252,6 +257,7 @@ export default compose(
       storeLinkInfo: getStoreLinkInfo(state),
       storeCollections: getIconCollections(state),
       bannerCollections: getBannerCollections(state),
+      carouselCollections: getCarouselCollections(state),
     }),
     dispatch => ({
       rootActions: bindActionCreators(rootActionCreators, dispatch),

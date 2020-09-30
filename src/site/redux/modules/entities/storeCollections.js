@@ -157,3 +157,4 @@ export const getOtherCollections = state => getAllStoreCollections(state)['Searc
 export const getPopupCollections = state => getAllStoreCollections(state)['SearchPopular'];
 export const getIconCollections = state => getAllStoreCollections(state)['Icon'];
 export const getBannerCollections = state => getAllStoreCollections(state)['Banner'];
+export const getCarouselCollections = state => getAllStoreCollections(state)['Carrousel'];

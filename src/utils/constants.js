@@ -252,6 +252,7 @@ const COLLECTIONS_TYPE = {
   OTHERS: 'SearchOthers',
   POPULAR: 'SearchPopular',
   BANNER: 'Banner',
+  CAROUSEL: 'Carrousel',
 };
 
 export default {
