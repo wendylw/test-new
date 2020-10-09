@@ -31,24 +31,8 @@ import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import config from '../../../config';
-import {
-  toDayDateMonth,
-  toNumericTimeRange,
-  toLocaleDateString,
-  toLocaleTimeString,
-  formatPickupAddress,
-} from '../../../utils/datetime-lib';
+import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
-
-const TIME_OPTIONS = {
-  hour: 'numeric',
-  minute: 'numeric',
-};
-const DATE_OPTIONS = {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-};
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -64,7 +48,7 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    const { thankYouActions, order, onlineStoreInfo, user, receiptNumber } = this.props;
+    const { thankYouActions, order, onlineStoreInfo, user } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
