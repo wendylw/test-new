@@ -228,7 +228,6 @@ class Home extends React.Component {
               <p className="flex flex-middle flex-center">
                 <img className="offer-details__bar-image" src={BeepAppLink} alt="" />
               </p>
-              {/* <IconInfoOutline className="offer-details__icon-info icon icon__small icon__white" /> */}
             </a>
           )}
 
