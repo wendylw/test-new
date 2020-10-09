@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 import { IconSearch } from '../components/Icons';
 
 <Meta title="Utilities/FormGroup" />
@@ -110,82 +110,80 @@ import { IconSearch } from '../components/Icons';
 
 # FormGroup
 
-<div class="form-sb__card">
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input_label">form input</label>
-    <div class="form-sb__content">
-      <div class="form__group">
-        <input placeholder="type something..." class="form__input"></input>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input_label">form input</label>
-    <div class="form-sb__content">
-      <div class="form__group success">
-        <input placeholder="type something correct..." class="form__input"></input>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input_label">form input</label>
-    <div class="form-sb__content">
-      <div class="form__group error">
-        <input placeholder="type something wrong..." class="form__input"></input>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input_label">form input</label>
-    <div class="form-sb__content">
-      <div class="form__group error">
-        <input placeholder="type something wrong..." class="form__input"></input>
-      </div>
-      <div class="form__error-message">Error info...</div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input_label">form input with search</label>
-    <div class="form-sb__content">
-      <div class="form__group">
-        <IconSearch className="form__search-icon icon icon__normal" />
-        <input placeholder="type something..." class="form__input form__search-input"></input>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input-big_label">form input(big)</label>
-    <div class="form-sb__content">
-      <div class="form__group">
-        <input placeholder="type something..." class="form__input form__input-big"></input>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input-big_label">form textarea</label>
-    <div class="form-sb__content">
-      <div class="form__group">
-        <textarea placeholder="type something..." class="form__input form__textarea"></textarea>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-sb__item">
-    <label class="form-sb__label form__input-big_label">form textarea</label>
-    <div class="form-sb__content">
-      <div class="form__group">
-        <select className="form__select">
-          <option>Option 1</option>
-          <option>Option 2</option>
-          <option>Option 3</option>
-        </select>
-      </div>
-    </div>
+## form input
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <input placeholder="type something..." class="form__input"></input>
   </div>
 </div>
+</Canvas>
+
+## form input correct
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group success">
+    <input placeholder="type something correct..." class="form__input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input wrong
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group error">
+    <input placeholder="type something wrong..." class="form__input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input wrong with error message
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group error">
+    <input placeholder="type something wrong..." class="form__input"></input>
+  </div>
+  <div class="form__error-message">Error info...</div>
+</div>
+</Canvas>
+
+## form input with search
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <IconSearch className="form__search-icon icon icon__normal" />
+    <input placeholder="type something..." class="form__input form__search-input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input(big)
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <input placeholder="type something..." class="form__input form__input-big"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input textarea
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <textarea placeholder="type something..." class="form__input form__textarea"></textarea>
+  </div>
+</div>
+</Canvas>
+
+## form input selector
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <select className="form__select">
+      <option>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+    </select>
+  </div>
+</div>
+</Canvas>

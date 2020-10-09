@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 
 <Meta title="Utilities/Progress Bar" />
 
@@ -93,53 +93,119 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Progress Bar
 
-<div class="progress-sb__card">
-  <div class="progress-sb__item">
-    <label class="progress-sb__label">progress bar none</label>
-    <div class="progress-sb__content">
-      <div className="progress-bar__container">
-        <i className="progress-bar none"></i>
-      </div>
-    </div>
-  </div>
-  <div class="progress-sb__item">
-    <label class="progress-sb__label">progress bar quarter</label>
-    <div class="progress-sb__content">
-      <div className="progress-bar__container">
-        <i className="progress-bar quarter"></i>
-      </div>
-    </div>
-  </div>
-  <div class="progress-sb__item">
-    <label class="progress-sb__label">progress bar half</label>
-    <div class="progress-sb__content">
-      <div className="progress-bar__container">
-        <i className="progress-bar half"></i>
-      </div>
-    </div>
-  </div>
-  <div class="progress-sb__item">
-    <label class="progress-sb__label">progress bar three quarter</label>
-    <div class="progress-sb__content">
-      <div className="progress-bar__container">
-        <i className="progress-bar three-quarter"></i>
-      </div>
-    </div>
-  </div>
-  <div class="progress-sb__item">
-    <label class="progress-sb__label">progress bar full</label>
-    <div class="progress-sb__content">
-      <div className="progress-bar__container">
-        <i className="progress-bar full"></i>
-      </div>
-    </div>
-  </div>
-  <div class="progress-sb__item">
-    <label class="progress-sb__label">progress bar animation</label>
-    <div class="progress-sb__content">
-      <div className="progress-bar__container">
-        <i className="progress-bar animation"></i>
-      </div>
-    </div>
+## Progress Bar 0%
+<Canvas>
+<div class="progress-sb__content">
+  <div className="progress-bar__container">
+    <i className="progress-bar none"></i>
   </div>
 </div>
+</Canvas>
+
+### CSS
+```js live=true
+.progress-bar {
+  .none {
+    width: 0;
+  }
+}
+```
+
+## Progress Bar 25%
+<Canvas>
+<div class="progress-sb__content">
+  <div className="progress-bar__container">
+    <i className="progress-bar quarter"></i>
+  </div>
+</div>
+</Canvas>
+
+### CSS
+```js live=true
+.progress-bar {
+  .quarter {
+    width: 25%;
+  }
+}
+```
+
+## Progress Bar 50%
+<Canvas>
+<div class="progress-sb__content">
+  <div className="progress-bar__container">
+    <i className="progress-bar half"></i>
+  </div>
+</div>
+</Canvas>
+
+### CSS
+```js live=true
+.progress-bar {
+  .half {
+    width: 50%;
+  }
+}
+```
+
+## Progress Bar 75%
+<Canvas>
+<div class="progress-sb__content">
+  <div className="progress-bar__container">
+    <i className="progress-bar three-quarter"></i>
+  </div>
+</div>
+</Canvas>
+
+### CSS
+```js live=true
+.progress-bar {
+  .three-quarter {
+    width: 75%;
+  }
+}
+```
+
+## Progress Bar 100%
+<Canvas>
+<div class="progress-sb__content">
+  <div className="progress-bar__container">
+    <i className="progress-bar full"></i>
+  </div>
+</div>
+</Canvas>
+
+### CSS
+```js live=true
+.progress-bar {
+  .full {
+    width: 100%;
+  }
+}
+```
+
+## Progress Bar animation
+<Canvas>
+<div class="progress-sb__content">
+  <div className="progress-bar__container">
+    <i className="progress-bar animation"></i>
+  </div>
+</div>
+</Canvas>
+
+### CSS
+```js live=true
+.progress-bar {
+  .animation {
+    animation: large 5s linear infinite;
+  }
+}
+
+@keyframes large {
+  0%{
+    width: 0;
+  }
+  100%{
+    width: 100%;
+  }
+}
+```
