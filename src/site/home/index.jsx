@@ -27,7 +27,7 @@ import { checkStateRestoreStatus } from '../redux/modules/index';
 import Banners from './components/Banners';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
-const isCampaignActive = true; // feature switch
+const isCampaignActive = false; // feature switch
 
 class Home extends React.Component {
   static lastUsedPlaceId = null;
