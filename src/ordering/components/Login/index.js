@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation, Trans } from 'react-i18next';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
-import Constants from '../../../utils/constants';
+import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -75,7 +74,7 @@ class Login extends React.Component {
     const { isLogin, showLoginPage, hasOtp, isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['login'];
+    const classList = [];
 
     if (isLogin) {
       return null;
@@ -103,31 +102,8 @@ class Login extends React.Component {
             updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
             onSubmit={this.handleSubmitPhoneNumber.bind(this)}
           >
-            <p className="terms-privacy text-center gray-font-opacity">
-              <BrowserRouter basename="/">
-                <Trans i18nKey="TermsAndPrivacyDescription">
-                  By tapping to continue, you agree to our
-                  <br />
-                  <Link
-                    className="font-weight-bolder link__non-underline"
-                    target="_blank"
-                    data-heap-name="ordering.common.login.term-link"
-                    to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                  >
-                    Terms of Service
-                  </Link>
-                  , and{' '}
-                  <Link
-                    className="font-weight-bolder link__non-underline"
-                    target="_blank"
-                    data-heap-name="ordering.common.login.privacy-policy-link"
-                    to={Constants.ROUTER_PATHS.PRIVACY}
-                  >
-                    Privacy Policy
-                  </Link>
-                  .
-                </Trans>
-              </BrowserRouter>
+            <p className="terms-privacy text-center text-opacity">
+              <TermsAndPrivacy />
             </p>
           </PhoneViewContainer>
         ) : null}

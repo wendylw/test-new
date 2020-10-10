@@ -42,6 +42,7 @@ Utils.getQueryVariable = variable => {
   }
   return false;
 };
+
 // Utils.isWebview = function isWebview() {
 //   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
 // };
@@ -304,6 +305,10 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
     isMobile,
     browser: browsers ? browsers[0] : '',
   };
+};
+
+Utils.isSafari = function isSafari() {
+  return Utils.getUserAgentInfo().browser.includes('Safari');
 };
 
 Utils.isValidUrl = function(url) {
@@ -656,6 +661,23 @@ Utils.getFileExtension = file => {
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
   return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
+};
+
+Utils.getContainerElementHeight = (headerEls, footerEl) => {
+  const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+  let headerFooterHeight = 0;
+
+  if (headerEls && headerEls.length) {
+    headerEls.forEach(el => {
+      headerFooterHeight += el.clientHeight || el.offsetHeight;
+    });
+  }
+
+  if (footerEl) {
+    headerFooterHeight += footerEl.clientHeight || footerEl.offsetHeight;
+  }
+
+  return windowHeight - headerFooterHeight;
 };
 
 Utils.zero = num => (num < 10 ? '0' + num : num + '');

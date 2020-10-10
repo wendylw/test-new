@@ -8,6 +8,7 @@ import Constants from '../utils/constants';
 import beepOtpImage from '../images/beep-otp.png';
 import Utils from '../utils/utils';
 import { captureException } from '@sentry/react';
+import './OtpModal.scss';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -110,21 +111,27 @@ class OtpModal extends React.Component {
     const { currentOtpTime, isNewInput } = this.state;
 
     return (
-      <div className="full-aside" data-heap-name="common.otp-modal.container">
-        <Header navFunc={onClose} data-heap-name="common.otp-modal.header" />
+      <div className="otp-modal absolute-wrapper flex flex-column" data-heap-name="common.otp-modal.container">
+        <Header
+          className="otp-modal__header border__bottom-divider"
+          navFunc={onClose}
+          data-heap-name="common.otp-modal.header"
+        />
 
-        <section ref={this.addressAsideInnerRef} className="full-aside__content text-center">
-          <figure className="full-aside__image-container">
+        <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
+          <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
             <img src={beepOtpImage} alt="otp" />
           </figure>
-          <h2 className="full-aside__title">{t('OTPSentTitle', { phone })}</h2>
-          <div className="otp-input">
+          <h2 className="padding-normal text-size-biggest text-line-height-base text-weight-bolder">
+            {t('OTPSentTitle', { phone })}
+          </h2>
+          <div className="margin-small">
             {isNewInput ? (
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="otp-modal__group form__group flex flex-middle flex-space-between text-size-larger">
                 <input
                   id="newOtpInput"
                   ref={this.inputRef}
-                  className="otp-input__single-input"
+                  className="otp-modal__input form__input text-size-larger"
                   data-heap-name="common.otp-modal.new-otp-input"
                   onChange={e => this.updateAndValidateOtp(e.target.value)}
                   maxLength={Constants.OTP_CODE_SIZE}
@@ -149,7 +156,7 @@ class OtpModal extends React.Component {
             )}
           </div>
           <button
-            className="otp-resend text-uppercase"
+            className="otp-modal__button-resend button button__link padding-normal margin-top-bottom-small text-size-big text-uppercase text-weight-bolder"
             data-heap-name="common.otp-modal.resend-btn"
             disabled={!!currentOtpTime}
             onClick={() => {

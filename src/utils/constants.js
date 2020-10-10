@@ -27,9 +27,8 @@ const ROUTER_PATHS = {
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
-
-  NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',

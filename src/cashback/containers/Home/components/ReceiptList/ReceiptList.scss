@@ -1,0 +1,51 @@
+@import "../../../../../Variables";
+
+.receipt-list {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  &__container {
+    @extend .receipt-list;
+
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    background-color: $white;
+  }
+
+  &.full &__container {
+    top: 0;
+    z-index: 100;
+    border-radius: 0;
+  }
+
+  &__content {
+    overflow: hidden;
+    max-height: 140px;
+
+    &.full {
+      max-height: 100%;
+      overflow: auto;
+      padding-bottom: 72px;
+    }
+  }
+
+  &__slide-button {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      height: 4px;
+      width: 28px;
+      border-radius: 2px;
+      background-color: $gray-4;
+    }
+  }
+
+  &__time {
+    color: $gray-2;
+  }
+}
