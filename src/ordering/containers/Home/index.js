@@ -775,6 +775,20 @@ export class Home extends Component {
       : Utils.isDeliveryType() || (Utils.isPickUpType() && validTimeFrom && validTimeTo && callApiFinish);
   };
 
+  isRenderDeliveryFee = ({ enableConditionalFreeShipping, freeShippingMinAmount }) => {
+    const adBarHeight = 30;
+    const { dScrollY } = this.state;
+    const { storeId } = config;
+
+    return (
+      enableConditionalFreeShipping &&
+      freeShippingMinAmount &&
+      Utils.isDeliveryType() &&
+      dScrollY < adBarHeight &&
+      storeId
+    );
+  };
+
   render() {
     const {
       categories,
@@ -803,7 +817,6 @@ export class Home extends Component {
     const { viewAside, alcoholModal, callApiFinish } = this.state;
     const { tableId } = requestInfo || {};
     const classList = ['table-ordering__home'];
-    const adBarHeight = 30;
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -820,10 +833,7 @@ export class Home extends Component {
         ) : null}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping &&
-        freeShippingMinAmount &&
-        Utils.isDeliveryType() &&
-        this.state.dScrollY < adBarHeight ? (
+        {this.isRenderDeliveryFee(deliveryInfo) ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
