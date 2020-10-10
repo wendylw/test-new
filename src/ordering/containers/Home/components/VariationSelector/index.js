@@ -124,7 +124,10 @@ export class VariationSelector extends Component {
             <span className="margin-left-right-smaller text-error">{AmountLimitDescription}</span>
           ) : null}
         </div>
-        <ul className="variation-selector__list flex flex-top margin-top-bottom-smaller">
+        <ul
+          className="variation-selector__list flex flex-top margin-top-bottom-smaller"
+          data-test_id={variation.variationType}
+        >
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut } = option;
             const className = [

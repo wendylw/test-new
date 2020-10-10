@@ -44,7 +44,7 @@ export const actions = {
       const { customer } = getState();
       const { deliveryDetails: nextDeliveryDetails } = customer;
       const { deliveryToAddress } = nextDeliveryDetails;
-      const { longitude, latitude } = deliveryDetails.deliveryToLocation;
+      const { longitude, latitude } = nextDeliveryDetails.deliveryToLocation;
       if (!deliveryToAddress && !longitude && !latitude) {
       } else {
         const addressChange =
