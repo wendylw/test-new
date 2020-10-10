@@ -775,7 +775,7 @@ export class Home extends Component {
       : Utils.isDeliveryType() || (Utils.isPickUpType() && validTimeFrom && validTimeTo && callApiFinish);
   };
 
-  isRenderDeliveryFee = ({ enableConditionalFreeShipping, freeShippingMinAmount }) => {
+  isRenderDeliveryFee = (enableConditionalFreeShipping, freeShippingMinAmount) => {
     const adBarHeight = 30;
     const { dScrollY } = this.state;
     const { storeId } = config;
@@ -833,7 +833,7 @@ export class Home extends Component {
         ) : null}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {this.isRenderDeliveryFee(deliveryInfo) ? (
+        {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <div className="top-message__second-level text-center">
             <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               <span>
