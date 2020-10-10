@@ -4,7 +4,7 @@ import { ScrollObserver, getCurrentScrollId } from '../../../../../components/Sc
 
 class CurrentCategoryBar extends PureComponent {
   render() {
-    const { containerId, categories } = this.props;
+    const { categories } = this.props;
     const defaultId = categories[0] ? categories[0].id : '';
 
     return (

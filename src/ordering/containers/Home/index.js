@@ -405,7 +405,7 @@ export class Home extends Component {
       ReactDOM.findDOMNode(this.footerEl)
     );
 
-    if (isValid && containerHeight != `${currentContainerHeight}px`) {
+    if (isValid && containerHeight !== `${currentContainerHeight}px`) {
       this.setState({
         containerHeight: `${currentContainerHeight}px`,
       });
