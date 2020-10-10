@@ -54,6 +54,7 @@ class Home extends Component {
     } = this.props;
 
     const storeName = onlineStoreName || businessDisplayName;
+    const { id: selectedVoucherId, unitPrice } = selectedVoucher || {};
 
     return (
       <section className="voucher-home flex flex-column" data-heap-name="voucher.home.container">
@@ -64,7 +65,7 @@ class Home extends Component {
               onlineStoreLogo={onlineStoreLogo}
               storeName={storeName}
               currencySymbol={currencySymbol}
-              selectedVoucher={selectedVoucher.unitPrice}
+              selectedVoucher={unitPrice || null}
             />
 
             <p className="voucher-home__prompt margin-normal text-center">
@@ -80,11 +81,11 @@ class Home extends Component {
           <div>
             <h2 className="text-center padding-normal text-size-big text-weight-bolder">{t('GiftCardChooseAmount')}</h2>
             <ul className="flex flex-middle flex-space-between padding-normal margin-top-bottom-small">
-              {voucherList.map(voucher => (
+              {(voucherList || []).map(voucher => (
                 <li className="voucher-home__item-price padding-left-right-small" key={voucher.id}>
                   <button
                     className={`voucher-home__button-price button ${
-                      selectedVoucher && selectedVoucher.id === voucher.id ? 'button__fill' : 'button__outline'
+                      selectedVoucher && selectedVoucherId === voucher.id ? 'button__fill' : 'button__outline'
                     } padding-top-bottom-smaller padding-left-right-normal`}
                     data-heap-name="voucher.home.voucher-item"
                     onClick={() => {
