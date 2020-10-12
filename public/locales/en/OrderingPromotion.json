@@ -11,5 +11,8 @@
     "NotAvailable": "Minimum requirements not met",
     "NotValid": "Coupon has expired",
     "NotExisted": "Invalid coupon",
-    "ReachedMaxClaimCount": "This promotion has exceeded the total claim limit"
+    "ReachedMaxClaimCount": "This promotion has exceeded the total claim limit",
+    "ReachCustomerClaimCountLimit": "You've exceeded the claim limit of this promotion",
+    "RequireCustomer": "Please login to use this promo code",
+    "RequireFirstTimePurchase": "This promotion is only applicable for new customer"
 }

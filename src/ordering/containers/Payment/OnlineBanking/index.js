@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
-import qs from 'qs';
 import _find from 'lodash/find';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
@@ -199,18 +198,6 @@ class OnlineBanking extends Component {
               <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
             )}
           </CreateOrderButton>
-          {/* <button
-            className="button button__fill button__block font-weight-bolder text-uppercase border-radius-base"
-            data-testid="payMoney"
-            onClick={this.payNow.bind(this)}
-            disabled={payNowLoading}
-          >
-            {payNowLoading ? (
-              <div className="loader"></div>
-            ) : (
-                <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
-              )}
-          </button> */}
         </div>
 
         {payNowLoading && paymentData ? (

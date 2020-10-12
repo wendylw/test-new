@@ -20,6 +20,7 @@ export class ProductItem extends Component {
       image,
       title,
       price,
+      originalDisplayPrice,
       soldOut,
       cartQuantity,
       decreaseDisabled,
@@ -30,6 +31,22 @@ export class ProductItem extends Component {
       productDetailImageRef,
       isValidTimeToOrder,
     } = this.props;
+    const PricesDom = (
+      <div className="price">
+        {originalDisplayPrice ? (
+          <CurrencyNumber
+            className="text-size-small text-line-through"
+            money={originalDisplayPrice}
+            numberOnly={true}
+          />
+        ) : null}
+        <CurrencyNumber
+          className={`${originalDisplayPrice ? 'text-error' : ''}`}
+          money={price || 0}
+          numberOnly={true}
+        />
+      </div>
+    );
 
     return (
       <Item
@@ -39,7 +56,7 @@ export class ProductItem extends Component {
         image={image}
         title={title}
         variation={variation}
-        detail={<CurrencyNumber className="price item__text font-weight-bolder" money={price || 0} numberOnly={true} />}
+        detail={PricesDom}
         operateItemDetail={showProductDetail}
         hasTag={isFeaturedProduct}
         data-heap-name="ordering.common.product-item.container"
@@ -81,6 +98,7 @@ ProductItem.propTypes = {
   image: PropTypes.string,
   title: PropTypes.string,
   price: PropTypes.number,
+  originalDisplayPrice: PropTypes.number,
   cartQuantity: PropTypes.number,
   decreaseDisabled: PropTypes.bool,
   onDecrease: PropTypes.func,
@@ -98,6 +116,7 @@ ProductItem.defaultProps = {
   image: '',
   title: '',
   price: 0,
+  originalDisplayPrice: 0,
   cartQuantity: 0,
   decreaseDisabled: false,
   isValidTimeToOrder: true,

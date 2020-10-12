@@ -47,17 +47,38 @@ const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
-  state = {
-    viewAside: null,
-    alcoholModal: false,
-    offlineStoreModal: false,
-    dScrollY: 0,
-    deliveryBar: false,
-    alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
-    callApiFinish: false,
-    enablePreOrderFroMulitpeStore: false,
-    isValidToOrderFromMulitpeStore: false,
-    search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewAside: null,
+      alcoholModal: false,
+      offlineStoreModal: false,
+      dScrollY: 0,
+      deliveryBar: false,
+      alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
+      callApiFinish: false,
+      enablePreOrderFroMulitpeStore: false,
+      isValidToOrderFromMulitpeStore: false,
+      search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+    };
+
+    if (Utils.isDineInType()) {
+      this.checkTableId();
+    }
+  }
+
+  checkTableId = () => {
+    const { table, storeId } = config;
+    const { ROUTER_PATHS } = Constants;
+    const { DINE } = ROUTER_PATHS;
+
+    if (storeId) {
+      if (!table) {
+        window.location.href = `${DINE}?s=${storeId}&from=home`;
+      }
+    } else {
+      window.location.href = DINE;
+    }
   };
 
   scrollDepthNumerator = 0;
@@ -503,6 +524,11 @@ export class Home extends Component {
       return null;
     }
 
+    if (isSourceBeepitCom()) {
+      const source = Utils.getQueryString('source');
+      sessionStorage.setItem('orderSource', source);
+    }
+
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder, deliveryToAddress } = deliveryInfo;
 
@@ -719,7 +745,7 @@ export class Home extends Component {
     // this.setState({
     //   alcoholModal: !isAgeLegal,
     // });
-    Utils.setSessionVariable('AlcoholHide', true);
+    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
   isCountryNeedAlcoholPop = country => {
