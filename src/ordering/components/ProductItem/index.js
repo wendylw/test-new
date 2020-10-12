@@ -80,6 +80,10 @@ export class ProductItem extends Component {
             onIncrease={onIncrease}
             increaseDisabled={!isValidTimeToOrder}
           />
+        ) : cartQuantity > 0 ? (
+          <span className="product-item__selected  text-size-small">
+            {cartQuantity} {t('Selected')}
+          </span>
         ) : null}
       </Item>
     );
