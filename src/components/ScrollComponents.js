@@ -4,7 +4,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 let observableContainer = {};
-let causeByNavClick = false;
 let currentCategoryId = null;
 let isScrolling = null;
 
@@ -133,7 +132,6 @@ export class ScrollObserver extends React.Component {
   handleScroll = () => {
     window.clearTimeout(isScrolling);
     isScrolling = setTimeout(function() {
-      causeByNavClick = false;
       currentCategoryId = null;
     }, 50);
 
@@ -176,7 +174,6 @@ export class ScrollObserver extends React.Component {
   handleSelectedTarget = async options => {
     const { targetId, categoryId } = options;
 
-    causeByNavClick = true;
     currentCategoryId = categoryId;
     this.setState({ drivenToScroll: true, scrollid: targetId });
 

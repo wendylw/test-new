@@ -108,9 +108,8 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, history, order, businessInfo, user, promotion } = this.props;
+    const { t, history, order, businessInfo, promotion } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
-    const { isLogin } = user || {};
 
     return (
       <section className="receipt flex flex-column" data-heap-name="ordering.receipt.container">

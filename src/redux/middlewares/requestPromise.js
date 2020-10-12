@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react';
 //Deal with every single action that has FETCH_REQUEST field.
 export default store => next => action => {
   const {

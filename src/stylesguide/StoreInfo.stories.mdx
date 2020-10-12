@@ -1,0 +1,46 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { IconWallet, IconMotorcycle  } from '../components/Icons';
+
+
+<Meta title="Utilities/StoreInfo" />
+
+# StoreInfo
+
+###
+###
+## StoreInfo
+
+<style>{`
+i{
+    width:22px;
+    height:22px;
+}
+`}</style>
+
+<ul className="store-info">
+    <li className="store-info__item">
+      <IconMotorcycle className="icon icon__smaller text-middle" />
+      <span>0.00</span>
+    </li>
+    <li className="store-info__item">
+      <IconWallet className="icon icon__smaller text-middle" />
+      <span className="store-info__text text-size-smaller text-middle">
+        Store Cashback
+      </span>
+    </li>
+</ul>
+
+```js live=true
+<ul className="store-info">
+    <li className="store-info__item">
+      <IconMotorcycle className="icon icon__smaller text-middle" />
+      <span>0.00</span>
+    </li>
+    <li className="store-info__item">
+      <IconWallet className="icon icon__smaller text-middle" />
+      <span className="store-info__text text-size-smaller text-middle">
+        Store Cashback
+      </span>
+    </li>
+</ul>
+```
