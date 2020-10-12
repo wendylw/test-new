@@ -44,7 +44,8 @@
     -o-transition: -o-filter 0.4s;
   }
 
-  &__item.disabled &__description {
+  &__item.disabled &__description,
+  &__prompt {
     color: $gray-2;
   }
 

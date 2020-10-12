@@ -99,20 +99,6 @@ class Payment extends Component {
     }
   };
 
-  getPaymentShowLabel(payment) {
-    const { t, merchantCountry } = this.props;
-    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
-      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
-      return supportCreditCardBrands
-        .map(brand => {
-          return t(brand);
-        })
-        .join(' / ');
-    } else {
-      return t(payment.label);
-    }
-  }
-
   handleBeforeCreateOrder = () => {
     const { history, currentPaymentInfo } = this.props;
 
@@ -202,8 +188,11 @@ class Payment extends Component {
                     </figure>
                     <div className="ordering-payment__description text-middle padding-left-right-normal">
                       <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
-                        {this.getPaymentShowLabel(payment)}
+                        {t(payment.label)}
                       </label>
+                      {payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY ? (
+                        <p className="ordering-payment__prompt">{`${t('Visa')}, ${t('MasterCard')}`}</p>
+                      ) : null}
                       {disabledPayment ? promptDom : null}
                     </div>
                   </div>
