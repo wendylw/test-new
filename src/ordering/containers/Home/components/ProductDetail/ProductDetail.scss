@@ -96,6 +96,10 @@
     width: 100%;
   }
 
+  &__variations .item-operator {
+    position: static;
+  }
+
   &__operators {
     width: 100%;
     background: $white;
