@@ -73,9 +73,11 @@ export const actions = {
       deliveryCoords = Utils.getDeliveryCoords();
     }
     config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
-    // if (!getState().home.onlineCategory.categoryIds.length) {
-    dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
-    // }
+
+    const fulfillDate = Utils.getFulfillDate().expectDeliveryDateFrom;
+    const shippingType = Utils.getApiRequestShippingType();
+
+    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
 
   loadCoreStores: address => (dispatch, getState) => {
