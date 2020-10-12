@@ -24,7 +24,7 @@ import {
   getUnavailablePayments,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import { getPaymentName, getSupportCreditCardBrands, getPaymentRedirectAndWebHookUrl } from './utils';
+import { getPaymentName, getPaymentRedirectAndWebHookUrl } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
