@@ -229,7 +229,7 @@ class Payment extends Component {
               });
             }}
           >
-            {payNowLoading ? <div className="loader"></div> : t('PayNow')}
+            {payNowLoading ? <div className="loader"></div> : t('Continue')}
           </CreateOrderButton>
         </footer>
 

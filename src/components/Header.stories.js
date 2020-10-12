@@ -1,5 +1,5 @@
 import React from 'react';
-import Header, { HeaderComponent } from './Header';
+import { HeaderComponent } from './Header';
 import { IconDelete } from './Icons';
 
 export default {

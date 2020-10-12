@@ -149,14 +149,12 @@ class CategoryProductList extends Component {
 
 CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
-  isVerticalMenu: PropTypes.bool,
   isValidTimeToOrder: PropTypes.bool,
   style: PropTypes.object,
 };
 
 CategoryProductList.defaultProps = {
   onToggle: () => {},
-  isVerticalMenu: false,
   isValidTimeToOrder: true,
 };
 

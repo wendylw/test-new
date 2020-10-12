@@ -30,7 +30,6 @@ import {
   getCategoryProductList,
   getDeliveryInfo,
   getPopUpModal,
-  isVerticalMenuBusiness,
   getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -54,18 +53,39 @@ export class Home extends Component {
   headerEl = null;
   footerEl = null;
 
-  state = {
-    viewAside: null,
-    alcoholModal: false,
-    offlineStoreModal: false,
-    containerHeight: null,
-    deliveryBar: false,
-    alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
-    callApiFinish: false,
-    enablePreOrderFroMulitpeStore: false,
-    isValidToOrderFromMulitpeStore: false,
-    search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
-    windowSize: windowSize(),
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewAside: null,
+      alcoholModal: false,
+      offlineStoreModal: false,
+      dScrollY: 0,
+      deliveryBar: false,
+      alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
+      callApiFinish: false,
+      enablePreOrderFroMulitpeStore: false,
+      isValidToOrderFromMulitpeStore: false,
+      search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+      windowSize: windowSize(),
+    };
+
+    if (Utils.isDineInType()) {
+      this.checkTableId();
+    }
+  }
+
+  checkTableId = () => {
+    const { table, storeId } = config;
+    const { ROUTER_PATHS } = Constants;
+    const { DINE } = ROUTER_PATHS;
+
+    if (storeId) {
+      if (!table) {
+        window.location.href = `${DINE}?s=${storeId}&from=home`;
+      }
+    } else {
+      window.location.href = DINE;
+    }
   };
 
   scrollDepthNumerator = 0;
@@ -385,7 +405,7 @@ export class Home extends Component {
       ReactDOM.findDOMNode(this.footerEl)
     );
 
-    if (isValid && containerHeight != `${currentContainerHeight}px`) {
+    if (isValid && containerHeight !== `${currentContainerHeight}px`) {
       this.setState({
         containerHeight: `${currentContainerHeight}px`,
       });
@@ -751,7 +771,6 @@ export class Home extends Component {
       businessInfo,
       businessLoaded,
       requestInfo,
-      isVerticalMenu,
       history,
       freeDeliveryFee,
       cartSummary,
@@ -809,7 +828,7 @@ export class Home extends Component {
               })}px`,
           }}
         >
-          <CurrentCategoryBar containerId="product-list" categories={categories} isVerticalMenu={isVerticalMenu} />
+          <CurrentCategoryBar containerId="product-list" categories={categories} viewAside={viewAside} />
           <CategoryProductList
             style={{
               paddingBottom:
@@ -819,7 +838,6 @@ export class Home extends Component {
                     })}px`
                   : '0',
             }}
-            isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
@@ -893,7 +911,6 @@ export default compose(
       return {
         deliveryInfo: getDeliveryInfo(state),
         businessInfo: getBusinessInfo(state),
-        isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
