@@ -216,7 +216,7 @@ class ProductDetail extends Component {
       const { id, minSelectionAmount, allowMultiQty } = minimumVariations[i];
       const { optionQuantity } = this.state;
 
-      if (allowMultiQty) {
+      if (allowMultiQty && variationsByIdMap[id]) {
         let selectTotal = 0;
         let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXECLUDE_KEYS[0]);
 

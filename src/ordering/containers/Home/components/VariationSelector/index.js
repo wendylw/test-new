@@ -260,7 +260,11 @@ export class VariationSelector extends Component {
                     <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff}</span>
                   ) : null}
                 </p>
-                <div className="variation-selector__operator padding-top-bottom-small margin-left-right-smaller ">
+                <div
+                  className={`variation-selector__operator margin-left-right-smaller ${
+                    this.isMultipleChoice() && enableQuantity ? '' : 'padding-top-bottom-small'
+                  }`}
+                >
                   {this.isSingleChoice() && <Radio checked={selected[id]} />}
                   {this.isMultipleChoice() && !enableQuantity && <CheckBox checked={selected[id]} />}
                   {this.isMultipleChoice() && enableQuantity && (
