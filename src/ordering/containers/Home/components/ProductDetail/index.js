@@ -698,7 +698,7 @@ class ProductDetail extends Component {
     const { storeName } = onlineStoreInfo || {};
     const { id, _needMore, images, title, description } = product || {};
     const { resizeImage } = this.state;
-    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
+    const descriptionStr = { __html: description };
 
     if (show && product && id && !_needMore) {
       className.push('active cover');
