@@ -51,15 +51,16 @@ class CategoryProductList extends Component {
 
     try {
       await this.props.homeActions.increaseProductInCart(product);
-      await this.props.homeActions.loadShoppingCart();
 
       if (product.variations && product.variations.length) {
-        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
-
         onToggle('PRODUCT_DETAIL');
+
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
       } else {
         this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
       }
+
+      await this.props.homeActions.loadShoppingCart();
     } catch (e) {
       console.error(e);
     }
@@ -98,9 +99,11 @@ class CategoryProductList extends Component {
 
   handleShowProductDetail = async product => {
     const { onToggle } = this.props;
-
     const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
     const { data: productDetail = {} } = responseGql;
+
+    onToggle('PRODUCT_DETAIL');
+
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
   };
@@ -131,7 +134,7 @@ class CategoryProductList extends Component {
                       decreaseDisabled={false}
                       onDecrease={this.handleDecreaseProductInCart.bind(this, product)}
                       onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
-                      showProductDetail={this.handleIncreaseProductInCart.bind(this, product)}
+                      showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
                       data-heap-name="ordering.home.product-item"
