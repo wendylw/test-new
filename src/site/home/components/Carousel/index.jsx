@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Trans, withTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import SwiperCore, { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { withRouter } from 'react-router-dom';
-import CurrencyNumber from '../../../components/CurrencyNumber';
 import Image from '../../../../components/Image';
 import MvpStorePlaceholderImage from '../../../../images/mvp-store-placeholder.jpg';
 import { IconLocalOffer, IconWallet } from '../../../../components/Icons';
@@ -46,13 +45,14 @@ class Carousel extends Component {
                 <h3 className="text-size-big text-weight-bolder">{name}</h3>
                 <span
                   className="carousel__see-all text-size-big text-weight-bold"
+                  data-heap-name="site.home.carousel.see-all-btn"
                   onClick={() => {
                     this.props.history.push({
                       pathname: `/collections/${urlPath}`,
                     });
                   }}
                 >
-                  See All &gt;
+                  {t('SeeAll')} &gt;
                 </span>
               </div>
               <Swiper className="margin-top-bottom-normal" slidesPerView={'auto'}>
@@ -61,11 +61,8 @@ class Carousel extends Component {
                     name,
                     avatar,
                     deliveryFee,
-                    minimumSpendForFreeDelivery,
                     isOpen,
                     id,
-                    locale,
-                    currency,
                     enableFreeShipping,
                     enableCashback,
                     enablePreOrder,
@@ -78,8 +75,7 @@ class Carousel extends Component {
                     <SwiperSlide
                       key={id}
                       className="carousel__item border-radius-large"
-                      data-testid="deliverStore"
-                      data-heap-name="site.common.store-item"
+                      data-heap-name="site.home.carousel.store-item"
                       data-heap-store-name={name}
                       onClick={() => {
                         this.handleStoreClicked(store);
@@ -116,20 +112,7 @@ class Carousel extends Component {
                         {enableFreeShipping && deliveryFee ? (
                           <div className="flex flex-middle">
                             <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
-                            <Trans
-                              i18nKey="MvpFreeDeliveryPrompt"
-                              minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}
-                            >
-                              <span className="text-size-small text-middle">
-                                Free Delivery above
-                                <CurrencyNumber
-                                  className="text-size-small"
-                                  locale={locale}
-                                  currency={currency}
-                                  price={minimumSpendForFreeDelivery}
-                                />
-                              </span>
-                            </Trans>
+                            <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
                           </div>
                         ) : null}
                       </summary>
@@ -145,4 +128,4 @@ class Carousel extends Component {
   }
 }
 
-export default withTranslation()(withRouter(Carousel));
+export default withTranslation(['SiteHome'])(withRouter(Carousel));
