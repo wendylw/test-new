@@ -162,7 +162,7 @@ class PageClaim extends React.Component {
     if (isLogin) {
       return (
         <div className="loading-cover">
-          <i className="loader theme page-loader"></i>
+          <i className="loader theme full-page"></i>
         </div>
       );
     }

@@ -149,7 +149,9 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
-    window.addEventListener('resize', () => this.setState({ windowSize: windowSize() }));
+    window.addEventListener('resize', () => {
+      this.setState({ windowSize: windowSize() });
+    });
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -169,7 +171,9 @@ export class Home extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', () => this.setState({ windowSize: windowSize() }));
+    window.removeEventListener('resize', () => {
+      this.setState({ windowSize: windowSize() });
+    });
   }
 
   checkMultipleStoreIsValidTimeToOrder = storeList => {
