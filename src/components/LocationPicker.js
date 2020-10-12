@@ -381,7 +381,7 @@ class LocationPicker extends Component {
   }
 
   renderLoadingMask() {
-    return <div className="loader theme page-loader" />;
+    return <div className="loader theme full-page" />;
   }
 
   render() {

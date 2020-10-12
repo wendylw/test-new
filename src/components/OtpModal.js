@@ -167,7 +167,7 @@ class OtpModal extends React.Component {
           >
             {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
           </button>
-          {isLoading && <div className="loader theme page-loader"></div>}
+          {isLoading && <div className="loader theme full-page"></div>}
         </section>
       </div>
     );
