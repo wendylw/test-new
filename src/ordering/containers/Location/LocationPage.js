@@ -156,7 +156,7 @@ class LocationPage extends Component {
     // a transparent mask to prevent user's input
     return (
       <div className="fixed-wrapper">
-        <div className="loader theme page-loader" />
+        <div className="loader theme full-page" />
       </div>
     );
   }
