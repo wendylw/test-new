@@ -173,12 +173,12 @@ class ProductDetail extends Component {
         totalPriceDiff -= selectedVariations.find(sv => sv.value === cv).priceDiff;
       });
 
-      return (childProduct.displayPrice + totalPriceDiff) * cartQuantity;
+      return childProduct.displayPrice + totalPriceDiff;
     }
 
     const price = displayPrice || unitPrice || onlineUnitPrice;
 
-    return ((price + totalPriceDiff) * cartQuantity).toFixed(2);
+    return (price + totalPriceDiff).toFixed(2);
   }
 
   getVariationText() {
@@ -459,6 +459,11 @@ class ProductDetail extends Component {
     );
   }
 
+  addCartDisplayPrice = () => {
+    const { cartQuantity } = this.state;
+    return this.displayPrice() * cartQuantity;
+  };
+
   renderProductOperator() {
     const { t, product } = this.props;
     const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
@@ -535,7 +540,7 @@ class ProductDetail extends Component {
             {t('AddCart')} -
             <CurrencyNumber
               className="padding-small text-weight-bolder flex__shrink-fixed"
-              money={Number(this.displayPrice()) || 0}
+              money={Number(this.addCartDisplayPrice()) || 0}
             />
           </button>
         </footer>
