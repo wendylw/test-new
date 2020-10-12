@@ -20,12 +20,13 @@ import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../re
 import { getAllCurrentStores, getPaginationInfo, getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
-import CampaignBar from './containers/CampaignBar';
+// import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import Banners from './components/Banners';
 import Carousel from './components/Carousel';
+import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -220,13 +221,17 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {isCampaignActive && (
-            <CampaignBar
-              countryCode={countryCode}
-              onToggle={() => {
-                this.setState({ campaignShown: !this.state.campaignShown });
-              }}
-            />
+          {isCampaignActive && countryCode.toUpperCase() === 'MY' && (
+            <a
+              className="offer-details__bar"
+              data-heap-name="site.home.campaign-bar"
+              target="_blank"
+              href="https://app.beepit.com/download/?utm_source=beep&utm_medium=homepage&utm_campaign=launch_campaign&utm_content=top_banner"
+            >
+              <p className="flex flex-middle flex-center">
+                <img className="offer-details__bar-image" src={BeepAppLink} alt="" />
+              </p>
+            </a>
           )}
 
           <Suspense fallback={null}>

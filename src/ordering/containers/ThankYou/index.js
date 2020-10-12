@@ -16,6 +16,7 @@ import {
   getCashbackInfo,
   getBusinessInfo,
   getReceiptNumber,
+  getLoadOrderStatus,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
@@ -30,7 +31,7 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
-
+import config from '../../../config';
 import {
   toDayDateMonth,
   toNumericTimeRange,
@@ -49,6 +50,9 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
+// const { ORDER_STATUS } = Constants;
+// const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
+// const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
@@ -64,15 +68,36 @@ export class ThankYou extends PureComponent {
     const { storeId } = order || {};
 
     if (storeId) {
-      thankYouActions.getStoreHashData(storeId);
+      Utils.isDineInType()
+        ? thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
+        : thankYouActions.getStoreHashData(storeId);
     }
 
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-
-    thankYouActions.loadOrder(receiptNumber);
+    this.loadOrder();
   }
+
+  loadOrder = async () => {
+    const { thankYouActions, receiptNumber } = this.props;
+
+    await thankYouActions.loadOrder(receiptNumber);
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+      clearInterval(this.timer);
+      const { order } = this.props;
+      const { status } = order;
+
+      this.timer = setInterval(async () => {
+        await thankYouActions.loadOrderStatus(receiptNumber);
+        const { updatedStatus } = this.props;
+
+        if (updatedStatus !== status) {
+          await this.loadOrder();
+        }
+      }, 60000);
+    }
+  };
 
   componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
@@ -81,7 +106,9 @@ export class ThankYou extends PureComponent {
     const { onlineStoreInfo, user } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
-      this.props.thankYouActions.getStoreHashData(storeId);
+      Utils.isDineInType()
+        ? this.props.thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
+        : this.props.thankYouActions.getStoreHashData(storeId);
     }
     const tySourceCookie = this.getThankYouSource();
     if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
@@ -176,29 +203,34 @@ export class ThankYou extends PureComponent {
     });
   };
   renderCashbackUI = cashback => {
-    const { t } = this.props;
+    const { t, cashbackInfo } = this.props;
+    const { status } = cashbackInfo || {};
+    const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime', 'Claimed_Repeat'];
+
     return (
-      <div className="thanks__delivery-status-container">
-        {this.state.cashbackSuccessImage && (
-          <img
-            src={this.state.cashbackSuccessImage}
-            alt="cashback Earned"
-            onLoad={this.cashbackSuccessStop}
-            className="thanks__earned-cashback-image"
+      statusCanGetCashback.includes(status) && (
+        <div className="thanks__delivery-status-container">
+          {this.state.cashbackSuccessImage && (
+            <img
+              src={this.state.cashbackSuccessImage}
+              alt="cashback Earned"
+              onLoad={this.cashbackSuccessStop}
+              className="thanks__earned-cashback-image"
+            />
+          )}
+          <CurrencyNumber
+            className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
+            money={cashback || 0}
           />
-        )}
-        <CurrencyNumber
-          className="thanks__earned-cashback-total text-size-huge font-weight-bolder"
-          money={cashback || 0}
-        />
-        <h3 className="flex flex-middle flex-center">
-          <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
-            {t('EarnedCashBackTitle')}
-          </span>
-          <img src={IconCelebration} alt="Beep Celebration" />
-        </h3>
-        <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
-      </div>
+          <h3 className="flex flex-middle flex-center">
+            <span className="thanks__earned-cashback-title text-size-big font-weight-bolder">
+              {t('EarnedCashBackTitle')}
+            </span>
+            <img src={IconCelebration} alt="Beep Celebration" />
+          </h3>
+          <p className="thanks__earned-cashback-description">{t('EarnedCashBackDescription')}</p>
+        </div>
+      )
     );
   };
   renderPickupInfo() {
@@ -206,18 +238,15 @@ export class ThankYou extends PureComponent {
     const { pickUpId } = order || {};
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
-    const isPickUpType = Utils.isPickUpType();
 
     return (
       <div className="thanks-pickup">
-        {isPickUpType && (
-          <div className="thanks-pickup__id-container">
-            <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
-            <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
-              {pickUpId}
-            </span>
-          </div>
-        )}
+        <div className="thanks-pickup__id-container">
+          <label className="text-uppercase font-weight-bolder">{t('OrderNumber')}</label>
+          <span className="thanks-pickup__id-number font-weight-bolder" data-testid="thanks__pickup-number">
+            {pickUpId}
+          </span>
+        </div>
         {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
       </div>
     );
@@ -480,6 +509,7 @@ export class ThankYou extends PureComponent {
   renderStoreInfo = () => {
     const isPickUpType = Utils.isPickUpType();
     const isDeliveryType = Utils.isDeliveryType();
+    const isDineInType = Utils.isDineInType();
     const { t, order, onlineStoreInfo = {} } = this.props;
     const { isPreOrder } = order || {};
 
@@ -529,7 +559,7 @@ export class ThankYou extends PureComponent {
           <i className="thanks__pin-icon">
             <IconPin />
           </i>
-          <span>{isPickUpType ? storeAddress : deliveryAddress}</span>
+          <span>{!isDineInType && !isDeliveryType ? storeAddress : deliveryAddress}</span>
         </p>
 
         <div className="thanks__total-container text-center">
@@ -680,6 +710,7 @@ export class ThankYou extends PureComponent {
 
   isNowPaidPreOrder() {
     const { order } = this.props;
+
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
@@ -704,7 +735,7 @@ export class ThankYou extends PureComponent {
     const isPickUpType = Utils.isPickUpType();
     const isDineInType = Utils.isDineInType();
     const isTakeaway = isDeliveryType || isPickUpType;
-    let orderInfo = isTakeaway ? this.renderStoreInfo() : null;
+    let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
 
@@ -749,7 +780,7 @@ export class ThankYou extends PureComponent {
               }
             }}
           >
-            {isTakeaway ? (
+            {!isDineInType ? (
               <button
                 className="link text-uppercase"
                 onClick={this.handleNeedHelp}
@@ -770,12 +801,12 @@ export class ThankYou extends PureComponent {
             ) : (
               <img
                 className="thanks__image"
-                src={isPickUpType ? beepPreOrderSuccessImage : beepSuccessImage}
+                src={isDineInType ? beepSuccessImage : beepPreOrderSuccessImage}
                 alt="Beep Success"
               />
             )}
             {isDeliveryType ? null : <h2 className="thanks__title font-weight-light">{t('ThankYou')}!</h2>}
-            {isDeliveryType ? null : (
+            {isDeliveryType || (!isPickUpType && !isDineInType) ? null : (
               <p className="thanks__prompt">
                 {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
@@ -783,15 +814,15 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
-            {isDeliveryType ? null : this.renderPickupInfo()}
+            {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
             {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
 
             <div className="thanks__info-container">
               {orderInfo}
-              {isTakeaway ? this.renderViewDetail() : this.renderNeedReceipt()}
-              <PhoneLogin hideMessage={isTakeaway || isDineInType} history={history} />
+              {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+              <PhoneLogin hideMessage={true} history={history} />
             </div>
           </div>
         </React.Fragment>
@@ -825,6 +856,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
+      updatedStatus: getLoadOrderStatus(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

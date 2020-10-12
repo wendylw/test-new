@@ -6,24 +6,19 @@ const API_URLS = {
   },
   GET_CART_TYPE: (isDeliveryType, deliveryCoords) => {
     let CartObj = API_URLS.GET_CART;
-    const params = {};
-    if (isDeliveryType) {
-      params.shippingType = 'delivery';
-      if (deliveryCoords) {
-        params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
-      }
-    }
     const { expectDeliveryDateFrom } = Utils.getFulfillDate();
+    const params = {
+      shippingType: Utils.getApiRequestShippingType(),
+    };
 
-    expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
-    const queryString = Object.keys(params)
-      .map(key => `${key}=${params[key]}`)
-      .join('&');
-    if (isDeliveryType) {
-      CartObj.url = `/api/cart?${queryString}`;
-    } else {
-      CartObj.url = expectDeliveryDateFrom ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}` : `/api/cart`;
+    if (isDeliveryType && deliveryCoords) {
+      params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
     }
+
+    if (expectDeliveryDateFrom) {
+      params.fulfillDate = expectDeliveryDateFrom;
+    }
+    CartObj.params = params;
     return CartObj;
   },
   GET_BRAINTREE_TOKEN: {
@@ -163,6 +158,10 @@ const API_URLS = {
   },
   GET_CONSUMER_PROFILE: consumerId => ({
     url: `/api/consumers/${consumerId}/profile`,
+    method: 'get',
+  }),
+  GET_ORDER_STATUS: ({ orderId }) => ({
+    url: `/api/transactions/${orderId}/status`,
     method: 'get',
   }),
   GET_COLLECTION: {
