@@ -71,7 +71,7 @@ const DOCUMENT_TITLE = {
 const PAYMENT_METHOD_LABELS = {
   STRIPE: 'stripe',
   ONLINE_BANKING_PAY: 'OnlineBanking',
-  CREDIT_CARD_PAY: 'CreditCard',
+  CREDIT_CARD_PAY: 'CreditAndDebitCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
   TNG_PAY: 'TouchNGo',
