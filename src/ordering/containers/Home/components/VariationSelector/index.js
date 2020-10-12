@@ -220,10 +220,7 @@ export class VariationSelector extends Component {
             {this.isMultipleChoice() && <span>{t('Selected', { quantity })}</span>}
           </div>
         </div>
-        <ul
-          className="variation-selector__list flex flex-top margin-top-bottom-smaller"
-          data-test_id={variation.variationType}
-        >
+        <ul className="variation-selector__list margin-top-bottom-smaller" data-test_id={variation.variationType}>
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut, priceDiff } = option;
             // const className = [

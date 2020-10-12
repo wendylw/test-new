@@ -146,7 +146,7 @@ class ProductDetail extends Component {
   displayPrice() {
     const { product } = this.props;
     const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
-    const { variationsByIdMap, optionQuantity } = this.state;
+    const { variationsByIdMap, optionQuantity, cartQuantity } = this.state;
     const selectedValues = [];
     const selectedVariations = [];
     let totalPriceDiff = 0;
@@ -173,12 +173,12 @@ class ProductDetail extends Component {
         totalPriceDiff -= selectedVariations.find(sv => sv.value === cv).priceDiff;
       });
 
-      return childProduct.displayPrice + totalPriceDiff;
+      return (childProduct.displayPrice + totalPriceDiff) * cartQuantity;
     }
 
     const price = displayPrice || unitPrice || onlineUnitPrice;
 
-    return (price + totalPriceDiff).toFixed(2);
+    return ((price + totalPriceDiff) * cartQuantity).toFixed(2);
   }
 
   getVariationText() {
