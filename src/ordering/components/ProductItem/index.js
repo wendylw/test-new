@@ -67,19 +67,7 @@ export class ProductItem extends Component {
         tagText={isFeaturedProduct ? t('BestSeller') : null}
         data-heap-name="ordering.common.product-item.container"
       >
-        {soldOut ? (
-          <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />
-        ) : (
-          <ItemOperator
-            className="flex-middle"
-            data-heap-name="ordering.common.product-item.item-operator"
-            quantity={cartQuantity}
-            decreaseDisabled={decreaseDisabled}
-            onDecrease={onDecrease}
-            onIncrease={onIncrease}
-            increaseDisabled={!isValidTimeToOrder}
-          />
-        )}
+        {soldOut ? <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" /> : null}
       </Item>
     );
   }
