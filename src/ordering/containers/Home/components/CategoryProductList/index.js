@@ -137,6 +137,7 @@ class CategoryProductList extends Component {
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
+                      showOperator={false}
                       data-heap-name="ordering.home.product-item"
                     />
                   ))}
