@@ -54,9 +54,11 @@ class ClaimedMessage extends React.Component {
                   {t('Close')}
                 </button>
 
-                <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
-                  <img src={animationGifSrc} alt="Beep Claimed" />
-                </div>
+                {animationGifSrc && (
+                  <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
+                    <img src={animationGifSrc} alt="Beep Claimed" />
+                  </div>
+                )}
               </div>
             </Modal.Body>
           </Modal>

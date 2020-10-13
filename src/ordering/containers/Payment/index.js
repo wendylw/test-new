@@ -238,7 +238,7 @@ class Payment extends Component {
 // to use container to make Payment initialization based on payments from a country
 const PaymentContainer = props => {
   if (!props.merchantCountry) {
-    return <Loader className={'ordering-payment-loading opacity'} />;
+    return <Loader />;
   }
 
   return <Payment {...props} />;
