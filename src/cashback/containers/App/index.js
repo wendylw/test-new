@@ -114,7 +114,7 @@ class App extends Component {
 
     return (
       <main className="loyalty fixed-wrapper__main fixed-wrapper">
-        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
+        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
         {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
