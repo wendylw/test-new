@@ -6,6 +6,7 @@ import Modal from '../../../components/Modal';
 import RedeemInfo from '../RedeemInfo';
 import succeedAnimationGif from '../../../images/succeed-animation.gif';
 import beepRewardImage from '../../../images/beep-reward.jpg';
+import './ClaimedMessage.scss';
 
 const ANIMATION_TIME = 3600;
 
