@@ -674,7 +674,9 @@ export class Home extends Component {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
         return (
-          <span className="flex__shrink-fixed flex__shrink-fixed text-opacity">{t('TableIdText', { tableId })}</span>
+          <span className="ordering-home__table-id flex__shrink-fixed flex__shrink-fixed padding-normal text-opacity">
+            {t('TableIdText', { tableId })}
+          </span>
         );
       case DELIVERY_METHOD.TAKE_AWAY:
         return <span className="flex__shrink-fixed padding-normal text-opacity">{t('TAKE_AWAY')}</span>;
@@ -707,9 +709,9 @@ export class Home extends Component {
       <Header
         headerRef={ref => (this.headerEl = ref)}
         className={
-          isDeliveryType || isPickUpType || tableId
+          isDeliveryType || isPickUpType
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
-            : 'flex-middle border__bottom-divider'
+            : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
         contentClassName={`${
           isDeliveryType || isPickUpType
