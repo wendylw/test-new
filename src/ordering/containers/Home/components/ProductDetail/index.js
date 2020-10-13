@@ -14,7 +14,8 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
-
+import SwiperCore, { Autoplay } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
@@ -22,6 +23,8 @@ import { actions as homeActionCreators, getCurrentProduct } from '../../../../re
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import qs from 'qs';
 import { withRouter } from 'react-router-dom';
+import 'swiper/swiper.scss';
+
 import './ProductDetail.scss';
 
 const VARIATION_TYPES = {
@@ -29,6 +32,8 @@ const VARIATION_TYPES = {
   MULTIPLE_CHOICE: 'MultipleChoice',
 };
 const EXECLUDE_KEYS = ['variationType'];
+
+SwiperCore.use([Autoplay]);
 
 class ProductDetail extends Component {
   currentProductId = null;
@@ -448,7 +453,7 @@ class ProductDetail extends Component {
               key={variation.id}
               variation={variation}
               initVariation={show}
-              isInvalidMinimum={this.isInvalidMinimumVariations()}
+              isInvalidMinimum={!!this.isInvalidMinimumVariations()}
               data-heap-name="ordering.home.product-detail.multi-choice"
               data-heap-variation-name={variation.name}
               updateOptionQuantity={this.updateOptionQuantity}
@@ -553,63 +558,6 @@ class ProductDetail extends Component {
           </button>
         </footer>
       </React.Fragment>
-
-      // <div ref={ref => (this.productEl = ref)} className="product-detail__operator">
-      //   <ProductItem
-      //     isLazyLoad={false}
-      //     productDetailImageRef={ref => (this.productDetailImage = ref)}
-      //     className="product-detail__item"
-      //     image={imageUrl}
-      //     title={title}
-      //     variation={this.getVariationText()}
-      //     price={Number(this.displayPrice())}
-      //     cartQuantity={cartQuantity}
-      //     decreaseDisabled={cartQuantity === 1}
-      //     onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-      //     onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
-      //   />
-      //
-      //   <div ref={ref => (this.buttonEl = ref)} className="padding-normal">
-      //     <button
-      //       className="button button__fill button__block text-weight-bolder"
-      //       type="button"
-      //       data-testid="OK"
-      //       data-heap-name="ordering.home.product-detail.ok-btn"
-      //       disabled={
-      //         !this.isSubmitable() ||
-      //         Utils.isProductSoldOut(product || {}) ||
-      //         (hasMinimumVariations && this.isInvalidMinimumVariations())
-      //       }
-      //       onClick={async () => {
-      //         const { variationsByIdMap } = this.state;
-      //         let variations = [];
-      //
-      //         Object.keys(variationsByIdMap).forEach(function(variationId) {
-      //           Object.keys(variationsByIdMap[variationId]).forEach(key => {
-      //             if (!EXECLUDE_KEYS.includes(key)) {
-      //               variations.push({
-      //                 variationId,
-      //                 optionId: key,
-      //               });
-      //             }
-      //           });
-      //         });
-      //
-      //         if (this.isSubmitable()) {
-      //           this.handleAddOrUpdateShoppingCartItem({
-      //             action: 'add',
-      //             business: config.business,
-      //             productId: this.currentProductId || productId,
-      //             quantity: cartQuantity,
-      //             variations,
-      //           });
-      //         }
-      //       }}
-      //     >
-      //       {t('OK')}
-      //     </button>
-      //   </div>
-      // </div>
     );
   }
 
@@ -734,12 +682,15 @@ class ProductDetail extends Component {
             />
 
             <div className="product-detail__image-container flex__shrink-fixed">
-              <Image
-                className="product-detail__image"
-                src={images && images.length ? images[0] : null}
-                scalingRatioIndex={2}
-                alt={`${storeName} ${title}`}
-              />
+              <Swiper className="product-detail__image" slidesPerView={'auto'} loop={true}>
+                {(images && images.length ? images : [null]).map(image => {
+                  return (
+                    <SwiperSlide key={image}>
+                      <Image src={image} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
             </div>
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
               <summary className="product-detail__info-summary flex flex-top flex-space-between">
