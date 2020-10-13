@@ -47,7 +47,7 @@ class ClaimedMessage extends React.Component {
                 ) : null}
 
                 <button
-                  className="button__block button__block-link link text-uppercase text-weight-bolder"
+                  className="button button__block button__block-link link text-uppercase text-weight-bolder"
                   onClick={() => hideMessage()}
                   data-heap-name="cashback.common.claimed-message.close-btn"
                 >
