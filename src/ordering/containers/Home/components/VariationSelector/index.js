@@ -201,7 +201,7 @@ export class VariationSelector extends Component {
       : this.calcQuantitySumMoney(optionValues, selected);
 
     return (
-      <li className="variation-selector " key={variation.id}>
+      <li className="variation-selector " key={variation.id} id={variation.id}>
         <div className="padding-left-right-normal">
           <h4 className="text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between">
             <span className="text-weight-bolder">{variation.name}</span>

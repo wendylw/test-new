@@ -209,13 +209,15 @@ class ProductDetail extends Component {
     }
 
     if (!variationsByIdMap) {
-      return true;
+      return minimumVariations[0].id;
     }
+
+    let isAllMinimumVariationsAble = false;
 
     for (let i = 0; i < minimumVariations.length; i++) {
       const { id, minSelectionAmount, allowMultiQty } = minimumVariations[i];
       const { optionQuantity } = this.state;
-
+      console.log(minimumVariations, variationsByIdMap, 'minimumVariations');
       if (allowMultiQty && variationsByIdMap[id]) {
         let selectTotal = 0;
         let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXECLUDE_KEYS[0]);
@@ -223,16 +225,15 @@ class ProductDetail extends Component {
         optionKeyList.forEach(key => {
           selectTotal += optionQuantity[key];
         });
-        if (!variationsByIdMap[id] || (variationsByIdMap[id] && selectTotal < minSelectionAmount)) {
-          return true;
+        if (selectTotal < minSelectionAmount) {
+          return id;
         }
       } else if (
         !variationsByIdMap[id] ||
         (variationsByIdMap[id] && Object.keys(variationsByIdMap[id]).length - 1 < minSelectionAmount)
       ) {
-        return true;
+        return id;
       }
-      return;
     }
 
     return false;
@@ -488,7 +489,14 @@ class ProductDetail extends Component {
             from="productDetail"
             decreaseDisabled={cartQuantity <= 1}
             onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-            onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
+            onIncrease={() => {
+              const disableVariationsId = this.isInvalidMinimumVariations();
+              if (hasMinimumVariations && disableVariationsId) {
+                document.getElementById(disableVariationsId).scrollIntoView();
+                return;
+              }
+              this.setState({ cartQuantity: cartQuantity + 1 });
+            }}
             increaseDisabled={false}
           />
         </div>
