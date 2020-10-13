@@ -44,11 +44,23 @@
     -o-transition: -o-filter 0.4s;
   }
 
-  &__item.disabled &__description {
+  &__item.disabled &__description,
+  &__prompt {
     color: $gray-2;
   }
 
   &__item.disabled .radio {
     opacity: 0;
   }
+}
+
+.ordering-payment-loading {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: 30px;
+  width: 70px;
 }
