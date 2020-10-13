@@ -76,7 +76,7 @@ class PageLoyalty extends React.Component {
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
       <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
-        <article className="text-center">
+        <article className="text-center margin-top-bottom-normal">
           {logo ? (
             <Image
               className="loyalty-home__logo logo logo__big margin-top-bottom-normal"

@@ -344,7 +344,10 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
 
       {paymentMethod ? renderRedirectForm(paymentMethod) : null}
 
-      <Loader loaded={cardNumberDomLoaded && cardExpiryDomLoaded && cardCVCDomLoaded} />
+      <Loader
+        className={'loading-cover opacity'}
+        loaded={cardNumberDomLoaded && cardExpiryDomLoaded && cardCVCDomLoaded}
+      />
     </form>
   );
 };

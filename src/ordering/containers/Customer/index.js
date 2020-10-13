@@ -498,7 +498,7 @@ class Customer extends Component {
             {isFetching ? <div className="loader"></div> : t('Continue')}
           </CreateOrderButton>
         </footer>
-        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
         <AddressChangeModal
           deliveryFee={shippingFee}
           addressChange={addressChange}
