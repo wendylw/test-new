@@ -6,6 +6,7 @@ import Modal from '../../../components/Modal';
 import RedeemInfo from '../RedeemInfo';
 import succeedAnimationGif from '../../../images/succeed-animation.gif';
 import beepRewardImage from '../../../images/beep-reward.jpg';
+import './ClaimedMessage.scss';
 
 const ANIMATION_TIME = 3600;
 
@@ -47,16 +48,18 @@ class ClaimedMessage extends React.Component {
                 ) : null}
 
                 <button
-                  className="button__block button__block-link link text-uppercase text-weight-bolder"
+                  className="button button__block button__block-link link text-uppercase text-weight-bolder"
                   onClick={() => hideMessage()}
                   data-heap-name="cashback.common.claimed-message.close-btn"
                 >
                   {t('Close')}
                 </button>
 
-                <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
-                  <img src={animationGifSrc} alt="Beep Claimed" />
-                </div>
+                {animationGifSrc && (
+                  <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
+                    <img src={animationGifSrc} alt="Beep Claimed" />
+                  </div>
+                )}
               </div>
             </Modal.Body>
           </Modal>

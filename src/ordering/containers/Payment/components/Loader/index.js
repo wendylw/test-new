@@ -1,22 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './PaymentLoader.scss';
 
 class Loader extends Component {
   render() {
     const { loaded, className } = this.props;
-    const classList = [];
 
     if (loaded) {
       return null;
     }
 
-    if (className) {
-      classList.push(className);
-    }
-
     return (
-      <div className={classList.join(' ')}>
-        <div className="loader-wave">
+      <div className={`${className ? `${className}` : ''}`}>
+        <div className="payment-loader loader-wave">
           <i className="dot dot1"></i>
           <i className="dot dot2"></i>
           <i className="dot dot3"></i>

@@ -217,7 +217,7 @@ class OnlineBanking extends Component {
           />
         ) : null}
 
-        <Loader loaded={Boolean((bankingList || []).length)} />
+        <Loader className={'loading-cover opacity'} loaded={Boolean((bankingList || []).length)} />
       </section>
     );
   }

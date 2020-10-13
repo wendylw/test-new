@@ -113,8 +113,8 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="loyalty fixed-wrapper fixed-wrapper__main">
-        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
+      <main className="loyalty fixed-wrapper__main fixed-wrapper">
+        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
         {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />

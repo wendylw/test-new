@@ -111,7 +111,7 @@ class OtpModal extends React.Component {
     const { currentOtpTime, isNewInput } = this.state;
 
     return (
-      <div className="otp-modal flex flex-column" data-heap-name="common.otp-modal.container">
+      <div className="otp-modal absolute-wrapper flex flex-column" data-heap-name="common.otp-modal.container">
         <Header
           className="otp-modal__header border__bottom-divider"
           navFunc={onClose}
