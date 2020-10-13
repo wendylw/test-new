@@ -689,7 +689,7 @@ export class Home extends Component {
   }
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore } = this.props;
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore, requestInfo } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const isDeliveryType = Utils.isDeliveryType();
@@ -697,6 +697,7 @@ export class Home extends Component {
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
+    const { tableId } = requestInfo || {};
 
     const { search } = this.state;
     const { h } = search;
@@ -706,7 +707,7 @@ export class Home extends Component {
       <Header
         headerRef={ref => (this.headerEl = ref)}
         className={
-          isDeliveryType || isPickUpType
+          isDeliveryType || isPickUpType || tableId
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
             : 'flex-middle border__bottom-divider'
         }
