@@ -205,9 +205,7 @@ export class VariationSelector extends Component {
         <div className="padding-left-right-normal">
           <h4 className="text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between">
             <span className="text-weight-bolder">{variation.name}</span>
-            {this.isMultipleChoice() && quantitySumMoney ? (
-              <span className="text-weight-bolder">+ {quantitySumMoney}</span>
-            ) : null}
+            {quantitySumMoney ? <span className="text-weight-bolder">+ {quantitySumMoney}</span> : null}
           </h4>
           <div className="flex flex-space-between">
             {this.isMultipleChoice() && enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
@@ -217,7 +215,7 @@ export class VariationSelector extends Component {
             ) : (
               <span></span>
             )}
-            {this.isMultipleChoice() && <span>{t('Selected', { quantity })}</span>}
+            {this.isMultipleChoice() || quantitySumMoney ? <span>{t('Selected', { quantity })}</span> : null}
           </div>
         </div>
         <ul className="variation-selector__list margin-top-bottom-smaller" data-test_id={variation.variationType}>
