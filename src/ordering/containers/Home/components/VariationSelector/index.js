@@ -85,11 +85,11 @@ export class VariationSelector extends Component {
       }));
   }
 
-  handleSelectedOption(option, isMultipleAndEnableQuantity) {
-    if (isMultipleAndEnableQuantity) return;
-
+  handleSelectedOption(option, isMultipleAndEnableQuantity, isMaxed) {
     const { id } = option;
     const { variation } = this.props;
+
+    if (isMultipleAndEnableQuantity || (isMaxed && !this.state.selected[id])) return;
 
     this.setState({
       selected: {
@@ -230,7 +230,8 @@ export class VariationSelector extends Component {
             let selectedOptionFunc = this.handleSelectedOption.bind(
               this,
               option,
-              this.isMultipleChoice() && enableQuantity
+              this.isMultipleChoice() && enableQuantity,
+              isRequireMax && quantity >= maxSelectionAmount
             );
 
             return (
