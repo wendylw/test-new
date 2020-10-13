@@ -127,7 +127,7 @@ ProductItem.defaultProps = {
 };
 
 export default compose(
-  withTranslation(),
+  withTranslation(['OrderingHome']),
   connect(
     state => {
       return {
