@@ -29,9 +29,8 @@ const ROUTER_PATHS = {
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
-
-  NEED_HELP: '/need-help',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
@@ -74,7 +73,7 @@ const DOCUMENT_TITLE = {
 const PAYMENT_METHOD_LABELS = {
   STRIPE: 'stripe',
   ONLINE_BANKING_PAY: 'OnlineBanking',
-  CREDIT_CARD_PAY: 'CreditCard',
+  CREDIT_CARD_PAY: 'CreditAndDebitCard',
   GRAB_PAY: 'GrabPay',
   BOOST_PAY: 'Boost',
   TNG_PAY: 'TouchNGo',

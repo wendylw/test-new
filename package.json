@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://storehubyougaga.beep.test5.shub.us",
+  "proxy": "https://wenjingzhang.beep.test16.shub.us",
   "engines": {
     "node": "12"
   },
@@ -88,7 +88,8 @@
     "build:sourcemap": "node scripts/build-sourcemap --serve-sourcemap-url http://localhost:8080",
     "serve:sourcemap": "node scripts/serve-sourcemap --port 8080",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "chromatic": "npx chromatic --project-token ejo2it5a6d"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -107,18 +108,21 @@
   "devDependencies": {
     "@sentry/cli": "^1.55.0",
     "@sentry/webpack-plugin": "^1.12.0",
-    "@storybook/addon-actions": "^5.3.19",
-    "@storybook/addon-docs": "^5.3.19",
-    "@storybook/addon-links": "^5.3.19",
-    "@storybook/addon-storysource": "^5.3.19",
-    "@storybook/addon-viewport": "^5.3.19",
-    "@storybook/addons": "^5.3.19",
-    "@storybook/preset-create-react-app": "^3.1.0",
-    "@storybook/react": "^5.3.19",
+    "@storybook/addon-actions": "^6.0.14",
+    "@storybook/addon-docs": "^6.0.14",
+    "@storybook/addon-links": "^6.0.14",
+    "@storybook/addon-storysource": "^6.0.14",
+    "@storybook/addon-viewport": "^6.0.14",
+    "@storybook/addons": "^6.0.18",
+    "@storybook/preset-create-react-app": "^3.1.4",
+    "@storybook/react": "^6.0.14",
+    "@storybook/theming": "^6.0.18",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "aws-sdk": "^2.706.0",
+    "babel-loader": "^8.1.0",
+    "chromatic": "^5.1.0",
     "customize-cra": "^0.9.1",
     "debug": "^4.1.1",
     "deploy-aws-s3-cloudfront": "^3.2.3",

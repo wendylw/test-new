@@ -68,6 +68,7 @@ export const actions = {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
@@ -87,6 +88,7 @@ export const actions = {
       requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
         phone,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
@@ -224,7 +226,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt, error } = action;
+  const { type, response, prompt, error } = action;
   const { consumerId, login } = response || {};
 
   switch (type) {

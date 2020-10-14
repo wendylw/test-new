@@ -1,5 +1,14 @@
 module.exports = {
-  stories: ['../src/**/*.stories.(js|mdx)'],
+  stories: ['../src/**/*.stories.@(js|mdx)'],
+  webpackFinal: async (config) => {
+    config.module.rules.push({
+      test: /\.(js|mjs|jsx|ts|tsx)$/,
+      enforce: 'pre',
+      exclude: /node_modules/,
+      loader: 'eslint-loader'
+    });
+    return config;
+  },
   addons: [
     '@storybook/preset-create-react-app',
     '@storybook/addon-actions',

@@ -13,6 +13,7 @@ import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import qs from 'qs';
+import './StoresHome.scss';
 
 import {
   actions as homeActionCreators,
@@ -129,25 +130,28 @@ class App extends Component {
 
     return (
       this.props.isHome && (
-        <section className="store-list__content">
+        <section className="store-list__content" data-heap-name="stores.home.container">
           <Header
-            className="border__bottom-divider gray has-right flex-middle"
+            className="flex-middle border__bottom-divider"
+            contentClassName="flex-middle"
+            data-heap-name="stores.home.header"
             isPage={true}
             isStoreHome={true}
             logo={logo}
             title={storeName}
           />
-          <h2 className="text-center" data-testid="selectStoreDescription">
-            {t('SelectStoreDescription')}
-          </h2>
 
-          <div className="list__container">
+          <section>
+            <h2 className="padding-normal text-size-big text-center" data-testid="selectStoreDescription">
+              {t('SelectStoreDescription')}
+            </h2>
+
             {!stores || !stores.length ? (
               <h3 className="text-center">{t('SelectStoreErrorMessage')}</h3>
             ) : (
               <StoreList storeList={stores} onSelect={storeId => this.selectStore(storeId)} />
             )}
-          </div>
+          </section>
         </section>
       )
     );
