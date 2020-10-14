@@ -3,9 +3,9 @@
   "PreOrderNow": "PRE-ORDER NOW",
   "CartItemsInCategory": "{{cartQuantity}} Items",
   "NoProductDescription": "No product description",
-  "MinimumChoicesDescription": "Select minimum of {{minSelectionAmount}} choices",
-  "MaximumChoicesDescription": "Select maximum of {{maxSelectionAmount}} choices",
-  "MinMaximumChoicesDescription": "Select minimum of {{minSelectionAmount}} and maximum of {{maxSelectionAmount}} choices",
+  "MinimumChoicesDescription": "Select minimum of {{minSelectionAmount}} option",
+  "MaximumChoicesDescription": "Select maximum of {{maxSelectionAmount}} option",
+  "MinMaximumChoicesDescription": "Select min {{minSelectionAmount}} option, max {{maxSelectionAmount}} option",
   "StoreOffline": "STORE OFFLINE",
   "PreOrderConfirmModalTitle": "We’re closed for now, but you can still order!",
   "PreOrderConfirmModalDescription": "Our opening hours are from {{validTimeFrom}} to {{validTimeTo}}. But you can browse the menu & pre-order instead!",
@@ -17,5 +17,7 @@
   "AlcoholDenied": "Access Denied",
   "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42",
   "OfflinePromptTitle": "{{storeName}} is currently offline",
-  "OfflinePromptDescription": "Apologies, our store is not ready to go online yet, but we will be back soon! Please try again later."
+  "OfflinePromptDescription": "Apologies, our store is not ready to go online yet, but we will be back soon! Please try again later.",
+  "Selected": "{{quantity}} Selected",
+  "AddCart": "add to cart"
 }
