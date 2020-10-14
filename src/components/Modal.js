@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withDataAttributes from './withDataAttributes';
+import './Modal.scss';
 
 class Modal extends Component {
   state = {
@@ -52,8 +53,12 @@ class Modal extends Component {
     }
 
     return (
-      <section className={`modal ${className}`} onClick={this.handleClick.bind(this)} {...dataAttributes}>
-        <div className="modal__content">{children}</div>
+      <section
+        className={`modal absolute-wrapper flex flex-column flex-middle flex-center ${className}`}
+        onClick={this.handleClick.bind(this)}
+        {...dataAttributes}
+      >
+        <div className="modal__content border-radius-large">{children}</div>
       </section>
     );
   }

@@ -66,7 +66,7 @@ class PhoneView extends React.Component {
         {errorMessage.phone ? <span className="error">{errorMessage.phone}</span> : null}
 
         <button
-          className="phone-view-form__button button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+          className="phone-view-form__button button__fill button__block border-radius-base text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view.submit-btn"
           onClick={this.savePhoneNumber.bind(this)}
           disabled={!phone || isLoading || !isValidPhoneNumber(phone)}
