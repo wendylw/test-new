@@ -72,9 +72,10 @@ class Header extends Component {
       defaultLoyaltyRatio,
       dataAttributes,
       headerRef,
+      isDeliveryType,
+      isPickUpType,
     } = this.props;
-    const isDeliveryType = Utils.isDeliveryType();
-    const isPickUpType = Utils.isPickUpType();
+
     const isDeliveryHomePage = isStoreHome && (isDeliveryType || isPickUpType);
     const classList = ['header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper'];
     const contentClassList = ['header__content flex padding-top-bottom-smaller'];
@@ -172,6 +173,8 @@ Header.propTypes = {
   isValidTimeToOrder: PropTypes.bool,
   enableCashback: PropTypes.bool,
   defaultLoyaltyRatio: PropTypes.number,
+  isDeliveryType: PropTypes.bool,
+  isPickUpType: PropTypes.bool,
 };
 
 Header.defaultProps = {
@@ -185,6 +188,8 @@ Header.defaultProps = {
   defaultLoyaltyRatio: 0,
   navFunc: () => {},
   onClickHandler: () => {},
+  isDeliveryType: Utils.isDeliveryType(),
+  isPickUpType: Utils.isPickUpType(),
 };
-
+export const HeaderComponent = Header;
 export default withDataAttributes(withTranslation()(Header));

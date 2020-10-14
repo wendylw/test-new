@@ -24,7 +24,7 @@ import {
   getUnavailablePayments,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import { getPaymentName, getSupportCreditCardBrands, getPaymentRedirectAndWebHookUrl } from './utils';
+import { getPaymentName, getPaymentRedirectAndWebHookUrl } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -98,20 +98,6 @@ class Payment extends Component {
       this.props.paymentActions.setCurrentPayment(label);
     }
   };
-
-  getPaymentShowLabel(payment) {
-    const { t, merchantCountry } = this.props;
-    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
-      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
-      return supportCreditCardBrands
-        .map(brand => {
-          return t(brand);
-        })
-        .join(' / ');
-    } else {
-      return t(payment.label);
-    }
-  }
 
   handleBeforeCreateOrder = () => {
     const { history, currentPaymentInfo } = this.props;
@@ -202,8 +188,11 @@ class Payment extends Component {
                     </figure>
                     <div className="ordering-payment__description text-middle padding-left-right-normal">
                       <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
-                        {this.getPaymentShowLabel(payment)}
+                        {t(payment.label)}
                       </label>
+                      {payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY ? (
+                        <p className="ordering-payment__prompt">{`${t('Visa')}, ${t('MasterCard')}`}</p>
+                      ) : null}
                       {disabledPayment ? promptDom : null}
                     </div>
                   </div>
@@ -229,7 +218,7 @@ class Payment extends Component {
               });
             }}
           >
-            {payNowLoading ? <div className="loader"></div> : t('PayNow')}
+            {payNowLoading ? <div className="loader"></div> : t('Continue')}
           </CreateOrderButton>
         </footer>
 
@@ -249,7 +238,7 @@ class Payment extends Component {
 // to use container to make Payment initialization based on payments from a country
 const PaymentContainer = props => {
   if (!props.merchantCountry) {
-    return <Loader />;
+    return <Loader className={'loading-cover opacity'} />;
   }
 
   return <Payment {...props} />;

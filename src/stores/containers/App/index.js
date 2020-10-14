@@ -259,7 +259,9 @@ class App extends Component {
           <Home isHome={this.state.isHome} />
         ) : null}
 
-        {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
+        {error && !pageError.code ? (
+          <ErrorToast className="fixed" message={error.message} clearError={this.handleClearError} />
+        ) : null}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );

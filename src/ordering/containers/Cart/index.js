@@ -269,7 +269,7 @@ class Cart extends Component {
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
 
     const buttonText = !isInvalidTotal ? (
-      t('Pay')
+      t('PayNow')
     ) : (
       <Trans i18nKey="MinimumConsumption">
         <span className="text-weight-bolder">Min</span>

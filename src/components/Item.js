@@ -124,5 +124,5 @@ Item.defaultProps = {
   operateItemDetail: () => {},
   hasTag: false,
 };
-
+export const ItemComponent = Item;
 export default withDataAttributes(withTranslation()(Item));

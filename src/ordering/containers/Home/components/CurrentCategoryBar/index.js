@@ -3,20 +3,15 @@ import PropTypes from 'prop-types';
 import { ScrollObserver, getCurrentScrollId } from '../../../../../components/ScrollComponents';
 
 class CurrentCategoryBar extends PureComponent {
-  getCurrentCategoryByScrollname = scrollname => {
-    return (this.props.categories || []).find(category => category.name === scrollname);
-  };
-
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { categories } = this.props;
     const defaultId = categories[0] ? categories[0].id : '';
 
     return (
       <ScrollObserver
         containerId="CategoryNavContent"
         targetIdPrefix="category"
-        defaultScrollId={getCurrentScrollId(isVerticalMenu) || defaultId}
-        isVerticalMenu={isVerticalMenu}
+        defaultScrollId={getCurrentScrollId(true) || defaultId}
         render={(scrollid, scrollToSmoothly) => {
           const currentCategory = categories.find(c => c.id === scrollid);
 
@@ -26,33 +21,33 @@ class CurrentCategoryBar extends PureComponent {
                 <ul className="category-nav__list text-middle">
                   {categories.map(c => {
                     const classList = [
-                      `category-nav__item padding-top-bottom-normal padding-left-right-small border__bottom-divider ${
-                        isVerticalMenu ? 'text-left' : 'text-center'
-                      }`,
+                      'category-nav__item padding-top-bottom-normal padding-left-right-small border__bottom-divider text-left',
                     ];
 
-                    if (
-                      document
-                        .getElementById('root')
-                        .getAttribute('class')
-                        .includes('fixed')
-                    ) {
-                      let isActive = null;
+                    // if (
+                    //   document
+                    //     .getElementById('root')
+                    //     .getAttribute('class')
+                    //     .includes('fixed')
+                    // ) {
+                    //   let isActive = null;
 
-                      if (document.getElementById(`category-${c.id}`)) {
-                        isActive = document
-                          .getElementById(`category-${c.id}`)
-                          .getAttribute('class')
-                          .includes('active');
-                      }
+                    //   if (document.getElementById(`category-${c.id}`)) {
+                    //     isActive = document
+                    //       .getElementById(`category-${c.id}`)
+                    //       .getAttribute('class')
+                    //       .includes('active');
+                    //   }
 
-                      if (isActive) {
-                        classList.push('active');
-                      }
-                    } else {
-                      if (currentCategory && currentCategory.id === c.id) {
-                        classList.push('active');
-                      }
+                    //   if (isActive) {
+                    //     classList.push('active');
+                    //   }
+                    // } else {
+
+                    // }
+
+                    if (currentCategory && currentCategory.id === c.id) {
+                      classList.push('active');
                     }
 
                     return (
@@ -83,11 +78,11 @@ class CurrentCategoryBar extends PureComponent {
 }
 
 CurrentCategoryBar.propTypes = {
-  isVerticalMenu: PropTypes.bool,
+  categories: PropTypes.array,
 };
 
 CurrentCategoryBar.defaultProps = {
-  isVerticalMenu: false,
+  categories: [],
 };
 
 export default CurrentCategoryBar;

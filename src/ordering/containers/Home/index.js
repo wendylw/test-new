@@ -30,7 +30,6 @@ import {
   getCategoryProductList,
   getDeliveryInfo,
   getPopUpModal,
-  isVerticalMenuBusiness,
   getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -54,18 +53,39 @@ export class Home extends Component {
   headerEl = null;
   footerEl = null;
 
-  state = {
-    viewAside: null,
-    alcoholModal: false,
-    offlineStoreModal: false,
-    containerHeight: null,
-    deliveryBar: false,
-    alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
-    callApiFinish: false,
-    enablePreOrderFroMulitpeStore: false,
-    isValidToOrderFromMulitpeStore: false,
-    search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
-    windowSize: windowSize(),
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewAside: null,
+      alcoholModal: false,
+      offlineStoreModal: false,
+      dScrollY: 0,
+      deliveryBar: false,
+      alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
+      callApiFinish: false,
+      enablePreOrderFroMulitpeStore: false,
+      isValidToOrderFromMulitpeStore: false,
+      search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+      windowSize: windowSize(),
+    };
+
+    if (Utils.isDineInType()) {
+      this.checkTableId();
+    }
+  }
+
+  checkTableId = () => {
+    const { table, storeId } = config;
+    const { ROUTER_PATHS } = Constants;
+    const { DINE } = ROUTER_PATHS;
+
+    if (storeId) {
+      if (!table) {
+        window.location.href = `${DINE}?s=${storeId}&from=home`;
+      }
+    } else {
+      window.location.href = DINE;
+    }
   };
 
   scrollDepthNumerator = 0;
@@ -129,7 +149,9 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
-    window.addEventListener('resize', () => this.setState({ windowSize: windowSize() }));
+    window.addEventListener('resize', () => {
+      this.setState({ windowSize: windowSize() });
+    });
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -149,7 +171,9 @@ export class Home extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', () => this.setState({ windowSize: windowSize() }));
+    window.removeEventListener('resize', () => {
+      this.setState({ windowSize: windowSize() });
+    });
   }
 
   checkMultipleStoreIsValidTimeToOrder = storeList => {
@@ -385,7 +409,7 @@ export class Home extends Component {
       ReactDOM.findDOMNode(this.footerEl)
     );
 
-    if (isValid && containerHeight != `${currentContainerHeight}px`) {
+    if (isValid && containerHeight !== `${currentContainerHeight}px`) {
       this.setState({
         containerHeight: `${currentContainerHeight}px`,
       });
@@ -650,7 +674,9 @@ export class Home extends Component {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
         return (
-          <span className="flex__shrink-fixed flex__shrink-fixed text-opacity">{t('TableIdText', { tableId })}</span>
+          <span className="ordering-home__table-id flex__shrink-fixed flex__shrink-fixed padding-normal text-opacity">
+            {t('TableIdText', { tableId })}
+          </span>
         );
       case DELIVERY_METHOD.TAKE_AWAY:
         return <span className="flex__shrink-fixed padding-normal text-opacity">{t('TAKE_AWAY')}</span>;
@@ -665,7 +691,7 @@ export class Home extends Component {
   }
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore } = this.props;
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore, requestInfo } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const isDeliveryType = Utils.isDeliveryType();
@@ -673,6 +699,7 @@ export class Home extends Component {
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
+    const { tableId } = requestInfo || {};
 
     const { search } = this.state;
     const { h } = search;
@@ -684,7 +711,7 @@ export class Home extends Component {
         className={
           isDeliveryType || isPickUpType
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
-            : 'flex-middle border__bottom-divider'
+            : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
         contentClassName={`${
           isDeliveryType || isPickUpType
@@ -753,7 +780,6 @@ export class Home extends Component {
       businessInfo,
       businessLoaded,
       requestInfo,
-      isVerticalMenu,
       history,
       freeDeliveryFee,
       cartSummary,
@@ -811,7 +837,7 @@ export class Home extends Component {
               })}px`,
           }}
         >
-          <CurrentCategoryBar containerId="product-list" categories={categories} isVerticalMenu={isVerticalMenu} />
+          <CurrentCategoryBar containerId="product-list" categories={categories} viewAside={viewAside} />
           <CategoryProductList
             style={{
               paddingBottom:
@@ -821,7 +847,6 @@ export class Home extends Component {
                     })}px`
                   : '0',
             }}
-            isVerticalMenu={isVerticalMenu}
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
@@ -898,7 +923,6 @@ export default compose(
       return {
         deliveryInfo: getDeliveryInfo(state),
         businessInfo: getBusinessInfo(state),
-        isVerticalMenu: isVerticalMenuBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),

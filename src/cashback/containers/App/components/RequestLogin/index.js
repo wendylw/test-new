@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import beepLoginImage from './images/login.svg';
 import { getAppToken } from '../../../utils';
+import beepLoginImage from './images/login.svg';
 import './RequestLogin.scss';
 
 class RequestLogin extends Component {

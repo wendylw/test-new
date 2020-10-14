@@ -100,7 +100,7 @@ it('src/ordering/redux/store.js', () => {
     home: {
       coreStore: { isFetching: false, storeList: [], storeHashCode: '' },
       currentProduct: { cartId: '', id: '', isFetching: false },
-      domProperties: { verticalMenuBusinesses: [''], productItemMinHeight: 107.64 },
+      domProperties: { productItemMinHeight: 107.64 },
       onlineCategory: { categoryIds: [], isFetching: false },
       popUpModal: {
         userConfirmed: false,

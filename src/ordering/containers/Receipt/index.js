@@ -95,7 +95,7 @@ export class ReceiptDetail extends Component {
               }
             >
               <ItemOperator
-                className="flex-middle exhibit"
+                className="flex-middle exhibit margin-normal padding-top-bottom-normal"
                 data-heap-name="ordering.receipt.item-operator"
                 quantity={quantity}
                 decreaseDisabled={quantity === 0}
@@ -108,9 +108,8 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, history, order, businessInfo, user, promotion } = this.props;
+    const { t, history, order, businessInfo, promotion } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
-    const { isLogin } = user || {};
 
     return (
       <section className="receipt flex flex-column" data-heap-name="ordering.receipt.container">
@@ -121,7 +120,7 @@ export class ReceiptDetail extends Component {
           data-heap-name="ordering.receipt.header"
           navFunc={this.goBack}
         >
-          <span className="flex__shrink-fixed text-opacity">{this.getHeaderContent()}</span>
+          <span className="flex__shrink-fixed text-opacity padding-left-right-small">{this.getHeaderContent()}</span>
         </Header>
         <div className="receipt__container">
           <div className="receipt__number-container text-center padding-normal border__bottom-divider">

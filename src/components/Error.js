@@ -5,6 +5,12 @@ import beepErrorImage from '../images/beep-error.png';
 import withDataAttributes from './withDataAttributes';
 import './Error.scss';
 
+/**
+ * `<Error />` is used on the beepit.com and ordering.
+ *
+ * A warn for page has some network errors and other issue.
+ */
+
 class Error extends React.Component {
   render() {
     const { t, dataAttributes } = this.props;
@@ -45,6 +51,9 @@ Error.propTypes = {
   description: PropTypes.string,
 };
 
-Error.defaultProps = {};
+Error.defaultProps = {
+  title: '',
+  description: '',
+};
 
 export default withDataAttributes(withTranslation()(Error));

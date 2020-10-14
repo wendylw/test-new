@@ -162,14 +162,14 @@ class PageClaim extends React.Component {
     if (isLogin) {
       return (
         <div className="loading-cover">
-          <i className="loader theme page-loader"></i>
+          <i className="loader theme full-page"></i>
         </div>
       );
     }
 
     return (
       <section className="loyalty-claim__container flex flex-column" data-heap-name="cashback.claim.container">
-        <article className="text-center">
+        <article className="text-center margin-top-bottom-normal">
           {logo ? (
             <Image
               className="loyalty-claim__logo logo logo__big margin-top-bottom-normal"
