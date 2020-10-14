@@ -119,7 +119,7 @@ class Carousel extends Component {
   render() {
     const { collections, t } = this.props;
     return (
-      <div>
+      <div className="margin-top-bottom-normal">
         {(collections || []).map(item => {
           const { name, stores, urlPath, beepCollectionId, shippingType } = item;
           return (
