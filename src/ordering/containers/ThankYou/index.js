@@ -531,7 +531,10 @@ export class ThankYou extends PureComponent {
           {isPickUpType && !isPreOrder ? (
             <div className="margin-top-bottom-small">
               <span className="margin-left-right-small text-size-bigger">{t('Total')}</span>
-              <CurrencyNumber className="text-size-bigger text-weight-bolder" money={total || 0} />
+              <CurrencyNumber
+                className="text-size-bigger text-weight-bolder text-omit__single-line"
+                money={total || 0}
+              />
             </div>
           ) : null}
         </div>
