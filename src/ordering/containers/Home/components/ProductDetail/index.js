@@ -536,6 +536,8 @@ class ProductDetail extends Component {
 
                 if (optionQuantity[optionId]) {
                   item.quantity = optionQuantity[optionId];
+                } else {
+                  item.quantity = 1;
                 }
               });
 
