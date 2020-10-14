@@ -23,8 +23,8 @@
 
 .entry-home {
   position: relative;
-  bottom: 56px;
-  padding: 56px 0 182px;
+  bottom: 59px;
+  padding: 59px 0 182px;
   height: 100vh;
 
   &__huge-loader {
@@ -123,6 +123,7 @@
   &__title {
     max-height: 24px;
     max-width: 100%;
+    line-clamp: 1;
     -webkit-line-clamp: 1;
   }
 

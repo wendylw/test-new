@@ -11,8 +11,8 @@ import {
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
+import '../../../Common.scss';
 import Routes from '../Routes';
-import '../../../App.scss';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
@@ -159,8 +159,8 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="table-ordering" data-heap-name="ordering.app.container">
-        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
+      <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
+        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         <Routes />
         <Login className="aside" title={prompt} />

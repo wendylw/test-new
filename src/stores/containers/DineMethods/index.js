@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import qs from 'qs';
+import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -15,8 +17,7 @@ import DineInImage from '../../../images/icon-dine-in.svg';
 import TakeAwayImage from '../../../images/icon-take-away.svg';
 import { IconNext } from '../../../components/Icons';
 import Tables from '../Tables';
-import qs from 'qs';
-import { withRouter } from 'react-router-dom';
+import './StoresTakingMealMethod.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -95,7 +96,8 @@ class DineMethods extends Component {
       afterLoadTables && (
         <section className="dine" data-heap-name="stores.dine-methods.container">
           <Header
-            className="border__bottom-divider gray has-right flex-middle"
+            className="flex-middle border__bottom-divider"
+            contentClassName="flex-middle"
             data-heap-name="stores.dine-methods.header"
             isPage={true}
             title={t('SelectYourPreference')}
@@ -106,16 +108,18 @@ class DineMethods extends Component {
               return (
                 <li
                   key={method.name}
-                  className="delivery__item border__bottom-divider flex flex-middle flex-space-between"
+                  className="border__bottom-divider flex flex-middle flex-space-between"
                   onClick={() => this.handleSelectMethod(method.name)}
                   data-heap-name="stores.dine-methods.method-item"
                   data-heap-method-name={method.name}
                 >
-                  <figure className="delivery__image-container">
-                    <img src={method.logo} alt={t(method.labelKey)}></img>
-                  </figure>
-                  <label className="delivery__name font-weight-bolder">{t(method.labelKey)}</label>
-                  <IconNext className="delivery__next-icon" />
+                  <summary className="taking-meal-method__summary">
+                    <figure className="taking-meal-method__image-container text-middle margin-normal">
+                      <img src={method.logo} alt={t(method.labelKey)}></img>
+                    </figure>
+                    <label className="text-middle text-size-big text-weight-bolder">{t(method.labelKey)}</label>
+                  </summary>
+                  <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
                 </li>
               );
             })}

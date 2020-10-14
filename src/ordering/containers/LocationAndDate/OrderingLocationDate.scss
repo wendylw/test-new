@@ -1,0 +1,83 @@
+@import "../../../Variables.scss";
+
+.location-date {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  &__delivery,
+  &__pickup {
+    width: 50%;
+    border: 1px solid $gray-4;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.2);
+
+    &.active {
+      color: $white;
+      background-color: $theme-color;
+      border-color: $theme-color;
+    }
+  }
+
+  &__delivery {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+
+  &__pickup {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+  &__label {
+    display: block;
+  }
+
+  &__input {
+    height: 54px;
+  }
+
+  &__date {
+    height: 60px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+
+  &__button-date {
+    width: 80px;
+    border-color: $gray-4;
+
+    &:disabled {
+      color: $gray-4;
+      background-color: transparent;
+    }
+  }
+
+  &__date-weekday {
+    display: block;
+  }
+
+  &__hour {
+    // overflow-y: auto;
+  }
+
+  &__button-hour {
+    color: $gray-2;
+    border-radius: 0;
+
+    &.selected {
+      color: $main-color;
+      background-color: $gray-5;
+    }
+  }
+
+  &__help-text {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 220px;
+    color: $gray-2;
+  }
+}

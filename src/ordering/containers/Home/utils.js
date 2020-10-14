@@ -3,6 +3,7 @@ import { get } from '../../../utils/request';
 
 export const isSourceBeepitCom = () => {
   const source = Utils.getQueryString('source');
+
   if (source) {
     const match = source.match(/^(?:https?:\/\/)?([^:/?#]+)/im);
     if (match) {
@@ -10,6 +11,7 @@ export const isSourceBeepitCom = () => {
       return Utils.isSiteApp(domain);
     }
   }
+
   return false;
 };
 
@@ -21,4 +23,33 @@ export const fetchRedirectPageState = async () => {
     console.error(e);
     return {};
   }
+};
+
+export const windowSize = () => ({
+  width: window.innerWidth || document.body.clientWidth,
+  height: window.innerHeight || document.body.clientHeight,
+});
+
+export const mainTop = ({ headerEls = [] }) => {
+  let top = 0;
+
+  if (headerEls.length) {
+    headerEls.forEach(headerEl => {
+      top += headerEl ? headerEl.clientHeight || headerEl.offsetHeight : 0;
+    });
+  }
+
+  return top;
+};
+
+export const mainBottom = ({ footerEls = [] }) => {
+  let bottom = 0;
+
+  if (footerEls.length) {
+    footerEls.forEach(footerEl => {
+      bottom += footerEl ? footerEl.clientHeight || footerEl.offsetHeight : 0;
+    });
+  }
+
+  return bottom;
 };
