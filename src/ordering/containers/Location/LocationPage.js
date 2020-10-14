@@ -188,7 +188,7 @@ class LocationPage extends Component {
           />
         )}
         {initializing && this.renderLoadingMask()}
-        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
       </section>
     );
   }

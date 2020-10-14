@@ -33,6 +33,7 @@ TopMessage.propTypes = {
 };
 
 TopMessage.defaultTypes = {
+  className: '',
   message: '',
   hideMessage: () => {},
 };

@@ -1,0 +1,62 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Aside" />
+
+<style>{`
+.aside-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.aside-sb__item {
+  margin-bottom: 20px;
+}
+
+.aside-sb__label {
+  vertical-align: top;
+  width: 320px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.aside-sb__content {
+  width: 100%;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+`}</style>
+
+# Aside
+
+Aside is used for expand or collapse some content
+
+## Expanded Aside
+
+<div class="aside-sb__card">
+  <div class="aside-sb__item flex flex-top">
+    <label class="aside-sb__label flex__shrink-fixed">expanded aside</label>
+    <div class="aside-sb__content">
+      <aside class="aside">
+        <div class="aside__content"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+## collapsed Aside
+
+<div class="aside-sb__card">
+  <div class="aside-sb__item flex flex-top">
+    <label class="aside-sb__label flex__shrink-fixed">collapsed aside</label>
+    <div class="aside-sb__content">
+      <aside class="aside active">
+        <div class="aside__content"></div>
+      </aside>
+    </div>
+  </div>
+</div>

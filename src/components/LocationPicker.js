@@ -390,7 +390,7 @@ class LocationPicker extends Component {
     return (
       <div className="location-picker">
         {this.renderMainContent()}
-        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
         {isSubmitting && this.renderLoadingMask()}
       </div>
     );

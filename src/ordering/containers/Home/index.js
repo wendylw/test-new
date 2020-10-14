@@ -672,7 +672,9 @@ export class Home extends Component {
       case DELIVERY_METHOD.DINE_IN:
         const { tableId } = requestInfo || {};
         return (
-          <span className="flex__shrink-fixed flex__shrink-fixed text-opacity">{t('TableIdText', { tableId })}</span>
+          <span className="ordering-home__table-id flex__shrink-fixed flex__shrink-fixed padding-normal text-opacity">
+            {t('TableIdText', { tableId })}
+          </span>
         );
       case DELIVERY_METHOD.TAKE_AWAY:
         return <span className="flex__shrink-fixed padding-normal text-opacity">{t('TAKE_AWAY')}</span>;
@@ -687,7 +689,7 @@ export class Home extends Component {
   }
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore } = this.props;
+    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore, requestInfo } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const isDeliveryType = Utils.isDeliveryType();
@@ -695,6 +697,7 @@ export class Home extends Component {
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
+    const { tableId } = requestInfo || {};
 
     const { search } = this.state;
     const { h } = search;
@@ -706,7 +709,7 @@ export class Home extends Component {
         className={
           isDeliveryType || isPickUpType
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
-            : 'flex-middle border__bottom-divider'
+            : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
         contentClassName={`${
           isDeliveryType || isPickUpType

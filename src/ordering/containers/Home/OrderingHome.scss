@@ -34,6 +34,16 @@ $gray-nav-item-text: #707070;
     width: 88%;
   }
 
+  &__dine-in-header .header__content {
+    width: 75%;
+  }
+
+  &__table-id {
+    max-width: 25%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
   &__delivery-fee {
     color: $white;
     background-color: $theme-blue;
