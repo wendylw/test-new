@@ -178,7 +178,9 @@ class Cart extends Component {
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
 
-      container.scrollTop = container.scrollHeight;
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
     }, 300);
   };
 
