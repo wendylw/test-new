@@ -222,7 +222,7 @@ class ProductDetail extends Component {
     for (let i = 0; i < minimumVariations.length; i++) {
       const { id, minSelectionAmount, allowMultiQty } = minimumVariations[i];
       const { optionQuantity } = this.state;
-      console.log(minimumVariations, variationsByIdMap, 'minimumVariations');
+
       if (allowMultiQty && variationsByIdMap[id]) {
         let selectTotal = 0;
         let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXECLUDE_KEYS[0]);
@@ -496,6 +496,7 @@ class ProductDetail extends Component {
             onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
             onIncrease={() => {
               const disableVariationsId = this.isInvalidMinimumVariations();
+
               if (hasMinimumVariations && disableVariationsId) {
                 document.getElementById(disableVariationsId).scrollIntoView();
                 return;
