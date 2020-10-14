@@ -54,7 +54,6 @@ export class OrderDetails extends Component {
                     {variationTexts && variationTexts[0] ? (
                       <span className="ordering-details__item-variations">{variationTexts.join(', ')}</span>
                     ) : null}
-                    <span className="ordering-details__item-variations">xxxxx, xxxxxx</span>
                   </p>
                 </div>
               </summary>
