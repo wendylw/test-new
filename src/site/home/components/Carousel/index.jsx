@@ -13,9 +13,20 @@ import { submitStoreMenu } from '../../utils';
 SwiperCore.use([Autoplay]);
 
 class Carousel extends Component {
-  handleStoreClicked = async store => {
+  handleStoreClicked = async (store, shippingType) => {
+    let type;
     const { currentPlaceInfo } = this.props;
-    await submitStoreMenu({ deliveryAddress: currentPlaceInfo, store: store, source: document.location.href });
+    if (shippingType.includes('Delivery')) {
+      type = 'delivery';
+    } else {
+      type = 'pickup';
+    }
+    await submitStoreMenu({
+      deliveryAddress: currentPlaceInfo,
+      store: store,
+      source: document.location.href,
+      shippingType: type,
+    });
   };
 
   renderClosedStoreTag = enablePreOrder => {
@@ -33,7 +44,7 @@ class Carousel extends Component {
     );
   };
 
-  renderCarouselStores(stores) {
+  renderCarouselStores(stores, shippingType) {
     const { t } = this.props;
     return (
       <Swiper className="margin-top-bottom-normal" slidesPerView={'auto'}>
@@ -59,7 +70,7 @@ class Carousel extends Component {
               data-heap-name="site.home.carousel.store-item"
               data-heap-store-name={name}
               onClick={() => {
-                this.handleStoreClicked(store);
+                this.handleStoreClicked(store, shippingType);
               }}
             >
               <div className="carousel__image-container">
@@ -109,7 +120,7 @@ class Carousel extends Component {
     return (
       <div>
         {(collections || []).map(item => {
-          const { name, stores, urlPath, beepCollectionId } = item;
+          const { name, stores, urlPath, beepCollectionId, shippingType } = item;
           return (
             <section key={beepCollectionId}>
               <div className="flex flex-space-between flex-middle padding-left-right-normal">
@@ -127,7 +138,7 @@ class Carousel extends Component {
                   <IconNext className="icon icon__privacy" />
                 </span>
               </div>
-              {stores && this.renderCarouselStores(stores)}
+              {stores && this.renderCarouselStores(stores, shippingType)}
             </section>
           );
         })}
