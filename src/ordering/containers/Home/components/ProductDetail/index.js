@@ -14,7 +14,7 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
-import SwiperCore, { Autoplay } from 'swiper';
+import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -24,7 +24,7 @@ import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm'
 import qs from 'qs';
 import { withRouter } from 'react-router-dom';
 import 'swiper/swiper.scss';
-
+import 'swiper/components/pagination/pagination.scss';
 import './ProductDetail.scss';
 
 const VARIATION_TYPES = {
@@ -33,7 +33,7 @@ const VARIATION_TYPES = {
 };
 const EXECLUDE_KEYS = ['variationType'];
 
-SwiperCore.use([Autoplay]);
+SwiperCore.use([Autoplay, Pagination]);
 
 class ProductDetail extends Component {
   currentProductId = null;
@@ -682,7 +682,12 @@ class ProductDetail extends Component {
             />
 
             <div className="product-detail__image-container flex__shrink-fixed">
-              <Swiper className="product-detail__image" slidesPerView={'auto'} loop={true}>
+              <Swiper
+                className="product-detail__image"
+                slidesPerView={'auto'}
+                loop={true}
+                pagination={{ clickable: true }}
+              >
                 {(images && images.length ? images : [null]).map(image => {
                   return (
                     <SwiperSlide key={image}>

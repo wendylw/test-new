@@ -65,7 +65,9 @@
     object-fit: cover;
     object-position: center;
   }
-
+  &__image .swiper-pagination-bullet-active {
+    background: $theme-color;
+  }
   &__info {
     position: relative;
     min-height: 20%;
