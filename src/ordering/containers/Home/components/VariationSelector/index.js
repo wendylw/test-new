@@ -152,7 +152,7 @@ export class VariationSelector extends Component {
         const priceDiff = optionValuesList.find(item => item.id === id).priceDiff;
         sum += priceDiff * obj[id];
       });
-      return sum;
+      return sum.toFixed(2);
     }
     return 0;
   };
