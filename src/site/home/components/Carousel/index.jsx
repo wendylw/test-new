@@ -9,6 +9,7 @@ import { IconLocalOffer, IconWallet, IconNext } from '../../../../components/Ico
 import 'swiper/swiper.scss';
 import './index.scss';
 import { submitStoreMenu } from '../../utils';
+import Tag from '../../../../components/Tag';
 
 SwiperCore.use([Autoplay]);
 
@@ -33,8 +34,8 @@ class Carousel extends Component {
     const { t } = this.props;
     return enablePreOrder ? (
       <div className="store-card-list__image-cover">
-        <label className="store-card-list__tag tag tag__small tag__privacy text-uppercase text-weight-bolder">
-          {t('PreOrder')}
+        <label className="store-card-list__tag text-size-small text-uppercase text-weight-bolder">
+          <Tag className="tag tag__small tag__primary" text={t('PreOrder')} />
         </label>
       </div>
     ) : (
@@ -93,7 +94,7 @@ class Carousel extends Component {
                 </h3>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconWallet className="icon icon__privacy icon__smaller text-middle" />
+                    <IconWallet className="icon icon__primary icon__smaller text-middle" />
                     <span className="text-size-smaller text-middle text-capitalize">
                       {t('EnabledCashbackText', {
                         cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
@@ -103,7 +104,7 @@ class Carousel extends Component {
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
+                    <IconLocalOffer className="icon icon__primary icon__smaller text-middle" />
                     <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
                   </div>
                 ) : null}
@@ -135,7 +136,7 @@ class Carousel extends Component {
                   }}
                 >
                   <span className="text-size-big text-weight-bolder">{t('SeeAll')}</span>
-                  <IconNext className="icon icon__privacy" />
+                  <IconNext className="icon icon__primary" />
                 </span>
               </div>
               {stores && this.renderCarouselStores(stores, shippingType)}
