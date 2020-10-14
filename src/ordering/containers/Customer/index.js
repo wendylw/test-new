@@ -35,6 +35,7 @@ const { ROUTER_PATHS, DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 
 class Customer extends Component {
   state = {
+    payNowLoading: false,
     sentOtp: false,
     errorToast: '',
     consumerInfo: {
@@ -88,6 +89,10 @@ class Customer extends Component {
     const { history, user } = this.props;
     const { isLogin } = user || {};
 
+    this.setState({
+      payNowLoading: false,
+    });
+
     if (isLogin) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
@@ -137,6 +142,11 @@ class Customer extends Component {
     const { phone } = deliveryDetails;
     const { isLogin } = user || {};
     const checkDistanceResult = this.checkDistanceError();
+
+    this.setState({
+      payNowLoading: true,
+    });
+
     if (checkDistanceResult) {
       this.setState({ errorToast: checkDistanceResult });
       return;
@@ -409,7 +419,7 @@ class Customer extends Component {
 
   render() {
     const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart, cartSummary } = this.props;
-    const { errorToast } = this.state;
+    const { errorToast, payNowLoading } = this.state;
     const { isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { shippingFee } = shoppingCart.summary;
@@ -490,7 +500,7 @@ class Customer extends Component {
             history={history}
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
-            disabled={!this.getCanContinue() || isFetching}
+            disabled={payNowLoading || !this.getCanContinue() || isFetching}
             validCreateOrder={!total}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             afterCreateOrder={this.visitPaymentPage.bind(this)}

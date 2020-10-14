@@ -552,7 +552,7 @@ class CreditCard extends Component {
           />
         ) : null}
 
-        <Loader className={'loading-cover opacity'} loaded={domLoaded} />
+        <Loader className="loading-cover opacity" loaded={domLoaded} />
       </section>
     );
   }
