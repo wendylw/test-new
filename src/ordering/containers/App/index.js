@@ -182,6 +182,7 @@ class App extends Component {
     const { message } = error || {};
     const { prompt } = user || {};
     const { favicon } = onlineStoreInfo || {};
+
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
         {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
