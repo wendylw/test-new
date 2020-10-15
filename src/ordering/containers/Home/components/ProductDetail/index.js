@@ -690,7 +690,7 @@ class ProductDetail extends Component {
                 slidesPerView={'auto'}
                 pagination={{
                   clickable: true,
-                  bulletClass: images && images.length === 1 ? 'pagination-hidden' : 'swiper-pagination-bullet',
+                  bulletClass: images && images.length > 1 ? 'swiper-pagination-bullet' : 'pagination-hidden',
                 }}
                 callback={this.handleSwipeProductImage.bind(this)}
               >
