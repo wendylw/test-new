@@ -688,8 +688,11 @@ class ProductDetail extends Component {
               <Swiper
                 className="product-detail__image"
                 slidesPerView={'auto'}
-                loop={true}
-                pagination={{ clickable: true }}
+                pagination={{
+                  clickable: true,
+                  bulletClass: images && images.length === 1 ? 'pagination-hidden' : 'swiper-pagination-bullet',
+                }}
+                callback={this.handleSwipeProductImage.bind(this)}
               >
                 {(images && images.length ? images : [null]).map(image => {
                   return (
