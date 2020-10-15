@@ -185,7 +185,6 @@ class App extends Component {
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
-        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         {apiErrorMessage.show ? (
           <MessageModal
