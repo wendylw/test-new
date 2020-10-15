@@ -498,7 +498,8 @@ class ProductDetail extends Component {
               const disableVariationsId = this.isInvalidMinimumVariations();
 
               if (hasMinimumVariations && disableVariationsId) {
-                document.getElementById(disableVariationsId).scrollIntoView();
+                document.getElementById(disableVariationsId) &&
+                  document.getElementById(disableVariationsId).scrollIntoView();
                 return;
               }
               this.setState({ cartQuantity: cartQuantity + 1 });
