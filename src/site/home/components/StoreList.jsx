@@ -11,6 +11,7 @@ import {
 import Image from '../../../components/Image';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import Tag from '../../../components/Tag';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -21,8 +22,8 @@ class StoreList extends Component {
     const { t } = this.props;
     return enablePreOrder ? (
       <div className="store-card-list__image-cover">
-        <label className="store-card-list__tag tag tag__small tag__info text-size-small text-uppercase text-weight-bolder">
-          {t('PreOrder')}
+        <label className="store-card-list__tag text-size-small text-uppercase text-weight-bolder">
+          <Tag className="tag tag__small tag__primary" text={t('PreOrder')} />
         </label>
       </div>
     ) : (
