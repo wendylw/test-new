@@ -721,18 +721,14 @@ class ProductDetail extends Component {
                 />
               ) : null}
             </div>
-            <article className="product-detail__article margin-top-bottom-normal">
-              {Boolean(descriptionStr) ? (
+            {Boolean(descriptionStr.__html) ? (
+              <article className="product-detail__article margin-top-bottom-normal">
                 <p
                   className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
                   dangerouslySetInnerHTML={descriptionStr}
                 />
-              ) : (
-                <p className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big">
-                  {t('NoProductDescription')}
-                </p>
-              )}
-            </article>
+              </article>
+            ) : null}
             {this.renderVariations()}
           </div>
           {this.renderProductOperator()}
