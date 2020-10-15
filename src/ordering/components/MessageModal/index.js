@@ -12,12 +12,12 @@ class MessageModal extends Component {
     const { message, description, buttonText, show } = data;
 
     return (
-      <Modal data-heap-name="ordering.common.message-modal.container" className="offline-store-modal" show={true}>
-        <Modal.Body className={'offline-store-modal__body text-center'}>
+      <Modal data-heap-name="ordering.common.message-modal.container" className="message-modal" show={true}>
+        <Modal.Body className="text-center">
           <h4 className="padding-small text-size-biggest text-weight-bolder">{message}</h4>
-          <p className="modal__text">{description}</p>
+          <p className="modal__text  padding-top-bottom-small">{description}</p>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="padding-small">
           <button
             className="button button__fill button__block text-weight-bolder"
             data-heap-name="ordering.common.message-modal.ok-btn"
