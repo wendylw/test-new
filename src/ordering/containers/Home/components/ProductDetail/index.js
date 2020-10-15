@@ -704,14 +704,14 @@ class ProductDetail extends Component {
               </Swiper>
             </div>
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
-              <summary className="product-detail__info-summary flex flex-top flex-space-between">
+              <div className="product-detail__info-summary flex flex-top flex-space-between">
                 <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
                 <CurrencyNumber
                   className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
                   money={Number(this.displayPrice()) || 0}
                   numberOnly={true}
                 />
-              </summary>
+              </div>
 
               {Utils.isProductSoldOut(product || {}) ? (
                 <Tag
