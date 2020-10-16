@@ -461,12 +461,26 @@ export class ThankYou extends PureComponent {
               </h4>
             )}
             {currentStatusObj.status === 'paid' ? (
-              <div className="flex flex-middle">
-                <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
-                <span role="img" aria-label="Goofy">
-                  😋
-                </span>
-              </div>
+              <React.fragment>
+                <h4
+                  className={`text-size-big text-weight-bolder line-height-normal ${
+                    (useStorehubLogistics && currentStatusObj.status === 'accepted') ||
+                    currentStatusObj.status === 'paid'
+                      ? ` ordering-thanks__${currentStatusObj.status}`
+                      : ''
+                  }`}
+                >
+                  {!useStorehubLogistics && currentStatusObj.status !== 'paid'
+                    ? t('SelfDeliveryTitle', { storeName: name })
+                    : currentStatusObj.firstNote}
+                </h4>
+                <div className="flex flex-middle">
+                  <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
+                  <span role="img" aria-label="Goofy">
+                    😋
+                  </span>
+                </div>
+              </React.fragment>
             ) : null}
             {useStorehubLogistics &&
             (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
@@ -491,7 +505,9 @@ export class ThankYou extends PureComponent {
                 <IconAccessTime className="icon icon__small" />
                 <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>
               </div>
-            ) : null}
+            ) : (
+              <div></div>
+            )}
 
             {currentStatusObj.status === 'delivered' ? (
               <div className="thanks__status-description flex flex-middle ">
