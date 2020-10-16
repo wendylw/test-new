@@ -167,11 +167,6 @@ export class VariationSelector extends Component {
       allowMultiQty: enableQuantity,
       optionValues,
     } = variation || {};
-    // TODO  test code   should remove it
-    // enableSelectionAmountLimit = true;
-    // minSelectionAmount = 2;
-    // maxSelectionAmount = 5;
-    // enableQuantity = true;
 
     const optionQuantityValue = Object.values(optionQuantity);
     const selectedValue = Object.values(selected).filter(item => item);
@@ -221,10 +216,7 @@ export class VariationSelector extends Component {
         <ul className="variation-selector__list margin-top-bottom-smaller" data-test_id={variation.variationType}>
           {(variation.optionValues || []).map(option => {
             const { id, value, markedSoldOut, priceDiff } = option;
-            // const className = [
-            //   'variation-selector__button button padding-top-bottom-small padding-left-right-normal margin-smaller',
-            //   selected[id] ? 'button__fill' : 'variation-selector__button-shadow',
-            // ];
+
             let selectedOptionFunc = this.handleSelectedOption.bind(
               this,
               option,
@@ -239,16 +231,6 @@ export class VariationSelector extends Component {
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
-                {/*<button*/}
-                {/*  className={className.join(' ')}*/}
-                {/*  data-testid="itemDetailSimpleSelection"*/}
-                {/*  data-heap-name="common.variation-selector.tag"*/}
-                {/*  data-heap-tag-value={value}*/}
-                {/*  disabled={markedSoldOut || (this.isInvalidMaximumVariations() && !selected[id])}*/}
-                {/*  onClick={selectedOptionFunc}*/}
-                {/*>*/}
-                {/*  {value}*/}
-                {/*</button>*/}
                 <p
                   className={`${
                     selected[id] || (this.isMultipleChoice() && enableQuantity) ? 'active' : ''
