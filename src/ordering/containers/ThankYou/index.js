@@ -328,7 +328,7 @@ export class ThankYou extends PureComponent {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    const { total, storeInfo, status, isPreOrder } = order || {};
+    let { total, storeInfo, status, isPreOrder } = order || {};
     const { name } = storeInfo || {};
     const { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
@@ -339,7 +339,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-
+    status = 'accepted';
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -419,16 +419,23 @@ export class ThankYou extends PureComponent {
           src={currentStatusObj.bannerImage}
           alt="Beep Success"
         />
-        <div className="card text-center margin-normal">
-          {currentStatusObj.status !== 'cancelled' ? (
-            <div className="progress-bar__container">
-              <i
-                className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}
-                style={currentStatusObj.style}
-              ></i>
-            </div>
-          ) : null}
-          <div className="padding-small">
+        <div className="card text-center margin-normal flex">
+          {/*{currentStatusObj.status !== 'cancelled' ? (*/}
+          {/*  <div className="progress-bar__container">*/}
+          {/*    <i*/}
+          {/*      className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}*/}
+          {/*      style={currentStatusObj.style}*/}
+          {/*    ></i>*/}
+          {/*  </div>*/}
+          {/*) : null}*/}
+          <div className="ordering-thanks__progress">
+            <p className="circle"></p>
+            <span className="line"></span>
+            <p className="circle"></p>
+            <span className="line"></span>
+            <p className="circle"></p>
+          </div>
+          <div className="padding-small text-left">
             {currentStatusObj.status === 'cancelled' ? (
               <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
                 <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
@@ -454,7 +461,7 @@ export class ThankYou extends PureComponent {
               </h4>
             )}
             {currentStatusObj.status === 'paid' ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
+              <div className="padding-top-bottom-small flex flex-middle">
                 <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
                 <span role="img" aria-label="Goofy">
                   😋
@@ -463,7 +470,7 @@ export class ThankYou extends PureComponent {
             ) : null}
             {useStorehubLogistics &&
             (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
+              <div className="padding-top-bottom-small flex flex-middle ">
                 {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                   <a
                     href={trackingUrl}
