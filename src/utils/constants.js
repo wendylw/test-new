@@ -154,7 +154,7 @@ const CREATE_ORDER_ERROR_CODES = {
   CONTACT_DETAIL_INVALID: 40012,
   STORE_IS_ON_VACATION: 40013,
 };
-console.log(i18next.t('Common:PreOrderTag'), 'i18next.t("ApiError:41000Title")');
+
 const ERROR_CODE_MAP = {
   40000: {
     title: 'ApiError:40000Title',
