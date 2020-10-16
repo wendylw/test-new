@@ -24,6 +24,10 @@ export class Error extends Component {
         title: `${t('Sorry')}!`,
         description: t('QROrderingDisabledDescription'),
       },
+      NoDeliveryLocation: {
+        title: `${t('Sorry')}!`,
+        description: t('NoDeliveryLocationDescription'),
+      },
     };
 
     return Errors[type.replace(/\s/g, '')] || {};
