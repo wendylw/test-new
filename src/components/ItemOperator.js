@@ -13,13 +13,8 @@ export class ItemOperator extends Component {
       onDecrease,
       onIncrease,
       dataAttributes,
-      from,
     } = this.props;
-    const classList = [
-      `item-operator flex flex-space-between ${
-        (from === 'productDetail' ? quantity >= 0 : quantity > 0) ? 'item-operator--minus' : ''
-      }`,
-    ];
+    const classList = [`item-operator flex flex-space-between ${quantity > 0 ? 'item-operator--minus' : ''}`];
 
     if (className) {
       classList.push(className);
@@ -46,7 +41,7 @@ export class ItemOperator extends Component {
           data-testid="itemDetailQuantity"
           data-heap-name="common.item-operator.quantity"
         >
-          {(from === 'productDetail' ? quantity >= 0 : quantity > 0) ? quantity : null}
+          {quantity > 0 ? quantity : null}
         </span>
 
         {onIncrease ? (
@@ -74,13 +69,11 @@ ItemOperator.propTypes = {
   onDecrease: PropTypes.func,
   onIncrease: PropTypes.func,
   quantity: PropTypes.number,
-  from: PropTypes.string,
 };
 
 ItemOperator.defaultProps = {
   decreaseDisabled: false,
   increaseDisabled: false,
-  from: 'home',
 };
 export const ItemOperatorComponent = ItemOperator;
 export default withDataAttributes(ItemOperator);

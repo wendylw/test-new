@@ -9,13 +9,11 @@ import VariationSelector from '../VariationSelector';
 import ProductItem from '../../../../components/ProductItem';
 import { IconClose } from '../../../../../components/Icons';
 import ItemOperator from '../../../../../components/ItemOperator';
-import CheckBox from '../../../../../components/CheckBox';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
-import SwiperCore, { Autoplay, Pagination } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
+
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
@@ -23,8 +21,6 @@ import { actions as homeActionCreators, getCurrentProduct } from '../../../../re
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import qs from 'qs';
 import { withRouter } from 'react-router-dom';
-import 'swiper/swiper.scss';
-import 'swiper/components/pagination/pagination.scss';
 import './ProductDetail.scss';
 
 const VARIATION_TYPES = {
@@ -32,8 +28,6 @@ const VARIATION_TYPES = {
   MULTIPLE_CHOICE: 'MultipleChoice',
 };
 const EXECLUDE_KEYS = ['variationType'];
-
-SwiperCore.use([Autoplay, Pagination]);
 
 class ProductDetail extends Component {
   currentProductId = null;
@@ -51,7 +45,6 @@ class ProductDetail extends Component {
     resizedImage: false,
     currentProductDescriptionImageIndex: 0,
     minimumVariations: [],
-    optionQuantity: {},
   };
 
   componentDidMount() {
@@ -83,7 +76,6 @@ class ProductDetail extends Component {
       this.setState({
         resizedImage: false,
         minimumVariations: [],
-        optionQuantity: {},
       });
     }
   }
@@ -151,19 +143,17 @@ class ProductDetail extends Component {
   displayPrice() {
     const { product } = this.props;
     const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
-    const { variationsByIdMap, optionQuantity, cartQuantity } = this.state;
+    const { variationsByIdMap } = this.state;
     const selectedValues = [];
     const selectedVariations = [];
     let totalPriceDiff = 0;
 
-    Object.keys(variationsByIdMap).forEach(function(id) {
-      const options = variationsByIdMap[id];
-      Object.keys(options).forEach(key => {
-        const item = options[key];
+    Object.values(variationsByIdMap).forEach(function(options) {
+      Object.values(options).forEach(item => {
         if (item.value) {
           selectedVariations.push(item);
 
-          totalPriceDiff += optionQuantity[key] > 1 ? optionQuantity[key] * item.priceDiff : item.priceDiff;
+          totalPriceDiff += item.priceDiff;
           selectedValues.push(item.value);
         }
       });
@@ -214,30 +204,17 @@ class ProductDetail extends Component {
     }
 
     if (!variationsByIdMap) {
-      return minimumVariations[0].id;
+      return true;
     }
 
-    let isAllMinimumVariationsAble = false;
-
     for (let i = 0; i < minimumVariations.length; i++) {
-      const { id, minSelectionAmount, allowMultiQty } = minimumVariations[i];
-      const { optionQuantity } = this.state;
+      const { id, minSelectionAmount } = minimumVariations[i];
 
-      if (allowMultiQty && variationsByIdMap[id]) {
-        let selectTotal = 0;
-        let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXECLUDE_KEYS[0]);
-
-        optionKeyList.forEach(key => {
-          selectTotal += optionQuantity[key];
-        });
-        if (selectTotal < minSelectionAmount) {
-          return id;
-        }
-      } else if (
+      if (
         !variationsByIdMap[id] ||
         (variationsByIdMap[id] && Object.keys(variationsByIdMap[id]).length - 1 < minSelectionAmount)
       ) {
-        return id;
+        return true;
       }
     }
 
@@ -299,15 +276,6 @@ class ProductDetail extends Component {
 
     this.setState({ variationsByIdMap: newMap });
   }
-
-  updateOptionQuantity = updateOptionQuantity => {
-    this.setState({
-      optionQuantity: {
-        ...this.state.optionQuantity,
-        ...updateOptionQuantity,
-      },
-    });
-  };
 
   getChoiceVariations(type) {
     const { variations } = this.props.product || {};
@@ -436,7 +404,7 @@ class ProductDetail extends Component {
     const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
 
     return (
-      <div className="product-detail__variations">
+      <div className="product-detail__variations border__bottom-divider">
         <ol className="padding-top-bottom-small">
           {singleChoiceVariations.map(variation => (
             <VariationSelector
@@ -453,10 +421,9 @@ class ProductDetail extends Component {
               key={variation.id}
               variation={variation}
               initVariation={show}
-              isInvalidMinimum={!!this.isInvalidMinimumVariations()}
+              isInvalidMinimum={this.isInvalidMinimumVariations()}
               data-heap-name="ordering.home.product-detail.multi-choice"
               data-heap-variation-name={variation.name}
-              updateOptionQuantity={this.updateOptionQuantity}
               onChange={this.setVariationsByIdMap.bind(this)}
             />
           ))}
@@ -465,14 +432,9 @@ class ProductDetail extends Component {
     );
   }
 
-  addCartDisplayPrice = () => {
-    const { cartQuantity } = this.state;
-    return this.displayPrice() * cartQuantity;
-  };
-
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
+    const { cartQuantity, minimumVariations } = this.state;
     const { id: productId, images, title } = product || {};
     const imageUrl = Array.isArray(images) ? images[0] : null;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -482,44 +444,34 @@ class ProductDetail extends Component {
     }
 
     return (
-      <React.Fragment>
-        <div
-          className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
-          ref={ref => (this.opeartoresEl = ref)}
-        >
-          <ItemOperator
-            className="flex-middle"
-            data-heap-name="ordering.common.product-item.item-operator "
-            quantity={cartQuantity}
-            from="productDetail"
-            decreaseDisabled={cartQuantity <= 1}
-            onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-            onIncrease={() => {
-              const disableVariationsId = this.isInvalidMinimumVariations();
+      <div ref={ref => (this.productEl = ref)} className="product-detail__operator">
+        <ProductItem
+          isLazyLoad={false}
+          productDetailImageRef={ref => (this.productDetailImage = ref)}
+          className="product-detail__item"
+          image={imageUrl}
+          title={title}
+          variation={this.getVariationText()}
+          price={Number(this.displayPrice())}
+          cartQuantity={cartQuantity}
+          decreaseDisabled={cartQuantity === 1}
+          onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+          onIncrease={() => this.setState({ cartQuantity: cartQuantity + 1 })}
+        />
 
-              if (hasMinimumVariations && disableVariationsId) {
-                document.getElementById(disableVariationsId) &&
-                  document.getElementById(disableVariationsId).scrollIntoView();
-                return;
-              }
-              this.setState({ cartQuantity: cartQuantity + 1 });
-            }}
-            increaseDisabled={false}
-          />
-        </div>
-        <footer
-          className="product-detail__footer flex flex-middle flex-center padding-normal flex__shrink-fixed "
-          ref={ref => (this.footerEl = ref)}
-        >
+        <div ref={ref => (this.buttonEl = ref)} className="padding-normal">
           <button
-            className="button add__button button__fill text-uppercase text-weight-bolder "
+            className="button button__fill button__block text-weight-bolder"
+            type="button"
+            data-testid="OK"
+            data-heap-name="ordering.home.product-detail.ok-btn"
             disabled={
               !this.isSubmitable() ||
               Utils.isProductSoldOut(product || {}) ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
-            onClick={() => {
-              const { variationsByIdMap, optionQuantity } = this.state;
+            onClick={async () => {
+              const { variationsByIdMap } = this.state;
               let variations = [];
 
               Object.keys(variationsByIdMap).forEach(function(variationId) {
@@ -533,16 +485,6 @@ class ProductDetail extends Component {
                 });
               });
 
-              variations.forEach(item => {
-                const { optionId } = item;
-
-                if (optionQuantity[optionId]) {
-                  item.quantity = optionQuantity[optionId];
-                } else {
-                  item.quantity = 1;
-                }
-              });
-
               if (this.isSubmitable()) {
                 this.handleAddOrUpdateShoppingCartItem({
                   action: 'add',
@@ -554,25 +496,22 @@ class ProductDetail extends Component {
               }
             }}
           >
-            {t('AddCart')} -
-            <CurrencyNumber
-              className="padding-small text-weight-bolder flex__shrink-fixed"
-              money={Number(this.addCartDisplayPrice()) || 0}
-            />
+            {t('OK')}
           </button>
-        </footer>
-      </React.Fragment>
+        </div>
+      </div>
     );
   }
 
   renderProductDescription() {
-    const { t, show, product, onlineStoreInfo } = this.props;
+    const { t, show, product, viewAside, onToggle, onlineStoreInfo } = this.props;
     const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title } = product || {};
+    const { images, title, description } = product || {};
     const { storeName } = onlineStoreInfo || {};
     const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
+    const descriptionStr = { __html: Utils.removeHtmlTag(description) };
 
-    if (show) {
+    if (viewAside !== 'PRODUCT_DESCRIPTION' && show) {
       className.push('product-description__hide');
     }
 
@@ -582,6 +521,11 @@ class ProductDetail extends Component {
           ref={ref => (this.productDescriptionImage = ref)}
           className="product-description__image-container flex__shrink-fixed"
         >
+          <IconClose
+            className="product-description__icon-close icon icon__normal margin-normal"
+            onClick={() => onToggle()}
+            data-heap-name="ordering.home.product-detail.back-btn"
+          />
           {images && images.length > 1 ? (
             <Swipe
               ref={ref => (this.swipeEl = ref)}
@@ -648,92 +592,51 @@ class ProductDetail extends Component {
             />
           )}
         </div>
+        <article className="product-description__article margin-top-bottom-normal">
+          {Boolean(descriptionStr) ? (
+            <p
+              className="text-opacity padding-left-right-normal margin-top-bottom-small"
+              dangerouslySetInnerHTML={descriptionStr}
+            />
+          ) : (
+            <p className="text-opacity padding-left-right-normal margin-top-bottom-small">
+              {t('NoProductDescription')}
+            </p>
+          )}
+        </article>
       </div>
     );
   }
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
-    const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = product || {};
+    const { product, viewAside, show, footerEl } = this.props;
     const { resizeImage } = this.state;
-    const descriptionStr = { __html: description };
 
-    if (show && product && id && !_needMore) {
-      className.push('active cover');
+    if (show && product && product.id && !product._needMore) {
+      className.push('active');
     }
 
-    const footerEl = this.footerEl;
     return (
       <aside
         ref={ref => (this.asideEl = ref)}
         className={className.join(' ')}
         onClick={e => this.handleHideProductDetail(e)}
         data-heap-name="ordering.home.product-detail.container"
+        style={{
+          bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
+        }}
       >
         <div
-          className="product-detail__container aside__content flex flex-column cover"
+          className="product-detail__container aside__content absolute-wrapper flex flex-column"
           style={{
             opacity: viewAside === 'PRODUCT_DESCRIPTION' && show && !resizeImage ? 0 : 1,
           }}
         >
-          <div className="product-detail__wrapper">
-            <IconClose
-              className="product-detail__icon-close icon icon__normal margin-normal"
-              onClick={() => onToggle()}
-              data-heap-name="ordering.home.product-detail.back-btn"
-            />
-
-            <div className="product-detail__image-container flex__shrink-fixed">
-              <Swiper
-                className="product-detail__image"
-                slidesPerView={'auto'}
-                pagination={{
-                  clickable: true,
-                  bulletClass: images && images.length > 1 ? 'swiper-pagination-bullet' : 'pagination-hidden',
-                }}
-                callback={this.handleSwipeProductImage.bind(this)}
-              >
-                {(images && images.length ? images : [null]).map(image => {
-                  return (
-                    <SwiperSlide key={image}>
-                      <Image src={image} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
-            </div>
-            <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
-              <div className="product-detail__info-summary flex flex-top flex-space-between">
-                <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
-                <CurrencyNumber
-                  className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
-                  money={Number(this.displayPrice()) || 0}
-                  numberOnly={true}
-                />
-              </div>
-
-              {Utils.isProductSoldOut(product || {}) ? (
-                <Tag
-                  text={t('SoldOut')}
-                  className="product-detail__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
-                />
-              ) : null}
-            </div>
-            {Boolean(descriptionStr.__html) ? (
-              <article className="product-detail__article margin-top-bottom-normal">
-                <p
-                  className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
-                  dangerouslySetInnerHTML={descriptionStr}
-                />
-              </article>
-            ) : null}
-            {this.renderVariations()}
-          </div>
+          {this.renderVariations()}
           {this.renderProductOperator()}
         </div>
-        {/* {this.renderProductDescription()} */}
+        {this.renderProductDescription()}
       </aside>
     );
   }

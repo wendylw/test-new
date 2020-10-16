@@ -37,7 +37,6 @@ class EmptySearch extends Component {
 
   renderOtherItems = () => {
     const { others } = this.props;
-
     return (
       <div>
         {(others || []).map(collection => {
@@ -59,27 +58,24 @@ class EmptySearch extends Component {
   };
 
   renderOtherCategories() {
-    const { t, hasMore, getScrollParent, loadCollections, others } = this.props;
-
+    const { t, hasMore, getScrollParent, loadCollections } = this.props;
     return (
       <div className={'search-other'}>
         <h2 className={'padding-top-bottom-normal text-weight-bolder'}>{t('OtherCategories')}</h2>
         <ul className={'search-other__container'}>
-          {!others || !others.length ? null : (
-            <InfiniteScroll
-              className="store-card-list"
-              element="ul"
-              loader={<div key={'loading-0'} className="store-card-list__loader loader theme text-size-biggest" />}
-              pageStart={0}
-              initialLoad={false}
-              hasMore={hasMore}
-              loadMore={page => loadCollections(page)}
-              getScrollParent={getScrollParent}
-              useWindow={false}
-            >
-              {this.renderOtherItems()}
-            </InfiniteScroll>
-          )}
+          <InfiniteScroll
+            className="store-card-list"
+            element="ul"
+            loader={<div key={'loading-0'} className="store-card-list__loader loader theme text-size-biggest" />}
+            pageStart={0}
+            initialLoad={false}
+            hasMore={hasMore}
+            loadMore={page => loadCollections(page)}
+            getScrollParent={getScrollParent}
+            useWindow={false}
+          >
+            {this.renderOtherItems()}
+          </InfiniteScroll>
         </ul>
       </div>
     );

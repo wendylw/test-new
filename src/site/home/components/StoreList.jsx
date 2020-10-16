@@ -38,7 +38,7 @@ class StoreList extends Component {
 
     return (
       <React.Fragment>
-        {(stores || []).map((store, index) => {
+        {stores.map((store, index) => {
           const {
             name,
             avatar,
@@ -159,11 +159,7 @@ class StoreList extends Component {
   };
 
   renderWithInfiniteScroll = () => {
-    const { hasMore, loadMoreStores, getScrollParent, stores } = this.props;
-
-    if (!stores || !stores.length) {
-      return null;
-    }
+    const { hasMore, loadMoreStores, getScrollParent } = this.props;
 
     return (
       <InfiniteScroll
