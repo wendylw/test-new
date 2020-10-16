@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Modal from '../../../components/Modal';
 import './MessageModal.scss';
+
 class MessageModal extends Component {
   handleClickOK = () => {
     this.props.onHide();
@@ -9,7 +10,7 @@ class MessageModal extends Component {
 
   render() {
     const { t, data } = this.props;
-    const { message, description, buttonText, show } = data;
+    const { message, description, buttonText } = data;
 
     return (
       <Modal data-heap-name="ordering.common.message-modal.container" className="message-modal" show={true}>
@@ -27,19 +28,6 @@ class MessageModal extends Component {
           </button>
         </Modal.Footer>
       </Modal>
-      // <section className="messageModal__wrapper">
-      //   <div className="messageModal__content">
-      //     <header className="messageModal__header ">{message}</header>
-      //     <div className="messageModal__body">
-      //       <p className="messageModal__text">{description}</p>
-      //     </div>
-      //     <footer>
-      //       <button className="button__fill button__block font-weight-bolder" onClick={this.handleClickOK}>
-      //         {buttonText || t('OK')}
-      //       </button>
-      //     </footer>
-      //   </div>
-      // </section>
     );
   }
 }
