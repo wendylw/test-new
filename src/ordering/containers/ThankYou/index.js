@@ -435,7 +435,7 @@ export class ThankYou extends PureComponent {
             <span className="line"></span>
             <p className="circle"></p>
           </div>
-          <div className="padding-small text-left">
+          <div className="padding-normal text-left">
             {currentStatusObj.status === 'cancelled' ? (
               <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
                 <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
@@ -445,7 +445,7 @@ export class ThankYou extends PureComponent {
               </Trans>
             ) : (
               <h4
-                className={`padding-top-bottom-small text-size-big text-weight-bolder ${
+                className={`text-size-big text-weight-bolder line-height-normal ${
                   (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'
                     ? ` ordering-thanks__${currentStatusObj.status}`
                     : ''
@@ -461,7 +461,7 @@ export class ThankYou extends PureComponent {
               </h4>
             )}
             {currentStatusObj.status === 'paid' ? (
-              <div className="padding-top-bottom-small flex flex-middle">
+              <div className="flex flex-middle">
                 <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
                 <span role="img" aria-label="Goofy">
                   😋
@@ -470,7 +470,7 @@ export class ThankYou extends PureComponent {
             ) : null}
             {useStorehubLogistics &&
             (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-              <div className="padding-top-bottom-small flex flex-middle ">
+              <div className=" flex flex-middle ">
                 {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                   <a
                     href={trackingUrl}
@@ -487,20 +487,20 @@ export class ThankYou extends PureComponent {
             ) : null}
 
             {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
+              <div className="flex flex-middle">
                 <IconAccessTime className="icon icon__small" />
                 <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>
               </div>
             ) : null}
 
             {currentStatusObj.status === 'delivered' ? (
-              <div className="thanks__status-description flex flex-middle flex-center">
+              <div className="thanks__status-description flex flex-middle ">
                 <p className="text-size-big">{currentStatusObj.secondNote}</p>
               </div>
             ) : null}
 
             {!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (
-              <div className="thanks__status-description flex flex-middle flex-center">
+              <div className="thanks__status-description flex flex-middle ">
                 <p className="text-size-big">{t('SelfDeliveryDescription')}</p>
               </div>
             ) : null}
