@@ -143,6 +143,8 @@ class App extends Component {
     }`;
 
     if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
+      Utils.setSessionVariable('errorMessage', pageError.message);
+
       return (window.location.href = errorPageUrl);
     }
   }
