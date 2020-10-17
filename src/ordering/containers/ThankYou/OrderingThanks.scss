@@ -86,6 +86,10 @@ $total-text-size: 1.7142rem;
     width: 0px;
   }
 
+  .text-gray svg {
+    fill: #8f9092;
+  }
+
   &__paid &__title-dots::after {
     content: ".....";
     overflow: hidden;
@@ -153,13 +157,10 @@ $total-text-size: 1.7142rem;
   }
 
   &__progress {
-    .circle {
-      width: 12px;
-      height: 12px;
-      background: $gray-2;
-      opacity: 0.5;
-      border-radius: 50%;
+    img {
+      width: 22px;
     }
+    width: 13%;
   }
   .icon__small {
     padding-left: 0;
@@ -169,7 +170,52 @@ $total-text-size: 1.7142rem;
     margin-top: 16px;
   }
 
+  .mt-12 {
+    margin-top: 12px;
+  }
+
+  .pt-4 {
+    padding-top: 4px;
+  }
+
   .line-height-normal {
     line-height: 24px;
+  }
+
+  .text-gray {
+    color: #8f9092;
+  }
+
+  .text-black {
+    color: $main-color;
+  }
+
+  &__rider {
+    p {
+      font-size: 16px;
+    }
+    h2 {
+      font-size: 26px;
+    }
+    img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+    }
+
+    &-button {
+      height: 56px;
+      border-top: 1px solid $gray-4;
+      a {
+        text-decoration: none;
+        color: $status-blue;
+        line-height: 56px;
+        flex: 1;
+      }
+      span {
+        width: 1px;
+        background: $gray-4;
+      }
+    }
   }
 }

@@ -30,6 +30,9 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
+import beepOrderPaid from '../../../images/beep-order-paid.png';
+import beepOrderAccepted from '../../../images/beep-order-accepted.png';
+import beepOrderConfirmed from '../../../images/beep-order-confirmed.png';
 import config from '../../../config';
 import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
@@ -330,7 +333,7 @@ export class ThankYou extends PureComponent {
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
     const { name } = storeInfo || {};
-    const { trackingUrl, useStorehubLogistics, courier } =
+    let { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -339,7 +342,8 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = 'accepted';
+    status = PICKUP;
+    useStorehubLogistics = true;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -373,8 +377,8 @@ export class ThankYou extends PureComponent {
         style: {
           width: '75%',
         },
-        firstNote: t('RiderAssigned'),
-        secondNote: t('TrackYourOrder'),
+        firstNote: t('PendingPickUp'),
+        secondNote: t('RiderAssigned'),
         bannerImage: beepOrderStatusConfirmed,
       };
     }
@@ -407,7 +411,7 @@ export class ThankYou extends PureComponent {
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        descriptionKey: cancelledDescriptionKey['auto_cancelled'],
         bannerImage: beepOrderStatusCancelled,
       };
     }
@@ -419,113 +423,211 @@ export class ThankYou extends PureComponent {
           src={currentStatusObj.bannerImage}
           alt="Beep Success"
         />
-        <div className="card text-center margin-normal flex">
-          {/*{currentStatusObj.status !== 'cancelled' ? (*/}
-          {/*  <div className="progress-bar__container">*/}
-          {/*    <i*/}
-          {/*      className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}*/}
-          {/*      style={currentStatusObj.style}*/}
-          {/*    ></i>*/}
-          {/*  </div>*/}
-          {/*) : null}*/}
-          <div className="ordering-thanks__progress">
-            <p className="circle"></p>
-            <span className="line"></span>
-            <p className="circle"></p>
-            <span className="line"></span>
-            <p className="circle"></p>
-          </div>
-          <div className="padding-normal text-left">
-            {currentStatusObj.status === 'cancelled' ? (
+        {currentStatusObj.status === 'cancelled' ? (
+          <div className="card text-center margin-normal flex">
+            <div className="padding-small text-left">
               <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
                 <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
                   {{ storeName: name }}
                   <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
                 </h4>
               </Trans>
-            ) : (
-              <h4
-                className={`text-size-big text-weight-bolder line-height-normal ${
-                  (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'
-                    ? ` ordering-thanks__${currentStatusObj.status}`
-                    : ''
-                }`}
-              >
-                {!useStorehubLogistics && currentStatusObj.status !== 'paid'
-                  ? t('SelfDeliveryTitle', { storeName: name })
-                  : currentStatusObj.firstNote}
-                {(useStorehubLogistics && currentStatusObj.status === 'accepted') ||
-                currentStatusObj.status === 'paid' ? (
-                  <span className="ordering-thanks__title-dots text-size-big text-weight-bolder"></span>
-                ) : null}
-              </h4>
-            )}
-            {currentStatusObj.status === 'paid' ? (
-              <React.fragment>
-                <h4
-                  className={`text-size-big text-weight-bolder line-height-normal ${
-                    (useStorehubLogistics && currentStatusObj.status === 'accepted') ||
+            </div>
+          </div>
+        ) : !useStorehubLogistics && currentStatusObj.status !== 'paid' ? null : (
+          <div className="card text-center margin-normal flex">
+            {/*{currentStatusObj.status !== 'cancelled' ? (*/}
+            {/*  <div className="progress-bar__container">*/}
+            {/*    <i*/}
+            {/*      className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}*/}
+            {/*      style={currentStatusObj.style}*/}
+            {/*    ></i>*/}
+            {/*  </div>*/}
+            {/*) : null}*/}
+            <div className="ordering-thanks__progress padding-top-bottom-small">
+              {
+                <img
+                  src={
                     currentStatusObj.status === 'paid'
-                      ? ` ordering-thanks__${currentStatusObj.status}`
-                      : ''
+                      ? beepOrderPaid
+                      : currentStatusObj.status === 'accepted'
+                      ? beepOrderAccepted
+                      : beepOrderConfirmed
+                  }
+                  alt=""
+                />
+              }
+            </div>
+            <div className="padding-small text-left">
+              {/*{currentStatusObj.status === 'cancelled' ? (*/}
+              {/*  <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>*/}
+              {/*    <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">*/}
+              {/*      {{ storeName: name }}*/}
+              {/*      <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />*/}
+              {/*    </h4>*/}
+              {/*  </Trans>*/}
+              {/*) :null*/}
+              {/*//     (*/}
+              {/*//   <h4*/}
+              {/*//     className={`text-size-big text-weight-bolder line-height-normal ${*/}
+              {/*//       (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'*/}
+              {/*//         ? ` ordering-thanks__${currentStatusObj.status}`*/}
+              {/*//         : ''*/}
+              {/*//     }`}*/}
+              {/*//   >*/}
+              {/*//     {!useStorehubLogistics && currentStatusObj.status !== 'paid'*/}
+              {/*//       ? t('SelfDeliveryTitle', { storeName: name })*/}
+              {/*//       : currentStatusObj.firstNote}*/}
+              {/*//     {(useStorehubLogistics && currentStatusObj.status === 'accepted') ||*/}
+              {/*//     currentStatusObj.status === 'paid' ? (*/}
+              {/*//       <span className="ordering-thanks__title-dots text-size-big text-weight-bolder"></span>*/}
+              {/*//     ) : null}*/}
+              {/*//   </h4>*/}
+              {/*// )*/}
+              {/*}*/}
+              {currentStatusObj.status === 'paid' ? (
+                <React.Fragment>
+                  <h4 className={`text-size-big text-weight-bolder line-height-normal ordering-thanks__paid`}>
+                    {currentStatusObj.firstNote}
+                  </h4>
+                  <div className="flex flex-middle line-height-normal text-gray">
+                    <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
+                    <span role="img" aria-label="Goofy">
+                      😋
+                    </span>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div className="line-height-normal text-black">{t('Confirmed')}</div>
+              )}
+
+              {currentStatusObj.status === 'accepted' ? (
+                <React.Fragment>
+                  <h4 className="text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted mt-12">
+                    {currentStatusObj.firstNote}
+                  </h4>
+                  <div className="flex flex-middle text-gray">
+                    <IconAccessTime className="icon icon__small" />
+                    <span className="">{currentStatusObj.secondNote}</span>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div
+                  className={`mt-12  line-height-normal ${
+                    currentStatusObj.status === 'confirmed' ? 'text-black' : 'pt-4 text-gray'
                   }`}
                 >
-                  {!useStorehubLogistics && currentStatusObj.status !== 'paid'
-                    ? t('SelfDeliveryTitle', { storeName: name })
-                    : currentStatusObj.firstNote}
-                </h4>
-                <div className="flex flex-middle">
-                  <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
-                  <span role="img" aria-label="Goofy">
-                    😋
-                  </span>
+                  {' '}
+                  {t('MerchantAccepted')}
                 </div>
-              </React.fragment>
-            ) : null}
-            {useStorehubLogistics &&
-            (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-              <div className=" flex flex-middle ">
-                {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-                  <a
-                    href={trackingUrl}
-                    target="__blank"
-                    className="ordering-thanks__link-status button button__link text-uppercase text-weight-bolder"
-                    data-heap-name="ordering.thank-you.logistics-tracking-link"
+              )}
+
+              {currentStatusObj.status === 'confirmed' ? (
+                <React.Fragment>
+                  <h4
+                    className={`text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted mt-12`}
                   >
-                    {currentStatusObj.secondNote}
-                  </a>
-                ) : (
-                  <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>
-                )}
-              </div>
-            ) : null}
+                    {currentStatusObj.firstNote}
+                  </h4>
+                  <div className="flex flex-middle text-gray line-height-normal">
+                    <span className="">{currentStatusObj.secondNote}</span>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div className="padding-top-bottom-small text-gray line-height-normal pt-4"> {t('PendingPickUp')} </div>
+              )}
+              {/*{useStorehubLogistics &&*/}
+              {/*(currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (*/}
+              {/*  <div className=" flex flex-middle ">*/}
+              {/*    {trackingUrl && Utils.isValidUrl(trackingUrl) ? (*/}
+              {/*      <a*/}
+              {/*        href={trackingUrl}*/}
+              {/*        target="__blank"*/}
+              {/*        className="ordering-thanks__link-status button button__link text-uppercase text-weight-bolder"*/}
+              {/*        data-heap-name="ordering.thank-you.logistics-tracking-link"*/}
+              {/*      >*/}
+              {/*        {currentStatusObj.secondNote}*/}
+              {/*      </a>*/}
+              {/*    ) : (*/}
+              {/*      <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>*/}
+              {/*    )}*/}
+              {/*  </div>*/}
+              {/*) : null}*/}
 
-            {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
-              <div className="flex flex-middle">
-                <IconAccessTime className="icon icon__small" />
-                <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>
-              </div>
-            ) : (
-              <div></div>
-            )}
+              {/*{useStorehubLogistics && currentStatusObj.status === 'accepted' ? (*/}
+              {/*  <div className="flex flex-middle">*/}
+              {/*    <IconAccessTime className="icon icon__small" />*/}
+              {/*    <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>*/}
+              {/*  </div>*/}
+              {/*) : (*/}
+              {/*  <div></div>*/}
+              {/*)}*/}
 
-            {currentStatusObj.status === 'delivered' ? (
-              <div className="thanks__status-description flex flex-middle ">
-                <p className="text-size-big">{currentStatusObj.secondNote}</p>
-              </div>
-            ) : null}
+              {/*{currentStatusObj.status === 'delivered' ? (*/}
+              {/*  <div className="thanks__status-description flex flex-middle ">*/}
+              {/*    <p className="text-size-big">{currentStatusObj.secondNote}</p>*/}
+              {/*  </div>*/}
+              {/*) : null}*/}
 
-            {!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (
-              <div className="thanks__status-description flex flex-middle ">
-                <p className="text-size-big">{t('SelfDeliveryDescription')}</p>
-              </div>
-            ) : null}
+              {/*{!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (*/}
+              {/*  <div className="thanks__status-description flex flex-middle ">*/}
+              {/*    <p className="text-size-big">{t('SelfDeliveryDescription')}</p>*/}
+              {/*  </div>*/}
+              {/*) : null}*/}
+            </div>
           </div>
-        </div>
+        )}
+        {currentStatusObj.status === 'confirmed' ||
+        currentStatusObj.status === 'riderPickUp' ||
+        currentStatusObj.status === 'delivered' ||
+        (!useStorehubLogistics && currentStatusObj.status !== 'paid')
+          ? this.renderRiderInfo(currentStatusObj.status, useStorehubLogistics)
+          : null}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
+
+  renderRiderInfo = (status, useStorehubLogistics) => {
+    const { t } = this.props;
+
+    return (
+      <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
+        <div className="padding-small">
+          {status === 'riderPickUp' && useStorehubLogistics && (
+            <p className="padding-small text-left">{t('OrderStatusPickedUp')}</p>
+          )}
+          {status === 'delivered' && useStorehubLogistics && (
+            <p className="padding-small text-left">{t('OrderStatusDelivered')}</p>
+          )}
+          {status !== 'paid' && !useStorehubLogistics && (
+            <p className="padding-small text-left">{t('SelfDeliveryDescription')}</p>
+          )}
+          {!(status !== 'paid' && !useStorehubLogistics) && (
+            <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder">
+              11:02 AM
+            </h2>
+          )}
+          <div className="padding-left-right-small flex padding-top-bottom-normal">
+            <img src={beepOrderStatusConfirmed} alt="rider info" />
+            <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
+              <p>Lavae</p>
+              <span className="text-gray">+60234234</span>
+            </div>
+          </div>
+        </div>
+        <div className="ordering-thanks__rider-button text-uppercase flex">
+          <a href="" className="text-weight-bolder button">
+            track order
+          </a>
+          <span></span>
+          <a href="" className="text-weight-bolder button">
+            track order
+          </a>
+        </div>
+      </div>
+    );
+  };
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
   renderStoreInfo = () => {

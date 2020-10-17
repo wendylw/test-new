@@ -6,6 +6,8 @@
   "PrepareOrderDescription": "We're preparing your order now.",
   "OrderConfirmed": "Order Confirmed",
   "RiderPendingTips": "Pending Rider Confirm",
+  "Confirmed": "Confirmed",
+  "PendingPickUp": "Pending Pick Up",
   "RiderOnTheWay": "Rider is on the way to pick up order",
   "OrderCancelledNoRide": "Order Cancelled. No rider available",
   "OrderReceived": "Waiting for store to confirm your order",
@@ -33,5 +35,11 @@
   "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",
   "DeliveringTo": "Delivering to",
   "SelfDeliveryTitle": "Delivered by {{storeName}}",
-  "SelfDeliveryDescription": "This restaurant uses its own delivery riders. You won’t be able to track your order, if you need please contact the merchant."
+  "SelfDeliveryDescription": "This restaurant uses its own delivery riders. You won’t be able to track your order, if you need please contact the merchant.",
+  "OrderStatusPickedUp": "Estimated order arrival time",
+  "OrderStatusDelivered": "Order has been delivered",
+  "CallStore": "Call Store",
+  "CallDriver": "Call Driver",
+  "ReportDriver": "Report Driver",
+  "TrackOrder": "Track Order"
 }
