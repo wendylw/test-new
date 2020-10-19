@@ -18,6 +18,8 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
+import { getAppToken } from '../../../../../cashback/containers/utils';
+import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -34,6 +36,32 @@ class PhoneLogin extends React.Component {
     claimedAnimationGifSrc: null,
   };
 
+  constructor(props) {
+    super(props);
+    window.sendToken = res => this.authTokens(res);
+  }
+
+  authTokens = async res => {
+    if (res) {
+      if (Utils.isIOSWebview()) {
+        await this.loginBeepApp(res);
+      } else if (Utils.isAndroidWebview()) {
+        const data = JSON.parse(res) || {};
+        await this.loginBeepApp(data);
+      }
+    }
+  };
+
+  loginBeepApp = async res => {
+    const { appActions } = this.props;
+    if (res.access_token && res.refresh_token) {
+      await appActions.loginApp({
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      });
+    }
+  };
+
   async componentDidMount() {
     const { history, thankYouActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -41,7 +69,12 @@ class PhoneLogin extends React.Component {
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
+    const { isWebview, isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
+
+    if (!isLogin && isWebview) {
+      getAppToken(user);
+    }
 
     if (enableCashback) {
       this.canClaimCheck(user);
@@ -192,17 +225,6 @@ class PhoneLogin extends React.Component {
     appActions.phoneNumberLogin({ phone });
   }
 
-  // handlePostLoyaltyPageMessage() {
-  //   const { user } = this.props;
-  //   const { isWebview } = user;
-
-  //   if (isWebview) {
-  //     window.ReactNativeWebView.postMessage('goToLoyaltyPage');
-  //   }
-
-  //   return;
-  // }
-
   renderCurrencyNumber() {
     const { cashbackInfo } = this.props;
     const { cashback } = cashbackInfo || {};
@@ -211,7 +233,7 @@ class PhoneLogin extends React.Component {
       return null;
     }
 
-    return <CurrencyNumber className="font-weight-bolder" money={Math.abs(cashback || 0)} />;
+    return <CurrencyNumber className="text-weight-bolder" money={Math.abs(cashback || 0)} />;
   }
 
   renderPhoneView() {
@@ -245,7 +267,7 @@ class PhoneLogin extends React.Component {
       return (
         <BrowserRouter basename="/">
           <Link
-            className="button__fill link__non-underline link__block border-radius-base font-weight-bolder text-uppercase"
+            className="button button__block button__fill text-weight-bolder text-uppercase"
             to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
             data-heap-name="ordering.thank-you.phone-login.check-balance-link"
             target="_blank"
@@ -258,7 +280,7 @@ class PhoneLogin extends React.Component {
 
     return (
       <button
-        className="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+        className="button button__block button__fill text-weight-bolder text-uppercase"
         data-heap-name="ordering.thank-you.phone-login.check-balance-btn"
         onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
       >
@@ -280,27 +302,14 @@ class PhoneLogin extends React.Component {
     }
 
     return (
-      <div className="thanks__phone-view" data-heap-name="ordering.thank-you.phone-login.container">
-        {/*<label className="phone-view-form__label text-center">{this.getMessage() || ''}</label>*/}
-        {/*{this.renderPhoneView()}*/}
-
-        {/* <p className="terms-privacy text-center gray-font-opacity">
-          <Trans i18nKey="TermsAndPrivacyDescription">
-            By tapping to continue, you agree to our
-            <br />
-            <BrowserRouter basename="/">
-              <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.TERMS_OF_USE}>
-                Terms of Service
-              </Link>
-              , and{' '}
-              <Link className="font-weight-bolder" target="_blank" to={Constants.ROUTER_PATHS.PRIVACY}>
-                Privacy Policy
-              </Link>
-              .
-            </BrowserRouter>
-          </Trans>
-        </p> */}
-        <div className={`succeed-animation ${showCelebration && customerId ? 'active' : ''}`}>
+      <div className="phone-login padding-normal" data-heap-name="ordering.thank-you.phone-login.container">
+        {/* <label className="text-size-big">{this.getMessage() || ''}</label> */}
+        {/* {this.renderPhoneView()} */}
+        <div
+          className={`ordering-thanks__card-prompt-congratulation absolute-wrapper ${
+            showCelebration && customerId ? 'active' : ''
+          }`}
+        >
           <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
         </div>
       </div>

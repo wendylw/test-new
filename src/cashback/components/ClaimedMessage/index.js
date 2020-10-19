@@ -6,6 +6,7 @@ import Modal from '../../../components/Modal';
 import RedeemInfo from '../RedeemInfo';
 import succeedAnimationGif from '../../../images/succeed-animation.gif';
 import beepRewardImage from '../../../images/beep-reward.jpg';
+import './ClaimedMessage.scss';
 
 const ANIMATION_TIME = 3600;
 
@@ -37,26 +38,28 @@ class ClaimedMessage extends React.Component {
             <Modal.Body className="active">
               <img src={beepRewardImage} alt="beep reward" />
               <div className="modal__detail text-center">
-                <h4 className="modal__title font-weight-bolder">{title}</h4>
+                <h4 className="modal__title text-weight-bolder">{title}</h4>
                 {description ? <p className="modal__text">{description}</p> : null}
                 {isFirstTime ? (
                   <RedeemInfo
-                    buttonClassName="button__fill button__block border-radius-base font-weight-bolder text-uppercase"
+                    buttonClassName="button__fill button__block border-radius-base text-weight-bolder text-uppercase"
                     buttonText={t('HowToUseCashback')}
                   />
                 ) : null}
 
                 <button
-                  className="button__block button__block-link link text-uppercase font-weight-bolder"
+                  className="button button__block button__block-link link text-uppercase text-weight-bolder"
                   onClick={() => hideMessage()}
                   data-heap-name="cashback.common.claimed-message.close-btn"
                 >
                   {t('Close')}
                 </button>
 
-                <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
-                  <img src={animationGifSrc} alt="Beep Claimed" />
-                </div>
+                {animationGifSrc && (
+                  <div className={`succeed-animation ${animationGifSrc ? 'active' : ''}`}>
+                    <img src={animationGifSrc} alt="Beep Claimed" />
+                  </div>
+                )}
               </div>
             </Modal.Body>
           </Modal>

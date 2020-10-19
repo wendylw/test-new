@@ -7,6 +7,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 
 import { actions as thankYouActionCreators, getOrder, getPromotion } from '../../redux/modules/thankYou';
+import './OrderingDetails.scss';
 
 export class OrderDetails extends Component {
   state = {};
@@ -24,39 +25,40 @@ export class OrderDetails extends Component {
     return query.get('receiptNumber');
   };
 
-  handleNeedHelp = () => {
+  handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
-      pathname: Constants.ROUTER_PATHS.NEED_HELP,
+      pathname: Constants.ROUTER_PATHS.MERCHANT_INFO,
       search: window.location.search,
     });
   };
 
-  renderOrderBillings() {
+  renderOrderDetails() {
     const { order } = this.props;
     const { items } = order || {};
 
     return (
-      <ul className="list">
+      <ul className="ordering-details__list padding-top-bottom-small">
         {(items || []).map((value, index) => {
           const { title, displayPrice, quantity, variationTexts } = value;
 
           return (
-            <li key={`title-${index}`} className="item flex flex-space-between">
-              <div className="flex">
-                <span style={{ width: '6vw' }} className="gray-font-opacity">
-                  {quantity} x
-                </span>
-                <div style={{ marginLeft: '2vw' }}>
-                  <span className="gray-font-opacity">{title}</span>
+            <li key={`title-${index}`} className="flex flex-middle flex-space-between">
+              <summary className="flex flex-top">
+                <span className="padding-top-bottom-small flex__shrink-fixed text-opacity">{quantity} x</span>
+                <div className="ordering-details__item-content padding-small">
+                  <span className="ordering-details__item-title text-opacity">{title}</span>
                   <p>
                     {variationTexts && variationTexts[0] ? (
-                      <span className="order-detail__tag">{variationTexts.join(', ')}</span>
+                      <span className="ordering-details__item-variations">{variationTexts.join(', ')}</span>
                     ) : null}
                   </p>
                 </div>
-              </div>
-              <CurrencyNumber className="gray-font-opacity" money={displayPrice * quantity} />
+              </summary>
+              <CurrencyNumber
+                className="padding-top-bottom-small flex__shrink-fixed text-opacity text-weight-bolder"
+                money={displayPrice * quantity}
+              />
             </li>
           );
         })}
@@ -66,16 +68,17 @@ export class OrderDetails extends Component {
 
   renderPromotion() {
     const { promotion, t } = this.props;
+
     if (!promotion) {
       return null;
     }
 
     return (
-      <li className="item flex flex-space-between flex-middle">
-        <span className="gray-font-opacity">
+      <li className="flex flex-space-between flex-middle">
+        <span className="padding-top-bottom-small text-opacity">
           {t(promotion.promoType)} ({promotion.promoCode})
         </span>
-        <CurrencyNumber className="gray-font-opacity" money={-promotion.discount} />
+        <CurrencyNumber className="text-opacity" money={-promotion.discount} />
       </li>
     );
   }
@@ -87,9 +90,10 @@ export class OrderDetails extends Component {
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
-      <section className="order-detail" data-heap-name="ordering.order-detail.container">
+      <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
         <Header
-          className="order-detail__header flex-middle"
+          className="flex-middle"
+          contentClassName="flex-middle"
           isPage={true}
           data-heap-name="ordering.order-detail.header"
           title={t('OrderDetails')}
@@ -101,42 +105,47 @@ export class OrderDetails extends Component {
           }
         >
           <button
-            className="link text-uppercase"
-            onClick={this.handleNeedHelp}
+            className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+            onClick={this.handleVisitMerchantInfoPage}
             data-heap-name="ordering.order-detail.contact-us-btn"
           >
             <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
           </button>
         </Header>
-        <div className="order-detail__info-container">
-          <div className="border__bottom-divider">
-            <h3 className="order-detail__title font-weight-bolder text-uppercase">{t('YourOrder')}</h3>
-            {this.renderOrderBillings()}
-          </div>
-          <div>
-            <ul className="list">
-              <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Subtotal')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={subtotal || 0} />
+
+        <div className="ordering-details__container">
+          <div className="card padding-top-bottom-small padding-left-right-normal margin-normal">
+            <h3 className="margin-top-bottom-small text-size-big text-weight-bolder text-uppercase">
+              {t('YourOrder')}
+            </h3>
+            <div className="border__bottom-divider">{this.renderOrderDetails()}</div>
+
+            <ul className="ordering-details__billing-container">
+              <li className="flex flex-space-between flex-middle">
+                <span className="padding-top-bottom-small text-opacity">{t('Subtotal')}</span>
+                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={subtotal || 0} />
               </li>
-              <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Tax')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={tax || 0} />
+              <li className="flex flex-space-between flex-middle">
+                <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
+                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
               </li>
-              <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('DeliveryCharge')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={shippingFee || 0} />
+              <li className="flex flex-space-between flex-middle">
+                <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
+                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
               </li>
-              <li className="item flex flex-space-between flex-middle">
-                <span className="gray-font-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="gray-font-opacity" money={-displayDiscount || 0} />
+              <li className="flex flex-space-between flex-middle">
+                <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
+                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
               </li>
               {this.renderPromotion()}
+              <li className="flex flex-space-between flex-middle">
+                <label className="padding-top-bottom-small text-size-biggest">{t('Total')}</label>
+                <CurrencyNumber
+                  className="padding-top-bottom-small text-size-biggest text-weight-bolder"
+                  money={total || 0}
+                />
+              </li>
             </ul>
-            <div className="flex flex-space-between flex-middle">
-              <label className="order-detail__title  font-weight-bolder">{t('Total')}</label>
-              <CurrencyNumber className="font-weight-bolder" money={total || 0} />
-            </div>
           </div>
         </div>
       </section>

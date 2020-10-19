@@ -1,0 +1,82 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+
+<Meta title="BEM Rules" />
+
+# BEM(Block, Element, Modifier)
+
+BEM (Block, Element, Modifier) is a component-based approach to web development. The idea behind it is to divide the user interface into independent blocks. 
+This makes interface development easy and fast even with a complex UI, and it allows reuse of existing code without copying and pasting.
+
+If all three are used in a name it would look something like this: `[block]__[element]--[modifier]`
+
+<a target="_blank" href="https://css-tricks.com/bem-101/">BEM 101 Document</a>
+
+<ul>
+  <li>Try to use nouns and adjectives for naming</li>
+  <li>Try not to exceed three words in the name of the block</li>
+  <li>Try not to use multi-level nested class names</li>
+  <li>Please do not use nesting rules to name the class name. eg: .block-element-...</li>
+</ul>
+
+### 
+### 
+## Block
+
+The outermost parent element of the component is defined as the block. If component is composed of other component, that only class name of native DOM base on current component block. Then components as an independent block for introduced.
+
+###
+## Element
+
+Inside of the component may be one or more children called elements. Rules are the same as block.
+
+###
+## Modifier
+
+Either a block or element may have a variation signified by a modifier.
+
+###
+## Samples
+
+### Page Sass file:
+
+```js live=true
+
+.ordering-home {
+  &__deliver-to + &__header::before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: inline-block;
+    margin: 0 2.4vw;
+    border-top: 1px solid $gray-4;
+  }
+}
+```
+PS:
+`ordering`: project name
+`home`: page name
+
+### Component Sass file:
+
+```js live=true
+
+.item {
+  position: relative;
+  background-color: $white;
+  list-style: none;
+
+  &__image-container {
+    position: relative;
+    width: 18vw;
+    height: 18vw;
+    min-width: 80px;
+    height: 80px;
+    overflow: hidden;
+  }
+}
+```
+PS:
+`item`: component name

@@ -11,6 +11,7 @@ import {
 import Image from '../../../components/Image';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import Tag from '../../../components/Tag';
 
 class StoreList extends Component {
   handleStoreClicked = store => {
@@ -21,8 +22,8 @@ class StoreList extends Component {
     const { t } = this.props;
     return enablePreOrder ? (
       <div className="store-card-list__image-cover">
-        <label className="store-card-list__tag tag tag__small tag__privacy text-uppercase text-weight-bolder">
-          {t('PreOrder')}
+        <label className="store-card-list__tag text-size-small text-uppercase text-weight-bolder">
+          <Tag className="tag tag__small tag__primary" text={t('PreOrder')} />
         </label>
       </div>
     ) : (
@@ -33,23 +34,11 @@ class StoreList extends Component {
   };
 
   renderStoreItems = () => {
-    // const tagClassName = 'tag__card text-size-small text-weight-bolder margin-normal';
     const { t, stores } = this.props;
-
-    // const storeStatus = {
-    //   open: {
-    //     text: t('Open'),
-    //     className: `${tagClassName} text-success`,
-    //   },
-    //   close: {
-    //     text: t('Closed'),
-    //     className: `${tagClassName} text-error`,
-    //   },
-    // };
 
     return (
       <React.Fragment>
-        {stores.map(store => {
+        {stores.map((store, index) => {
           const {
             name,
             avatar,
@@ -65,9 +54,9 @@ class StoreList extends Component {
             enableCashback,
             enablePreOrder,
             cashbackRate,
+            products,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
-          // const currentStoreStatus = storeStatus[isOpen ? 'open' : 'close'];
 
           return (
             <li
@@ -76,6 +65,7 @@ class StoreList extends Component {
               data-testid="deliverStore"
               data-heap-name="site.common.store-item"
               data-heap-store-name={name}
+              data-heap-store-index={index}
               onClick={() => {
                 this.handleStoreClicked(store);
               }}
@@ -112,17 +102,10 @@ class StoreList extends Component {
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
-                  {/* {isOutOfDeliveryRange ? (
-                    <li className="store-info__item text-middle">
-                      <IconBookmark className="icon icon__smaller text-middle" />
-                      <span className="store-info__text text-size-small text-middle">{t('SelfPickupOnly')}</span>
-                    </li>
-                  ) : null
-                  } */}
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconWallet className="icon icon__privacy icon__smaller text-middle" />
+                    <IconWallet className="icon icon__primary icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle text-capitalize">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
                     </span>
@@ -130,7 +113,7 @@ class StoreList extends Component {
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__privacy icon__smaller text-middle" />
+                    <IconLocalOffer className="icon icon__primary icon__smaller text-middle" />
                     <Trans i18nKey="MvpFreeDeliveryPrompt" minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}>
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery above
@@ -144,6 +127,29 @@ class StoreList extends Component {
                     </Trans>
                   </div>
                 ) : null}
+                {products.length > 0 && (
+                  <div className="flex padding-top-bottom-small">
+                    {(products || []).map(product => {
+                      const { id, title, images, price } = product;
+                      return (
+                        <div className="flex flex-column padding-left-right-smaller" key={id}>
+                          <Image className="store-card-list__product-image" src={images[0]} />
+                          <summary
+                            className="padding-left-right-smaller margin-top-bottom-smaller"
+                            style={{ width: 65 }}
+                          >
+                            <span className="store-card-list__product-title padding-top-bottom-smaller text-size-small text-omit__single-line">
+                              {title}
+                            </span>
+                            <span className="store-card-list__product-price font-weight-bolder">
+                              {Math.floor(price * 100) / 100}
+                            </span>
+                          </summary>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </summary>
             </li>
           );

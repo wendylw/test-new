@@ -1,0 +1,23 @@
+@import "../../../Variables";
+
+.banners-item {
+  width: 84vw;
+
+  img {
+    width: 84vw;
+    height: 27vw;
+    border-radius: $border-radius-large;
+  }
+}
+
+@media (min-width: 770px) {
+  .banners-item {
+    width: 350px;
+
+    img {
+      width: 350px;
+      height: 117px;
+      border-radius: $border-radius-large;
+    }
+  }
+}

@@ -49,16 +49,7 @@ class CreateOrderButton extends React.Component {
   };
 
   handleCreateOrder = async () => {
-    const {
-      history,
-      paymentActions,
-      user,
-      requestInfo,
-      cartSummary,
-      afterCreateOrder,
-      beforeCreateOrder,
-      validCreateOrder,
-    } = this.props;
+    const { history, paymentActions, user, requestInfo, cartSummary, afterCreateOrder, beforeCreateOrder } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartSummary || {};
@@ -68,7 +59,7 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
-
+    const { validCreateOrder } = this.props;
     // if (!Boolean(storeId)) {
     //   if (type === 'dine' || type === 'takeaway') {
     //     window.location.href = Constants.ROUTER_PATHS.DINE;
@@ -152,7 +143,7 @@ class CreateOrderButton extends React.Component {
 
   render() {
     const { children, className, buttonType, disabled, dataAttributes } = this.props;
-    const classList = ['billing__link button button__fill button__block font-weight-bolder'];
+    const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
       classList.push(className);

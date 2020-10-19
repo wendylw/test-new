@@ -1,4 +1,4 @@
-@import "../site/Variables.scss";
+@import "../Variables.scss";
 
 /* Deliver To */
 .deliver-to-entry {
@@ -7,18 +7,26 @@
   background-color: $white;
   z-index: $z-index-base;
 
+  > .icon {
+    display: flex;
+  }
+
   &__content {
-    max-width: 90%;
+    max-width: 93%;
+    width: 100%;
   }
 
   &__label {
     display: inline-block;
-    margin: 4px 10px;
   }
 
-  &__address {
-    max-width: 90%;
-    max-height: 16px;
+  &__detail-container {
+    width: 94%;
+  }
+
+  &__base-info {
+    width: 100%;
+    line-clamp: 1;
     -webkit-line-clamp: 1;
   }
 }

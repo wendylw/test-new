@@ -17,7 +17,7 @@ import {
 } from '../../redux/modules/home';
 
 import Constants from '../../../utils/constants';
-import '../../../App.scss';
+import '../../../Common.scss';
 import Home from '../Home';
 import { withRouter } from 'react-router-dom';
 import DeliveryMethods from '../DeliveryMethods';
@@ -64,6 +64,9 @@ class App extends Component {
 
     let isOnlyType = true,
       onlyType;
+
+    if (!(stores || []).length) return type;
+
     for (let store of stores) {
       if (store.fulfillmentOptions.length > 1) {
         isOnlyType = false;
@@ -180,8 +183,10 @@ class App extends Component {
 
     this.visitErrorPage();
     fetchOnlineStoreInfo().then(({ responseGql }) => {
-      const { data } = responseGql;
-      const { onlineStoreInfo } = data;
+      const { data } = responseGql || {};
+      const { onlineStoreInfo } = data || {};
+
+      if (!onlineStoreInfo) return;
       gtmSetUserProperties({ onlineStoreInfo, store: { id: currentStoreId } });
     });
 
@@ -247,14 +252,16 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="store-list">
+      <main className="store-list fixed-wrapper fixed-wrapper__main">
         {currentStoreId ? (
           this.renderDeliveryOrDineMethods()
         ) : this.isDinePath() ? (
           <Home isHome={this.state.isHome} />
         ) : null}
 
-        {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
+        {error && !pageError.code ? (
+          <ErrorToast className="fixed" message={error.message} clearError={this.handleClearError} />
+        ) : null}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
