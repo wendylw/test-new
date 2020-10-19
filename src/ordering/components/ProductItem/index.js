@@ -34,6 +34,7 @@ export class ProductItem extends Component {
       isLazyLoad,
       productItemMinHeight,
       scrollContainer,
+      showOperator,
     } = this.props;
     const PricesDom = (
       <div>
@@ -69,7 +70,7 @@ export class ProductItem extends Component {
       >
         {soldOut ? (
           <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />
-        ) : (
+        ) : showOperator ? (
           <ItemOperator
             className="flex-middle"
             data-heap-name="ordering.common.product-item.item-operator"
@@ -79,7 +80,9 @@ export class ProductItem extends Component {
             onIncrease={onIncrease}
             increaseDisabled={!isValidTimeToOrder}
           />
-        )}
+        ) : cartQuantity > 0 ? (
+          <span className="product-item__selected  text-size-small">{t('Selected', { quantity: cartQuantity })}</span>
+        ) : null}
       </Item>
     );
   }
@@ -101,6 +104,7 @@ ProductItem.propTypes = {
   productDetailImageRef: PropTypes.any,
   isValidTimeToOrder: PropTypes.bool,
   isLazyLoad: PropTypes.bool,
+  showOperator: PropTypes.bool,
 };
 
 ProductItem.defaultProps = {
@@ -115,6 +119,7 @@ ProductItem.defaultProps = {
   decreaseDisabled: false,
   isValidTimeToOrder: true,
   isLazyLoad: true,
+  showOperator: true,
   productItemMinHeight: 100,
   onDecrease: () => {},
   onIncrease: () => {},
@@ -122,7 +127,7 @@ ProductItem.defaultProps = {
 };
 
 export default compose(
-  withTranslation(),
+  withTranslation(['OrderingHome']),
   connect(
     state => {
       return {

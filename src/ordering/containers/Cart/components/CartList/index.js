@@ -90,7 +90,11 @@ class CartList extends Component {
               action: 'edit',
               productId,
               quantity: quantity - 1,
-              variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
+              variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+                variationId,
+                optionId,
+                quantity,
+              })),
             });
           }
         }}
@@ -100,7 +104,11 @@ class CartList extends Component {
             action: 'edit',
             productId,
             quantity: quantity + 1,
-            variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
+            variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+              variationId,
+              optionId,
+              quantity,
+            })),
           });
         }}
       />
