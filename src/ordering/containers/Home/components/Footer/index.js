@@ -87,10 +87,10 @@ export class Footer extends Component {
   postAppMessage(user) {
     const { isExpired } = user || {};
     if (Utils.isAndroidWebview() && isExpired) {
-      window.androidInterface.tokenExpired(true);
+      window.androidInterface.tokenExpired('isCheckout');
     }
     if (Utils.isAndroidWebview() && !isExpired) {
-      window.androidInterface.getToken(true);
+      window.androidInterface.getToken('isCheckout');
     }
     if (Utils.isIOSWebview() && isExpired) {
       window.webkit.messageHandlers.shareAction.postMessage({
