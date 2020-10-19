@@ -1,0 +1,23 @@
+@import "../../../Variables.scss";
+
+.ordering-tables {
+  height: 100vh;
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  &__list {
+    flex-wrap: wrap;
+  }
+
+  &__list-item {
+    width: 25%;
+  }
+
+  &__button {
+    height: 60px;
+  }
+}

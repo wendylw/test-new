@@ -5,41 +5,65 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
-import checked from '../../../images/select.svg';
+import Image from '../../../components/Image';
+import { IconChecked } from '../../../components/Icons';
 
-import './storeList.scss';
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
+import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
+import './OrderingStores.scss';
+
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
-  <div
-    className={props.isClose ? 'stores-list-item close-mask' : 'stores-list-item'}
+  <li
+    className={`flex flex-middle flex-space-between padding-top-bottom-normal margin-left-right-normal border__bottom-divider ${
+      props.isClose ? 'ordering-stores__item-disabled' : ''
+    }`}
     onClick={() => props.select(props.store)}
     data-heap-name="ordering.store-list.store-item"
   >
-    <p>
-      {props.store.name}
-      {props.isClose && <span className="store-list-close-tag">{props.t('Closed').toUpperCase()}</span>}
-    </p>
-    <p>{Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}</p>
-    {props.isDeliveryType && (
-      <p>
-        <IconLocation className="header__motor-icon text-middle" />
-        <span className="stores-list-item-distance">{props.store.distance} km</span>
-        {/* <IconMotorcycle className="header__motor-icon text-middle" /> */}
-        {/* <CurrencyNumber className="font-weight-bolder" money={props.store.deliveryFee} /> */}
-        {/* <span className="stores-list-item-fee">{props.store.deliveryFee}</span> */}
+    <summary
+      className={`${
+        props.storeId === props.store.id ? 'ordering-stores__summary--selected' : 'ordering-stores__summary'
+      } padding-left-right-small`}
+    >
+      <div className="flex flex-middle">
+        <h3 className="ordering-stores__title margin-top-bottom-small text-size-big text-weight-bolder text-omit__single-line">
+          {props.store.name}
+        </h3>
+        {props.isClose ? (
+          <Tag
+            text={props.t('Closed')}
+            className="tag__small tag__error margin-left-right-small text-middle text-size-small"
+          />
+        ) : null}
+      </div>
+      <p className="margin-top-bottom-small text-size-small text-opacity">
+        {Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}
       </p>
+      {props.isDeliveryType && (
+        <ul className="store-info">
+          <li className="store-info__item text-middle">
+            <IconLocation className="icon icon__smaller text-middle" />
+            <span className="store-info__text text-size-smaller text-middle">
+              {props.t('DistanceText', { distance: props.store.distance })}
+            </span>
+          </li>
+        </ul>
+      )}
+      <p className="margin-top-bottom-small text-size-small">
+        {props.t('openingHours')}: {props.openingHouers}
+      </p>
+    </summary>
+
+    {props.storeId === props.store.id && (
+      <IconChecked className="icon icon__primary flex__shrink-fixed margin-left-right-smaller" />
     )}
-    <p>
-      {props.t('openingHours')}: {props.openingHouers}
-    </p>
-    <p>{props.storeId === props.store.id && <img src={checked} alt="" />}</p>
-  </div>
+  </li>
 );
 
 class StoreList extends Component {
@@ -207,47 +231,54 @@ class StoreList extends Component {
   };
 
   render() {
+    const { t, history, onlineStoreInfo } = this.props;
     const { storeList } = this.state;
 
     return (
-      (this.props.onlineStoreInfo && (
-        <div className="stores-list-contain" data-heap-name="ordering.store-list.container">
+      (onlineStoreInfo && (
+        <section className="ordering-stores flex flex-column" data-heap-name="ordering.store-list.container">
           <Header
-            className="has-right flex-middle"
+            className="flex-middle"
+            contentClassName="flex-middle"
             isPage={true}
-            title={'Select store'}
             data-heap-name="ordering.store-list.header"
+            title={t('SelectStore')}
             navFunc={() => {
-              this.props.history.go(-1);
+              history.go(-1);
             }}
           />
-          <div className="stores-info">
-            <img src={this.props.onlineStoreInfo.logo} alt="" />
-            <div className="stores-info-detail">
-              <p>{this.props.onlineStoreInfo.storeName}</p>
-              <p>{this.props.onlineStoreInfo.businessType}</p>
-              <p>
-                {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
-                  ? `${storeList.length} outlets near you`
-                  : `Total ${storeList.length} outlets`}
-              </p>
+
+          <div className="ordering-stores__container">
+            <div className="flex flex-top padding-top-bottom-normal padding-left-right-small margin-left-right-normal border__bottom-divider">
+              <Image className="logo logo__big margin-left-right-small" src={onlineStoreInfo.logo} />
+              <summary className="padding-left-right-small">
+                <h2 className="margin-top-bottom-small text-size-big text-weight-bolder">
+                  {onlineStoreInfo.storeName}
+                </h2>
+                <p className="margin-top-bottom-small text-size-smaller text-opacity">{onlineStoreInfo.businessType}</p>
+                <p className="margin-top-bottom-small text-size-small">
+                  {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
+                    ? `${storeList.length} outlets near you`
+                    : `Total ${storeList.length} outlets`}
+                </p>
+              </summary>
             </div>
+            <ul className="">
+              {storeList.map(item => (
+                <StoreListItem
+                  store={item}
+                  openingHouers={this.getOpeningHouers(item)}
+                  storeId={this.state.storeid}
+                  select={this.selectStore}
+                  key={item.id}
+                  t={this.props.t}
+                  isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+                  isClose={item.isClose}
+                />
+              ))}
+            </ul>
           </div>
-          <div className="stores-list">
-            {storeList.map(item => (
-              <StoreListItem
-                store={item}
-                openingHouers={this.getOpeningHouers(item)}
-                storeId={this.state.storeid}
-                select={this.selectStore}
-                key={item.id}
-                t={this.props.t}
-                isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
-                isClose={item.isClose}
-              />
-            ))}
-          </div>
-        </div>
+        </section>
       )) ||
       null
     );

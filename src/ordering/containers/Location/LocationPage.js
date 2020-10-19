@@ -6,14 +6,14 @@ import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
-import '../../../App.scss';
 import Utils from '../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-
 import { connect } from 'react-redux';
+
+import './OrderingLocation.scss';
 
 class LocationPage extends Component {
   state = {
@@ -52,7 +52,6 @@ class LocationPage extends Component {
   }
 
   async loadStoreInfo() {
-    const { t } = this.props;
     this.setState({ initializing: true });
     try {
       const { business, storeId } = config;
@@ -142,9 +141,13 @@ class LocationPage extends Component {
   renderInitError() {
     const { initError } = this.state;
     return (
-      <div className="location-page__error-screen">
-        <img className="location-page__error-screen-image" alt="Something went wrong" src={ErrorImage} />
-        <div className="location-page__error-screen-message">{initError}</div>
+      <div className="padding-top-bottom-normal text-center">
+        <img
+          className="ordering-location__error-screen-image margin-top-bottom-small"
+          alt="Something went wrong"
+          src={ErrorImage}
+        />
+        <p className="ordering-location__error-screen-message padding-normal">{initError}</p>
       </div>
     );
   }
@@ -152,8 +155,8 @@ class LocationPage extends Component {
   renderLoadingMask() {
     // a transparent mask to prevent user's input
     return (
-      <div className="location-page__loading-mask">
-        <div className="loader theme page-loader" />
+      <div className="fixed-wrapper">
+        <div className="loader theme full-page" />
       </div>
     );
   }
@@ -163,9 +166,10 @@ class LocationPage extends Component {
     const { initError, initializing, storeInfo, errorToast } = this.state;
     const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
-      <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
+      <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <Header
-          className="has-right flex-middle"
+          className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.location.header"
           isPage={true}
           title={t('DeliverTo')}
@@ -184,7 +188,7 @@ class LocationPage extends Component {
           />
         )}
         {initializing && this.renderLoadingMask()}
-        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
       </section>
     );
   }

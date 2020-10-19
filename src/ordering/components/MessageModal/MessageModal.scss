@@ -1,0 +1,23 @@
+@import "../../../Variables.scss";
+
+.message-modal {
+  .modal__content {
+    padding: 2.4vw;
+  }
+
+  &__body {
+    padding-bottom: 2.4vw;
+  }
+}
+
+@media (min-width: 420px) {
+  .message-modal {
+    .modal__content {
+      padding: 8px;
+    }
+
+    &__body {
+      padding-bottom: 16px;
+    }
+  }
+}

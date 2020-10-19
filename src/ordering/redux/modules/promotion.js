@@ -32,6 +32,7 @@ export const actions = {
         payload: {
           promoCode,
           fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+          shippingType: Utils.getApiRequestShippingType(),
         },
       },
     });
@@ -78,6 +79,7 @@ export const actions = {
         payload: {
           voucherCode: promoCode,
           fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+          shippingType: Utils.getApiRequestShippingType(),
         },
       },
     });
@@ -118,6 +120,7 @@ export const actions = {
             dismissType === 'DISMISS_VOUCHER_CODE' || dismissType === 'DISMISS_PROMOTION_CODE'
               ? Utils.getFulfillDate().expectDeliveryDateFrom
               : undefined,
+          shippingType: dismissType === 'DISMISS_PROMOTION_CODE' ? Utils.getApiRequestShippingType() : undefined,
         },
       },
     });
