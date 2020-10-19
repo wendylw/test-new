@@ -14,6 +14,11 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+Utils.getApiRequestShippingType = () => {
+  const type = Utils.getQueryVariable('type');
+  return type ? Utils.mapString2camelCase(type) : undefined;
+};
+
 Utils.isWebview = function isWebview() {
   return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
 };
@@ -31,12 +36,13 @@ Utils.getQueryVariable = variable => {
   var vars = query.split('&');
   for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split('=');
-    if (pair[0] == variable) {
+    if (pair[0] === variable) {
       return pair[1];
     }
   }
   return false;
 };
+
 // Utils.isWebview = function isWebview() {
 //   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
 // };
@@ -299,6 +305,10 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
     isMobile,
     browser: browsers ? browsers[0] : '',
   };
+};
+
+Utils.isSafari = function isSafari() {
+  return Utils.getUserAgentInfo().browser.includes('Safari');
 };
 
 Utils.isValidUrl = function(url) {
@@ -653,6 +663,23 @@ Utils.getFileExtension = file => {
   return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
 };
 
+Utils.getContainerElementHeight = (headerEls, footerEl) => {
+  const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+  let headerFooterHeight = 0;
+
+  if (headerEls && headerEls.length) {
+    headerEls.forEach(el => {
+      headerFooterHeight += el.clientHeight || el.offsetHeight;
+    });
+  }
+
+  if (footerEl) {
+    headerFooterHeight += footerEl.clientHeight || footerEl.offsetHeight;
+  }
+
+  return windowHeight - headerFooterHeight;
+};
+
 Utils.zero = num => (num < 10 ? '0' + num : num + '');
 Utils.getHourList = (validFrom, validTo, useSHLog, type, isToday) => {
   const zero = num => (num < 10 ? '0' + num : num + '');
@@ -665,7 +692,7 @@ Utils.getHourList = (validFrom, validTo, useSHLog, type, isToday) => {
     let hasonDemand = timeString(new Date()) > start ? 'now' : '';
 
     validFrom =
-      validFrom.split(':')[1] == '00'
+      validFrom.split(':')[1] === '00'
         ? zero(+validFrom.split(':')[0] + 1) + ':00'
         : zero(+validFrom.split(':')[0] + 2) + ':00';
 
@@ -827,7 +854,7 @@ Utils.getFulfillDate = () => {
 Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
   let timer = null;
 
-  function timerSetting() {
+  function timerSetting(resolve, reject) {
     timer = setTimeout(() => {
       clearTimeout(timer);
 
@@ -842,12 +869,26 @@ Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
   return new Promise((resolve, reject) => {
     fn()
       .then(resolve, () => {
-        timerSetting();
+        timerSetting(resolve, reject);
       })
       .catch(error => {
-        timerSetting();
+        timerSetting(resolve, reject);
       });
   });
+};
+
+Utils.judgeClient = () => {
+  let client = '';
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    //判断iPhone|iPad|iPod|iOS
+    client = 'iOS';
+  } else if (/(Android)/i.test(navigator.userAgent)) {
+    //判断Android
+    client = 'Android';
+  } else {
+    client = 'PC';
+  }
+  return client;
 };
 
 export default Utils;

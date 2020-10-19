@@ -1,0 +1,54 @@
+@import "../Variables.scss";
+
+.item {
+  position: relative;
+  background-color: $white;
+  list-style: none;
+
+  &__image-container {
+    position: relative;
+    width: 18vw;
+    height: 18vw;
+    min-width: 80px;
+    height: 80px;
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__summary {
+    width: 70.4vw;
+  }
+
+  &__title {
+    max-height: 2.8em;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+  }
+
+  &__description {
+    color: $theme-color;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+  }
+
+  &__amount {
+    min-width: 24px;
+  }
+}
+
+@media (min-width: 770px) {
+  .item {
+    &__image-container {
+      width: 72px;
+      height: 72px;
+    }
+
+    &__summary {
+      width: 100%;
+    }
+  }
+}

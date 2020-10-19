@@ -1,3 +1,4 @@
+// @import '~normalize.css';
 @import "~normalize.css/normalize.css";
 @import "./Variables.scss";
 
@@ -40,6 +41,14 @@ address {
   font-style: normal;
 }
 
+.text-size-larger {
+  font-size: 2.8571rem;
+}
+
+.text-size-large {
+  font-size: 2.5714rem;
+}
+
 .text-size-huge {
   font-size: 2.1428rem;
 }
@@ -72,19 +81,23 @@ address {
   text-transform: uppercase;
 }
 
+.text-lowercase {
+  text-transform: lowercase;
+}
+
 .text-capitalize {
   text-transform: capitalize;
 }
 
 .text-error {
-  color: $red;
+  color: $status-red;
 }
 
 .text-success {
-  color: $green;
+  color: $status-green;
 }
 
-.reset-font-size {
+.text-size-reset {
   font-size: 0;
 }
 
@@ -110,6 +123,10 @@ address {
 
 .text-left {
   text-align: left;
+}
+
+.text-right {
+  text-align: right;
 }
 
 .text-middle {
@@ -247,7 +264,13 @@ img {
 }
 
 .padding-top-bottom-smaller {
-  padding: 1.4vw 0;
+  padding-top: 1.4vw;
+  padding-bottom: 1.4vw;
+}
+
+.padding-left-right-smaller {
+  padding-left: 1.4vw;
+  padding-right: 1.4vw;
 }
 
 .padding-small {
@@ -255,15 +278,13 @@ img {
 }
 
 .padding-left-right-small {
-  padding: 0 2.4vw;
-}
-
-.padding-left-right-smaller {
-  padding: 0 1.4vw;
+  padding-left: 2.4vw;
+  padding-right: 2.4vw;
 }
 
 .padding-top-bottom-small {
-  padding: 2.4vw 0;
+  padding-top: 2.4vw;
+  padding-bottom: 2.4vw;
 }
 
 .padding-normal {
@@ -280,8 +301,47 @@ img {
   padding-bottom: 3.8vw;
 }
 
+.margin-smaller {
+  margin: 1.4vw;
+}
+
 .margin-top-bottom-smaller {
-  margin: 2.4vw 0;
+  margin-top: 1.4vw;
+  margin-bottom: 1.4vw;
+}
+
+.margin-left-right-smaller {
+  margin-left: 1.4vw;
+  margin-right: 1.4vw;
+}
+
+.margin-small {
+  margin: 2.4vw;
+}
+
+.margin-top-bottom-small {
+  margin-top: 2.4vw;
+  margin-bottom: 2.4vw;
+}
+
+.margin-left-right-small {
+  margin-left: 2.4vw;
+  margin-right: 2.4vw;
+}
+
+.margin-top-bottom-normal {
+  margin-top: 3.8vw;
+  margin-bottom: 3.8vw;
+}
+
+.margin-left-right-normal {
+  margin-left: 3.8vw;
+  margin-right: 3.8vw;
+}
+
+.margin-top-bottom-normal {
+  margin-top: 3.8vw;
+  margin-bottom: 3.8vw;
 }
 
 .margin-normal {
@@ -290,11 +350,11 @@ img {
 
 .border {
   &__top-divider {
-    border-top: 1px solid $gray-3;
+    border-top: 1px solid $gray-4;
   }
 
   &__bottom-divider {
-    border-bottom: 1px solid $gray-3;
+    border-bottom: 1px solid $gray-4;
   }
 }
 
@@ -309,7 +369,7 @@ img {
 }
 
 .loader {
-  color: $gray-5;
+  color: $gray-6;
   text-indent: -9999em;
   overflow: hidden;
   width: 1em;
@@ -418,7 +478,7 @@ img {
     width: 8px;
     border-radius: 50%;
     top: 0;
-    background-color: #ff9419;
+    background-color: $theme-color;
     position: absolute;
     -webkit-animation: vertical-movement 1.2s infinite ease-in-out;
     -moz-animation: vertical-movement 1.2s infinite ease-in-out;
@@ -497,16 +557,24 @@ img {
 }
 
 .icon {
-  @extend .reset-font-size;
+  @extend .text-size-reset;
 
   display: inline-block;
 
-  &__privacy {
+  &__primary {
     fill: $theme-color;
   }
 
-  &__gray {
+  &__primary-light {
+    fill: $theme-color-translucent;
+  }
+
+  &__default {
     fill: $gray-2;
+  }
+
+  &__error {
+    fill: $status-red;
   }
 
   &__white {
@@ -540,7 +608,7 @@ img {
   }
 
   &__item.active {
-    .icon__gray {
+    .icon__default {
       fill: $theme-color;
     }
   }
@@ -565,39 +633,6 @@ img {
   }
 }
 
-.tag {
-  text-align: center;
-  padding: 3px 5px;
-  border-radius: $border-radius-base;
-  font-size: 0.8571rem;
-  text-transform: uppercase;
-  color: $white;
-  font-style: normal;
-  white-space: nowrap;
-
-  &__block {
-    display: block;
-    width: 100%;
-  }
-
-  &__small {
-    font-size: 0.7142rem;
-  }
-
-  &__privacy {
-    background-color: $theme-color;
-  }
-
-  &__reverse-privacy {
-    color: $theme-color;
-    background-color: $white;
-  }
-
-  &__error {
-    background-color: $red;
-  }
-}
-
 .top-message {
   top: 0;
   display: block;
@@ -611,7 +646,7 @@ img {
   }
 
   &.error {
-    background-color: $red;
+    background-color: $status-red;
   }
 
   &__text {
@@ -621,6 +656,7 @@ img {
 
 .button {
   height: 8vh;
+  max-height: 56px;
   background-color: transparent;
   border-color: transparent;
   border-radius: $border-radius-base;
@@ -630,7 +666,7 @@ img {
   }
 
   &.dark {
-    background-color: $dark;
+    background-color: $main-color;
   }
 
   &__fill {
@@ -644,6 +680,11 @@ img {
     background-color: transparent;
   }
 
+  &__link {
+    height: auto;
+    text-decoration: none;
+  }
+
   &:disabled,
   &__disabled {
     pointer-events: none;
@@ -651,18 +692,35 @@ img {
     background-color: $gray-2;
     opacity: 0.8;
   }
+
+  &__link:disabled,
+  &__link-disabled {
+    pointer-events: none;
+    color: $gray-2;
+    background-color: transparent;
+    opacity: 1;
+  }
 }
 
 .form {
   &__group {
     @extend .border-radius-base;
 
-    border: 1px solid $gray-3;
+    border: 1px solid $gray-4;
     background-color: $white;
+
+    &.error {
+      border-color: $status-red;
+    }
+
+    &.success {
+      border-color: $status-green;
+    }
   }
 
   &__input {
-    padding: 8px 0;
+    padding-top: 8px;
+    padding-bottom: 8px;
     border: 0;
     line-height: 26px;
     height: 40px;
@@ -673,8 +731,79 @@ img {
     caret-color: $gray-2;
   }
 
+  &__input-big {
+    height: 54px;
+  }
+
   &__search-icon {
     padding: 10px 8px;
+  }
+
+  &__textarea {
+    min-height: 60px;
+    resize: none;
+  }
+
+  &__select {
+    border: 0;
+    width: 100%;
+    background-color: transparent;
+    -webkit-appearance: none;
+    box-shadow: none;
+    outline: none;
+    z-index: 1;
+  }
+
+  &__error-message {
+    display: inline-block;
+    color: $status-red;
+  }
+}
+
+/* react Phone number input box */
+.react-phone-number-input {
+  @extend .margin-top-bottom-small;
+
+  .react-phone-number-input__row {
+    @extend .form__group;
+
+    overflow: hidden;
+  }
+
+  .react-phone-number-input__country--native {
+    @extend .margin-left-right-small;
+  }
+
+  .react-phone-number-input__icon {
+    border: 0;
+    width: calc(0.51em * 4);
+    height: calc(0.51em * 3);
+  }
+
+  .react-phone-number-input__input,
+  .react-phone-number-input__input:focus {
+    @extend .form__input;
+    @extend .text-size-biggest;
+
+    color: $main-color;
+  }
+}
+/* End of react Phone number input box */
+
+.progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: $theme-color;
+
+  &.not-on-way {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &__container {
+    width: 100%;
+    height: 8px;
+    background-color: $gray-4;
   }
 }
 
@@ -713,26 +842,43 @@ img {
   }
 }
 
-/* Header */
-.header {
-  top: 0;
-  width: 100%;
-  z-index: $z-index-base;
-  background-color: $white;
+.logo {
+  border-radius: 50%;
+  overflow: hidden;
 
-  &__content {
-    max-width: 90%;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
-  &__title {
-    max-width: 85%;
-    max-height: 20px;
-    -webkit-line-clamp: 1;
+  &__bigger {
+    width: 100px;
+    height: 100px;
+  }
+
+  &__big {
+    width: 72px;
+    height: 72px;
+  }
+
+  &__normal {
+    width: 36px;
+    height: 36px;
   }
 }
-/* end of Header */
 
-/* Store Info */
+.footer {
+  position: sticky;
+  bottom: 0;
+  background-color: $main-color;
+
+  &__white {
+    background-color: $white;
+  }
+}
+
 .store-info {
   &__item {
     display: inline-block;
@@ -746,12 +892,98 @@ img {
     margin: 0 5px;
   }
 }
-/* end of Store Info */
 
 @media (max-width: 374px) {
   *,
   html {
     font-size: $mobile-font-size-base;
+  }
+}
+
+@media (min-width: 420px) {
+  .padding-top-bottom-smaller {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .padding-left-right-smaller {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .padding-small {
+    padding: 8px;
+  }
+
+  .padding-left-right-small {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .padding-top-bottom-small {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .padding-normal {
+    padding: 8px * 2;
+  }
+
+  .padding-left-right-normal {
+    padding-left: 8px * 2;
+    padding-right: 8px * 2;
+  }
+
+  .padding-top-bottom-normal {
+    padding-top: 8px * 2;
+    padding-bottom: 8px * 2;
+  }
+
+  .margin-smaller {
+    margin: 4px;
+  }
+
+  .margin-top-bottom-smaller {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .margin-left-right-smaller {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+  .margin-small {
+    margin: 8px;
+  }
+
+  .margin-top-bottom-small {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .margin-left-right-small {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .margin-top-bottom-normal {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  .margin-left-right-normal {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .margin-top-bottom-normal {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  .margin-normal {
+    margin: 16px;
   }
 }
 
@@ -767,48 +999,26 @@ img {
 
     border-width: 1px;
     border-style: solid;
-    border-color: $gray-3;
-  }
-
-  .padding-top-bottom-smaller {
-    padding: 4px 0;
-  }
-
-  .padding-small {
-    padding: 8px;
-  }
-
-  .padding-left-right-small {
-    padding: 0 8px;
-  }
-
-  .padding-top-bottom-small {
-    padding: 8px 0;
-  }
-
-  .padding-normal {
-    padding: 8px * 2;
-  }
-
-  .padding-left-right-normal {
-    padding-left: 8px * 2;
-    padding-right: 8px * 2;
-  }
-
-  .padding-left-right-smaller {
-    padding: 0 4px;
-  }
-
-  .padding-top-bottom-normal {
-    padding-top: 8px * 2;
-    padding-bottom: 8px * 2;
-  }
-
-  .margin-top-bottom-smaller {
-    margin: 8px 0;
-  }
-
-  .margin-normal {
-    margin: 16px;
+    border-color: $gray-4;
   }
 }
+
+/* Header */
+.header {
+  top: 0;
+  width: 100%;
+  z-index: $z-index-base;
+  background-color: $white;
+
+  &__content {
+    max-width: 90%;
+  }
+
+  &__title {
+    max-width: 85%;
+    max-height: 20px;
+    line-clamp: 1;
+    -webkit-line-clamp: 1;
+  }
+}
+/* end of Header */

@@ -1,0 +1,24 @@
+@import "../../../Variables.scss";
+
+.product-item {
+  &__tag {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: inline-block;
+    margin: 3.8vw;
+  }
+
+  &__price:not(.text-error) {
+    display: block;
+    color: $gray-2;
+  }
+}
+
+@media (min-width: 420px) {
+  .product-item {
+    &__tag {
+      margin: 12px;
+    }
+  }
+}

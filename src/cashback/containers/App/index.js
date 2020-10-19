@@ -10,8 +10,9 @@ import {
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
+import '../../../Common.scss';
+import './Loyalty.scss';
 import Routes from '../Routes';
-import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
@@ -112,10 +113,10 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="loyalty">
-        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
+      <main className="loyalty fixed-wrapper__main fixed-wrapper">
+        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
-        {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
+        {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>

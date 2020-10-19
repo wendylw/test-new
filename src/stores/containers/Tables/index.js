@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import Constants from '../../../utils/constants';
+import './OrderingTables.scss';
 
 import { actions as homeActionCreators, getCurrentStoreId } from '../../redux/modules/home';
 import {
@@ -43,42 +44,46 @@ class Tables extends Component {
     const { t, tables, currentTableId } = this.props;
 
     return (
-      <section className="tables" data-heap-name="stores.tables.container">
+      <section className="ordering-tables flex flex-column" data-heap-name="stores.tables.container">
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="stores.tables.header"
           isPage={true}
           title={t('SelectTableNumber')}
           navFunc={this.handleClickBack}
         />
-        <div className="tables__title">{t('PleasePickOne')}</div>
-        <div className="tables__list">
-          {tables.map(table => {
-            const active = table.id === currentTableId ? 'active' : '';
-            return (
-              <button
-                onClick={() => this.handleSelectTable(table.id)}
-                data-heap-name="stores.tables.table-btn"
-                key={table.id}
-                className={`tables__list-item ${active}`}
-              >
-                <div className="tables__list-table-title">{t('Table')}</div>
-                <div className="tables__list-table-name">{table.name}</div>
-              </button>
-            );
-          })}
+        <div className="ordering-tables__container">
+          <h2 className="padding-smaller margin-small text-size-big text-weight-bolder">{t('PleasePickOne')}</h2>
+          <ul className="ordering-tables__list flex flex-middle padding-smaller margin-top-bottom-small">
+            {tables.map(table => {
+              return (
+                <li className="ordering-tables__list-item padding-small">
+                  <button
+                    onClick={() => this.handleSelectTable(table.id)}
+                    data-heap-name="stores.tables.table-btn"
+                    key={table.id}
+                    className={`button button__block text-line-height-base border-radius-large ${
+                      table.id === currentTableId ? 'button__fill' : 'button__outline'
+                    }`}
+                  >
+                    <div className="ordering-tables__list-table-title">{t('Table')}</div>
+                    <div className="ordering-tables__list-table-name text-weight-bolder">{table.name}</div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-1">
-            <button
-              className="tables__continue-button button button__fill button__block font-weight-bolder"
-              disabled={currentTableId === ''}
-              onClick={this.handleContinue}
-              data-heap-name="stores.tables.continue"
-            >
-              {t('Continue')}
-            </button>
-          </div>
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+          <button
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+            disabled={currentTableId === ''}
+            onClick={this.handleContinue}
+            data-heap-name="stores.tables.continue"
+          >
+            {t('Continue')}
+          </button>
         </footer>
       </section>
     );

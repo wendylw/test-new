@@ -18,6 +18,7 @@ export const initialState = {
   cashbackInfo: null /* included: customerId, consumerId, status */,
   storeHashCode: null,
   orderStatus: null,
+  isWebView: Utils.isWebview(),
 };
 
 export const types = THANK_YOU_TYPES;
@@ -209,6 +210,7 @@ export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;
 
 export const getLoadOrderStatus = state => state.thankYou.orderStatus;
+export const getWebViewStatus = state => state.thankYou.isWebView;
 
 export const getOrderStatus = createSelector([getOrder], order => {
   return _get(order, 'status', '');

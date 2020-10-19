@@ -32,7 +32,7 @@ export class AddressChangeModal extends React.Component {
             className="button__fill button__block border-radius-base text-uppercase font-weight-bolder"
             onClick={this.handleClick}
           >
-            {t('CONTINUE')}
+            {t('Continue')}
           </button>
         </Modal.Footer>
       </Modal>

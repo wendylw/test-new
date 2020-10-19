@@ -17,7 +17,7 @@ import {
 } from '../../redux/modules/home';
 
 import Constants from '../../../utils/constants';
-import '../../../App.scss';
+import '../../../Common.scss';
 import Home from '../Home';
 import { withRouter } from 'react-router-dom';
 import DeliveryMethods from '../DeliveryMethods';
@@ -252,14 +252,16 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="store-list">
+      <main className="store-list fixed-wrapper fixed-wrapper__main">
         {currentStoreId ? (
           this.renderDeliveryOrDineMethods()
         ) : this.isDinePath() ? (
           <Home isHome={this.state.isHome} />
         ) : null}
 
-        {error && !pageError.code ? <ErrorToast message={error.message} clearError={this.handleClearError} /> : null}
+        {error && !pageError.code ? (
+          <ErrorToast className="fixed" message={error.message} clearError={this.handleClearError} />
+        ) : null}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );

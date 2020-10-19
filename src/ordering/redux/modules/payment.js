@@ -407,10 +407,7 @@ export const getUnavailablePayments = state => {
   ) {
     return [...unavailablePayments, 'onlineBanking'];
   }
-  // TODO: Temporarily closed onlineBanking
-  if (!unavailablePayments.includes('onlineBanking')) {
-    return [...unavailablePayments, 'onlineBanking'];
-  }
+
   return unavailablePayments;
 };
 

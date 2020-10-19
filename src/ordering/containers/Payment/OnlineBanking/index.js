@@ -8,6 +8,7 @@ import Header from '../../../../components/Header';
 import RedirectForm from '../components/RedirectForm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
+import { IconKeyArrowDown } from '../../../../components/Icons';
 import Constants from '../../../../utils/constants';
 import config from '../../../../config';
 
@@ -19,6 +20,7 @@ import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../re
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
 import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
+import './OrderingBanking.scss';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -99,7 +101,7 @@ class OnlineBanking extends Component {
 
     if (!bankingList || !bankingList.length) {
       return (
-        <select className="input__block" disabled>
+        <select className="ordering-banking__select form__select text-size-biggest" disabled>
           <option>Select one</option>
         </select>
       );
@@ -107,7 +109,7 @@ class OnlineBanking extends Component {
 
     return (
       <select
-        className="input__block"
+        className="ordering-banking__select form__select text-size-biggest"
         onChange={this.handleSelectBank.bind(this)}
         data-heap-name="ordering.payment.online-banking.bank-select"
       >
@@ -131,11 +133,12 @@ class OnlineBanking extends Component {
 
     return (
       <section
-        className={`table-ordering__bank-payment ${match.isExact ? '' : 'hide'}`}
+        className={`ordering-banking flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.online-banking.container"
       >
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.payment.online-banking.header"
           isPage={true}
           title={t('PayViaOnlineBanking')}
@@ -147,37 +150,38 @@ class OnlineBanking extends Component {
           }}
         />
 
-        <div className="payment-bank">
-          <Image className="logo-default__image-container" src={logo} />
-          <CurrencyNumber className="payment-bank__money font-weight-bolder text-center" money={total || 0} />
+        <div className="ordering-banking__container padding-top-bottom-normal">
+          <Image className="ordering-banking__logo logo logo__bigger margin-normal" src={logo} />
+          <div className="text-center padding-top-bottom-normal">
+            <CurrencyNumber className="text-center text-size-large text-weight-bolder" money={total || 0} />
+          </div>
 
           <form id="bank-2c2p-form" className="form">
-            <div className="payment-bank__form-item">
-              <div className="flex flex-middle flex-space-between">
-                <label className="payment-bank__label font-weight-bolder">{t('SelectABank')}</label>
+            <div className="padding-normal">
+              <div className="padding-top-bottom-normal">
+                <label className="text-size-bigger text-weight-bolder text-capitalize">{t('SelectABank')}</label>
               </div>
-              <div className="payment-bank__card-container">
-                <div className={`input ${payNowLoading && !agentCode ? 'has-error' : ''}`}>
+              <div className="ordering-banking__group form__group">
+                <div
+                  className={`ordering-banking__input form__input padding-left-right-normal ${
+                    payNowLoading && !agentCode ? 'error' : ''
+                  }`}
+                >
                   {this.renderBankingList()}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" />
-                    <path d="M0 0h24v24H0z" fill="none" />
-                  </svg>
+                  <IconKeyArrowDown className="ordering-banking__icon icon icon__normal" />
                 </div>
-                {payNowLoading && !agentCode ? (
-                  <div className="error-message__container">
-                    <span className="error-message">{t('PleaseSelectABankToContinue')}</span>
-                  </div>
-                ) : null}
               </div>
+              {payNowLoading && !agentCode ? (
+                <span className="form__error-message margin-top-bottom-small">{t('PleaseSelectABankToContinue')}</span>
+              ) : null}
             </div>
           </form>
         </div>
 
-        <div className="footer-operation">
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
-            className="border-radius-base"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
@@ -195,10 +199,14 @@ class OnlineBanking extends Component {
             {payNowLoading ? (
               <div className="loader"></div>
             ) : (
-              <CurrencyNumber className="font-weight-bolder text-center" addonBefore={t('Pay')} money={total || 0} />
+              <CurrencyNumber
+                className="text-center text-weight-bolder text-uppercase"
+                addonBefore={t('Pay')}
+                money={total || 0}
+              />
             )}
           </CreateOrderButton>
-        </div>
+        </footer>
 
         {payNowLoading && paymentData ? (
           <RedirectForm
@@ -209,7 +217,7 @@ class OnlineBanking extends Component {
           />
         ) : null}
 
-        <Loader loaded={Boolean((bankingList || []).length)} />
+        <Loader className={'loading-cover opacity'} loaded={Boolean((bankingList || []).length)} />
       </section>
     );
   }

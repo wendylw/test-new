@@ -17,7 +17,8 @@ class EmptySearch extends Component {
         <h2 className={'padding-top-bottom-normal text-weight-bolder'}>{t('PopularCategories')}</h2>
         <div className={'search-popular__container flex flex-between'}>
           {(populars || []).map(collection => {
-            const { name, urlPath } = collection;
+            const { name, urlPath } = collection || {};
+
             return (
               <span
                 key={urlPath}
@@ -39,7 +40,8 @@ class EmptySearch extends Component {
     return (
       <div>
         {(others || []).map(collection => {
-          const { name, urlPath } = collection;
+          const { name, urlPath } = collection || {};
+
           return (
             <li
               key={urlPath}
@@ -83,8 +85,8 @@ class EmptySearch extends Component {
     const { populars, others } = this.props;
     return (
       <div className={'empty-search padding-normal'}>
-        {populars.length > 0 && this.renderPopularCategories()}
-        {others.length > 0 && this.renderOtherCategories()}
+        {populars && populars.length > 0 && this.renderPopularCategories()}
+        {others && others.length > 0 && this.renderOtherCategories()}
       </div>
     );
   }
