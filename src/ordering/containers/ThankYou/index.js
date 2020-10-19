@@ -366,8 +366,8 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = 'confirmed';
-    useStorehubLogistics = true;
+    // status = ACCEPTED;
+    // useStorehubLogistics = true;
 
     /** paid status */
     if (status === PAID) {
@@ -463,14 +463,6 @@ export class ThankYou extends PureComponent {
           </div>
         ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
-            {/*{currentStatusObj.status !== 'cancelled' ? (*/}
-            {/*  <div className="progress-bar__container">*/}
-            {/*    <i*/}
-            {/*      className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}*/}
-            {/*      style={currentStatusObj.style}*/}
-            {/*    ></i>*/}
-            {/*  </div>*/}
-            {/*) : null}*/}
             <div className="ordering-thanks__progress padding-top-bottom-small">
               {
                 <img
@@ -486,32 +478,6 @@ export class ThankYou extends PureComponent {
               }
             </div>
             <div className="padding-small text-left">
-              {/*{currentStatusObj.status === 'cancelled' ? (*/}
-              {/*  <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>*/}
-              {/*    <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">*/}
-              {/*      {{ storeName: name }}*/}
-              {/*      <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />*/}
-              {/*    </h4>*/}
-              {/*  </Trans>*/}
-              {/*) :null*/}
-              {/*//     (*/}
-              {/*//   <h4*/}
-              {/*//     className={`text-size-big text-weight-bolder line-height-normal ${*/}
-              {/*//       (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'*/}
-              {/*//         ? ` ordering-thanks__${currentStatusObj.status}`*/}
-              {/*//         : ''*/}
-              {/*//     }`}*/}
-              {/*//   >*/}
-              {/*//     {!useStorehubLogistics && currentStatusObj.status !== 'paid'*/}
-              {/*//       ? t('SelfDeliveryTitle', { storeName: name })*/}
-              {/*//       : currentStatusObj.firstNote}*/}
-              {/*//     {(useStorehubLogistics && currentStatusObj.status === 'accepted') ||*/}
-              {/*//     currentStatusObj.status === 'paid' ? (*/}
-              {/*//       <span className="ordering-thanks__title-dots text-size-big text-weight-bolder"></span>*/}
-              {/*//     ) : null}*/}
-              {/*//   </h4>*/}
-              {/*// )*/}
-              {/*}*/}
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
                   <h4 className={`text-size-big text-weight-bolder line-height-normal ordering-thanks__paid`}>
@@ -563,44 +529,6 @@ export class ThankYou extends PureComponent {
               ) : (
                 <div className="padding-top-bottom-small text-gray line-height-normal pt-4"> {t('PendingPickUp')} </div>
               )}
-              {/*{useStorehubLogistics &&*/}
-              {/*(currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (*/}
-              {/*  <div className=" flex flex-middle ">*/}
-              {/*    {trackingUrl && Utils.isValidUrl(trackingUrl) ? (*/}
-              {/*      <a*/}
-              {/*        href={trackingUrl}*/}
-              {/*        target="__blank"*/}
-              {/*        className="ordering-thanks__link-status button button__link text-uppercase text-weight-bolder"*/}
-              {/*        data-heap-name="ordering.thank-you.logistics-tracking-link"*/}
-              {/*      >*/}
-              {/*        {currentStatusObj.secondNote}*/}
-              {/*      </a>*/}
-              {/*    ) : (*/}
-              {/*      <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>*/}
-              {/*    )}*/}
-              {/*  </div>*/}
-              {/*) : null}*/}
-
-              {/*{useStorehubLogistics && currentStatusObj.status === 'accepted' ? (*/}
-              {/*  <div className="flex flex-middle">*/}
-              {/*    <IconAccessTime className="icon icon__small" />*/}
-              {/*    <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>*/}
-              {/*  </div>*/}
-              {/*) : (*/}
-              {/*  <div></div>*/}
-              {/*)}*/}
-
-              {/*{currentStatusObj.status === 'delivered' ? (*/}
-              {/*  <div className="thanks__status-description flex flex-middle ">*/}
-              {/*    <p className="text-size-big">{currentStatusObj.secondNote}</p>*/}
-              {/*  </div>*/}
-              {/*) : null}*/}
-
-              {/*{!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (*/}
-              {/*  <div className="thanks__status-description flex flex-middle ">*/}
-              {/*    <p className="text-size-big">{t('SelfDeliveryDescription')}</p>*/}
-              {/*  </div>*/}
-              {/*) : null}*/}
             </div>
           </div>
         )}
