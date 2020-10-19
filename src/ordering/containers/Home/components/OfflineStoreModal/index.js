@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Modal from '../../../../../components/Modal';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
+import './OfflineStoreModal.scss';
 
 export class OfflineStoreModal extends PureComponent {
   state = {
@@ -20,18 +21,18 @@ export class OfflineStoreModal extends PureComponent {
     return (
       <Modal
         show={!enableLiveOnline && show}
-        className="align-middle"
+        className="offline-store-modal"
         data-heap-name="ordering.home.offline-store-modal.container"
       >
-        <Modal.Body className="modal__content text-center">
-          <h2 className="modal__subtitle text-size-biggest font-weight-bolder">
+        <Modal.Body className="offline-store-modal__body text-center">
+          <h2 className="padding-small text-size-biggest text-weight-bolder">
             {t('OfflinePromptTitle', { storeName: currentStoreName })}
           </h2>
-          <p className="text-size-big">{t('OfflinePromptDescription')}</p>
+          <p className="padding-left-right-smaller margin-small text-size-big">{t('OfflinePromptDescription')}</p>
         </Modal.Body>
-        <Modal.Footer className="modal__footer">
+        <Modal.Footer className="padding-small">
           <button
-            className="button__fill button__block border-radius-base text-uppercase font-weight-bolder"
+            className="button button__fill button__block border-radius-base text-uppercase text-weight-bolder"
             data-heap-name="ordering.home.offline-store-modal.dismiss-btn"
             onClick={this.handleHideOfflineStoreModal.bind(this)}
           >

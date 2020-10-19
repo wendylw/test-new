@@ -1,0 +1,17 @@
+@import "../../../Variables.scss";
+
+.ordering-location {
+  height: 100vh;
+
+  .location-picker {
+    height: 100%;
+  }
+
+  &__error-screen-image {
+    max-width: 90%;
+  }
+
+  &__error-screen-message {
+    color: $gray-2;
+  }
+}

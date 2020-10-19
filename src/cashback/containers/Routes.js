@@ -17,7 +17,7 @@ class Routes extends Component {
         <Suspense
           fallback={
             <div className="loading-cover">
-              <i className="loader theme page-loader"></i>
+              <i className="loader theme full-page"></i>
             </div>
           }
         >

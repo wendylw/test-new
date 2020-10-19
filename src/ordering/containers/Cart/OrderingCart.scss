@@ -1,0 +1,31 @@
+@import "../../../Variables.scss";
+
+.ordering-cart {
+  height: 100vh;
+  background-color: $gray-5;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  &__additional-comments {
+    background-color: $white;
+  }
+
+  &__textarea {
+    width: 100%;
+    border: 0;
+  }
+
+  &__button-back {
+    width: 33.333333%;
+  }
+}
+
+.cart-promotion {
+  &__button-acquisition {
+    max-height: 50px;
+  }
+}

@@ -1,0 +1,13 @@
+@import "../../../Variables.scss";
+
+.billing {
+  background-color: $white;
+
+  &__button-login {
+    height: 30px;
+  }
+
+  &__item-primary {
+    background-color: $theme-color-translucent-light;
+  }
+}
