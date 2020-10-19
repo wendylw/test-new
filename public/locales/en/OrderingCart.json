@@ -1,5 +1,8 @@
 {
   "OrderNotesPlaceholder": "Special Instructions E.g. Less rice, more garlic",
   "ProductsInOrderText": "Order {{count}} Items",
-  "InvalidPromoCode": "Invalid Promo/Voucher"
+  "InvalidPromoCode": "Invalid Promo/Voucher",
+  "ProductSoldOutTitle": "We're sorry, some items are not available",
+  "ProductSoldOutTitleDescription": "Some items in your cart are sold out or not available. Please edit the cart and try again.",
+  "EditCart": "edit cart"
 }

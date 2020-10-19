@@ -20,6 +20,7 @@ import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness 
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
+import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
@@ -29,6 +30,7 @@ class Cart extends Component {
     expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
+    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
   };
 
   async componentDidMount() {
@@ -258,7 +260,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder } = this.state;
+    const { isCreatingOrder, isHaveProductSoldOut } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -356,6 +358,15 @@ class Cart extends Component {
             {!isCreatingOrder ? buttonText : null}
           </button>
         </footer>
+        <ProductSoldOutModal
+          show={isHaveProductSoldOut}
+          editHandler={() => {
+            this.setState({
+              isHaveProductSoldOut: null,
+            });
+            Utils.removeSessionVariable('isHaveProductSoldOut');
+          }}
+        />
       </section>
     );
   }
