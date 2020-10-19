@@ -30,6 +30,7 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
+import beepAppDownloadBanner from '../../../images/beep-app-download.png';
 import config from '../../../config';
 import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
@@ -656,6 +657,28 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  renderDownloadBanner() {
+    let link = '';
+    const client = Utils.judgeClient();
+    if (client === 'iOS') {
+      link = 'https://apps.apple.com/my/app/beep-food-delivery/id1526807985';
+    } else if (client === 'Android') {
+      link = 'https://play.google.com/store/apps/details?id=com.storehub.beep';
+    } else {
+      link =
+        'https://app.beepit.com/download/?utm_source=beep&utm_medium=tracking&utm_campaign=launch_campaign&utm_content=tracking_banner';
+    }
+    return (
+      <div className="margin-normal">
+        <a href={link} data-heap-name="ordering.thank-you.download" target={client === 'PC' ? '_blank' : ''}>
+          <p className="flex flex-center flex-middle">
+            <img src={beepAppDownloadBanner} alt="Beep App Download" />
+          </p>
+        </a>
+      </div>
+    );
+  }
+
   render() {
     const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
@@ -726,6 +749,7 @@ export class ThankYou extends PureComponent {
           </Header>
 
           <div className="ordering-thanks__container">
+            {!isWebview && this.renderDownloadBanner()}
             {isDeliveryType ? (
               this.renderDeliveryImageAndTimeLine()
             ) : (
