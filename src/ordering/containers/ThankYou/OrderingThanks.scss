@@ -206,7 +206,8 @@ $total-text-size: 1.7142rem;
     &-button {
       height: 56px;
       border-top: 1px solid $gray-4;
-      a {
+      a,
+      button {
         text-decoration: none;
         color: $status-blue;
         line-height: 56px;

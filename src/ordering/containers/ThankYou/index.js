@@ -36,6 +36,8 @@ import beepOrderConfirmed from '../../../images/beep-order-confirmed.png';
 import config from '../../../config';
 import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
+import qs from 'qs';
+import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -190,6 +192,28 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  isReportUnsafeDriverButtonDisabled = () => {
+    const { order } = this.props;
+    const { status } = order || {};
+
+    return !CAN_REPORT_STATUS_LIST.includes(status);
+  };
+
+  handleReportUnsafeDriver = () => {
+    if (this.isReportUnsafeDriverButtonDisabled()) {
+      return;
+    }
+
+    const queryParams = {
+      receiptNumber: Utils.getQueryString('receiptNumber'),
+    };
+
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
   renderCashbackUI = cashback => {
     const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
@@ -332,7 +356,7 @@ export class ThankYou extends PureComponent {
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
-    const { name } = storeInfo || {};
+    const { name, phone: storePhone } = storeInfo || {};
     let { trackingUrl, useStorehubLogistics, courier } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
@@ -342,8 +366,9 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = PICKUP;
+    status = 'confirmed';
     useStorehubLogistics = true;
+
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -416,6 +441,8 @@ export class ThankYou extends PureComponent {
       };
     }
 
+    const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
+
     return (
       <React.Fragment>
         <img
@@ -434,7 +461,7 @@ export class ThankYou extends PureComponent {
               </Trans>
             </div>
           </div>
-        ) : !useStorehubLogistics && currentStatusObj.status !== 'paid' ? null : (
+        ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
             {/*{currentStatusObj.status !== 'cancelled' ? (*/}
             {/*  <div className="progress-bar__container">*/}
@@ -581,14 +608,14 @@ export class ThankYou extends PureComponent {
         currentStatusObj.status === 'riderPickUp' ||
         currentStatusObj.status === 'delivered' ||
         (!useStorehubLogistics && currentStatusObj.status !== 'paid')
-          ? this.renderRiderInfo(currentStatusObj.status, useStorehubLogistics)
+          ? this.renderRiderInfo(currentStatusObj.status, useStorehubLogistics, trackingUrl, storePhone)
           : null}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
 
-  renderRiderInfo = (status, useStorehubLogistics) => {
+  renderRiderInfo = (status, useStorehubLogistics, trackingUrl, storePhone) => {
     const { t } = this.props;
 
     return (
@@ -603,7 +630,7 @@ export class ThankYou extends PureComponent {
           {status !== 'paid' && !useStorehubLogistics && (
             <p className="padding-small text-left">{t('SelfDeliveryDescription')}</p>
           )}
-          {!(status !== 'paid' && !useStorehubLogistics) && (
+          {!(status !== 'paid' && !useStorehubLogistics) && status !== 'confirmed' && (
             <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder">
               11:02 AM
             </h2>
@@ -617,17 +644,53 @@ export class ThankYou extends PureComponent {
           </div>
         </div>
         <div className="ordering-thanks__rider-button text-uppercase flex">
-          <a href="" className="text-weight-bolder button">
-            track order
-          </a>
-          <span></span>
-          <a href="" className="text-weight-bolder button">
-            track order
-          </a>
+          {status === 'confirmed' && (
+            <React.Fragment>
+              <a href={`tel:${storePhone}`} className="text-weight-bolder button">
+                {t('CallStore')}
+              </a>
+              <span></span>
+              <a href="" className="text-weight-bolder button">
+                {t('CallDriver')}
+              </a>
+            </React.Fragment>
+          )}
+
+          {status === 'riderPickUp' && (
+            <React.Fragment>
+              {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                <a
+                  href={trackingUrl}
+                  className="text-weight-bolder button"
+                  target="__blank"
+                  data-heap-name="ordering.thank-you.logistics-tracking-link"
+                >
+                  {t('TrackOrder')}
+                </a>
+              ) : null}
+              <span></span>
+              <a href="" className="text-weight-bolder button">
+                {t('CallDriver')}
+              </a>
+            </React.Fragment>
+          )}
+
+          {status === 'delivered' && (
+            <React.Fragment>
+              <button
+                className="text-weight-bolder button text-uppercase"
+                onClick={this.handleReportUnsafeDriver}
+                data-heap-name="ordering.need-help.report-driver-btn"
+              >
+                {t('ReportDriver')}
+              </button>
+            </React.Fragment>
+          )}
         </div>
       </div>
     );
   };
+
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
   renderStoreInfo = () => {
