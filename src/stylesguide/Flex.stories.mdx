@@ -1,0 +1,163 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Utilities/Flex" />
+
+<style>{`
+.border-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.border-sb__item {
+  margin-bottom: 20px;
+}
+
+.border-sb__label {
+  vertical-align: top;
+  width: 320px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.border-sb__content {
+  width: 100%;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+`}</style>
+
+# Flex
+
+Flex is used for layout and alignment in Beep. <a target="_blank" href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">Articles of Flex knowledge</a>
+
+### 
+## Flex column
+
+```js live=true
+flex flex-column
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-column</label>
+    <div class="border-sb__content">
+      <div class="flex flex-column" style={{backgroundColor: '#ffd100'}}>
+        <div style={{margin: '8px', width: '120px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '80px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 
+## Flex baseline alignment
+
+```js live=true
+flex flex-middle
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-middle</label>
+    <div class="border-sb__content" style={{backgroundColor: '#ffd100'}}>
+      <div class="flex flex-middle">
+        <div style={{margin: '8px', width: '150px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '200px', height: '200px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 
+## Flex top alignment
+
+```js live=true
+flex flex-top
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-top</label>
+    <div class="border-sb__content" style={{backgroundColor: '#ffd100'}}>
+      <div class="flex flex-top">
+        <div style={{margin: '8px', width: '150px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '200px', height: '200px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 
+## Flex center alignment
+
+```js live=true
+flex flex-center
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-center</label>
+    <div class="border-sb__content">
+      <div class="flex flex-center" style={{backgroundColor: '#ffd100'}}>
+        <div style={{margin: '8px', width: '120px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '80px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 
+## Flex space between alignment
+
+```js live=true
+flex flex-space-between
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-space-between</label>
+    <div class="border-sb__content">
+      <div class="flex flex-space-between" style={{backgroundColor: '#ffd100'}}>
+        <div style={{margin: '8px', width: '120px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '80px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 
+## Flex space around alignment
+Space is the same as both side for each item
+
+```js live=true
+flex flex-space-around
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-space-around</label>
+    <div class="border-sb__content">
+      <div class="flex flex-space-around" style={{backgroundColor: '#ffd100'}}>
+        <div style={{margin: '8px', width: '120px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '80px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 
+## Flex end alignment
+
+```js live=true
+flex flex-end
+```
+<div class="border-sb__card">
+  <div class="border-sb__item flex flex-top">
+    <label class="border-sb__label flex__shrink-fixed">flex flex-end</label>
+    <div class="border-sb__content">
+      <div class="flex flex-end" style={{backgroundColor: '#ffd100'}}>
+        <div style={{margin: '8px', width: '120px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+        <div style={{margin: '8px', width: '80px', height: '150px', backgroundColor: '#ff9419', fontSize: 'inherit'}}></div>
+      </div>
+    </div>
+  </div>
+</div>

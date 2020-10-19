@@ -1,0 +1,44 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Utilities/Loader" />
+
+<style>{`
+.loader-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.loader-sb__item {
+  margin-bottom: 20px;
+}
+
+.loader-sb__label {
+  vertical-align: top;
+  width: 320px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.loader-sb__content {
+  width: 100%;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+`}</style>
+
+# Loader
+
+Show the Loader when loading page or fetching data
+
+<div class="loader-sb__card">
+  <div class="loader-sb__item flex flex-top">
+    <div class="loader-sb__content">
+      <div class="loader theme"></div>
+    </div>
+  </div>
+</div>

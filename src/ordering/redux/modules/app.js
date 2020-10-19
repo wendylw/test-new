@@ -8,6 +8,7 @@ import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { post, get } from '../../../utils/request';
+import i18next from 'i18next';
 
 const { AUTH_INFO } = Constants;
 
@@ -29,6 +30,14 @@ export const initialState = {
     description: '',
     buttonText: '',
   }, // message modal
+  apiError: {
+    show: false,
+    message: '',
+    description: '',
+    buttonText: '',
+    code: null,
+    redirectUrl: '',
+  },
   business: config.business,
   onlineStoreInfo: {
     id: '',
@@ -59,6 +68,7 @@ export const actions = {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
@@ -78,6 +88,7 @@ export const actions = {
       requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
         phone,
         fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           window.heap?.identify(resp.consumerId);
@@ -163,6 +174,9 @@ export const actions = {
   hideMessageModal: () => ({
     type: types.HIDE_MESSAGE_MODAL,
   }),
+  hideApiMessageModal: () => ({
+    type: types.CLEAR_API_ERROR,
+  }),
 
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
@@ -212,7 +226,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt, error } = action;
+  const { type, response, prompt, error } = action;
   const { consumerId, login } = response || {};
 
   switch (type) {
@@ -283,16 +297,22 @@ const user = (state = initialState.user, action) => {
 };
 
 const error = (state = initialState.error, action) => {
-  const { type, code, message } = action;
+  const { type, code, message, response, responseGql } = action;
+  const result = response || (responseGql || {}).data;
+  const errorCode = code || (result || {}).code;
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
   } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
 
-    if (type === types.CREATE_OTP_FAILURE) {
-      errorMessage = Constants.LOGIN_PROMPT[code];
-    }
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
+  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
+    let errorMessage = Constants.LOGIN_PROMPT[code];
 
     return {
       ...state,
@@ -325,6 +345,41 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   }
 };
 
+const apiError = (state = initialState.apiError, action) => {
+  const { type, code, message, response, responseGql } = action;
+  const result = response || (responseGql || {}).data;
+  const errorCode = code || (result || {}).code;
+  const { ERROR_CODE_MAP } = Constants;
+  const error = ERROR_CODE_MAP[errorCode];
+
+  if (type === types.CLEAR_API_ERROR) {
+    return {
+      ...state,
+      show: false,
+      message: '',
+      description: '',
+      buttonText: '',
+      code: null,
+      redirectUrl: '',
+    };
+  }
+
+  if (error) {
+    return {
+      ...state,
+      show: error.showModal,
+      code: errorCode,
+      message: i18next.t(error.title, { error_code: errorCode }),
+      description: i18next.t(error.desc),
+      buttonText: i18next.t(error.buttonText),
+      redirectUrl: error.redirectUrl,
+    };
+  } else {
+    // TODO add default error message
+    return state;
+  }
+};
+
 const messageModal = (state = initialState.messageModal, action) => {
   switch (action.type) {
     case types.SET_MESSAGE_INFO: {
@@ -348,6 +403,7 @@ export default combineReducers({
   business,
   onlineStoreInfo,
   requestInfo,
+  apiError,
 });
 
 // selectors
@@ -366,3 +422,4 @@ export const getMerchantCountry = state => {
 
   return null;
 };
+export const getApiError = state => state.app.apiError;

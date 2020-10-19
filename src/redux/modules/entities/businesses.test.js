@@ -8,11 +8,12 @@ const initialState = {
 
 describe('src/redux/modules/entities/businesses.js:reducers', () => {
   it('should return the initial state', () => {
-    expect(businessesReducers(undefined, {})).toEqual({ businesses: {} });
+    expect(businessesReducers(initialState, {})).toEqual({ ...initialState, loaded: false });
   });
   describe('action with responseGql', () => {
     it('valid business', () => {
       const businessInfo = {
+        country: 'my',
         name: 'mockName',
         stores: [
           {
@@ -47,6 +48,7 @@ describe('src/redux/modules/entities/businesses.js:reducers', () => {
       };
       const expectedState = {
         businesses: {},
+        loaded: true,
         mockName: businessInfo,
       };
       expect(businessesReducers(initialState, action)).toEqual(expectedState);

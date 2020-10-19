@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import LazyLoad from 'react-lazyload';
 import Item from '../../../components/Item';
 import Tag from '../../../components/Tag';
 import ItemOperator from '../../../components/ItemOperator';
@@ -11,8 +10,10 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getProductItemMinHeight } from '../../redux/modules/home';
 
+import './ProductItem.scss';
+
 export class ProductItem extends Component {
-  renderItem() {
+  render() {
     const {
       t,
       className,
@@ -20,6 +21,7 @@ export class ProductItem extends Component {
       image,
       title,
       price,
+      originalDisplayPrice,
       soldOut,
       cartQuantity,
       decreaseDisabled,
@@ -29,23 +31,44 @@ export class ProductItem extends Component {
       showProductDetail,
       productDetailImageRef,
       isValidTimeToOrder,
+      isLazyLoad,
+      productItemMinHeight,
+      scrollContainer,
     } = this.props;
+    const PricesDom = (
+      <div>
+        {originalDisplayPrice ? (
+          <CurrencyNumber
+            className="product-item__price text-size-small text-line-through"
+            money={originalDisplayPrice}
+            numberOnly={true}
+          />
+        ) : null}
+        <CurrencyNumber
+          className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
+          money={price || 0}
+          numberOnly={true}
+        />
+      </div>
+    );
 
     return (
       <Item
+        scrollContainer={scrollContainer}
+        isLazyLoad={isLazyLoad}
+        productItemMinHeight={productItemMinHeight}
         className={className}
-        contentClassName="flex-top"
         productDetailImageRef={productDetailImageRef}
         image={image}
         title={title}
         variation={variation}
-        detail={<CurrencyNumber className="price item__text font-weight-bolder" money={price || 0} numberOnly={true} />}
+        detail={PricesDom}
         operateItemDetail={showProductDetail}
-        hasTag={isFeaturedProduct}
+        tagText={isFeaturedProduct ? t('BestSeller') : null}
         data-heap-name="ordering.common.product-item.container"
       >
         {soldOut ? (
-          <Tag text={t('SoldOut')} className="tag__card info sold-out" style={{ minWidth: '70px' }} />
+          <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />
         ) : (
           <ItemOperator
             className="flex-middle"
@@ -60,18 +83,6 @@ export class ProductItem extends Component {
       </Item>
     );
   }
-
-  render() {
-    const { isList, productItemMinHeight } = this.props;
-
-    return isList ? (
-      <LazyLoad offset={150} height={productItemMinHeight}>
-        {this.renderItem()}
-      </LazyLoad>
-    ) : (
-      this.renderItem()
-    );
-  }
 }
 
 ProductItem.propTypes = {
@@ -81,6 +92,7 @@ ProductItem.propTypes = {
   image: PropTypes.string,
   title: PropTypes.string,
   price: PropTypes.number,
+  originalDisplayPrice: PropTypes.number,
   cartQuantity: PropTypes.number,
   decreaseDisabled: PropTypes.bool,
   onDecrease: PropTypes.func,
@@ -88,7 +100,7 @@ ProductItem.propTypes = {
   showProductDetail: PropTypes.func,
   productDetailImageRef: PropTypes.any,
   isValidTimeToOrder: PropTypes.bool,
-  isList: PropTypes.bool,
+  isLazyLoad: PropTypes.bool,
 };
 
 ProductItem.defaultProps = {
@@ -98,10 +110,11 @@ ProductItem.defaultProps = {
   image: '',
   title: '',
   price: 0,
+  originalDisplayPrice: 0,
   cartQuantity: 0,
   decreaseDisabled: false,
   isValidTimeToOrder: true,
-  isList: true,
+  isLazyLoad: true,
   productItemMinHeight: 100,
   onDecrease: () => {},
   onIncrease: () => {},

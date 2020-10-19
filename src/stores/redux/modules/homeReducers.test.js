@@ -25,7 +25,6 @@ describe('src/stores/redux/modules/homeReducers.js:reducers', () => {
     };
     expect(homeReducers(initialState, action)).toEqual({
       ...initialState,
-      isFetching: true,
     });
   });
 
@@ -47,6 +46,9 @@ describe('src/stores/redux/modules/homeReducers.js:reducers', () => {
                 isDeleted: false,
               },
             ],
+            qrOrderingSettings: {
+              enableDelivery: false,
+            },
           },
         },
       },

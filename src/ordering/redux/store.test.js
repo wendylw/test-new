@@ -15,6 +15,7 @@ it('src/ordering/redux/store.js', () => {
         hasOtp: false,
         isExpired: false,
         isLogin: false,
+        isWebview: false,
         showLoginPage: false,
         storeCreditsBalance: 0,
       },
@@ -22,6 +23,7 @@ it('src/ordering/redux/store.js', () => {
     cart: { pendingTransactionsIds: [] },
     customer: {
       deliveryDetails: {
+        addressChange: false,
         addressDetails: '',
         deliveryComments: '',
         deliveryToAddress: '',
@@ -96,13 +98,17 @@ it('src/ordering/redux/store.js', () => {
       stores: {},
     },
     home: {
+      coreStore: { isFetching: false, storeList: [], storeHashCode: '' },
       currentProduct: { cartId: '', id: '', isFetching: false },
-      domProperties: { verticalMenuBusinesses: [''], productItemMinHeight: 107.64 },
+      domProperties: { productItemMinHeight: 107.64 },
       onlineCategory: { categoryIds: [], isFetching: false },
       popUpModal: {
         userConfirmed: false,
       },
       shoppingCart: { isFetching: false, itemIds: [], unavailableItemIds: [] },
+      timeSlot: {
+        timeSlotList: [],
+      },
     },
     payment: { bankingList: [], braintreeToken: '', currentPayment: '', orderId: '', thankYouPageUrl: '' },
     promotion: {
@@ -123,6 +129,6 @@ it('src/ordering/redux/store.js', () => {
         url: '',
       },
     },
-    thankYou: { cashbackInfo: null, orderId: null, storeHashCode: null },
+    thankYou: { cashbackInfo: null, orderId: null, storeHashCode: null, orderStatus: null, isWebView: false },
   });
 });

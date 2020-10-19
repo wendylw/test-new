@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import ProductItem from '../../../../components/ProductItem';
-import { ScrollObserver, ScrollObservable } from '../../../../../components/ScrollComponents';
+import { ScrollObservable } from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -66,6 +66,7 @@ class CategoryProductList extends Component {
   };
 
   handleGtmEventTracking = (eventName, data) => {
+    if (!data) return;
     let gtmTrackingData = {};
     if (eventName === GTM_TRACKING_EVENTS.VIEW_PRODUCT) {
       gtmTrackingData = {
@@ -107,56 +108,26 @@ class CategoryProductList extends Component {
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { categories, style } = this.props;
+
     return (
-      <div id="product-list" className="list__container">
-        <ScrollObserver
-          render={scrollid => {
-            const categoryList = categories || [];
-            const currentTarget = categoryList.find(category => category.id === scrollid) || categoryList[0];
-            let target = currentTarget;
-
-            if (!currentTarget || !isVerticalMenu) {
-              return null;
-            }
-
-            if (
-              document
-                .getElementById('root')
-                .getAttribute('class')
-                .includes('fixed')
-            ) {
-              target = this.prevCategory || {};
-            } else {
-              this.prevCategory = currentTarget;
-            }
-
-            return (
-              <h2 className="category__header fixed flex flex-middle flex-space-between" data-testid="categoryRight">
-                <label>{target.name || ''}</label>
-                {/* {target.cartQuantity ? (
-                  <span className="gray-font-opacity">
-                    {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
-                  </span>
-                ) : null} */}
-              </h2>
-            );
-          }}
-        />
+      <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
               <ScrollObservable targetId={category.id} key={category.id}>
-                <h2 className="category__header flex flex-middle flex-space-between">
-                  <label>{category.name}</label>
+                <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
+                  <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
-                <ul className="list">
+                <div className="list">
                   {(category.products || []).map(product => (
                     <ProductItem
+                      scrollContainer="#product-list"
                       key={product.id}
                       image={product.images[0]}
                       title={product.title}
                       price={product.displayPrice}
+                      originalDisplayPrice={product.originalDisplayPrice}
                       cartQuantity={product.cartQuantity}
                       soldOut={product.soldOut}
                       decreaseDisabled={false}
@@ -168,7 +139,7 @@ class CategoryProductList extends Component {
                       data-heap-name="ordering.home.product-item"
                     />
                   ))}
-                </ul>
+                </div>
               </ScrollObservable>
             </li>
           ))}
@@ -180,13 +151,12 @@ class CategoryProductList extends Component {
 
 CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
-  isVerticalMenu: PropTypes.bool,
   isValidTimeToOrder: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 CategoryProductList.defaultProps = {
   onToggle: () => {},
-  isVerticalMenu: false,
   isValidTimeToOrder: true,
 };
 

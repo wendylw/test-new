@@ -1,0 +1,12 @@
+@import "../Variables.scss";
+
+.phone-view {
+  &__label {
+    display: block;
+  }
+
+  .react-phone-number-input .react-phone-number-input__input,
+  .react-phone-number-input .react-phone-number-input__input:focus {
+    height: 54px;
+  }
+}

@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { captureException } from '@sentry/react';
 
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
@@ -106,6 +107,7 @@ export const actions = {
 
     // expectedDeliveryHour & expectedDeliveryDate will always be there if
     // there is preOrder in url
+    const orderSource = getOrderSource();
     const business = getBusiness(getState());
     const businessInfo = getBusinessByName(getState(), business);
     const { qrOrderingSettings = {} } = businessInfo || {};
@@ -122,12 +124,13 @@ export const actions = {
       shoppingCartIds,
       tableId,
       cashback,
+      orderSource,
     };
 
     // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
     let expectDeliveryDateInfo = null;
     try {
-      if (enablePreOrder) {
+      if (enablePreOrder && !(shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY)) {
         const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
         // => {"from":2,"to":3}
         const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
@@ -142,7 +145,8 @@ export const actions = {
         }
       }
     } catch (e) {
-      console.error('failed to create expectDeliveryDateInfo');
+      console.error('failed to create expectDeliveryDateInfo', e.toString());
+      captureException(e);
     }
     // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
 
@@ -169,11 +173,13 @@ export const actions = {
       variables = {
         ...variables,
         contactDetail,
+        shippingType,
         ...expectDeliveryDateInfo,
       };
     } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
       variables = {
         ...variables,
+        shippingType: Utils.mapString2camelCase(shippingType),
         contactDetail,
       };
     }
@@ -281,6 +287,18 @@ export const actions = {
       params: { country },
     },
   }),
+};
+
+const getOrderSource = () => {
+  let orderSource = '';
+  if (Utils.isWebview()) {
+    orderSource = 'BeepApp';
+  } else if (sessionStorage.getItem('orderSource')) {
+    orderSource = 'BeepSite';
+  } else {
+    orderSource = 'BeepStore';
+  }
+  return orderSource;
 };
 
 const createOrder = variables => {
@@ -430,5 +448,5 @@ export const getDefaultPayment = state => {
 };
 
 export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
-  return payments.find(payment => payment.label === currentPayment);
+  return (payments || []).find(payment => payment.label === currentPayment);
 });

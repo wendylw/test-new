@@ -1,11 +1,12 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
+import Utils from '../../utils/utils';
 import NotFound from '../../NotFound';
 
-const RecentActivities = lazy(() => import('./Home/components/RecentActivities'));
-const Claim = lazy(() => import('./Claim'));
-const Home = lazy(() => import('./Home'));
-const Error = lazy(() => import('../../components/Error'));
+const RecentActivities = lazy(() => Utils.retry(() => import('./Home/components/RecentActivities')));
+const Claim = lazy(() => Utils.retry(() => import('./Claim')));
+const Home = lazy(() => Utils.retry(() => import('./Home')));
+const Error = lazy(() => Utils.retry(() => import('../../components/Error')));
 
 class Routes extends Component {
   render() {
@@ -16,7 +17,7 @@ class Routes extends Component {
         <Suspense
           fallback={
             <div className="loading-cover">
-              <i className="loader theme page-loader"></i>
+              <i className="loader theme full-page"></i>
             </div>
           }
         >

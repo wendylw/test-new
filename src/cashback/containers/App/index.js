@@ -10,73 +10,30 @@ import {
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
+import '../../../Common.scss';
+import './Loyalty.scss';
 import Routes from '../Routes';
-import '../../../App.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
+import RequestLogin from './components/RequestLogin';
+import Utils from '../../../utils/utils';
+import { getAppLoginStatus, getAppToken } from '../utils';
 
 class App extends Component {
-  //TODO: loyalty page communicate with native app
-  // constructor(props) {
-  //   super(props);
-  //   window.sendToken = res => this.AuthTokens(res);
-  //   this.postAppMessage(props.user);
-  // }
-
-  async componentDidMount() {
-    const { appActions } = this.props;
-
-    this.visitErrorPage();
-    await appActions.getLoginStatus();
-    await appActions.fetchOnlineStoreInfo();
-    await appActions.fetchBusiness();
-
-    const { user } = this.props;
-    const { isLogin } = user || {};
-
-    if (isLogin) {
-      appActions.loadCustomerProfile();
-    }
+  constructor(props) {
+    super(props);
+    window.sendToken = res => this.authTokens(res);
   }
 
-  componentDidUpdate(prevProps) {
-    const { appActions, user, pageError } = this.props;
-    const { isExpired, isWebview, isLogin } = user || {};
-    const { code } = prevProps.pageError || {};
-
-    if (pageError.code && pageError.code !== code) {
-      this.visitErrorPage();
-    }
-
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      // this.postAppMessage(user);
-    }
-
-    if (isLogin && prevProps.user.isLogin !== isLogin) {
-      appActions.loadCustomerProfile();
-    }
-  }
-
-  visitErrorPage() {
-    const { pageError } = this.props;
-
-    if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
-    }
-  }
-
-  AuthTokens = async res => {
+  authTokens = async res => {
     if (res) {
-      if (window.webkit) {
+      if (Utils.isIOSWebview()) {
         await this.loginBeepApp(res);
-      } else if (window.androidInterface) {
+      } else if (Utils.isAndroidWebview()) {
         const data = JSON.parse(res) || {};
-        if (data.phone) {
-          sessionStorage.setItem('userPhone', data.phone);
-        }
         await this.loginBeepApp(data);
       }
     }
@@ -92,22 +49,52 @@ class App extends Component {
     }
   };
 
-  postAppMessage(user) {
-    const { isExpired } = user || {};
-    if (window.androidInterface && isExpired) {
-      window.androidInterface.tokenExpired();
+  async componentDidMount() {
+    const { appActions } = this.props;
+    this.visitErrorPage();
+    await appActions.getLoginStatus();
+    await appActions.fetchOnlineStoreInfo();
+    await appActions.fetchBusiness();
+
+    const { user } = this.props;
+    const { isLogin, isWebview } = user || {};
+    const appLogin = getAppLoginStatus();
+
+    if (isLogin) {
+      appActions.loadCustomerProfile();
     }
-    if (window.androidInterface && !isExpired) {
-      window.androidInterface.getToken();
+
+    // appLogin is true, isLogin is false
+    if (isWebview) {
+      if (appLogin && !isLogin) {
+        getAppToken(user);
+      }
     }
-    if (window.webkit && isExpired) {
-      window.webkit.messageHandlers.shareAction.postMessage({
-        functionName: 'tokenExpired',
-        callbackName: 'sendToken',
-      });
+  }
+
+  componentDidUpdate(prevProps) {
+    const { appActions, user, pageError } = this.props;
+    const { isExpired, isWebview, isLogin } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
     }
-    if (window.webkit && !isExpired) {
-      window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'getToken', callbackName: 'sendToken' });
+
+    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+      getAppToken(user);
+    }
+
+    if (isLogin && prevProps.user.isLogin !== isLogin) {
+      appActions.loadCustomerProfile();
+    }
+  }
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+
+    if (pageError && pageError.code) {
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
   }
 
@@ -119,21 +106,29 @@ class App extends Component {
     this.props.appActions.hideMessageModal();
   };
 
-  render() {
+  renderMainContent() {
     const { user, error, onlineStoreInfo } = this.props;
     const { isFetching, prompt, isLogin } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="loyalty">
-        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
+      <main className="loyalty fixed-wrapper__main fixed-wrapper">
+        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
-        {!isFetching || !isLogin ? <Login className="aside" title={prompt} /> : null}
+        {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
+  }
+
+  render() {
+    const { user } = this.props;
+    const { isWebview } = user || {};
+    const appLogin = getAppLoginStatus();
+
+    return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
   }
 }
 

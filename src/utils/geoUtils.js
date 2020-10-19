@@ -100,7 +100,7 @@ export const getDeviceCoordinates = option => {
         resolve(position);
       },
       error => {
-        console.error('Fail to detect location', error);
+        console.warn('Fail to detect location', error);
         reject(error);
       },
       option
@@ -212,6 +212,7 @@ export const computeStraightDistance = (fromCoords, toCoords) => {
   const from = latLng(fromCoords);
   const to = latLng(toCoords);
   const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+
   straightDistanceCache[key] = result;
   return result;
 };

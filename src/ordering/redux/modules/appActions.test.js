@@ -11,6 +11,7 @@ import {
   mockErrorMsg,
   mockErrorCode,
 } from '../../../utils/testHelper';
+import { RequestError } from '../../../utils/request';
 const orderingStore = rootReducer(undefined, {});
 
 describe('src/ordering/redux/modules/app.js:actions', () => {
@@ -72,7 +73,6 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
           {
             type: types.CREATE_LOGIN_SUCCESS,
             response: commonSuccessData,
-            params: reqParams,
           },
         ];
         return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
@@ -85,8 +85,7 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
           },
           {
             type: types.CREATE_LOGIN_FAILURE,
-            code: mockErrorCode,
-            message: mockErrorMsg,
+            error: new RequestError(mockErrorMsg, mockErrorCode),
           },
         ];
         return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
@@ -98,7 +97,7 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.CREATE_LOGIN_REQUEST },
-          { type: types.CREATE_LOGIN_SUCCESS, response: commonSuccessData, params: reqParams },
+          { type: types.CREATE_LOGIN_SUCCESS, response: commonSuccessData },
         ];
         return expectedActionsCheck(actions.phoneNumberLogin(reqParams), expectedActions);
       });
@@ -106,7 +105,7 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         failMockFetch();
         const expectedActions = [
           { type: types.CREATE_LOGIN_REQUEST },
-          { type: types.CREATE_LOGIN_FAILURE, code: mockErrorCode, message: mockErrorMsg },
+          { type: types.CREATE_LOGIN_FAILURE, error: new RequestError(mockErrorMsg, mockErrorCode) },
         ];
         return expectedActionsCheck(actions.phoneNumberLogin(reqParams), expectedActions);
       });
@@ -191,7 +190,7 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_LOGIN_STATUS_REQUEST },
-          { type: types.FETCH_LOGIN_STATUS_SUCCESS, response: commonSuccessData, params: {} },
+          { type: types.FETCH_LOGIN_STATUS_SUCCESS, response: commonSuccessData },
         ];
         return expectedActionsCheck(actions.getLoginStatus(), expectedActions);
       });
@@ -203,8 +202,7 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
           },
           {
             type: types.FETCH_LOGIN_STATUS_FAILURE,
-            code: mockErrorCode,
-            message: mockErrorMsg,
+            error: new RequestError(mockErrorMsg, mockErrorCode),
           },
         ];
         return expectedActionsCheck(actions.getLoginStatus(), expectedActions);

@@ -6,7 +6,7 @@ import dataSource from './dataSource';
 // this container is kind of view, and can have dom level animation between banner bars
 const CampaignBar = ({ countryCode, onToggle = () => {} }) => {
   // for further from redux state
-  const defaultCampaign = dataSource[2];
+  const defaultCampaign = dataSource[0];
   const [currentCampaign] = useState(defaultCampaign);
 
   if (countryCode.toUpperCase() === 'MY') {
