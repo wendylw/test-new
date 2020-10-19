@@ -422,8 +422,9 @@ class Stripe extends Component {
                 if (!paymentMethod) return null;
 
                 const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
+                const { receiptNumber } = requestData;
 
-                return requestData ? (
+                return requestData && receiptNumber ? (
                   <RedirectForm
                     key="stripe-payment-redirect-form"
                     action={config.storeHubPaymentEntryURL}

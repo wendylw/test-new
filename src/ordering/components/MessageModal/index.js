@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Modal from '../../components/MessageModal';
+import Modal from '../../../components/Modal';
+import './MessageModal.scss';
 
 class MessageModal extends Component {
   handleClickOK = () => {
@@ -12,12 +13,12 @@ class MessageModal extends Component {
     const { message, description, buttonText } = data;
 
     return (
-      <Modal data-heap-name="ordering.common.message-modal.container">
-        <Modal.Body>
-          <h4 className="text-weight-bolder">{message}</h4>
-          <p className="modal__text">{description}</p>
+      <Modal data-heap-name="ordering.common.message-modal.container" className="message-modal" show={true}>
+        <Modal.Body className="text-center">
+          <h4 className="padding-small text-size-biggest text-weight-bolder">{message}</h4>
+          <p className="modal__text  padding-top-bottom-small">{description}</p>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="padding-small">
           <button
             className="button button__fill button__block text-weight-bolder"
             data-heap-name="ordering.common.message-modal.ok-btn"
