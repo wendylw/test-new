@@ -4,7 +4,8 @@ import Utils from '../../../utils/utils';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
+import Image from '../../../components/Image';
 import Constants from '../../../utils/constants';
 
 import {
@@ -17,14 +18,15 @@ import {
   getVoucherValidityPeriodDays,
 } from '../../redux/modules/app';
 import giftCardImage from '../../../images/thankyou-giftcard.svg';
-import VoucherAboutContent from '../../components/VoucherAboutContent';
+import VoucherIntroduction from '../../components/VoucherIntroduction';
+import './VoucherThanks.scss';
 
 class ThankYou extends Component {
   componentDidMount() {
     const receiptNumber = Utils.getQueryString('receiptNumber');
     this.props.appActions.loadOrder(receiptNumber);
   }
-  handlerClickBack = () => {
+  handleClickBack = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_HOME,
     });
@@ -40,37 +42,59 @@ class ThankYou extends Component {
       onlineStoreName,
       validityPeriodDays,
     } = this.props;
-    return (
-      <section className="thankyou-page" data-heap-name="voucher.thank-you.container">
-        <Header clickBack={this.handlerClickBack} data-heap-name="voucher.thank-you.header" />
-        <h1 className="thankyou-page__title">{t('ThankYou')}!</h1>
-        <div className="thankyou-page__gifCard">
-          <img alt="Gift Card" src={giftCardImage} />
-        </div>
-        <div className="thankyou-page__contact-info">
-          {t('VoucherHaveBeenSentTo')}
-          <span className="contact-info__email">{contactEmail}</span>
-        </div>
-        <div className="thankyou-page__order-info">
-          <div className="voucher-code__container">
-            <p className="voucher-code__title">{t('YourGiftVoucherCode')}</p>
-            <p className="voucher-code__content">{voucherCode}</p>
-          </div>
-          <div className="store-info__container">
-            {onlineStoreLogo ? (
-              <p className="store-info__logo">
-                <img alt={`${onlineStoreName} Logo`} src={onlineStoreLogo} />
-              </p>
-            ) : null}
 
-            <p className="store-info__site">
-              <a href={beepSiteUrl} data-heap-name="voucher.thank-you.visit-site-link">
-                {t('VisitSiteToUseVoucherNow', { onlineStoreName })}
-              </a>
-            </p>
+    return (
+      <section className="voucher-thanks flex flex-column" data-heap-name="voucher.thank-you.container">
+        <Header
+          className="flex-middle"
+          contentClassName="flex-middle"
+          data-heap-name="voucher.thank-you.header"
+          isPage={true}
+          navFunc={this.handleClickBack}
+        />
+
+        <div className="voucher-thanks__container">
+          <h2 className="voucher-thanks__title text-center padding-normal margin-top-bottom-small text-size-large text-weight-light">
+            {t('ThankYou')}!
+          </h2>
+          <div className="text-center padding-left-right-normal">
+            <img className="voucher-thanks__image" alt="Gift Card" src={giftCardImage} />
           </div>
+
+          <div className="text-center padding-normal margin-normal">
+            <span className="text-size-big">{t('VoucherHaveBeenSentTo')}</span>
+            <span className="text-size-big text-weight-bolder">{contactEmail}</span>
+          </div>
+
+          <div className="card margin-normal">
+            <div className="text-center padding-small border__bottom-divider">
+              <h4 className="margin-small text-size-big text-weight-bolder">{t('YourGiftVoucherCode')}</h4>
+              <span className="voucher-thanks__voucher-code padding-small text-size-huge text-weight-bolder">
+                {voucherCode}
+              </span>
+            </div>
+            <div className="padding-top-bottom-smaller">
+              {onlineStoreLogo ? (
+                <Image
+                  className="voucher-thanks__logo logo logo__big margin-normal"
+                  alt={`${onlineStoreName} Logo`}
+                  src={onlineStoreLogo}
+                />
+              ) : null}
+
+              <div className="text-center margin-normal">
+                <a
+                  class="voucher-thanks__button-link button button__link text-size-big text-weight-bolder"
+                  href={beepSiteUrl}
+                  data-heap-name="voucher.thank-you.visit-site-link"
+                >
+                  {t('VisitSiteToUseVoucherNow', { onlineStoreName })}
+                </a>
+              </div>
+            </div>
+          </div>
+          <VoucherIntroduction onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
         </div>
-        <VoucherAboutContent onlineStoreName={onlineStoreName} validityPeriodDays={validityPeriodDays} />
       </section>
     );
   }

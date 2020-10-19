@@ -17,6 +17,8 @@ export const initialState = {
   orderId: null,
   cashbackInfo: null /* included: customerId, consumerId, status */,
   storeHashCode: null,
+  orderStatus: null,
+  isWebView: Utils.isWebview(),
 };
 
 export const types = THANK_YOU_TYPES;
@@ -24,6 +26,10 @@ export const types = THANK_YOU_TYPES;
 export const actions = {
   loadOrder: orderId => dispatch => {
     return dispatch(fetchOrder({ orderId }));
+  },
+
+  loadOrderStatus: orderId => dispatch => {
+    return dispatch(fetchOrderStatus({ orderId }));
   },
 
   getCashbackInfo: receiptNumber => ({
@@ -59,6 +65,20 @@ export const actions = {
       ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
     },
   }),
+
+  getStoreHashDataWithTableId: ({ storeId, tableId }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_WITH_TABLEID_REQUEST,
+        types.FETCH_STORE_HASHCODE_WITH_TABLEID_SUCCESS,
+        types.FETCH_STORE_HASHCODE_WITH_TABLEID_FAILURE,
+      ],
+      payload: {
+        tableId,
+      },
+      ...Url.API_URLS.POST_STORE_HASH_DATA(storeId),
+    },
+  }),
 };
 
 const fetchOrder = variables => ({
@@ -66,6 +86,13 @@ const fetchOrder = variables => ({
     types: [types.FETCH_ORDER_REQUEST, types.FETCH_ORDER_SUCCESS, types.FETCH_ORDER_FAILURE],
     endpoint: Url.apiGql('Order'),
     variables,
+  },
+});
+
+const fetchOrderStatus = variables => ({
+  [API_REQUEST]: {
+    types: [types.FETCH_ORDER_STATUS_REQUEST, types.FETCH_ORDER_STATUS_SUCCESS, types.FETCH_ORDER_STATUS_FAILURE],
+    ...Url.API_URLS.GET_ORDER_STATUS(variables),
   },
 });
 
@@ -126,6 +153,22 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: redirectTo };
     }
+    case types.FETCH_STORE_HASHCODE_WITH_TABLEID_SUCCESS: {
+      const { response } = action;
+      const { hex } = response || {};
+
+      return { ...state, storeHashCode: hex };
+    }
+    case types.FETCH_ORDER_STATUS_SUCCESS: {
+      const { response } = action;
+      const { status } = response;
+
+      return {
+        ...state,
+        orderStatus: status,
+      };
+    }
+
     default:
       return state;
   }
@@ -165,6 +208,9 @@ export const getBusinessInfo = state => {
 
 export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;
+
+export const getLoadOrderStatus = state => state.thankYou.orderStatus;
+export const getWebViewStatus = state => state.thankYou.isWebView;
 
 export const getOrderStatus = createSelector([getOrder], order => {
   return _get(order, 'status', '');

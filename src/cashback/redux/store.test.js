@@ -66,6 +66,12 @@ it('src/cashback/redux/store.js', () => {
             label: 'GrabPay',
             logo: 'paymentGrabImage',
           },
+          onlineBanking: {
+            key: 'onlineBanking',
+            label: 'OnlineBanking',
+            logo: 'paymentBankingImage',
+            pathname: '/payment/online-banking',
+          },
           stripe: {
             key: 'stripe',
             label: 'CreditCard',

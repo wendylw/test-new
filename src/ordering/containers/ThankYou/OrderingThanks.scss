@@ -1,0 +1,154 @@
+@import "../../../Variables.scss";
+
+$total-text-size: 1.7142rem;
+
+@keyframes dots {
+  to {
+    width: 18px;
+  }
+}
+
+@-webkit-keyframes dots {
+  to {
+    width: 18px;
+  }
+}
+
+@keyframes dotsMore {
+  to {
+    width: 26px;
+  }
+}
+
+@-webkit-keyframes dotsMore {
+  to {
+    width: 26px;
+  }
+}
+
+.ordering-thanks {
+  height: 100vh;
+  background-color: $gray-6;
+
+  &__button-contact-us {
+    color: $status-blue;
+  }
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  &__image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 60%;
+  }
+
+  &__page-title {
+    color: $gray-2;
+  }
+
+  &__page-description {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__accepted &__title-dots,
+  &__paid &__title-dots {
+    text-align: left;
+    display: inline-block;
+  }
+
+  &__accepted &__title-dots {
+    width: 18px;
+  }
+
+  &__paid &__title-dots {
+    width: 24px;
+  }
+
+  &__accepted &__title-dots::after,
+  &__paid &__title-dots::after {
+    vertical-align: bottom;
+    display: inline-block;
+    margin-left: 2px;
+  }
+
+  &__accepted &__title-dots::after {
+    content: "...";
+    overflow: hidden;
+    -webkit-animation: dots steps(4, end) 2s infinite;
+    animation: dots steps(4, end) 2s infinite;
+    width: 0px;
+  }
+
+  &__paid &__title-dots::after {
+    content: ".....";
+    overflow: hidden;
+    -webkit-animation: dotsMore steps(6, end) 3s infinite;
+    animation: dotsMore steps(6, end) 3s infinite;
+    width: 0px;
+  }
+
+  &__description {
+    margin-right: 5px;
+  }
+
+  &__link-status {
+    letter-spacing: 1.25px;
+  }
+
+  &__pickup-number {
+    display: block;
+    color: $gray-2;
+  }
+
+  &__card-prompt {
+    position: relative;
+    overflow: visible;
+  }
+
+  &__card-prompt-congratulation {
+    max-width: 320px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  &__card-prompt-total {
+    display: block;
+  }
+
+  &__card-prompt-description {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 300px;
+  }
+
+  &__address,
+  &__time {
+    color: $gray-2;
+  }
+
+  &__total {
+    font-size: $total-text-size;
+  }
+
+  &__button-card-link {
+    border-top: 1px solid $gray-4;
+    color: $status-blue;
+    border-radius: 0;
+  }
+
+  &__footer {
+    bottom: 0;
+  }
+
+  &__button-footer-link {
+    color: $status-blue;
+  }
+}

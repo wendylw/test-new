@@ -80,6 +80,12 @@ it('src/ordering/redux/store.js', () => {
             label: 'GrabPay',
             logo: 'paymentGrabImage',
           },
+          onlineBanking: {
+            key: 'onlineBanking',
+            label: 'OnlineBanking',
+            logo: 'paymentBankingImage',
+            pathname: '/payment/online-banking',
+          },
           stripe: {
             key: 'stripe',
             label: 'CreditCard',
@@ -94,7 +100,7 @@ it('src/ordering/redux/store.js', () => {
     home: {
       coreStore: { isFetching: false, storeList: [], storeHashCode: '' },
       currentProduct: { cartId: '', id: '', isFetching: false },
-      domProperties: { verticalMenuBusinesses: [''], productItemMinHeight: 107.64 },
+      domProperties: { productItemMinHeight: 107.64 },
       onlineCategory: { categoryIds: [], isFetching: false },
       popUpModal: {
         userConfirmed: false,
@@ -123,6 +129,6 @@ it('src/ordering/redux/store.js', () => {
         url: '',
       },
     },
-    thankYou: { cashbackInfo: null, orderId: null, storeHashCode: null },
+    thankYou: { cashbackInfo: null, orderId: null, storeHashCode: null, orderStatus: null, isWebView: false },
   });
 });

@@ -50,6 +50,7 @@ export const actions = {
       accessToken,
       refreshToken,
       fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      shippingType: Utils.getApiRequestShippingType(),
     }).then(resp => {
       if (resp && resp.consumerId) {
         window.heap?.identify(resp.consumerId);
@@ -68,6 +69,7 @@ export const actions = {
     requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
       phone,
       fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      shippingType: Utils.getApiRequestShippingType(),
     }).then(resp => {
       if (resp && resp.consumerId) {
         window.heap?.identify(resp.consumerId);

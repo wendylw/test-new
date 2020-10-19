@@ -1,60 +1,99 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
-import Constants from '../utils/constants';
+import React, { Component } from 'react';
+import withDataAttributes from './withDataAttributes';
 import './DeliverToBar.scss';
-import { IconLocation, IconScanner } from './Icons';
 
-class DeliverToBar extends PureComponent {
-  handleScannerClicked = () => {
-    this.props.backLeftPosition();
-  };
-
+/**
+ * `<DeliverToBar />` is used on the homepage of beepit.com and ordering.
+ *
+ * A entry of search location and delivery details
+ */
+class DeliverToBar extends Component {
   render() {
-    const { title, address, className, gotoLocationPage } = this.props;
-    const { ROUTER_PATHS } = Constants;
-    const classList = ['deliver-to-entry flex flex-middle flex-space-between'];
+    const {
+      title,
+      icon,
+      backIcon,
+      content,
+      extraInfo,
+      className,
+      showBackButton,
+      gotoLocationPage,
+      backLeftPosition,
+      deliverToBarRef,
+      dataAttributes,
+      children,
+    } = this.props;
+    const classList = ['deliver-to-entry flex flex-space-between sticky-wrapper'];
 
     if (className) {
       classList.push(className);
     }
 
     return (
-      <section className={classList.join(' ')}>
+      <section ref={deliverToBarRef} className={classList.join(' ')}>
+        {showBackButton ? backIcon : null}
         <div
           className="deliver-to-entry__content"
+          {...dataAttributes}
           data-testid="DeliverToBar"
-          data-heap-name="site.home.delivery-bar"
           onClick={() => {
-            this.handleScannerClicked();
+            if (backLeftPosition) {
+              backLeftPosition();
+            }
+
             gotoLocationPage();
           }}
         >
-          <label className="deliver-to-entry__label text-uppercase text-weight-bold">{title}</label>
-          <div>
-            <IconLocation className="icon icon__small icon__gray text-middle" />
-            <span className="deliver-to-entry__address text-middle text-opacity text-omit__single-line">{address}</span>
+          <div className={showBackButton ? '' : 'padding-left-right-smaller'}>
+            {title ? (
+              <label className="deliver-to-entry__label margin-smaller text-size-small text-uppercase text-weight-bolder">
+                {title}
+              </label>
+            ) : null}
+            <div className="flex flex-top">
+              {icon}
+              <div className="deliver-to-entry__detail-container">
+                <p className="deliver-to-entry__base-info padding-top-bottom-smaller text-middle text-opacity text-omit__single-line">
+                  {content}
+                </p>
+                {extraInfo ? (
+                  <p className="padding-top-bottom-smaller text-size-small text-weight-bolder text-uppercase text-omit__single-line">
+                    {extraInfo}
+                  </p>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
-        <Link to={ROUTER_PATHS.QRSCAN} data-heap-name="site.home.qr-scan-icon">
-          <IconScanner className="icon icon__privacy" onClick={this.handleScannerClicked} />
-        </Link>
+        {children}
       </section>
     );
   }
 }
 
 DeliverToBar.propTypes = {
+  deliverToBarRef: PropTypes.any,
   className: PropTypes.string,
   title: PropTypes.string,
-  address: PropTypes.string,
+  icon: PropTypes.node,
+  backIcon: PropTypes.node,
+  content: PropTypes.string,
+  extraInfo: PropTypes.string,
+  showBackButton: PropTypes.bool,
   gotoLocationPage: PropTypes.func,
+  backLeftPosition: PropTypes.func,
 };
 
 DeliverToBar.defaultProps = {
   title: '',
-  address: '',
-  toLocationPage: () => {},
+  content: '',
+  extraInfo: '',
+  icon: null,
+  backIcon: null,
+  showBackButton: false,
+  backLeftPosition: () => {},
+  gotoLocationPage: () => {},
 };
 
-export default DeliverToBar;
+export default withDataAttributes(DeliverToBar);

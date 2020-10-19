@@ -24,7 +24,7 @@ const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class Bootstrap extends Component {
   renderSitePages = () => {
     return (
-      <Suspense fallback={<div className="loader theme page-loader"></div>}>
+      <Suspense fallback={<div className="loader theme full-page"></div>}>
         <AsyncSite />
       </Suspense>
     );
@@ -32,7 +32,7 @@ class Bootstrap extends Component {
 
   renderMerchantPages = () => {
     return (
-      <Suspense fallback={<div className="loader theme page-loader"></div>}>
+      <Suspense fallback={<div className="loader theme full-page"></div>}>
         <Switch>
           <Route
             exact
