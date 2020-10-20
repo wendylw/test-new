@@ -149,6 +149,7 @@ class Payment extends Component {
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.header"
@@ -157,7 +158,18 @@ class Payment extends Component {
           navFunc={this.handleClickBack}
         />
 
-        <div className="ordering-payment__container">
+        <div
+          className="ordering-payment__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: Utils.containerHeight({
+              headerEls: [this.headerEl],
+              footerEls: [this.footerEl],
+            }),
+          }}
+        >
           <ul>
             {payments.map(payment => {
               const classList = [
@@ -203,7 +215,10 @@ class Payment extends Component {
           </ul>
         </div>
 
-        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
+        >
           <CreateOrderButton
             history={history}
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
