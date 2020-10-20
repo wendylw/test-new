@@ -483,30 +483,6 @@ class ProductDetail extends Component {
 
     return (
       <React.Fragment>
-        <div
-          className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
-          ref={ref => (this.opeartoresEl = ref)}
-        >
-          <ItemOperator
-            className="flex-middle"
-            data-heap-name="ordering.common.product-item.item-operator "
-            quantity={cartQuantity}
-            from="productDetail"
-            decreaseDisabled={cartQuantity <= 1}
-            onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-            onIncrease={() => {
-              const disableVariationsId = this.isInvalidMinimumVariations();
-
-              if (hasMinimumVariations && disableVariationsId) {
-                document.getElementById(disableVariationsId) &&
-                  document.getElementById(disableVariationsId).scrollIntoView();
-                return;
-              }
-              this.setState({ cartQuantity: cartQuantity + 1 });
-            }}
-            increaseDisabled={false}
-          />
-        </div>
         <footer
           className="product-detail__footer flex flex-middle flex-center padding-normal flex__shrink-fixed "
           ref={ref => (this.footerEl = ref)}
@@ -651,6 +627,42 @@ class ProductDetail extends Component {
       </div>
     );
   }
+  renderOperatorButton = () => {
+    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
+
+    const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
+    const { id: productId, images } = product || {};
+
+    const imageUrl = Array.isArray(images) ? images[0] : null;
+    const hasMinimumVariations = minimumVariations && minimumVariations.length;
+
+    return (
+      <div
+        className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
+        ref={ref => (this.opeartoresEl = ref)}
+      >
+        <ItemOperator
+          className="flex-middle"
+          data-heap-name="ordering.common.product-item.item-operator "
+          quantity={cartQuantity}
+          from="productDetail"
+          decreaseDisabled={cartQuantity <= 1}
+          onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+          onIncrease={() => {
+            const disableVariationsId = this.isInvalidMinimumVariations();
+
+            if (hasMinimumVariations && disableVariationsId) {
+              document.getElementById(disableVariationsId) &&
+                document.getElementById(disableVariationsId).scrollIntoView();
+              return;
+            }
+            this.setState({ cartQuantity: cartQuantity + 1 });
+          }}
+          increaseDisabled={false}
+        />
+      </div>
+    );
+  };
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
