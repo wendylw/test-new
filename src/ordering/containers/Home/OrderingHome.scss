@@ -3,7 +3,9 @@ $gray-nav-item-text: #707070;
 
 .ordering-home {
   height: 100vh;
-
+  &__header {
+    overflow: hidden;
+  }
   .footer {
     z-index: $z-index-base;
   }
