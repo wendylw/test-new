@@ -309,9 +309,9 @@ class Cart extends Component {
         <aside
           className="sticky-wrapper"
           style={{
-            bottom: `mainBottom({
+            bottom: `${mainBottom({
               footerEls: [this.footerEl],
-            })px`,
+            })}px`,
           }}
         >
           <Billing
