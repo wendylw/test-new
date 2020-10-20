@@ -33,9 +33,14 @@ class Cart extends Component {
   };
 
   componentDidUpdate(prevProps, prevStates) {
-    if (prevStates.cartContainerHeight !== this.getCartContainerHeight()) {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.billingEl, this.footerEl],
+    });
+
+    if (prevStates.cartContainerHeight !== containerHeight) {
       this.setState({
-        cartContainerHeight: this.getCartContainerHeight(),
+        cartContainerHeight: containerHeight,
       });
     }
   }
@@ -49,18 +54,11 @@ class Cart extends Component {
     this.handleResizeEvent();
 
     this.setState({
-      cartContainerHeight: this.getCartContainerHeight(),
-    });
-  }
-
-  getCartContainerHeight() {
-    return `${Utils.windowSize().height -
-      Utils.mainTop({
+      cartContainerHeight: Utils.containerHeight({
         headerEls: [this.headerEl],
-      }) -
-      Utils.mainBottom({
         footerEls: [this.billingEl, this.footerEl],
-      })}px`;
+      }),
+    });
   }
 
   handleResizeEvent() {

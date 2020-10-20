@@ -920,4 +920,14 @@ Utils.mainBottom = ({ footerEls = [] }) => {
   return bottom;
 };
 
+Utils.containerHeight = ({ headerEls, footerEls }) => {
+  return `${Utils.windowSize().height -
+    Utils.mainTop({
+      headerEls,
+    }) -
+    Utils.mainBottom({
+      footerEls,
+    })}px`;
+};
+
 export default Utils;
