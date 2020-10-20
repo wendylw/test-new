@@ -517,6 +517,7 @@ class CreditCard extends Component {
           style={{
             height: Utils.containerHeight({
               headerEls: [this.headerEl],
+              footerEls: [this.footerEl],
             }),
           }}
           className="payment-credit-card__container padding-top-bottom-normal"
@@ -524,7 +525,10 @@ class CreditCard extends Component {
           {this.renderForm()}
         </div>
 
-        <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
+        >
           <CreateOrderButton
             history={history}
             className="margin-top-bottom-smaller"
