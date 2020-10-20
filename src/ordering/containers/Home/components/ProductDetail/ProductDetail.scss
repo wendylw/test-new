@@ -48,6 +48,7 @@
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 50%;
     z-index: 200;
+    transform: translateZ(10px);
   }
 
   &__image-container {

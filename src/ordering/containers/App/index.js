@@ -28,6 +28,10 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+      document.body.style.overflow = 'hidden';
+    }
+
     if (Utils.isAndroidWebview()) {
       const res = window.androidInterface.getAddress();
       this.setAppAddressToSession(JSON.parse(res));
