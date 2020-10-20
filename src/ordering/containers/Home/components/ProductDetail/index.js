@@ -742,6 +742,7 @@ class ProductDetail extends Component {
               </article>
             ) : null}
             {this.renderVariations()}
+            {this.renderOperatorButton()}
           </div>
           {this.renderProductOperator()}
         </div>
