@@ -4,7 +4,7 @@ import {
   fetchDeliveryDetails,
   patchDeliveryDetails,
   updateDeliveryDetails,
-} from '../../containers/Customer/utils';
+} from '../../containers/Customer-1/utils';
 import _get from 'lodash/get';
 
 // actions
