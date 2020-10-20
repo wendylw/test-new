@@ -891,6 +891,23 @@ Utils.judgeClient = () => {
   return client;
 };
 
+Utils.windowSize = () => ({
+  width: window.innerWidth || document.body.clientWidth,
+  height: window.innerHeight || document.body.clientHeight,
+});
+
+Utils.mainTop = ({ headerEls = [] }) => {
+  let top = 0;
+
+  if (headerEls.length) {
+    headerEls.forEach(headerEl => {
+      top += headerEl ? headerEl.clientHeight || headerEl.offsetHeight : 0;
+    });
+  }
+
+  return top;
+};
+
 Utils.mainBottom = ({ footerEls = [] }) => {
   let bottom = 0;
 

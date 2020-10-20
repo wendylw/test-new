@@ -29,7 +29,16 @@ class Cart extends Component {
     expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
+    cartContainerHeight: '100%',
   };
+
+  componentDidUpdate(prevProps, prevStates) {
+    if (prevStates.cartContainerHeight !== this.getCartContainerHeight()) {
+      this.setState({
+        cartContainerHeight: this.getCartContainerHeight(),
+      });
+    }
+  }
 
   async componentDidMount() {
     const { homeActions } = this.props;
@@ -38,6 +47,20 @@ class Cart extends Component {
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
+
+    this.setState({
+      cartContainerHeight: this.getCartContainerHeight(),
+    });
+  }
+
+  getCartContainerHeight() {
+    return `${Utils.windowSize().height -
+      Utils.mainTop({
+        headerEls: [this.headerEl],
+      }) -
+      Utils.mainBottom({
+        footerEls: [this.billingEl, this.footerEl],
+      })}px`;
   }
 
   handleResizeEvent() {
@@ -260,7 +283,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder } = this.state;
+    const { isCreatingOrder, cartContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -286,6 +309,7 @@ class Cart extends Component {
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
@@ -302,7 +326,15 @@ class Cart extends Component {
             <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="ordering-cart__container" style={{ overflowY: 'scroll' }}>
+        <div
+          className="ordering-cart__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: cartContainerHeight,
+          }}
+        >
           <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
@@ -315,6 +347,7 @@ class Cart extends Component {
           }}
         >
           <Billing
+            billingRef={ref => (this.billingEl = ref)}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}

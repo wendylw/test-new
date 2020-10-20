@@ -59,6 +59,7 @@ export class Billing extends Component {
   render() {
     const {
       t,
+      billingRef,
       className,
       subtotal,
       total,
@@ -79,7 +80,7 @@ export class Billing extends Component {
     }
 
     return (
-      <section className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
+      <section ref={billingRef} className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
         <ul className="billing__list">
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
             <label className="margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
@@ -135,6 +136,7 @@ export class Billing extends Component {
 }
 
 Billing.propTypes = {
+  billingRef: PropTypes.any,
   className: PropTypes.string,
   tax: PropTypes.number,
   serviceCharge: PropTypes.number,
