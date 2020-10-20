@@ -726,13 +726,6 @@ class ProductDetail extends Component {
               <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
                 <h2 className="product-detail__title text-size-biggest text-weight-bolder">{title}</h2>
                 <div className="product-detail__price flex flex-column text-right flex-end">
-                  {originalDisplayPrice ? (
-                    <CurrencyNumber
-                      className={`product-item__price  text-line-through margin-left-right-smaller`}
-                      money={originalDisplayPrice || 0}
-                      numberOnly={true}
-                    />
-                  ) : null}
                   <CurrencyNumber
                     className=" text-size-biggest text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
                     money={Number(this.displayPrice()) || 0}
