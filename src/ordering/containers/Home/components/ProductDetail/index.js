@@ -658,7 +658,7 @@ class ProductDetail extends Component {
             }
             this.setState({ cartQuantity: cartQuantity + 1 });
           }}
-          increaseDisabled={false}
+          increaseDisabled={Utils.isProductSoldOut(product || {})}
         />
       </div>
     );
@@ -711,7 +711,12 @@ class ProductDetail extends Component {
                 {(images && images.length ? images : [null]).map(image => {
                   return (
                     <SwiperSlide key={image}>
-                      <Image src={image} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
+                      <Image
+                        src={image}
+                        scalingRatioIndex={2}
+                        alt={`${storeName} ${title}`}
+                        className="product-detail__image-content"
+                      />
                     </SwiperSlide>
                   );
                 })}
