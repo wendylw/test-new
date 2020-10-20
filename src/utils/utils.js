@@ -891,4 +891,16 @@ Utils.judgeClient = () => {
   return client;
 };
 
+Utils.mainBottom = ({ footerEls = [] }) => {
+  let bottom = 0;
+
+  if (footerEls.length) {
+    footerEls.forEach(footerEl => {
+      bottom += footerEl ? footerEl.clientHeight || footerEl.offsetHeight : 0;
+    });
+  }
+
+  return bottom;
+};
+
 export default Utils;
