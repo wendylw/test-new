@@ -44,7 +44,7 @@ export class Item extends Component {
               <div className="item__image-container flex__shrink-fixed margin-small">
                 <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
               </div>
-              <summary
+              <div
                 className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
                 data-testid="itemDetail"
               >
@@ -63,7 +63,7 @@ export class Item extends Component {
                   ) : null}
                 </div>
                 {detail}
-              </summary>
+              </div>
             </div>
 
             {children}
