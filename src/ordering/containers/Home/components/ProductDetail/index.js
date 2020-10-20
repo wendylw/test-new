@@ -437,7 +437,7 @@ class ProductDetail extends Component {
 
     return (
       <div className="product-detail__variations">
-        <ol className="padding-top-bottom-small">
+        <ol className="">
           {singleChoiceVariations.map(variation => (
             <VariationSelector
               key={variation.id}
