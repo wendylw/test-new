@@ -310,7 +310,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
         }}
       />
 
-      <footer className="payment-credit-card__footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+      <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
           className="margin-top-bottom-smaller"
           history={history}
@@ -414,9 +414,6 @@ class Stripe extends Component {
         <div
           className="payment-credit-card__container padding-top-bottom-normal"
           style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
             height: Utils.containerHeight({
               headerEls: [this.headerEl],
             }),
