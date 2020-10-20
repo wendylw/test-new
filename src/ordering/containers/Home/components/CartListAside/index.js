@@ -77,6 +77,7 @@ class CartListAside extends Component {
             </button>
           </div>
           <div
+            className="cart-list-aside__list-container"
             style={{
               maxHeight: this.aside ? `${(this.aside.clientHeight || this.aside.offsetHeight) * 0.8}px` : '0',
             }}
