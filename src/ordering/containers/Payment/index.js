@@ -142,7 +142,7 @@ class Payment extends Component {
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { payNowLoading, containerHeight } = this.state;
+    const { payNowLoading, cartContainerHeight } = this.state;
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
@@ -178,7 +178,7 @@ class Payment extends Component {
             top: `${Utils.mainTop({
               headerEls: [this.headerEl],
             })}px`,
-            height: containerHeight,
+            height: cartContainerHeight,
           }}
         >
           <ul>
