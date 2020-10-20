@@ -668,7 +668,7 @@ class ProductDetail extends Component {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
     const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = product || {};
+    const { id, _needMore, images, title, description, originalDisplayPrice, price } = product || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
@@ -725,13 +725,20 @@ class ProductDetail extends Component {
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
               <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
                 <h2 className="product-detail__title text-size-biggest text-weight-bolder">{title}</h2>
-                <div className="product-detail__price flex flex-column text-right flex-middle">
+                <div className="product-detail__price flex flex-column text-right flex-end">
+                  {originalDisplayPrice ? (
+                    <CurrencyNumber
+                      className={`product-item__price  text-line-through margin-left-right-smaller`}
+                      money={originalDisplayPrice || 0}
+                      numberOnly={true}
+                    />
+                  ) : null}
                   <CurrencyNumber
                     className=" text-size-biggest text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
                     money={Number(this.displayPrice()) || 0}
                     numberOnly={true}
                   />
-                  {Utils.isProductSoldOut(product || {}) ? (
+                  {Utils.isProductSoldOut(product || {}) || true ? (
                     <Tag
                       text={t('SoldOut')}
                       className="product-detail__info-tag tag tag__default margin-smaller text-size-big flex__shrink-fixed"
