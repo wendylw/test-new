@@ -53,7 +53,7 @@ class Payment extends Component {
   componentDidUpdate(prevProps, prevStates) {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
-      footerEls: [this.billingEl, this.footerEl],
+      footerEls: [this.footerEl],
     });
 
     if (prevStates.cartContainerHeight !== containerHeight) {
