@@ -510,8 +510,7 @@ export class ThankYou extends PureComponent {
                     currentStatusObj.status === 'confirmed' ? 'text-black' : 'pt-4 text-gray'
                   }`}
                 >
-                  {' '}
-                  {t('MerchantAccepted')}
+                  {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
                 </div>
               )}
 
@@ -564,7 +563,7 @@ export class ThankYou extends PureComponent {
             </h2>
           )}
           <div className="padding-left-right-small flex padding-top-bottom-normal">
-            <img src={beepOrderStatusConfirmed} alt="rider info" />
+            <img src={beepOrderStatusConfirmed} alt="rider info" className="logo" />
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p>Lavae</p>
               <span className="text-gray">+60234234</span>
