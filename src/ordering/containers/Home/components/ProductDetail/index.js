@@ -671,6 +671,7 @@ class ProductDetail extends Component {
     const { id, _needMore, images, title, description } = product || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
+    const isHaveContent = Utils.removeHtmlTag(description);
 
     if (show && product && id && !_needMore) {
       className.push('active cover');
@@ -717,23 +718,24 @@ class ProductDetail extends Component {
               </Swiper>
             </div>
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
-              <div className="product-detail__info-summary flex flex-top flex-space-between">
-                <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
-                <CurrencyNumber
-                  className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
-                  money={Number(this.displayPrice()) || 0}
-                  numberOnly={true}
-                />
+              <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
+                <h2 className="product-detail__title text-size-biggest text-weight-bolder">{title}</h2>
+                <div className="product-detail__price flex flex-column text-right flex-middle">
+                  <CurrencyNumber
+                    className=" text-size-biggest text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
+                    money={Number(this.displayPrice()) || 0}
+                    numberOnly={true}
+                  />
+                  {Utils.isProductSoldOut(product || {}) ? (
+                    <Tag
+                      text={t('SoldOut')}
+                      className="product-detail__info-tag tag tag__default margin-smaller text-size-big flex__shrink-fixed"
+                    />
+                  ) : null}
+                </div>
               </div>
-
-              {Utils.isProductSoldOut(product || {}) ? (
-                <Tag
-                  text={t('SoldOut')}
-                  className="product-detail__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
-                />
-              ) : null}
             </div>
-            {Boolean(descriptionStr.__html) ? (
+            {isHaveContent ? (
               <article className="product-detail__article margin-top-bottom-normal">
                 <p
                   className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"

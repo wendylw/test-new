@@ -98,6 +98,11 @@
   &__title {
     word-break: break-word;
   }
+  &__price {
+    align-items: flex-end;
+    i {
+    }
+  }
 
   &__info-title {
     word-break: break-all;
