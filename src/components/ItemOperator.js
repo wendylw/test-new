@@ -29,7 +29,7 @@ export class ItemOperator extends Component {
       <div className={classList.join(' ')} {...dataAttributes}>
         {onDecrease ? (
           <button
-            className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller"
+            className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller item-operator__button-decrease"
             disabled={decreaseDisabled}
             onClick={onDecrease}
             data-testid="itemDecrease"
@@ -51,7 +51,7 @@ export class ItemOperator extends Component {
 
         {onIncrease ? (
           <button
-            className="item-operator__button padding-top-bottom-small padding-left-right-smaller"
+            className="item-operator__button padding-top-bottom-small padding-left-right-smaller item-operator__button-increase"
             onClick={onIncrease}
             disabled={increaseDisabled}
             data-testid="itemIncrease"
