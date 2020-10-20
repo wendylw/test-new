@@ -238,7 +238,7 @@ export class VariationSelector extends Component {
                 >
                   <span>{value}</span>
                   {priceDiff ? (
-                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff}</span>
+                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff.toFixed(2)}</span>
                   ) : null}
                 </p>
                 <div
