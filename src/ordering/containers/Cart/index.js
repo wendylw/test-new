@@ -306,7 +306,14 @@ class Cart extends Component {
           <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
-        <aside className="aside-bottom">
+        <aside
+          className="sticky-wrapper"
+          style={{
+            bottom: `${mainBottom({
+              footerEls: [this.footerEl],
+            })}px`,
+          }}
+        >
           <Billing
             tax={tax}
             serviceCharge={serviceCharge}
@@ -322,7 +329,10 @@ class Cart extends Component {
             {this.renderPromotionItem()}
           </Billing>
         </aside>
-        <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
+        <footer
+          footerRef={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        >
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={this.handleClickBack.bind(this)}
