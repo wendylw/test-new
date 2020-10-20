@@ -731,7 +731,7 @@ class ProductDetail extends Component {
                     money={Number(this.displayPrice()) || 0}
                     numberOnly={true}
                   />
-                  {Utils.isProductSoldOut(product || {}) || true ? (
+                  {Utils.isProductSoldOut(product || {}) ? (
                     <Tag
                       text={t('SoldOut')}
                       className="product-detail__info-tag tag tag__default margin-smaller text-size-big flex__shrink-fixed"
