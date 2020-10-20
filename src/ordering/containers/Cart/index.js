@@ -33,16 +33,7 @@ class Cart extends Component {
   };
 
   componentDidUpdate(prevProps, prevStates) {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.billingEl, this.footerEl],
-    });
-
-    if (prevStates.cartContainerHeight !== containerHeight) {
-      this.setState({
-        cartContainerHeight: containerHeight,
-      });
-    }
+    this.setCartContainerHeight(prevStates.cartContainerHeight);
   }
 
   async componentDidMount() {
@@ -52,14 +43,21 @@ class Cart extends Component {
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
-
-    this.setState({
-      cartContainerHeight: Utils.containerHeight({
-        headerEls: [this.headerEl],
-        footerEls: [this.billingEl, this.footerEl],
-      }),
-    });
+    this.setCartContainerHeight();
   }
+
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.billingEl, this.footerEl],
+    });
+
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  };
 
   handleResizeEvent() {
     window.addEventListener(
@@ -220,6 +218,7 @@ class Cart extends Component {
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
+          onBlur={this.setCartContainerHeight}
         ></textarea>
         {additionalComments ? (
           <IconClose

@@ -892,8 +892,8 @@ Utils.judgeClient = () => {
 };
 
 Utils.windowSize = () => ({
-  width: window.innerWidth || document.body.clientWidth,
-  height: window.innerHeight || document.body.clientHeight,
+  width: document.body.clientWidth || window.innerWidth,
+  height: document.body.clientHeight || window.innerHeight,
 });
 
 Utils.mainTop = ({ headerEls = [] }) => {

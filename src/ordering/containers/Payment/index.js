@@ -49,6 +49,7 @@ class Payment extends Component {
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
     await this.props.homeActions.loadShoppingCart();
   };
+
   componentDidUpdate(prevProps, prevStates) {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
