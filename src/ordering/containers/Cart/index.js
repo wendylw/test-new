@@ -330,7 +330,7 @@ class Cart extends Component {
           </Billing>
         </aside>
         <footer
-          footerRef={ref => (this.footerEl = ref)}
+          ref={ref => (this.footerEl = ref)}
           className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
         >
           <button
