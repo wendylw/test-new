@@ -39,6 +39,7 @@ const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_MET
 class Payment extends Component {
   state = {
     payNowLoading: false,
+    cartContainerHeight: '100%',
   };
 
   componentDidMount = async () => {
@@ -48,6 +49,18 @@ class Payment extends Component {
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
     await this.props.homeActions.loadShoppingCart();
   };
+  componentDidUpdate(prevProps, prevStates) {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.billingEl, this.footerEl],
+    });
+
+    if (prevStates.cartContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  }
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
@@ -128,7 +141,7 @@ class Payment extends Component {
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { payNowLoading } = this.state;
+    const { payNowLoading, containerHeight } = this.state;
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
@@ -164,10 +177,7 @@ class Payment extends Component {
             top: `${Utils.mainTop({
               headerEls: [this.headerEl],
             })}px`,
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-              footerEls: [this.footerEl],
-            }),
+            height: containerHeight,
           }}
         >
           <ul>
