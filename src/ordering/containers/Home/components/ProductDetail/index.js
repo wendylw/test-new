@@ -722,8 +722,8 @@ class ProductDetail extends Component {
                 })}
               </Swiper>
             </div>
-            <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-top-bottom-small">
-              <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top padding-left-right-normal">
+            <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
+              <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
                 <h2 className="product-detail__title text-size-biggest text-weight-bolder">{title}</h2>
                 <div className="product-detail__price flex flex-column text-right flex-end">
                   <CurrencyNumber
