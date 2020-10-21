@@ -741,7 +741,7 @@ class ProductDetail extends Component {
               </div>
             </div>
             {isHaveContent ? (
-              <article className="product-detail__article margin-top-bottom-normal">
+              <article className="product-detail__article">
                 <p
                   className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
                   dangerouslySetInnerHTML={descriptionStr}

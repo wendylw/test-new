@@ -200,7 +200,7 @@ export class VariationSelector extends Component {
         <div className="padding-left-right-normal variation-selector__title">
           <h4 className="variation-selector__title-name text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between padding-left-right-smaller">
             <span className="text-weight-bolder">{variation.name}</span>
-            {quantitySumMoney ? <span className="text-weight-bolder">+ {quantitySumMoney}</span> : null}
+            {<span className="text-weight-bolder">+ {quantitySumMoney || '0.00'}</span>}
           </h4>
           <div className="variation-selector__title-info flex flex-space-between padding-left-right-smaller">
             {this.isMultipleChoice() && enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
