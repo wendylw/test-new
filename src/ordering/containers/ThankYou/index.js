@@ -373,6 +373,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
+    status = CONFIMRMED;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -466,8 +467,8 @@ export class ThankYou extends PureComponent {
             </div>
           </div>
         ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
-          <div className="card text-center margin-normal flex">
-            <div className="ordering-thanks__progress padding-top-bottom-small">
+          <div className="card text-center margin-normal flex padding-left-right-normal">
+            <div className="ordering-thanks__progress padding-top-bottom-small ">
               {
                 <img
                   src={
@@ -484,10 +485,12 @@ export class ThankYou extends PureComponent {
             <div className="padding-small text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
-                  <h4 className={`text-size-big text-weight-bolder line-height-normal ordering-thanks__paid`}>
+                  <h4
+                    className={`text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
+                  >
                     {currentStatusObj.firstNote}
                   </h4>
-                  <div className="flex flex-middle line-height-normal text-gray">
+                  <div className="flex flex-middle line-height-normal text-gray padding-left-right-small">
                     <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
                     <span role="img" aria-label="Goofy">
                       😋
@@ -495,23 +498,25 @@ export class ThankYou extends PureComponent {
                   </div>
                 </React.Fragment>
               ) : (
-                <div className="line-height-normal text-black">{t('Confirmed')}</div>
+                <div className="line-height-normal text-black padding-left-right-small">{t('Confirmed')}</div>
               )}
 
               {currentStatusObj.status === 'accepted' ? (
                 <React.Fragment>
-                  <h4 className="text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted mt-12">
+                  <h4 className="ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
                     {currentStatusObj.firstNote}
                   </h4>
-                  <div className="flex flex-middle text-gray">
+                  <div className="flex flex-middle text-gray ">
                     <IconAccessTime className="icon icon__small icon__default" />
                     <span className="">{currentStatusObj.secondNote}</span>
                   </div>
                 </React.Fragment>
               ) : (
                 <div
-                  className={`mt-12  line-height-normal ${
-                    currentStatusObj.status === 'confirmed' ? 'text-black' : 'pt-4 text-gray'
+                  className={`line-height-normal ordering-thanks__progress-title padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
+                    currentStatusObj.status === 'confirmed'
+                      ? 'text-black'
+                      : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
                   }`}
                 >
                   {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
@@ -521,16 +526,19 @@ export class ThankYou extends PureComponent {
               {currentStatusObj.status === 'confirmed' ? (
                 <React.Fragment>
                   <h4
-                    className={`text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted mt-12`}
+                    className={` margin-top-bottom-small ordering-thanks__progress-title  padding-top-bottom-smaller padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
                   >
                     {currentStatusObj.firstNote}
                   </h4>
-                  <div className="flex flex-middle text-gray line-height-normal">
+                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-small">
                     <span className="">{currentStatusObj.secondNote}</span>
                   </div>
                 </React.Fragment>
               ) : (
-                <div className="padding-top-bottom-small text-gray line-height-normal pt-4"> {t('PendingPickUp')} </div>
+                <div className="padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
+                  {' '}
+                  {t('PendingPickUp')}{' '}
+                </div>
               )}
             </div>
           </div>
@@ -617,7 +625,9 @@ export class ThankYou extends PureComponent {
             </h2>
           )}
           <div className="padding-left-right-small flex padding-top-bottom-normal">
-            <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />
+            <div className="ordering-thanks__rider-logo">
+              <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />
+            </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal">{courier}</p>
               <span className="text-gray line-height-normal">{driverPhone}</span>

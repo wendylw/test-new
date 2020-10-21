@@ -153,36 +153,24 @@ $total-text-size: 1.7142rem;
   }
 
   &__progress {
-    img {
-      max-width: 22px;
-    }
-    width: 13%;
-  }
-  .icon__small {
-    padding-left: 0;
-  }
-
-  .mt-12 {
-    margin-top: 12px;
-  }
-
-  .pt-4 {
-    padding-top: 4px;
+    width: 14vw;
+    max-width: 22px;
   }
 
   .line-height-normal {
-    line-height: 24px;
+    line-height: 1.8rem;
   }
 
   .text-gray {
     color: $gray-2;
   }
 
-  .text-black {
-    color: $main-color;
+  &__progress-title {
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 
-  &__rider img {
+  &__rider-logo {
     width: 16%;
     height: 16%;
   }
