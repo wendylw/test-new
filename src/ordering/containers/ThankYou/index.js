@@ -373,7 +373,6 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = DELIVERED;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
