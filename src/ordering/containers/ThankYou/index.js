@@ -373,7 +373,6 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = CONFIMRMED;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -467,77 +466,97 @@ export class ThankYou extends PureComponent {
             </div>
           </div>
         ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
-          <div className="card text-center margin-normal flex padding-left-right-normal">
-            <div className="ordering-thanks__progress padding-top-bottom-small ">
-              {
-                <img
-                  src={
-                    currentStatusObj.status === 'paid'
-                      ? beepOrderPaid
-                      : currentStatusObj.status === 'accepted'
-                      ? beepOrderAccepted
-                      : beepOrderConfirmed
-                  }
-                  alt=""
-                />
-              }
-            </div>
+          <div className="card text-center margin-normal flex">
+            {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
+            {/*  /!*{*!/*/}
+            {/*  /!*  <img*!/*/}
+            {/*  /!*    src={*!/*/}
+            {/*  /!*      currentStatusObj.status === 'paid'*!/*/}
+            {/*  /!*        ? beepOrderPaid*!/*/}
+            {/*  /!*        : currentStatusObj.status === 'accepted'*!/*/}
+            {/*  /!*        ? beepOrderAccepted*!/*/}
+            {/*  /!*        : beepOrderConfirmed*!/*/}
+            {/*  /!*    }*!/*/}
+            {/*  /!*    alt=""*!/*/}
+            {/*  /!*  />*!/*/}
+            {/*  /!*}*!/*/}
+            {/*</div>*/}
             <div className="padding-small text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
                   <h4
-                    className={`text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
+                    className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
                   >
-                    {currentStatusObj.firstNote}
+                    <i className="ordering-thanks__active "></i>
+                    <span className="padding-left-right-normal">{currentStatusObj.firstNote}</span>
                   </h4>
-                  <div className="flex flex-middle line-height-normal text-gray padding-left-right-small">
-                    <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
-                    <span role="img" aria-label="Goofy">
-                      😋
-                    </span>
+                  <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
+                    <p className="ordering-thanks__description text-size-big padding-left-right-normal">
+                      <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
+                      <span role="img" aria-label="Goofy">
+                        😋
+                      </span>
+                    </p>
                   </div>
                 </React.Fragment>
               ) : (
-                <div className="line-height-normal text-black padding-left-right-small">{t('Confirmed')}</div>
+                <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
+                  <i className="ordering-thanks__prev"></i>
+                  <span className="padding-left-right-normal">{t('Confirmed')}</span>
+                </div>
               )}
 
               {currentStatusObj.status === 'accepted' ? (
                 <React.Fragment>
-                  <h4 className="ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
-                    {currentStatusObj.firstNote}
+                  <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
+                    <i className="ordering-thanks__active"></i>
+                    <span className="padding-left-right-normal">{currentStatusObj.firstNote}</span>
                   </h4>
-                  <div className="flex flex-middle text-gray ">
+                  <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
                     <IconAccessTime className="icon icon__small icon__default" />
                     <span className="">{currentStatusObj.secondNote}</span>
                   </div>
                 </React.Fragment>
               ) : (
                 <div
-                  className={`line-height-normal ordering-thanks__progress-title padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
+                  className={` flex flex-middle line-height-normal ordering-thanks__progress-title padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
                     currentStatusObj.status === 'confirmed'
                       ? 'text-black'
                       : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
                   }`}
                 >
-                  {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
+                  {status === 'paid' ? (
+                    <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
+                  ) : (
+                    <i className="ordering-thanks__prev"></i>
+                  )}
+
+                  <span className="padding-left-right-normal">
+                    {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
+                  </span>
                 </div>
               )}
 
               {currentStatusObj.status === 'confirmed' ? (
                 <React.Fragment>
                   <h4
-                    className={` margin-top-bottom-small ordering-thanks__progress-title  padding-top-bottom-smaller padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
+                    className={`flex flex-middle margin-top-bottom-small ordering-thanks__progress-title  padding-top-bottom-smaller padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
                   >
-                    {currentStatusObj.firstNote}
+                    <i className="ordering-thanks__active"></i>
+                    <span className="padding-left-right-normal">{currentStatusObj.firstNote}</span>
                   </h4>
-                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-small">
-                    <span className="">{currentStatusObj.secondNote}</span>
+                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal">
+                    <span className="padding-left-right-normal margin-left-right-smaller">
+                      {currentStatusObj.secondNote}
+                    </span>
                   </div>
                 </React.Fragment>
               ) : (
-                <div className="padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
-                  {' '}
-                  {t('PendingPickUp')}{' '}
+                <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
+                  <i
+                    className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
+                  ></i>
+                  <span className="padding-left-right-normal">{t('PendingPickUp')}</span>
                 </div>
               )}
             </div>
@@ -582,7 +601,7 @@ export class ThankYou extends PureComponent {
 
     try {
       const time = new Date(ETA);
-      return Utils.zero(time.getHours());
+      return `${Utils.zero(time.getHours())}:${Utils.zero(time.getMinutes())}`;
     } catch (e) {
       return '';
     }
@@ -624,7 +643,7 @@ export class ThankYou extends PureComponent {
                 : null}
             </h2>
           )}
-          <div className="padding-left-right-small flex padding-top-bottom-normal">
+          <div className="padding-left-right-small flex padding-top-bottom-normal flex-middle">
             <div className="ordering-thanks__rider-logo">
               <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />
             </div>
@@ -637,10 +656,7 @@ export class ThankYou extends PureComponent {
         <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
           {status === 'confirmed' && (
             <React.Fragment>
-              <a
-                href={`tel:${storePhone}`}
-                className="text-weight-bolder button ordering-thanks__link ordering-thanks__split"
-              >
+              <a href={`tel:${storePhone}`} className="text-weight-bolder button ordering-thanks__button-link">
                 {t('CallStore')}
               </a>
               <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
@@ -654,7 +670,7 @@ export class ThankYou extends PureComponent {
               {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                 <a
                   href={trackingUrl}
-                  className="text-weight-bolder button ordering-thanks__link ordering-thanks__split"
+                  className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
                   target="__blank"
                   data-heap-name="ordering.thank-you.logistics-tracking-link"
                 >

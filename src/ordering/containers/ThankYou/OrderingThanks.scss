@@ -154,7 +154,78 @@ $total-text-size: 1.7142rem;
 
   &__progress {
     width: 14vw;
-    max-width: 22px;
+    max-width: 25px;
+  }
+
+  &__prev {
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: $theme-color;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  &__prev::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 45vw;
+    background: $theme-color;
+    left: 50%;
+    margin: 0 auto 0;
+    max-height: 45px;
+  }
+
+  &__next {
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: $gray-4;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  &__next::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 45vw;
+    background: $gray-4;
+    left: 50%;
+    max-height: 45px;
+    bottom: 0;
+  }
+
+  &__active {
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: $theme-color;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__active::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: $theme-color;
+    left: -40%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    opacity: 0.2;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  &__next-heigher::after {
+    height: 50vw;
+    max-height: 65px;
   }
 
   .line-height-normal {
@@ -186,11 +257,11 @@ $total-text-size: 1.7142rem;
     flex: 1;
   }
 
-  &__split {
+  &__button-link {
     position: relative;
   }
 
-  &__split::after {
+  &__button-link::after {
     content: "";
     position: absolute;
     width: 1px;
