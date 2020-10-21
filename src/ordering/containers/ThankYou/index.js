@@ -33,6 +33,12 @@ import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import beepOrderPaid from '../../../images/beep-order-paid.png';
 import beepOrderAccepted from '../../../images/beep-order-accepted.png';
 import beepOrderConfirmed from '../../../images/beep-order-confirmed.png';
+import logisticsGrab from '../../../images/beep-logistics-grab.png';
+import logisticsGoget from '../../../images/beep-logistics-goget.png';
+import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
+import logisticsRspeedy from '../../../images/beep-logistics-rspeedy.png';
+import beepLogo from '../../../images/beep-logo.svg';
+
 import config from '../../../config';
 import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
@@ -357,7 +363,7 @@ export class ThankYou extends PureComponent {
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
     const { name, phone: storePhone } = storeInfo || {};
-    let { trackingUrl, useStorehubLogistics, courier } =
+    let { trackingUrl, useStorehubLogistics, courier, driverPhone } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -366,8 +372,6 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    // status = ACCEPTED;
-    // useStorehubLogistics = true;
 
     /** paid status */
     if (status === PAID) {
@@ -535,14 +539,58 @@ export class ThankYou extends PureComponent {
         currentStatusObj.status === 'riderPickUp' ||
         currentStatusObj.status === 'delivered' ||
         (!useStorehubLogistics && currentStatusObj.status !== 'paid')
-          ? this.renderRiderInfo(currentStatusObj.status, useStorehubLogistics, trackingUrl, storePhone)
+          ? this.renderRiderInfo(
+              currentStatusObj,
+              useStorehubLogistics,
+              trackingUrl,
+              storePhone,
+              driverPhone,
+              courier,
+              order
+            )
           : null}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
 
-  renderRiderInfo = (status, useStorehubLogistics, trackingUrl, storePhone) => {
+  getLogisticsLogo = (logistics = '') => {
+    switch (logistics.toLowerCase()) {
+      case 'grab':
+        return logisticsGrab;
+      case 'goget':
+        return logisticsGoget;
+      case 'lalamove':
+        return logisticsLalamove;
+      case 'rspeedy':
+        return logisticsRspeedy;
+      default:
+        return beepLogo;
+    }
+  };
+
+  getOrderETA = ETA => {
+    if (!ETA) return '';
+
+    try {
+      const time = new Date(ETA);
+      return Utils.zero(time.getHours());
+    } catch (e) {
+      return '';
+    }
+  };
+
+  renderRiderInfo = (
+    currentStatusObj,
+    useStorehubLogistics,
+    trackingUrl,
+    storePhone,
+    driverPhone,
+    courier,
+    order = {}
+  ) => {
+    const { status } = currentStatusObj;
+    const { bestLastMileETA, worstLastMileETA, deliveredTime } = order;
     const { t } = this.props;
 
     return (
@@ -559,14 +607,20 @@ export class ThankYou extends PureComponent {
           )}
           {!(status !== 'paid' && !useStorehubLogistics) && status !== 'confirmed' && (
             <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder">
-              11:02 AM
+              {status === 'riderPickUp'
+                ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
+                    bestLastMileETA
+                  )}`
+                : status === 'delivered'
+                ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
+                : null}
             </h2>
           )}
           <div className="padding-left-right-small flex padding-top-bottom-normal">
-            <img src={beepOrderStatusConfirmed} alt="rider info" className="logo" />
+            <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
-              <p>Lavae</p>
-              <span className="text-gray">+60234234</span>
+              <p>{courier}</p>
+              <span className="text-gray">{driverPhone}</span>
             </div>
           </div>
         </div>
@@ -577,7 +631,7 @@ export class ThankYou extends PureComponent {
                 {t('CallStore')}
               </a>
               <span></span>
-              <a href="" className="text-weight-bolder button">
+              <a href={`tel:${driverPhone}`} className="text-weight-bolder button">
                 {t('CallDriver')}
               </a>
             </React.Fragment>
