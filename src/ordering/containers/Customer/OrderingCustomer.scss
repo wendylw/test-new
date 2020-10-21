@@ -12,6 +12,7 @@
 
   &__detail {
     background-color: $white;
+    color: initial;
   }
 
   &__detail ~ &__detail::before {
