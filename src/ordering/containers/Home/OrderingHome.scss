@@ -80,16 +80,13 @@ $gray-nav-item-text: #707070;
   &__item {
     color: $gray-nav-item-text;
     border-left: 3px solid transparent;
+    word-break: break-all;
+    hyphens: auto;
 
     &.active {
       border-left-color: $theme-color;
       background-color: $white;
     }
-  }
-
-  &__text {
-    word-break: break-all;
-    hyphens: auto;
   }
 }
 
