@@ -1,3 +1,5 @@
+import i18next from 'i18next';
+
 const DOCUMENT_ROOT_ID = 'root';
 
 const MANIFEST = {
@@ -153,13 +155,120 @@ const CREATE_ORDER_ERROR_CODES = {
   STORE_IS_ON_VACATION: 40013,
 };
 
+const ERROR_CODE_MAP = {
+  40000: {
+    title: 'ApiError:40000Title',
+    desc: 'ApiError:40000Description',
+    redirectUrl: '',
+    buttonText: 'Common:TryAgain',
+    showModal: true,
+  },
+  40001: {
+    title: 'ApiError:40001Title',
+    desc: 'ApiError:40001Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40002: {
+    title: 'ApiError:40002Title',
+    desc: 'ApiError:40002Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40003: {
+    title: 'ApiError:40003Title',
+    desc: 'ApiError:40003Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40009: {
+    title: 'ApiError:40009Title',
+    desc: 'ApiError:40009Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40012: {
+    title: 'ApiError:40012Title',
+    desc: 'ApiError:40012Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40013: {
+    title: 'ApiError:40013Title',
+    desc: 'ApiError:40013Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40015: {
+    title: 'ApiError:40015Title',
+    desc: 'ApiError:40015Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40016: {
+    title: 'ApiError:40016Title',
+    desc: 'ApiError:40016Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40017: {
+    title: 'ApiError:40017Title',
+    desc: 'ApiError:40017Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40018: {
+    title: 'ApiError:40018Title',
+    desc: 'ApiError:40018Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40019: {
+    title: 'ApiError:40019Title',
+    desc: 'ApiError:40019Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40020: {
+    title: 'ApiError:40020Title',
+    desc: 'ApiError:40020Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40022: {
+    title: 'ApiError:40022Title',
+    desc: 'ApiError:40022Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  41000: {
+    title: 'ApiError:41000Title',
+    desc: 'ApiError:41000Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+};
+
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
 const LANGUAGES = ['en', 'th'];
 const POLYFILL_FEATURES = ['Object.values', 'Intl'];
 
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
-  PRODUCT_DESCRIPTION: 'PRODUCT_DESCRIPTION',
   MENU: 'MENU',
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
@@ -287,4 +396,5 @@ export default {
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
   COLLECTIONS_TYPE,
+  ERROR_CODE_MAP,
 };

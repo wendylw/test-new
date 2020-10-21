@@ -51,15 +51,16 @@ class CategoryProductList extends Component {
 
     try {
       await this.props.homeActions.increaseProductInCart(product);
-      await this.props.homeActions.loadShoppingCart();
 
       if (product.variations && product.variations.length) {
-        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
-
         onToggle('PRODUCT_DETAIL');
+
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
       } else {
         this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
       }
+
+      await this.props.homeActions.loadShoppingCart();
     } catch (e) {
       console.error(e);
     }
@@ -97,14 +98,28 @@ class CategoryProductList extends Component {
   };
 
   handleShowProductDetail = async product => {
-    const { onToggle } = this.props;
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
 
+    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
+      const { search } = window.location;
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        search: `${search}&callbackUrl=${callbackUrl}`,
+      });
+      return;
+    }
+
+    const { onToggle } = this.props;
     const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
     const { data: productDetail = {} } = responseGql;
+
+    onToggle('PRODUCT_DETAIL');
+
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
-
-    onToggle('PRODUCT_DESCRIPTION');
   };
 
   render() {
@@ -136,6 +151,7 @@ class CategoryProductList extends Component {
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
+                      showOperator={false}
                       data-heap-name="ordering.home.product-item"
                     />
                   ))}
