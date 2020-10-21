@@ -28,6 +28,13 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
+
     if (Utils.isAndroidWebview()) {
       const res = window.androidInterface.getAddress();
       this.setAppAddressToSession(JSON.parse(res));

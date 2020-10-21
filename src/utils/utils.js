@@ -891,4 +891,43 @@ Utils.judgeClient = () => {
   return client;
 };
 
+Utils.windowSize = () => ({
+  width: document.body.clientWidth || window.innerWidth,
+  height: document.body.clientHeight || window.innerHeight,
+});
+
+Utils.mainTop = ({ headerEls = [] }) => {
+  let top = 0;
+
+  if (headerEls.length) {
+    headerEls.forEach(headerEl => {
+      top += headerEl ? headerEl.clientHeight || headerEl.offsetHeight : 0;
+    });
+  }
+
+  return top;
+};
+
+Utils.mainBottom = ({ footerEls = [] }) => {
+  let bottom = 0;
+
+  if (footerEls.length) {
+    footerEls.forEach(footerEl => {
+      bottom += footerEl ? footerEl.clientHeight || footerEl.offsetHeight : 0;
+    });
+  }
+
+  return bottom;
+};
+
+Utils.containerHeight = ({ headerEls, footerEls }) => {
+  return `${Utils.windowSize().height -
+    Utils.mainTop({
+      headerEls,
+    }) -
+    Utils.mainBottom({
+      footerEls,
+    })}px`;
+};
+
 export default Utils;
