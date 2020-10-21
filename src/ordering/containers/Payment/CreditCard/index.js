@@ -527,6 +527,7 @@ class CreditCard extends Component {
 
         <footer
           ref={ref => (this.footerEl = ref)}
+          style={{ position: 'sticky' }}
           className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
         >
           <CreateOrderButton
