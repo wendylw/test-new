@@ -373,7 +373,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = PICKUP;
+    status = DELIVERED;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -598,13 +598,13 @@ export class ThankYou extends PureComponent {
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
         <div className="padding-small">
           {status === 'riderPickUp' && useStorehubLogistics && (
-            <p className="padding-small text-left">{t('OrderStatusPickedUp')}</p>
+            <p className="padding-small text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
           )}
           {status === 'delivered' && useStorehubLogistics && (
-            <p className="padding-small text-left">{t('OrderStatusDelivered')}</p>
+            <p className="padding-small text-left text-size-big">{t('OrderStatusDelivered')}</p>
           )}
           {status !== 'paid' && !useStorehubLogistics && (
-            <p className="padding-small text-left">{t('SelfDeliveryDescription')}</p>
+            <p className="padding-small text-left text-size-big">{t('SelfDeliveryDescription')}</p>
           )}
           {!(status !== 'paid' && !useStorehubLogistics) && status !== 'confirmed' && (
             <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder text-size-huge">
@@ -620,19 +620,19 @@ export class ThankYou extends PureComponent {
           <div className="padding-left-right-small flex padding-top-bottom-normal">
             <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
-              <p>{courier}</p>
-              <span className="text-gray">{driverPhone}</span>
+              <p className="line-height-normal">{courier}</p>
+              <span className="text-gray line-height-normal">{driverPhone}</span>
             </div>
           </div>
         </div>
-        <div className="ordering-thanks__rider-button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
+        <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
           {status === 'confirmed' && (
             <React.Fragment>
-              <a href={`tel:${storePhone}`} className="text-weight-bolder button">
+              <a href={`tel:${storePhone}`} className="text-weight-bolder button ordering-thanks__link">
                 {t('CallStore')}
               </a>
               <span></span>
-              <a href={`tel:${driverPhone}`} className="text-weight-bolder button">
+              <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                 {t('CallDriver')}
               </a>
             </React.Fragment>
@@ -643,7 +643,7 @@ export class ThankYou extends PureComponent {
               {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                 <a
                   href={trackingUrl}
-                  className="text-weight-bolder button"
+                  className="text-weight-bolder button ordering-thanks__link ordering-thanks__split"
                   target="__blank"
                   data-heap-name="ordering.thank-you.logistics-tracking-link"
                 >
@@ -651,7 +651,7 @@ export class ThankYou extends PureComponent {
                 </a>
               ) : null}
               <span></span>
-              <a href="" className="text-weight-bolder button">
+              <a href="" className="text-weight-bolder button ordering-thanks__link">
                 {t('CallDriver')}
               </a>
             </React.Fragment>

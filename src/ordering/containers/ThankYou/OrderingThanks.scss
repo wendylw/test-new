@@ -154,7 +154,7 @@ $total-text-size: 1.7142rem;
 
   &__progress {
     img {
-      width: 22px;
+      max-width: 22px;
     }
     width: 13%;
   }
@@ -182,29 +182,32 @@ $total-text-size: 1.7142rem;
     color: $main-color;
   }
 
-  &__rider {
-    p {
-      font-size: 16px;
-    }
-    img {
-      width: 16%;
-      height: 16%;
-    }
+  &__rider img {
+    width: 16%;
+    height: 16%;
+  }
 
-    &-button {
-      a {
-        text-decoration: none;
-        color: $status-blue;
-        line-height: 56px;
-        flex: 1;
-      }
-      button {
-        border: 0;
-      }
-      span {
-        width: 1px;
-        background: $gray-4;
-      }
-    }
+  &__button .button {
+    border: 0;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: $status-blue;
+    line-height: 56px;
+    flex: 1;
+  }
+
+  &__split {
+    position: relative;
+  }
+
+  &__split::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    background: $gray-4;
+    height: 100%;
+    right: 0;
   }
 }
