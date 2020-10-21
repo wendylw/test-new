@@ -440,7 +440,7 @@ export class ThankYou extends PureComponent {
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey['auto_cancelled'],
+        descriptionKey: cancelledDescriptionKey[cancelOperator],
         bannerImage: beepOrderStatusCancelled,
       };
     }
@@ -624,7 +624,7 @@ export class ThankYou extends PureComponent {
             </div>
           </div>
         </div>
-        <div className="ordering-thanks__rider-button text-uppercase flex">
+        <div className="ordering-thanks__rider-button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
           {status === 'confirmed' && (
             <React.Fragment>
               <a href={`tel:${storePhone}`} className="text-weight-bolder button">
@@ -659,7 +659,7 @@ export class ThankYou extends PureComponent {
           {status === 'delivered' && (
             <React.Fragment>
               <button
-                className="text-weight-bolder button text-uppercase"
+                className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
                 onClick={this.handleReportUnsafeDriver}
                 data-heap-name="ordering.need-help.report-driver-btn"
               >
