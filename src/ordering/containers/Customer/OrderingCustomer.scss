@@ -46,6 +46,14 @@
     background-color: $gray-6;
   }
 
+  &__address-content {
+    width: 100%;
+  }
+
+  &__address-edit-button {
+    color: $status-blue;
+  }
+
   &__time {
     display: block;
   }

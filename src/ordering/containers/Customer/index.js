@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+
 import Header from '../../../components/Header';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
 
-import { connect } from 'react-redux';
-import { compose } from 'redux';
 import './OrderingCustomer.scss';
 
 class Customer extends Component {
   render() {
-    const { history } = this.props;
+    const { t, history } = this.props;
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -50,9 +51,14 @@ class Customer extends Component {
                   </div>
                 </div>
                 <div className="ordering-customer__address-detail-container flex flex-start padding-top-bottom-smaller padding-left-right-small">
-                  <article className="ordering-customer__address-detail padding-smaller border-radius-base">
-                    <p className="padding-smaller text-size-small">Level 7 - 01</p>
-                    <p className="padding-smaller text-size-small">Please pass the pizza to receptionist</p>
+                  <article className="ordering-customer__address-detail flex flex-middle flex-space-between padding-smaller border-radius-base">
+                    <div className="ordering-customer__address-content">
+                      <p className="padding-smaller text-size-small">Level 7 - 01</p>
+                      <p className="padding-smaller text-size-small">Please pass the pizza to receptionist</p>
+                    </div>
+                    <button className="ordering-customer__address-edit-button button button__link flex__shrink-fixed padding-small text-weight-bolder">
+                      Edit
+                    </button>
                   </article>
                 </div>
               </div>
@@ -99,7 +105,7 @@ class Customer extends Component {
             data-heap-name="ordering.customer.back-btn"
             onClick={() => {}}
           >
-            Back
+            {t('Back')}
           </button>
           <CreateOrderButton
             className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
@@ -111,7 +117,7 @@ class Customer extends Component {
             beforeCreateOrder={() => {}}
             afterCreateOrder={() => {}}
           >
-            Continue
+            {t('Continue')}
           </CreateOrderButton>
         </footer>
       </section>
