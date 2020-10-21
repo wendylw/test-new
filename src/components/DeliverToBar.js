@@ -58,7 +58,7 @@ class DeliverToBar extends Component {
                   {content}
                 </p>
                 {extraInfo ? (
-                  <p className=" deliver-to-entry__remarks padding-top-bottom-smaller text-size-small text-weight-bolder text-uppercase text-omit__single-line">
+                  <p className="padding-top-bottom-smaller text-size-small text-weight-bolder text-uppercase text-omit__single-line">
                     {extraInfo}
                   </p>
                 ) : null}

@@ -197,12 +197,12 @@ export class VariationSelector extends Component {
 
     return (
       <li className="variation-selector " key={variation.id} id={variation.id}>
-        <div className="padding-left-right-normal variation-selector__title">
-          <h4 className="variation-selector__title-name text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between padding-left-right-smaller">
+        <div className="padding-left-right-normal">
+          <h4 className="text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between">
             <span className="text-weight-bolder">{variation.name}</span>
             {quantitySumMoney ? <span className="text-weight-bolder">+ {quantitySumMoney}</span> : null}
           </h4>
-          <div className="variation-selector__title-info flex flex-space-between padding-left-right-smaller">
+          <div className="flex flex-space-between">
             {this.isMultipleChoice() && enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
               <span className={`${isRequireMin && quantity < minSelectionAmount ? 'text-error' : 'text-gray '}`}>
                 {AmountLimitDescription}
@@ -227,18 +227,18 @@ export class VariationSelector extends Component {
             return (
               <li
                 key={id}
-                className={` variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-normal`}
+                className={` variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-smaller`}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
                 <p
                   className={`${
                     selected[id] || (this.isMultipleChoice() && enableQuantity) ? 'active' : ''
-                  } text-line-height-base margin-left-right-smaller flex flex-column flex-center `}
+                  } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-small`}
                 >
                   <span>{value}</span>
                   {priceDiff ? (
-                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff.toFixed(2)}</span>
+                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff}</span>
                   ) : null}
                 </p>
                 <div

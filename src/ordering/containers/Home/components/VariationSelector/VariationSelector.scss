@@ -16,10 +16,6 @@
       border: 0;
     }
   }
-  &__title &__title-name,
-  &__title &__title-info {
-    padding-right: 0;
-  }
 
   .text-gray {
     color: $status-gray;
@@ -31,14 +27,6 @@
 
   &__operator {
     position: relative;
-    margin-right: 0;
-  }
-
-  &__operator .item-operator__button-increase {
-    padding-right: 0;
-    i {
-      margin-right: 0;
-    }
   }
 
   &__button {

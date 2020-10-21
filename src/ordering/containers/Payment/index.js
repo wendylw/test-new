@@ -39,7 +39,6 @@ const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_MET
 class Payment extends Component {
   state = {
     payNowLoading: false,
-    cartContainerHeight: '100%',
   };
 
   componentDidMount = async () => {
@@ -49,19 +48,6 @@ class Payment extends Component {
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
     await this.props.homeActions.loadShoppingCart();
   };
-
-  componentDidUpdate(prevProps, prevStates) {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl],
-    });
-
-    if (prevStates.cartContainerHeight !== containerHeight) {
-      this.setState({
-        cartContainerHeight: containerHeight,
-      });
-    }
-  }
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
@@ -142,7 +128,7 @@ class Payment extends Component {
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { payNowLoading, cartContainerHeight } = this.state;
+    const { payNowLoading } = this.state;
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
@@ -163,7 +149,6 @@ class Payment extends Component {
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
         <Header
-          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.header"
@@ -172,15 +157,7 @@ class Payment extends Component {
           navFunc={this.handleClickBack}
         />
 
-        <div
-          className="ordering-payment__container"
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
-            height: cartContainerHeight,
-          }}
-        >
+        <div className="ordering-payment__container">
           <ul>
             {payments.map(payment => {
               const classList = [
@@ -226,10 +203,7 @@ class Payment extends Component {
           </ul>
         </div>
 
-        <footer
-          ref={ref => (this.footerEl = ref)}
-          className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
-        >
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"

@@ -707,12 +707,11 @@ export class ThankYou extends PureComponent {
 
     return (
       <section
-        className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
+        className={`ordering-thanks flex flex-middle flex-column flex-space-between ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
           <Header
-            headerRef={ref => (this.headerEl = ref)}
             className="flex-middle border__bottom-divider"
             isPage={!isWebview}
             contentClassName="flex-middle"
@@ -749,18 +748,7 @@ export class ThankYou extends PureComponent {
             )}
           </Header>
 
-          <div
-            className="ordering-thanks__container"
-            style={{
-              top: `${Utils.mainTop({
-                headerEls: [this.headerEl],
-              })}px`,
-              height: Utils.containerHeight({
-                headerEls: [this.headerEl],
-                footerEls: [this.footerEl],
-              }),
-            }}
-          >
+          <div className="ordering-thanks__container">
             {!isWebview && this.renderDownloadBanner()}
             {isDeliveryType ? (
               this.renderDeliveryImageAndTimeLine()
@@ -797,10 +785,7 @@ export class ThankYou extends PureComponent {
               </div>
             </div>
           </div>
-          <footer
-            ref={ref => (this.footerEl = ref)}
-            className="footer footer__transparent flex flex-middle flex-center flex__shrink-fixed"
-          >
+          <footer className="flex flex-middle flex-center">
             <span>&copy; {date.getFullYear()} </span>
             <a
               className="ordering-thanks__button-footer-link button button__link padding-small"

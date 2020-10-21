@@ -1313,7 +1313,7 @@ class LocationAndDate extends Component {
 
     return (
       <footer
-        ref={ref => (this.footerEl = ref)}
+        ref={this.footerRef}
         className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
       >
         <button
@@ -1394,7 +1394,6 @@ class LocationAndDate extends Component {
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
         <Header
-          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.location-and-date.header"
@@ -1402,18 +1401,7 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        <div
-          className="location-date__container"
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-              footerEls: [this.footerEl],
-            }),
-          }}
-        >
+        <div className="location-date__container">
           {!onlyType && (
             <ul className="flex flex-middle padding-normal">
               <li

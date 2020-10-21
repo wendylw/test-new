@@ -418,7 +418,6 @@ class Customer extends Component {
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
         <Header
-          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle text-center"
           contentClassName="flex-middle"
           data-heap-name="ordering.customer.header"
@@ -431,18 +430,7 @@ class Customer extends Component {
             });
           }}
         ></Header>
-        <div
-          className="ordering-customer__container padding-normal"
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-              footerEls: [this.footerEl],
-            }),
-          }}
-        >
+        <div className="ordering-customer__container padding-normal">
           <form className="ordering-customer__form">
             <div className="padding-top-bottom-small">
               <div className="ordering-customer__group form__group" data-testid="customerName">
@@ -484,10 +472,7 @@ class Customer extends Component {
           </form>
         </div>
 
-        <footer
-          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
-          ref={ref => (this.footerEl = ref)}
-        >
+        <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
           <button
             className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             data-heap-name="ordering.customer.back-btn"

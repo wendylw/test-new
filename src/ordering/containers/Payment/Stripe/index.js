@@ -17,7 +17,6 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import RedirectForm from '../components/RedirectForm';
 import config from '../../../../config';
-import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
@@ -150,9 +149,6 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <div className="text-center padding-top-bottom-normal">
-        <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
-      </div>
       <div className="padding-left-right-normal">
         <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
           <label className="text-size-bigger text-weight-bolder">{t('CardInformation')}</label>
@@ -310,7 +306,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
         }}
       />
 
-      <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+      <footer className="payment-credit-card__footer flex__shrink-fixed footer padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
           className="margin-top-bottom-smaller"
           history={history}
@@ -390,6 +386,7 @@ class Stripe extends Component {
 
   render() {
     const { t, match, history, cartSummary, merchantCountry } = this.props;
+    const { total } = cartSummary || {};
 
     return (
       <section
@@ -397,7 +394,6 @@ class Stripe extends Component {
         data-heap-name="ordering.payment.stripe.container"
       >
         <Header
-          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.stripe.header"
@@ -411,14 +407,11 @@ class Stripe extends Component {
           }}
         />
 
-        <div
-          className="payment-credit-card__container padding-top-bottom-normal"
-          style={{
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-            }),
-          }}
-        >
+        <div className="payment-credit-card__container padding-top-bottom-normal">
+          <div className="text-center padding-top-bottom-normal">
+            <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
+          </div>
+
           <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
             <CheckoutForm
               t={t}
