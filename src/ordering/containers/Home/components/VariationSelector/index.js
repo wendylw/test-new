@@ -227,7 +227,9 @@ export class VariationSelector extends Component {
             return (
               <li
                 key={id}
-                className={` variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-normal`}
+                className={`${
+                  this.isMultipleChoice() && enableQuantity ? 'pr-0' : ''
+                } variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-normal`}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
@@ -250,7 +252,7 @@ export class VariationSelector extends Component {
                   {this.isMultipleChoice() && !enableQuantity && <CheckBox checked={selected[id]} />}
                   {this.isMultipleChoice() && enableQuantity && (
                     <ItemOperator
-                      className="flex-middle"
+                      className="flex-middle variation-selector__operator-mutiple padding-left-right-smaller"
                       data-heap-name="ordering.common.product-detail.item-operator"
                       quantity={optionQuantity[option.id] || 0}
                       from="productDetail"
