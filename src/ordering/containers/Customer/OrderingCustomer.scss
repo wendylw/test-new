@@ -14,6 +14,15 @@
     background-color: $white;
   }
 
+  &__detail ~ &__detail::before {
+    content: "";
+    display: block;
+    margin-left: 3.8vw;
+    margin-right: 3.8vw;
+    height: 2px;
+    background-color: $gray-5;
+  }
+
   &__summary {
     width: 100%;
   }
@@ -48,6 +57,11 @@
 
 @media (min-width: 420px) {
   .ordering-customer {
+    &__detail ~ &__detail::before {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
     &__address-detail-container::before {
       padding: 4px;
       margin-left: 8px;

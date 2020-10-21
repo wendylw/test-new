@@ -56,14 +56,16 @@ class Customer extends Component {
                   </article>
                 </div>
               </div>
-              <div className="ordering-customer__detail flex flex-middle padding-left-right-smaller">
-                <IconMotorcycle className="icon icon__small icon__default margin-small" />
-                <div className="ordering-customer__summary flex flex-middle flex-space-between padding-small">
-                  <div className="padding-top-bottom-smaller">
-                    <label className="text-size-big padding-top-bottom-smaller text-weight-bolder">Delivery</label>
-                    <p className="padding-top-bottom-smaller">Sunday, 29 April 2020, 05:00 PM - 06:00 PM</p>
+              <div className="ordering-customer__detail padding-left-right-smaller">
+                <div className="flex flex-middle">
+                  <IconMotorcycle className="icon icon__small icon__default margin-small" />
+                  <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-small">
+                    <div className="padding-top-bottom-smaller">
+                      <label className="text-size-big padding-top-bottom-smaller text-weight-bolder">Delivery</label>
+                      <p className="padding-top-bottom-smaller">Sunday, 29 April 2020, 05:00 PM - 06:00 PM</p>
+                    </div>
+                    <IconNext className="icon" />
                   </div>
-                  <IconNext className="icon" />
                 </div>
               </div>
             </li>
