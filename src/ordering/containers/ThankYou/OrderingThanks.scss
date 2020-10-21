@@ -87,7 +87,7 @@ $total-text-size: 1.7142rem;
   }
 
   .text-gray svg {
-    fill: #8f9092;
+    fill: $gray-2;
   }
 
   &__paid &__title-dots::after {
@@ -179,7 +179,7 @@ $total-text-size: 1.7142rem;
   }
 
   .text-gray {
-    color: #8f9092;
+    color: $gray-2;
   }
 
   .text-black {
