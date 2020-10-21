@@ -656,7 +656,10 @@ export class ThankYou extends PureComponent {
         <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
           {status === 'confirmed' && (
             <React.Fragment>
-              <a href={`tel:${storePhone}`} className="text-weight-bolder button ordering-thanks__button-link">
+              <a
+                href={`tel:${storePhone}`}
+                className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+              >
                 {t('CallStore')}
               </a>
               <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
