@@ -372,6 +372,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
+    status = PICKUP;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -465,7 +466,7 @@ export class ThankYou extends PureComponent {
             </div>
           </div>
         ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
-          <div className="card text-center margin-normal flex">
+          <div className="card text-center margin-normal flex padding-left-right-normal">
             <div className="ordering-thanks__progress padding-top-bottom-small">
               {
                 <img
@@ -503,7 +504,7 @@ export class ThankYou extends PureComponent {
                     {currentStatusObj.firstNote}
                   </h4>
                   <div className="flex flex-middle text-gray">
-                    <IconAccessTime className="icon icon__small" />
+                    <IconAccessTime className="icon icon__small icon__default" />
                     <span className="">{currentStatusObj.secondNote}</span>
                   </div>
                 </React.Fragment>
@@ -605,7 +606,7 @@ export class ThankYou extends PureComponent {
             <p className="padding-small text-left">{t('SelfDeliveryDescription')}</p>
           )}
           {!(status !== 'paid' && !useStorehubLogistics) && status !== 'confirmed' && (
-            <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder">
+            <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder text-size-huge">
               {status === 'riderPickUp'
                 ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
                     bestLastMileETA

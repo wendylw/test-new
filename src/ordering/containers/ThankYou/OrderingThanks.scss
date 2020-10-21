@@ -86,10 +86,6 @@ $total-text-size: 1.7142rem;
     width: 0px;
   }
 
-  .text-gray svg {
-    fill: $gray-2;
-  }
-
   &__paid &__title-dots::after {
     content: ".....";
     overflow: hidden;
@@ -190,12 +186,9 @@ $total-text-size: 1.7142rem;
     p {
       font-size: 16px;
     }
-    h2 {
-      font-size: 26px;
-    }
     img {
-      width: 56px;
-      height: 56px;
+      width: 16%;
+      height: 16%;
     }
 
     &-button {
