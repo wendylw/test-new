@@ -30,9 +30,6 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
-import beepOrderPaid from '../../../images/beep-order-paid.png';
-import beepOrderAccepted from '../../../images/beep-order-accepted.png';
-import beepOrderConfirmed from '../../../images/beep-order-confirmed.png';
 import logisticsGrab from '../../../images/beep-logistics-grab.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
 import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
