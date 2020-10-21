@@ -159,8 +159,10 @@ $total-text-size: 1.7142rem;
 
   &__prev {
     display: block;
-    width: 12px;
-    height: 12px;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
     background: $theme-color;
     border-radius: 50%;
     position: relative;
@@ -179,8 +181,10 @@ $total-text-size: 1.7142rem;
 
   &__next {
     display: block;
-    width: 12px;
-    height: 12px;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
     background: $gray-4;
     border-radius: 50%;
     position: relative;
@@ -199,8 +203,10 @@ $total-text-size: 1.7142rem;
 
   &__active {
     display: block;
-    width: 12px;
-    height: 12px;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
     background: $theme-color;
     border-radius: 50%;
     position: relative;
