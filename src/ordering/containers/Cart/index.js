@@ -346,10 +346,16 @@ class Cart extends Component {
               }
 
               this.handleGtmEventTracking(() => {
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                  search: window.location.search,
-                });
+                isLogin
+                  ? history.push({
+                      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                      search: window.location.search,
+                    })
+                  : history.push({
+                      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+                      search: window.location.search,
+                      nextPage: true,
+                    });
               });
             }}
             disabled={!items || !items.length || isInvalidTotal}

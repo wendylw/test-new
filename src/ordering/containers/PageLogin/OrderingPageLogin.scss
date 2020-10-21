@@ -6,7 +6,7 @@
   &__container {
     height: 100%;
     width: 100%;
-    background-color: $gray-6;
+    //background-color: $gray-6;
   }
 
   &__image-container {
@@ -17,5 +17,9 @@
 
   &__button-link {
     color: inherit;
+  }
+
+  &__disabled {
+    max-width: 180px;
   }
 }

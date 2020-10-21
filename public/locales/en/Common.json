@@ -53,7 +53,8 @@
   "Total": "Total",
   "SoldOut": "Sold Out",
   "BestSeller": "Best seller",
-  "OTPSentTitle": "We’ve sent you a One Time Passcode (OTP) to {{phone}}. Enter it below to continue.",
+  "ResendOTPTip": "Didn't receive the OTP?",
+  "OTPSentTitle": "We’ve sent you a One Time Passcode (OTP) to <1>{{phone}}</1>. Enter it below to continue.",
   "OTPResendTitle": "Resend OTP{{currentOtpTime}}",
   "EnterPhoneNumber": "Enter phone number",
   "PeopleCountModalTitle": "Welcome! How many of you are dining today?",
@@ -140,7 +141,7 @@
   "CustomerDetails": "Customer Details",
   "TAKE_AWAY": "TAKE AWAY",
   "Login": "LOGIN",
-  "LoginTip": "Login with your mobile number to view all your promos & vouchers",
+  "LoginTip": "Enter your mobile number to proceed",
   "TryAgain": "Try Again",
   "Required": "Required",
   "Dismiss": "Dismiss",
@@ -156,5 +157,7 @@
   "OnlineBanking": "Online Banking",
   "CreditAndDebitCard": "Credit/Debit Card",
   "SelectStore": "Select a Store",
-  "DeliveryHelpText": "Please key in your address to add items to your cart"
+  "DeliveryHelpText": "Please key in your address to add items to your cart",
+  "CompleteYourProfile": "Complete Your Profile",
+  "CompleteProfileTip": "Completing your profile helps you avail all ongoing offers & promotions offered by our partner merchants"
 }

@@ -1,14 +1,15 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { Trans, withTranslation } from 'react-i18next';
 import OtpInput from 'react-otp-input';
 import Header from './Header';
 import Constants from '../utils/constants';
-import beepOtpImage from '../images/beep-otp.png';
+import beepOtpLock from '../images/beep-otp-lock.svg';
 import Utils from '../utils/utils';
 import { captureException } from '@sentry/react';
 import './OtpModal.scss';
+import TermsAndPrivacy from './TermsAndPrivacy';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -120,10 +121,13 @@ class OtpModal extends React.Component {
 
         <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
           <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
-            <img src={beepOtpImage} alt="otp" />
+            <img src={beepOtpLock} alt="otp" />
           </figure>
-          <h2 className="padding-normal text-size-biggest text-line-height-base text-weight-bolder">
-            {t('OTPSentTitle', { phone })}
+          <h2 className="padding-normal text-size-big text-line-height-base">
+            <Trans i18nKey="OTPSentTitle">
+              We’ve sent you a One Time Passcode (OTP) to{' '}
+              <span className="text-size-big text-weight-bolder">{{ phone }}</span>. Enter it below to continue.
+            </Trans>
           </h2>
           <div className="margin-small">
             {isNewInput ? (
@@ -155,20 +159,27 @@ class OtpModal extends React.Component {
               />
             )}
           </div>
-          <button
-            className="otp-modal__button-resend button button__link padding-normal margin-top-bottom-small text-size-big text-uppercase text-weight-bolder"
-            data-heap-name="common.otp-modal.resend-btn"
-            disabled={!!currentOtpTime}
-            onClick={() => {
-              this.setState({ currentOtpTime: ResendOtpTime });
-              this.countDown(ResendOtpTime);
-              getOtp(phone);
-            }}
-          >
-            {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
-          </button>
+          <div className="margin-top-bottom-normal">
+            <p className="otp-modal__resend-tip text-size-big">{t('ResendOTPTip')}</p>
+            <button
+              className="otp-modal__button-resend button button__link padding-small text-size-big text-weight-bolder"
+              data-heap-name="common.otp-modal.resend-btn"
+              disabled={!!currentOtpTime}
+              onClick={() => {
+                this.setState({ currentOtpTime: ResendOtpTime });
+                this.countDown(ResendOtpTime);
+                getOtp(phone);
+              }}
+            >
+              {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
+            </button>
+          </div>
           {isLoading && <div className="loader theme full-page"></div>}
         </section>
+
+        <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
+          <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
+        </p>
       </div>
     );
   }

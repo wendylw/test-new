@@ -9,9 +9,11 @@ import Header from '../../../components/Header';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import beepLoginImage from '../../../images/login.png';
+import beepLoginDisabled from '../../../images/beep-login-disabled.png';
+import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 
 class PageLogin extends React.Component {
@@ -25,16 +27,30 @@ class PageLogin extends React.Component {
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
-      this.visitCartPage();
+      this.visitNextPage();
     }
   }
 
-  visitCartPage = () => {
-    const { history } = this.props;
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-      search: window.location.search,
-    });
+  visitNextPage = () => {
+    const { history, location, user } = this.props;
+    const { nextPage } = location;
+    const { profile } = user || {};
+    if (nextPage && profile) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.PROFILE,
+        search: window.location.search,
+      });
+    } else if (nextPage && !profile) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.PROFILE,
+        search: window.location.search,
+      });
+    } else {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+        search: window.location.search,
+      });
+    }
   };
 
   handleCloseOtpModal() {
@@ -115,10 +131,10 @@ class PageLogin extends React.Component {
       <React.Fragment>
         <section className={classList.join(' ')} data-heap-name="ordering.login.container">
           <Header
-            className="flex-middle border__bottom-divider"
+            className="flex-middle"
             contentClassName="flex-middle"
             data-heap-name="ordering.login.header"
-            title="Account"
+            title="Login or Create Account"
             isPage={true}
             navFunc={() => {
               history.push({
@@ -129,24 +145,27 @@ class PageLogin extends React.Component {
           />
           <div className="page-login__container">
             <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
-              <img src={beepLoginImage} alt="otp" />
+              {isValidPhoneNumber(phone) ? (
+                <img src={beepLoginActive} alt="otp" />
+              ) : (
+                <img className="page-login__disabled" src={beepLoginDisabled} alt="otp" />
+              )}
             </figure>
             <PhoneViewContainer
-              className="card padding-normal margin-normal"
-              title={t('LoginTip')}
+              className="padding-normal margin-normal"
               phone={phone}
+              content={t('LoginTip')}
               country={country}
               buttonText={t('Continue')}
               show={true}
               isLoading={isFetching}
               updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
               onSubmit={this.handleSubmitPhoneNumber.bind(this)}
-            >
-              <p className="text-center margin-top-bottom-small text-size-big text-line-height-base text-opacity">
-                <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
-              </p>
-            </PhoneViewContainer>
+            ></PhoneViewContainer>
           </div>
+          <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
+            <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
+          </p>
         </section>
         {this.renderOtpModal()}
       </React.Fragment>

@@ -1,0 +1,19 @@
+@import "src/Variables";
+
+.profile {
+  &__container {
+    color: $gray-3;
+  }
+
+  &__complete-tip {
+  }
+
+  &__input {
+    margin-bottom: 8px;
+    border: 1px solid $gray-4;
+
+    input {
+      height: 25px;
+    }
+  }
+}

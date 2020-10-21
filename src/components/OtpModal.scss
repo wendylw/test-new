@@ -34,6 +34,10 @@
     text-indent: 0.8em;
   }
 
+  &__resend-tip {
+    color: $gray-3;
+  }
+
   &__button-resend:not(:disabled) {
     color: $status-blue;
   }

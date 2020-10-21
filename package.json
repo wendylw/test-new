@@ -2,7 +2,7 @@
   "name": "beep",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://wenjingzhang.beep.test16.shub.us",
+  "proxy": "https://storehubyougaga.beep.test5.shub.us",
   "engines": {
     "node": "12"
   },
@@ -51,6 +51,7 @@
     "qrcode-decoder": "^0.1.1",
     "qs": "^6.7.0",
     "react": "^16.13.1",
+    "react-datepicker": "^3.3.0",
     "react-dom": "^16.13.1",
     "react-i18next": "^11.2.7",
     "react-infinite-scroller": "^1.2.4",

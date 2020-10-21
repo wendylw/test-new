@@ -227,7 +227,7 @@ export const fetchCustomerProfile = consumerId => ({
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error } = action;
-  const { consumerId, login } = response || {};
+  const { consumerId, login, user } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -268,6 +268,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         consumerId,
+        profile: user,
         isLogin: true,
         hasOtp: false,
         isFetching: false,

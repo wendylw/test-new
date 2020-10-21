@@ -31,6 +31,7 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
+  PROFILE: '/profile',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
