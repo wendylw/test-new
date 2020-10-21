@@ -229,14 +229,14 @@ export class VariationSelector extends Component {
                 key={id}
                 className={`${
                   this.isMultipleChoice() && enableQuantity ? 'pr-0' : ''
-                } variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-normal`}
+                } variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex `}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
                 <p
                   className={`${
                     selected[id] || (this.isMultipleChoice() && enableQuantity) ? 'active' : ''
-                  } text-line-height-base margin-left-right-smaller flex flex-column flex-center `}
+                  } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-normal`}
                 >
                   <span>{value}</span>
                   {priceDiff ? (
@@ -244,8 +244,10 @@ export class VariationSelector extends Component {
                   ) : null}
                 </p>
                 <div
-                  className={`variation-selector__operator margin-left-right-smaller ${
-                    this.isMultipleChoice() && enableQuantity ? '' : 'padding-top-bottom-small'
+                  className={`variation-selector__operator margin-left-right-smaller  ${
+                    this.isMultipleChoice() && enableQuantity
+                      ? ''
+                      : 'padding-top-bottom-small padding-left-right-normal'
                   }`}
                 >
                   {this.isSingleChoice() && <Radio checked={selected[id]} />}
