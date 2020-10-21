@@ -466,7 +466,7 @@ export class ThankYou extends PureComponent {
             </div>
           </div>
         ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
-          <div className="card text-center margin-normal flex padding-left-right-normal">
+          <div className="card text-center margin-normal flex">
             <div className="ordering-thanks__progress padding-top-bottom-small">
               {
                 <img
@@ -627,10 +627,12 @@ export class ThankYou extends PureComponent {
         <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
           {status === 'confirmed' && (
             <React.Fragment>
-              <a href={`tel:${storePhone}`} className="text-weight-bolder button ordering-thanks__link">
+              <a
+                href={`tel:${storePhone}`}
+                className="text-weight-bolder button ordering-thanks__link ordering-thanks__split"
+              >
                 {t('CallStore')}
               </a>
-              <span></span>
               <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                 {t('CallDriver')}
               </a>
@@ -649,7 +651,6 @@ export class ThankYou extends PureComponent {
                   {t('TrackOrder')}
                 </a>
               ) : null}
-              <span></span>
               <a href="" className="text-weight-bolder button ordering-thanks__link">
                 {t('CallDriver')}
               </a>
