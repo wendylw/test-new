@@ -17,4 +17,41 @@
   &__summary {
     width: 100%;
   }
+
+  &__title {
+    color: $theme-color;
+  }
+
+  &__address-detail-container::before {
+    content: "";
+    padding: 1.4vw;
+    margin-left: 2.4vw;
+    margin-right: 2.4vw;
+    width: 18px;
+    height: 18px;
+  }
+
+  &__address-detail {
+    width: 100%;
+    color: $gray-2;
+    background-color: $gray-6;
+  }
+
+  &__time {
+    display: block;
+  }
+
+  &__button-back {
+    width: 33.333333%;
+  }
+}
+
+@media (min-width: 420px) {
+  .ordering-customer {
+    &__address-detail-container::before {
+      padding: 4px;
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+  }
 }
