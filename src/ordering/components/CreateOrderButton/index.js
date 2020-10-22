@@ -37,12 +37,12 @@ class CreateOrderButton extends React.Component {
     const { history, user } = this.props;
     const { isLogin } = user || {};
 
-    if (!isLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-      });
-    }
+    // if (!isLogin) {
+    //   history.push({
+    //     pathname: ROUTER_PATHS.ORDERING_LOGIN,
+    //     search: window.location.search,
+    //   });
+    // }
   };
 
   handleCreateOrder = async () => {

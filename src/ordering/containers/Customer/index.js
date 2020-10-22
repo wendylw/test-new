@@ -48,7 +48,7 @@ class Customer extends Component {
     }
 
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
-    let deliveryTime;
+
     if (date.date && hour.from) {
       return date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
         ? t('DeliverNow', { separator: ',' })
@@ -66,20 +66,16 @@ class Customer extends Component {
     return date && date.date && formatToDeliveryTime({ date, hour, locale });
   };
 
-  async handleBeforeCreateOrder() {
-    const { history, user, deliveryDetails } = this.props;
-    const { phone } = deliveryDetails;
-    const { isLogin } = user || {};
-    const checkDistanceResult = this.checkDistanceError();
-    if (checkDistanceResult) {
-      this.setState({ errorToast: checkDistanceResult });
-      return;
-    }
+  handleBeforeCreateOrder() {}
 
-    if (!isLogin) {
-      history.push({});
-    }
-  }
+  visitPaymentPage = () => {
+    const { history } = this.props;
+
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+      search: window.location.search,
+    });
+  };
 
   renderDeliveryPickupDetail() {
     if (Utils.isDineInType()) {
@@ -286,7 +282,7 @@ class Customer extends Component {
             disabled={false}
             validCreateOrder={!total}
             beforeCreateOrder={() => {}}
-            afterCreateOrder={() => {}}
+            afterCreateOrder={this.visitPaymentPage}
           >
             {t('Continue')}
           </CreateOrderButton>
