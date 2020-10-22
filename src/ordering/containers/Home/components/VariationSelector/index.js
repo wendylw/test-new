@@ -197,12 +197,12 @@ export class VariationSelector extends Component {
 
     return (
       <li className="variation-selector " key={variation.id} id={variation.id}>
-        <div className="padding-left-right-normal">
-          <h4 className="text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between">
+        <div className="padding-left-right-normal variation-selector__title">
+          <h4 className="variation-selector__title-name text-size-big text-capitalize padding-top-bottom-smaller flex flex-space-between padding-left-right-smaller">
             <span className="text-weight-bolder">{variation.name}</span>
-            {quantitySumMoney ? <span className="text-weight-bolder">+ {quantitySumMoney}</span> : null}
+            {<span className="text-weight-bolder">+ {quantitySumMoney || '0.00'}</span>}
           </h4>
-          <div className="flex flex-space-between">
+          <div className="variation-selector__title-info flex flex-space-between padding-left-right-smaller">
             {this.isMultipleChoice() && enableSelectionAmountLimit && (minSelectionAmount || maxSelectionAmount) ? (
               <span className={`${isRequireMin && quantity < minSelectionAmount ? 'text-error' : 'text-gray '}`}>
                 {AmountLimitDescription}
@@ -227,30 +227,34 @@ export class VariationSelector extends Component {
             return (
               <li
                 key={id}
-                className={` variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex padding-left-right-smaller`}
+                className={`${
+                  this.isMultipleChoice() && enableQuantity ? 'pr-0' : ''
+                } variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex `}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
                 <p
                   className={`${
                     selected[id] || (this.isMultipleChoice() && enableQuantity) ? 'active' : ''
-                  } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-small`}
+                  } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-normal`}
                 >
                   <span>{value}</span>
                   {priceDiff ? (
-                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff}</span>
+                    <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff.toFixed(2)}</span>
                   ) : null}
                 </p>
                 <div
-                  className={`variation-selector__operator margin-left-right-smaller ${
-                    this.isMultipleChoice() && enableQuantity ? '' : 'padding-top-bottom-small'
+                  className={`variation-selector__operator margin-left-right-smaller  ${
+                    this.isMultipleChoice() && enableQuantity
+                      ? ''
+                      : 'padding-top-bottom-small padding-left-right-normal'
                   }`}
                 >
                   {this.isSingleChoice() && <Radio checked={selected[id]} />}
                   {this.isMultipleChoice() && !enableQuantity && <CheckBox checked={selected[id]} />}
                   {this.isMultipleChoice() && enableQuantity && (
                     <ItemOperator
-                      className="flex-middle"
+                      className="flex-middle variation-selector__operator-mutiple padding-left-right-smaller"
                       data-heap-name="ordering.common.product-detail.item-operator"
                       quantity={optionQuantity[option.id] || 0}
                       from="productDetail"
