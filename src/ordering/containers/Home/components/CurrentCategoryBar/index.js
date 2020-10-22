@@ -63,7 +63,7 @@ class CurrentCategoryBar extends PureComponent {
                           })
                         }
                       >
-                        <label>{c.name}</label>
+                        <label className="category-nav__text">{c.name}</label>
                       </li>
                     );
                   })}

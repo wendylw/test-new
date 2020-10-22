@@ -13,8 +13,13 @@ export class ItemOperator extends Component {
       onDecrease,
       onIncrease,
       dataAttributes,
+      from,
     } = this.props;
-    const classList = [`item-operator flex flex-space-between ${quantity > 0 ? 'item-operator--minus' : ''}`];
+    const classList = [
+      `item-operator flex flex-space-between ${
+        (from === 'productDetail' ? quantity >= 0 : quantity > 0) ? 'item-operator--minus' : ''
+      }`,
+    ];
 
     if (className) {
       classList.push(className);
@@ -24,7 +29,7 @@ export class ItemOperator extends Component {
       <div className={classList.join(' ')} {...dataAttributes}>
         {onDecrease ? (
           <button
-            className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller"
+            className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller item-operator__button-decrease"
             disabled={decreaseDisabled}
             onClick={onDecrease}
             data-testid="itemDecrease"
@@ -41,12 +46,12 @@ export class ItemOperator extends Component {
           data-testid="itemDetailQuantity"
           data-heap-name="common.item-operator.quantity"
         >
-          {quantity > 0 ? quantity : null}
+          {(from === 'productDetail' ? quantity >= 0 : quantity > 0) ? quantity : null}
         </span>
 
         {onIncrease ? (
           <button
-            className="item-operator__button padding-top-bottom-small padding-left-right-smaller"
+            className="item-operator__button padding-top-bottom-small padding-left-right-smaller item-operator__button-increase"
             onClick={onIncrease}
             disabled={increaseDisabled}
             data-testid="itemIncrease"
@@ -69,11 +74,13 @@ ItemOperator.propTypes = {
   onDecrease: PropTypes.func,
   onIncrease: PropTypes.func,
   quantity: PropTypes.number,
+  from: PropTypes.string,
 };
 
 ItemOperator.defaultProps = {
   decreaseDisabled: false,
   increaseDisabled: false,
+  from: 'home',
 };
 export const ItemOperatorComponent = ItemOperator;
 export default withDataAttributes(ItemOperator);
