@@ -370,8 +370,8 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    // status = CONFIMRMED;
-    // useStorehubLogistics = false;
+    status = CONFIMRMED;
+    useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -669,7 +669,9 @@ export class ThankYou extends PureComponent {
               {!useStorehubLogistics && <img src={storeLogo} alt="store info" className="logo" />}
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
-              <p className="line-height-normal">{useStorehubLogistics ? courier : storeName}</p>
+              <p className="line-height-normal text-weight-bolder">
+                {useStorehubLogistics ? courier : t('DeliveryBy', { name: storeName })}
+              </p>
               {
                 <span className="text-gray line-height-normal">
                   {useStorehubLogistics
