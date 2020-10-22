@@ -49,9 +49,17 @@ import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
-  state = {
-    cashbackSuccessImage,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      cashbackSuccessImage,
+      isWebview: Utils.isWebview(),
+    };
+
+    this.isHidePageTopForWebview();
+  }
+
+  isHidePageTopForWebview = () => {};
 
   componentDidMount() {
     // expected delivery time is for pre order
@@ -370,7 +378,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    // status = CONFIMRMED;
+    status = CONFIMRMED;
     // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
