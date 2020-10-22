@@ -370,6 +370,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
+    status = PAID;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -485,10 +486,12 @@ export class ThankYou extends PureComponent {
                     className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
                   >
                     <i className="ordering-thanks__active "></i>
-                    <span className="padding-left-right-normal">{currentStatusObj.firstNote}</span>
+                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                      {currentStatusObj.firstNote}
+                    </span>
                   </h4>
                   <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
-                    <p className="ordering-thanks__description text-size-big padding-left-right-normal">
+                    <p className="ordering-thanks__description text-size-big padding-left-right-normal margin-left-right-smaller">
                       <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
                       <span role="img" aria-label="Goofy">
                         😋
@@ -499,7 +502,7 @@ export class ThankYou extends PureComponent {
               ) : (
                 <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
                   <i className="ordering-thanks__prev"></i>
-                  <span className="padding-left-right-normal">{t('Confirmed')}</span>
+                  <span className="padding-left-right-normal margin-left-right-smaller">{t('Confirmed')}</span>
                 </div>
               )}
 
@@ -507,16 +510,20 @@ export class ThankYou extends PureComponent {
                 <React.Fragment>
                   <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
                     <i className="ordering-thanks__active"></i>
-                    <span className="padding-left-right-normal">{currentStatusObj.firstNote}</span>
+                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                      {currentStatusObj.firstNote}
+                    </span>
                   </h4>
                   <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
-                    <IconAccessTime className="icon icon__small icon__default" />
-                    <span className="">{currentStatusObj.secondNote}</span>
+                    <div className="margin-left-right-smaller flex flex-middle">
+                      <IconAccessTime className="icon icon__small icon__default" />
+                      <span className="">{currentStatusObj.secondNote}</span>
+                    </div>
                   </div>
                 </React.Fragment>
               ) : (
                 <div
-                  className={` flex flex-middle line-height-normal ordering-thanks__progress-title padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
+                  className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
                     currentStatusObj.status === 'confirmed'
                       ? 'text-black'
                       : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
@@ -527,8 +534,7 @@ export class ThankYou extends PureComponent {
                   ) : (
                     <i className="ordering-thanks__prev"></i>
                   )}
-
-                  <span className="padding-left-right-normal">
+                  <span className="padding-left-right-normal margin-left-right-smaller">
                     {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
                   </span>
                 </div>
@@ -537,12 +543,14 @@ export class ThankYou extends PureComponent {
               {currentStatusObj.status === 'confirmed' ? (
                 <React.Fragment>
                   <h4
-                    className={`flex flex-middle margin-top-bottom-small ordering-thanks__progress-title  padding-top-bottom-smaller padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
+                    className={`flex flex-middle  ordering-thanks__progress-title   padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
                   >
                     <i className="ordering-thanks__active"></i>
-                    <span className="padding-left-right-normal">{currentStatusObj.firstNote}</span>
+                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                      {currentStatusObj.firstNote}
+                    </span>
                   </h4>
-                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal">
+                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal margin-left-right-smaller">
                     <span className="padding-left-right-normal margin-left-right-smaller">
                       {currentStatusObj.secondNote}
                     </span>
@@ -553,7 +561,7 @@ export class ThankYou extends PureComponent {
                   <i
                     className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
                   ></i>
-                  <span className="padding-left-right-normal">{t('PendingPickUp')}</span>
+                  <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
                 </div>
               )}
             </div>
@@ -646,7 +654,7 @@ export class ThankYou extends PureComponent {
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal">{courier}</p>
-              <span className="text-gray line-height-normal">{driverPhone}</span>
+              <span className="text-gray line-height-normal">+{driverPhone}</span>
             </div>
           </div>
         </div>
