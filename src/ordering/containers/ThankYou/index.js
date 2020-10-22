@@ -370,8 +370,8 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = CONFIMRMED;
-    useStorehubLogistics = false;
+    // status = CONFIMRMED;
+    // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
