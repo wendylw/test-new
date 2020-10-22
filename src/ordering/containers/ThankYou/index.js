@@ -371,7 +371,7 @@ export class ThankYou extends PureComponent {
 
     let currentStatusObj = {};
     // status = CONFIMRMED;
-    // useStorehubLogistics = true
+    // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -628,33 +628,42 @@ export class ThankYou extends PureComponent {
   ) => {
     const { status } = currentStatusObj;
     const { deliveredTime } = order;
-    const { t } = this.props;
-    const { name: storeName, phone: storePhone, logo: storeLogo } = storeInfo;
+    const { t, onlineStoreInfo = {} } = this.props;
+    const { name: storeName, phone: storePhone } = storeInfo;
+    const { logo: storeLogo } = onlineStoreInfo;
 
     return (
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
-        <div className="padding-small">
-          {status === 'riderPickUp' && useStorehubLogistics && (
-            <p className="padding-small text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
+        <div className="padding-normal">
+          {status === 'riderPickUp' && useStorehubLogistics && bestLastMileETA && worstLastMileETA && (
+            <p className="text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
           )}
-          {status === 'delivered' && useStorehubLogistics && (
-            <p className="padding-small text-left text-size-big">{t('OrderStatusDelivered')}</p>
+          {status === 'delivered' && useStorehubLogistics && deliveredTime && (
+            <p className="text-left text-size-big">{t('OrderStatusDelivered')}</p>
           )}
           {status !== 'paid' && !useStorehubLogistics && (
-            <p className="padding-left-right-small text-left text-size-big">{t('SelfDeliveryDescription')}</p>
+            <p className="text-left text-size-big" style={{ marginBottom: '24px' }}>
+              {t('SelfDeliveryDescription')}
+            </p>
           )}
-          {!(status !== 'paid' && !useStorehubLogistics) && status !== 'confirmed' && (
-            <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder text-size-huge">
-              {status === 'riderPickUp'
-                ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
-                    bestLastMileETA
-                  )}`
-                : status === 'delivered'
-                ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
-                : null}
-            </h2>
-          )}
-          <div className="padding-left-right-small flex padding-top-bottom-normal flex-middle">
+          {!(status !== 'paid' && !useStorehubLogistics) &&
+            status !== 'confirmed' &&
+            ((bestLastMileETA && worstLastMileETA) || deliveredTime ? (
+              <h2
+                className="padding-top-bottom-small text-left text-weight-bolder text-size-huge"
+                style={{ marginBottom: '16px' }}
+              >
+                {status === 'riderPickUp'
+                  ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
+                      bestLastMileETA
+                    )}`
+                  : status === 'delivered'
+                  ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
+                  : null}
+              </h2>
+            ) : null)}
+
+          <div className={`flex  flex-middle`}>
             <div className="ordering-thanks__rider-logo">
               {useStorehubLogistics && <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />}
               {!useStorehubLogistics && <img src={storeLogo} alt="store info" className="logo" />}
@@ -730,7 +739,7 @@ export class ThankYou extends PureComponent {
                   onClick={this.handleReportUnsafeDriver}
                   data-heap-name="ordering.need-help.report-driver-btn"
                 >
-                  {t('ReportDriver')}
+                  {t('ReportOrder')}
                 </button>
               </React.Fragment>
             )}

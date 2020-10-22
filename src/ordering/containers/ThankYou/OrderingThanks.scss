@@ -248,8 +248,13 @@ $total-text-size: 1.7142rem;
   }
 
   &__rider-logo {
-    width: 16%;
-    height: 16%;
+    width: 13.5vw;
+    height: 13.5vw;
+    max-width: 56px;
+    max-height: 56px;
+  }
+  &__rider-logo img {
+    height: 100%;
   }
 
   &__button .button {

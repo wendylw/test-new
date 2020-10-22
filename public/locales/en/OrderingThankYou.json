@@ -15,7 +15,7 @@
   "OrderReceivedDescription": "Please wait a few minutes",
   "MerchantAccepted": "Looking for rider",
   "RiderFound": "Rider Found",
-  "FindingRider": "10-20 mins",
+  "FindingRider": "2-10 mins",
   "RiderAssigned": "Rider is on the way to the store",
   "TrackYourOrder": "Track your order here",
   "RiderPickUp": "Rider is on the way to you",
@@ -41,6 +41,6 @@
   "OrderStatusDelivered": "Order has been delivered",
   "CallStore": "Call Store",
   "CallDriver": "Call Driver",
-  "ReportDriver": "Report Driver",
+  "ReportOrder": "Report Order",
   "TrackOrder": "Track Order"
 }
