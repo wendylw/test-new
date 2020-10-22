@@ -370,7 +370,8 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-
+    // status = CONFIMRMED;
+    // useStorehubLogistics = true
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -575,7 +576,7 @@ export class ThankYou extends PureComponent {
               currentStatusObj,
               useStorehubLogistics,
               trackingUrl,
-              storePhone,
+              storeInfo,
               driverPhone,
               courier,
               bestLastMileETA,
@@ -618,7 +619,7 @@ export class ThankYou extends PureComponent {
     currentStatusObj,
     useStorehubLogistics,
     trackingUrl,
-    storePhone,
+    storeInfo = {},
     driverPhone,
     courier,
     bestLastMileETA,
@@ -628,6 +629,7 @@ export class ThankYou extends PureComponent {
     const { status } = currentStatusObj;
     const { deliveredTime } = order;
     const { t } = this.props;
+    const { name: storeName, phone: storePhone, logo: storeLogo } = storeInfo;
 
     return (
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
@@ -639,7 +641,7 @@ export class ThankYou extends PureComponent {
             <p className="padding-small text-left text-size-big">{t('OrderStatusDelivered')}</p>
           )}
           {status !== 'paid' && !useStorehubLogistics && (
-            <p className="padding-small text-left text-size-big">{t('SelfDeliveryDescription')}</p>
+            <p className="padding-left-right-small text-left text-size-big">{t('SelfDeliveryDescription')}</p>
           )}
           {!(status !== 'paid' && !useStorehubLogistics) && status !== 'confirmed' && (
             <h2 className="padding-top-bottom-smaller padding-left-right-small text-left text-weight-bolder text-size-huge">
@@ -654,59 +656,86 @@ export class ThankYou extends PureComponent {
           )}
           <div className="padding-left-right-small flex padding-top-bottom-normal flex-middle">
             <div className="ordering-thanks__rider-logo">
-              <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />
+              {useStorehubLogistics && <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />}
+              {!useStorehubLogistics && <img src={storeLogo} alt="store info" className="logo" />}
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
-              <p className="line-height-normal">{courier}</p>
-              <span className="text-gray line-height-normal">+{driverPhone}</span>
+              <p className="line-height-normal">{useStorehubLogistics ? courier : storeName}</p>
+              {
+                <span className="text-gray line-height-normal">
+                  {useStorehubLogistics
+                    ? driverPhone
+                      ? `+${driverPhone}`
+                      : null
+                    : storePhone
+                    ? `+${storePhone}`
+                    : null}
+                </span>
+              }
             </div>
           </div>
         </div>
-        <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-          {status === 'confirmed' && (
-            <React.Fragment>
+        {!useStorehubLogistics ? (
+          status !== 'paid' &&
+          storePhone && (
+            <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
               <a
                 href={`tel:${storePhone}`}
                 className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
               >
                 {t('CallStore')}
               </a>
-              <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                {t('CallDriver')}
-              </a>
-            </React.Fragment>
-          )}
-
-          {status === 'riderPickUp' && (
-            <React.Fragment>
-              {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-                <a
-                  href={trackingUrl}
-                  className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-                  target="__blank"
-                  data-heap-name="ordering.thank-you.logistics-tracking-link"
-                >
-                  {t('TrackOrder')}
+            </div>
+          )
+        ) : (
+          <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
+            {status === 'confirmed' && (
+              <React.Fragment>
+                {storePhone && (
+                  <a
+                    href={`tel:${storePhone}`}
+                    className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                  >
+                    {t('CallStore')}
+                  </a>
+                )}
+                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                  {t('CallDriver')}
                 </a>
-              ) : null}
-              <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                {t('CallDriver')}
-              </a>
-            </React.Fragment>
-          )}
+              </React.Fragment>
+            )}
 
-          {status === 'delivered' && (
-            <React.Fragment>
-              <button
-                className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
-                onClick={this.handleReportUnsafeDriver}
-                data-heap-name="ordering.need-help.report-driver-btn"
-              >
-                {t('ReportDriver')}
-              </button>
-            </React.Fragment>
-          )}
-        </div>
+            {status === 'riderPickUp' && (
+              <React.Fragment>
+                {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                  <a
+                    href={trackingUrl}
+                    className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                    target="__blank"
+                    data-heap-name="ordering.thank-you.logistics-tracking-link"
+                  >
+                    {t('TrackOrder')}
+                  </a>
+                ) : null}
+                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                  {t('CallDriver')}
+                </a>
+              </React.Fragment>
+            )}
+
+            {status === 'delivered' && (
+              <React.Fragment>
+                <button
+                  className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
+                  onClick={this.handleReportUnsafeDriver}
+                  data-heap-name="ordering.need-help.report-driver-btn"
+                >
+                  {t('ReportDriver')}
+                </button>
+              </React.Fragment>
+            )}
+          </div>
+        )}
       </div>
     );
   };
