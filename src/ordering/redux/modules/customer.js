@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import Url from '../../../utils/url';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import {
   fetchDeliveryAddress,
   fetchDeliveryDetails,
@@ -110,7 +112,12 @@ export const actions = {
 
     return result;
   },
-  fetchConsumerAddressList: fields => dispatch => {},
+  fetchConsumerAddressList: ({ consumerId, storeId }) => ({
+    [API_REQUEST]: {
+      types: [types.FETCH_ADDRESS_LIST_REQUEST, types.FETCH_ADDRESS_LIST_SUCCESS, types.FETCH_ADDRESS_LIST_FAILURE],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(consumerId, storeId),
+    },
+  }),
 };
 
 // reducers

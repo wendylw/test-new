@@ -15,7 +15,7 @@ const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount() {
-    this.visitCustomerPage();
+    this.visitLoginPage();
   }
 
   componentDidUpdate(prevProps) {
@@ -25,7 +25,7 @@ class CreateOrderButton extends React.Component {
     const { total } = cartSummary || {};
 
     if (!isLogin && isLogin !== this.props.user.isLogin) {
-      this.visitCustomerPage();
+      this.visitLoginPage();
     }
 
     if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
@@ -33,15 +33,13 @@ class CreateOrderButton extends React.Component {
     }
   }
 
-  visitCustomerPage = () => {
+  visitLoginPage = () => {
     const { history, user } = this.props;
     const { isLogin } = user || {};
-    const { location } = history || {};
-    const { pathname } = location || {};
 
-    if (!isLogin && pathname !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+    if (!isLogin) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
       });
     }

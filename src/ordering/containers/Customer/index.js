@@ -11,8 +11,9 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import Header from '../../../components/Header';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
-import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getBusiness, getUser } from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 
@@ -25,6 +26,7 @@ class Customer extends Component {
     const { customerActions } = this.props;
 
     customerActions.initDeliveryDetails();
+    // customerActions.fetchConsumerAddressList({ consumerId: '', storeId: '' });s
   }
 
   getBusinessCountry = () => {
@@ -64,6 +66,21 @@ class Customer extends Component {
     return date && date.date && formatToDeliveryTime({ date, hour, locale });
   };
 
+  async handleBeforeCreateOrder() {
+    const { history, user, deliveryDetails } = this.props;
+    const { phone } = deliveryDetails;
+    const { isLogin } = user || {};
+    const checkDistanceResult = this.checkDistanceError();
+    if (checkDistanceResult) {
+      this.setState({ errorToast: checkDistanceResult });
+      return;
+    }
+
+    if (!isLogin) {
+      history.push({});
+    }
+  }
+
   renderDeliveryPickupDetail() {
     if (Utils.isDineInType()) {
       return null;
@@ -86,9 +103,15 @@ class Customer extends Component {
         <div className="ordering-customer__detail padding-top-bottom-normal padding-left-right-smaller">
           <div className="flex flex-middle">
             <IconLocation className="icon icon__small icon__default margin-left-right-small" />
-            <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-smaller padding-left-right-small">
+            <div className="ordering-customer__summary flex flex-middle flex-space-between padding-left-right-small">
               {isDeliveryType ? (
-                <div>
+                <Link
+                  to={{
+                    pathname: '/customer/AddressList',
+                    search: window.location.search,
+                  }}
+                  className="ordering-customer__button-link button__link"
+                >
                   {deliveryAddressList && deliveryAddressList[0] && availableStatus ? (
                     <React.Fragment>
                       <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
@@ -105,20 +128,33 @@ class Customer extends Component {
                       </p>
                     </React.Fragment>
                   )}
-                </div>
+                </Link>
               ) : (
-                <div>
-                  <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">
+                <Link
+                  to={{
+                    pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+                    search: window.location.search,
+                  }}
+                  className="padding-top-bottom-smaller ordering-customer__button-link button__link"
+                >
+                  <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
                     {t('PickupLocationTitle')}
                   </h3>
                   <time className="ordering-customer__time padding-top-bottom-smaller">{pickUpAddress}</time>
-                </div>
+                </Link>
               )}
+
               <IconNext className="icon" />
             </div>
           </div>
           {isDeliveryType && addressDetails ? (
-            <div className="ordering-customer__address-detail-container flex flex-start padding-top-bottom-smaller padding-left-right-small">
+            <Link
+              to={{
+                pathname: '/customer/AddressDetail',
+                search: window.location.search,
+              }}
+              className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
+            >
               <article className="ordering-customer__address-detail flex flex-middle flex-space-between padding-smaller border-radius-base">
                 <div className="ordering-customer__address-content">
                   <p className="padding-smaller text-size-small">{addressDetails}</p>
@@ -128,12 +164,18 @@ class Customer extends Component {
                   {t('Edit')}
                 </button>
               </article>
-            </div>
+            </Link>
           ) : null}
         </div>
         {/* enf of Address Info of Delivery or Pickup */}
         {/* Time of Delivery or Pickup */}
-        <div className="ordering-customer__detail padding-left-right-smaller">
+        <Link
+          to={{
+            pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+            search: window.location.search,
+          }}
+          className="ordering-customer__time ordering-customer__detail button__link padding-left-right-smaller"
+        >
           <div className="flex flex-middle">
             <IconMotorcycle className="icon icon__small icon__default margin-small" />
             <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-small">
@@ -148,18 +190,19 @@ class Customer extends Component {
               <IconNext className="icon" />
             </div>
           </div>
-        </div>
+        </Link>
         {/* end of Time of Delivery or Pickup */}
       </li>
     );
   }
 
   render() {
-    const { t, history, deliveryDetails } = this.props;
-    const { username, phone, deliveryAddressList } = deliveryDetails;
+    const { t, history, deliveryDetails, cartSummary } = this.props;
+    const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
+    const { total } = cartSummary || {};
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -184,7 +227,10 @@ class Customer extends Component {
                 {t('ContactDetails')}
               </h4>
               <Link
-                to=""
+                to={{
+                  pathname: '/customer/ContactDetails',
+                  search: window.location.search,
+                }}
                 className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
               >
                 <IconAccountCircle className="icon icon__small icon__default margin-small" />
@@ -223,7 +269,12 @@ class Customer extends Component {
           <button
             className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             data-heap-name="ordering.customer.back-btn"
-            onClick={() => {}}
+            onClick={() => {
+              history.push({
+                pathname: ROUTER_PATHS.ORDERING_CART,
+                search: window.location.search,
+              });
+            }}
           >
             {t('Back')}
           </button>
@@ -233,7 +284,7 @@ class Customer extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={false}
-            validCreateOrder={false}
+            validCreateOrder={!total}
             beforeCreateOrder={() => {}}
             afterCreateOrder={() => {}}
           >
@@ -249,10 +300,12 @@ export default compose(
   withTranslation(['OrderingCustomer']),
   connect(
     state => ({
+      user: getUser(state),
       business: getBusiness(state),
       businessInfo: getBusinessInfo(state),
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
+      cartSummary: getCartSummary(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
