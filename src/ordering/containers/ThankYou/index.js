@@ -33,7 +33,7 @@ import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import logisticsGrab from '../../../images/beep-logistics-grab.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
 import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
-import logisticsRspeedy from '../../../images/beep-logistics-rspeedy.png';
+import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.png';
 import beepLogo from '../../../images/beep-logo.svg';
 
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
@@ -597,8 +597,8 @@ export class ThankYou extends PureComponent {
         return logisticsGoget;
       case 'lalamove':
         return logisticsLalamove;
-      case 'rspeedy':
-        return logisticsRspeedy;
+      case 'mrspeedy':
+        return logisticsMrspeedy;
       default:
         return beepLogo;
     }
