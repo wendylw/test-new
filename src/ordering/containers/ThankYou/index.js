@@ -689,7 +689,7 @@ export class ThankYou extends PureComponent {
                   {t('TrackOrder')}
                 </a>
               ) : null}
-              <a href="" className="text-weight-bolder button ordering-thanks__link">
+              <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                 {t('CallDriver')}
               </a>
             </React.Fragment>
