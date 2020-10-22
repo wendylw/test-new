@@ -361,7 +361,7 @@ export class ThankYou extends PureComponent {
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
     const { name, phone: storePhone } = storeInfo || {};
-    let { trackingUrl, useStorehubLogistics, courier, driverPhone } =
+    let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -370,7 +370,7 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-    status = PAID;
+
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -578,6 +578,8 @@ export class ThankYou extends PureComponent {
               storePhone,
               driverPhone,
               courier,
+              bestLastMileETA,
+              worstLastMileETA,
               order
             )
           : null}
@@ -619,10 +621,12 @@ export class ThankYou extends PureComponent {
     storePhone,
     driverPhone,
     courier,
+    bestLastMileETA,
+    worstLastMileETA,
     order = {}
   ) => {
     const { status } = currentStatusObj;
-    const { bestLastMileETA, worstLastMileETA, deliveredTime } = order;
+    const { deliveredTime } = order;
     const { t } = this.props;
 
     return (
