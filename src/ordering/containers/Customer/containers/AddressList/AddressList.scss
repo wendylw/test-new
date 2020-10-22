@@ -1,0 +1,15 @@
+@import "src/Variables";
+
+.address-list {
+  &__disabled {
+    color: $gray-3;
+  }
+
+  &__add-icon {
+    border: 1px dashed $gray-3;
+  }
+
+  &__save-title {
+    background-color: $gray-5;
+  }
+}

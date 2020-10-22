@@ -159,5 +159,10 @@
   "SelectStore": "Select a Store",
   "DeliveryHelpText": "Please key in your address to add items to your cart",
   "CompleteYourProfile": "Complete Your Profile",
-  "CompleteProfileTip": "Completing your profile helps you avail all ongoing offers & promotions offered by our partner merchants"
+  "CompleteProfileTip": "Completing your profile helps you avail all ongoing offers & promotions offered by our partner merchants",
+  "DeliveryTo": "Delivery To",
+  "AddNewAddress": "Add new address",
+  "AddAddress": "Add Address",
+  "SavedAddress": "Saved Address",
+  "OutOfRange": "OUT OF RANGE"
 }

@@ -168,6 +168,10 @@ const API_URLS = {
     url: '/api/stores/collection',
     method: 'get',
   },
+  CREATE_AND_UPDATE_PROFILE: consumerId => ({
+    url: `/api/consumers/${consumerId}/profile`,
+    method: 'put',
+  }),
 };
 
 export default {

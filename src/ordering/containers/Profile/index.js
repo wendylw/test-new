@@ -7,12 +7,24 @@ import Constants from '../../../utils/constants';
 import './Profile.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import { IconKeyArrowDown } from '../../../components/Icons';
+import { getUser } from '../../redux/modules/app';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { put } from '../../../utils/request';
+import url from '../../../utils/url';
 
+const { API_URLS } = url;
 class Profile extends Component {
   state = {
+    email: '',
+    name: '',
     date: '12',
     month: '06',
   };
+
+  componentDidMount() {
+    const { user } = this.props;
+  }
 
   handleClickBack = () => {
     const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
@@ -23,11 +35,24 @@ class Profile extends Component {
     });
   };
 
+  saveProfile = () => {
+    const { user } = this.props;
+    console.log(user);
+    const { consumerId } = user || {};
+    const { name, month, date, email } = this.state;
+    const demo = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
+    const data = {
+      firstName: name,
+      email: email,
+    };
+    put(demo.url, data);
+  };
+
   render() {
     const { t } = this.props;
-    const { month, date } = this.state;
+    const { name, month, date, email } = this.state;
     return (
-      <div>
+      <div className="profile flex flex-column">
         <Header
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -41,11 +66,24 @@ class Profile extends Component {
             <form>
               <div className="profile__input padding-small border-radius-base">
                 <div>Name</div>
-                <input className="form__input" type="text" required={true} />
+                <input
+                  className="form__input"
+                  type="text"
+                  required={true}
+                  onChange={e => {
+                    this.setState({ name: e.target.value });
+                  }}
+                />
               </div>
               <div className="profile__input padding-small border-radius-base">
                 <div>Email Address</div>
-                <input className="form__input" type="text" />
+                <input
+                  className="form__input"
+                  type="text"
+                  onChange={e => {
+                    this.setState({ email: e.target.value });
+                  }}
+                />
               </div>
               <div className="profile__input padding-small border-radius-base">
                 <div>Date of Birth</div>
@@ -54,10 +92,8 @@ class Profile extends Component {
                     {month}/{date}
                   </div>
                   <div>
-                    <label for="birthday">
-                      <IconKeyArrowDown />
-                      <DatePicker />
-                    </label>
+                    <IconKeyArrowDown />
+                    <DatePicker className="form__input" />
 
                     {/*<DatePicker className="form__input" onChange={this.handleDateChange}>*/}
                     {/*  <IconKeyArrowDown />*/}
@@ -67,10 +103,28 @@ class Profile extends Component {
               </div>
             </form>
           </div>
+          <footer>
+            <button
+              className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
+              disabled={!name}
+              onClick={this.saveProfile}
+            >
+              {t('Continue')}
+            </button>
+          </footer>
         </section>
       </div>
     );
   }
 }
 
-export default withTranslation()(Profile);
+export default compose(
+  withTranslation(),
+  connect(
+    state => ({
+      user: getUser(state),
+    }),
+    dispatch => ({})
+  )
+)(Profile);
+// export default withTranslation()(Profile);

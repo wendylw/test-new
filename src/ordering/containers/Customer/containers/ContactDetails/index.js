@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
-import Utils from '../../../utils/utils';
+import Utils from '../../../../../utils/utils';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 

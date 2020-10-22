@@ -32,6 +32,8 @@ const ROUTER_PATHS = {
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
   PROFILE: '/profile',
+  ADDRESS_LIST: '/addressList',
+  ADDRESS_DETAIL: '/addressDetail',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',

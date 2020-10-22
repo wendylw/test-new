@@ -1,6 +1,8 @@
 @import "src/Variables";
 
 .profile {
+  height: 100vh;
+
   &__container {
     color: $gray-3;
   }
