@@ -56,10 +56,16 @@ export class ThankYou extends PureComponent {
       isWebview: Utils.isWebview(),
     };
 
-    this.isHidePageTopForWebview();
+    this.injectFun();
   }
 
-  isHidePageTopForWebview = () => {};
+  injectFun = () => {
+    window.contactUs = !Utils.isDineInType()
+      ? () => {
+          this.handleVisitMerchantInfoPage();
+        }
+      : null;
+  };
 
   componentDidMount() {
     // expected delivery time is for pre order
@@ -78,6 +84,26 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
+  }
+  componentDidUpdate() {
+    const { order = {}, t } = this.props;
+    const { orderId, tableId } = order;
+    const isDelivery = Utils.isDeliveryType() || Utils.isPickUpType();
+
+    if (window.androidInterface) {
+      window.androidInterface.updateHeaderOptions(
+        JSON.stringify({
+          title: isDelivery ? `#${orderId}` : t('OrderPaid'),
+          rightButtons: [
+            {
+              text: !Utils.isDineInType() ? t('ContactUs') : t('TableIdText', { tableId }),
+            },
+          ],
+        })
+      );
+    } else if (window.webkit) {
+      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+    }
   }
 
   loadOrder = async () => {
@@ -376,6 +402,8 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
     };
+    const { user } = this.props;
+    const { isWebview } = user;
 
     let currentStatusObj = {};
     status = CONFIMRMED;
@@ -456,11 +484,13 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        <img
-          className="ordering-thanks__image padding-normal margin-normal"
-          src={currentStatusObj.bannerImage}
-          alt="Beep Success"
-        />
+        {!isWebview && (
+          <img
+            className="ordering-thanks__image padding-normal margin-normal"
+            src={currentStatusObj.bannerImage}
+            alt="Beep Success"
+          />
+        )}
         {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
             <div className="padding-small text-left">
@@ -966,44 +996,45 @@ export class ThankYou extends PureComponent {
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
-          <Header
-            headerRef={ref => (this.headerEl = ref)}
-            className="flex-middle border__bottom-divider"
-            isPage={!isWebview}
-            contentClassName="flex-middle"
-            data-heap-name="ordering.thank-you.header"
-            title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
-            navFunc={() => {
-              if (isWebview) {
-                if (window.androidInterface) {
-                  window.androidInterface.gotoHome();
-                } else if (window.webkit) {
-                  window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+          {!isWebview && (
+            <Header
+              headerRef={ref => (this.headerEl = ref)}
+              className="flex-middle border__bottom-divider"
+              isPage={!isWebview}
+              contentClassName="flex-middle"
+              data-heap-name="ordering.thank-you.header"
+              title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
+              navFunc={() => {
+                if (isWebview) {
+                  if (window.androidInterface) {
+                    window.androidInterface.gotoHome();
+                  } else if (window.webkit) {
+                    window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                  }
+                } else {
+                  // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+                  history.replace({
+                    pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                    search: `?${options.join('&')}`,
+                  });
                 }
-              } else {
-                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-                history.replace({
-                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                  search: `?${options.join('&')}`,
-                });
-              }
-            }}
-          >
-            {!isDineInType ? (
-              <button
-                className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-                onClick={this.handleVisitMerchantInfoPage}
-                data-heap-name="ordering.thank-you.contact-us-btn"
-              >
-                <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-              </button>
-            ) : (
-              <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
-                {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
-              </div>
-            )}
-          </Header>
-
+              }}
+            >
+              {!isDineInType ? (
+                <button
+                  className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+                  onClick={this.handleVisitMerchantInfoPage}
+                  data-heap-name="ordering.thank-you.contact-us-btn"
+                >
+                  <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
+                </button>
+              ) : (
+                <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
+                  {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
+                </div>
+              )}
+            </Header>
+          )}
           <div
             className="ordering-thanks__container"
             style={{
