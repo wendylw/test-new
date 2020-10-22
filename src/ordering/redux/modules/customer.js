@@ -4,14 +4,35 @@ import {
   fetchDeliveryDetails,
   patchDeliveryDetails,
   updateDeliveryDetails,
-} from '../../containers/Customer-1/utils';
+} from '../../containers/Customer/utils';
 import _get from 'lodash/get';
+
+const initialState = {
+  deliveryDetails: {
+    addressChange: false,
+    username: '',
+    phone: '',
+    addressDetails: '',
+    deliveryComments: '',
+    deliveryToAddress: '',
+    deliveryToLocation: {
+      longitude: 0,
+      latitude: 0,
+    },
+    deliveryAddressList: [],
+  },
+};
 
 // actions
 
 export const types = {
   PUT_DELIVERY_DETAILS: 'ORDERING/CUSTOMER/PUT_DELIVERY_DETAILS',
   PUT_ADDRESS_CHANGE: 'ORDERING/CUSTOMER/PUT_ADDRESS_CHANGE',
+
+  // Get Delivery Address List
+  FETCH_ADDRESS_LIST_REQUEST: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_REQUEST',
+  FETCH_ADDRESS_LIST_SUCCESS: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_SUCCESS',
+  FETCH_ADDRESS_LIST_FAILURE: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_FAILURE',
 };
 
 export const actions = {
@@ -69,7 +90,7 @@ export const actions = {
       addressChange,
     });
   },
-  updateDeliveryDetails: fields => async (dispatch, getState) => {
+  updateDeliveryDetails: fields => async dispatch => {
     const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
       fields,
@@ -79,7 +100,7 @@ export const actions = {
 
     return result;
   },
-  patchDeliveryDetails: fields => async (dispatch, getState) => {
+  patchDeliveryDetails: fields => async dispatch => {
     const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
       fields,
@@ -89,21 +110,7 @@ export const actions = {
 
     return result;
   },
-};
-
-const initialState = {
-  deliveryDetails: {
-    addressChange: false,
-    username: '',
-    phone: '',
-    addressDetails: '',
-    deliveryComments: '',
-    deliveryToAddress: '',
-    deliveryToLocation: {
-      longitude: 0,
-      latitude: 0,
-    },
-  },
+  fetchConsumerAddressList: fields => dispatch => {},
 };
 
 // reducers

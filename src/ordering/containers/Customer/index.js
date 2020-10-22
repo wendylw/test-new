@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { Link } from 'react-router-dom';
+import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
@@ -10,24 +11,71 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import Header from '../../../components/Header';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
+import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
-import { getDeliveryDetails } from '../../redux/modules/customer';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 
 import './OrderingCustomer.scss';
 
+const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
+
 class Customer extends Component {
+  componentDidMount() {
+    const { customerActions } = this.props;
+
+    customerActions.initDeliveryDetails();
+  }
+
+  getBusinessCountry = () => {
+    try {
+      const { businessInfo } = this.props;
+      return businessInfo.country;
+    } catch (e) {
+      // this could happen when allBusinessInfo is not loaded.
+      return undefined;
+    }
+  };
+
+  getDeliveryTime = () => {
+    const { t, business, allBusinessInfo } = this.props;
+    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+
+    if (!enablePreOrder) {
+      return null;
+    }
+
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    let deliveryTime;
+    if (date.date && hour.from) {
+      return date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
+        ? t('DeliverNow', { separator: ',' })
+        : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
+    }
+
+    return '';
+  };
+
+  getPickupTime = () => {
+    const { businessInfo = {} } = this.props;
+    const { locale } = businessInfo;
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+
+    return date && date.date && formatToDeliveryTime({ date, hour, locale });
+  };
+
   renderDeliveryPickupDetail() {
     if (Utils.isDineInType()) {
       return null;
     }
 
     const { t, businessInfo = {}, deliveryDetails } = this.props;
-    const { stores = [], locale } = businessInfo;
+    const { stores = [] } = businessInfo;
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryToAddress, addressDetails, deliveryComments, deliveryToAddressName } = deliveryDetails;
-    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
-    const pickUpTime = date && date.date && formatToDeliveryTime({ date, hour, locale });
+    const { deliveryAddressList } = deliveryDetails;
+    const { deliveryTo, addressDetails, comments: deliveryComments, addressName, availableStatus } =
+      deliveryAddressList[0] || {};
+    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
 
     return (
       <li>
@@ -41,21 +89,22 @@ class Customer extends Component {
             <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-smaller padding-left-right-small">
               {isDeliveryType ? (
                 <div>
-                  <React.Fragment>
-                    <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
-                      {t('DeliveryLocationLabel')}
-                    </h5>
-                    <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
-                      {' '}
-                      {t('DeliveryLocationDescription')}
-                    </p>
-                  </React.Fragment>
-                  <React.Fragment>
-                    <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">
-                      {deliveryToAddressName}
-                    </h3>
-                    <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
-                  </React.Fragment>
+                  {deliveryAddressList && deliveryAddressList[0] && availableStatus ? (
+                    <React.Fragment>
+                      <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
+                      <address className="padding-top-bottom-smaller">{deliveryTo}</address>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
+                        {t('DeliveryLocationLabel')}
+                      </h5>
+                      <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                        {' '}
+                        {t('DeliveryLocationDescription')}
+                      </p>
+                    </React.Fragment>
+                  )}
                 </div>
               ) : (
                 <div>
@@ -68,12 +117,12 @@ class Customer extends Component {
               <IconNext className="icon" />
             </div>
           </div>
-          {isDeliveryType ? (
+          {isDeliveryType && addressDetails ? (
             <div className="ordering-customer__address-detail-container flex flex-start padding-top-bottom-smaller padding-left-right-small">
               <article className="ordering-customer__address-detail flex flex-middle flex-space-between padding-smaller border-radius-base">
                 <div className="ordering-customer__address-content">
                   <p className="padding-smaller text-size-small">{addressDetails}</p>
-                  <p className="padding-smaller text-size-small">{deliveryComments}</p>
+                  {deliveryComments ? <p className="padding-smaller text-size-small">{deliveryComments}</p> : null}
                 </div>
                 <button className="ordering-customer__address-edit-button button button__link flex__shrink-fixed padding-small text-weight-bolder">
                   {t('Edit')}
@@ -92,7 +141,9 @@ class Customer extends Component {
                 <label className="text-size-big padding-top-bottom-smaller text-weight-bolder">
                   {isDeliveryType ? t('Delivery') : t('PickupTime')}
                 </label>
-                <p className="padding-top-bottom-smaller">{pickUpTime}</p>
+                <p className="padding-top-bottom-smaller">
+                  {isDeliveryType ? this.getDeliveryTime() : this.getPickupTime()}
+                </p>
               </div>
               <IconNext className="icon" />
             </div>
@@ -105,8 +156,10 @@ class Customer extends Component {
 
   render() {
     const { t, history, deliveryDetails } = this.props;
-    const { username, phone } = deliveryDetails;
+    const { username, phone, deliveryAddressList } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
+    const formatPhone = formatPhoneNumberIntl(phone);
+    const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -116,7 +169,12 @@ class Customer extends Component {
           data-heap-name="ordering.customer.header"
           isPage={true}
           title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
-          navFunc={() => {}}
+          navFunc={() => {
+            history.push({
+              pathname: ROUTER_PATHS.ORDERING_CART,
+              search: window.location.search,
+            });
+          }}
         ></Header>
         <div className="ordering-customer__container">
           <ul>
@@ -125,7 +183,10 @@ class Customer extends Component {
               <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder">
                 {t('ContactDetails')}
               </h4>
-              <Link className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller">
+              <Link
+                to=""
+                className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
+              >
                 <IconAccountCircle className="icon icon__small icon__default margin-small" />
                 <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
                   <div className="padding-top-bottom-smaller">
@@ -140,11 +201,17 @@ class Customer extends Component {
                         </React.Fragment>
                       )}
                     </p>
-                    <p className="padding-top-bottom-smaller">
-                      <span className="text-size-big">{phone}</span>
-                      {/* <span className="text-size-big text-weight-bolder">+60</span>
-                      <span className="text-size-big">12 345 6789</span> */}
-                    </p>
+                    {phone ? (
+                      <p className="padding-top-bottom-smaller">
+                        {/* Country Code */}
+                        <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
+                          0,
+                          splitIndex
+                        )} `}</span>
+                        {/* end of Country Code */}
+                        <span className="text-size-big">{formatPhone.substring(splitIndex + 1)}</span>
+                      </p>
+                    ) : null}
                   </div>
                   <IconNext className="icon" />
                 </div>
@@ -182,9 +249,13 @@ export default compose(
   withTranslation(['OrderingCustomer']),
   connect(
     state => ({
+      business: getBusiness(state),
       businessInfo: getBusinessInfo(state),
+      allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
     }),
-    dispatch => ({})
+    dispatch => ({
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
+    })
   )
 )(Customer);
