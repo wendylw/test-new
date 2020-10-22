@@ -19,6 +19,10 @@
     fill: $theme-blue;
   }
 
+  &__list-container {
+    overflow-y: auto;
+  }
+
   &__item-number {
     color: $gray-2;
   }

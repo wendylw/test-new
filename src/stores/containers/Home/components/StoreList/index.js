@@ -8,7 +8,7 @@ class StoreList extends Component {
     const { storeList, onSelect } = this.props;
 
     return (
-      <ul className="list">
+      <ul>
         {storeList.map(store => {
           const { id, name } = store;
           const { ADDRESS_RANGE } = Constants;

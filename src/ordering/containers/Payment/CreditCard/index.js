@@ -368,13 +368,17 @@ class CreditCard extends Component {
   }
 
   renderForm() {
-    const { t } = this.props;
+    const { t, cartSummary } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
     const { cardholderName } = card || {};
     const cardNumber = card.formattedCardNumber;
+    const { total } = cartSummary || {};
 
     return (
       <form id="bank-2c2p-form" className="form">
+        <div className="text-center padding-top-bottom-normal">
+          <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
+        </div>
         <div className="padding-left-right-normal">
           <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
             <label className="text-size-bigger text-weight-bolder">{t('CardInformation')}</label>
@@ -496,6 +500,7 @@ class CreditCard extends Component {
         data-heap-name="ordering.payment.credit-card.container"
       >
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.credit-card.header"
@@ -508,15 +513,23 @@ class CreditCard extends Component {
             });
           }}
         />
-        <div className="payment-credit-card__container padding-top-bottom-normal">
-          <div className="text-center padding-top-bottom-normal">
-            <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
-          </div>
-
+        <div
+          style={{
+            height: Utils.containerHeight({
+              headerEls: [this.headerEl],
+              footerEls: [this.footerEl],
+            }),
+          }}
+          className="payment-credit-card__container padding-top-bottom-normal"
+        >
           {this.renderForm()}
         </div>
 
-        <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          style={{ position: 'sticky' }}
+          className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
+        >
           <CreateOrderButton
             history={history}
             className="margin-top-bottom-smaller"
