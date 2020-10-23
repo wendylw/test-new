@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import i18next from 'i18next';
 import Url from '../../../utils/url';
 import config from '../../../config';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -8,11 +9,13 @@ import {
   patchDeliveryDetails,
   updateDeliveryDetails,
 } from '../../containers/Customer/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 import _get from 'lodash/get';
 
 const initialState = {
   deliveryDetails: {
     addressChange: false,
+    addressName: '',
     username: '',
     phone: '',
     addressDetails: '',
@@ -22,7 +25,12 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
-    deliveryAddressList: [],
+  },
+  customerError: {
+    show: false,
+    message: '',
+    description: '',
+    buttonText: '',
   },
 };
 
@@ -31,6 +39,8 @@ const initialState = {
 export const types = {
   PUT_DELIVERY_DETAILS: 'ORDERING/CUSTOMER/PUT_DELIVERY_DETAILS',
   PUT_ADDRESS_CHANGE: 'ORDERING/CUSTOMER/PUT_ADDRESS_CHANGE',
+  PUT_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/PUT_CUSTOMER_ERROR',
+  CLEAR_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/CLEAR_CUSTOMER_ERROR',
 
   // Get Delivery Address List
   FETCH_ADDRESS_LIST_REQUEST: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_REQUEST',
@@ -45,43 +55,42 @@ export const actions = {
 
     const newDeliveryDetails = {
       ...deliveryDetails,
-      phone: _get(deliveryDetails, 'phone', localStoragePhone),
+      phone: deliveryDetails.phone || _get(deliveryDetails, 'phone', localStoragePhone),
     };
 
-    // if (shippingType === 'delivery') {
-    //   const deliveryAddress = await fetchDeliveryAddress();
+    if (shippingType === 'delivery') {
+      const newDeliveryDetails = await fetchDeliveryAddress();
 
-    //   if (deliveryAddress) {
-    //     newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
-    //     newDeliveryDetails.deliveryToLocation = {
-    //       longitude: deliveryAddress.coords.lng,
-    //       latitude: deliveryAddress.coords.lat,
-    //     };
-    //   }
+      if (newDeliveryDetails) {
+        newDeliveryDetails.deliveryToAddress = newDeliveryDetails.address;
+        newDeliveryDetails.deliveryToLocation = {
+          longitude: newDeliveryDetails.coords.lng,
+          latitude: newDeliveryDetails.coords.lat,
+        };
+      }
 
-    //   // if address chosen is different from address in session
-    //   // then clean up the address details info
-    //   if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
-    //     newDeliveryDetails.addressDetails = '';
-    //   }
+      // if address chosen is different from address in session
+      // then clean up the address details info
+      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
+        newDeliveryDetails.addressDetails = '';
+      }
 
-    //   const { customer } = getState();
-    //   const { deliveryDetails: nextDeliveryDetails } = customer;
-    //   const { deliveryToAddress } = nextDeliveryDetails;
-    //   const { longitude, latitude } = nextDeliveryDetails.deliveryToLocation;
-    //   if (!deliveryToAddress && !longitude && !latitude) {
-    //   } else {
-    //     const addressChange =
-    //       deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
-    //       longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
-    //       latitude !== newDeliveryDetails.deliveryToLocation.latitude;
-    //     dispatch({
-    //       type: types.PUT_ADDRESS_CHANGE,
-    //       addressChange,
-    //     });
-    //   }
-    // } else
-    if (shippingType === 'pickup') {
+      const { customer } = getState();
+      const { deliveryDetails: nextDeliveryDetails } = customer;
+      const { deliveryToAddress } = nextDeliveryDetails;
+      const { longitude, latitude } = nextDeliveryDetails.deliveryToLocation;
+      if (!deliveryToAddress && !longitude && !latitude) {
+      } else {
+        const addressChange =
+          deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
+          longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
+          latitude !== newDeliveryDetails.deliveryToLocation.latitude;
+        dispatch({
+          type: types.PUT_ADDRESS_CHANGE,
+          addressChange,
+        });
+      }
+    } else if (shippingType === 'pickup') {
       delete newDeliveryDetails.deliveryToAddress;
       delete newDeliveryDetails.addressDetails;
     }
@@ -120,6 +129,13 @@ export const actions = {
       ...Url.API_URLS.GET_ADDRESS_LIST(consumerId, storeId || config.storeId),
     },
   }),
+  setError: error => ({
+    type: types.PUT_CUSTOMER_ERROR,
+    error,
+  }),
+  clearError: () => ({
+    type: types.CLEAR_CUSTOMER_ERROR,
+  }),
 };
 
 // reducers
@@ -137,9 +153,16 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
     };
   } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
     const deliveryAddressList = action.response || {};
+    const findAvailableAddress = (deliveryAddressList || []).find(
+      address =>
+        address.availableStatus &&
+        (address.addressName === state.addressName ||
+          computeStraightDistance(address.location, state.deliveryToLocation) <= 500)
+    );
 
-    if (deliveryAddressList) {
+    if (findAvailableAddress) {
       const {
+        addressName,
         addressDetails,
         comments: deliveryComments,
         deliveryTo: deliveryToAddress,
@@ -148,6 +171,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
 
       return {
         ...state,
+        addressName,
         addressDetails,
         deliveryComments,
         deliveryToAddress,
@@ -158,12 +182,38 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
   return state;
 };
 
+const customerError = (state = initialState.customerError, action) => {
+  if (action.type === types.CLEAR_CUSTOMER_ERROR) {
+    return {
+      ...state,
+      show: false,
+      message: '',
+      description: '',
+      buttonText: '',
+    };
+  }
+
+  if (action.type === types.PUT_CUSTOMER_ERROR) {
+    return {
+      ...state,
+      show: action.error.showModal,
+      message: i18next.t(action.error.message),
+      description: i18next.t(action.error.description),
+      buttonText: i18next.t(action.error.buttonText),
+    };
+  }
+
+  return state;
+};
+
 export default combineReducers({
   deliveryDetails,
+  customerError,
 });
 
 // selectors
 
 export const getDeliveryDetails = state => state.customer.deliveryDetails;
 export const getAddressChange = state => state.customer.deliveryDetails.addressChange;
+export const getCustomerError = state => state.customer.customerError;
 // export const isCheckoutDisabled = state => {}

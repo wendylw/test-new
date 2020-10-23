@@ -8,5 +8,9 @@
   "DeliveryLocationDescription": "Select delivery address",
   "PickupLocationTitle": "Pickup address",
   "ContactDetails": "Contact details",
-  "NameReplaceHolder": "Your name"
+  "NameReplaceHolder": "Your name",
+  "ContactEmptyTitle": "Contact Details Required",
+  "ContactEmptyDescription": "Please fill in your contact details for proceed checkout",
+  "DeliveryAddressEmptyTitle": "Delivery Address Required",
+  "DeliveryAddressEmptyDescription": "Please fill in your delivery address to proceed to checkout"
 }

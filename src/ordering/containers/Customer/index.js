@@ -9,13 +9,14 @@ import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
 import Header from '../../../components/Header';
+import MessageModal from '../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
+import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 
 import './OrderingCustomer.scss';
 
@@ -68,15 +69,49 @@ class Customer extends Component {
     return date && date.date && formatToDeliveryTime({ date, hour, locale });
   };
 
-  handleBeforeCreateOrder() {}
+  validateFields = () => {
+    const { customerActions, deliveryDetails } = this.props;
+    const { username, addressName } = deliveryDetails || {};
+    let error = {};
+
+    if (!Boolean(addressName)) {
+      error = {
+        showModal: true,
+        message: 'OrderingCustomer:DeliveryAddressEmptyTitle',
+        description: 'OrderingCustomer:DeliveryAddressEmptyDescription',
+        buttonText: 'OK',
+      };
+    } else if (!Boolean(username)) {
+      error = {
+        showModal: true,
+        message: 'OrderingCustomer:ContactEmptyTitle',
+        description: 'OrderingCustomer:ContactEmptyDescription',
+        buttonText: 'OK',
+      };
+    }
+
+    if (error.showModal) {
+      customerActions.setError(error);
+    }
+
+    return error.showModal;
+  };
+
+  handleErrorHide() {
+    const { customerActions } = this.props;
+
+    customerActions.clearError();
+  }
 
   visitPaymentPage = () => {
     const { history } = this.props;
 
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-      search: window.location.search,
-    });
+    if (!this.validateFields) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
   };
 
   renderDeliveryPickupDetail() {
@@ -87,9 +122,7 @@ class Customer extends Component {
     const { t, businessInfo = {}, deliveryDetails } = this.props;
     const { stores = [] } = businessInfo;
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryAddressList } = deliveryDetails;
-    const { deliveryTo, addressDetails, comments: deliveryComments, addressName, availableStatus } =
-      deliveryAddressList[0] || {};
+    const { deliveryTo, addressDetails, comments: deliveryComments, addressName } = deliveryDetails;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
 
     return (
@@ -110,7 +143,7 @@ class Customer extends Component {
                   }}
                   className="ordering-customer__button-link button__link"
                 >
-                  {deliveryAddressList && deliveryAddressList[0] && availableStatus ? (
+                  {Boolean(addressName) ? (
                     <React.Fragment>
                       <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
                       <address className="padding-top-bottom-smaller">{deliveryTo}</address>
@@ -145,7 +178,7 @@ class Customer extends Component {
               <IconNext className="icon" />
             </div>
           </div>
-          {isDeliveryType && addressDetails ? (
+          {isDeliveryType && addressDetails && Boolean(addressName) ? (
             <Link
               to={{
                 pathname: '/customer/AddressDetail',
@@ -195,12 +228,15 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartSummary } = this.props;
+    const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
     const { username, phone } = deliveryDetails;
+    const { name, phone: consumerPhone } = user || {};
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
-    const formatPhone = formatPhoneNumberIntl(phone);
-    const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
+    const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
+    const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
     const { total } = cartSummary || {};
+
+    console.log(error);
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -235,8 +271,8 @@ class Customer extends Component {
                 <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
                   <div className="padding-top-bottom-smaller">
                     <p className="padding-top-bottom-smaller">
-                      {username ? (
-                        <span className="text-size-big">{username}</span>
+                      {username || name ? (
+                        <span className="text-size-big">{username || name}</span>
                       ) : (
                         <React.Fragment>
                           <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
@@ -245,7 +281,7 @@ class Customer extends Component {
                         </React.Fragment>
                       )}
                     </p>
-                    {phone ? (
+                    {phone || consumerPhone ? (
                       <p className="padding-top-bottom-smaller">
                         {/* Country Code */}
                         <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
@@ -282,13 +318,21 @@ class Customer extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={false}
-            validCreateOrder={!total}
-            beforeCreateOrder={() => {}}
+            validCreateOrder={!total && !this.validateFields}
+            beforeCreateOrder={this.validateFields}
             afterCreateOrder={this.visitPaymentPage}
           >
             {t('Continue')}
           </CreateOrderButton>
         </footer>
+        {error.show ? (
+          <MessageModal
+            data={error}
+            onHide={() => {
+              this.handleErrorHide();
+            }}
+          />
+        ) : null}
       </section>
     );
   }
@@ -305,6 +349,7 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       cartSummary: getCartSummary(state),
       requestInfo: getRequestInfo(state),
+      error: getCustomerError(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
