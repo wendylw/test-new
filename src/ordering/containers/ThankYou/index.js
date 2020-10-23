@@ -85,26 +85,6 @@ export class ThankYou extends PureComponent {
     }
     this.loadOrder();
   }
-  componentDidUpdate() {
-    const { order = {}, t } = this.props;
-    const { orderId, tableId } = order;
-    const isDelivery = Utils.isDeliveryType() || Utils.isPickUpType();
-
-    if (window.androidInterface) {
-      window.androidInterface.updateHeaderOptions(
-        JSON.stringify({
-          title: isDelivery ? `#${orderId}` : t('OrderPaid'),
-          rightButtons: [
-            {
-              text: !Utils.isDineInType() ? t('ContactUs') : t('TableIdText', { tableId }),
-            },
-          ],
-        })
-      );
-    } else if (window.webkit) {
-      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
-    }
-  }
 
   updateAppLocationAndStatus = () => {
     //      nOrderStatusChanged(status: String) // 更新Order Status
@@ -117,9 +97,9 @@ export class ThankYou extends PureComponent {
 
     if (window.androidInterface) {
       window.androidInterface.onOrderStatusChanged(status);
-      window.androidInterface.updateStorePosition(Math.random(), Math.random());
-      window.androidInterface.updateHomePosition(Math.random(), Math.random());
-      window.androidInterface.updateRiderPosition(Math.random(), Math.random());
+      window.androidInterface.updateStorePosition(-33.849, 151.208);
+      window.androidInterface.updateHomePosition(-33.852, 151.212);
+      window.androidInterface.updateRiderPosition(-33.855, 151.223);
     } else if (window.webkit) {
       // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
       // TODO update for ios
@@ -166,7 +146,31 @@ export class ThankYou extends PureComponent {
       const orderInfo = this.props.order;
       this.handleGtmEventTracking({ order: orderInfo });
     }
+
+    Utils.isWebview() && this.updateHeaderForApp();
   }
+
+  updateHeaderForApp = () => {
+    const { order = {}, t } = this.props;
+    const { orderId, tableId } = order;
+    const isDelivery = Utils.isDeliveryType() || Utils.isPickUpType();
+
+    if (window.androidInterface) {
+      window.androidInterface.updateHeaderOptions(
+        JSON.stringify({
+          title: isDelivery ? `#${orderId}` : t('OrderPaid'),
+          rightButtons: [
+            {
+              text: !Utils.isDineInType() ? t('ContactUs') : t('TableIdText', { tableId }),
+              callbackName: 'contactUs',
+            },
+          ],
+        })
+      );
+    } else if (window.webkit) {
+      // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+    }
+  };
 
   getThankYouSource = () => {
     return Utils.getCookieVariable('__ty_source', '');
