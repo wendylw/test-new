@@ -33,7 +33,7 @@ import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import logisticsGrab from '../../../images/beep-logistics-grab.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
 import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
-import logisticsRspeedy from '../../../images/beep-logistics-rspeedy.png';
+import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.png';
 import beepLogo from '../../../images/beep-logo.svg';
 
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
@@ -656,8 +656,8 @@ export class ThankYou extends PureComponent {
         return logisticsGoget;
       case 'lalamove':
         return logisticsLalamove;
-      case 'rspeedy':
-        return logisticsRspeedy;
+      case 'mrspeedy':
+        return logisticsMrspeedy;
       default:
         return beepLogo;
     }
@@ -1064,7 +1064,6 @@ export class ThankYou extends PureComponent {
               })}px`,
               height: Utils.containerHeight({
                 headerEls: [this.headerEl],
-                footerEls: [this.footerEl],
               }),
             }}
           >
@@ -1103,20 +1102,20 @@ export class ThankYou extends PureComponent {
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
-          </div>
-          <footer
-            ref={ref => (this.footerEl = ref)}
-            className="footer footer__transparent flex flex-middle flex-center flex__shrink-fixed"
-          >
-            <span>&copy; {date.getFullYear()} </span>
-            <a
-              className="ordering-thanks__button-footer-link button button__link padding-small"
-              href="https://www.storehub.com/"
-              data-heap-name="ordering.thank-you.storehub-link"
+            <footer
+              ref={ref => (this.footerEl = ref)}
+              className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
-              {t('StoreHub')}
-            </a>
-          </footer>
+              <span>&copy; {date.getFullYear()} </span>
+              <a
+                className="ordering-thanks__button-footer-link button button__link padding-small"
+                href="https://www.storehub.com/"
+                data-heap-name="ordering.thank-you.storehub-link"
+              >
+                {t('StoreHub')}
+              </a>
+            </footer>
+          </div>
         </React.Fragment>
       </section>
     );
