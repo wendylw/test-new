@@ -427,7 +427,7 @@ export class ThankYou extends PureComponent {
     const { isWebview } = user;
 
     let currentStatusObj = {};
-    status = CONFIMRMED;
+    // status = CONFIMRMED;
     // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
