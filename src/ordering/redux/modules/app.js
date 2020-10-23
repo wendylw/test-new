@@ -9,6 +9,8 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
+import url from '../../../utils/url';
+import { toISODateString } from '../../../utils/datetime-lib';
 
 const { AUTH_INFO } = Constants;
 
@@ -183,6 +185,39 @@ export const actions = {
     type: types.CLEAR_API_ERROR,
   }),
 
+  updateProfileInfo: fields => ({
+    type: types.UPDATE_PROFILE_INFO,
+    fields,
+  }),
+
+  getProfileInfo: consumerId => ({
+    [API_REQUEST]: {
+      types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
+      ...url.API_URLS.GET_CONSUMER_PROFILE(consumerId),
+    },
+  }),
+
+  createOrUpdateProfile: () => (dispatch, getState) => {
+    const state = getState();
+    const consumerId = state.user.consumerId;
+    const profile = state.user.profile;
+    return {
+      [API_REQUEST]: {
+        types: [
+          types.CREATE_OR_UPDATE_PROFILE_REQUEST,
+          types.CREATE_OR_UPDATE_PROFILE_SUCCESS,
+          types.CREATE_OR_UPDATE_PROFILE_FAILURE,
+        ],
+        ...url.API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId),
+        payload: {
+          firstName: profile.name,
+          email: profile.email,
+          birthday: profile.birthday,
+        },
+      },
+    };
+  },
+
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -231,7 +266,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, prompt, error } = action;
+  const { type, response, prompt, error, fields } = action;
   const { consumerId, login, user } = response || {};
 
   switch (type) {
@@ -273,7 +308,11 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         consumerId,
-        profile: user,
+        profile: {
+          name: user.firstName,
+          email: user.email,
+          birthday: toISODateString(user.birthday),
+        },
         isLogin: true,
         hasOtp: false,
         isFetching: false,
@@ -297,6 +336,31 @@ const user = (state = initialState.user, action) => {
       const { storeCreditsBalance, customerId } = response || {};
 
       return { ...state, storeCreditsBalance, customerId };
+    case types.UPDATE_PROFILE_INFO:
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          ...fields,
+        },
+      };
+    case types.FETCH_PROFILE_SUCCESS:
+      const { firstName, email, birthday } = response || {};
+      return {
+        ...state,
+        profile: {
+          name: firstName,
+          email,
+          birthday,
+        },
+      };
+
+    case types.CREATE_OR_UPDATE_PROFILE_SUCCESS:
+      const { success } = response || {};
+      return {
+        ...state,
+        success,
+      };
     default:
       return state;
   }

@@ -265,7 +265,8 @@ class Cart extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
-    const { isLogin } = user || {};
+    const { isLogin, profile } = user || {};
+    const { name: consumerName } = profile || {};
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
@@ -346,16 +347,23 @@ class Cart extends Component {
               }
 
               this.handleGtmEventTracking(() => {
-                isLogin
-                  ? history.push({
-                      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                      search: window.location.search,
-                    })
-                  : history.push({
-                      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
-                      search: window.location.search,
-                      nextPage: true,
-                    });
+                if (isLogin && consumerName) {
+                  history.push({
+                    pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                    search: window.location.search,
+                  });
+                } else if (isLogin && !consumerName) {
+                  history.push({
+                    pathname: Constants.ROUTER_PATHS.PROFILE,
+                    search: window.location.search,
+                  });
+                } else {
+                  history.push({
+                    pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+                    search: window.location.search,
+                    nextPage: true,
+                  });
+                }
               });
             }}
             disabled={!items || !items.length || isInvalidTotal}

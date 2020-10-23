@@ -125,7 +125,7 @@ class OtpModal extends React.Component {
           </figure>
           <h2 className="padding-normal text-size-big text-line-height-base">
             <Trans i18nKey="OTPSentTitle">
-              We’ve sent you a One Time Passcode (OTP) to{' '}
+              We’ve sent you a One Time Passcode (OTP) to
               <span className="text-size-big text-weight-bolder">{{ phone }}</span>. Enter it below to continue.
             </Trans>
           </h2>

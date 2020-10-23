@@ -165,5 +165,8 @@
   "AddNewAddress": "Add new address",
   "AddAddress": "Add Address",
   "SavedAddress": "Saved Address",
-  "OutOfRange": "OUT OF RANGE"
+  "OutOfRange": "OUT OF RANGE",
+  "ContactDetails": "Contact Details",
+  "ContactTip": "Only change this if you are placing an order with someone else and want us to contact them if there's an issue with the order. PS: All order status updates will be sent to the following contact.",
+  "SaveChanges": "Save Changes"
 }

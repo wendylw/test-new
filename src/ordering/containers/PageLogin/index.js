@@ -35,12 +35,13 @@ class PageLogin extends React.Component {
     const { history, location, user } = this.props;
     const { nextPage } = location;
     const { profile } = user || {};
-    if (nextPage && profile) {
+    const { name: consumerName } = profile || {};
+    if (nextPage && consumerName) {
       history.push({
-        pathname: Constants.ROUTER_PATHS.PROFILE,
+        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
       });
-    } else if (nextPage && !profile) {
+    } else if (nextPage && !consumerName) {
       history.push({
         pathname: Constants.ROUTER_PATHS.PROFILE,
         search: window.location.search,

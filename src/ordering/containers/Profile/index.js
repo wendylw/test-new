@@ -7,22 +7,19 @@ import Constants from '../../../utils/constants';
 import './Profile.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 // import { IconKeyArrowDown } from '../../../components/Icons';
-import { getUser } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
 import url from '../../../utils/url';
+import { toISODateString } from '../../../utils/datetime-lib';
 
 const { API_URLS } = url;
 class Profile extends Component {
-  state = {
-    email: '',
-    name: '',
-    date: '',
-  };
-
   componentDidMount() {
-    const { user } = this.props;
+    const { appActions, user } = this.props;
+    const { consumerId } = user || {};
+    appActions.getProfileInfo(consumerId);
   }
 
   handleClickBack = () => {
@@ -35,16 +32,18 @@ class Profile extends Component {
   };
 
   saveProfile = async () => {
-    const { user, history } = this.props;
-    const { consumerId } = user || {};
-    const { name, date, email } = this.state;
-    const demo = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
+    const { user, history, appActions } = this.props;
+    const { consumerId, profile } = user || {};
+    const { name, email, birthday } = profile || {};
+    // appActions.createOrUpdateProfile();
+    // const { name, date, email } = this.state;
+    const createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
     const data = {
       firstName: name,
       email: email,
-      birthday: new Date(date).toISOString(),
+      birthday: new Date(birthday).toISOString(),
     };
-    const response = await put(demo.url, data);
+    const response = await put(createdUrl.url, data);
     const { success } = response;
     if (success) {
       history.push({
@@ -54,9 +53,21 @@ class Profile extends Component {
     }
   };
 
+  handleInputChange = e => {
+    const inputValue = e.target.value;
+    if (e.target.name === 'consumerName') {
+      this.props.appActions.updateProfileInfo({ name: inputValue });
+    } else if (e.target.name === 'consumerEmail') {
+      this.props.appActions.updateProfileInfo({ email: inputValue });
+    } else if (e.target.name === 'consumerBirthday') {
+      this.props.appActions.updateProfileInfo({ birthday: inputValue });
+    }
+  };
+
   render() {
-    const { t } = this.props;
-    const { name, month, date, email } = this.state;
+    const { t, user } = this.props;
+    const { profile } = user || {};
+    const { name, email, birthday } = profile || {};
     return (
       <div className="profile flex flex-column">
         <Header
@@ -73,22 +84,22 @@ class Profile extends Component {
               <div className="profile__input padding-small border-radius-base">
                 <div>Name</div>
                 <input
+                  name="consumerName"
+                  value={name}
                   className="form__input"
                   type="text"
                   required={true}
-                  onChange={e => {
-                    this.setState({ name: e.target.value });
-                  }}
+                  onChange={this.handleInputChange}
                 />
               </div>
               <div className="profile__input padding-small border-radius-base">
                 <div>Email Address</div>
                 <input
+                  name="consumerEmail"
+                  value={email}
                   className="form__input"
                   type="text"
-                  onChange={e => {
-                    this.setState({ email: e.target.value });
-                  }}
+                  onChange={this.handleInputChange}
                 />
               </div>
               <div className="profile__input padding-small border-radius-base">
@@ -100,12 +111,11 @@ class Profile extends Component {
                   <div>
                     {/*<IconKeyArrowDown />*/}
                     <input
+                      name="consumerBirthday"
+                      value={toISODateString(birthday)}
                       className="form__input"
                       type="date"
-                      onChange={e => {
-                        console.log('date', e.target.value);
-                        this.setState({ date: e.target.value });
-                      }}
+                      onChange={this.handleInputChange}
                     />
 
                     {/*<DatePicker className="form__input" onChange={this.handleDateChange}>*/}
@@ -137,6 +147,8 @@ export default compose(
     state => ({
       user: getUser(state),
     }),
-    dispatch => ({})
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
   )
 )(Profile);

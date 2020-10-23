@@ -1,4 +1,12 @@
 .contact-details {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
+
   &__group {
     overflow: hidden;
   }

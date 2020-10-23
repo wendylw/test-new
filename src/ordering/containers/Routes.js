@@ -26,6 +26,7 @@ const StoreList = lazy(() => Utils.retry(() => import('./StoreList')));
 const Profile = lazy(() => Utils.retry(() => import('./Profile')));
 const AddressList = lazy(() => Utils.retry(() => import('./Customer/containers/AddressList')));
 const AddressDetail = lazy(() => Utils.retry(() => import('./Customer/containers/AddressDetail')));
+const ContactDetail = lazy(() => Utils.retry(() => import('./Customer/containers/ContactDetail')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -56,8 +57,21 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={PageLogin} />
             <Route exact path={ROUTER_PATHS.ORDERING_STORE_LIST} component={StoreList} />
             <Route exact path={ROUTER_PATHS.PROFILE} component={Profile} />
-            <Route exact path={ROUTER_PATHS.ADDRESS_LIST} component={AddressList} />
-            <Route exact path={ROUTER_PATHS.ADDRESS_DETAIL} component={AddressDetail} />
+            <Route
+              exact
+              path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`}
+              component={AddressList}
+            />
+            <Route
+              exact
+              path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`}
+              component={AddressDetail}
+            />
+            <Route
+              exact
+              path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`}
+              component={ContactDetail}
+            />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>

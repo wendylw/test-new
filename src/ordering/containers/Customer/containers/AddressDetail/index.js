@@ -39,15 +39,14 @@ class AddressDetail extends Component {
     const pathname = (location.state && location.state.from && location.state.from.pathname) || '/customer';
     history.push({
       pathname,
-      state: {
-        from: location,
-      },
+      search: window.location.search,
     });
   };
 
   handleInputChange = e => {
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
+      this.props.customerActions.patchDeliveryDetails({ addressName: inputValue });
       this.setState({ addressName: inputValue });
     } else if (e.target.name === 'addressDetails') {
       this.props.customerActions.patchDeliveryDetails({ addressDetails: inputValue });
@@ -57,12 +56,12 @@ class AddressDetail extends Component {
   };
 
   createOrUpdateAddress = () => {
-    const { addressName } = this.state;
-    const { location, user, deliveryDetails } = this.props;
+    // const { addressName } = this.state;
+    const { location, user, deliveryDetails, addressId } = this.props;
     const { consumerId } = user || {};
-    const { addressDetails, deliveryComments, deliveryToLocation, addressId } = deliveryDetails || {};
+    const { addressName, addressDetails, deliveryComments, deliveryToLocation } = deliveryDetails || {};
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-
+    // const addressId = '5f92d7ad30cbaa05b3c5dff0';
     const action = (location.state && location.state.action) || 'add';
     if (action === 'add') {
       const addUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
@@ -85,7 +84,6 @@ class AddressDetail extends Component {
         deliveryTo: deliveryToAddress,
         addressDetails: addressDetails,
         comments: deliveryComments,
-        address: addressDetails + ', ' + deliveryToAddress,
         location: {
           longitude: deliveryToLocation.longitude,
           latitude: deliveryToLocation.latitude,
@@ -96,8 +94,9 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { t, history, addressName, deliveryDetails } = this.props;
+    const { t, history, addressName, deliveryDetails, location } = this.props;
     const { addressDetails, deliveryComments } = deliveryDetails || {};
+    const action = (location.state && location.state.action) || 'edit';
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     return (
       <div className="flex flex-column address-detail">
@@ -105,7 +104,7 @@ class AddressDetail extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
-          title={t('AddNewAddress')}
+          title={action === 'edit' ? t('EditAddress') : t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
         <section className="address-detail__container padding-left-right-normal">
@@ -128,20 +127,24 @@ class AddressDetail extends Component {
             <div
               className="form__group flex flex-middle flex-space-between"
               data-heap-name="ordering.customer.delivery-address"
-              onClick={async () => {
-                const { search } = window.location;
+              onClick={
+                action !== 'edit'
+                  ? async () => {
+                      const { search } = window.location;
 
-                const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`);
+                      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`);
 
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-                  search: `${search}&callbackUrl=${callbackUrl}`,
-                });
-              }}
+                      history.push({
+                        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+                        search: `${search}&callbackUrl=${callbackUrl}`,
+                      });
+                    }
+                  : null
+              }
             >
               <p
                 className={`padding-normal text-size-big text-line-height-base ${
-                  deliveryToAddress ? '' : 'text-opacity'
+                  deliveryToAddress || action === 'edit' ? '' : 'text-opacity'
                 }`}
               >
                 {deliveryToAddress || t('AddAddressPlaceholder')}
@@ -185,7 +188,7 @@ class AddressDetail extends Component {
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
             onClick={this.createOrUpdateAddress}
           >
-            {t('AddAddress')}
+            {action === 'edit' ? t('SaveChanges') : t('AddAddress')}
           </button>
         </footer>
       </div>
