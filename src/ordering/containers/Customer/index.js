@@ -11,7 +11,7 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import Header from '../../../components/Header';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
-import { getBusiness, getUser } from '../../redux/modules/app';
+import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -23,10 +23,12 @@ const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
 class Customer extends Component {
   componentDidMount() {
-    const { customerActions } = this.props;
+    const { customerActions, user, requestInfo } = this.props;
+    const { consumerId } = user || {};
+    const { storeId } = requestInfo || {};
 
     customerActions.initDeliveryDetails();
-    // customerActions.fetchConsumerAddressList({ consumerId: '', storeId: '' });s
+    customerActions.fetchConsumerAddressList({ consumerId, storeId });
   }
 
   getBusinessCountry = () => {
@@ -302,6 +304,7 @@ export default compose(
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
       cartSummary: getCartSummary(state),
+      requestInfo: getRequestInfo(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
