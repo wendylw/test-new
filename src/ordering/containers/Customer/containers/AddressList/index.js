@@ -5,6 +5,7 @@ import { withTranslation } from 'react-i18next';
 import './AddressList.scss';
 import { IconBookmark, IconNext } from '../../../../../components/Icons';
 import Tag from '../../../../../components/Tag';
+import Constants from '../../../../../utils/constants';
 
 class AddressList extends Component {
   state = {
@@ -22,12 +23,22 @@ class AddressList extends Component {
   addNewAddress = () => {
     const { history } = this.props;
     history.push({
-      path: '/AddressDetail',
+      pathname: Constants.ROUTER_PATHS.ADDRESS_DETAIL,
       search: window.location.search,
+      state: {
+        from: '/addressList',
+        action: 'add',
+      },
     });
   };
 
-  handleClickBack = () => {};
+  handleClickBack = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: '/customer',
+      search: window.location.search,
+    });
+  };
 
   renderAddressCard = () => {
     const { t } = this.props;

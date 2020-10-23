@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import DatePicker from 'react-datepicker';
+// import DatePicker from 'react-datepicker';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import './Profile.scss';
 import 'react-datepicker/dist/react-datepicker.css';
-import { IconKeyArrowDown } from '../../../components/Icons';
+// import { IconKeyArrowDown } from '../../../components/Icons';
 import { getUser } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -18,8 +18,7 @@ class Profile extends Component {
   state = {
     email: '',
     name: '',
-    date: '12',
-    month: '06',
+    date: '',
   };
 
   componentDidMount() {
@@ -35,17 +34,24 @@ class Profile extends Component {
     });
   };
 
-  saveProfile = () => {
-    const { user } = this.props;
-    console.log(user);
+  saveProfile = async () => {
+    const { user, history } = this.props;
     const { consumerId } = user || {};
-    const { name, month, date, email } = this.state;
+    const { name, date, email } = this.state;
     const demo = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
     const data = {
       firstName: name,
       email: email,
+      birthday: new Date(date).toISOString(),
     };
-    put(demo.url, data);
+    const response = await put(demo.url, data);
+    const { success } = response;
+    if (success) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+      });
+    }
   };
 
   render() {
@@ -88,12 +94,19 @@ class Profile extends Component {
               <div className="profile__input padding-small border-radius-base">
                 <div>Date of Birth</div>
                 <div className="flex flex-space-between">
+                  {/*<div>*/}
+                  {/*  {month}/{date}*/}
+                  {/*</div>*/}
                   <div>
-                    {month}/{date}
-                  </div>
-                  <div>
-                    <IconKeyArrowDown />
-                    <DatePicker className="form__input" />
+                    {/*<IconKeyArrowDown />*/}
+                    <input
+                      className="form__input"
+                      type="date"
+                      onChange={e => {
+                        console.log('date', e.target.value);
+                        this.setState({ date: e.target.value });
+                      }}
+                    />
 
                     {/*<DatePicker className="form__input" onChange={this.handleDateChange}>*/}
                     {/*  <IconKeyArrowDown />*/}
@@ -103,16 +116,16 @@ class Profile extends Component {
               </div>
             </form>
           </div>
-          <footer>
-            <button
-              className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-              disabled={!name}
-              onClick={this.saveProfile}
-            >
-              {t('Continue')}
-            </button>
-          </footer>
         </section>
+        <footer className="footer footer__transparent margin-normal">
+          <button
+            className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
+            disabled={!name}
+            onClick={this.saveProfile}
+          >
+            {t('Continue')}
+          </button>
+        </footer>
       </div>
     );
   }
@@ -127,4 +140,3 @@ export default compose(
     dispatch => ({})
   )
 )(Profile);
-// export default withTranslation()(Profile);

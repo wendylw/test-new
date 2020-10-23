@@ -22,6 +22,11 @@ export const initialState = {
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
+    profile: {
+      name: '',
+      email: '',
+      birthday: null,
+    },
   },
   error: null, // network error
   messageModal: {

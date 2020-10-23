@@ -29,6 +29,7 @@ import { actions as homeActionCreators, getShoppingCart } from '../../redux/modu
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import './OrderingCustomer.scss';
+import Routes from './Routes';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const { ROUTER_PATHS, DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;

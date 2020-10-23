@@ -3,15 +3,104 @@ import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../../../components/Header';
+import './AddressDetail.scss';
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+import { getUser } from '../../../../redux/modules/app';
+import { actions as customerActionCreators, getDeliveryDetails } from '../../../../redux/modules/customer';
+import Utils from '../../../../../utils/utils';
+import { post, put } from '../../../../../utils/request';
+import url from '../../../../../utils/url';
+import qs from 'qs';
 
 class AddressDetail extends Component {
-  handleClickBack = () => {};
+  state = {
+    addressName: '',
+    addressDetails: '',
+    deliveryComments: '',
+  };
+
+  getShippingType() {
+    const { history } = this.props;
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    return type;
+  }
+
+  componentDidMount = async () => {
+    const { homeActions, customerActions } = this.props;
+
+    // init username, phone, deliveryToAddress, deliveryDetails
+    await customerActions.initDeliveryDetails(this.getShippingType());
+  };
+
+  handleClickBack = () => {
+    const { history, location } = this.props;
+    const pathname = (location.state && location.state.from && location.state.from.pathname) || '/customer';
+    history.push({
+      pathname,
+      state: {
+        from: location,
+      },
+    });
+  };
+
+  handleInputChange = e => {
+    const inputValue = e.target.value;
+    if (e.target.name === 'addressName') {
+      this.setState({ addressName: inputValue });
+    } else if (e.target.name === 'addressDetails') {
+      this.props.customerActions.patchDeliveryDetails({ addressDetails: inputValue });
+    } else if (e.target.name === 'deliveryComments') {
+      this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
+    }
+  };
+
+  createOrUpdateAddress = () => {
+    const { addressName } = this.state;
+    const { location, user, deliveryDetails } = this.props;
+    const { consumerId } = user || {};
+    const { addressDetails, deliveryComments, deliveryToLocation, addressId } = deliveryDetails || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+
+    const action = (location.state && location.state.action) || 'add';
+    if (action === 'add') {
+      const addUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
+      const data = {
+        addressName,
+        deliveryTo: deliveryToAddress,
+        addressDetails: addressDetails,
+        comments: deliveryComments,
+        address: addressDetails + ', ' + deliveryToAddress,
+        location: {
+          longitude: deliveryToLocation.longitude,
+          latitude: deliveryToLocation.latitude,
+        },
+      };
+      post(addUrl.url, data);
+    } else {
+      const updateUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, addressId);
+      const data = {
+        addressName,
+        deliveryTo: deliveryToAddress,
+        addressDetails: addressDetails,
+        comments: deliveryComments,
+        address: addressDetails + ', ' + deliveryToAddress,
+        location: {
+          longitude: deliveryToLocation.longitude,
+          latitude: deliveryToLocation.latitude,
+        },
+      };
+      put(updateUrl.url, data);
+    }
+  };
 
   render() {
-    const { t, history, addressName, deliveryToAddress, addressDetails, deliveryComments } = this.props;
-
+    const { t, history, addressName, deliveryDetails } = this.props;
+    const { addressDetails, deliveryComments } = deliveryDetails || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     return (
-      <div>
+      <div className="flex flex-column address-detail">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
@@ -19,17 +108,17 @@ class AddressDetail extends Component {
           title={t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
-        <section className="padding-left-right-normal">
+        <section className="address-detail__container padding-left-right-normal">
           <div className="padding-top-bottom-small">
             <div className="ordering-customer__group form__group">
               <input
                 className="ordering-customer__input form__input padding-left-right-normal text-size-big text-line-height-base"
-                data-heap-name="ordering.customer.delivery-address-detail"
+                data-heap-name="ordering.customer.delivery-address-name"
                 type="text"
                 maxLength="140"
                 placeholder={t('Name')}
                 value={addressName}
-                name="addressDetails"
+                name="addressName"
                 onChange={this.handleInputChange}
               />
             </div>
@@ -42,7 +131,7 @@ class AddressDetail extends Component {
               onClick={async () => {
                 const { search } = window.location;
 
-                const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
+                const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`);
 
                 history.push({
                   pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
@@ -90,15 +179,29 @@ class AddressDetail extends Component {
               />
             </div>
           </div>
-          <div className="margin-top-bottom-normal">
-            <button className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase">
-              {t('AddAddress')}
-            </button>
-          </div>
         </section>
+        <footer className="footer footer__transparent margin-normal">
+          <button
+            className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
+            onClick={this.createOrUpdateAddress}
+          >
+            {t('AddAddress')}
+          </button>
+        </footer>
       </div>
     );
   }
 }
 
-export default withTranslation()(AddressDetail);
+export default compose(
+  withTranslation(),
+  connect(
+    state => ({
+      user: getUser(state),
+      deliveryDetails: getDeliveryDetails(state),
+    }),
+    dispatch => ({
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
+    })
+  )
+)(AddressDetail);
