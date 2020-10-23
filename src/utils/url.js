@@ -172,6 +172,18 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/profile`,
     method: 'put',
   }),
+  GET_ADDRESS_LIST: (consumerId, storeId) => ({
+    url: `/api/consumers/${consumerId}/${storeId}/address`,
+    method: 'get',
+  }),
+  CREATE_ADDRESS: consumerId => ({
+    url: `/api/consumers/${consumerId}/address`,
+    method: 'post',
+  }),
+  UPDATE_ADDRESS: (consumerId, addressId) => ({
+    url: `/api/consumers/${consumerId}/address/${addressId}`,
+    method: 'put',
+  }),
 };
 
 export default {
