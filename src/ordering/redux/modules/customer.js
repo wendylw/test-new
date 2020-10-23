@@ -48,39 +48,40 @@ export const actions = {
       phone: _get(deliveryDetails, 'phone', localStoragePhone),
     };
 
-    if (shippingType === 'delivery') {
-      const deliveryAddress = await fetchDeliveryAddress();
+    // if (shippingType === 'delivery') {
+    //   const deliveryAddress = await fetchDeliveryAddress();
 
-      if (deliveryAddress) {
-        newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
-        newDeliveryDetails.deliveryToLocation = {
-          longitude: deliveryAddress.coords.lng,
-          latitude: deliveryAddress.coords.lat,
-        };
-      }
+    //   if (deliveryAddress) {
+    //     newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
+    //     newDeliveryDetails.deliveryToLocation = {
+    //       longitude: deliveryAddress.coords.lng,
+    //       latitude: deliveryAddress.coords.lat,
+    //     };
+    //   }
 
-      // if address chosen is different from address in session
-      // then clean up the address details info
-      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
-        newDeliveryDetails.addressDetails = '';
-      }
+    //   // if address chosen is different from address in session
+    //   // then clean up the address details info
+    //   if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
+    //     newDeliveryDetails.addressDetails = '';
+    //   }
 
-      const { customer } = getState();
-      const { deliveryDetails: nextDeliveryDetails } = customer;
-      const { deliveryToAddress } = nextDeliveryDetails;
-      const { longitude, latitude } = nextDeliveryDetails.deliveryToLocation;
-      if (!deliveryToAddress && !longitude && !latitude) {
-      } else {
-        const addressChange =
-          deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
-          longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
-          latitude !== newDeliveryDetails.deliveryToLocation.latitude;
-        dispatch({
-          type: types.PUT_ADDRESS_CHANGE,
-          addressChange,
-        });
-      }
-    } else if (shippingType === 'pickup') {
+    //   const { customer } = getState();
+    //   const { deliveryDetails: nextDeliveryDetails } = customer;
+    //   const { deliveryToAddress } = nextDeliveryDetails;
+    //   const { longitude, latitude } = nextDeliveryDetails.deliveryToLocation;
+    //   if (!deliveryToAddress && !longitude && !latitude) {
+    //   } else {
+    //     const addressChange =
+    //       deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
+    //       longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
+    //       latitude !== newDeliveryDetails.deliveryToLocation.latitude;
+    //     dispatch({
+    //       type: types.PUT_ADDRESS_CHANGE,
+    //       addressChange,
+    //     });
+    //   }
+    // } else
+    if (shippingType === 'pickup') {
       delete newDeliveryDetails.deliveryToAddress;
       delete newDeliveryDetails.addressDetails;
     }
@@ -134,6 +135,25 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
       ...state,
       addressChange: action.addressChange,
     };
+  } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
+    const deliveryAddressList = action.response || {};
+
+    if (deliveryAddressList) {
+      const {
+        addressDetails,
+        comments: deliveryComments,
+        deliveryTo: deliveryToAddress,
+        location: deliveryToLocation,
+      } = deliveryAddressList[0] || {};
+
+      return {
+        ...state,
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress,
+        deliveryToLocation,
+      };
+    }
   }
   return state;
 };

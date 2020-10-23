@@ -22,12 +22,12 @@ import './OrderingCustomer.scss';
 const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
 class Customer extends Component {
-  componentDidMount() {
+  async componentDidMount() {
     const { customerActions, user, requestInfo } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
 
-    customerActions.initDeliveryDetails();
+    await customerActions.initDeliveryDetails();
     customerActions.fetchConsumerAddressList({ consumerId, storeId });
   }
 
