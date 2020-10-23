@@ -106,6 +106,26 @@ export class ThankYou extends PureComponent {
     }
   }
 
+  updateAppLocationAndStatus = () => {
+    //      nOrderStatusChanged(status: String) // 更新Order Status
+    //      updateStorePosition(lat: Double, lng: Double) // 更新商家坐标
+    //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
+    //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
+
+    const { order } = this.props;
+    const { status } = order;
+
+    if (window.androidInterface) {
+      window.androidInterface.onOrderStatusChanged(status);
+      window.androidInterface.updateStorePosition(Math.random(), Math.random());
+      window.androidInterface.updateHomePosition(Math.random(), Math.random());
+      window.androidInterface.updateRiderPosition(Math.random(), Math.random());
+    } else if (window.webkit) {
+      // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+      // TODO update for ios
+    }
+  };
+
   loadOrder = async () => {
     const { thankYouActions, receiptNumber } = this.props;
 
@@ -114,15 +134,16 @@ export class ThankYou extends PureComponent {
       clearInterval(this.timer);
       const { order } = this.props;
       const { status } = order;
+      this.updateAppLocationAndStatus();
 
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
         const { updatedStatus } = this.props;
-
+        console.log(updatedStatus, 'updatedStatus');
         if (updatedStatus !== status) {
           await this.loadOrder();
         }
-      }, 60000);
+      }, 6000);
     }
   };
 
