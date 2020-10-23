@@ -1,17 +1,51 @@
 import { combineReducers } from 'redux';
+import i18next from 'i18next';
+import Url from '../../../utils/url';
+import config from '../../../config';
+import { API_REQUEST } from '../../../redux/middlewares/api';
 import {
   fetchDeliveryAddress,
   fetchDeliveryDetails,
   patchDeliveryDetails,
   updateDeliveryDetails,
 } from '../../containers/Customer/utils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 import _get from 'lodash/get';
+
+const initialState = {
+  deliveryDetails: {
+    addressChange: false,
+    addressName: '',
+    username: '',
+    phone: '',
+    addressDetails: '',
+    deliveryComments: '',
+    deliveryToAddress: '',
+    deliveryToLocation: {
+      longitude: 0,
+      latitude: 0,
+    },
+  },
+  customerError: {
+    show: false,
+    message: '',
+    description: '',
+    buttonText: '',
+  },
+};
 
 // actions
 
 export const types = {
   PUT_DELIVERY_DETAILS: 'ORDERING/CUSTOMER/PUT_DELIVERY_DETAILS',
   PUT_ADDRESS_CHANGE: 'ORDERING/CUSTOMER/PUT_ADDRESS_CHANGE',
+  PUT_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/PUT_CUSTOMER_ERROR',
+  CLEAR_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/CLEAR_CUSTOMER_ERROR',
+
+  // Get Delivery Address List
+  FETCH_ADDRESS_LIST_REQUEST: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_REQUEST',
+  FETCH_ADDRESS_LIST_SUCCESS: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_SUCCESS',
+  FETCH_ADDRESS_LIST_FAILURE: 'ORDERING/CUSTOMER/FETCH_ADDRESS_LIST_FAILURE',
 };
 
 export const actions = {
@@ -21,17 +55,17 @@ export const actions = {
 
     const newDeliveryDetails = {
       ...deliveryDetails,
-      phone: _get(deliveryDetails, 'phone', localStoragePhone),
+      phone: deliveryDetails.phone || _get(deliveryDetails, 'phone', localStoragePhone),
     };
 
     if (shippingType === 'delivery') {
-      const deliveryAddress = await fetchDeliveryAddress();
+      const newDeliveryDetails = await fetchDeliveryAddress();
 
-      if (deliveryAddress) {
-        newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
+      if (newDeliveryDetails) {
+        newDeliveryDetails.deliveryToAddress = newDeliveryDetails.address;
         newDeliveryDetails.deliveryToLocation = {
-          longitude: deliveryAddress.coords.lng,
-          latitude: deliveryAddress.coords.lat,
+          longitude: newDeliveryDetails.coords.lng,
+          latitude: newDeliveryDetails.coords.lat,
         };
       }
 
@@ -69,7 +103,7 @@ export const actions = {
       addressChange,
     });
   },
-  updateDeliveryDetails: fields => async (dispatch, getState) => {
+  updateDeliveryDetails: fields => async dispatch => {
     const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
       fields,
@@ -79,7 +113,7 @@ export const actions = {
 
     return result;
   },
-  patchDeliveryDetails: fields => async (dispatch, getState) => {
+  patchDeliveryDetails: fields => async dispatch => {
     const result = await dispatch({
       type: types.PUT_DELIVERY_DETAILS,
       fields,
@@ -89,21 +123,19 @@ export const actions = {
 
     return result;
   },
-};
-
-const initialState = {
-  deliveryDetails: {
-    addressChange: false,
-    username: '',
-    phone: '',
-    addressDetails: '',
-    deliveryComments: '',
-    deliveryToAddress: '',
-    deliveryToLocation: {
-      longitude: 0,
-      latitude: 0,
+  fetchConsumerAddressList: ({ consumerId, storeId }) => ({
+    [API_REQUEST]: {
+      types: [types.FETCH_ADDRESS_LIST_REQUEST, types.FETCH_ADDRESS_LIST_SUCCESS, types.FETCH_ADDRESS_LIST_FAILURE],
+      ...Url.API_URLS.GET_ADDRESS_LIST(consumerId, storeId || config.storeId),
     },
-  },
+  }),
+  setError: error => ({
+    type: types.PUT_CUSTOMER_ERROR,
+    error,
+  }),
+  clearError: () => ({
+    type: types.CLEAR_CUSTOMER_ERROR,
+  }),
 };
 
 // reducers
@@ -119,16 +151,69 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
       ...state,
       addressChange: action.addressChange,
     };
+  } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
+    const deliveryAddressList = action.response || {};
+    const findAvailableAddress = (deliveryAddressList || []).find(
+      address =>
+        address.availableStatus &&
+        (address.addressName === state.addressName ||
+          computeStraightDistance(address.location, state.deliveryToLocation) <= 500)
+    );
+
+    if (findAvailableAddress) {
+      const {
+        addressName,
+        addressDetails,
+        comments: deliveryComments,
+        deliveryTo: deliveryToAddress,
+        location: deliveryToLocation,
+      } = deliveryAddressList[0] || {};
+
+      return {
+        ...state,
+        addressName,
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress,
+        deliveryToLocation,
+      };
+    }
   }
+  return state;
+};
+
+const customerError = (state = initialState.customerError, action) => {
+  if (action.type === types.CLEAR_CUSTOMER_ERROR) {
+    return {
+      ...state,
+      show: false,
+      message: '',
+      description: '',
+      buttonText: '',
+    };
+  }
+
+  if (action.type === types.PUT_CUSTOMER_ERROR) {
+    return {
+      ...state,
+      show: action.error.showModal,
+      message: i18next.t(action.error.message),
+      description: i18next.t(action.error.description),
+      buttonText: i18next.t(action.error.buttonText),
+    };
+  }
+
   return state;
 };
 
 export default combineReducers({
   deliveryDetails,
+  customerError,
 });
 
 // selectors
 
 export const getDeliveryDetails = state => state.customer.deliveryDetails;
 export const getAddressChange = state => state.customer.deliveryDetails.addressChange;
+export const getCustomerError = state => state.customer.customerError;
 // export const isCheckoutDisabled = state => {}
