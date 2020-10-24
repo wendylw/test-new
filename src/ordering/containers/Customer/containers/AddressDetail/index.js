@@ -54,8 +54,8 @@ class AddressDetail extends Component {
     const { consumerId } = user || {};
     const { addressName, addressDetails, deliveryComments, deliveryToLocation } = deliveryDetails || {};
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    // const addressId = '5f92d7ad30cbaa05b3c5dff0';
     const action = (location.state && location.state.action) || 'add';
+
     if (action === 'add') {
       const addUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
       const data = {
@@ -101,7 +101,7 @@ class AddressDetail extends Component {
   render() {
     const { t, history, deliveryDetails, location } = this.props;
     const { addressName, addressDetails, deliveryComments } = deliveryDetails || {};
-    const action = (location.state && location.state.action) || 'edit';
+    const action = (location.state && location.state.action) || 'add';
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     return (
       <div className="flex flex-column address-detail">

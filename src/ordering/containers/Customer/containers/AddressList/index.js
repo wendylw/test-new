@@ -43,7 +43,6 @@ class AddressList extends Component {
         from: {
           pathname: '/customer/addressList',
         },
-        action: 'add',
       },
     });
   };

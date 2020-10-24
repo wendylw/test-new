@@ -121,7 +121,7 @@ class Customer extends Component {
     const { t, businessInfo = {}, deliveryDetails } = this.props;
     const { stores = [] } = businessInfo;
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryToAddress, addressDetails, comments: deliveryComments, addressName } = deliveryDetails;
+    const { deliveryToAddress, addressDetails, deliveryComments, addressName } = deliveryDetails;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
 
     return (
@@ -182,6 +182,9 @@ class Customer extends Component {
               to={{
                 pathname: '/customer/AddressDetail',
                 search: window.location.search,
+                state: {
+                  action: 'edit',
+                },
               }}
               className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
             >
