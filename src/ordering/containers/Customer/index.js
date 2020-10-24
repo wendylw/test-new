@@ -240,6 +240,7 @@ class Customer extends Component {
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle text-center"
           contentClassName="flex-middle"
           data-heap-name="ordering.customer.header"

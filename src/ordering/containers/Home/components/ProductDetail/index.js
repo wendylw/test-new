@@ -437,7 +437,7 @@ class ProductDetail extends Component {
 
     return (
       <div className="product-detail__variations">
-        <ol className="padding-top-bottom-small">
+        <ol className="">
           {singleChoiceVariations.map(variation => (
             <VariationSelector
               key={variation.id}
@@ -483,30 +483,6 @@ class ProductDetail extends Component {
 
     return (
       <React.Fragment>
-        <div
-          className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
-          ref={ref => (this.opeartoresEl = ref)}
-        >
-          <ItemOperator
-            className="flex-middle"
-            data-heap-name="ordering.common.product-item.item-operator "
-            quantity={cartQuantity}
-            from="productDetail"
-            decreaseDisabled={cartQuantity <= 1}
-            onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
-            onIncrease={() => {
-              const disableVariationsId = this.isInvalidMinimumVariations();
-
-              if (hasMinimumVariations && disableVariationsId) {
-                document.getElementById(disableVariationsId) &&
-                  document.getElementById(disableVariationsId).scrollIntoView();
-                return;
-              }
-              this.setState({ cartQuantity: cartQuantity + 1 });
-            }}
-            increaseDisabled={false}
-          />
-        </div>
         <footer
           className="product-detail__footer flex flex-middle flex-center padding-normal flex__shrink-fixed "
           ref={ref => (this.footerEl = ref)}
@@ -651,14 +627,51 @@ class ProductDetail extends Component {
       </div>
     );
   }
+  renderOperatorButton = () => {
+    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
+
+    const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
+    const { id: productId, images } = product || {};
+
+    const imageUrl = Array.isArray(images) ? images[0] : null;
+    const hasMinimumVariations = minimumVariations && minimumVariations.length;
+
+    return (
+      <div
+        className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
+        ref={ref => (this.opeartoresEl = ref)}
+      >
+        <ItemOperator
+          className="flex-middle"
+          data-heap-name="ordering.common.product-item.item-operator "
+          quantity={cartQuantity}
+          from="productDetail"
+          decreaseDisabled={cartQuantity <= 1}
+          onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+          onIncrease={() => {
+            const disableVariationsId = this.isInvalidMinimumVariations();
+
+            if (hasMinimumVariations && disableVariationsId) {
+              document.getElementById(disableVariationsId) &&
+                document.getElementById(disableVariationsId).scrollIntoView();
+              return;
+            }
+            this.setState({ cartQuantity: cartQuantity + 1 });
+          }}
+          increaseDisabled={Utils.isProductSoldOut(product || {})}
+        />
+      </div>
+    );
+  };
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
     const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = product || {};
+    const { id, _needMore, images, title, description, originalDisplayPrice, price } = product || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
+    const isHaveContent = Utils.removeHtmlTag(description);
 
     if (show && product && id && !_needMore) {
       className.push('active cover');
@@ -688,7 +701,7 @@ class ProductDetail extends Component {
             <div className="product-detail__image-container flex__shrink-fixed">
               <Swiper
                 className="product-detail__image"
-                slidesPerView={'auto'}
+                // slidesPerView={'auto'}
                 pagination={{
                   clickable: true,
                   bulletClass: images && images.length > 1 ? 'swiper-pagination-bullet' : 'pagination-hidden',
@@ -698,38 +711,45 @@ class ProductDetail extends Component {
                 {(images && images.length ? images : [null]).map(image => {
                   return (
                     <SwiperSlide key={image}>
-                      <Image src={image} scalingRatioIndex={2} alt={`${storeName} ${title}`} />
+                      <Image
+                        src={image}
+                        scalingRatioIndex={2}
+                        alt={`${storeName} ${title}`}
+                        className="product-detail__image-content"
+                      />
                     </SwiperSlide>
                   );
                 })}
               </Swiper>
             </div>
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
-              <div className="product-detail__info-summary flex flex-top flex-space-between">
-                <h2 className="product-detail__title padding-small text-size-biggest text-weight-bolder">{title}</h2>
-                <CurrencyNumber
-                  className="padding-small text-size-biggest text-weight-bolder flex__shrink-fixed"
-                  money={Number(this.displayPrice()) || 0}
-                  numberOnly={true}
-                />
+              <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
+                <h2 className="product-detail__title text-size-biggest text-weight-bolder">{title}</h2>
+                <div className="product-detail__price flex flex-column text-right flex-end">
+                  <CurrencyNumber
+                    className=" text-size-biggest text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
+                    money={Number(this.displayPrice()) || 0}
+                    numberOnly={true}
+                  />
+                  {Utils.isProductSoldOut(product || {}) ? (
+                    <Tag
+                      text={t('SoldOut')}
+                      className="product-detail__info-tag tag tag__default margin-smaller text-size-big flex__shrink-fixed"
+                    />
+                  ) : null}
+                </div>
               </div>
-
-              {Utils.isProductSoldOut(product || {}) ? (
-                <Tag
-                  text={t('SoldOut')}
-                  className="product-detail__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
-                />
-              ) : null}
             </div>
-            {Boolean(descriptionStr.__html) ? (
-              <article className="product-detail__article margin-top-bottom-normal">
+            {isHaveContent ? (
+              <article className="product-detail__article padding-left-right-small padding-bottom-small">
                 <p
-                  className="text-opacity padding-left-right-normal margin-top-bottom-small text-size-big"
+                  className="text-opacity padding-left-right-small text-size-big padding-bottom-small"
                   dangerouslySetInnerHTML={descriptionStr}
                 />
               </article>
             ) : null}
             {this.renderVariations()}
+            {this.renderOperatorButton()}
           </div>
           {this.renderProductOperator()}
         </div>

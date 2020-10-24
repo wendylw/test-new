@@ -134,7 +134,7 @@ class CategoryProductList extends Component {
                 <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
                   <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
-                <div className="list">
+                <div>
                   {(category.products || []).map(product => (
                     <ProductItem
                       scrollContainer="#product-list"

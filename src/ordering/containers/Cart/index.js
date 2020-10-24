@@ -29,7 +29,12 @@ class Cart extends Component {
     expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
+    cartContainerHeight: '100%',
   };
+
+  componentDidUpdate(prevProps, prevStates) {
+    this.setCartContainerHeight(prevStates.cartContainerHeight);
+  }
 
   async componentDidMount() {
     const { homeActions } = this.props;
@@ -38,7 +43,21 @@ class Cart extends Component {
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
+    this.setCartContainerHeight();
   }
+
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.billingEl, this.footerEl],
+    });
+
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  };
 
   handleResizeEvent() {
     window.addEventListener(
@@ -199,6 +218,7 @@ class Cart extends Component {
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
+          onBlur={this.setCartContainerHeight}
         ></textarea>
         {additionalComments ? (
           <IconClose
@@ -260,7 +280,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder } = this.state;
+    const { isCreatingOrder, cartContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -287,6 +307,7 @@ class Cart extends Component {
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
@@ -303,12 +324,28 @@ class Cart extends Component {
             <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="ordering-cart__container" style={{ overflowY: 'scroll' }}>
+        <div
+          className="ordering-cart__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: cartContainerHeight,
+          }}
+        >
           <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
         </div>
-        <aside className="aside-bottom">
+        <aside
+          className="sticky-wrapper"
+          style={{
+            bottom: `${Utils.mainBottom({
+              footerEls: [this.footerEl],
+            })}px`,
+          }}
+        >
           <Billing
+            billingRef={ref => (this.billingEl = ref)}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
@@ -323,7 +360,10 @@ class Cart extends Component {
             {this.renderPromotionItem()}
           </Billing>
         </aside>
-        <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        >
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={this.handleClickBack.bind(this)}
