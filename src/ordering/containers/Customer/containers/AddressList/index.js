@@ -5,6 +5,14 @@ import { withTranslation } from 'react-i18next';
 import './AddressList.scss';
 import { IconBookmark, IconNext } from '../../../../../components/Icons';
 import Tag from '../../../../../components/Tag';
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+import { getRequestInfo, getUser } from '../../../../redux/modules/app';
+import {
+  actions as customerActionCreators,
+  getDeliveryDetails,
+  getDeliveryAddressList,
+} from '../../../../redux/modules/customer';
 
 class AddressList extends Component {
   state = {
@@ -18,6 +26,13 @@ class AddressList extends Component {
       },
     ],
   };
+  componentDidMount() {
+    const { user, requestInfo, customerActions } = this.props;
+    const { consumerId } = user || {};
+    const { storeId } = requestInfo || {};
+
+    customerActions.fetchConsumerAddressList({ consumerId, storeId });
+  }
 
   addNewAddress = () => {
     const { history } = this.props;
@@ -42,8 +57,7 @@ class AddressList extends Component {
   };
 
   renderAddressCard = () => {
-    const { t } = this.props;
-    const { addressList } = this.state;
+    const { t, addressList } = this.props;
     return (addressList || []).map(address => {
       const { addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
       return (
@@ -111,4 +125,17 @@ class AddressList extends Component {
   }
 }
 
-export default withTranslation()(AddressList);
+export default compose(
+  withTranslation(),
+  connect(
+    state => ({
+      user: getUser(state),
+      deliveryDetails: getDeliveryDetails(state),
+      addressList: getDeliveryAddressList(state),
+      requestInfo: getRequestInfo(state),
+    }),
+    dispatch => ({
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
+    })
+  )
+)(AddressList);

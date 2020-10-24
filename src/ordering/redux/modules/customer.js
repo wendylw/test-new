@@ -25,6 +25,7 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
+    deliveryAddressList: [],
   },
   customerError: {
     show: false,
@@ -171,6 +172,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
 
       return {
         ...state,
+        deliveryAddressList,
         addressName,
         addressDetails,
         deliveryComments,
@@ -216,4 +218,5 @@ export default combineReducers({
 export const getDeliveryDetails = state => state.customer.deliveryDetails;
 export const getAddressChange = state => state.customer.deliveryDetails.addressChange;
 export const getCustomerError = state => state.customer.customerError;
+export const getDeliveryAddressList = state => state.customer.deliveryDetails.deliveryAddressList;
 // export const isCheckoutDisabled = state => {}

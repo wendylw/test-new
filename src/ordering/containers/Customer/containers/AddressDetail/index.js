@@ -14,12 +14,6 @@ import url from '../../../../../utils/url';
 import qs from 'qs';
 
 class AddressDetail extends Component {
-  state = {
-    addressName: '',
-    addressDetails: '',
-    deliveryComments: '',
-  };
-
   getShippingType() {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -55,9 +49,8 @@ class AddressDetail extends Component {
     }
   };
 
-  createOrUpdateAddress = () => {
-    // const { addressName } = this.state;
-    const { location, user, deliveryDetails, addressId } = this.props;
+  createOrUpdateAddress = async () => {
+    const { history, location, user, deliveryDetails, addressId } = this.props;
     const { consumerId } = user || {};
     const { addressName, addressDetails, deliveryComments, deliveryToLocation } = deliveryDetails || {};
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
@@ -76,7 +69,13 @@ class AddressDetail extends Component {
           latitude: deliveryToLocation.latitude,
         },
       };
-      post(addUrl.url, data);
+      const response = await post(addUrl.url, data);
+      if (response) {
+        history.push({
+          pathname: '/customer',
+          search: window.location.search,
+        });
+      }
     } else {
       const updateUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, addressId);
       const data = {
@@ -89,13 +88,19 @@ class AddressDetail extends Component {
           latitude: deliveryToLocation.latitude,
         },
       };
-      put(updateUrl.url, data);
+      const response = put(updateUrl.url, data);
+      if (response) {
+        history.push({
+          pathname: '/customer',
+          search: window.location.search,
+        });
+      }
     }
   };
 
   render() {
-    const { t, history, addressName, deliveryDetails, location } = this.props;
-    const { addressDetails, deliveryComments } = deliveryDetails || {};
+    const { t, history, deliveryDetails, location } = this.props;
+    const { addressName, addressDetails, deliveryComments } = deliveryDetails || {};
     const action = (location.state && location.state.action) || 'edit';
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     return (
@@ -132,7 +137,9 @@ class AddressDetail extends Component {
                   ? async () => {
                       const { search } = window.location;
 
-                      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`);
+                      const callbackUrl = encodeURIComponent(
+                        `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
+                      );
 
                       history.push({
                         pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
@@ -144,7 +151,7 @@ class AddressDetail extends Component {
             >
               <p
                 className={`padding-normal text-size-big text-line-height-base ${
-                  deliveryToAddress || action === 'edit' ? '' : 'text-opacity'
+                  deliveryToAddress && action !== 'edit' ? '' : 'text-opacity'
                 }`}
               >
                 {deliveryToAddress || t('AddAddressPlaceholder')}

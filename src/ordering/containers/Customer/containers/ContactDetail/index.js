@@ -48,9 +48,9 @@ class ContactDetail extends Component {
                     type="text"
                     placeholder={t('Name')}
                     defaultValue={name}
-                    // onChange={e => {
-                    //   this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
-                    // }}
+                    onChange={e => {
+                      this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
+                    }}
                   />
                 </div>
               </div>
@@ -89,7 +89,8 @@ class ContactDetail extends Component {
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
-            disabled={!name || !name.length || phone}
+            disabled={!name || !name.length || !phone}
+            onClick={this.handleClickBack}
           >
             {t('Continue')}
           </button>
