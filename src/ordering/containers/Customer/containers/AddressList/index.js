@@ -22,7 +22,7 @@ class AddressList extends Component {
         deliveryTo: 'KLCC, Kuala Lumpur City Centre, 吉隆坡马来西亚',
         addressDetails: 'floor 1',
         comments: 'pass the pizza',
-        // availableStatus: true,
+        availableStatus: true,
       },
     ],
   };
@@ -57,14 +57,31 @@ class AddressList extends Component {
   };
 
   renderAddressCard = () => {
-    const { t, addressList } = this.props;
+    const { t, addressList, history, customerActions } = this.props;
     return (addressList || []).map(address => {
-      const { addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
+      const { addressId, addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
       return (
         <div
           className={`flex flex-space-between margin-left-right-normal border__bottom-divider ${
             availableStatus ? 'active' : 'address-list__disabled'
           }`}
+          onClick={
+            availableStatus
+              ? () => {
+                  customerActions.patchDeliveryDetails({
+                    addressId,
+                    addressName,
+                    addressDetails,
+                    deliveryComments: comments,
+                    deliveryToAddress: deliveryTo,
+                  });
+                  history.push({
+                    pathname: '/customer',
+                    search: window.location.search,
+                  });
+                }
+              : null
+          }
         >
           <div className="margin-top-bottom-normal">
             <IconBookmark className={`icon padding-top-bottom-small ${availableStatus ? '' : 'icon__default'}`} />

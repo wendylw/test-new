@@ -121,7 +121,7 @@ class Customer extends Component {
     const { t, businessInfo = {}, deliveryDetails } = this.props;
     const { stores = [] } = businessInfo;
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryTo, addressDetails, comments: deliveryComments, addressName } = deliveryDetails;
+    const { deliveryToAddress, addressDetails, comments: deliveryComments, addressName } = deliveryDetails;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
 
     return (
@@ -145,7 +145,7 @@ class Customer extends Component {
                   {Boolean(addressName) ? (
                     <React.Fragment>
                       <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
-                      <address className="padding-top-bottom-smaller">{deliveryTo}</address>
+                      <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
