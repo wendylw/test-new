@@ -57,7 +57,7 @@ export const actions = {
 
     const newDeliveryDetails = {
       ...deliveryDetails,
-      phone: deliveryDetails.phone || _get(deliveryDetails, 'phone', localStoragePhone),
+      phone: deliveryDetails.phone || localStoragePhone,
     };
 
     if (shippingType === 'delivery') {
@@ -96,8 +96,6 @@ export const actions = {
       delete newDeliveryDetails.deliveryToAddress;
       delete newDeliveryDetails.addressDetails;
     }
-
-    console.log(newDeliveryDetails);
 
     dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
   },
