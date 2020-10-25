@@ -1,3 +1,5 @@
+import i18next from 'i18next';
+
 const DOCUMENT_ROOT_ID = 'root';
 
 const MANIFEST = {

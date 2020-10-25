@@ -71,9 +71,10 @@ class Customer extends Component {
   validateFields = () => {
     const { customerActions, deliveryDetails } = this.props;
     const { username, addressName } = deliveryDetails || {};
+    const isDeliveryType = Utils.isDeliveryType();
     let error = {};
 
-    if (!Boolean(addressName)) {
+    if (!Boolean(addressName) && isDeliveryType) {
       error = {
         showModal: true,
         message: 'OrderingCustomer:DeliveryAddressEmptyTitle',
@@ -137,7 +138,7 @@ class Customer extends Component {
               {isDeliveryType ? (
                 <Link
                   to={{
-                    pathname: '/customer/AddressList',
+                    pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
                     search: window.location.search,
                   }}
                   className="ordering-customer__button-link button__link"
@@ -180,7 +181,7 @@ class Customer extends Component {
           {isDeliveryType && addressDetails && Boolean(addressName) ? (
             <Link
               to={{
-                pathname: '/customer/AddressDetail',
+                pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
                 search: window.location.search,
                 state: {
                   action: 'edit',
@@ -206,6 +207,9 @@ class Customer extends Component {
           to={{
             pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: window.location.search,
+            state: {
+              from: isDeliveryType ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : null,
+            },
           }}
           className="ordering-customer__time ordering-customer__detail button__link padding-left-right-smaller"
         >
@@ -238,8 +242,6 @@ class Customer extends Component {
     const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
     const { total } = cartSummary || {};
 
-    console.log(error);
-
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
         <Header
@@ -265,7 +267,7 @@ class Customer extends Component {
               </h4>
               <Link
                 to={{
-                  pathname: '/customer/ContactDetails',
+                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.PROFILE}`,
                   search: window.location.search,
                 }}
                 className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
