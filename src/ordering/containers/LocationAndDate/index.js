@@ -1228,7 +1228,7 @@ class LocationAndDate extends Component {
   };
 
   goToNext = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
     const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
 
     if (isPickUpType) delete selectedHour.to;
@@ -1242,21 +1242,9 @@ class LocationAndDate extends Component {
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
     if (typeof callbackUrl === 'string') {
-      if (callbackUrl.split('?')[0] === '/customer') {
-        // from customer
-        this.checkDetailChange(search);
-      } else {
-        // from ordering
-        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-          callbackUrl.split('?')[0]
-        }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
-        // history.replace({
-        //   pathname: callbackUrl.split('?')[0],
-        //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
-        //     this.state.isPickUpType ? 'pickup' : 'delivery'
-        //   }`,
-        // });
-      }
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+        callbackUrl.split('?')[0]
+      }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
     } else {
       history.go(-1);
     }
