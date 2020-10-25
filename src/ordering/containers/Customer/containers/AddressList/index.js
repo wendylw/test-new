@@ -54,7 +54,7 @@ class AddressList extends Component {
             availableStatus ? 'active' : 'address-list__disabled'
           }`}
           onClick={
-            !availableStatus
+            availableStatus
               ? () => {
                   customerActions.patchDeliveryDetails({
                     addressId,
