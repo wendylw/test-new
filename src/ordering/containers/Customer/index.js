@@ -72,9 +72,10 @@ class Customer extends Component {
   validateFields = () => {
     const { customerActions, deliveryDetails } = this.props;
     const { username, addressName } = deliveryDetails || {};
+    const isDeliveryType = Utils.isDeliveryType();
     let error = {};
 
-    if (!Boolean(addressName)) {
+    if (!Boolean(addressName) && isDeliveryType) {
       error = {
         showModal: true,
         message: 'OrderingCustomer:DeliveryAddressEmptyTitle',
@@ -122,7 +123,7 @@ class Customer extends Component {
     const { t, businessInfo = {}, deliveryDetails } = this.props;
     const { stores = [] } = businessInfo;
     const isDeliveryType = Utils.isDeliveryType();
-    const { deliveryTo, addressDetails, comments: deliveryComments, addressName } = deliveryDetails;
+    const { deliveryToAddress, addressDetails, deliveryComments, addressName } = deliveryDetails;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
 
     return (
@@ -146,7 +147,7 @@ class Customer extends Component {
                   {Boolean(addressName) ? (
                     <React.Fragment>
                       <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
-                      <address className="padding-top-bottom-smaller">{deliveryTo}</address>
+                      <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
@@ -238,8 +239,6 @@ class Customer extends Component {
     const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
     const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
     const { total } = cartSummary || {};
-
-    console.log(error);
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">

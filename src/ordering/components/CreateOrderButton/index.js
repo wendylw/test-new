@@ -37,12 +37,12 @@ class CreateOrderButton extends React.Component {
     const { history, user } = this.props;
     const { isLogin } = user || {};
 
-    // if (!isLogin) {
-    //   history.push({
-    //     pathname: ROUTER_PATHS.ORDERING_LOGIN,
-    //     search: window.location.search,
-    //   });
-    // }
+    if (!isLogin) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+      });
+    }
   };
 
   handleCreateOrder = async () => {
@@ -75,35 +75,6 @@ class CreateOrderButton extends React.Component {
 
       const { currentOrder /*error*/ } = this.props;
       const { orderId } = currentOrder || {};
-      // const { code } = error || {};
-
-      // if (code === 40003 || code === 40012) {
-      //   this.setTimeoutObject = setTimeout(() => {
-      //     clearTimeout(this.setTimeoutObject);
-
-      //     history.push({
-      //       pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      //       search: window.location.search,
-      //     });
-      //   }, 2000);
-
-      //   return;
-      // } else if ((code >= 40006 && code <= 40009) || code === 40013) {
-      //   if (type === 'dine' || type === 'takeaway') {
-      //     window.location.href = Constants.ROUTER_PATHS.DINE;
-      //   } else {
-      //     this.setTimeoutObject = setTimeout(() => {
-      //       clearTimeout(this.setTimeoutObject);
-
-      //       history.push({
-      //         pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-      //         search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-      //       });
-      //     }, 2000);
-      //   }
-
-      //   return;
-      // }
 
       newOrderId = orderId;
 
