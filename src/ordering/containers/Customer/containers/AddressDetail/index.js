@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Constants from '../../../../../utils/constants';
-import { IconNext } from '../../../../../components/Icons';
+import { IconChecked, IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../../../components/Header';
 import './AddressDetail.scss';
@@ -14,6 +14,12 @@ import url from '../../../../../utils/url';
 import qs from 'qs';
 
 class AddressDetail extends Component {
+  state = {
+    addressName: '',
+    addressDetails: '',
+    deliveryComments: '',
+  };
+
   getShippingType() {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -22,7 +28,9 @@ class AddressDetail extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, customerActions } = this.props;
+    const { deliveryDetails, customerActions } = this.props;
+    const { addressName, addressDetails, deliveryComments } = deliveryDetails || {};
+    this.setState({ addressName: addressName, addressDetails: addressDetails, deliveryComments: deliveryComments });
 
     // init username, phone, deliveryToAddress, deliveryDetails
     await customerActions.initDeliveryDetails(this.getShippingType());
@@ -40,21 +48,23 @@ class AddressDetail extends Component {
   handleInputChange = e => {
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
-      this.props.customerActions.patchDeliveryDetails({ addressName: inputValue });
       this.setState({ addressName: inputValue });
     } else if (e.target.name === 'addressDetails') {
-      this.props.customerActions.patchDeliveryDetails({ addressDetails: inputValue });
+      this.setState({ addressDetails: inputValue });
     } else if (e.target.name === 'deliveryComments') {
-      this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
+      this.setState({ deliveryComments: inputValue });
     }
   };
 
   createOrUpdateAddress = async () => {
-    const { history, location, user, deliveryDetails, addressId } = this.props;
+    const { history, location, user, deliveryDetails, addressId, customerActions } = this.props;
+    const { addressName, addressDetails, deliveryComments } = this.state;
     const { consumerId } = user || {};
-    const { addressName, addressDetails, deliveryComments, deliveryToLocation } = deliveryDetails || {};
+    const { deliveryToLocation } = deliveryDetails || {};
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const action = (location.state && location.state.action) || 'add';
+
+    customerActions.patchDeliveryDetails({ addressName, addressDetails, deliveryComments });
 
     if (action === 'add') {
       const addUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
@@ -99,8 +109,8 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { t, history, deliveryDetails, location } = this.props;
-    const { addressName, addressDetails, deliveryComments } = deliveryDetails || {};
+    const { t, history, location } = this.props;
+    const { addressName, addressDetails, deliveryComments } = this.state;
     const action = (location.state && location.state.action) || 'add';
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     return (
@@ -156,7 +166,11 @@ class AddressDetail extends Component {
               >
                 {deliveryToAddress || t('AddAddressPlaceholder')}
               </p>
-              <IconNext className="icon icon__normal flex__shrink-fixed" />
+              {action == 'edit' ? (
+                <IconChecked className="icon icon__fixed icon__normal" />
+              ) : (
+                <IconNext className="icon icon__normal flex__shrink-fixed" />
+              )}
             </div>
           </div>
 
