@@ -95,6 +95,8 @@ class Customer extends Component {
       customerActions.setError(error);
     }
 
+    console.log(error.showModal);
+
     return error.showModal;
   };
 
