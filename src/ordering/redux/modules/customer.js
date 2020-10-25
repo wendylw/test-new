@@ -97,6 +97,8 @@ export const actions = {
       delete newDeliveryDetails.addressDetails;
     }
 
+    console.log(newDeliveryDetails);
+
     dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
   },
   updateAddressChange: addressChange => dispatch => {

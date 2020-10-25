@@ -100,17 +100,19 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
+    const { search } = this.state;
+    const { storeid, type } = search || {};
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
       deliveryToAddress,
     });
-    this.state.search.storeid ? this.setStoreFromSelect() : this.setStore();
+    storeid ? this.setStoreFromSelect() : this.setStore();
 
-    if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
+    if ((type || '').toLowerCase() === DELIVERY_METHOD.DELIVERY) {
       this.setDeliveryType();
-    } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
+    } else if ((type || '').toLowerCase() === DELIVERY_METHOD.PICKUP) {
       this.setPickUpType(false);
     }
   };
@@ -686,10 +688,12 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryTo = () => {
-    if (this.state.isDeliveryType) {
-      const { deliveryToAddress } = this.state;
-      const { t } = this.props;
+    const { t, location } = this.props;
+    const { isDeliveryType, deliveryToAddress } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
 
+    if (isDeliveryType && from !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       return (
         <div className="padding-normal">
           <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
@@ -1224,8 +1228,10 @@ class LocationAndDate extends Component {
   };
 
   goToNext = () => {
-    const { history } = this.props;
-    const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
+    const { history, location } = this.props;
+    const { h, selectedDate, selectedHour, isPickUpType } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
 
     if (isPickUpType) delete selectedHour.to;
 
@@ -1237,22 +1243,22 @@ class LocationAndDate extends Component {
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
-    if (typeof callbackUrl === 'string') {
-      if (callbackUrl.split('?')[0] === '/customer') {
-        // from customer
-        this.checkDetailChange(search);
-      } else {
-        // from ordering
-        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-          callbackUrl.split('?')[0]
-        }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
-        // history.replace({
-        //   pathname: callbackUrl.split('?')[0],
-        //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
-        //     this.state.isPickUpType ? 'pickup' : 'delivery'
-        //   }`,
-        // });
+    if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      const searchArray = window.location.search.split('&');
+      const typeFieldIndex = searchArray.findIndex(i => i.indexOf('type=') !== -1);
+
+      if (typeFieldIndex !== -1) {
+        searchArray[typeFieldIndex] = `type=${isPickUpType ? 'pickup' : 'delivery'}`;
       }
+
+      history.push({
+        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+        search: searchArray.join('&'),
+      });
+    } else if (typeof callbackUrl === 'string') {
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+        callbackUrl.split('?')[0]
+      }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
     } else {
       history.go(-1);
     }
@@ -1278,6 +1284,10 @@ class LocationAndDate extends Component {
       // });
       return;
     }
+
+    const { h, isPickUpType, search: stateSearch } = this.state;
+    const { type: stateType } = stateSearch || {};
+
     if (
       cachedeliveryAddress !== deliveryAddress ||
       cacheexpectedDeliveryDate !== expectedDeliveryDate ||
@@ -1289,22 +1299,21 @@ class LocationAndDate extends Component {
 
       this.props.history.replace({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${this.state.h}&type=${
-          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }`,
+        search: `h=${h}&type=${isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY}`,
       });
       return;
     }
-    const type = this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
-    if (type !== this.state.search.type.toLowerCase()) {
+
+    const type = isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY;
+
+    if (type !== stateType.toLowerCase()) {
       this.props.history.replace({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: `h=${this.state.h}&type=${
-          this.state.isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
-        }`,
+        search: `h=${h}&type=${isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY}`,
       });
       return;
     }
+
     this.props.history.push(search.callbackUrl);
   };
 
@@ -1388,8 +1397,10 @@ class LocationAndDate extends Component {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, location } = this.props;
     const { isDeliveryType, isPickUpType, onlyType, deliveryToAddress } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
@@ -1438,13 +1449,11 @@ class LocationAndDate extends Component {
           )}
           {isPickUpType && this.renderSelectStore()}
           {this.renderDeliveryTo()}
-          {this.state.isDeliveryType ? (this.state.deliveryToAddress ? this.renderSelectStore() : null) : null}
-          {this.state.isDeliveryType
-            ? this.state.deliveryToAddress
-              ? this.renderDeliveryOn()
-              : null
-            : this.renderDeliveryOn()}
-          {this.state.isDeliveryType
+          {isDeliveryType && this.state.deliveryToAddress && from !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO
+            ? this.renderSelectStore()
+            : null}
+          {isDeliveryType ? (this.state.deliveryToAddress ? this.renderDeliveryOn() : null) : this.renderDeliveryOn()}
+          {isDeliveryType
             ? this.state.deliveryToAddress
               ? this.renderHourSelector()
               : null
