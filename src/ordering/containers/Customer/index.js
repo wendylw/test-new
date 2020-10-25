@@ -138,7 +138,7 @@ class Customer extends Component {
               {isDeliveryType ? (
                 <Link
                   to={{
-                    pathname: '/customer/AddressList',
+                    pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
                     search: window.location.search,
                   }}
                   className="ordering-customer__button-link button__link"
@@ -181,7 +181,7 @@ class Customer extends Component {
           {isDeliveryType && addressDetails && Boolean(addressName) ? (
             <Link
               to={{
-                pathname: '/customer/AddressDetail',
+                pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
                 search: window.location.search,
               }}
               className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
@@ -204,6 +204,9 @@ class Customer extends Component {
           to={{
             pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: window.location.search,
+            state: {
+              from: isDeliveryType ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : null,
+            },
           }}
           className="ordering-customer__time ordering-customer__detail button__link padding-left-right-smaller"
         >
@@ -262,7 +265,7 @@ class Customer extends Component {
               </h4>
               <Link
                 to={{
-                  pathname: '/customer/ContactDetails',
+                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.PROFILE}`,
                   search: window.location.search,
                 }}
                 className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"

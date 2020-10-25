@@ -1,3 +1,5 @@
+import i18next from 'i18next';
+
 const DOCUMENT_ROOT_ID = 'root';
 
 const MANIFEST = {
@@ -29,6 +31,9 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
+  PROFILE: '/profile',
+  ADDRESS_LIST: '/addressList',
+  ADDRESS_DETAIL: '/addressDetail',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
@@ -267,7 +272,6 @@ const POLYFILL_FEATURES = ['Object.values', 'Intl'];
 
 const ASIDE_NAMES = {
   PRODUCT_DETAIL: 'PRODUCT_DETAIL',
-  PRODUCT_DESCRIPTION: 'PRODUCT_DESCRIPTION',
   MENU: 'MENU',
   CART: 'CART',
   PRODUCT_ITEM: 'PRODUCT_ITEM',
