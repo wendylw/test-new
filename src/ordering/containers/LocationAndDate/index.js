@@ -594,16 +594,9 @@ class LocationAndDate extends Component {
     Utils.removeSessionVariable('deliveryAddressUpdate');
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
-      const searchArray = window.location.search.split('&');
-      const typeFieldIndex = searchArray.findIndex(i => i.indexOf('type=') !== -1);
-
-      if (typeFieldIndex !== -1) {
-        searchArray[typeFieldIndex] = `type=${isPickUpType ? 'pickup' : 'delivery'}`;
-      }
-
       history.push({
-        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
-        search: searchArray.join('&'),
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
       });
     } else if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;

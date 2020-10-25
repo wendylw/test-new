@@ -14,22 +14,12 @@ import Constants from '../../../utils/constants';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
-  componentDidMount() {
-    this.visitLoginPage();
-  }
-
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
-    const { isLogin } = user || {};
-    const { sentOtp, cartSummary } = this.props;
-    const { total } = cartSummary || {};
+    const { isLogin, isFetching } = user || {};
 
-    if (!isLogin && isLogin !== this.props.user.isLogin) {
+    if (!isFetching && !isLogin) {
       this.visitLoginPage();
-    }
-
-    if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
-      this.handleCreateOrder();
     }
   }
 

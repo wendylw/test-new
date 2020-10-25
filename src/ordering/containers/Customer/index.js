@@ -96,9 +96,6 @@ class Customer extends Component {
       customerActions.setError(error);
     }
 
-    console.log(this.props.cartSummary);
-    console.log(!error.showModal);
-
     return error.showModal;
   };
 
@@ -110,6 +107,8 @@ class Customer extends Component {
 
   visitPaymentPage = () => {
     const { history } = this.props;
+
+    console.log(!this.validateFields);
 
     if (!this.validateFields) {
       history.push({
