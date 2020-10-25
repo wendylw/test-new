@@ -57,10 +57,10 @@ class AddressDetail extends Component {
   };
 
   createOrUpdateAddress = async () => {
-    const { history, location, user, deliveryDetails, addressId, customerActions } = this.props;
+    const { history, location, user, deliveryDetails, customerActions } = this.props;
     const { addressName, addressDetails, deliveryComments } = this.state;
     const { consumerId } = user || {};
-    const { deliveryToLocation } = deliveryDetails || {};
+    const { deliveryToLocation, addressId } = deliveryDetails || {};
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const action = (location.state && location.state.action) || 'add';
 
@@ -84,6 +84,9 @@ class AddressDetail extends Component {
         history.push({
           pathname: '/customer',
           search: window.location.search,
+          state: {
+            from: '/customer',
+          },
         });
       }
     } else {
@@ -103,6 +106,9 @@ class AddressDetail extends Component {
         history.push({
           pathname: '/customer',
           search: window.location.search,
+          state: {
+            from: '/customer',
+          },
         });
       }
     }
