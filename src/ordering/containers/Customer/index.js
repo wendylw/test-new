@@ -165,6 +165,9 @@ class Customer extends Component {
                   to={{
                     pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
                     search: window.location.search,
+                    state: {
+                      from: isDeliveryType ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : null,
+                    },
                   }}
                   className="padding-top-bottom-smaller ordering-customer__button-link button__link"
                 >

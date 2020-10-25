@@ -1228,8 +1228,10 @@ class LocationAndDate extends Component {
   };
 
   goToNext = () => {
-    const { history } = this.props;
-    const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
+    const { history, location } = this.props;
+    const { h, selectedDate, selectedHour, isPickUpType } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
 
     if (isPickUpType) delete selectedHour.to;
 
@@ -1241,22 +1243,22 @@ class LocationAndDate extends Component {
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
-    if (typeof callbackUrl === 'string') {
-      if (callbackUrl.split('?')[0] === '/customer') {
-        // from customer
-        this.checkDetailChange(search);
-      } else {
-        // from ordering
-        window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-          callbackUrl.split('?')[0]
-        }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
-        // history.replace({
-        //   pathname: callbackUrl.split('?')[0],
-        //   search: `${this.state.h ? 'h=' + this.state.h + '&' : ''}type=${
-        //     this.state.isPickUpType ? 'pickup' : 'delivery'
-        //   }`,
-        // });
+    if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      const searchArray = window.location.search.split('&');
+      const typeFieldIndex = searchArray.findIndex(i => i.indexOf('type=') !== -1);
+
+      if (typeFieldIndex !== -1) {
+        searchArray[typeFieldIndex] = `type=${isPickUpType ? 'pickup' : 'delivery'}`;
       }
+
+      history.push({
+        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+        search: searchArray.join('&'),
+      });
+    } else if (typeof callbackUrl === 'string') {
+      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+        callbackUrl.split('?')[0]
+      }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
     } else {
       history.go(-1);
     }
