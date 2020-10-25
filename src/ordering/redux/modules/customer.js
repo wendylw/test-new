@@ -179,6 +179,11 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         deliveryToAddress,
         deliveryToLocation,
       };
+    } else {
+      return {
+        ...state,
+        deliveryAddressList,
+      };
     }
   }
   return state;

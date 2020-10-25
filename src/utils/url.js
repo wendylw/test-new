@@ -173,7 +173,7 @@ const API_URLS = {
     method: 'put',
   }),
   GET_ADDRESS_LIST: (consumerId, storeId) => ({
-    url: `/api/consumers/${consumerId}/${storeId}/address`,
+    url: `/api/consumers/${consumerId}/store/${storeId}/address`,
     method: 'get',
   }),
   CREATE_ADDRESS: consumerId => ({
