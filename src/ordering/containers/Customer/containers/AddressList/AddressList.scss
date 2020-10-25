@@ -1,6 +1,11 @@
 @import "src/Variables";
 
 .address-list {
+  &__container {
+    height: 100vh;
+    overflow: auto;
+  }
+
   &__disabled {
     color: $gray-3;
   }

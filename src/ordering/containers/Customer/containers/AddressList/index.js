@@ -15,17 +15,6 @@ import {
 } from '../../../../redux/modules/customer';
 
 class AddressList extends Component {
-  state = {
-    addressList: [
-      {
-        addressName: 'test',
-        deliveryTo: 'KLCC, Kuala Lumpur City Centre, 吉隆坡马来西亚',
-        addressDetails: 'floor 1',
-        comments: 'pass the pizza',
-        availableStatus: true,
-      },
-    ],
-  };
   componentDidMount() {
     const { user, requestInfo, customerActions } = this.props;
     const { consumerId } = user || {};
@@ -58,7 +47,7 @@ class AddressList extends Component {
   renderAddressCard = () => {
     const { t, addressList, history, customerActions } = this.props;
     return (addressList || []).map(address => {
-      const { addressId, addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
+      const { _id: addressId, addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
       return (
         <div
           className={`flex flex-space-between margin-left-right-normal border__bottom-divider ${
@@ -119,7 +108,7 @@ class AddressList extends Component {
           title={t('DeliveryTo')}
           navFunc={this.handleClickBack.bind(this)}
         />
-        <section>
+        <section className="address-list__container">
           <div className="flex flex-middle padding-normal">
             <img src={addAddress} className="address-list__add-icon icon border-radius-base" />
             <span

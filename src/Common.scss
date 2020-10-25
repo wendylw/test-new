@@ -595,6 +595,10 @@ img {
     fill: $gray-2;
   }
 
+  &__fixed {
+    fill: $status-green;
+  }
+
   &__error {
     fill: $status-red;
   }

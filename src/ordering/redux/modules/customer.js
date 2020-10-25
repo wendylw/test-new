@@ -15,6 +15,7 @@ import _get from 'lodash/get';
 const initialState = {
   deliveryDetails: {
     addressChange: false,
+    addressId: '',
     addressName: '',
     username: '',
     phone: '',
@@ -163,6 +164,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
 
     if (findAvailableAddress) {
       const {
+        _id,
         addressName,
         addressDetails,
         comments: deliveryComments,
@@ -172,6 +174,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
 
       return {
         ...state,
+        addressId: _id,
         deliveryAddressList,
         addressName,
         addressDetails,

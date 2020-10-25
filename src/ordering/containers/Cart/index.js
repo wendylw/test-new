@@ -37,9 +37,11 @@ class Cart extends Component {
   }
 
   async componentDidMount() {
-    const { homeActions } = this.props;
+    const { appActions, homeActions, user } = this.props;
+    const { consumerId } = user || {};
 
     await homeActions.loadShoppingCart();
+    consumerId && (await appActions.getProfileInfo(consumerId));
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
