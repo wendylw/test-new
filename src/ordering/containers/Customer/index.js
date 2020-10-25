@@ -270,7 +270,7 @@ class Customer extends Component {
               </h4>
               <Link
                 to={{
-                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.PROFILE}`,
+                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
                   search: window.location.search,
                 }}
                 className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
