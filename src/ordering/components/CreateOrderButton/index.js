@@ -70,9 +70,6 @@ class CreateOrderButton extends React.Component {
     //   return;
     // }
 
-    console.log(isLogin);
-    console.log(validCreateOrder);
-
     if ((isLogin || type === 'digital') && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
