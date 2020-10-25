@@ -586,10 +586,26 @@ class LocationAndDate extends Component {
   };
 
   handleBackClicked = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
+    const { isPickUpType } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
+
     Utils.removeSessionVariable('deliveryAddressUpdate');
 
-    if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
+    if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      const searchArray = window.location.search.split('&');
+      const typeFieldIndex = searchArray.findIndex(i => i.indexOf('type=') !== -1);
+
+      if (typeFieldIndex !== -1) {
+        searchArray[typeFieldIndex] = `type=${isPickUpType ? 'pickup' : 'delivery'}`;
+      }
+
+      history.push({
+        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+        search: searchArray.join('&'),
+      });
+    } else if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
     } else if (this.state.search.h) {
       history.replace(this.state.search.callbackUrl);
