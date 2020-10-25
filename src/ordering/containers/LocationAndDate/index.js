@@ -688,10 +688,12 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryTo = () => {
-    if (this.state.isDeliveryType) {
-      const { deliveryToAddress } = this.state;
-      const { t } = this.props;
+    const { t, location } = this.props;
+    const { isDeliveryType, deliveryToAddress } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
 
+    if (isDeliveryType && from !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       return (
         <div className="padding-normal">
           <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
@@ -1393,8 +1395,8 @@ class LocationAndDate extends Component {
   };
 
   render() {
-    const { t } = this.props;
-    const { isDeliveryType, isPickUpType, onlyType, deliveryToAddress, location } = this.state;
+    const { t, location } = this.props;
+    const { isDeliveryType, isPickUpType, onlyType, deliveryToAddress } = this.state;
     const { state } = location || {};
     const { from } = state || {};
 
