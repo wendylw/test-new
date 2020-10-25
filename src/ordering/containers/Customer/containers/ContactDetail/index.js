@@ -22,7 +22,7 @@ class ContactDetail extends Component {
   };
 
   render() {
-    const { t, user, country, deliveryDetails } = this.props;
+    const { t, country, deliveryDetails } = this.props;
     const { phone, username: name } = deliveryDetails;
 
     console.log('deliveryDetails', deliveryDetails);

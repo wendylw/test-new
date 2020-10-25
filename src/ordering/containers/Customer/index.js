@@ -24,12 +24,15 @@ const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
 class Customer extends Component {
   async componentDidMount() {
-    const { homeActions, customerActions, user, requestInfo } = this.props;
+    const { homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
+    const { addressId } = deliveryDetails || {};
 
-    await customerActions.initDeliveryDetails();
-    customerActions.fetchConsumerAddressList({ consumerId, storeId });
+    // todo: think a better solution to avoid changing deliveryToAddress
+    //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
+    !addressId && (await customerActions.initDeliveryDetails());
+    !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
     homeActions.loadShoppingCart();
   }
 
@@ -243,7 +246,8 @@ class Customer extends Component {
   render() {
     const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
     const { username, phone } = deliveryDetails;
-    const { name, phone: consumerPhone } = user || {};
+    const { profile } = user || {};
+    const { name, phone: consumerPhone } = profile || {};
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
     const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
