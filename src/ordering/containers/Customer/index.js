@@ -13,7 +13,7 @@ import MessageModal from '../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
-import { actions as homeActionCreators } from '../../redux/modules/home';
+// import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -30,7 +30,7 @@ class Customer extends Component {
 
     await customerActions.initDeliveryDetails();
     customerActions.fetchConsumerAddressList({ consumerId, storeId });
-    homeActions.loadShoppingCart();
+    // homeActions.loadShoppingCart();
   }
 
   getBusinessCountry = () => {
@@ -364,7 +364,7 @@ export default compose(
       error: getCustomerError(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      // homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )

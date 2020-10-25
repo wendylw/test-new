@@ -16,9 +16,9 @@ const { ROUTER_PATHS } = Constants;
 class CreateOrderButton extends React.Component {
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
-    const { isLogin, isFetching } = user || {};
+    const { isFetching } = user || {};
 
-    if (!isFetching && !isLogin) {
+    if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
       this.visitLoginPage();
     }
   }
