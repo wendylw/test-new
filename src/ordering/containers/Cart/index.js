@@ -41,7 +41,7 @@ class Cart extends Component {
     const { consumerId } = user || {};
 
     await homeActions.loadShoppingCart();
-    await appActions.getProfileInfo(consumerId);
+    consumerId && (await appActions.getProfileInfo(consumerId));
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
