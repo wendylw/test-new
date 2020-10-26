@@ -179,7 +179,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         comments: deliveryComments,
         deliveryTo: deliveryToAddress,
         location: deliveryToLocation,
-      } = deliveryAddressList[0] || {};
+      } = findAvailableAddress;
 
       return {
         ...state,
@@ -190,11 +190,6 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         deliveryComments,
         deliveryToAddress,
         deliveryToLocation,
-      };
-    } else {
-      return {
-        ...state,
-        deliveryAddressList,
       };
     }
   }
