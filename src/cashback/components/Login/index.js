@@ -55,6 +55,7 @@ class Login extends React.Component {
     const { user, t } = this.props;
     const { isFetching, isLogin, hasOtp } = user || {};
     const { phone } = this.state;
+    const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
       return null;
@@ -63,7 +64,7 @@ class Login extends React.Component {
     return (
       <OtpModal
         buttonText={t('OK')}
-        ResendOtpTime={20}
+        ResendOtpTime={RESEND_OTP_TIME}
         phone={phone}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}

@@ -2,6 +2,8 @@ import i18next from 'i18next';
 
 const DOCUMENT_ROOT_ID = 'root';
 
+const RESEND_OTP_TIME = 30;
+
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
   PATH: '/web/manifest.json',
@@ -398,4 +400,5 @@ export default {
   CREATE_ORDER_ERROR_CODES,
   COLLECTIONS_TYPE,
   ERROR_CODE_MAP,
+  RESEND_OTP_TIME,
 };
