@@ -159,15 +159,22 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
   } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
     const deliveryAddressList = action.response || {};
     const { fixed } = action.context || {};
+    const { longitude, latitude } = deliveryToLocation;
 
     const findAvailableAddress = (deliveryAddressList || []).find(
       address =>
         address.availableStatus &&
         (address.addressName === state.addressName ||
-          computeStraightDistance(address.location, {
-            lng: state.deliveryToLocation.lng,
-            lat: state.deliveryToLocation.latitude,
-          }) <= 500)
+          computeStraightDistance(
+            {
+              lng: address.location.longitude,
+              lat: address.location.latitude,
+            },
+            {
+              lng: longitude,
+              lat: latitude,
+            }
+          ) <= 500)
     );
 
     if (findAvailableAddress && !fixed) {
