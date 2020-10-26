@@ -13,7 +13,7 @@ import MessageModal from '../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
-// import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -73,8 +73,8 @@ class Customer extends Component {
     return date && date.date && formatToDeliveryTime({ date, hour, locale });
   };
 
-  validateFields = () => {
-    const { customerActions, deliveryDetails } = this.props;
+  validateFields() {
+    const { deliveryDetails } = this.props;
     const { username, addressName } = deliveryDetails || {};
     const isDeliveryType = Utils.isDeliveryType();
     let error = {};
@@ -95,13 +95,16 @@ class Customer extends Component {
       };
     }
 
+    return error;
+  }
+
+  handleBeforeCreateOrder = () => {
+    const { customerActions } = this.props;
+    const error = this.validateFields();
+
     if (error.showModal) {
       customerActions.setError(error);
     }
-
-    console.log(error);
-
-    return error.showModal;
   };
 
   handleErrorHide() {
@@ -113,14 +116,10 @@ class Customer extends Component {
   visitPaymentPage = () => {
     const { history } = this.props;
 
-    console.log(!this.validateFields);
-
-    if (!this.validateFields) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
-    }
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+      search: window.location.search,
+    });
   };
 
   renderDeliveryPickupDetail() {
@@ -336,8 +335,8 @@ class Customer extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={false}
-            validCreateOrder={!total && !this.validateFields}
-            beforeCreateOrder={this.validateFields}
+            validCreateOrder={!total && !this.validateFields().showModal}
+            beforeCreateOrder={this.handleBeforeCreateOrder}
             afterCreateOrder={this.visitPaymentPage}
           >
             {t('Continue')}
@@ -370,7 +369,7 @@ export default compose(
       error: getCustomerError(state),
     }),
     dispatch => ({
-      // homeActions: bindActionCreators(homeActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )

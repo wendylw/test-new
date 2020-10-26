@@ -690,13 +690,13 @@ class ProductDetail extends Component {
             />
 
             <div className="product-detail__image-container flex__shrink-fixed">
-              {images && images.length ? (
+              {images && images.length > 1 ? (
                 <Swiper
                   className="product-detail__image"
                   // slidesPerView={'auto'}
                   pagination={{
                     clickable: true,
-                    bulletClass: images.length > 1 ? 'swiper-pagination-bullet' : 'pagination-hidden',
+                    bulletClass: 'swiper-pagination-bullet',
                   }}
                   callback={this.handleSwipeProductImage.bind(this)}
                 >
