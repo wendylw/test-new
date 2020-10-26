@@ -1455,7 +1455,7 @@ class LocationAndDate extends Component {
               </li>
             </ul>
           )}
-          {isPickUpType && this.renderSelectStore()}
+          {isPickUpType && from !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO ? this.renderSelectStore() : null}
           {this.renderDeliveryTo()}
           {isDeliveryType && this.state.deliveryToAddress && from !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO
             ? this.renderSelectStore()

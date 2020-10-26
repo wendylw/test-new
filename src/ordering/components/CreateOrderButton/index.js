@@ -41,7 +41,7 @@ class CreateOrderButton extends React.Component {
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartSummary || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let newOrderId, orderTotal;
+    let newOrderId;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -64,10 +64,9 @@ class CreateOrderButton extends React.Component {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
       const { currentOrder /*error*/ } = this.props;
-      const { orderId, total } = currentOrder || {};
+      const { orderId } = currentOrder || {};
 
       newOrderId = orderId;
-      orderTotal = total;
 
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
@@ -84,7 +83,7 @@ class CreateOrderButton extends React.Component {
     }
 
     if (afterCreateOrder) {
-      afterCreateOrder(newOrderId, orderTotal);
+      afterCreateOrder(newOrderId);
     }
   };
 

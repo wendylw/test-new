@@ -113,8 +113,9 @@ class Customer extends Component {
     customerActions.clearError();
   }
 
-  visitPaymentPage = (orderId, total) => {
-    const { history } = this.props;
+  visitPaymentPage = () => {
+    const { history, cartSummary } = this.props;
+    const { total } = cartSummary || {};
 
     if (total) {
       history.push({
