@@ -49,7 +49,7 @@ class AddressList extends Component {
   renderAddressCard = () => {
     const { t, addressList, history, customerActions } = this.props;
     return (addressList || []).map((address, index) => {
-      const { _id: addressId, addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
+      const { _id: addressId, addressName, deliveryTo, addressDetails, comments, availableStatus, location } = address;
       return (
         <div
           className={`flex flex-space-between margin-left-right-normal border__bottom-divider ${
@@ -65,6 +65,7 @@ class AddressList extends Component {
                     addressDetails,
                     deliveryComments: comments,
                     deliveryToAddress: deliveryTo,
+                    deliveryToLocation: location,
                   });
                   history.push({
                     pathname: '/customer',

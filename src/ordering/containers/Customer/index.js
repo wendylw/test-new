@@ -251,7 +251,7 @@ class Customer extends Component {
     const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
     const { username, phone } = deliveryDetails;
     const { profile } = user || {};
-    const { name, phone: consumerPhone } = profile || {};
+    const { phone: consumerPhone } = profile || {};
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
     const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
@@ -291,8 +291,8 @@ class Customer extends Component {
                 <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
                   <div className="padding-top-bottom-smaller">
                     <p className="padding-top-bottom-smaller">
-                      {username || name ? (
-                        <span className="text-size-big">{username || name}</span>
+                      {username ? (
+                        <span className="text-size-big">{username}</span>
                       ) : (
                         <React.Fragment>
                           <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>

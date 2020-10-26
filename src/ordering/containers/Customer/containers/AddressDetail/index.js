@@ -81,14 +81,21 @@ class AddressDetail extends Component {
         },
       };
       const response = await post(addUrl.url, data);
-      const { _id: addressId, addressName, addressDetails, comments: deliveryComments, deliveryTo: deliveryToAddress } =
-        response || {};
+      const {
+        _id: addressId,
+        addressName,
+        addressDetails,
+        comments: deliveryComments,
+        deliveryTo: deliveryToAddress,
+        location: deliveryToLocation,
+      } = response || {};
       customerActions.patchDeliveryDetails({
         addressId,
         addressName,
         addressDetails,
         deliveryComments,
         deliveryToAddress,
+        deliveryToLocation,
       });
       if (response) {
         history.push({
@@ -108,7 +115,23 @@ class AddressDetail extends Component {
           latitude: deliveryToLocation.latitude,
         },
       };
-      const response = put(updateUrl.url, data);
+      const response = await put(updateUrl.url, data);
+      const {
+        _id: addressId,
+        addressName,
+        addressDetails,
+        comments: deliveryComments,
+        deliveryTo: deliveryToAddress,
+        location: deliveryToLocation,
+      } = response || {};
+      customerActions.patchDeliveryDetails({
+        addressId,
+        addressName,
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress,
+        deliveryToLocation,
+      });
       if (response) {
         history.push({
           pathname: '/customer',
