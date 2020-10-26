@@ -159,7 +159,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
   } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
     const deliveryAddressList = action.response || {};
     const { fixed } = action.context || {};
-    const { longitude, latitude } = deliveryToLocation;
+    const { longitude, latitude } = state.deliveryToLocation;
 
     const findAvailableAddress = (deliveryAddressList || []).find(
       address =>
