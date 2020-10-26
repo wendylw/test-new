@@ -48,13 +48,14 @@ class AddressList extends Component {
 
   renderAddressCard = () => {
     const { t, addressList, history, customerActions } = this.props;
-    return (addressList || []).map(address => {
+    return (addressList || []).map((address, index) => {
       const { _id: addressId, addressName, deliveryTo, addressDetails, comments, availableStatus } = address;
       return (
         <div
           className={`flex flex-space-between margin-left-right-normal border__bottom-divider ${
             availableStatus ? 'active' : 'address-list__disabled'
           }`}
+          key={index}
           onClick={
             availableStatus
               ? () => {
