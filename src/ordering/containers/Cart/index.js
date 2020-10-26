@@ -18,9 +18,12 @@ import { actions as promotionActionCreators } from '../../redux/modules/promotio
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { actions as customerActionCreators } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
 import './OrderingCart.scss';
+import Url from '../../../utils/url';
+import { get } from '../../../utils/request';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 const { PROMOTION_APPLIED_STATUS } = Constants;
@@ -37,11 +40,9 @@ class Cart extends Component {
   }
 
   async componentDidMount() {
-    const { appActions, homeActions, user } = this.props;
-    const { consumerId } = user || {};
+    const { homeActions } = this.props;
 
     await homeActions.loadShoppingCart();
-    consumerId && (await appActions.getProfileInfo(consumerId));
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
@@ -58,6 +59,49 @@ class Cart extends Component {
       this.setState({
         cartContainerHeight: containerHeight,
       });
+    }
+  };
+
+  handleClickContinue = async () => {
+    const { user, history } = this.props;
+    const { consumerId, isLogin, profile } = user || {};
+    const { name } = profile || {};
+
+    if (!isLogin) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        nextPage: true,
+      });
+    }
+
+    // if have name, redirect to customer page
+    // if have consumerId, get profile first and update consumer profile, then redirect to next page
+    if (isLogin && name) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+      });
+    } else {
+      if (isLogin && consumerId) {
+        let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
+        let { firstName, email, birthday, phone } = await get(request.url);
+        this.props.appActions.updateProfileInfo({
+          name: firstName,
+          email,
+          birthday,
+          phone,
+        });
+        firstName
+          ? history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+              search: window.location.search,
+            })
+          : history.push({
+              pathname: Constants.ROUTER_PATHS.PROFILE,
+              search: window.location.search,
+            });
+      }
     }
   };
 
@@ -287,8 +331,7 @@ class Cart extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
-    const { isLogin, profile } = user || {};
-    const { name: consumerName } = profile || {};
+    const { isLogin } = user || {};
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
@@ -388,24 +431,8 @@ class Cart extends Component {
                 return;
               }
 
-              this.handleGtmEventTracking(() => {
-                if (isLogin && consumerName) {
-                  history.push({
-                    pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                    search: window.location.search,
-                  });
-                } else if (isLogin && !consumerName) {
-                  history.push({
-                    pathname: Constants.ROUTER_PATHS.PROFILE,
-                    search: window.location.search,
-                  });
-                } else {
-                  history.push({
-                    pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
-                    search: window.location.search,
-                    nextPage: true,
-                  });
-                }
+              this.handleGtmEventTracking(async () => {
+                await this.handleClickContinue();
               });
             }}
             disabled={!items || !items.length || isInvalidTotal}
@@ -445,6 +472,7 @@ export default compose(
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Cart);

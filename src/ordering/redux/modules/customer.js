@@ -57,7 +57,7 @@ export const actions = {
 
     const newDeliveryDetails = {
       ...deliveryDetails,
-      phone: deliveryDetails.phone || localStoragePhone,
+      phone: (deliveryDetails && deliveryDetails.phone) || localStoragePhone,
     };
 
     if (shippingType === 'delivery') {
@@ -125,10 +125,13 @@ export const actions = {
 
     return result;
   },
-  fetchConsumerAddressList: ({ consumerId, storeId }) => ({
+  fetchConsumerAddressList: ({ consumerId, storeId, fixed }) => ({
     [API_REQUEST]: {
       types: [types.FETCH_ADDRESS_LIST_REQUEST, types.FETCH_ADDRESS_LIST_SUCCESS, types.FETCH_ADDRESS_LIST_FAILURE],
       ...Url.API_URLS.GET_ADDRESS_LIST(consumerId, storeId || config.storeId),
+    },
+    context: {
+      fixed,
     },
   }),
   setError: error => ({
@@ -155,6 +158,8 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
     };
   } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
     const deliveryAddressList = action.response || {};
+    const { fixed } = action.context || {};
+
     const findAvailableAddress = (deliveryAddressList || []).find(
       address =>
         address.availableStatus &&
@@ -162,7 +167,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
           computeStraightDistance(address.location, state.deliveryToLocation) <= 500)
     );
 
-    if (findAvailableAddress) {
+    if (findAvailableAddress && !fixed) {
       const {
         _id,
         addressName,

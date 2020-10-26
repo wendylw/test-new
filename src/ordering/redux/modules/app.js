@@ -25,6 +25,7 @@ export const initialState = {
     customerId: '',
     storeCreditsBalance: 0,
     profile: {
+      phone: '',
       name: '',
       email: '',
       birthday: null,
@@ -309,6 +310,7 @@ const user = (state = initialState.user, action) => {
         ...state,
         consumerId,
         profile: {
+          phone: user.phone,
           name: user.firstName,
           email: user.email,
           birthday: toISODateString(user.birthday),

@@ -18,6 +18,7 @@ class AddressDetail extends Component {
     addressName: '',
     addressDetails: '',
     deliveryComments: '',
+    deliveryToAddress: '',
   };
 
   getShippingType() {
@@ -29,11 +30,11 @@ class AddressDetail extends Component {
 
   componentDidMount = async () => {
     const { deliveryDetails, customerActions } = this.props;
-    const { addressName, addressDetails, deliveryComments } = deliveryDetails || {};
+    const { addressName, addressDetails, deliveryComments, addressId } = deliveryDetails || {};
     this.setState({ addressName: addressName, addressDetails: addressDetails, deliveryComments: deliveryComments });
 
-    // init username, phone, deliveryToAddress, deliveryDetails
-    await customerActions.initDeliveryDetails(this.getShippingType());
+    //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
+    !addressId && (await customerActions.initDeliveryDetails(this.getShippingType()));
   };
 
   handleClickBack = () => {
@@ -57,29 +58,38 @@ class AddressDetail extends Component {
   };
 
   createOrUpdateAddress = async () => {
-    const { history, location, user, deliveryDetails, addressId, customerActions } = this.props;
+    const { history, location, user, deliveryDetails, customerActions } = this.props;
     const { addressName, addressDetails, deliveryComments } = this.state;
     const { consumerId } = user || {};
-    const { deliveryToLocation } = deliveryDetails || {};
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { deliveryToAddress, deliveryToLocation, addressId } = deliveryDetails || {};
+    const { address: locationAddress, coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const action = (location.state && location.state.action) || 'add';
 
-    customerActions.patchDeliveryDetails({ addressName, addressDetails, deliveryComments });
+    customerActions.patchDeliveryDetails({ addressName, addressDetails, deliveryComments, deliveryToAddress });
 
     if (action === 'add') {
       const addUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
       const data = {
         addressName,
-        deliveryTo: deliveryToAddress,
+        deliveryTo: locationAddress,
         addressDetails: addressDetails,
         comments: deliveryComments,
-        address: addressDetails + ', ' + deliveryToAddress,
+        address: addressDetails + ', ' + locationAddress,
         location: {
-          longitude: deliveryToLocation.longitude,
-          latitude: deliveryToLocation.latitude,
+          longitude: coords.lng,
+          latitude: coords.lat,
         },
       };
       const response = await post(addUrl.url, data);
+      const { _id: addressId, addressName, addressDetails, comments: deliveryComments, deliveryTo: deliveryToAddress } =
+        response || {};
+      customerActions.patchDeliveryDetails({
+        addressId,
+        addressName,
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress,
+      });
       if (response) {
         history.push({
           pathname: '/customer',
@@ -109,10 +119,13 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { t, history, location } = this.props;
+    const { t, history, location, deliveryDetails } = this.props;
     const { addressName, addressDetails, deliveryComments } = this.state;
+
     const action = (location.state && location.state.action) || 'add';
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { deliveryToAddress } = deliveryDetails || {};
+    const { address: locationAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+
     return (
       <div className="flex flex-column address-detail">
         <Header
@@ -164,7 +177,7 @@ class AddressDetail extends Component {
                   deliveryToAddress && action !== 'edit' ? '' : 'text-opacity'
                 }`}
               >
-                {deliveryToAddress || t('AddAddressPlaceholder')}
+                {action !== 'edit' ? locationAddress : deliveryToAddress || t('AddAddressPlaceholder')}
               </p>
               {action == 'edit' ? (
                 <IconChecked className="icon icon__fixed icon__normal" />
