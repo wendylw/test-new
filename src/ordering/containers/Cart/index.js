@@ -312,7 +312,7 @@ class Cart extends Component {
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
+    // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
       t('PayNow')
     ) : (
@@ -415,7 +415,7 @@ class Cart extends Component {
                 });
               });
             }}
-            disabled={!items || !items.length || isInvalidTotal || haveItemSoldOut}
+            disabled={!items || !items.length || isInvalidTotal}
           >
             {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
             {!isCreatingOrder ? buttonText : null}
