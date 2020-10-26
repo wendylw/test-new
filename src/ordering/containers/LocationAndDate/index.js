@@ -1347,8 +1347,10 @@ class LocationAndDate extends Component {
   };
 
   goStoreList = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
     const { search, h, isPickUpType, nearlyStore } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
 
     if (search.storeid) {
       history.push({
@@ -1356,6 +1358,7 @@ class LocationAndDate extends Component {
         search: `${search.h ? 'h=' + h + '&' : ''}storeid=${search.storeid}&type=${
           isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
         }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
+        state: from ? { from } : null,
       });
     } else {
       this.props.history.push({
@@ -1363,6 +1366,7 @@ class LocationAndDate extends Component {
         search: `${h ? 'h=' + h + '&' : ''}storeid=${nearlyStore.id}&type=${
           isPickUpType ? Constants.DELIVERY_METHOD.PICKUP : Constants.DELIVERY_METHOD.DELIVERY
         }&callbackUrl=${encodeURIComponent(search.callbackUrl)}`,
+        state: from ? { from } : null,
       });
     }
   };

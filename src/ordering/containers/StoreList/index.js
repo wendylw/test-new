@@ -176,11 +176,16 @@ class StoreList extends Component {
       },
       async () => {
         if (this.state.search.callbackUrl) {
-          let search = this.props.history.location.search;
+          const { history, location } = this.props;
+          const { state } = location || {};
+          const { from } = state || {};
+          let search = history.location.search;
           search = search.replace(/&?storeid=[^&]*/, '');
+
           this.props.history.replace({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: `${search}&${store.id ? 'storeid=' + store.id : ''}`,
+            state: from ? { from } : null,
           });
         } else {
           await this.props.homeActions.getStoreHashData(store.id);
