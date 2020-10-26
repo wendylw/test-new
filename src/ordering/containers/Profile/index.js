@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
-// import DatePicker from 'react-datepicker';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
-import './Profile.scss';
-import 'react-datepicker/dist/react-datepicker.css';
-// import { IconKeyArrowDown } from '../../../components/Icons';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
-import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
+import url from '../../../utils/url';
+import './Profile.scss';
 
 const { API_URLS } = url;
 class Profile extends Component {
@@ -109,7 +106,6 @@ class Profile extends Component {
                   {/*  {month}/{date}*/}
                   {/*</div>*/}
                   <div>
-                    {/*<IconKeyArrowDown />*/}
                     <input
                       name="consumerBirthday"
                       value={toISODateString(birthday)}
@@ -117,10 +113,6 @@ class Profile extends Component {
                       type="date"
                       onChange={this.handleInputChange}
                     />
-
-                    {/*<DatePicker className="form__input" onChange={this.handleDateChange}>*/}
-                    {/*  <IconKeyArrowDown />*/}
-                    {/*</DatePicker>*/}
                   </div>
                 </div>
               </div>
