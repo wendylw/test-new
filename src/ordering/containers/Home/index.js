@@ -257,7 +257,7 @@ export class Home extends Component {
     }
   };
 
-  setDefaultDate = ({ validDays, vacations }) => {
+  setDefaultDate = ({ validDays = [] }) => {
     let defaultTime = new Date(); //TODO 应该用商家本地时间
     if (!validDays.length) {
       return;
@@ -372,7 +372,7 @@ export class Home extends Component {
 
       if (!Utils.getSessionVariable('expectedDeliveryDate')) {
         // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
-        this.setDefaultDate(qrOrderingSettings);
+        this.setDefaultDate(qrOrderingSettings || {});
       }
       if (!Utils.getSessionVariable('expectedDeliveryHour')) {
         this.setDefaultHour(qrOrderingSettings);

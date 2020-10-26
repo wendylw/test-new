@@ -16,7 +16,6 @@ import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
-import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
 import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
