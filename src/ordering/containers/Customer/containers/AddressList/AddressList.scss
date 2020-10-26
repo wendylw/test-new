@@ -10,6 +10,14 @@
     color: $gray-3;
   }
 
+  &__delivery-info {
+    flex: 1;
+  }
+
+  &__book-mark {
+    padding-top: 1rem;
+  }
+
   &__add-icon {
     border: 1px dashed $gray-3;
   }
