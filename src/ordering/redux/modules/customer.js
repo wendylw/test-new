@@ -10,6 +10,7 @@ import {
   updateDeliveryDetails,
 } from '../../containers/Customer/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
+import { getUserAddressList } from '../../../redux/modules/entities/users';
 import _get from 'lodash/get';
 
 const initialState = {
@@ -26,7 +27,6 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
-    deliveryAddressList: [],
   },
   customerError: {
     show: false,
@@ -230,5 +230,7 @@ export default combineReducers({
 export const getDeliveryDetails = state => state.customer.deliveryDetails;
 export const getAddressChange = state => state.customer.deliveryDetails.addressChange;
 export const getCustomerError = state => state.customer.customerError;
-export const getDeliveryAddressList = state => state.customer.deliveryDetails.deliveryAddressList;
+export const getDeliveryAddressList = state => {
+  return getUserAddressList(state);
+};
 // export const isCheckoutDisabled = state => {}

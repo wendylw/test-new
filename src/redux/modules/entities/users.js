@@ -16,3 +16,5 @@ const reducer = (state = initialState, action) => {
 };
 
 export default reducer;
+
+export const getUserAddressList = state => state.entities.users.deliveryAddressList;
