@@ -19,11 +19,9 @@ class ContactDetail extends Component {
   };
 
   componentDidMount() {
-    const { deliveryDetails, user } = this.props;
-    const { profile } = user || {};
-    const { name: consumerName } = profile || {};
+    const { deliveryDetails } = this.props;
     const { phone, username } = deliveryDetails;
-    this.setState({ phone, username: username || consumerName });
+    this.setState({ phone, username });
   }
 
   handleClickBack = () => {

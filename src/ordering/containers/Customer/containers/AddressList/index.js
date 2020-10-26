@@ -76,9 +76,9 @@ class AddressList extends Component {
           }
         >
           <div className="margin-top-bottom-normal">
-            <IconBookmark className={`icon padding-top-bottom-small ${availableStatus ? '' : 'icon__default'}`} />
+            <IconBookmark className={`icon address-list__book-mark ${availableStatus ? '' : 'icon__default'}`} />
           </div>
-          <div className="margin-normal">
+          <div className="address-list__delivery-info margin-normal">
             <div>
               <summary>
                 <span>{addressName}</span>
