@@ -61,23 +61,19 @@ export const actions = {
     };
 
     if (shippingType === 'delivery') {
-      const newDeliveryDetails = await fetchDeliveryAddress();
+      const deliveryAddress = await fetchDeliveryAddress();
 
-      if (newDeliveryDetails) {
-        newDeliveryDetails.deliveryToAddress = newDeliveryDetails.address;
+      if (deliveryAddress) {
+        newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
         newDeliveryDetails.deliveryToLocation = {
-          longitude: newDeliveryDetails.coords.lng,
-          latitude: newDeliveryDetails.coords.lat,
+          longitude: deliveryAddress.coords.lng,
+          latitude: deliveryAddress.coords.lat,
         };
       }
 
       // if address chosen is different from address in session
       // then clean up the address details info
-      if (
-        deliveryDetails &&
-        deliveryDetails.deliveryToAddress &&
-        deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress
-      ) {
+      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
         newDeliveryDetails.addressDetails = '';
       }
 

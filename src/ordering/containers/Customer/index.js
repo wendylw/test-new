@@ -117,7 +117,7 @@ class Customer extends Component {
     const { history, cartSummary } = this.props;
     const { total } = cartSummary || {};
 
-    if (total) {
+    if (total && !this.validateFields().showModal) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
