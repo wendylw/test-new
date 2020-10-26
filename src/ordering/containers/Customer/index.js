@@ -113,13 +113,15 @@ class Customer extends Component {
     customerActions.clearError();
   }
 
-  visitPaymentPage = () => {
+  visitPaymentPage = (orderId, total) => {
     const { history } = this.props;
 
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-      search: window.location.search,
-    });
+    if (total) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
   };
 
   renderDeliveryPickupDetail() {

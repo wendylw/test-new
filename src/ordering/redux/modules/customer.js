@@ -73,7 +73,11 @@ export const actions = {
 
       // if address chosen is different from address in session
       // then clean up the address details info
-      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
+      if (
+        deliveryDetails &&
+        deliveryDetails.deliveryToAddress &&
+        deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress
+      ) {
         newDeliveryDetails.addressDetails = '';
       }
 
