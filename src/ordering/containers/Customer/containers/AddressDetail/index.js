@@ -220,6 +220,7 @@ class AddressDetail extends Component {
         <footer className="footer footer__transparent margin-normal">
           <button
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
+            disabled={!addressName || !addressDetails || (action !== 'edit' && !locationAddress)}
             onClick={this.createOrUpdateAddress}
           >
             {action === 'edit' ? t('SaveChanges') : t('AddAddress')}

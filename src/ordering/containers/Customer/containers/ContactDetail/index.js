@@ -13,6 +13,19 @@ import './ContactDetail.scss';
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
+  state = {
+    username: '',
+    phone: '',
+  };
+
+  componentDidMount() {
+    const { deliveryDetails, user } = this.props;
+    const { profile } = user || {};
+    const { name: consumerName } = profile || {};
+    const { phone, username } = deliveryDetails;
+    this.setState({ phone, username: username || consumerName });
+  }
+
   handleClickBack = () => {
     const { history } = this.props;
     history.push({
@@ -21,12 +34,16 @@ class ContactDetail extends Component {
     });
   };
 
-  render() {
-    const { t, country, deliveryDetails } = this.props;
-    const { phone, username: name } = deliveryDetails;
+  handleClickContinue = async () => {
+    const { username, phone } = this.state;
+    await this.props.customerActions.patchDeliveryDetails({ username, phone });
+    this.handleClickBack();
+  };
 
-    console.log('deliveryDetails', deliveryDetails);
-    // const { name } = user || {};
+  render() {
+    const { t, country } = this.props;
+    const { phone, username } = this.state;
+
     return (
       <div className="contact-details flex flex-column">
         <Header
@@ -47,9 +64,9 @@ class ContactDetail extends Component {
                     data-heap-name="ordering.contact-details.name-input"
                     type="text"
                     placeholder={t('Name')}
-                    defaultValue={name}
+                    value={username}
                     onChange={e => {
-                      this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
+                      this.setState({ username: e.target.value.trim() });
                     }}
                   />
                 </div>
@@ -66,7 +83,7 @@ class ContactDetail extends Component {
                   onChange={phone => {
                     const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
 
-                    this.props.customerActions.patchDeliveryDetails({
+                    this.setState({
                       phone:
                         metadataMobile.countries[selectedCountry] &&
                         Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]),
@@ -89,8 +106,8 @@ class ContactDetail extends Component {
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
-            disabled={!name || !name.length || !phone}
-            onClick={this.handleClickBack}
+            disabled={!username || !username.length || !phone}
+            onClick={this.handleClickContinue}
           >
             {t('Continue')}
           </button>
