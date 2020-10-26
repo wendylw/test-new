@@ -25,7 +25,7 @@ const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
 class Customer extends Component {
   async componentDidMount() {
-    const { homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
+    const { history, homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
     const { addressId } = deliveryDetails || {};
