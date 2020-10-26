@@ -99,6 +99,8 @@ class Customer extends Component {
       customerActions.setError(error);
     }
 
+    console.log(error);
+
     return error.showModal;
   };
 
