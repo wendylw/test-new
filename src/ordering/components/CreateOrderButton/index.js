@@ -83,8 +83,8 @@ class CreateOrderButton extends React.Component {
       }
     }
 
-    if ((afterCreateOrder, orderTotal)) {
-      afterCreateOrder(newOrderId);
+    if (afterCreateOrder) {
+      afterCreateOrder(newOrderId, orderTotal);
     }
   };
 
