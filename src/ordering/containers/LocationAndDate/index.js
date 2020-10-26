@@ -587,7 +587,6 @@ class LocationAndDate extends Component {
 
   handleBackClicked = () => {
     const { history, location } = this.props;
-    const { isPickUpType } = this.state;
     const { state } = location || {};
     const { from } = state || {};
 
