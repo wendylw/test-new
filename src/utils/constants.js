@@ -261,6 +261,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
+  41014: {
+    title: 'ApiError:41014Title',
+    desc: 'ApiError:41014Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`,
+    buttonText: 'Common:Reorder',
+    showModal: true,
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
