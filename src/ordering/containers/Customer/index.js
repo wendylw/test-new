@@ -145,9 +145,17 @@ class Customer extends Component {
         </h4>
         {/* Address Info of Delivery or Pickup */}
         <div className="ordering-customer__detail padding-top-bottom-normal padding-left-right-smaller">
-          <div className="flex flex-middle">
+          <div
+            className={`flex ${
+              isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+            }`}
+          >
             <IconLocation className="icon icon__small icon__default margin-left-right-small" />
-            <div className="ordering-customer__summary flex flex-middle flex-space-between padding-left-right-small">
+            <div
+              className={`ordering-customer__summary flex ${
+                isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+              } flex-space-between padding-left-right-small`}
+            >
               {isDeliveryType ? (
                 <Link
                   to={{
