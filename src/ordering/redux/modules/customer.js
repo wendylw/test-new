@@ -164,7 +164,10 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
       address =>
         address.availableStatus &&
         (address.addressName === state.addressName ||
-          computeStraightDistance(address.location, state.deliveryToLocation) <= 500)
+          computeStraightDistance(address.location, {
+            lng: state.deliveryToLocation.lng,
+            lat: state.deliveryToLocation.latitude,
+          }) <= 500)
     );
 
     if (findAvailableAddress && !fixed) {
