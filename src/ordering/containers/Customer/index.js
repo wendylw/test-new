@@ -28,10 +28,11 @@ class Customer extends Component {
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
     const { addressId } = deliveryDetails || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     // todo: think a better solution to avoid changing deliveryToAddress
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
-    !addressId && (await customerActions.initDeliveryDetails());
+    !addressId && (await customerActions.initDeliveryDetails(type));
     !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
     homeActions.loadShoppingCart();
   }
