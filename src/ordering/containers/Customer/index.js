@@ -187,7 +187,7 @@ class Customer extends Component {
                     pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
                     search: window.location.search,
                     state: {
-                      from: isDeliveryType ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : null,
+                      from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
                     },
                   }}
                   className="padding-top-bottom-smaller ordering-customer__button-link button__link"
@@ -232,7 +232,7 @@ class Customer extends Component {
             pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: window.location.search,
             state: {
-              from: isDeliveryType ? ROUTER_PATHS.ORDERING_CUSTOMER_INFO : null,
+              from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
             },
           }}
           className="ordering-customer__time ordering-customer__detail button__link padding-left-right-smaller"
