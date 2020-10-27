@@ -13,6 +13,8 @@ import Header from '../../../components/Header';
 import MessageModal from '../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
+import AddressChangeModal from './components/AddressChangeModal';
+
 import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getBusinessInfo } from '../../redux/modules/cart';
@@ -24,18 +26,38 @@ import './OrderingCustomer.scss';
 const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
 class Customer extends Component {
+  state = {
+    addressChange: false,
+  };
+
   async componentDidMount() {
     const { history, homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
-    const { addressId } = deliveryDetails || {};
+    const { addressId, deliveryToLocation } = deliveryDetails || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     // todo: think a better solution to avoid changing deliveryToAddress
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
     !addressId && (await customerActions.initDeliveryDetails(type));
     !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
-    homeActions.loadShoppingCart();
+    homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
+  }
+
+  componentDidUpdate(prevProps) {
+    const { cartSummary } = this.props;
+    const { cartSummary: prevCartSummary } = prevProps;
+    const { shippingFee } = cartSummary || {};
+
+    if (shippingFee && prevCartSummary.shippingFee && shippingFee !== prevCartSummary.shippingFee) {
+      this.setState({ addressChange: true });
+    }
   }
 
   getBusinessCountry = () => {
@@ -114,6 +136,12 @@ class Customer extends Component {
 
     customerActions.clearError();
   }
+
+  handleHideChangeShippingFeeModal = () => {
+    const { customerActions } = this.props;
+
+    customerActions.updateAddressChange(false);
+  };
 
   visitPaymentPage = () => {
     const { history, cartSummary } = this.props;
@@ -259,13 +287,17 @@ class Customer extends Component {
 
   render() {
     const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
+    const { addressChange } = this.state;
     const { username, phone: consumerPhone } = deliveryDetails;
     const { profile } = user || {};
     const { phone } = profile || {};
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
     const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
-    const { total } = cartSummary || {};
+    const { total, shippingFee } = cartSummary || {};
+
+    // console.log(shippingFee);
+    // console.log(addressChange);
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -363,6 +395,11 @@ class Customer extends Component {
             }}
           />
         ) : null}
+        <AddressChangeModal
+          deliveryFee={shippingFee}
+          addressChange={addressChange}
+          continue={this.handleHideChangeShippingFeeModal}
+        />
       </section>
     );
   }
