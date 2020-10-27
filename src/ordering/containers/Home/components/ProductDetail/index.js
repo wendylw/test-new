@@ -713,7 +713,14 @@ class ProductDetail extends Component {
                     );
                   })}
                 </Swiper>
-              ) : null}
+              ) : (
+                <Image
+                  className="product-detail__image-content"
+                  src={images && images.length ? images[0] : null}
+                  scalingRatioIndex={2}
+                  alt={`${storeName} ${title}`}
+                />
+              )}
             </div>
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
               <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
