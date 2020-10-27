@@ -741,7 +741,7 @@ export class ThankYou extends PureComponent {
                   onClick={this.handleReportUnsafeDriver}
                   data-heap-name="ordering.need-help.report-driver-btn"
                 >
-                  {t('ReportOrder')}
+                  {t('ReportIssue')}
                 </button>
               </React.Fragment>
             )}
