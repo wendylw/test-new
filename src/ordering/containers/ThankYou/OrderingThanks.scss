@@ -151,4 +151,133 @@ $total-text-size: 1.7142rem;
   &__button-footer-link {
     color: $status-blue;
   }
+
+  &__progress {
+    width: 14vw;
+    max-width: 25px;
+  }
+
+  &__prev {
+    display: block;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
+    background: $theme-color;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  &__prev::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 45vw;
+    background: $theme-color;
+    left: 50%;
+    margin: 0 auto 0;
+    max-height: 45px;
+  }
+
+  &__next {
+    display: block;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
+    background: $gray-4;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  &__next::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 45vw;
+    background: $gray-4;
+    left: 50%;
+    max-height: 45px;
+    bottom: 0;
+  }
+
+  &__active {
+    display: block;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
+    background: $theme-color;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__active::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: $theme-color;
+    left: -45%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    opacity: 0.2;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  &__next-heigher::after {
+    height: 50vw;
+    max-height: 65px;
+  }
+
+  .line-height-normal {
+    line-height: 1.8rem;
+  }
+
+  .text-gray {
+    color: $gray-2;
+  }
+
+  &__progress-title {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  &__rider-logo {
+    width: 13.5vw;
+    height: 13.5vw;
+    max-width: 56px;
+    max-height: 56px;
+  }
+  &__rider-logo img {
+    height: 100%;
+  }
+
+  &__button .button {
+    border: 0;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: $status-blue;
+    line-height: 56px;
+    flex: 1;
+  }
+
+  &__button-link {
+    position: relative;
+  }
+
+  &__button-link::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    background: $gray-4;
+    height: 100%;
+    right: 0;
+  }
 }
