@@ -1240,6 +1240,7 @@ class LocationAndDate extends Component {
     const { h, selectedDate, selectedHour, isPickUpType } = this.state;
     const { state } = location || {};
     const { from } = state || {};
+    const urlSearch = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
     if (isPickUpType) delete selectedHour.to;
 
@@ -1251,7 +1252,7 @@ class LocationAndDate extends Component {
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
-    if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+    if ((from || urlSearch.from) === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       const searchArray = window.location.search.split('&');
       const typeFieldIndex = searchArray.findIndex(i => i.indexOf('type=') !== -1);
 
