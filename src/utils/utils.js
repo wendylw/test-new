@@ -656,6 +656,15 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
+Utils.getTimeUnit = time => {
+  try {
+    const hour = new Date(time);
+    return hour < 12 ? 'AM' : 'PM';
+  } catch (e) {
+    return null;
+  }
+};
+
 Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
