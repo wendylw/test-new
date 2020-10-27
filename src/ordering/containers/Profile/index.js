@@ -16,7 +16,7 @@ class Profile extends Component {
   componentDidMount() {
     const { appActions, user } = this.props;
     const { consumerId } = user || {};
-    appActions.getProfileInfo(consumerId);
+    consumerId && appActions.getProfileInfo(consumerId);
   }
 
   handleClickBack = () => {

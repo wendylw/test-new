@@ -72,6 +72,10 @@ class PageLogin extends React.Component {
     this.setState({ sendOtp: true });
   }
 
+  updateOtpStatus() {
+    this.props.appActions.updateOtpStatus();
+  }
+
   async handleWebLogin(otp) {
     const { appActions } = this.props;
 
@@ -90,7 +94,7 @@ class PageLogin extends React.Component {
 
   renderOtpModal() {
     const { t, user } = this.props;
-    const { isFetching, isLogin, hasOtp } = user || {};
+    const { isFetching, isLogin, hasOtp, isError } = user || {};
 
     if (!hasOtp || isLogin) {
       return null;
@@ -104,7 +108,9 @@ class PageLogin extends React.Component {
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
+        updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
+        isError={isError}
       />
     );
   }

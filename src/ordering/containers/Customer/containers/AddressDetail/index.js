@@ -29,9 +29,12 @@ class AddressDetail extends Component {
   }
 
   componentDidMount = async () => {
-    const { deliveryDetails, customerActions } = this.props;
+    const { deliveryDetails, customerActions, location } = this.props;
     const { addressName, addressDetails, deliveryComments, addressId } = deliveryDetails || {};
-    this.setState({ addressName: addressName, addressDetails: addressDetails, deliveryComments: deliveryComments });
+
+    const action = (location.state && location.state.action) || 'add';
+    action === 'edit' &&
+      this.setState({ addressName: addressName, addressDetails: addressDetails, deliveryComments: deliveryComments });
 
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
     !addressId && (await customerActions.initDeliveryDetails(this.getShippingType()));
