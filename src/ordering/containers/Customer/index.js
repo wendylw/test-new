@@ -259,9 +259,9 @@ class Customer extends Component {
 
   render() {
     const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
-    const { username, phone } = deliveryDetails;
+    const { username, phone: consumerPhone } = deliveryDetails;
     const { profile } = user || {};
-    const { phone: consumerPhone } = profile || {};
+    const { phone } = profile || {};
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
     const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
