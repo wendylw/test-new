@@ -28,7 +28,10 @@ export class AddressChangeModal extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer className="padding-small">
-          <button className="button button__fill button__block text-weight-bolder" onClick={this.handleClick}>
+          <button
+            className="button button__fill button__block text-weight-bolder text-uppercase"
+            onClick={this.handleClick}
+          >
             {t('Continue')}
           </button>
         </Modal.Footer>
