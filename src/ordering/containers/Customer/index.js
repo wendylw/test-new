@@ -20,12 +20,7 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import {
-  getDeliveryDetails,
-  getCustomerError,
-  getAddressChange,
-  actions as customerActionCreators,
-} from '../../redux/modules/customer';
+import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
 
 const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
@@ -61,7 +56,7 @@ class Customer extends Component {
     const { shippingFee } = cartSummary || {};
 
     if (shippingFee && prevCartSummary.shippingFee && shippingFee !== prevCartSummary.shippingFee) {
-      this.setState({});
+      this.setState({ addressChange: true });
     }
   }
 
@@ -141,6 +136,12 @@ class Customer extends Component {
 
     customerActions.clearError();
   }
+
+  handleHideChangeShippingFeeModal = () => {
+    const { customerActions } = this.props;
+
+    customerActions.updateAddressChange(false);
+  };
 
   visitPaymentPage = () => {
     const { history, cartSummary } = this.props;
@@ -285,7 +286,8 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartSummary, user, error, addressChange } = this.props;
+    const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
+    const { addressChange } = this.state;
     const { username, phone: consumerPhone } = deliveryDetails;
     const { profile } = user || {};
     const { phone } = profile || {};
@@ -393,11 +395,11 @@ class Customer extends Component {
             }}
           />
         ) : null}
-        {/* <AddressChangeModal
+        <AddressChangeModal
           deliveryFee={shippingFee}
           addressChange={addressChange}
-          continue={this.AddressChangeModalContinue}
-        /> */}
+          continue={this.handleHideChangeShippingFeeModal}
+        />
       </section>
     );
   }
@@ -415,7 +417,6 @@ export default compose(
       cartSummary: getCartSummary(state),
       requestInfo: getRequestInfo(state),
       error: getCustomerError(state),
-      addressChange: getAddressChange(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

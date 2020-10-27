@@ -30,6 +30,7 @@ export const initialState = {
       email: '',
       birthday: null,
     },
+    isError: false,
   },
   error: null, // network error
   messageModal: {
@@ -191,6 +192,10 @@ export const actions = {
     fields,
   }),
 
+  updateOtpStatus: () => ({
+    type: types.UPDATE_OTP_STATUS,
+  }),
+
   getProfileInfo: consumerId => ({
     [API_REQUEST]: {
       types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
@@ -283,9 +288,11 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, isError: true };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
+    case types.UPDATE_OTP_STATUS:
+      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
       return { ...state, isFetching: false, hasOtp: true };
     case types.CREATE_OTP_SUCCESS:

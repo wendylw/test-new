@@ -6,10 +6,14 @@ import OtpInput from 'react-otp-input';
 import Header from './Header';
 import Constants from '../utils/constants';
 import beepOtpLock from '../images/beep-otp-lock.svg';
+import beepOtpError from '../images/beep-otp-error.svg';
 import Utils from '../utils/utils';
 import { captureException } from '@sentry/react';
 import './OtpModal.scss';
 import TermsAndPrivacy from './TermsAndPrivacy';
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+import { actions as appActionCreators, getError, getOnlineStoreInfo, getUser } from '../ordering/redux/modules/app';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -76,13 +80,17 @@ class OtpModal extends React.Component {
   }
 
   updateAndValidateOtp = otp => {
-    const { sendOtp } = this.props;
+    const { sendOtp, updateOtpStatus } = this.props;
     this.setState(
       {
         otp,
       },
       () => {
         const { otp: newOtp } = this.state;
+        if (newOtp.length !== Constants.OTP_CODE_SIZE) {
+          updateOtpStatus();
+        }
+
         if (newOtp.length === Constants.OTP_CODE_SIZE) {
           // Unfocus the OTP input to prevent users from changing OTP
           // And at the same time do auto validation
@@ -108,7 +116,7 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const { t, onClose, getOtp, isLoading, phone, ResendOtpTime } = this.props;
+    const { t, onClose, getOtp, isLoading, phone, ResendOtpTime, isError } = this.props;
     const { currentOtpTime, isNewInput } = this.state;
 
     return (
@@ -121,7 +129,7 @@ class OtpModal extends React.Component {
 
         <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
           <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
-            <img src={beepOtpLock} alt="otp" />
+            {isError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
           </figure>
           <h2 className="padding-normal text-size-big text-line-height-base">
             <Trans i18nKey="OTPSentTitle">
@@ -131,7 +139,11 @@ class OtpModal extends React.Component {
           </h2>
           <div className="margin-small">
             {isNewInput ? (
-              <div className="otp-modal__group form__group flex flex-middle flex-space-between text-size-larger">
+              <div
+                className={`otp-modal__group form__group flex flex-middle flex-space-between text-size-larger ${
+                  isError ? 'error' : ''
+                }`}
+              >
                 <input
                   id="newOtpInput"
                   ref={this.inputRef}
@@ -158,6 +170,7 @@ class OtpModal extends React.Component {
                 }}
               />
             )}
+            {isError && <p className="otp-modal__failed-otp padding-top-bottom-small">{t('CodeVerificationFailed')}</p>}
           </div>
           <div className="margin-top-bottom-normal">
             <p className="otp-modal__resend-tip text-size-big">{t('ResendOTPTip')}</p>
@@ -190,6 +203,7 @@ OtpModal.propTypes = {
   buttonText: PropTypes.string,
   ResendOtpTime: PropTypes.number,
   isLoading: PropTypes.bool,
+  isError: PropTypes.bool,
   onClose: PropTypes.func,
   getOtp: PropTypes.func,
   sendOtp: PropTypes.func,

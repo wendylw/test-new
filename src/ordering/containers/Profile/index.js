@@ -10,13 +10,14 @@ import { put } from '../../../utils/request';
 import { toISODateString } from '../../../utils/datetime-lib';
 import url from '../../../utils/url';
 import './Profile.scss';
+import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 
 const { API_URLS } = url;
 class Profile extends Component {
   componentDidMount() {
     const { appActions, user } = this.props;
     const { consumerId } = user || {};
-    appActions.getProfileInfo(consumerId);
+    consumerId && appActions.getProfileInfo(consumerId);
   }
 
   handleClickBack = () => {
@@ -29,9 +30,10 @@ class Profile extends Component {
   };
 
   saveProfile = async () => {
-    const { user, history, appActions } = this.props;
+    const { user, history, deliveryDetails, customerActions } = this.props;
     const { consumerId, profile } = user || {};
     const { name, email, birthday } = profile || {};
+    const { username } = deliveryDetails || {};
     // appActions.createOrUpdateProfile();
     // const { name, date, email } = this.state;
     const createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
@@ -43,6 +45,7 @@ class Profile extends Component {
     const response = await put(createdUrl.url, data);
     const { success } = response;
     if (success) {
+      !username && customerActions.patchDeliveryDetails({ username: name });
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
@@ -138,9 +141,11 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Profile);

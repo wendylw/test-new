@@ -15,6 +15,7 @@ import Utils from '../../../utils/utils';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
+import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 
 class PageLogin extends React.Component {
   state = {
@@ -32,11 +33,14 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = () => {
-    const { history, location, user } = this.props;
+    const { history, location, user, deliveryDetails, customerActions } = this.props;
+    const { username } = deliveryDetails || {};
     const { nextPage } = location;
     const { profile } = user || {};
     const { name: consumerName } = profile || {};
     if (nextPage && consumerName) {
+      !username && customerActions.patchDeliveryDetails({ username: consumerName });
+
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
@@ -72,6 +76,10 @@ class PageLogin extends React.Component {
     this.setState({ sendOtp: true });
   }
 
+  updateOtpStatus() {
+    this.props.appActions.updateOtpStatus();
+  }
+
   async handleWebLogin(otp) {
     const { appActions } = this.props;
 
@@ -90,7 +98,7 @@ class PageLogin extends React.Component {
 
   renderOtpModal() {
     const { t, user } = this.props;
-    const { isFetching, isLogin, hasOtp } = user || {};
+    const { isFetching, isLogin, hasOtp, isError } = user || {};
 
     if (!hasOtp || isLogin) {
       return null;
@@ -104,7 +112,9 @@ class PageLogin extends React.Component {
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
+        updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
+        isError={isError}
       />
     );
   }
@@ -189,9 +199,11 @@ export default compose(
     state => ({
       user: getUser(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
+      deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(PageLogin);

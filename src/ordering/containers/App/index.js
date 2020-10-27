@@ -203,7 +203,7 @@ class App extends Component {
           />
         ) : null}
         <Routes />
-        <Login className="aside" title={prompt} />
+        {/*<Login className="aside" title={prompt} />*/}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
