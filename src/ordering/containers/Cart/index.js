@@ -18,7 +18,7 @@ import { actions as promotionActionCreators } from '../../redux/modules/promotio
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
-import { actions as customerActionCreators } from '../../redux/modules/customer';
+import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
 import './OrderingCart.scss';
@@ -63,7 +63,8 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history } = this.props;
+    const { user, history, customerActions, deliveryDetails } = this.props;
+    const { username } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name } = profile || {};
 
@@ -92,6 +93,7 @@ class Cart extends Component {
           birthday,
           phone,
         });
+        !username && customerActions.patchDeliveryDetails({ username: firstName });
         firstName
           ? history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
@@ -464,6 +466,7 @@ export default compose(
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
