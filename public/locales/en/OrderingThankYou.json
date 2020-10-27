@@ -43,5 +43,6 @@
   "CallDriver": "Call Driver",
   "ReportOrder": "Report Order",
   "TrackOrder": "Track Order",
-  "DeliveryBy": "Delivered by {{name}}"
+  "DeliveryBy": "Delivered by {{name}}",
+  "ReportIssue": "Report Issue"
 }

@@ -156,5 +156,6 @@
   "OnlineBanking": "Online Banking",
   "CreditAndDebitCard": "Credit/Debit Card",
   "SelectStore": "Select a Store",
-  "DeliveryHelpText": "Please key in your address to add items to your cart"
+  "DeliveryHelpText": "Please key in your address to add items to your cart",
+  "Reorder": "Reorder"
 }
