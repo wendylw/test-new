@@ -86,20 +86,18 @@ export class ThankYou extends PureComponent {
     this.loadOrder();
   }
 
-  updateAppLocationAndStatus = () => {
+  updateAppLocationAndStatus = (updatedStatus, riderLocations = []) => {
     //      nOrderStatusChanged(status: String) // 更新Order Status
     //      updateStorePosition(lat: Double, lng: Double) // 更新商家坐标
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const { order } = this.props;
-    const { status } = order;
-
+    const [lat, lng] = riderLocations;
     if (window.androidInterface) {
-      window.androidInterface.onOrderStatusChanged(status);
-      window.androidInterface.updateStorePosition(-33.849, 151.208);
-      window.androidInterface.updateHomePosition(-33.852, 151.212);
-      window.androidInterface.updateRiderPosition(-33.855, 151.223);
+      window.androidInterface.onOrderStatusChanged(updatedStatus);
+      window.androidInterface.updateStorePosition(lat, lng);
+      window.androidInterface.updateHomePosition(lat, lng);
+      window.androidInterface.updateRiderPosition(lat, lng);
     } else if (window.webkit) {
       // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
       // TODO update for ios
@@ -114,11 +112,13 @@ export class ThankYou extends PureComponent {
       clearInterval(this.timer);
       const { order } = this.props;
       const { status } = order;
-      this.updateAppLocationAndStatus();
 
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
-        const { updatedStatus } = this.props;
+        const { updatedStatus, riderLocations } = this.props;
+
+        this.updateAppLocationAndStatus(updatedStatus, riderLocations);
+
         console.log(updatedStatus, 'updatedStatus');
         if (updatedStatus !== status) {
           await this.loadOrder();
@@ -1138,6 +1138,7 @@ export default compose(
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
       updatedStatus: getLoadOrderStatus(state),
+      riderLocations: getRiderLocations(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
