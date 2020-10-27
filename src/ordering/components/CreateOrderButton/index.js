@@ -12,7 +12,7 @@ import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
 
 const { ROUTER_PATHS, CREATE_ORDER_ERROR_CODES } = Constants;
-const { PRODUCT_SOLD_OUT } = CREATE_ORDER_ERROR_CODES;
+const { PRODUCT_SOLD_OUT, PRODUCT_SOLD_OUT_EC } = CREATE_ORDER_ERROR_CODES;
 
 class CreateOrderButton extends React.Component {
   componentDidMount() {
@@ -105,18 +105,6 @@ class CreateOrderButton extends React.Component {
           }, 2000);
         }
 
-        return;
-      } else if (code === PRODUCT_SOLD_OUT) {
-        Utils.setSessionVariable('isHaveProductSoldOut', true);
-
-        this.setTimeoutObject = setTimeout(() => {
-          clearTimeout(this.setTimeoutObject);
-
-          history.push({
-            pathname: ROUTER_PATHS.ORDERING_CART,
-            search: window.location.search,
-          });
-        }, 2000);
         return;
       }
 

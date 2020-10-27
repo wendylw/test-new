@@ -74,7 +74,7 @@ class PageLogin extends React.Component {
   renderOtpModal() {
     const { t, user } = this.props;
     const { isFetching, isLogin, hasOtp } = user || {};
-
+    const { RESEND_OTP_TIME } = Constants;
     if (!hasOtp || isLogin) {
       return null;
     }
@@ -82,7 +82,7 @@ class PageLogin extends React.Component {
     return (
       <OtpModal
         buttonText={t('OK')}
-        ResendOtpTime={20}
+        ResendOtpTime={RESEND_OTP_TIME}
         phone={Utils.getLocalStorageVariable('user.p')}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}

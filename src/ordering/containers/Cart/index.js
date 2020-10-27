@@ -280,9 +280,30 @@ class Cart extends Component {
     );
   }
 
+  checkCartItemSoldOut = (shoppingCart = {}) => {
+    const { unavailableItems = [], items = [] } = shoppingCart;
+    const cartList = [...unavailableItems, ...items];
+
+    for (let i = 0; i < cartList.length; i++) {
+      const cartItem = cartList[i];
+      const { markedSoldOut, variations } = cartItem;
+
+      if (markedSoldOut) {
+        return true;
+      }
+
+      if (Array.isArray(variations) && variations.length > 0) {
+        if (variations.find(variation => variation.markedSoldOut)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder, cartContainerHeight, isHaveProductSoldOut } = this.state;
+    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -291,7 +312,7 @@ class Cart extends Component {
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-
+    // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
       t('PayNow')
     ) : (
