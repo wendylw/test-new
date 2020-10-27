@@ -1,13 +1,38 @@
 @import "../../../../../Variables.scss";
 
 .variation-selector {
+  border-top: 8px solid $gray-5;
+  padding-top: 4.8vw;
+
   &__list {
     flex-wrap: wrap;
   }
 
   &__item {
-    display: inline-block;
-    max-width: 80%;
+    border-bottom: 1px solid $gray-4;
+    color: $status-gray;
+
+    &:last-child {
+      border: 0;
+    }
+  }
+
+  &__title &__title-name,
+  &__title &__title-info {
+    padding-right: 0;
+  }
+
+  .text-gray {
+    color: $status-gray;
+  }
+
+  .active {
+    color: $main-color;
+  }
+
+  &__operator {
+    position: relative;
+    margin-right: 0;
   }
 
   &__button {
@@ -23,5 +48,11 @@
 
   &__button-shadow {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+@media (min-width: 420px) {
+  .variation-selector {
+    padding-top: 20px;
   }
 }

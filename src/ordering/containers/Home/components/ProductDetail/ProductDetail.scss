@@ -5,65 +5,15 @@
 
   &__container {
     bottom: 0;
-    max-height: 80%;
-  }
-
-  &__variations {
-    max-height: 100%;
+    height: 100%;
     overflow-y: auto;
-  }
-
-  &__variations,
-  &__operator {
-    width: 100%;
-  }
-
-  &__item .item-operator {
-    padding: 0 0.7vw;
-  }
-}
-
-.product-description {
-  .swipe {
-    height: 100%;
-  }
-
-  &__hide {
-    display: none;
-  }
-
-  &__container {
-    bottom: 0;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  &__image-container {
+    border-radius: 0;
     position: relative;
-    height: 30%;
-    overflow: hidden;
   }
 
-  &__icon-close {
-    position: absolute;
-    top: 0;
-    left: 0;
-    fill: $white;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    z-index: 1;
-  }
-
-  &__single-image {
-    position: absolute;
-    width: 100%;
-  }
-
-  &__single-image img {
-    width: 100%;
+  &__wrapper {
     height: 100%;
-    object-fit: cover;
-    object-position: center;
+    overflow-y: auto;
   }
 
   &__dot-list {
@@ -86,13 +36,59 @@
     }
   }
 
+  &.cover {
+    z-index: 101;
+  }
+
+  &__icon-close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    fill: $white;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    z-index: 200;
+    transform: translateZ(10px);
+  }
+
+  &__image-container {
+    height: 24vh;
+    overflow: hidden;
+  }
+
+  &__image-container .pagination-hidden {
+    display: none;
+  }
+
+  &__image-container .swiper-wrapper {
+    align-items: center;
+  }
+
+  &__image,
+  &__image-content {
+    height: 100%;
+  }
+
+  &__image-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  &__image .swiper-pagination-bullet-active {
+    background: $theme-color;
+  }
+
   &__info {
-    position: relative;
-    min-height: 20%;
   }
 
   &__info-summary {
-    height: 100%;
+    width: 100%;
+  }
+
+  &__title {
+    word-break: break-word;
   }
 
   &__info-title {
@@ -101,23 +97,42 @@
   }
 
   &__info-tag {
-    position: absolute;
-    right: 0;
-    bottom: 0;
     display: inline-block;
   }
 
   &__article {
-    height: 100%;
     overflow-y: auto;
   }
-}
 
-@media (min-width: 420px) {
-  .product-detail {
-    &__item,
-    &__item .item-operator {
-      padding: 0 4px;
-    }
+  &__variations,
+  &__operator {
+    width: 100%;
+  }
+
+  &__variations .item-operator {
+    position: static;
+  }
+
+  &__operators {
+    width: 100%;
+    background: $white;
+  }
+
+  &__operators .item-operator {
+    position: static;
+    transform: scale(1.3);
+  }
+
+  &__item .item-operator {
+    padding: 0 0.7vw;
+  }
+
+  &__footer {
+    width: 100%;
+    background-color: $main-color;
+  }
+
+  .add__button {
+    width: 100%;
   }
 }
