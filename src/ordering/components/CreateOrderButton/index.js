@@ -106,17 +106,6 @@ class CreateOrderButton extends React.Component {
         }
 
         return;
-      } else if (code === PRODUCT_SOLD_OUT || code === PRODUCT_SOLD_OUT_EC) {
-        // FB-1518: not release for now
-        // Utils.setSessionVariable('isHaveProductSoldOut', true);
-        // this.setTimeoutObject = setTimeout(() => {
-        //   clearTimeout(this.setTimeoutObject);
-        //   history.push({
-        //     pathname: ROUTER_PATHS.ORDERING_CART,
-        //     search: window.location.search,
-        //   });
-        // }, 2000);
-        // return;
       }
 
       newOrderId = orderId;
