@@ -184,6 +184,10 @@ img {
   display: none;
 }
 
+.block {
+  display: block;
+}
+
 .flex {
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -297,6 +301,10 @@ img {
 
 .padding-top-bottom-small {
   padding-top: 2.4vw;
+  padding-bottom: 2.4vw;
+}
+
+.padding-bottom-small {
   padding-bottom: 2.4vw;
 }
 
@@ -943,6 +951,9 @@ img {
 
   .padding-top-bottom-small {
     padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .padding-bottom-small {
     padding-bottom: 8px;
   }
 

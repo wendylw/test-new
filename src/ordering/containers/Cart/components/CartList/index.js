@@ -90,7 +90,11 @@ class CartList extends Component {
               action: 'edit',
               productId,
               quantity: quantity - 1,
-              variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
+              variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+                variationId,
+                optionId,
+                quantity,
+              })),
             });
           }
         }}
@@ -100,7 +104,11 @@ class CartList extends Component {
             action: 'edit',
             productId,
             quantity: quantity + 1,
-            variations: (variations || []).map(({ variationId, optionId }) => ({ variationId, optionId })),
+            variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+              variationId,
+              optionId,
+              quantity,
+            })),
           });
         }}
       />
@@ -133,11 +141,7 @@ class CartList extends Component {
       return cartItems.sort(sortFn).map(this.generateProductItemView);
     };
 
-    return (
-      <ul className="list" data-heap-name="ordering.common.cart-list">
-        {generateCartItemUI()}
-      </ul>
-    );
+    return <ul data-heap-name="ordering.common.cart-list">{generateCartItemUI()}</ul>;
   }
 }
 

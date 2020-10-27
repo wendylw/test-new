@@ -511,9 +511,7 @@ export class Home extends Component {
   };
 
   handleToggleAside(asideName) {
-    const stopBodyScroll =
-      this.state.viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION &&
-      asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
+    const stopBodyScroll = asideName === Constants.ASIDE_NAMES.PRODUCT_DETAIL;
 
     if (!stopBodyScroll) {
       this.toggleBodyScroll(asideName === Constants.ASIDE_NAMES.CARTMODAL_HIDE ? false : !!asideName);
@@ -869,10 +867,7 @@ export class Home extends Component {
         <ProductDetail
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
-          show={
-            viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL ||
-            viewAside === Constants.ASIDE_NAMES.PRODUCT_DESCRIPTION
-          }
+          show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
         />
