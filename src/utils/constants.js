@@ -138,6 +138,7 @@ const REQUEST_ERROR_KEYS = {
   500: 'Server Error',
   40004: 'QROrdering Disabled',
   40005: 'No Business',
+  40000: 'Email has been occupied',
 };
 
 const LOGIN_PROMPT = {
@@ -253,6 +254,13 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40022Title',
     desc: 'ApiError:40022Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40024: {
+    title: 'ApiError:40024Title',
+    desc: 'ApiError:40024Description',
+    redirectUrl: '',
     buttonText: 'Common:Continue',
     showModal: true,
   },
