@@ -95,7 +95,7 @@ export class MerchantInfo extends Component {
                 {t('StoreAddress')}
               </summary>
               <span className="ordering-merchant-info__description padding-top-bottom-smaller text-line-height-base text-opacity">
-                {Utils.getValidAddress(storesInfo || {}, Constants.ADDRESS_RANGE.CITY)}
+                {Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.CITY)}
               </span>
             </li>
           </ul>
