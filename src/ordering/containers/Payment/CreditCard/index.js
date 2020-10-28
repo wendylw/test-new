@@ -61,9 +61,16 @@ class CreditCard extends Component {
 
     this.setState({ domLoaded: true });
 
-    const { homeActions } = this.props;
+    const { homeActions, deliveryDetails } = this.props;
+    const { deliveryToLocation } = deliveryDetails || {};
 
-    homeActions.loadShoppingCart();
+    homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   }
 
   getPaymentEntryRequestData = () => {

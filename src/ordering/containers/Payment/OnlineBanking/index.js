@@ -32,8 +32,17 @@ class OnlineBanking extends Component {
   };
 
   componentDidMount() {
+    const { deliveryDetails } = this.props;
+    const { deliveryToLocation } = deliveryDetails || {};
+
     this.updateBankList();
-    this.props.homeActions.loadShoppingCart();
+    this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   }
 
   getPaymentEntryRequestData = () => {

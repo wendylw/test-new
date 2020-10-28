@@ -363,7 +363,16 @@ class Stripe extends Component {
   };
 
   componentDidMount() {
-    this.props.homeActions.loadShoppingCart();
+    const { deliveryDetails } = this.props;
+    const { deliveryToLocation } = deliveryDetails || {};
+
+    this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   }
 
   getPaymentEntryRequestData = () => {

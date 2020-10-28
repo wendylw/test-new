@@ -43,11 +43,18 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { payments, unavailablePaymentList } = this.props;
+    const { payments, unavailablePaymentList, deliveryDetails } = this.props;
     const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
+    const { deliveryToLocation } = deliveryDetails || {};
 
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
-    await this.props.homeActions.loadShoppingCart();
+    await this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   };
 
   componentDidUpdate(prevProps, prevStates) {
