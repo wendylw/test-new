@@ -691,12 +691,22 @@ export class ThankYou extends PureComponent {
           status !== 'paid' &&
           storePhone && (
             <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-              <a
-                href={`tel:${storePhone}`}
-                className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-              >
-                {t('CallStore')}
-              </a>
+              {Utils.isWebview() ? (
+                <a
+                  href={`tel:${storePhone}`}
+                  className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                >
+                  {t('CallStore')}
+                </a>
+              ) : (
+                <a
+                  href="javascript: void(0)"
+                  onClick={() => this.copyPhoneNumber(storePhone)}
+                  className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                >
+                  {t('CallStore')}
+                </a>
+              )}
             </div>
           )
         ) : (
@@ -707,7 +717,7 @@ export class ThankYou extends PureComponent {
                   (Utils.isWebview() ? (
                     <button
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
-                      onClick={this.copyPhoneNumber(storePhone)}
+                      onClick={() => this.copyPhoneNumber(storePhone)}
                     >
                       {t('CallStore')}
                     </button>
@@ -721,7 +731,7 @@ export class ThankYou extends PureComponent {
                   ))}
                 {Utils.isWebview() ? (
                   <button
-                    onClick={this.copyPhoneNumber(driverPhone)}
+                    onClick={() => this.copyPhoneNumber(driverPhone)}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
