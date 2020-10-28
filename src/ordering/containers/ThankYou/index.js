@@ -70,6 +70,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
+    alert(Utils.isWebview());
   }
 
   loadOrder = async () => {
