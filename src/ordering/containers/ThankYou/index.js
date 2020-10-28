@@ -703,7 +703,7 @@ export class ThankYou extends PureComponent {
             {status === 'confirmed' && (
               <React.Fragment>
                 {storePhone &&
-                  (Utils.isWebview() || true ? (
+                  (Utils.isWebview() ? (
                     <a
                       href="javascript:void(0)"
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
@@ -747,7 +747,7 @@ export class ThankYou extends PureComponent {
                     {t('TrackOrder')}
                   </a>
                 ) : null}
-                {Utils.isWebview() || true ? (
+                {Utils.isWebview() ? (
                   <a
                     href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone)}
@@ -781,7 +781,7 @@ export class ThankYou extends PureComponent {
   };
 
   copyPhoneNumber = phone => {
-    console.log('copy');
+    alert('copy');
     const input = document.createElement('input');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('value', '+' + phone);
