@@ -64,9 +64,9 @@ class Cart extends Component {
 
   handleClickContinue = async () => {
     const { user, history, customerActions, deliveryDetails } = this.props;
-    const { username } = deliveryDetails || {};
+    const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
-    const { name } = profile || {};
+    const { name, phone } = profile || {};
 
     if (!isLogin) {
       history.push({
@@ -78,8 +78,9 @@ class Cart extends Component {
 
     // if have name, redirect to customer page
     // if have consumerId, get profile first and update consumer profile, then redirect to next page
-    if (isLogin && name) {
+    if (isLogin && name && phone) {
       !username && customerActions.patchDeliveryDetails({ username: name });
+      !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
@@ -95,6 +96,7 @@ class Cart extends Component {
           phone,
         });
         !username && customerActions.patchDeliveryDetails({ username: firstName });
+        !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
         firstName
           ? history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,

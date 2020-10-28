@@ -34,18 +34,19 @@ class PageLogin extends React.Component {
 
   visitNextPage = () => {
     const { history, location, user, deliveryDetails, customerActions } = this.props;
-    const { username } = deliveryDetails || {};
+    const { username, phone: orderPhone } = deliveryDetails || {};
     const { nextPage } = location;
     const { profile } = user || {};
-    const { name: consumerName } = profile || {};
-    if (nextPage && consumerName) {
-      !username && customerActions.patchDeliveryDetails({ username: consumerName });
+    const { name, phone } = profile || {};
+    if (nextPage && name) {
+      !username && customerActions.patchDeliveryDetails({ username: name });
+      !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
       });
-    } else if (nextPage && !consumerName) {
+    } else if (nextPage && !name) {
       history.push({
         pathname: Constants.ROUTER_PATHS.PROFILE,
         search: window.location.search,
