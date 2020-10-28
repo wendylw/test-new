@@ -12,7 +12,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
-import { fetchDeliveryDetails } from '../../containers/Customer-1/utils';
+import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
 import { getPaymentList, getUnavailablePaymentList } from '../../containers/Payment/utils';
