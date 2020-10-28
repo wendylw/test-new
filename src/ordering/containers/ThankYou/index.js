@@ -693,15 +693,15 @@ export class ThankYou extends PureComponent {
             <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
               {Utils.isWebview() ? (
                 <a
-                  href={`tel:${storePhone}`}
+                  href="javascript:void(0)"
+                  onClick={() => this.copyPhoneNumber(storePhone)}
                   className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
                 >
                   {t('CallStore')}
                 </a>
               ) : (
                 <a
-                  href="javascript: void(0)"
-                  onClick={() => this.copyPhoneNumber(storePhone)}
+                  href={`tel:${storePhone}`}
                   className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
                 >
                   {t('CallStore')}
