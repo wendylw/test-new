@@ -32,15 +32,15 @@ class PageLogin extends React.Component {
     }
   }
 
-  visitNextPage = () => {
+  visitNextPage = async () => {
     const { history, location, user, deliveryDetails, customerActions } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { nextPage } = location;
     const { profile } = user || {};
     const { name, phone } = profile || {};
     if (nextPage && name) {
-      !username && customerActions.patchDeliveryDetails({ username: name });
-      !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
+      !username && (await customerActions.patchDeliveryDetails({ username: name }));
+      !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,

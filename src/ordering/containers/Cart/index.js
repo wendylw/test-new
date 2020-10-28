@@ -78,9 +78,9 @@ class Cart extends Component {
 
     // if have name, redirect to customer page
     // if have consumerId, get profile first and update consumer profile, then redirect to next page
-    if (isLogin && name && phone) {
-      !username && customerActions.patchDeliveryDetails({ username: name });
-      !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
+    if (isLogin && name) {
+      !username && (await customerActions.patchDeliveryDetails({ username: name }));
+      !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
@@ -95,8 +95,8 @@ class Cart extends Component {
           birthday,
           phone,
         });
-        !username && customerActions.patchDeliveryDetails({ username: firstName });
-        !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
+        !username && (await customerActions.patchDeliveryDetails({ username: firstName }));
+        !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
         firstName
           ? history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
