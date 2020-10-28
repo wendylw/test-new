@@ -17,6 +17,7 @@ import {
   getBusinessInfo,
   getReceiptNumber,
   getLoadOrderStatus,
+  getRiderLocations,
 } from '../../redux/modules/thankYou';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
 
@@ -86,13 +87,13 @@ export class ThankYou extends PureComponent {
     this.loadOrder();
   }
 
-  updateAppLocationAndStatus = (updatedStatus, riderLocations = []) => {
+  updateAppLocationAndStatus = (updatedStatus, riderLocations) => {
     //      nOrderStatusChanged(status: String) // 更新Order Status
     //      updateStorePosition(lat: Double, lng: Double) // 更新商家坐标
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const [lat, lng] = riderLocations;
+    const [lat = null, lng = null] = riderLocations || [];
     if (window.androidInterface) {
       window.androidInterface.onOrderStatusChanged(updatedStatus);
       window.androidInterface.updateStorePosition(lat, lng);
@@ -115,11 +116,10 @@ export class ThankYou extends PureComponent {
 
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
-        const { updatedStatus, riderLocations } = this.props;
+        const { updatedStatus, riderLocations = [] } = this.props;
 
         this.updateAppLocationAndStatus(updatedStatus, riderLocations);
 
-        console.log(updatedStatus, 'updatedStatus');
         if (updatedStatus !== status) {
           await this.loadOrder();
         }
@@ -405,6 +405,12 @@ export class ThankYou extends PureComponent {
       clearTimeout(timer);
     }, ANIMATION_TIME);
   };
+
+  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS) => {
+    const { PICKUP, DELIVERED } = CONSUMERFLOW_STATUS;
+
+    return !(isWebview && (status === PICKUP || status === DELIVERED) && Utils.isDeliveryType());
+  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
@@ -427,7 +433,7 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
     };
-    const { user } = this.props;
+    const { user, updatedStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -509,7 +515,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {!isWebview && (
+        {this.isRenderImage(isWebview, updatedStatus, CONSUMERFLOW_STATUS) && (
           <img
             className="ordering-thanks__image padding-normal margin-normal"
             src={currentStatusObj.bannerImage}
