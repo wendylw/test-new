@@ -699,7 +699,7 @@ export class ThankYou extends PureComponent {
               {Utils.isWebview() && !supportCallPhone ? (
                 <a
                   href="javascript:void(0)"
-                  onClick={() => this.copyPhoneNumber(storePhone)}
+                  onClick={() => this.copyPhoneNumber(storePhone, 'store')}
                   className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
                 >
                   {t('CallStore')}
@@ -723,7 +723,7 @@ export class ThankYou extends PureComponent {
                     <a
                       href="javascript:void(0)"
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
-                      onClick={() => this.copyPhoneNumber(storePhone)}
+                      onClick={() => this.copyPhoneNumber(storePhone, 'store')}
                     >
                       {t('CallStore')}
                     </a>
@@ -738,7 +738,7 @@ export class ThankYou extends PureComponent {
                 {Utils.isWebview() && !supportCallPhone ? (
                   <a
                     href="javascript:void(0)"
-                    onClick={() => this.copyPhoneNumber(driverPhone)}
+                    onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
@@ -766,7 +766,7 @@ export class ThankYou extends PureComponent {
                 {Utils.isWebview() && !supportCallPhone ? (
                   <a
                     href="javascript:void(0)"
-                    onClick={() => this.copyPhoneNumber(driverPhone)}
+                    onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
@@ -796,11 +796,14 @@ export class ThankYou extends PureComponent {
     );
   };
 
-  copyPhoneNumber = phone => {
+  copyPhoneNumber = (phone, PhoneName) => {
     const { t } = this.props;
     const input = document.createElement('input');
     const title = t('CopyTitle');
-    const content = t('CopyDescription', { phone });
+    const content =
+      PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
+    // "CopyStoreDescription": "Store's contact number (+{{phone}}) has been copied to your clipboard",
+    // "CopyDriverDescription": "Driver's contact number (+{{phone}}) has been copied to your clipboard",
 
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('value', '+' + phone);
