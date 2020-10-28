@@ -29,10 +29,9 @@ class Profile extends Component {
   }
 
   handleClickBack = () => {
-    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
     this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: newSearchParams,
+      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      search: window.location.search,
     });
   };
 
