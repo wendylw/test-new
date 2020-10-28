@@ -51,6 +51,7 @@ class PageLogin extends React.Component {
         search: window.location.search,
       });
     } else {
+      !username && customerActions.patchDeliveryDetails({ username: consumerName });
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART,
         search: window.location.search,
