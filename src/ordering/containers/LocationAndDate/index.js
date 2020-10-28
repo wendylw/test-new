@@ -1233,8 +1233,12 @@ class LocationAndDate extends Component {
   };
 
   goToNext = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
     const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
+    const urlType = Utils.getOrderTypeFromUrl();
+    const currentType = isPickUpType ? DELIVERY_METHOD.PICKUP : DELIVERY_METHOD.DELIVERY;
 
     if (isPickUpType) delete selectedHour.to;
 
@@ -1246,14 +1250,14 @@ class LocationAndDate extends Component {
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
-    if (typeof callbackUrl === 'string') {
-      if (callbackUrl.split('?')[0] === '/customer') {
+    if (typeof callbackUrl === 'string' || (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO && urlType !== currentType)) {
+      if ((callbackUrl || '').split('?')[0] === '/customer') {
         // from customer
         this.checkDetailChange(search);
       } else {
         // from ordering
         window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-          callbackUrl.split('?')[0]
+          callbackUrl ? callbackUrl.split('?')[0] : ''
         }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
         // history.replace({
         //   pathname: callbackUrl.split('?')[0],

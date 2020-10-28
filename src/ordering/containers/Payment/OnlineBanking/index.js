@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
+import qs from 'qs';
 import React, { Component } from 'react';
 import _find from 'lodash/find';
 import { withTranslation } from 'react-i18next';
@@ -15,6 +16,7 @@ import config from '../../../../config';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
@@ -31,9 +33,24 @@ class OnlineBanking extends Component {
     payNowLoading: false,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    const { history, deliveryDetails, customerActions } = this.props;
+    const { addressId } = deliveryDetails || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    !addressId && (await customerActions.initDeliveryDetails(type));
     this.updateBankList();
-    this.props.homeActions.loadShoppingCart();
+
+    const { deliveryDetails: newDeliveryDetails } = this.props;
+    const { deliveryToLocation } = newDeliveryDetails || {};
+
+    this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   }
 
   getPaymentEntryRequestData = () => {
@@ -236,11 +253,13 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(OnlineBanking);
