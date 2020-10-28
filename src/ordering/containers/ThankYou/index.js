@@ -54,8 +54,13 @@ export class ThankYou extends PureComponent {
     super(props);
     this.state = {
       cashbackSuccessImage,
-      isWebview: Utils.isWebview(),
+      isHideTopArea: false,
     };
+
+    const isNeedHideTopArea = Utils.getQueryVariable('hideTopArea');
+    if (isNeedHideTopArea) {
+      this.state.isHideTopArea = true;
+    }
 
     this.injectFun();
   }
@@ -411,8 +416,9 @@ export class ThankYou extends PureComponent {
 
   isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS) => {
     const { PICKUP, DELIVERED } = CONSUMERFLOW_STATUS;
+    const { isHideTopArea } = this.state;
 
-    return !(isWebview && (status === PICKUP || status === DELIVERED) && Utils.isDeliveryType());
+    return !(isWebview && isHideTopArea && (status === PICKUP || status === DELIVERED) && Utils.isDeliveryType());
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
@@ -438,6 +444,7 @@ export class ThankYou extends PureComponent {
     };
     const { user, updatedStatus } = this.props;
     const { isWebview } = user;
+    const { isHideTopArea } = this.state;
 
     let currentStatusObj = {};
     // status = CONFIMRMED;
@@ -1011,6 +1018,7 @@ export class ThankYou extends PureComponent {
     let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
+    const { isHideTopArea } = this.state;
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
@@ -1030,7 +1038,7 @@ export class ThankYou extends PureComponent {
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
-          {!isWebview && (
+          {!isWebview && !isHideTopArea && (
             <Header
               headerRef={ref => (this.headerEl = ref)}
               className="flex-middle border__bottom-divider"
