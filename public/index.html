@@ -138,7 +138,19 @@
         window.heap && window.heap.track('common.google-maps-auth-errors');
       }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=quarterly&key=%REACT_APP_GOOGLE_MAPS_API_KEY%&libraries=geometry,places"></script>
+    <script>
+      (function () {
+        // fix FB-1755: Some browsers caches the google maps script for a long time, which makes the token expired.
+        // In order to solve this, we force the browser to refetch the script after 12 hours. This won't have too
+        // much impact on performance, because the content of the script changes every day, so the cache is invalidated
+        // anyway.
+        var script = document.createElement('script');
+        var GOOGLE_MAPS_INVALIDATE_INTERVAL = 12 * 3600 * 1000;
+        var timestamp = Math.floor(Date.now() / GOOGLE_MAPS_INVALIDATE_INTERVAL) * GOOGLE_MAPS_INVALIDATE_INTERVAL;
+        script.src = "https://maps.googleapis.com/maps/api/js?v=quarterly&key=%REACT_APP_GOOGLE_MAPS_API_KEY%&libraries=geometry,places&timestamp=" + timestamp;
+        document.body.appendChild(script);
+      })();
+    </script>
   </body>
 
 </html>
