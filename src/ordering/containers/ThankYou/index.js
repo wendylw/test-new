@@ -101,7 +101,11 @@ export class ThankYou extends PureComponent {
       window.androidInterface.updateRiderPosition(lat, lng);
     } else if (window.webkit) {
       // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
-      // TODO update for ios
+
+      window.webkit.messageHandlers.onOrderStatusChanged.postMessage(updatedStatus);
+      window.webkit.messageHandlers.updateStorePosition.postMessage(lat, lng);
+      window.webkit.messageHandlers.updateHomePosition.postMessage(lat, lng);
+      window.webkit.messageHandlers.updateRiderPosition.postMessage(lat, lng);
     }
   };
 
@@ -154,21 +158,20 @@ export class ThankYou extends PureComponent {
     const { order = {}, t } = this.props;
     const { orderId, tableId } = order;
     const isDelivery = Utils.isDeliveryType() || Utils.isPickUpType();
+    const appMesage = JSON.stringify({
+      title: isDelivery ? `#${orderId}` : t('OrderPaid'),
+      rightButtons: [
+        {
+          text: !Utils.isDineInType() ? t('ContactUs') : t('TableIdText', { tableId }),
+          callbackName: 'contactUs',
+        },
+      ],
+    });
 
     if (window.androidInterface) {
-      window.androidInterface.updateHeaderOptions(
-        JSON.stringify({
-          title: isDelivery ? `#${orderId}` : t('OrderPaid'),
-          rightButtons: [
-            {
-              text: !Utils.isDineInType() ? t('ContactUs') : t('TableIdText', { tableId }),
-              callbackName: 'contactUs',
-            },
-          ],
-        })
-      );
+      window.androidInterface.updateHeaderOptions(appMesage);
     } else if (window.webkit) {
-      // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+      window.webkit.messageHandlers.updateHeaderOptions.postMessage(appMesage);
     }
   };
 
