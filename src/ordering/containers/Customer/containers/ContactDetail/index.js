@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Utils from '../../../../../utils/utils';
 import Header from '../../../../../components/Header';
 import constants from '../../../../../utils/constants';
@@ -104,7 +104,7 @@ class ContactDetail extends Component {
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
-            disabled={!username || !username.length || !phone}
+            disabled={!username || !username.length || !isValidPhoneNumber(phone)}
             onClick={this.handleClickContinue}
           >
             {t('Continue')}

@@ -79,6 +79,7 @@ class Cart extends Component {
     // if have name, redirect to customer page
     // if have consumerId, get profile first and update consumer profile, then redirect to next page
     if (isLogin && name) {
+      !username && customerActions.patchDeliveryDetails({ username: name });
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
