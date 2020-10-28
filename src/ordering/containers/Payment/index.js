@@ -1,3 +1,4 @@
+import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import Header from '../../../components/Header';
@@ -10,6 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators } from '../../redux/modules/app';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -43,11 +45,17 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { payments, unavailablePaymentList, deliveryDetails } = this.props;
+    const { history, payments, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
     const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
-    const { deliveryToLocation } = deliveryDetails || {};
+    const { addressId } = deliveryDetails || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
+    !addressId && (await customerActions.initDeliveryDetails(type));
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
+
+    const { deliveryDetails: newDeliveryDetails } = this.props;
+    const { deliveryToLocation } = newDeliveryDetails || {};
+
     await this.props.homeActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
@@ -296,12 +304,14 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(PaymentContainer);
