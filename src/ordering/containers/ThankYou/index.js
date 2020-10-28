@@ -57,9 +57,18 @@ export class ThankYou extends PureComponent {
       isHideTopArea: false,
     };
 
-    const isNeedHideTopArea = Utils.getQueryVariable('hideTopArea');
-    if (isNeedHideTopArea) {
-      this.state.isHideTopArea = true;
+    try {
+      if (Utils.isAndroidWebview()) {
+        const res = window.androidInterface.getAppVersion();
+        if (res >= '1.0.1') this.state.isHideTopArea = true;
+      }
+
+      if (Utils.isIOSWebview()) {
+        const res = window.prompt('getAppVersion');
+        if (res >= '1.0.1') this.state.isHideTopArea = true;
+      }
+    } catch (e) {
+      this.state.isHideTopArea = false;
     }
 
     this.injectFun();
