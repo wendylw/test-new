@@ -30,10 +30,18 @@ import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif
 import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
+import logisticsGrab from '../../../images/beep-logistics-grab.png';
+import logisticsGoget from '../../../images/beep-logistics-goget.png';
+import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
+import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.png';
+import beepLogo from '../../../images/beep-logo.svg';
+
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
 import config from '../../../config';
 import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
 import './OrderingThanks.scss';
+import qs from 'qs';
+import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -188,6 +196,28 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  isReportUnsafeDriverButtonDisabled = () => {
+    const { order } = this.props;
+    const { status } = order || {};
+
+    return !CAN_REPORT_STATUS_LIST.includes(status);
+  };
+
+  handleReportUnsafeDriver = () => {
+    if (this.isReportUnsafeDriverButtonDisabled()) {
+      return;
+    }
+
+    const queryParams = {
+      receiptNumber: Utils.getQueryString('receiptNumber'),
+    };
+
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
   renderCashbackUI = cashback => {
     const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
@@ -329,9 +359,9 @@ export class ThankYou extends PureComponent {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    const { total, storeInfo, status, isPreOrder } = order || {};
-    const { name } = storeInfo || {};
-    const { trackingUrl, useStorehubLogistics, courier } =
+    let { total, storeInfo, status, isPreOrder } = order || {};
+    const { name, phone: storePhone } = storeInfo || {};
+    let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
       ist: 'ISTCancelledDescription',
@@ -340,7 +370,8 @@ export class ThankYou extends PureComponent {
     };
 
     let currentStatusObj = {};
-
+    // status = CONFIMRMED;
+    // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
@@ -374,8 +405,8 @@ export class ThankYou extends PureComponent {
         style: {
           width: '75%',
         },
-        firstNote: t('RiderAssigned'),
-        secondNote: t('TrackYourOrder'),
+        firstNote: t('PendingPickUp'),
+        secondNote: t('RiderAssigned'),
         bannerImage: beepOrderStatusConfirmed,
       };
     }
@@ -413,6 +444,8 @@ export class ThankYou extends PureComponent {
       };
     }
 
+    const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
+
     return (
       <React.Fragment>
         <img
@@ -420,90 +453,304 @@ export class ThankYou extends PureComponent {
           src={currentStatusObj.bannerImage}
           alt="Beep Success"
         />
-        <div className="card text-center margin-normal">
-          {currentStatusObj.status !== 'cancelled' ? (
-            <div className="progress-bar__container">
-              <i
-                className={`progress-bar ${currentStatusObj.status !== 'riderPickUp' ? 'not-on-way' : ''}`}
-                style={currentStatusObj.style}
-              ></i>
-            </div>
-          ) : null}
-          <div className="padding-small">
-            {currentStatusObj.status === 'cancelled' ? (
+        {currentStatusObj.status === 'cancelled' ? (
+          <div className="card text-center margin-normal flex">
+            <div className="padding-small text-left">
               <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
                 <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
                   {{ storeName: name }}
                   <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
                 </h4>
               </Trans>
-            ) : (
-              <h4
-                className={`padding-top-bottom-small text-size-big text-weight-bolder ${
-                  (useStorehubLogistics && currentStatusObj.status === 'accepted') || currentStatusObj.status === 'paid'
-                    ? ` ordering-thanks__${currentStatusObj.status}`
-                    : ''
-                }`}
-              >
-                {!useStorehubLogistics && currentStatusObj.status !== 'paid'
-                  ? t('SelfDeliveryTitle', { storeName: name })
-                  : currentStatusObj.firstNote}
-                {(useStorehubLogistics && currentStatusObj.status === 'accepted') ||
-                currentStatusObj.status === 'paid' ? (
-                  <span className="ordering-thanks__title-dots text-size-big text-weight-bolder"></span>
-                ) : null}
-              </h4>
-            )}
-            {currentStatusObj.status === 'paid' ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
-                <p className="ordering-thanks__description text-size-big">{currentStatusObj.secondNote}</p>
-                <span role="img" aria-label="Goofy">
-                  😋
-                </span>
-              </div>
-            ) : null}
-            {useStorehubLogistics &&
-            (currentStatusObj.status === 'confirmed' || currentStatusObj.status === 'riderPickUp') ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
-                {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-                  <a
-                    href={trackingUrl}
-                    target="__blank"
-                    className="ordering-thanks__link-status button button__link text-uppercase text-weight-bolder"
-                    data-heap-name="ordering.thank-you.logistics-tracking-link"
-                  >
-                    {currentStatusObj.secondNote}
-                  </a>
-                ) : (
-                  <p className="text-size-big">{t('ConfirmedDescription', { courier })}</p>
-                )}
-              </div>
-            ) : null}
-
-            {useStorehubLogistics && currentStatusObj.status === 'accepted' ? (
-              <div className="padding-top-bottom-small flex flex-middle flex-center">
-                <IconAccessTime className="icon icon__small" />
-                <span className="text-weight-bolder">{currentStatusObj.secondNote}</span>
-              </div>
-            ) : null}
-
-            {currentStatusObj.status === 'delivered' ? (
-              <div className="thanks__status-description flex flex-middle flex-center">
-                <p className="text-size-big">{currentStatusObj.secondNote}</p>
-              </div>
-            ) : null}
-
-            {!useStorehubLogistics && currentStatusObj.status !== 'paid' && currentStatusObj.status !== 'cancelled' ? (
-              <div className="thanks__status-description flex flex-middle flex-center">
-                <p className="text-size-big">{t('SelfDeliveryDescription')}</p>
-              </div>
-            ) : null}
+            </div>
           </div>
-        </div>
+        ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
+          <div className="card text-center margin-normal flex">
+            {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
+            {/*  /!*{*!/*/}
+            {/*  /!*  <img*!/*/}
+            {/*  /!*    src={*!/*/}
+            {/*  /!*      currentStatusObj.status === 'paid'*!/*/}
+            {/*  /!*        ? beepOrderPaid*!/*/}
+            {/*  /!*        : currentStatusObj.status === 'accepted'*!/*/}
+            {/*  /!*        ? beepOrderAccepted*!/*/}
+            {/*  /!*        : beepOrderConfirmed*!/*/}
+            {/*  /!*    }*!/*/}
+            {/*  /!*    alt=""*!/*/}
+            {/*  /!*  />*!/*/}
+            {/*  /!*}*!/*/}
+            {/*</div>*/}
+            <div className="padding-small text-left">
+              {currentStatusObj.status === 'paid' ? (
+                <React.Fragment>
+                  <h4
+                    className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
+                  >
+                    <i className="ordering-thanks__active "></i>
+                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                      {currentStatusObj.firstNote}
+                    </span>
+                  </h4>
+                  <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
+                    <p className="ordering-thanks__description text-size-big padding-left-right-normal margin-left-right-smaller">
+                      <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
+                      <span role="img" aria-label="Goofy">
+                        😋
+                      </span>
+                    </p>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
+                  <i className="ordering-thanks__prev"></i>
+                  <span className="padding-left-right-normal margin-left-right-smaller">{t('Confirmed')}</span>
+                </div>
+              )}
+
+              {currentStatusObj.status === 'accepted' ? (
+                <React.Fragment>
+                  <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
+                    <i className="ordering-thanks__active"></i>
+                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                      {currentStatusObj.firstNote}
+                    </span>
+                  </h4>
+                  <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
+                    <div className="margin-left-right-smaller flex flex-middle">
+                      <IconAccessTime className="icon icon__small icon__default" />
+                      <span className="">{currentStatusObj.secondNote}</span>
+                    </div>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div
+                  className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
+                    currentStatusObj.status === 'confirmed'
+                      ? 'text-black'
+                      : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
+                  }`}
+                >
+                  {status === 'paid' ? (
+                    <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
+                  ) : (
+                    <i className="ordering-thanks__prev"></i>
+                  )}
+                  <span className="padding-left-right-normal margin-left-right-smaller">
+                    {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
+                  </span>
+                </div>
+              )}
+
+              {currentStatusObj.status === 'confirmed' ? (
+                <React.Fragment>
+                  <h4
+                    className={`flex flex-middle  ordering-thanks__progress-title   padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
+                  >
+                    <i className="ordering-thanks__active"></i>
+                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                      {currentStatusObj.firstNote}
+                    </span>
+                  </h4>
+                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal margin-left-right-smaller">
+                    <span className="padding-left-right-normal margin-left-right-smaller">
+                      {currentStatusObj.secondNote}
+                    </span>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
+                  <i
+                    className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
+                  ></i>
+                  <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {currentStatusObj.status === 'confirmed' ||
+        currentStatusObj.status === 'riderPickUp' ||
+        currentStatusObj.status === 'delivered' ||
+        (!useStorehubLogistics && currentStatusObj.status !== 'paid')
+          ? this.renderRiderInfo(
+              currentStatusObj,
+              useStorehubLogistics,
+              trackingUrl,
+              storeInfo,
+              driverPhone,
+              courier,
+              bestLastMileETA,
+              worstLastMileETA,
+              order
+            )
+          : null}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
+
+  getLogisticsLogo = (logistics = '') => {
+    switch (logistics.toLowerCase()) {
+      case 'grab':
+        return logisticsGrab;
+      case 'goget':
+        return logisticsGoget;
+      case 'lalamove':
+        return logisticsLalamove;
+      case 'mrspeedy':
+        return logisticsMrspeedy;
+      default:
+        return beepLogo;
+    }
+  };
+
+  getOrderETA = ETA => {
+    if (!ETA) return '';
+
+    try {
+      const time = new Date(ETA);
+      return `${Utils.zero(time.getHours())}:${Utils.zero(time.getMinutes())}`;
+    } catch (e) {
+      return '';
+    }
+  };
+
+  renderRiderInfo = (
+    currentStatusObj,
+    useStorehubLogistics,
+    trackingUrl,
+    storeInfo = {},
+    driverPhone,
+    courier,
+    bestLastMileETA,
+    worstLastMileETA,
+    order = {}
+  ) => {
+    const { status } = currentStatusObj;
+    const { deliveredTime } = order;
+    const { t, onlineStoreInfo = {} } = this.props;
+    const { name: storeName, phone: storePhone } = storeInfo;
+    const { logo: storeLogo } = onlineStoreInfo;
+
+    return (
+      <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
+        <div className="padding-normal">
+          {status === 'riderPickUp' && useStorehubLogistics && bestLastMileETA && worstLastMileETA && (
+            <p className="text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
+          )}
+          {status === 'delivered' && useStorehubLogistics && deliveredTime && (
+            <p className="text-left text-size-big">{t('OrderStatusDelivered')}</p>
+          )}
+          {status !== 'paid' && !useStorehubLogistics && (
+            <p className="text-left text-size-big" style={{ marginBottom: '24px' }}>
+              {t('SelfDeliveryDescription')}
+            </p>
+          )}
+          {!(status !== 'paid' && !useStorehubLogistics) &&
+            status !== 'confirmed' &&
+            ((bestLastMileETA && worstLastMileETA) || deliveredTime ? (
+              <h2
+                className="padding-top-bottom-small text-left text-weight-bolder text-size-huge"
+                style={{ marginBottom: '16px' }}
+              >
+                {status === 'riderPickUp'
+                  ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
+                      bestLastMileETA
+                    )}`
+                  : status === 'delivered'
+                  ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
+                  : null}
+              </h2>
+            ) : null)}
+
+          <div className={`flex  flex-middle`}>
+            <div className="ordering-thanks__rider-logo">
+              {useStorehubLogistics && <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />}
+              {!useStorehubLogistics && <img src={storeLogo} alt="store info" className="logo" />}
+            </div>
+            <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
+              <p className="line-height-normal text-weight-bolder">
+                {useStorehubLogistics ? courier : t('DeliveryBy', { name: storeName })}
+              </p>
+              {
+                <span className="text-gray line-height-normal">
+                  {useStorehubLogistics
+                    ? driverPhone
+                      ? `+${driverPhone}`
+                      : null
+                    : storePhone
+                    ? `+${storePhone}`
+                    : null}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+        {!useStorehubLogistics ? (
+          status !== 'paid' &&
+          storePhone && (
+            <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
+              <a
+                href={`tel:${storePhone}`}
+                className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+              >
+                {t('CallStore')}
+              </a>
+            </div>
+          )
+        ) : (
+          <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
+            {status === 'confirmed' && (
+              <React.Fragment>
+                {storePhone && (
+                  <a
+                    href={`tel:${storePhone}`}
+                    className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                  >
+                    {t('CallStore')}
+                  </a>
+                )}
+                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                  {t('CallDriver')}
+                </a>
+              </React.Fragment>
+            )}
+
+            {status === 'riderPickUp' && (
+              <React.Fragment>
+                {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                  <a
+                    href={trackingUrl}
+                    className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                    target="__blank"
+                    data-heap-name="ordering.thank-you.logistics-tracking-link"
+                  >
+                    {t('TrackOrder')}
+                  </a>
+                ) : null}
+                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                  {t('CallDriver')}
+                </a>
+              </React.Fragment>
+            )}
+
+            {status === 'delivered' && (
+              <React.Fragment>
+                <button
+                  className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
+                  onClick={this.handleReportUnsafeDriver}
+                  data-heap-name="ordering.need-help.report-driver-btn"
+                >
+                  {t('ReportIssue')}
+                </button>
+              </React.Fragment>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
   renderStoreInfo = () => {
@@ -751,7 +998,6 @@ export class ThankYou extends PureComponent {
               })}px`,
               height: Utils.containerHeight({
                 headerEls: [this.headerEl],
-                footerEls: [this.footerEl],
               }),
             }}
           >
@@ -790,20 +1036,20 @@ export class ThankYou extends PureComponent {
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
-          </div>
-          <footer
-            ref={ref => (this.footerEl = ref)}
-            className="footer footer__transparent flex flex-middle flex-center flex__shrink-fixed"
-          >
-            <span>&copy; {date.getFullYear()} </span>
-            <a
-              className="ordering-thanks__button-footer-link button button__link padding-small"
-              href="https://www.storehub.com/"
-              data-heap-name="ordering.thank-you.storehub-link"
+            <footer
+              ref={ref => (this.footerEl = ref)}
+              className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
-              {t('StoreHub')}
-            </a>
-          </footer>
+              <span>&copy; {date.getFullYear()} </span>
+              <a
+                className="ordering-thanks__button-footer-link button button__link padding-small"
+                href="https://www.storehub.com/"
+                data-heap-name="ordering.thank-you.storehub-link"
+              >
+                {t('StoreHub')}
+              </a>
+            </footer>
+          </div>
         </React.Fragment>
       </section>
     );
