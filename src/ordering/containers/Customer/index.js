@@ -286,14 +286,12 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartSummary, user, error } = this.props;
+    const { t, history, deliveryDetails, cartSummary, error } = this.props;
     const { addressChange } = this.state;
-    const { username, phone: consumerPhone } = deliveryDetails;
-    const { profile } = user || {};
-    const { phone } = profile || {};
+    const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
-    const formatPhone = formatPhoneNumberIntl(consumerPhone || phone);
-    const splitIndex = consumerPhone || phone ? formatPhone.indexOf(' ') : 0;
+    const formatPhone = formatPhoneNumberIntl(phone);
+    const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartSummary || {};
 
     // console.log(shippingFee);
@@ -343,7 +341,7 @@ class Customer extends Component {
                         </React.Fragment>
                       )}
                     </p>
-                    {phone || consumerPhone ? (
+                    {phone ? (
                       <p className="padding-top-bottom-smaller">
                         {/* Country Code */}
                         <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(

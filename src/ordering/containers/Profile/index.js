@@ -38,8 +38,8 @@ class Profile extends Component {
   saveProfile = async () => {
     const { user, history, deliveryDetails, customerActions } = this.props;
     const { consumerId, profile } = user || {};
-    const { name, email, birthday } = profile || {};
-    const { username } = deliveryDetails || {};
+    const { name, email, birthday, phone } = profile || {};
+    const { username, phone: orderPhone } = deliveryDetails || {};
 
     let data = {};
     let createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
@@ -55,6 +55,7 @@ class Profile extends Component {
       const { success } = response;
       if (success) {
         !username && customerActions.patchDeliveryDetails({ username: name });
+        !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
           search: window.location.search,

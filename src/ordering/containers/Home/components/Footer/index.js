@@ -87,23 +87,21 @@ export class Footer extends Component {
   postAppMessage(user) {
     const { isExpired } = user || {};
     if (Utils.isAndroidWebview() && isExpired) {
-      window.androidInterface.tokenExpired('true');
+      window.androidInterface.tokenExpired();
     }
     if (Utils.isAndroidWebview() && !isExpired) {
-      window.androidInterface.getToken('true');
+      window.androidInterface.getToken();
     }
     if (Utils.isIOSWebview() && isExpired) {
       window.webkit.messageHandlers.shareAction.postMessage({
         functionName: 'tokenExpired',
         callbackName: 'sendToken',
-        isCheckout: 'true',
       });
     }
     if (Utils.isIOSWebview() && !isExpired) {
       window.webkit.messageHandlers.shareAction.postMessage({
         functionName: 'getToken',
         callbackName: 'sendToken',
-        isCheckout: 'true',
       });
     }
   }
