@@ -706,7 +706,7 @@ export class ThankYou extends PureComponent {
                 </a>
               ) : (
                 <a
-                  href={`tel:${storePhone}`}
+                  href={`tel:+${storePhone}`}
                   className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
                 >
                   {t('CallStore')}
@@ -729,7 +729,7 @@ export class ThankYou extends PureComponent {
                     </a>
                   ) : (
                     <a
-                      href={`tel:${storePhone}`}
+                      href={`tel:+${storePhone}`}
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
                     >
                       {t('CallStore')}
@@ -744,7 +744,7 @@ export class ThankYou extends PureComponent {
                     {t('CallDriver')}
                   </a>
                 ) : (
-                  <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                  <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                     {t('CallDriver')}
                   </a>
                 )}
@@ -772,7 +772,7 @@ export class ThankYou extends PureComponent {
                     {t('CallDriver')}
                   </a>
                 ) : (
-                  <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                  <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                     {t('CallDriver')}
                   </a>
                 )}
