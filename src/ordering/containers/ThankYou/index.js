@@ -705,13 +705,12 @@ export class ThankYou extends PureComponent {
               <React.Fragment>
                 {storePhone &&
                   (Utils.isWebview() ? (
-                    <a
-                      href="javascript:void(0)"
-                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                    <button
+                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
                       onClick={this.copyPhoneNumber(storePhone)}
                     >
                       {t('CallStore')}
-                    </a>
+                    </button>
                   ) : (
                     <a
                       href={`tel:${storePhone}`}
@@ -721,13 +720,12 @@ export class ThankYou extends PureComponent {
                     </a>
                   ))}
                 {Utils.isWebview() ? (
-                  <a
-                    href="javascript:void(0)"
+                  <button
                     onClick={this.copyPhoneNumber(driverPhone)}
-                    className="text-weight-bolder button ordering-thanks__link"
+                    className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
-                  </a>
+                  </button>
                 ) : (
                   <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                     {t('CallDriver')}
@@ -749,13 +747,13 @@ export class ThankYou extends PureComponent {
                   </a>
                 ) : null}
                 {Utils.isWebview() ? (
-                  <a
+                  <button
                     href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone)}
-                    className="text-weight-bolder button ordering-thanks__link"
+                    className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
-                  </a>
+                  </button>
                 ) : (
                   <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                     {t('CallDriver')}
