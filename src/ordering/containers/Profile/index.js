@@ -12,8 +12,16 @@ import url from '../../../utils/url';
 import './Profile.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 
+import DayPicker from 'react-day-picker';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import 'react-day-picker/lib/style.css';
+
 const { API_URLS } = url;
 class Profile extends Component {
+  state = {
+    error: false,
+    message: '',
+  };
   componentDidMount() {
     const { appActions, user } = this.props;
     const { consumerId } = user || {};
@@ -24,7 +32,6 @@ class Profile extends Component {
     const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      // search: window.location.search,
       search: newSearchParams,
     });
   };
@@ -34,22 +41,33 @@ class Profile extends Component {
     const { consumerId, profile } = user || {};
     const { name, email, birthday } = profile || {};
     const { username } = deliveryDetails || {};
-    // appActions.createOrUpdateProfile();
-    // const { name, date, email } = this.state;
-    const createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
-    const data = {
-      firstName: name,
-      email: email,
-      birthday: new Date(birthday).toISOString(),
-    };
-    const response = await put(createdUrl.url, data);
-    const { success } = response;
-    if (success) {
-      !username && customerActions.patchDeliveryDetails({ username: name });
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
+
+    let data = {};
+    let createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
+    // let dateFormat = /^\d{4}-(\d{2})-(\d{2})$/;
+    data.firstName = name;
+    data.email = email;
+    if (birthday instanceof Date) {
+      data.birthday = birthday.toISOString();
+    }
+
+    try {
+      const response = await put(createdUrl.url, data);
+      const { success } = response;
+      if (success) {
+        !username && customerActions.patchDeliveryDetails({ username: name });
+        history.push({
+          pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+          search: window.location.search,
+        });
+      }
+    } catch (e) {
+      this.setState({ error: true, message: e.message });
+      this.timeoutId = setTimeout(() => {
+        this.setState({ error: false });
+        clearTimeout(this.timeoutId);
+      }, 3000);
+      console.log(e);
     }
   };
 
@@ -59,9 +77,11 @@ class Profile extends Component {
       this.props.appActions.updateProfileInfo({ name: inputValue });
     } else if (e.target.name === 'consumerEmail') {
       this.props.appActions.updateProfileInfo({ email: inputValue });
-    } else if (e.target.name === 'consumerBirthday') {
-      this.props.appActions.updateProfileInfo({ birthday: inputValue });
     }
+  };
+
+  handleDateChange = date => {
+    this.props.appActions.updateProfileInfo({ birthday: date });
   };
 
   render() {
@@ -92,7 +112,8 @@ class Profile extends Component {
                   onChange={this.handleInputChange}
                 />
               </div>
-              <div className="profile__input padding-small border-radius-base">
+              {this.state.error && <p className="profile__error-message">{this.state.message}</p>}
+              <div className={`profile__input padding-small border-radius-base ${this.state.error ? 'error' : ''}`}>
                 <div>Email Address</div>
                 <input
                   name="consumerEmail"
@@ -105,18 +126,7 @@ class Profile extends Component {
               <div className="profile__input padding-small border-radius-base">
                 <div>Date of Birth</div>
                 <div className="flex flex-space-between">
-                  {/*<div>*/}
-                  {/*  {month}/{date}*/}
-                  {/*</div>*/}
-                  <div>
-                    <input
-                      name="consumerBirthday"
-                      value={toISODateString(birthday)}
-                      className="form__input"
-                      type="date"
-                      onChange={this.handleInputChange}
-                    />
-                  </div>
+                  <DayPickerInput onDayChange={this.handleDateChange} value={toISODateString(birthday)} />
                 </div>
               </div>
             </form>

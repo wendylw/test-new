@@ -10,7 +10,8 @@
     color: $gray-3;
   }
 
-  &__complete-tip {
+  &__error-message {
+    color: $status-red;
   }
 
   &__input {
@@ -19,6 +20,10 @@
 
     input {
       height: 26px;
+    }
+
+    &.error {
+      border: 1px solid $status-red;
     }
   }
 }
