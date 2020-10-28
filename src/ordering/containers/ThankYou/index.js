@@ -802,8 +802,6 @@ export class ThankYou extends PureComponent {
     const title = t('CopyTitle');
     const content =
       PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
-    // "CopyStoreDescription": "Store's contact number (+{{phone}}) has been copied to your clipboard",
-    // "CopyDriverDescription": "Driver's contact number (+{{phone}}) has been copied to your clipboard",
 
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('value', '+' + phone);
