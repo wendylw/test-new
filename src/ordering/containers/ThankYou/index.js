@@ -702,17 +702,36 @@ export class ThankYou extends PureComponent {
           <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
             {status === 'confirmed' && (
               <React.Fragment>
-                {storePhone && (
+                {storePhone &&
+                  (Utils.isWebview() || true ? (
+                    <a
+                      href="javascript:void(0)"
+                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                      onClick={this.copyPhoneNumber(storePhone)}
+                    >
+                      {t('CallStore')}
+                    </a>
+                  ) : (
+                    <a
+                      href={`tel:${storePhone}`}
+                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                    >
+                      {t('CallStore')}
+                    </a>
+                  ))}
+                {Utils.isWebview() ? (
                   <a
-                    href={`tel:${storePhone}`}
-                    className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                    href="javascript:void(0)"
+                    onClick={this.copyPhoneNumber(driverPhone)}
+                    className="text-weight-bolder button ordering-thanks__link"
                   >
-                    {t('CallStore')}
+                    {t('CallDriver')}
+                  </a>
+                ) : (
+                  <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                    {t('CallDriver')}
                   </a>
                 )}
-                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                  {t('CallDriver')}
-                </a>
               </React.Fragment>
             )}
 
@@ -728,9 +747,19 @@ export class ThankYou extends PureComponent {
                     {t('TrackOrder')}
                   </a>
                 ) : null}
-                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                  {t('CallDriver')}
-                </a>
+                {Utils.isWebview() || true ? (
+                  <a
+                    href="javascript:void(0)"
+                    onClick={() => this.copyPhoneNumber(driverPhone)}
+                    className="text-weight-bolder button ordering-thanks__link"
+                  >
+                    {t('CallDriver')}
+                  </a>
+                ) : (
+                  <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                    {t('CallDriver')}
+                  </a>
+                )}
               </React.Fragment>
             )}
 
@@ -749,6 +778,21 @@ export class ThankYou extends PureComponent {
         )}
       </div>
     );
+  };
+
+  copyPhoneNumber = phone => {
+    console.log('copy');
+    const input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('value', '+' + phone);
+    document.body.appendChild(input);
+    input.setSelectionRange(0, 9999);
+    if (document.execCommand('copy')) {
+      input.select();
+      document.execCommand('copy');
+      console.log('复制成功');
+    }
+    document.body.removeChild(input);
   };
 
   /* eslint-enable jsx-a11y/anchor-is-valid */
