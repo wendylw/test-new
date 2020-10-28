@@ -46,5 +46,6 @@
   "DeliveryBy": "Delivered by {{name}}",
   "ReportIssue": "Report Issue",
   "CopyDescription": "Store's contact number (+{{phone}}) has been copied to your clipboard",
-  "CopyTitle": "Contact number copied"
+  "CopyTitle": "Contact number copied",
+  "Ok": "Ok"
 }

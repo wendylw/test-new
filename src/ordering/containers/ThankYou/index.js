@@ -42,6 +42,7 @@ import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../.
 import './OrderingThanks.scss';
 import qs from 'qs';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
+import PhoneCopyModal from './components/PhoneCopyModal/index';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -52,6 +53,9 @@ export class ThankYou extends PureComponent {
   state = {
     cashbackSuccessImage,
     supportCallPhone: Utils.getQueryVariable('supportCallPhone'),
+    showPhoneCopy: false,
+    phoneCopyTitle: '',
+    phoneCopyContent: '',
   };
 
   componentDidMount() {
@@ -795,6 +799,9 @@ export class ThankYou extends PureComponent {
   copyPhoneNumber = phone => {
     const { t } = this.props;
     const input = document.createElement('input');
+    const title = t('CopyTitle');
+    const content = t('CopyDescription', { phone });
+
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('value', '+' + phone);
     document.body.appendChild(input);
@@ -802,8 +809,11 @@ export class ThankYou extends PureComponent {
     if (document.execCommand('copy')) {
       input.select();
       document.execCommand('copy');
-      console.log('复制成功');
-      alert(t('CopyDescription', { phone }), t('CopyTitle'));
+      this.setState({
+        showPhoneCopy: true,
+        phoneCopyTitle: title,
+        phoneCopyContent: content,
+      });
     }
     document.body.removeChild(input);
   };
@@ -1114,6 +1124,18 @@ export class ThankYou extends PureComponent {
             </footer>
           </div>
         </React.Fragment>
+        <PhoneCopyModal
+          show={this.state.showPhoneCopy}
+          phoneCopyTitle={this.state.phoneCopyTitle}
+          phoneCopyContent={this.state.phoneCopyContent}
+          continue={() => {
+            this.setState({
+              showPhoneCopy: false,
+              phoneCopyTitle: '',
+              phoneCopyContent: '',
+            });
+          }}
+        />
       </section>
     );
   }
