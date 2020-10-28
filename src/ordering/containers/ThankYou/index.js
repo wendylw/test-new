@@ -70,7 +70,6 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
-    alert(Utils.isWebview());
   }
 
   loadOrder = async () => {
@@ -715,12 +714,13 @@ export class ThankYou extends PureComponent {
               <React.Fragment>
                 {storePhone &&
                   (Utils.isWebview() ? (
-                    <button
+                    <a
+                      href="javascript:void(0)"
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
                       onClick={() => this.copyPhoneNumber(storePhone)}
                     >
                       {t('CallStore')}
-                    </button>
+                    </a>
                   ) : (
                     <a
                       href={`tel:${storePhone}`}
@@ -730,12 +730,13 @@ export class ThankYou extends PureComponent {
                     </a>
                   ))}
                 {Utils.isWebview() ? (
-                  <button
+                  <a
+                    href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone)}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
-                  </button>
+                  </a>
                 ) : (
                   <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                     {t('CallDriver')}
@@ -757,13 +758,13 @@ export class ThankYou extends PureComponent {
                   </a>
                 ) : null}
                 {Utils.isWebview() ? (
-                  <button
+                  <a
                     href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone)}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
                     {t('CallDriver')}
-                  </button>
+                  </a>
                 ) : (
                   <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
                     {t('CallDriver')}
@@ -790,7 +791,6 @@ export class ThankYou extends PureComponent {
   };
 
   copyPhoneNumber = phone => {
-    alert('copy');
     const input = document.createElement('input');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('value', '+' + phone);
