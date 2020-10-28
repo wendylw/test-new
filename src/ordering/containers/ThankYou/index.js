@@ -51,6 +51,7 @@ const ANIMATION_TIME = 3600;
 export class ThankYou extends PureComponent {
   state = {
     cashbackSuccessImage,
+    supportCallPhone: Utils.getQueryVariable('supportCallPhone'),
   };
 
   componentDidMount() {
@@ -631,6 +632,7 @@ export class ThankYou extends PureComponent {
     const { t, onlineStoreInfo = {} } = this.props;
     const { name: storeName, phone: storePhone } = storeInfo;
     const { logo: storeLogo } = onlineStoreInfo;
+    const { supportCallPhone } = this.state;
 
     return (
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
@@ -690,7 +692,7 @@ export class ThankYou extends PureComponent {
           status !== 'paid' &&
           storePhone && (
             <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-              {Utils.isWebview() ? (
+              {Utils.isWebview() && !supportCallPhone ? (
                 <a
                   href="javascript:void(0)"
                   onClick={() => this.copyPhoneNumber(storePhone)}
@@ -713,7 +715,7 @@ export class ThankYou extends PureComponent {
             {status === 'confirmed' && (
               <React.Fragment>
                 {storePhone &&
-                  (Utils.isWebview() ? (
+                  (Utils.isWebview() && !supportCallPhone ? (
                     <a
                       href="javascript:void(0)"
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
@@ -729,7 +731,7 @@ export class ThankYou extends PureComponent {
                       {t('CallStore')}
                     </a>
                   ))}
-                {Utils.isWebview() ? (
+                {Utils.isWebview() && !supportCallPhone ? (
                   <a
                     href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone)}
@@ -757,7 +759,7 @@ export class ThankYou extends PureComponent {
                     {t('TrackOrder')}
                   </a>
                 ) : null}
-                {Utils.isWebview() ? (
+                {Utils.isWebview() && !supportCallPhone ? (
                   <a
                     href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone)}
@@ -791,6 +793,7 @@ export class ThankYou extends PureComponent {
   };
 
   copyPhoneNumber = phone => {
+    const { t } = this.props;
     const input = document.createElement('input');
     input.setAttribute('readonly', 'readonly');
     input.setAttribute('value', '+' + phone);
@@ -800,6 +803,7 @@ export class ThankYou extends PureComponent {
       input.select();
       document.execCommand('copy');
       console.log('复制成功');
+      alert(t('CopyDescription', { phone }), t('CopyTitle'));
     }
     document.body.removeChild(input);
   };
