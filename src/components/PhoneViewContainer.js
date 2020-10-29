@@ -49,7 +49,7 @@ class PhoneViewContainer extends React.Component {
     Utils.setLocalStorageVariable('user.p', phone);
     this.setState({ isSavingPhone: true });
 
-    onSubmit(phone);
+    onSubmit(phone, 'otp');
   }
 
   render() {

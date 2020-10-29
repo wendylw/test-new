@@ -72,6 +72,8 @@ export class Home extends Component {
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
+    let a = Utils.getQueryString('callbackUrl');
+    console.log(typeof a === 'string');
   }
 
   checkTableId = () => {

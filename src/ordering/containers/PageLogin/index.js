@@ -69,11 +69,11 @@ class PageLogin extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber(phoneNumber) {
+  handleSubmitPhoneNumber(phoneNumber, type) {
     const { appActions } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone: phoneNumber || phone });
+    appActions.getOtp({ phone: phoneNumber || phone, type });
     this.setState({ sendOtp: true });
   }
 

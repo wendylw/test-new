@@ -115,15 +115,13 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone }) => ({
+  getOtp: ({ phone, type = 'otp' }) => ({
     [API_REQUEST]: {
       types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
       ...Url.API_URLS.POST_OTP(config.authApiUrl),
       payload: {
-        grant_type: AUTH_INFO.GRANT_TYPE,
-        client: AUTH_INFO.CLIENT,
-        business_name: config.business,
-        username: phone,
+        type,
+        phone,
       },
     },
   }),
