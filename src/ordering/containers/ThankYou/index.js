@@ -90,11 +90,11 @@ export class ThankYou extends PureComponent {
   componentWillUnmount() {
     try {
       if (Utils.isAndroidWebview()) {
-        window.androidInterface.updateHeaderOptionsAndCloseMap();
+        window.androidInterface.closeMap();
       }
 
       if (Utils.isIOSWebview()) {
-        window.webkit.messageHandlers.shareAction.postMessage('updateHeaderOptionsAndCloseMap');
+        window.webkit.messageHandlers.shareAction.postMessage('closeMap');
       }
     } catch (e) {}
   }
