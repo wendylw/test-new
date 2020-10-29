@@ -241,7 +241,7 @@ class Customer extends Component {
                   <p className="padding-smaller text-size-small">{addressDetails}</p>
                   {deliveryComments ? <p className="padding-smaller text-size-small">{deliveryComments}</p> : null}
                 </div>
-                <button className="ordering-customer__address-edit-button button button__link flex__shrink-fixed padding-small text-weight-bolder">
+                <button className="ordering-customer__address-edit-button button button__link flex__shrink-fixed padding-small text-weight-bolder text-capitalize">
                   {t('Edit')}
                 </button>
               </article>
@@ -308,7 +308,21 @@ class Customer extends Component {
             });
           }}
         ></Header>
-        <div className="ordering-customer__container">
+        <div
+          className="ordering-customer__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: `${Utils.windowSize().height -
+              Utils.mainTop({
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              }) -
+              Utils.marginBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+          }}
+        >
           <ul>
             {this.renderDeliveryPickupDetail()}
             <li>
@@ -354,7 +368,10 @@ class Customer extends Component {
             </li>
           </ul>
         </div>
-        <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        >
           <button
             className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             data-heap-name="ordering.customer.back-btn"

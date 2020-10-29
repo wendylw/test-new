@@ -92,6 +92,7 @@
   "DeliveryDetails": "Delivery Details",
   "PickUpDetails": "Pickup Details",
   "Name": "Name",
+  "AddressName": "Address Name",
   "MobileNumber": "Mobile Number",
   "AddAddressPlaceholder": "Add in your address*",
   "AddDeliveryTimePlaceholder": "Add in your delivery time",
@@ -171,5 +172,6 @@
   "EditAddress": "Edit Address",
   "SaveChanges": "Save Changes",
   "CodeVerificationFailed": "Code verification failed",
-  "Reorder": "Reorder"
+  "Reorder": "Reorder",
+  "AddressDetailLabel": "Label this address for easy reference"
 }

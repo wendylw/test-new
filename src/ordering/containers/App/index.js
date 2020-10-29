@@ -26,7 +26,7 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+    if (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview()) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';

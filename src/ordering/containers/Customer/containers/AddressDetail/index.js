@@ -32,9 +32,15 @@ class AddressDetail extends Component {
     const { deliveryDetails, customerActions, location } = this.props;
     const { addressName, addressDetails, deliveryComments, addressId } = deliveryDetails || {};
 
+    const addressInfo = JSON.parse(Utils.getSessionVariable('savedAddressInfo'));
+    const { savedName, savedDetails, savedComments } = addressInfo || {};
+
     const action = (location.state && location.state.action) || 'add';
     action === 'edit' &&
       this.setState({ addressName: addressName, addressDetails: addressDetails, deliveryComments: deliveryComments });
+
+    action === 'add' &&
+      this.setState({ addressName: savedName, addressDetails: savedDetails, deliveryComments: savedComments });
 
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
     !addressId && (await customerActions.initDeliveryDetails(this.getShippingType()));
@@ -43,6 +49,7 @@ class AddressDetail extends Component {
   handleClickBack = () => {
     const { history, location } = this.props;
     const pathname = (location.state && location.state.from && location.state.from.pathname) || '/customer';
+    Utils.removeSessionVariable('savedAddressInfo');
     history.push({
       pathname,
       search: window.location.search,
@@ -51,11 +58,15 @@ class AddressDetail extends Component {
 
   handleInputChange = e => {
     const inputValue = e.target.value;
+    const addressInfo = JSON.parse(sessionStorage.getItem('savedAddressInfo'));
     if (e.target.name === 'addressName') {
+      sessionStorage.setItem('savedAddressInfo', JSON.stringify({ ...addressInfo, savedName: inputValue }));
       this.setState({ addressName: inputValue });
     } else if (e.target.name === 'addressDetails') {
+      sessionStorage.setItem('savedAddressInfo', JSON.stringify({ ...addressInfo, savedDetails: inputValue }));
       this.setState({ addressDetails: inputValue });
     } else if (e.target.name === 'deliveryComments') {
+      sessionStorage.setItem('savedAddressInfo', JSON.stringify({ ...addressInfo, savedComments: inputValue }));
       this.setState({ deliveryComments: inputValue });
     }
   };
@@ -100,6 +111,7 @@ class AddressDetail extends Component {
         deliveryToAddress,
         deliveryToLocation,
       });
+      Utils.removeSessionVariable('savedAddressInfo');
       if (response) {
         history.push({
           pathname: '/customer',
@@ -135,6 +147,7 @@ class AddressDetail extends Component {
         deliveryToAddress,
         deliveryToLocation,
       });
+      Utils.removeSessionVariable('savedAddressInfo');
       if (response) {
         history.push({
           pathname: '/customer',
@@ -155,13 +168,28 @@ class AddressDetail extends Component {
     return (
       <div className="flex flex-column address-detail">
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
           title={action === 'edit' ? t('EditAddress') : t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
-        <section className="address-detail__container padding-left-right-normal">
+        <section
+          className="address-detail__container padding-left-right-normal"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: `${Utils.windowSize().height -
+              Utils.mainTop({
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              }) -
+              Utils.marginBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+          }}
+        >
           <div className="padding-top-bottom-small">
             <div className="ordering-customer__group form__group">
               <input
@@ -169,12 +197,13 @@ class AddressDetail extends Component {
                 data-heap-name="ordering.customer.delivery-address-name"
                 type="text"
                 maxLength="140"
-                placeholder={t('Name')}
+                placeholder={t('AddressName')}
                 value={addressName}
                 name="addressName"
                 onChange={this.handleInputChange}
               />
             </div>
+            <p className="text-opacity padding-small">{t('AddressDetailLabel')}</p>
           </div>
 
           <div className="padding-top-bottom-small">
@@ -243,7 +272,7 @@ class AddressDetail extends Component {
             </div>
           </div>
         </section>
-        <footer className="footer footer__transparent margin-normal">
+        <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
             disabled={!addressName || !addressDetails || (action !== 'edit' && !locationAddress)}

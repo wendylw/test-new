@@ -33,7 +33,7 @@ import {
   getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, mainBottom } from './utils';
+import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
@@ -830,7 +830,7 @@ export class Home extends Component {
               mainTop({
                 headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
               }) -
-              mainBottom({
+              marginBottom({
                 footerEls: [this.footerEl],
               })}px`,
           }}
@@ -840,7 +840,7 @@ export class Home extends Component {
             style={{
               paddingBottom:
                 Utils.isSafari && Utils.getUserAgentInfo().isMobile
-                  ? `${mainBottom({
+                  ? `${marginBottom({
                       footerEls: [this.footerEl],
                     })}px`
                   : '0',
@@ -889,7 +889,7 @@ export class Home extends Component {
           {...otherProps}
           style={{
             top: `${windowSize.height -
-              mainBottom({
+              marginBottom({
                 footerEls: [this.footerEl],
               })}px`,
           }}

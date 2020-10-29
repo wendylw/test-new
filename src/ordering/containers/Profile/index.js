@@ -38,7 +38,7 @@ class Profile extends Component {
   saveProfile = async () => {
     const { user, history, deliveryDetails, customerActions } = this.props;
     const { consumerId, profile } = user || {};
-    const { name, email, birthday, phone } = profile || {};
+    const { name, email, phone } = profile || {};
     const { username, phone: orderPhone } = deliveryDetails || {};
 
     let data = {};
@@ -46,9 +46,9 @@ class Profile extends Component {
     // let dateFormat = /^\d{4}-(\d{2})-(\d{2})$/;
     data.firstName = name;
     data.email = email;
-    if (birthday instanceof Date) {
-      data.birthday = birthday.toISOString();
-    }
+    // if (birthday instanceof Date) {
+    //   data.birthday = birthday.toISOString();
+    // }
 
     try {
       const response = await put(createdUrl.url, data);
@@ -80,14 +80,14 @@ class Profile extends Component {
     }
   };
 
-  handleDateChange = date => {
-    this.props.appActions.updateProfileInfo({ birthday: date });
-  };
+  // handleDateChange = date => {
+  //   this.props.appActions.updateProfileInfo({ birthday: date });
+  // };
 
   render() {
     const { t, user } = this.props;
     const { profile } = user || {};
-    const { name, email, birthday } = profile || {};
+    const { name, email } = profile || {};
     return (
       <div className="profile flex flex-column">
         <Header
@@ -123,12 +123,12 @@ class Profile extends Component {
                   onChange={this.handleInputChange}
                 />
               </div>
-              <div className="profile__input padding-small border-radius-base">
-                <div>Date of Birth</div>
-                <div className="flex flex-space-between">
-                  <DayPickerInput onDayChange={this.handleDateChange} value={toISODateString(birthday)} />
-                </div>
-              </div>
+              {/*<div className="profile__input padding-small border-radius-base">*/}
+              {/*  <div>Date of Birth</div>*/}
+              {/*  <div className="flex flex-space-between">*/}
+              {/*    <DayPickerInput onDayChange={this.handleDateChange} value={toISODateString(birthday)} />*/}
+              {/*  </div>*/}
+              {/*</div>*/}
             </form>
           </div>
         </section>

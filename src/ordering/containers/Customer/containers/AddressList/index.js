@@ -13,6 +13,7 @@ import {
   getDeliveryDetails,
   getDeliveryAddressList,
 } from '../../../../redux/modules/customer';
+import Utils from '../../../../../utils/utils';
 
 class AddressList extends Component {
   componentDidMount() {
@@ -106,13 +107,25 @@ class AddressList extends Component {
     return (
       <div>
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}
           title={t('DeliveryTo')}
           navFunc={this.handleClickBack.bind(this)}
         />
-        <section className="address-list__container">
+        <section
+          className="address-list__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: `${Utils.windowSize().height -
+              Utils.mainTop({
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              })}px`,
+          }}
+        >
           <div className="flex flex-middle padding-normal">
             <img src={addAddress} className="address-list__add-icon icon border-radius-base" />
             <span
