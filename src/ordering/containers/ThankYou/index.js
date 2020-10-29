@@ -142,7 +142,7 @@ export class ThankYou extends PureComponent {
           const res = window.prompt('getAppVersion');
           if (res > '1.0.1') {
             window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateHeaderOptions',
+              functionName: 'updateHeaderOptionsAndShowMap',
               title,
               rightButtons: [
                 {
