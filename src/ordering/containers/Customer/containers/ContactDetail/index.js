@@ -8,6 +8,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { getUser } from '../../../../redux/modules/app';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../../../redux/modules/customer';
+import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
