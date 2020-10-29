@@ -88,6 +88,7 @@ export class ThankYou extends PureComponent {
   }
 
   componentWillUnmount() {
+    clearInterval(this.timer);
     try {
       if (Utils.isAndroidWebview()) {
         window.androidInterface.closeMap();
