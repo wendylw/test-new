@@ -169,21 +169,21 @@ const ERROR_CODE_MAP = {
   40001: {
     title: 'ApiError:40001Title',
     desc: 'ApiError:40001Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
   40002: {
     title: 'ApiError:40002Title',
     desc: 'ApiError:40002Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
   40003: {
     title: 'ApiError:40003Title',
     desc: 'ApiError:40003Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
@@ -218,7 +218,7 @@ const ERROR_CODE_MAP = {
   40016: {
     title: 'ApiError:40016Title',
     desc: 'ApiError:40016Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },

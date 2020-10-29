@@ -163,7 +163,7 @@ class App extends Component {
   };
 
   handleApiErrorHide = apiErrorMessage => {
-    const { appActions } = this.props;
+    const { history, appActions } = this.props;
     const { redirectUrl } = apiErrorMessage;
     const { ROUTER_PATHS } = Constants;
     const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
@@ -172,7 +172,7 @@ class App extends Component {
     let callback_url;
 
     appActions.hideApiMessageModal();
-    if (redirectUrl) {
+    if (window.location.pathname !== redirectUrl) {
       switch (redirectUrl) {
         case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
           callback_url = encodeURIComponent(ORDERING_HOME);
@@ -187,6 +187,8 @@ class App extends Component {
   render() {
     let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
+
+    console.log(window.location);
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
