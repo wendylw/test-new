@@ -57,20 +57,6 @@ export class ThankYou extends PureComponent {
       isHideTopArea: false,
     };
 
-    try {
-      if (Utils.isAndroidWebview()) {
-        const res = window.androidInterface.getAppVersion();
-        if (res > '1.0.1') this.state.isHideTopArea = true;
-      }
-
-      if (Utils.isIOSWebview()) {
-        const res = window.prompt('getAppVersion');
-        if (res > '1.0.1') this.state.isHideTopArea = true;
-      }
-    } catch (e) {
-      this.state.isHideTopArea = false;
-    }
-
     this.injectFun();
   }
 
@@ -101,6 +87,18 @@ export class ThankYou extends PureComponent {
     this.loadOrder();
   }
 
+  componentWillUnmount() {
+    try {
+      if (Utils.isAndroidWebview()) {
+        window.androidInterface.updateHeaderOptionsAndCloseMap();
+      }
+
+      if (Utils.isIOSWebview()) {
+        window.webkit.messageHandlers.shareAction.postMessage('updateHeaderOptionsAndCloseMap');
+      }
+    } catch (e) {}
+  }
+
   updateAppLocationAndStatus = (updatedStatus, riderLocations) => {
     //      nOrderStatusChanged(status: String) // 更新Order Status
     //      updateStorePosition(lat: Double, lng: Double) // 更新商家坐标
@@ -108,18 +106,64 @@ export class ThankYou extends PureComponent {
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
     const [lat = null, lng = null] = riderLocations || [];
-    if (window.androidInterface) {
-      window.androidInterface.onOrderStatusChanged(updatedStatus);
-      window.androidInterface.updateStorePosition(lat, lng);
-      window.androidInterface.updateHomePosition(lat, lng);
-      window.androidInterface.updateRiderPosition(lat, lng);
-    } else if (window.webkit) {
-      // window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+    const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
+    const { PICKUP } = CONSUMERFLOW_STATUS;
+    const { order = {}, t } = this.props;
+    const { orderId, tableId } = order;
+    const title = `#${orderId}`;
+    const text = t('ContactUs');
 
-      window.webkit.messageHandlers.onOrderStatusChanged.postMessage(updatedStatus);
-      window.webkit.messageHandlers.updateStorePosition.postMessage(lat, lng);
-      window.webkit.messageHandlers.updateHomePosition.postMessage(lat, lng);
-      window.webkit.messageHandlers.updateRiderPosition.postMessage(lat, lng);
+    if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
+      try {
+        if (Utils.isAndroidWebview()) {
+          const res = window.androidInterface.getAppVersion();
+          if (res > '1.0.1') {
+            window.androidInterface.updateHeaderOptionsAndShowMap(
+              JSON.stringify({
+                title,
+                rightButtons: [
+                  {
+                    text,
+                    callbackName: 'contactUs',
+                  },
+                ],
+              })
+            );
+            window.androidInterface.updateStorePosition(lat, lng);
+            window.androidInterface.updateHomePosition(lat, lng);
+            window.androidInterface.updateRiderPosition(lat, lng);
+            this.setState({
+              isHideTopArea: true,
+            });
+          }
+        }
+
+        if (Utils.isIOSWebview()) {
+          const res = window.prompt('getAppVersion');
+          if (res > '1.0.1') {
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateHeaderOptions',
+              title,
+              rightButtons: [
+                {
+                  text,
+                  callbackName: 'contactUs',
+                },
+              ],
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateStorePosition', lat, lng });
+            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateHomePosition', lat, lng });
+            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
+            this.setState({
+              isHideTopArea: true,
+            });
+          }
+        }
+      } catch (e) {
+        this.setState({
+          isHideTopArea: false,
+        });
+      }
     }
   };
 
@@ -164,30 +208,7 @@ export class ThankYou extends PureComponent {
       const orderInfo = this.props.order;
       this.handleGtmEventTracking({ order: orderInfo });
     }
-
-    Utils.isWebview() && this.updateHeaderForApp();
   }
-
-  updateHeaderForApp = () => {
-    const { order = {}, t } = this.props;
-    const { orderId, tableId } = order;
-    const isDelivery = Utils.isDeliveryType() || Utils.isPickUpType();
-    const appMesage = JSON.stringify({
-      title: isDelivery ? `#${orderId}` : t('OrderPaid'),
-      rightButtons: [
-        {
-          text: !Utils.isDineInType() ? t('ContactUs') : t('TableIdText', { tableId }),
-          callbackName: 'contactUs',
-        },
-      ],
-    });
-
-    if (window.androidInterface) {
-      window.androidInterface.updateHeaderOptions(appMesage);
-    } else if (window.webkit) {
-      window.webkit.messageHandlers.updateHeaderOptions.postMessage(appMesage);
-    }
-  };
 
   getThankYouSource = () => {
     return Utils.getCookieVariable('__ty_source', '');
@@ -424,10 +445,10 @@ export class ThankYou extends PureComponent {
   };
 
   isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS) => {
-    const { PICKUP, DELIVERED } = CONSUMERFLOW_STATUS;
+    const { PICKUP } = CONSUMERFLOW_STATUS;
     const { isHideTopArea } = this.state;
 
-    return !(isWebview && isHideTopArea && (status === PICKUP || status === DELIVERED) && Utils.isDeliveryType());
+    return !(isWebview && isHideTopArea && status === PICKUP && Utils.isDeliveryType());
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
