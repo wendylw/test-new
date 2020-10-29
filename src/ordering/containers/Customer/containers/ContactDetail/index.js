@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { getUser } from '../../../../redux/modules/app';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../../../redux/modules/customer';
 import './ContactDetail.scss';
+import 'react-phone-number-input/style.css';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
