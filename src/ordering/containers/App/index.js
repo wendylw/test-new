@@ -163,7 +163,7 @@ class App extends Component {
   };
 
   handleApiErrorHide = apiErrorMessage => {
-    const { appActions } = this.props;
+    const { history, appActions } = this.props;
     const { redirectUrl } = apiErrorMessage;
     const { ROUTER_PATHS } = Constants;
     const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
@@ -188,6 +188,8 @@ class App extends Component {
     let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
+    console.log(window.location);
+
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
@@ -195,7 +197,10 @@ class App extends Component {
           <MessageModal
             data={apiErrorMessage}
             onHide={() => {
-              this.handleApiErrorHide(apiErrorMessage);
+              const { redirectUrl } = apiErrorMessage || {};
+              if (window.location.pathname !== redirectUrl) {
+                this.handleApiErrorHide(apiErrorMessage);
+              }
             }}
           />
         ) : null}
