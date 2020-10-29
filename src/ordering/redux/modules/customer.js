@@ -125,13 +125,13 @@ export const actions = {
 
     return result;
   },
-  fetchConsumerAddressList: ({ consumerId, storeId, fixed }) => ({
+  fetchConsumerAddressList: ({ consumerId, storeId, preventUpdate }) => ({
     [API_REQUEST]: {
       types: [types.FETCH_ADDRESS_LIST_REQUEST, types.FETCH_ADDRESS_LIST_SUCCESS, types.FETCH_ADDRESS_LIST_FAILURE],
       ...Url.API_URLS.GET_ADDRESS_LIST(consumerId, storeId || config.storeId),
     },
     context: {
-      fixed,
+      preventUpdate,
     },
   }),
   setError: error => ({
@@ -158,7 +158,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
     };
   } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
     const deliveryAddressList = action.response || {};
-    const { fixed } = action.context || {};
+    const { preventUpdate } = action.context || {};
     const { longitude, latitude } = state.deliveryToLocation;
 
     const findAvailableAddress = (deliveryAddressList || []).find(
@@ -177,7 +177,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
           ) <= 500)
     );
 
-    if (findAvailableAddress && !fixed) {
+    if (findAvailableAddress && !preventUpdate) {
       const {
         _id,
         addressName,

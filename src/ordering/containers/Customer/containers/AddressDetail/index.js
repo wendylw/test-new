@@ -206,7 +206,7 @@ class AddressDetail extends Component {
                 {action !== 'edit' ? locationAddress : deliveryToAddress || t('AddAddressPlaceholder')}
               </p>
               {action == 'edit' ? (
-                <IconChecked className="icon icon__fixed icon__normal" />
+                <IconChecked className="icon icon__success icon__normal" />
               ) : (
                 <IconNext className="icon icon__normal flex__shrink-fixed" />
               )}

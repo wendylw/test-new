@@ -11,9 +11,6 @@ import Utils from '../utils/utils';
 import { captureException } from '@sentry/react';
 import './OtpModal.scss';
 import TermsAndPrivacy from './TermsAndPrivacy';
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
-import { actions as appActionCreators, getError, getOnlineStoreInfo, getUser } from '../ordering/redux/modules/app';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {

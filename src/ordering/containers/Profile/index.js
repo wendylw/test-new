@@ -54,8 +54,8 @@ class Profile extends Component {
       const response = await put(createdUrl.url, data);
       const { success } = response;
       if (success) {
-        !username && customerActions.patchDeliveryDetails({ username: name });
-        !orderPhone && customerActions.patchDeliveryDetails({ phone: phone });
+        !username && (await customerActions.patchDeliveryDetails({ username: name }));
+        !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
           search: window.location.search,
