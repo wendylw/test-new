@@ -22,7 +22,7 @@ class AddressList extends Component {
 
     // todo: 怎么避免拿 addreesList 时候避免更新deliveryToAddress
     // use 'fixed' to get pure addressList with updating deliveryToAddress
-    customerActions.fetchConsumerAddressList({ consumerId, storeId, fixed: true });
+    customerActions.fetchConsumerAddressList({ consumerId, storeId, preventUpdate: true });
   }
 
   addNewAddress = () => {

@@ -17,7 +17,6 @@ import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import MessageModal from '../../components/MessageModal';
-import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
@@ -186,9 +185,7 @@ class App extends Component {
   };
 
   render() {
-    let { user, error, messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
-    const { message } = error || {};
-    const { prompt } = user || {};
+    let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -203,7 +200,6 @@ class App extends Component {
           />
         ) : null}
         <Routes />
-        {/*<Login className="aside" title={prompt} />*/}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
