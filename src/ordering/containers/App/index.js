@@ -172,7 +172,7 @@ class App extends Component {
     let callback_url;
 
     appActions.hideApiMessageModal();
-    if (redirectUrl) {
+    if (window.location.pathname !== redirectUrl) {
       switch (redirectUrl) {
         case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
           callback_url = encodeURIComponent(ORDERING_HOME);
@@ -197,10 +197,7 @@ class App extends Component {
           <MessageModal
             data={apiErrorMessage}
             onHide={() => {
-              const { redirectUrl } = apiErrorMessage || {};
-              if (window.location.pathname !== redirectUrl) {
-                this.handleApiErrorHide(apiErrorMessage);
-              }
+              this.handleApiErrorHide(apiErrorMessage);
             }}
           />
         ) : null}
