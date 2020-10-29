@@ -110,13 +110,16 @@ export class ThankYou extends PureComponent {
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
     const { order = {}, t } = this.props;
-    const { orderId, tableId } = order;
+    const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
+    const { location = {} } = storeInfo;
+    const { latitude: storeLat, longitude: storeLng } = location;
+    const { latitude: deliveryeLat, longitude: deliveryLng } = deliveryInformation[0] || {};
     const title = `#${orderId}`;
     const text = t('ContactUs');
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
-        if (Utils.isAndroidWebview()) {
+        if (Utils.isAndroidWebview() && lat && lng) {
           const res = window.androidInterface.getAppVersion();
           if (res > '1.0.1') {
             window.androidInterface.updateHeaderOptionsAndShowMap(
@@ -130,8 +133,8 @@ export class ThankYou extends PureComponent {
                 ],
               })
             );
-            window.androidInterface.updateStorePosition(lat, lng);
-            window.androidInterface.updateHomePosition(lat, lng);
+            window.androidInterface.updateStorePosition(storeLat, storeLng);
+            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
             window.androidInterface.updateRiderPosition(lat, lng);
             this.setState({
               isHideTopArea: true,
@@ -139,7 +142,7 @@ export class ThankYou extends PureComponent {
           }
         }
 
-        if (Utils.isIOSWebview()) {
+        if (Utils.isIOSWebview() && lat && lng) {
           const res = window.prompt('getAppVersion');
           if (res > '1.0.1') {
             window.webkit.messageHandlers.shareAction.postMessage({
@@ -152,8 +155,16 @@ export class ThankYou extends PureComponent {
                 },
               ],
             });
-            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateStorePosition', lat, lng });
-            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateHomePosition', lat, lng });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateStorePosition',
+              lat: storeLat,
+              lng: storeLng,
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateHomePosition',
+              lat: deliveryeLat,
+              lng: deliveryLng,
+            });
             window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
             this.setState({
               isHideTopArea: true,
