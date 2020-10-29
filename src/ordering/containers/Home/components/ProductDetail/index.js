@@ -6,10 +6,8 @@ import Swipe, { SwipeItem } from 'swipejs/react';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import VariationSelector from '../VariationSelector';
-import ProductItem from '../../../../components/ProductItem';
 import { IconClose } from '../../../../../components/Icons';
 import ItemOperator from '../../../../../components/ItemOperator';
-import CheckBox from '../../../../../components/CheckBox';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import config from '../../../../../config';
 import Utils from '../../../../../utils/utils';
@@ -151,7 +149,7 @@ class ProductDetail extends Component {
   displayPrice() {
     const { product } = this.props;
     const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
-    const { variationsByIdMap, optionQuantity, cartQuantity } = this.state;
+    const { variationsByIdMap, optionQuantity } = this.state;
     const selectedValues = [];
     const selectedVariations = [];
     let totalPriceDiff = 0;
@@ -216,8 +214,6 @@ class ProductDetail extends Component {
     if (!variationsByIdMap) {
       return minimumVariations[0].id;
     }
-
-    let isAllMinimumVariationsAble = false;
 
     for (let i = 0; i < minimumVariations.length; i++) {
       const { id, minSelectionAmount, allowMultiQty } = minimumVariations[i];
@@ -472,9 +468,8 @@ class ProductDetail extends Component {
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
-    const { id: productId, images, title } = product || {};
-    const imageUrl = Array.isArray(images) ? images[0] : null;
+    const { cartQuantity, minimumVariations } = this.state;
+    const { id: productId } = product || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     if (!product) {
@@ -628,12 +623,9 @@ class ProductDetail extends Component {
     );
   }
   renderOperatorButton = () => {
-    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
+    const { product } = this.props;
+    const { cartQuantity, minimumVariations } = this.state;
 
-    const { cartQuantity, minimumVariations, variationsByIdMap } = this.state;
-    const { id: productId, images } = product || {};
-
-    const imageUrl = Array.isArray(images) ? images[0] : null;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     return (
@@ -668,7 +660,7 @@ class ProductDetail extends Component {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
     const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description, originalDisplayPrice, price } = product || {};
+    const { id, _needMore, images, title, description } = product || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
@@ -677,7 +669,6 @@ class ProductDetail extends Component {
       className.push('active cover');
     }
 
-    const footerEl = this.footerEl;
     return (
       <aside
         ref={ref => (this.asideEl = ref)}
@@ -699,28 +690,37 @@ class ProductDetail extends Component {
             />
 
             <div className="product-detail__image-container flex__shrink-fixed">
-              <Swiper
-                className="product-detail__image"
-                // slidesPerView={'auto'}
-                pagination={{
-                  clickable: true,
-                  bulletClass: images && images.length > 1 ? 'swiper-pagination-bullet' : 'pagination-hidden',
-                }}
-                callback={this.handleSwipeProductImage.bind(this)}
-              >
-                {(images && images.length ? images : [null]).map(image => {
-                  return (
-                    <SwiperSlide key={image}>
-                      <Image
-                        src={image}
-                        scalingRatioIndex={2}
-                        alt={`${storeName} ${title}`}
-                        className="product-detail__image-content"
-                      />
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
+              {images && images.length > 1 ? (
+                <Swiper
+                  className="product-detail__image"
+                  // slidesPerView={'auto'}
+                  pagination={{
+                    clickable: true,
+                    bulletClass: 'swiper-pagination-bullet',
+                  }}
+                  callback={this.handleSwipeProductImage.bind(this)}
+                >
+                  {images.map(image => {
+                    return (
+                      <SwiperSlide key={image}>
+                        <Image
+                          src={image}
+                          scalingRatioIndex={2}
+                          alt={`${storeName} ${title}`}
+                          className="product-detail__image-content"
+                        />
+                      </SwiperSlide>
+                    );
+                  })}
+                </Swiper>
+              ) : (
+                <Image
+                  className="product-detail__image-content"
+                  src={images && images.length ? images[0] : null}
+                  scalingRatioIndex={2}
+                  alt={`${storeName} ${title}`}
+                />
+              )}
             </div>
             <div className="product-detail__info flex flex-top flex-space-between flex__shrink-fixed padding-small">
               <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">

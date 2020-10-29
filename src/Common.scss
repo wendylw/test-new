@@ -76,6 +76,10 @@ address {
   line-height: $line-height-base;
 }
 
+.text-line-height-higher {
+  line-height: $line-height-higher;
+}
+
 .text-uppercase {
   text-transform: uppercase;
 }
@@ -206,6 +210,12 @@ img {
   -ms-flex-align: start;
   -webkit-align-items: flex-start;
   align-items: flex-start;
+}
+
+.flex-bottom {
+  -ms-flex-align: end;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
 }
 
 .flex-center {
@@ -583,6 +593,10 @@ img {
 
   &__default {
     fill: $gray-2;
+  }
+
+  &__success {
+    fill: $status-green;
   }
 
   &__error {

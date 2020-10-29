@@ -1,3 +1,4 @@
+import qs from 'qs';
 import React, { Component, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
@@ -22,6 +23,7 @@ import Utils from '../../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
@@ -362,8 +364,23 @@ class Stripe extends Component {
     domLoaded: false,
   };
 
-  componentDidMount() {
-    this.props.homeActions.loadShoppingCart();
+  async componentDidMount() {
+    const { history, deliveryDetails, customerActions } = this.props;
+    const { addressId } = deliveryDetails || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    !addressId && (await customerActions.initDeliveryDetails(type));
+
+    const { deliveryDetails: newDeliveryDetails } = this.props;
+    const { deliveryToLocation } = newDeliveryDetails || {};
+
+    this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   }
 
   getPaymentEntryRequestData = () => {
@@ -460,11 +477,13 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Stripe);

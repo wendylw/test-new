@@ -28,11 +28,12 @@ class LocationPage extends Component {
     this.loadStoreInfo();
     if (!config.storeId) {
       await this.props.appActions.loadCoreBusiness();
-      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business];
+      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business] || {};
+      const { deliveryRadius } = qrOrderingSettings || {};
 
       this.setState({
         storeInfo: {
-          radius: qrOrderingSettings.deliveryRadius * 1000,
+          radius: deliveryRadius * 1000,
           country,
         },
       });

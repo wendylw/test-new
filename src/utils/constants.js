@@ -1,5 +1,3 @@
-import i18next from 'i18next';
-
 const DOCUMENT_ROOT_ID = 'root';
 
 const MANIFEST = {
@@ -31,6 +29,10 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
+  PROFILE: '/profile',
+  ADDRESS_LIST: '/addressList',
+  ADDRESS_DETAIL: '/addressDetail',
+  CONTACT_DETAIL: '/contactDetails',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
@@ -136,6 +138,7 @@ const REQUEST_ERROR_KEYS = {
   500: 'Server Error',
   40004: 'QROrdering Disabled',
   40005: 'No Business',
+  40000: 'Email has been occupied',
 };
 
 const LOGIN_PROMPT = {
@@ -251,6 +254,13 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40022Title',
     desc: 'ApiError:40022Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40024: {
+    title: 'ApiError:40024Title',
+    desc: 'ApiError:40024Description',
+    redirectUrl: '',
     buttonText: 'Common:Continue',
     showModal: true,
   },

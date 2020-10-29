@@ -53,7 +53,7 @@ class PhoneViewContainer extends React.Component {
   }
 
   render() {
-    const { t, children, title, className, country, buttonText } = this.props;
+    const { t, children, title, className, country, buttonText, content } = this.props;
     const { isSavingPhone, phone } = this.state;
     const classList = ['phone-view'];
     let buttonContent = buttonText;
@@ -73,6 +73,7 @@ class PhoneViewContainer extends React.Component {
             {title}
           </label>
         ) : null}
+        {content ? <p className="text-weight-bolder">{content}</p> : null}
         <PhoneInput
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}

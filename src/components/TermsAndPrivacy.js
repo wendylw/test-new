@@ -7,7 +7,7 @@ import Constants from '../utils/constants';
 export class TermsAndPrivacy extends React.Component {
   render() {
     const { buttonLinkClassName, baseName } = this.props;
-    const buttonLinkClassList = ['button button__link text-size-big text-weight-bolder'];
+    const buttonLinkClassList = ['button button__link text-weight-bolder'];
 
     if (buttonLinkClassName) {
       buttonLinkClassList.push(buttonLinkClassName);
