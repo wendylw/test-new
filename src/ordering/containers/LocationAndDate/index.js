@@ -584,10 +584,19 @@ class LocationAndDate extends Component {
   };
 
   handleBackClicked = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
+    const { state } = location || {};
+    const { from } = state || {};
+    const urlSearch = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     Utils.removeSessionVariable('deliveryAddressUpdate');
 
-    if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
+    if ((from || urlSearch.from) === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+        state: from ? { from } : null,
+      });
+    } else if (!this.state.search.h && this.state.search.callbackUrl.split('?')[0] === '/' && this.state.h) {
       window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.state.h}&type=${this.state.search.type}`;
     } else if (this.state.search.h) {
       history.replace(this.state.search.callbackUrl);
@@ -1224,8 +1233,12 @@ class LocationAndDate extends Component {
   };
 
   goToNext = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
     const { search, h, selectedDate, selectedHour, isPickUpType } = this.state;
+    const { state } = location || {};
+    const { from } = state || {};
+    const urlType = Utils.getOrderTypeFromUrl();
+    const currentType = isPickUpType ? DELIVERY_METHOD.PICKUP : DELIVERY_METHOD.DELIVERY;
 
     if (isPickUpType) delete selectedHour.to;
 
@@ -1237,14 +1250,14 @@ class LocationAndDate extends Component {
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
 
-    if (typeof callbackUrl === 'string') {
-      if (callbackUrl.split('?')[0] === '/customer') {
+    if (typeof callbackUrl === 'string' || (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO && urlType !== currentType)) {
+      if ((callbackUrl || '').split('?')[0] === '/customer') {
         // from customer
         this.checkDetailChange(search);
       } else {
         // from ordering
         window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
-          callbackUrl.split('?')[0]
+          callbackUrl ? callbackUrl.split('?')[0] : ''
         }?${h ? 'h=' + h + '&' : ''}type=${isPickUpType ? 'pickup' : 'delivery'}`;
         // history.replace({
         //   pathname: callbackUrl.split('?')[0],

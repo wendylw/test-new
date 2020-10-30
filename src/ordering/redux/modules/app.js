@@ -9,6 +9,8 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
+import url from '../../../utils/url';
+import { toISODateString } from '../../../utils/datetime-lib';
 
 const { AUTH_INFO } = Constants;
 
@@ -22,6 +24,13 @@ export const initialState = {
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
+    profile: {
+      phone: '',
+      name: '',
+      email: '',
+      birthday: null,
+    },
+    isError: false,
   },
   error: null, // network error
   messageModal: {
@@ -178,6 +187,43 @@ export const actions = {
     type: types.CLEAR_API_ERROR,
   }),
 
+  updateProfileInfo: fields => ({
+    type: types.UPDATE_PROFILE_INFO,
+    fields,
+  }),
+
+  updateOtpStatus: () => ({
+    type: types.UPDATE_OTP_STATUS,
+  }),
+
+  getProfileInfo: consumerId => ({
+    [API_REQUEST]: {
+      types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
+      ...url.API_URLS.GET_CONSUMER_PROFILE(consumerId),
+    },
+  }),
+
+  createOrUpdateProfile: () => (dispatch, getState) => {
+    const state = getState();
+    const consumerId = state.user.consumerId;
+    const profile = state.user.profile;
+    return {
+      [API_REQUEST]: {
+        types: [
+          types.CREATE_OR_UPDATE_PROFILE_REQUEST,
+          types.CREATE_OR_UPDATE_PROFILE_SUCCESS,
+          types.CREATE_OR_UPDATE_PROFILE_FAILURE,
+        ],
+        ...url.API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId),
+        payload: {
+          firstName: profile.name,
+          email: profile.email,
+          birthday: profile.birthday,
+        },
+      },
+    };
+  },
+
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -226,8 +272,8 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, prompt, error } = action;
-  const { consumerId, login } = response || {};
+  const { type, response, prompt, error, fields } = action;
+  const { consumerId, login, user } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -242,9 +288,11 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, isError: true };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
+    case types.UPDATE_OTP_STATUS:
+      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
       return { ...state, isFetching: false, hasOtp: true };
     case types.CREATE_OTP_SUCCESS:
@@ -268,6 +316,12 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         consumerId,
+        profile: {
+          phone: user.phone,
+          name: user.firstName,
+          email: user.email,
+          birthday: toISODateString(user.birthday),
+        },
         isLogin: true,
         hasOtp: false,
         isFetching: false,
@@ -291,6 +345,31 @@ const user = (state = initialState.user, action) => {
       const { storeCreditsBalance, customerId } = response || {};
 
       return { ...state, storeCreditsBalance, customerId };
+    case types.UPDATE_PROFILE_INFO:
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          ...fields,
+        },
+      };
+    case types.FETCH_PROFILE_SUCCESS:
+      const { firstName, email, birthday } = response || {};
+      return {
+        ...state,
+        profile: {
+          name: firstName,
+          email,
+          birthday,
+        },
+      };
+
+    case types.CREATE_OR_UPDATE_PROFILE_SUCCESS:
+      const { success } = response || {};
+      return {
+        ...state,
+        success,
+      };
     default:
       return state;
   }

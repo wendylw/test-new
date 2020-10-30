@@ -16,9 +16,7 @@ import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
-import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
-import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
@@ -28,7 +26,7 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+    if (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview()) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
@@ -174,7 +172,7 @@ class App extends Component {
     let callback_url;
 
     appActions.hideApiMessageModal();
-    if (redirectUrl) {
+    if (redirectUrl && window.location.pathname !== redirectUrl) {
       switch (redirectUrl) {
         case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
           callback_url = encodeURIComponent(ORDERING_HOME);
@@ -187,10 +185,10 @@ class App extends Component {
   };
 
   render() {
-    let { user, error, messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
-    const { message } = error || {};
-    const { prompt } = user || {};
+    let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
+
+    console.log(window.location);
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
@@ -204,7 +202,6 @@ class App extends Component {
           />
         ) : null}
         <Routes />
-        <Login className="aside" title={prompt} />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );

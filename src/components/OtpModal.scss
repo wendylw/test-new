@@ -25,6 +25,10 @@
     margin-right: auto;
     max-width: 7.8em;
     overflow: hidden;
+
+    &.error {
+      border: 1px solid $status-red;
+    }
   }
 
   &__input {
@@ -32,6 +36,14 @@
     line-height: 42px;
     letter-spacing: 0.8em;
     text-indent: 0.8em;
+  }
+
+  &__failed-otp {
+    color: $status-red;
+  }
+
+  &__resend-tip {
+    color: $gray-3;
   }
 
   &__button-resend:not(:disabled) {
