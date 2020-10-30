@@ -1162,14 +1162,14 @@ export class ThankYou extends PureComponent {
     if (type) {
       options.push(`type=${type}`);
     }
-
+    console.log(!isWebview && !isHideTopArea);
     return (
       <section
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
-          {!isWebview && !isHideTopArea && (
+          {isWebview && isHideTopArea ? null : (
             <Header
               headerRef={ref => (this.headerEl = ref)}
               className="flex-middle border__bottom-divider"
