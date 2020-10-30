@@ -188,6 +188,11 @@ export class ThankYou extends PureComponent {
       const { order } = this.props;
       const { status } = order;
 
+      await thankYouActions.loadOrderStatus(receiptNumber);
+      const { updatedStatus, riderLocations = [] } = this.props;
+
+      this.updateAppLocationAndStatus(updatedStatus, riderLocations);
+
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
         const { updatedStatus, riderLocations = [] } = this.props;
