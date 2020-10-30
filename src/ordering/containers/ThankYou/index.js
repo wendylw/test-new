@@ -125,7 +125,8 @@ export class ThankYou extends PureComponent {
     const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
     const { location = {} } = storeInfo;
     const { latitude: storeLat, longitude: storeLng } = location;
-    const { latitude: deliveryeLat, longitude: deliveryLng } = deliveryInformation[0] || {};
+    const { address = {} } = deliveryInformation[0] || {};
+    const { latitude: deliveryeLat, longitude: deliveryLng } = address.location || {};
     const title = `#${orderId}`;
     const text = t('ContactUs');
 
