@@ -202,7 +202,7 @@ export class ThankYou extends PureComponent {
         if (updatedStatus !== status) {
           await this.loadOrder();
         }
-      }, 6000);
+      }, 60000);
     }
   };
 
