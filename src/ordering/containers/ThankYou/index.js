@@ -202,10 +202,7 @@ export class ThankYou extends PureComponent {
       const { order } = this.props;
       const { status } = order;
 
-      await thankYouActions.loadOrderStatus(receiptNumber);
-      const { updatedStatus, riderLocations = [] } = this.props;
-
-      this.updateAppLocationAndStatus(updatedStatus, riderLocations);
+      this.updateOrderStatusAndLocation();
 
       this.timer = setInterval(async () => {
         await thankYouActions.loadOrderStatus(receiptNumber);
@@ -218,6 +215,13 @@ export class ThankYou extends PureComponent {
         }
       }, 60000);
     }
+  };
+
+  updateOrderStatusAndLocation = async () => {
+    await thankYouActions.loadOrderStatus(receiptNumber);
+    const { updatedStatus, riderLocations = [] } = this.props;
+
+    this.updateAppLocationAndStatus(updatedStatus, riderLocations);
   };
 
   componentDidUpdate(prevProps) {
