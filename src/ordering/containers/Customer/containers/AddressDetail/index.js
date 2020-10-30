@@ -7,20 +7,22 @@ import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { getUser } from '../../../../redux/modules/app';
-import { actions as customerActionCreators, getDeliveryDetails } from '../../../../redux/modules/customer';
+import {
+  actions as customerActionCreators,
+  getDeliveryDetails,
+  getSavedAddressInfo,
+} from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
 
-class AddressDetail extends Component {
-  state = {
-    addressName: '',
-    addressDetails: '',
-    deliveryComments: '',
-    deliveryToAddress: '',
-  };
+const actions = {
+  EDIT: 'edit',
+  ADD: 'add',
+};
 
+class AddressDetail extends Component {
   getShippingType() {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -29,27 +31,49 @@ class AddressDetail extends Component {
   }
 
   componentDidMount = async () => {
-    const { deliveryDetails, customerActions, location } = this.props;
-    const { addressName, addressDetails, deliveryComments, addressId } = deliveryDetails || {};
+    const { deliveryDetails, savedAddressInfo, customerActions, location } = this.props;
+    const { addressId, addressName, deliveryToAddress, addressDetails, deliveryComments, deliveryToLocation } =
+      deliveryDetails || {};
+    const { address: savedAddress, coords: savedCoords } = savedAddressInfo || {};
+    const { address, coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
-    const addressInfo = JSON.parse(Utils.getSessionVariable('savedAddressInfo'));
-    const { savedName, savedDetails, savedComments } = addressInfo || {};
+    // if choose a new location, update the savedAddressInfo
+    if (address !== savedAddress || coords.lat !== savedCoords.latitude || coords.lng !== savedCoords.longitude) {
+      customerActions.updateSavedAddressInfo({
+        address: address,
+        coords: {
+          latitude: coords.lat,
+          longitude: coords.lng,
+        },
+      });
+    }
 
-    const action = (location.state && location.state.action) || 'add';
-    action === 'edit' &&
-      this.setState({ addressName: addressName, addressDetails: addressDetails, deliveryComments: deliveryComments });
+    if (location.state && location.state.fromCustomer) {
+      customerActions.updateSavedAddressInfo({
+        id: addressId,
+        type: actions.EDIT,
+        name: addressName,
+        address: deliveryToAddress,
+        details: addressDetails,
+        comments: deliveryComments,
+        coords: deliveryToLocation,
+      });
+    }
 
-    action === 'add' &&
-      this.setState({ addressName: savedName, addressDetails: savedDetails, deliveryComments: savedComments });
-
-    //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
-    !addressId && (await customerActions.initDeliveryDetails(this.getShippingType()));
+    if (location.state && location.state.fromAddressList) {
+      customerActions.updateSavedAddressInfo({
+        type: actions.ADD,
+        address,
+        coords: { longitude: coords.lng, latitude: coords.lat },
+      });
+    }
   };
 
   handleClickBack = () => {
-    const { history, location } = this.props;
-    const pathname = (location.state && location.state.from && location.state.from.pathname) || '/customer';
-    Utils.removeSessionVariable('savedAddressInfo');
+    const { history, savedAddressInfo, customerActions } = this.props;
+    const { type } = savedAddressInfo || {};
+    const pathname = type === actions.ADD ? '/customer/addressList' : '/customer';
+    customerActions.removeSavedAddressInfo();
     history.push({
       pathname,
       search: window.location.search,
@@ -58,112 +82,58 @@ class AddressDetail extends Component {
 
   handleInputChange = e => {
     const inputValue = e.target.value;
-    const addressInfo = JSON.parse(sessionStorage.getItem('savedAddressInfo'));
     if (e.target.name === 'addressName') {
-      sessionStorage.setItem('savedAddressInfo', JSON.stringify({ ...addressInfo, savedName: inputValue }));
-      this.setState({ addressName: inputValue });
+      this.props.customerActions.updateSavedAddressInfo({ name: inputValue });
     } else if (e.target.name === 'addressDetails') {
-      sessionStorage.setItem('savedAddressInfo', JSON.stringify({ ...addressInfo, savedDetails: inputValue }));
-      this.setState({ addressDetails: inputValue });
+      this.props.customerActions.updateSavedAddressInfo({ details: inputValue });
     } else if (e.target.name === 'deliveryComments') {
-      sessionStorage.setItem('savedAddressInfo', JSON.stringify({ ...addressInfo, savedComments: inputValue }));
-      this.setState({ deliveryComments: inputValue });
+      this.props.customerActions.updateSavedAddressInfo({ comments: inputValue });
     }
   };
 
   createOrUpdateAddress = async () => {
-    const { history, location, user, deliveryDetails, customerActions } = this.props;
-    const { addressName, addressDetails, deliveryComments } = this.state;
+    const { history, user, savedAddressInfo, customerActions } = this.props;
+    const { id, type, name, address, details, comments, coords } = savedAddressInfo;
     const { consumerId } = user || {};
-    const { deliveryToAddress, deliveryToLocation, addressId } = deliveryDetails || {};
-    const { address: locationAddress, coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const action = (location.state && location.state.action) || 'add';
+    const data = {
+      addressName: name,
+      deliveryTo: address,
+      addressDetails: details,
+      comments: comments,
+      location: coords,
+    };
 
-    customerActions.patchDeliveryDetails({ addressName, addressDetails, deliveryComments, deliveryToAddress });
-
-    if (action === 'add') {
-      const addUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
-      const data = {
-        addressName,
-        deliveryTo: locationAddress,
-        addressDetails: addressDetails,
-        comments: deliveryComments,
-        address: addressDetails + ', ' + locationAddress,
-        location: {
-          longitude: coords.lng,
-          latitude: coords.lat,
-        },
-      };
-      const response = await post(addUrl.url, data);
-      const {
-        _id: addressId,
-        addressName,
-        addressDetails,
-        comments: deliveryComments,
-        deliveryTo: deliveryToAddress,
-        location: deliveryToLocation,
-      } = response || {};
-      customerActions.patchDeliveryDetails({
-        addressId,
-        addressName,
-        addressDetails,
-        deliveryComments,
-        deliveryToAddress,
-        deliveryToLocation,
+    let requestUrl;
+    let response;
+    if (type === actions.ADD) {
+      requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
+      response = await post(requestUrl.url, data);
+    }
+    if (type === actions.EDIT) {
+      requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
+      response = await put(requestUrl.url, data);
+    }
+    const { _id: addressId } = response || {};
+    customerActions.patchDeliveryDetails({
+      addressId,
+      addressName: name,
+      addressDetails: details,
+      deliveryComments: comments,
+      deliveryToAddress: address,
+      deliveryToLocation: coords,
+    });
+    customerActions.removeSavedAddressInfo();
+    if (response) {
+      history.push({
+        pathname: '/customer',
+        search: window.location.search,
       });
-      Utils.removeSessionVariable('savedAddressInfo');
-      if (response) {
-        history.push({
-          pathname: '/customer',
-          search: window.location.search,
-        });
-      }
-    } else {
-      const updateUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, addressId);
-      const data = {
-        addressName,
-        deliveryTo: deliveryToAddress,
-        addressDetails: addressDetails,
-        comments: deliveryComments,
-        location: {
-          longitude: deliveryToLocation.longitude,
-          latitude: deliveryToLocation.latitude,
-        },
-      };
-      const response = await put(updateUrl.url, data);
-      const {
-        _id: addressId,
-        addressName,
-        addressDetails,
-        comments: deliveryComments,
-        deliveryTo: deliveryToAddress,
-        location: deliveryToLocation,
-      } = response || {};
-      customerActions.patchDeliveryDetails({
-        addressId,
-        addressName,
-        addressDetails,
-        deliveryComments,
-        deliveryToAddress,
-        deliveryToLocation,
-      });
-      Utils.removeSessionVariable('savedAddressInfo');
-      if (response) {
-        history.push({
-          pathname: '/customer',
-          search: window.location.search,
-        });
-      }
     }
   };
 
   render() {
-    const { t, history, location, deliveryDetails } = this.props;
-    const { addressName, addressDetails, deliveryComments } = this.state;
-
-    const action = (location.state && location.state.action) || 'add';
-    const { deliveryToAddress } = deliveryDetails || {};
-    const { address: locationAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { t, history, savedAddressInfo } = this.props;
+    const { type, name, address, details, comments } = savedAddressInfo || {};
 
     return (
       <div className="flex flex-column address-detail">
@@ -172,7 +142,7 @@ class AddressDetail extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
-          title={action === 'edit' ? t('EditAddress') : t('AddNewAddress')}
+          title={type === actions.EDIT ? t('EditAddress') : t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
         <section
@@ -198,7 +168,7 @@ class AddressDetail extends Component {
                 type="text"
                 maxLength="140"
                 placeholder={t('AddressName')}
-                value={addressName}
+                value={name}
                 name="addressName"
                 onChange={this.handleInputChange}
               />
@@ -210,35 +180,23 @@ class AddressDetail extends Component {
             <div
               className="form__group flex flex-middle flex-space-between"
               data-heap-name="ordering.customer.delivery-address"
-              onClick={
-                action !== 'edit'
-                  ? async () => {
-                      const { search } = window.location;
+              onClick={async () => {
+                const { search } = window.location;
 
-                      const callbackUrl = encodeURIComponent(
-                        `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
-                      );
+                const callbackUrl = encodeURIComponent(
+                  `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
+                );
 
-                      history.push({
-                        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-                        search: `${search}&callbackUrl=${callbackUrl}`,
-                      });
-                    }
-                  : null
-              }
+                history.push({
+                  pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+                  search: `${search}&callbackUrl=${callbackUrl}`,
+                });
+              }}
             >
-              <p
-                className={`padding-normal text-size-big text-line-height-base ${
-                  deliveryToAddress && action !== 'edit' ? '' : 'text-opacity'
-                }`}
-              >
-                {action !== 'edit' ? locationAddress : deliveryToAddress || t('AddAddressPlaceholder')}
+              <p className="padding-normal text-size-big text-line-height-base">
+                {address || t('AddAddressPlaceholder')}
               </p>
-              {action == 'edit' ? (
-                <IconChecked className="icon icon__success icon__normal" />
-              ) : (
-                <IconNext className="icon icon__normal flex__shrink-fixed" />
-              )}
+              <IconNext className="icon icon__normal flex__shrink-fixed" />
             </div>
           </div>
 
@@ -250,7 +208,7 @@ class AddressDetail extends Component {
                 type="text"
                 maxLength="140"
                 placeholder={t('AddressDetailsPlaceholder')}
-                value={addressDetails}
+                value={details}
                 name="addressDetails"
                 onChange={this.handleInputChange}
               />
@@ -264,7 +222,7 @@ class AddressDetail extends Component {
                 data-heap-name="ordering.customer.delivery-note"
                 type="text"
                 maxLength="140"
-                value={deliveryComments}
+                value={comments}
                 name="deliveryComments"
                 onChange={this.handleInputChange}
                 placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
@@ -275,10 +233,10 @@ class AddressDetail extends Component {
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-            disabled={!addressName || !addressDetails || (action !== 'edit' && !locationAddress)}
+            disabled={!name || !details || !address}
             onClick={this.createOrUpdateAddress}
           >
-            {action === 'edit' ? t('SaveChanges') : t('AddAddress')}
+            {type === actions.EDIT ? t('SaveChanges') : t('AddAddress')}
           </button>
         </footer>
       </div>
@@ -292,6 +250,7 @@ export default compose(
     state => ({
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
+      savedAddressInfo: getSavedAddressInfo(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),

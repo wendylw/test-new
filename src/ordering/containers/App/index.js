@@ -188,8 +188,6 @@ class App extends Component {
     let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
-    console.log(window.location);
-
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}

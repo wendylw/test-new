@@ -32,9 +32,7 @@ class AddressList extends Component {
       pathname: '/customer/addressDetail',
       search: window.location.search,
       state: {
-        from: {
-          pathname: '/customer/addressList',
-        },
+        fromAddressList: true,
       },
     });
   };
