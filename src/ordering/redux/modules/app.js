@@ -195,10 +195,6 @@ export const actions = {
     type: types.UPDATE_OTP_STATUS,
   }),
 
-  updateOtpType: () => ({
-    type: types.UPDATE_OTP_TYPE,
-  }),
-
   getProfileInfo: consumerId => ({
     [API_REQUEST]: {
       types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
@@ -284,7 +280,6 @@ const user = (state = initialState.user, action) => {
     case types.HIDE_LOGIN_PAGE:
       return { ...state, showLoginPage: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-    case types.GET_OTP_REQUEST:
     case types.CREATE_OTP_REQUEST:
     case types.CREATE_LOGIN_REQUEST:
       return { ...state, isFetching: true };
@@ -292,16 +287,16 @@ const user = (state = initialState.user, action) => {
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isError: true };
+    case types.GET_OTP_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        otpType: 'reSendotp',
+      };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
     case types.UPDATE_OTP_STATUS:
       return { ...state, isFetching: false, isError: false };
-    case types.UPDATE_OTP_TYPE:
-      console.log('resend');
-      return {
-        ...state,
-        otpType: 'reSendotp',
-      };
     case types.GET_OTP_SUCCESS:
       return { ...state, isFetching: false, hasOtp: true };
     case types.CREATE_OTP_SUCCESS:

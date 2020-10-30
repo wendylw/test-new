@@ -30,7 +30,6 @@ class Login extends React.Component {
     const { phone } = this.state;
 
     await appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
-    appActions.updateOtpType();
   }
 
   async handleWebLogin(otp) {

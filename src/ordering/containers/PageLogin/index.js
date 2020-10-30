@@ -30,6 +30,7 @@ class PageLogin extends React.Component {
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
     }
+    console.log(this.props);
   }
 
   visitNextPage = async () => {
@@ -73,8 +74,7 @@ class PageLogin extends React.Component {
     const { appActions, otpType } = this.props;
     const { phone } = this.state;
 
-    await appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
-    appActions.updateOtpType();
+    appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
     this.setState({ sendOtp: true });
   }
 
