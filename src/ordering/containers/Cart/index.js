@@ -389,7 +389,7 @@ class Cart extends Component {
         <aside
           className="sticky-wrapper"
           style={{
-            bottom: `${Utils.mainBottom({
+            bottom: `${Utils.marginBottom({
               footerEls: [this.footerEl],
             })}px`,
           }}

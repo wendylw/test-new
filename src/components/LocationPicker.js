@@ -385,10 +385,11 @@ class LocationPicker extends Component {
   }
 
   render() {
+    const { style } = this.props;
     const { isSubmitting, errorToast } = this.state;
 
     return (
-      <div className="location-picker">
+      <div className="location-picker" style={style}>
         {this.renderMainContent()}
         {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
         {isSubmitting && this.renderLoadingMask()}

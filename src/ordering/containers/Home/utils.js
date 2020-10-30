@@ -42,7 +42,7 @@ export const mainTop = ({ headerEls = [] }) => {
   return top;
 };
 
-export const mainBottom = ({ footerEls = [] }) => {
+export const marginBottom = ({ footerEls = [] }) => {
   let bottom = 0;
 
   if (footerEls.length) {

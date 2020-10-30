@@ -917,7 +917,7 @@ Utils.mainTop = ({ headerEls = [] }) => {
   return top;
 };
 
-Utils.mainBottom = ({ footerEls = [] }) => {
+Utils.marginBottom = ({ footerEls = [] }) => {
   let bottom = 0;
 
   if (footerEls.length) {
@@ -934,7 +934,7 @@ Utils.containerHeight = ({ headerEls, footerEls }) => {
     Utils.mainTop({
       headerEls,
     }) -
-    Utils.mainBottom({
+    Utils.marginBottom({
       footerEls,
     })}px`;
 };
