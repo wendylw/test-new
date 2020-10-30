@@ -10,7 +10,7 @@ import Header from '../../../components/Header';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOnlineStoreInfo, getOtpType } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
@@ -69,11 +69,12 @@ class PageLogin extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber(phoneNumber, type) {
-    const { appActions } = this.props;
+  async handleSubmitPhoneNumber(phoneNumber, type) {
+    const { appActions, otpType } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone: phoneNumber || phone, type });
+    await appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
+    appActions.updateOtpType();
     this.setState({ sendOtp: true });
   }
 
@@ -201,6 +202,7 @@ export default compose(
       user: getUser(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       deliveryDetails: getDeliveryDetails(state),
+      otpType: getOtpType(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

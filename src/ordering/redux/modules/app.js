@@ -31,6 +31,7 @@ export const initialState = {
       birthday: null,
     },
     isError: false,
+    otpType: 'otp',
   },
   error: null, // network error
   messageModal: {
@@ -194,6 +195,10 @@ export const actions = {
     type: types.UPDATE_OTP_STATUS,
   }),
 
+  updateOtpType: () => ({
+    type: types.UPDATE_OTP_TYPE,
+  }),
+
   getProfileInfo: consumerId => ({
     [API_REQUEST]: {
       types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
@@ -291,6 +296,12 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false, hasOtp: false };
     case types.UPDATE_OTP_STATUS:
       return { ...state, isFetching: false, isError: false };
+    case types.UPDATE_OTP_TYPE:
+      console.log('resend');
+      return {
+        ...state,
+        otpType: 'reSendotp',
+      };
     case types.GET_OTP_SUCCESS:
       return { ...state, isFetching: false, hasOtp: true };
     case types.CREATE_OTP_SUCCESS:
@@ -485,6 +496,7 @@ export default combineReducers({
 
 // selectors
 export const getUser = state => state.app.user;
+export const getOtpType = state => state.app.user.otpType;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {

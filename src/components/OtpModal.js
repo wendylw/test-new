@@ -178,7 +178,7 @@ class OtpModal extends React.Component {
               onClick={() => {
                 this.setState({ currentOtpTime: ResendOtpTime });
                 this.countDown(ResendOtpTime);
-                getOtp(phone, 'reSendotp');
+                getOtp(phone);
               }}
             >
               {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
