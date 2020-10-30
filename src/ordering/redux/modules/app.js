@@ -118,7 +118,7 @@ export const actions = {
   getOtp: ({ phone, type = 'otp' }) => ({
     [API_REQUEST]: {
       types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
-      ...Url.API_URLS.POST_OTP(config.authApiUrl),
+      ...Url.API_URLS.GET_OTP,
       payload: {
         type,
         phone,
