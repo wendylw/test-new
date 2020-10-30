@@ -89,6 +89,10 @@ export class ThankYou extends PureComponent {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+    this.closeMap();
+  }
+
+  closeMap = () => {
     try {
       if (Utils.isAndroidWebview()) {
         window.androidInterface.closeMap();
@@ -98,7 +102,10 @@ export class ThankYou extends PureComponent {
         window.webkit.messageHandlers.shareAction.postMessage('closeMap');
       }
     } catch (e) {}
-  }
+    this.setState({
+      isHideTopArea: true,
+    });
+  };
 
   updateAppLocationAndStatus = (updatedStatus, riderLocations) => {
     //      nOrderStatusChanged(status: String) // 更新Order Status
@@ -176,6 +183,8 @@ export class ThankYou extends PureComponent {
           isHideTopArea: false,
         });
       }
+    } else {
+      this.closeMap();
     }
   };
 
