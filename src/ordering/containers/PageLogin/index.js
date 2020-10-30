@@ -70,7 +70,7 @@ class PageLogin extends React.Component {
     this.setState({ phone });
   }
 
-  async handleSubmitPhoneNumber(phoneNumber, type) {
+  handleSubmitPhoneNumber(phoneNumber, type) {
     const { appActions, otpType } = this.props;
     const { phone } = this.state;
 
