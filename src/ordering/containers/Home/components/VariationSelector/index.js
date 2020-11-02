@@ -85,11 +85,11 @@ export class VariationSelector extends Component {
       }));
   }
 
-  handleSelectedOption(option, isMultipleAndEnableQuantity, isMaxed) {
+  handleSelectedOption(option, isMultipleAndEnableQuantity, isMaxed, markedSoldOut) {
     const { id } = option;
     const { variation } = this.props;
 
-    if (isMultipleAndEnableQuantity || (isMaxed && !this.state.selected[id])) return;
+    if (isMultipleAndEnableQuantity || (isMaxed && !this.state.selected[id]) || markedSoldOut) return;
 
     this.setState({
       selected: {
@@ -221,7 +221,8 @@ export class VariationSelector extends Component {
               this,
               option,
               this.isMultipleChoice() && enableQuantity,
-              isRequireMax && quantity >= maxSelectionAmount
+              isRequireMax && quantity >= maxSelectionAmount,
+              markedSoldOut
             );
 
             return (
@@ -230,6 +231,7 @@ export class VariationSelector extends Component {
                 className={`${
                   this.isMultipleChoice() && enableQuantity ? 'pr-0' : ''
                 } variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex `}
+                style={{ opacity: markedSoldOut ? '0.35' : '1' }}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
@@ -239,7 +241,9 @@ export class VariationSelector extends Component {
                   } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-normal`}
                 >
                   <span>{value}</span>
-                  {priceDiff ? (
+                  {markedSoldOut ? (
+                    <span className="margin-top-bottom-smaller">{t('Unavailable')}</span>
+                  ) : priceDiff ? (
                     <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff.toFixed(2)}</span>
                   ) : null}
                 </p>
@@ -261,7 +265,7 @@ export class VariationSelector extends Component {
                       decreaseDisabled={!optionQuantity[option.id]}
                       onDecrease={() => this.decreaseHandle(option)}
                       onIncrease={() => this.increaseHandle(option)}
-                      increaseDisabled={isRequireMax && quantity >= maxSelectionAmount}
+                      increaseDisabled={(isRequireMax && quantity >= maxSelectionAmount) || markedSoldOut}
                     />
                   )}
                 </div>

@@ -656,6 +656,15 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
+Utils.getTimeUnit = time => {
+  try {
+    const hour = new Date(time);
+    return hour < 12 ? 'AM' : 'PM';
+  } catch (e) {
+    return null;
+  }
+};
+
 Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
@@ -908,7 +917,7 @@ Utils.mainTop = ({ headerEls = [] }) => {
   return top;
 };
 
-Utils.mainBottom = ({ footerEls = [] }) => {
+Utils.marginBottom = ({ footerEls = [] }) => {
   let bottom = 0;
 
   if (footerEls.length) {
@@ -925,7 +934,7 @@ Utils.containerHeight = ({ headerEls, footerEls }) => {
     Utils.mainTop({
       headerEls,
     }) -
-    Utils.mainBottom({
+    Utils.marginBottom({
       footerEls,
     })}px`;
 };

@@ -9,10 +9,11 @@ import { IconNext } from '../../../components/Icons';
 import Utils from '../../../utils/utils';
 import {
   actions as thankYouActionCreators,
-  getBusinessInfo,
   getReceiptNumber,
+  getWebViewStatus,
   getOrderStatus,
   getIsUseStorehubLogistics,
+  getOrder,
 } from '../../redux/modules/thankYou';
 
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
@@ -43,9 +44,9 @@ export class MerchantInfo extends Component {
   };
 
   render() {
-    const { history, businessInfo, t, isUseStorehubLogistics } = this.props;
-    const { stores } = businessInfo || '';
-    const { name, phone } = stores && stores[0] ? stores[0] : {};
+    const { history, t, isUseStorehubLogistics, order, isWebView } = this.props;
+    const { storeInfo } = order || {};
+    const { name, phone, street1 } = storeInfo || {};
 
     return (
       <section className="ordering-merchant-info flex flex-column" data-heap-name="ordering.need-help.container">
@@ -81,19 +82,20 @@ export class MerchantInfo extends Component {
               <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
                 {t('ContactInfo')}
               </summary>
-              <a
-                className="ordering-merchant-info__button-link button button__link padding-top-bottom-smaller text-line-height-base"
-                href={`tel:${phone}`}
-              >
-                {phone}
-              </a>
+              {isWebView ? (
+                <span className="item__text gray-font-opacity">{phone}</span>
+              ) : (
+                <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
+                  {phone}
+                </a>
+              )}
             </li>
             <li className="ordering-merchant-info__item margin-left-right-small">
               <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
                 {t('StoreAddress')}
               </summary>
               <span className="ordering-merchant-info__description padding-top-bottom-smaller text-line-height-base text-opacity">
-                {Utils.getValidAddress(stores && stores[0] ? stores[0] : {}, Constants.ADDRESS_RANGE.CITY)}
+                {Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.CITY)}
               </span>
             </li>
           </ul>
@@ -120,9 +122,10 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
-      businessInfo: getBusinessInfo(state),
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
+      order: getOrder(state),
+      isWebView: getWebViewStatus(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
     dispatch => ({

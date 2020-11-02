@@ -14,34 +14,22 @@ import Constants from '../../../utils/constants';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
-  componentDidMount() {
-    this.visitCustomerPage();
-  }
-
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
-    const { isLogin } = user || {};
-    const { sentOtp, cartSummary } = this.props;
-    const { total } = cartSummary || {};
+    const { isFetching } = user || {};
 
-    if (!isLogin && isLogin !== this.props.user.isLogin) {
-      this.visitCustomerPage();
-    }
-
-    if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
-      this.handleCreateOrder();
+    if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
+      this.visitLoginPage();
     }
   }
 
-  visitCustomerPage = () => {
+  visitLoginPage = () => {
     const { history, user } = this.props;
     const { isLogin } = user || {};
-    const { location } = history || {};
-    const { pathname } = location || {};
 
-    if (!isLogin && pathname !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+    if (!isLogin) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
       });
     }
@@ -75,37 +63,8 @@ class CreateOrderButton extends React.Component {
     if ((isLogin || type === 'digital') && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
-      const { currentOrder, error } = this.props;
+      const { currentOrder /*error*/ } = this.props;
       const { orderId } = currentOrder || {};
-      const { code } = error || {};
-
-      if (code === 40003 || code === 40012) {
-        this.setTimeoutObject = setTimeout(() => {
-          clearTimeout(this.setTimeoutObject);
-
-          history.push({
-            pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-            search: window.location.search,
-          });
-        }, 2000);
-
-        return;
-      } else if ((code >= 40006 && code <= 40009) || code === 40013) {
-        if (type === 'dine' || type === 'takeaway') {
-          window.location.href = Constants.ROUTER_PATHS.DINE;
-        } else {
-          this.setTimeoutObject = setTimeout(() => {
-            clearTimeout(this.setTimeoutObject);
-
-            history.push({
-              pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-              search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-            });
-          }, 2000);
-        }
-
-        return;
-      }
 
       newOrderId = orderId;
 

@@ -18,9 +18,12 @@ import { actions as promotionActionCreators } from '../../redux/modules/promotio
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
 import './OrderingCart.scss';
+import Url from '../../../utils/url';
+import { get } from '../../../utils/request';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 const { PROMOTION_APPLIED_STATUS } = Constants;
@@ -56,6 +59,54 @@ class Cart extends Component {
       this.setState({
         cartContainerHeight: containerHeight,
       });
+    }
+  };
+
+  handleClickContinue = async () => {
+    const { user, history, customerActions, deliveryDetails } = this.props;
+    const { username, phone: orderPhone } = deliveryDetails || {};
+    const { consumerId, isLogin, profile } = user || {};
+    const { name, phone } = profile || {};
+
+    if (!isLogin) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        nextPage: true,
+      });
+    }
+
+    // if have name, redirect to customer page
+    // if have consumerId, get profile first and update consumer profile, then redirect to next page
+    if (isLogin && name) {
+      !username && (await customerActions.patchDeliveryDetails({ username: name }));
+      !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+      });
+    } else {
+      if (isLogin && consumerId) {
+        let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
+        let { firstName, email, birthday, phone } = await get(request.url);
+        this.props.appActions.updateProfileInfo({
+          name: firstName,
+          email,
+          birthday,
+          phone,
+        });
+        !username && (await customerActions.patchDeliveryDetails({ username: firstName }));
+        !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+        firstName
+          ? history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+              search: window.location.search,
+            })
+          : history.push({
+              pathname: Constants.ROUTER_PATHS.PROFILE,
+              search: window.location.search,
+            });
+      }
     }
   };
 
@@ -338,7 +389,7 @@ class Cart extends Component {
         <aside
           className="sticky-wrapper"
           style={{
-            bottom: `${Utils.mainBottom({
+            bottom: `${Utils.marginBottom({
               footerEls: [this.footerEl],
             })}px`,
           }}
@@ -385,11 +436,8 @@ class Cart extends Component {
                 return;
               }
 
-              this.handleGtmEventTracking(() => {
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                  search: window.location.search,
-                });
+              this.handleGtmEventTracking(async () => {
+                await this.handleClickContinue();
               });
             }}
             disabled={!items || !items.length || isInvalidTotal}
@@ -421,6 +469,7 @@ export default compose(
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
@@ -429,6 +478,7 @@ export default compose(
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Cart);

@@ -1,0 +1,19 @@
+.contact-details {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
+
+  &__group {
+    overflow: hidden;
+  }
+
+  &__input,
+  .react-phone-number-input .react-phone-number-input__input,
+  .react-phone-number-input .react-phone-number-input__input:focus {
+    height: 54px;
+  }
+}
