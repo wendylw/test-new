@@ -108,7 +108,7 @@ export class ThankYou extends PureComponent {
       }
     } catch (e) {}
     this.setState({
-      isHideTopArea: true,
+      isHideTopArea: false,
     });
   };
 
