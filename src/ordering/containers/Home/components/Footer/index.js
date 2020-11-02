@@ -99,7 +99,10 @@ export class Footer extends Component {
       });
     }
     if (Utils.isIOSWebview() && !isExpired) {
-      window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'getToken', callbackName: 'sendToken' });
+      window.webkit.messageHandlers.shareAction.postMessage({
+        functionName: 'getToken',
+        callbackName: 'sendToken',
+      });
     }
   }
 

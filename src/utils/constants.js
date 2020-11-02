@@ -1,5 +1,3 @@
-import i18next from 'i18next';
-
 const DOCUMENT_ROOT_ID = 'root';
 
 const RESEND_OTP_TIME = 30;
@@ -33,6 +31,10 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
+  PROFILE: '/profile',
+  ADDRESS_LIST: '/addressList',
+  ADDRESS_DETAIL: '/addressDetail',
+  CONTACT_DETAIL: '/contactDetails',
   // cashback App basename
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
@@ -138,6 +140,7 @@ const REQUEST_ERROR_KEYS = {
   500: 'Server Error',
   40004: 'QROrdering Disabled',
   40005: 'No Business',
+  40000: 'Email has been occupied',
 };
 
 const LOGIN_PROMPT = {
@@ -170,21 +173,21 @@ const ERROR_CODE_MAP = {
   40001: {
     title: 'ApiError:40001Title',
     desc: 'ApiError:40001Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
   40002: {
     title: 'ApiError:40002Title',
     desc: 'ApiError:40002Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
   40003: {
     title: 'ApiError:40003Title',
     desc: 'ApiError:40003Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
@@ -219,7 +222,7 @@ const ERROR_CODE_MAP = {
   40016: {
     title: 'ApiError:40016Title',
     desc: 'ApiError:40016Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`,
     buttonText: 'Common:Continue',
     showModal: true,
   },
@@ -255,6 +258,13 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40022Title',
     desc: 'ApiError:40022Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  40024: {
+    title: 'ApiError:40024Title',
+    desc: 'ApiError:40024Description',
+    redirectUrl: '',
     buttonText: 'Common:Continue',
     showModal: true,
   },

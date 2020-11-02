@@ -102,7 +102,7 @@ export const actions = {
   }),
 
   // load shopping cart
-  loadShoppingCart: () => async (dispatch, getState) => {
+  loadShoppingCart: location => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     if (isDigital) {
@@ -114,7 +114,7 @@ export const actions = {
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
     }
-    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords));
   },
 
   removeShoppingCartItem: variables => dispatch => {

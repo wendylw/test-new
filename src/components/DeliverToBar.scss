@@ -16,6 +16,10 @@
     width: 100%;
   }
 
+  > .icon + &__content {
+    max-width: 80%;
+  }
+
   &__label {
     display: inline-block;
   }

@@ -42,6 +42,7 @@ import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../.
 import './OrderingThanks.scss';
 import qs from 'qs';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
+import PhoneCopyModal from './components/PhoneCopyModal/index';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -51,6 +52,10 @@ const ANIMATION_TIME = 3600;
 export class ThankYou extends PureComponent {
   state = {
     cashbackSuccessImage,
+    supportCallPhone: Utils.getQueryVariable('supportCallPhone'),
+    showPhoneCopy: false,
+    phoneCopyTitle: '',
+    phoneCopyContent: '',
   };
 
   componentDidMount() {
@@ -631,6 +636,7 @@ export class ThankYou extends PureComponent {
     const { t, onlineStoreInfo = {} } = this.props;
     const { name: storeName, phone: storePhone } = storeInfo;
     const { logo: storeLogo } = onlineStoreInfo;
+    const { supportCallPhone } = this.state;
 
     return (
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
@@ -690,29 +696,58 @@ export class ThankYou extends PureComponent {
           status !== 'paid' &&
           storePhone && (
             <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-              <a
-                href={`tel:${storePhone}`}
-                className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-              >
-                {t('CallStore')}
-              </a>
+              {Utils.isWebview() && !supportCallPhone ? (
+                <a
+                  href="javascript:void(0)"
+                  onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+                  className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                >
+                  {t('CallStore')}
+                </a>
+              ) : (
+                <a
+                  href={`tel:+${storePhone}`}
+                  className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                >
+                  {t('CallStore')}
+                </a>
+              )}
             </div>
           )
         ) : (
           <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
             {status === 'confirmed' && (
               <React.Fragment>
-                {storePhone && (
+                {storePhone &&
+                  (Utils.isWebview() && !supportCallPhone ? (
+                    <a
+                      href="javascript:void(0)"
+                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
+                      onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+                    >
+                      {t('CallStore')}
+                    </a>
+                  ) : (
+                    <a
+                      href={`tel:+${storePhone}`}
+                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                    >
+                      {t('CallStore')}
+                    </a>
+                  ))}
+                {Utils.isWebview() && !supportCallPhone ? (
                   <a
-                    href={`tel:${storePhone}`}
-                    className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                    href="javascript:void(0)"
+                    onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
+                    className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
-                    {t('CallStore')}
+                    {t('CallDriver')}
+                  </a>
+                ) : (
+                  <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                    {t('CallDriver')}
                   </a>
                 )}
-                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                  {t('CallDriver')}
-                </a>
               </React.Fragment>
             )}
 
@@ -728,9 +763,19 @@ export class ThankYou extends PureComponent {
                     {t('TrackOrder')}
                   </a>
                 ) : null}
-                <a href={`tel:${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                  {t('CallDriver')}
-                </a>
+                {Utils.isWebview() && !supportCallPhone ? (
+                  <a
+                    href="javascript:void(0)"
+                    onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
+                    className="text-weight-bolder button ordering-thanks__link text-uppercase"
+                  >
+                    {t('CallDriver')}
+                  </a>
+                ) : (
+                  <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+                    {t('CallDriver')}
+                  </a>
+                )}
               </React.Fragment>
             )}
 
@@ -749,6 +794,29 @@ export class ThankYou extends PureComponent {
         )}
       </div>
     );
+  };
+
+  copyPhoneNumber = (phone, PhoneName) => {
+    const { t } = this.props;
+    const input = document.createElement('input');
+    const title = t('CopyTitle');
+    const content =
+      PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
+
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('value', '+' + phone);
+    document.body.appendChild(input);
+    input.setSelectionRange(0, 9999);
+    if (document.execCommand('copy')) {
+      input.select();
+      document.execCommand('copy');
+      this.setState({
+        showPhoneCopy: true,
+        phoneCopyTitle: title,
+        phoneCopyContent: content,
+      });
+    }
+    document.body.removeChild(input);
   };
 
   /* eslint-enable jsx-a11y/anchor-is-valid */
@@ -1051,6 +1119,18 @@ export class ThankYou extends PureComponent {
             </footer>
           </div>
         </React.Fragment>
+        <PhoneCopyModal
+          show={this.state.showPhoneCopy}
+          phoneCopyTitle={this.state.phoneCopyTitle}
+          phoneCopyContent={this.state.phoneCopyContent}
+          continue={() => {
+            this.setState({
+              showPhoneCopy: false,
+              phoneCopyTitle: '',
+              phoneCopyContent: '',
+            });
+          }}
+        />
       </section>
     );
   }

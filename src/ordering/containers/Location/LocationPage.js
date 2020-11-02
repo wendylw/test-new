@@ -28,11 +28,12 @@ class LocationPage extends Component {
     this.loadStoreInfo();
     if (!config.storeId) {
       await this.props.appActions.loadCoreBusiness();
-      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business];
+      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business] || {};
+      const { deliveryRadius } = qrOrderingSettings || {};
 
       this.setState({
         storeInfo: {
-          radius: qrOrderingSettings.deliveryRadius * 1000,
+          radius: deliveryRadius * 1000,
           country,
         },
       });
@@ -168,6 +169,7 @@ class LocationPage extends Component {
     return (
       <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <Header
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.location.header"
@@ -179,6 +181,15 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
+            style={{
+              top: `${Utils.mainTop({
+                headerEls: [this.headerEl],
+              })}px`,
+              height: `${Utils.windowSize().height -
+                Utils.mainTop({
+                  headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+                })}px`,
+            }}
             mode={'ORIGIN_STORE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}

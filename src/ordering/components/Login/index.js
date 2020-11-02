@@ -8,7 +8,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOnlineStoreInfo, getOtpType } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
@@ -26,11 +26,11 @@ class Login extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber(phoneNumber) {
-    const { appActions } = this.props;
+  handleSubmitPhoneNumber(phoneNumber, type) {
+    const { appActions, otpType } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone: phoneNumber || phone });
+    appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
   }
 
   async handleWebLogin(otp) {
@@ -130,6 +130,7 @@ export default compose(
     state => ({
       user: getUser(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
+      otpType: getOtpType(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

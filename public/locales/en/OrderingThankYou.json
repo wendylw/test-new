@@ -44,5 +44,9 @@
   "ReportOrder": "Report Order",
   "TrackOrder": "Track Order",
   "DeliveryBy": "Delivered by {{name}}",
-  "ReportIssue": "Report Issue"
+  "ReportIssue": "Report Issue",
+  "CopyStoreDescription": "Store's contact number (+{{phone}}) has been copied to your clipboard",
+  "CopyDriverDescription": "Driver's contact number (+{{phone}}) has been copied to your clipboard",
+  "CopyTitle": "Contact number copied",
+  "Ok": "Ok"
 }
