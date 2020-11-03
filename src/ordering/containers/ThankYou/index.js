@@ -915,7 +915,21 @@ export class ThankYou extends PureComponent {
 
             {status === 'riderPickUp' && (
               <React.Fragment>
-                {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                {Utils.isWebview() ? (
+                  !supportCallPhone ? (
+                    <a
+                      href="javascript:void(0)"
+                      onClick={() => this.copyPhoneNumber(storePhone, 'drive')}
+                      className="text-weight-bolder button ordering-thanks__link text-uppercase"
+                    >
+                      {t('CallStore')}
+                    </a>
+                  ) : (
+                    <a href={`tel:+${storePhone}`} className="text-weight-bolder button ordering-thanks__link">
+                      {t('CallStore')}
+                    </a>
+                  )
+                ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                   <a
                     href={trackingUrl}
                     className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
