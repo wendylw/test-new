@@ -71,6 +71,26 @@ export class ThankYou extends PureComponent {
           this.handleVisitMerchantInfoPage();
         }
       : null;
+
+    let version = '0';
+
+    if (Utils.isAndroidWebview()) {
+      version = window.androidInterface.getAppVersion();
+    }
+
+    if (Utils.isIOSWebview()) {
+      version = window.prompt('getAppVersion');
+    }
+
+    if (version > '1.0.1') {
+      this.setState({
+        supportCallPhone: true,
+      });
+    } else {
+      this.setState({
+        supportCallPhone: false,
+      });
+    }
   };
 
   componentDidMount() {
