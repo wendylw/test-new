@@ -53,26 +53,9 @@ const ANIMATION_TIME = 3600;
 export class ThankYou extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      cashbackSuccessImage,
-      isHideTopArea: false,
-      supportCallPhone: Utils.getQueryVariable('supportCallPhone'),
-      showPhoneCopy: false,
-      phoneCopyTitle: '',
-      phoneCopyContent: '',
-    };
 
-    this.injectFun();
-  }
-
-  injectFun = () => {
-    window.contactUs = !Utils.isDineInType()
-      ? () => {
-          this.handleVisitMerchantInfoPage();
-        }
-      : null;
-
-    let version = '0';
+    let version = '0',
+      supportCallPhone = false;
 
     if (Utils.isAndroidWebview()) {
       version = window.androidInterface.getAppVersion();
@@ -83,14 +66,28 @@ export class ThankYou extends PureComponent {
     }
 
     if (version > '1.0.1') {
-      this.setState({
-        supportCallPhone: true,
-      });
+      supportCallPhone = true;
     } else {
-      this.setState({
-        supportCallPhone: false,
-      });
+      supportCallPhone = false;
     }
+
+    this.state = {
+      cashbackSuccessImage,
+      isHideTopArea: false,
+      supportCallPhone,
+      showPhoneCopy: false,
+      phoneCopyTitle: '',
+      phoneCopyContent: '',
+    };
+    this.injectFun();
+  }
+
+  injectFun = () => {
+    window.contactUs = !Utils.isDineInType()
+      ? () => {
+          this.handleVisitMerchantInfoPage();
+        }
+      : null;
   };
 
   componentDidMount() {
