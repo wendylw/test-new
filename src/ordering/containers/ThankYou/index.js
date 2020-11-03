@@ -920,12 +920,15 @@ export class ThankYou extends PureComponent {
                     <a
                       href="javascript:void(0)"
                       onClick={() => this.copyPhoneNumber(storePhone, 'drive')}
-                      className="text-weight-bolder button ordering-thanks__link text-uppercase"
+                      className="text-weight-bolder button ordering-thanks__link text-uppercase ordering-thanks__button-link"
                     >
                       {t('CallStore')}
                     </a>
                   ) : (
-                    <a href={`tel:+${storePhone}`} className="text-weight-bolder button ordering-thanks__link">
+                    <a
+                      href={`tel:+${storePhone}`}
+                      className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                    >
                       {t('CallStore')}
                     </a>
                   )
