@@ -52,7 +52,7 @@ class Cart extends Component {
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
-      footerEls: [this.billingEl, this.footerEl],
+      footerEls: [this.footerEl],
     });
 
     if (preContainerHeight !== containerHeight) {
@@ -385,17 +385,7 @@ class Cart extends Component {
         >
           <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
           {this.renderAdditionalComments()}
-        </div>
-        <aside
-          className="sticky-wrapper"
-          style={{
-            bottom: `${Utils.marginBottom({
-              footerEls: [this.footerEl],
-            })}px`,
-          }}
-        >
           <Billing
-            billingRef={ref => (this.billingEl = ref)}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
@@ -409,7 +399,7 @@ class Cart extends Component {
           >
             {this.renderPromotionItem()}
           </Billing>
-        </aside>
+        </div>
         <footer
           ref={ref => (this.footerEl = ref)}
           className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
