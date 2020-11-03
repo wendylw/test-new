@@ -264,7 +264,7 @@ export class ThankYou extends PureComponent {
     return (
       <React.Fragment>
         <div className="card text-center padding-small margin-normal">
-          <label className="text-size-big padding-top-bottom-smallest text-uppercase text-weight-bolder">
+          <label className="text-size-big padding-top-bottom-small text-uppercase text-weight-bolder">
             {t('OrderNumber')}
           </label>
           <span
@@ -984,7 +984,7 @@ export class ThankYou extends PureComponent {
         'https://app.beepit.com/download/?utm_source=beep&utm_medium=tracking&utm_campaign=launch_campaign&utm_content=tracking_banner';
     }
     return (
-      <div className="margin-normal">
+      <div className="margin-normal ordering-thanks__download">
         <a href={link} data-heap-name="ordering.thank-you.download" target={client === 'PC' ? '_blank' : ''}>
           <p className="flex flex-center flex-middle">
             <img src={beepAppDownloadBanner} alt="Beep App Download" />
