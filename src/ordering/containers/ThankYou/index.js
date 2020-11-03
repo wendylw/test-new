@@ -799,7 +799,7 @@ export class ThankYou extends PureComponent {
     const { name: storeName, phone: storePhone } = storeInfo;
     const { logo: storeLogo } = onlineStoreInfo;
     const { supportCallPhone } = this.state;
-
+    console.log(supportCallPhone, 'supportCallPhone');
     return (
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
         <div className="padding-normal">
@@ -1199,7 +1199,6 @@ export class ThankYou extends PureComponent {
     if (type) {
       options.push(`type=${type}`);
     }
-    console.log(!isWebview && !isHideTopArea);
     return (
       <section
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
