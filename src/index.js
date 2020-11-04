@@ -11,6 +11,7 @@ import Bootstrap from './Bootstrap';
 
 import './index.css';
 import Utils from './utils/utils';
+// import './utils/cross-storage';
 
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
