@@ -31,6 +31,7 @@ export const initialState = {
       birthday: null,
     },
     isError: false,
+    otpType: 'otp',
   },
   error: null, // network error
   messageModal: {
@@ -115,15 +116,13 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone }) => ({
+  getOtp: ({ phone, type = 'otp' }) => ({
     [API_REQUEST]: {
       types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
-      ...Url.API_URLS.POST_OTP(config.authApiUrl),
+      ...Url.API_URLS.GET_OTP,
       payload: {
-        grant_type: AUTH_INFO.GRANT_TYPE,
-        client: AUTH_INFO.CLIENT,
-        business_name: config.business,
-        username: phone,
+        type,
+        phone,
       },
     },
   }),
@@ -281,7 +280,6 @@ const user = (state = initialState.user, action) => {
     case types.HIDE_LOGIN_PAGE:
       return { ...state, showLoginPage: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-    case types.GET_OTP_REQUEST:
     case types.CREATE_OTP_REQUEST:
     case types.CREATE_LOGIN_REQUEST:
       return { ...state, isFetching: true };
@@ -289,6 +287,12 @@ const user = (state = initialState.user, action) => {
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isError: true };
+    case types.GET_OTP_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        otpType: 'reSendotp',
+      };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
     case types.UPDATE_OTP_STATUS:
@@ -487,6 +491,7 @@ export default combineReducers({
 
 // selectors
 export const getUser = state => state.app.user;
+export const getOtpType = state => state.app.user.otpType;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
