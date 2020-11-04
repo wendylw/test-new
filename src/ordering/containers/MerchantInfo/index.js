@@ -62,7 +62,9 @@ export class MerchantInfo extends Component {
               if (history.length) {
                 console.log('==> back');
                 // history.goBack();
+
                 window.history.go(-1);
+                console.log('==> back end');
               } else {
                 console.log('==> push');
 
