@@ -878,7 +878,18 @@ export class ThankYou extends PureComponent {
             {status === 'confirmed' && (
               <React.Fragment>
                 {storePhone &&
-                  (Utils.isWebview() && !supportCallPhone ? (
+                  (Utils.isWebview() ? (
+                    trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                      <a
+                        href={trackingUrl}
+                        className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                        target="__blank"
+                        data-heap-name="ordering.thank-you.logistics-tracking-link"
+                      >
+                        {t('TrackOrder')}
+                      </a>
+                    ) : null
+                  ) : !supportCallPhone ? (
                     <a
                       href="javascript:void(0)"
                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
@@ -900,11 +911,11 @@ export class ThankYou extends PureComponent {
                     onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 ) : (
                   <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 )}
               </React.Fragment>
@@ -945,11 +956,11 @@ export class ThankYou extends PureComponent {
                     onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 ) : (
                   <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 )}
               </React.Fragment>

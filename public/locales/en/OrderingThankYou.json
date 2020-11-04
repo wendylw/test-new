@@ -41,6 +41,7 @@
   "OrderStatusDelivered": "Order has been delivered",
   "CallStore": "Call Store",
   "CallDriver": "Call Driver",
+  "CallRider": "Call Rider",
   "ReportOrder": "Report Order",
   "TrackOrder": "Track Order",
   "DeliveryBy": "Delivered by {{name}}",
