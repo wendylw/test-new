@@ -57,27 +57,13 @@ export class MerchantInfo extends Component {
           isPage={false}
           title={t('ContactUs')}
           navFunc={() => {
-            try {
-              console.log('==> before');
-              if (history.length) {
-                console.log('==> back', history.length, '-', window.history, '-', window.history.go);
-                // history.goBack();
-                try {
-                  window.history.go(-1);
-                  console.log('==> back end');
-                } catch (e) {
-                  console.log('==> back end error', e);
-                }
-              } else {
-                console.log('==> push');
-
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.THANK_YOU,
-                  search: window.location.search,
-                });
-              }
-            } catch (e) {
-              console.log('error==>', e);
+            if (history.length) {
+              history.goBack();
+            } else {
+              history.push({
+                pathname: Constants.ROUTER_PATHS.THANK_YOU,
+                search: window.location.search,
+              });
             }
           }}
         />
