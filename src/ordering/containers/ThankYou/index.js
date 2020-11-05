@@ -844,12 +844,6 @@ export class ThankYou extends PureComponent {
       <div className="padding-small">
         <div className="padding-left-right-small flex flex-middle flex-space-between">
           <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
-          {isPickUpType && !isPreOrder ? (
-            <div className="margin-top-bottom-small">
-              <span className="margin-left-right-small text-size-bigger">{t('Total')}</span>
-              <CurrencyNumber className="text-size-bigger text-weight-bolder" money={total || 0} />
-            </div>
-          ) : null}
         </div>
 
         {isPickUpType && isPreOrder ? (

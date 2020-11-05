@@ -44,9 +44,11 @@ export class OrderDetails extends Component {
 
           return (
             <li key={`title-${index}`} className="flex flex-middle flex-space-between">
-              <summary className="flex flex-top">
-                <span className="padding-top-bottom-small flex__shrink-fixed text-opacity">{quantity} x</span>
-                <div className="ordering-details__item-content padding-small">
+              <summary className="ordering-details__summary">
+                <span className="ordering-details__item-quantity padding-top-bottom-small flex__shrink-fixed text-top text-opacity">
+                  {quantity} x
+                </span>
+                <div className="ordering-details__item-content text-top padding-small">
                   <span className="ordering-details__item-title text-opacity">{title}</span>
                   <p>
                     {variationTexts && variationTexts[0] ? (
