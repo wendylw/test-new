@@ -66,6 +66,8 @@ class CartList extends Component {
       quantity,
       image,
     } = cartItem;
+    const originalDisplayPrice = 2.0;
+    // TODO need get originalDisplayPrice form api
 
     return (
       <ProductItem
@@ -79,6 +81,7 @@ class CartList extends Component {
         isLazyLoad={isList}
         soldOut={isCartItemSoldOut(cartItem)}
         decreaseDisabled={!Boolean(quantity)}
+        originalDisplayPrice={originalDisplayPrice}
         onDecrease={async () => {
           if (quantity === 1) {
             this.handleRemoveCartItem({
