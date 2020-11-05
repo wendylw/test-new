@@ -1,6 +1,8 @@
 import { CrossStorageClient } from 'cross-storage';
 
-const storage = new CrossStorageClient('/cross-storage/hub.html', { timeout: 5000 });
+const storage = new CrossStorageClient(`${process.env.REACT_APP_CROSS_STORAGE_BASE_URL}/cross-storage/hub.html`, {
+  timeout: 5000,
+});
 
 export const setItem = async (key, value) => {
   await storage.onConnect();
