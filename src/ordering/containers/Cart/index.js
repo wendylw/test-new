@@ -21,7 +21,6 @@ import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
-import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
@@ -33,7 +32,6 @@ class Cart extends Component {
     expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
-    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
   };
 
@@ -331,30 +329,9 @@ class Cart extends Component {
     );
   }
 
-  checkCartItemSoldOut = (shoppingCart = {}) => {
-    const { unavailableItems = [], items = [] } = shoppingCart;
-    const cartList = [...unavailableItems, ...items];
-
-    for (let i = 0; i < cartList.length; i++) {
-      const cartItem = cartList[i];
-      const { markedSoldOut, variations } = cartItem;
-
-      if (markedSoldOut) {
-        return true;
-      }
-
-      if (Array.isArray(variations) && variations.length > 0) {
-        if (variations.find(variation => variation.markedSoldOut)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight } = this.state;
+    const { isCreatingOrder, cartContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -363,7 +340,7 @@ class Cart extends Component {
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
+
     const buttonText = !isInvalidTotal ? (
       t('PayNow')
     ) : (
@@ -469,15 +446,6 @@ class Cart extends Component {
             {!isCreatingOrder ? buttonText : null}
           </button>
         </footer>
-        <ProductSoldOutModal
-          show={isHaveProductSoldOut}
-          editHandler={() => {
-            this.setState({
-              isHaveProductSoldOut: null,
-            });
-            Utils.removeSessionVariable('isHaveProductSoldOut');
-          }}
-        />
       </section>
     );
   }

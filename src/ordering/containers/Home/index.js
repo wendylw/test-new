@@ -49,6 +49,10 @@ const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
+  deliveryEntryEl = null;
+  headerEl = null;
+  footerEl = null;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -68,12 +72,7 @@ export class Home extends Component {
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
-    this.checkUrlType();
   }
-  deliveryEntryEl = null;
-  headerEl = null;
-  footerEl = null;
-  scrollDepthNumerator = 0;
 
   checkTableId = () => {
     const { table, storeId } = config;
@@ -89,14 +88,7 @@ export class Home extends Component {
     }
   };
 
-  checkUrlType = () => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    const { type } = search;
-
-    if (!type) {
-      window.location.href = window.location.origin;
-    }
-  };
+  scrollDepthNumerator = 0;
 
   // copied and modified from https://docs.heap.io/docs/scroll-tracking
   trackScrollDepth = () => {

@@ -11,8 +11,7 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
 
-const { ROUTER_PATHS, CREATE_ORDER_ERROR_CODES } = Constants;
-const { PRODUCT_SOLD_OUT, PRODUCT_SOLD_OUT_EC } = CREATE_ORDER_ERROR_CODES;
+const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidUpdate(prevProps) {

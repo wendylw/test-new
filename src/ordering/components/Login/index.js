@@ -4,7 +4,6 @@ import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
-import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -52,7 +51,6 @@ class Login extends React.Component {
   renderOtpModal() {
     const { t, user } = this.props;
     const { isFetching, isLogin, hasOtp } = user || {};
-    const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
       return null;
@@ -61,7 +59,7 @@ class Login extends React.Component {
     return (
       <OtpModal
         buttonText={t('OK')}
-        ResendOtpTime={RESEND_OTP_TIME}
+        ResendOtpTime={20}
         phone={Utils.getLocalStorageVariable('user.p')}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}

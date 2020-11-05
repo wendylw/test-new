@@ -13,7 +13,7 @@ class CurrencyNumber extends React.Component {
       return money;
     }
 
-    const formatPrice = numberOnly
+    const price = numberOnly
       ? Intl.NumberFormat(locale, {
           style: 'decimal',
           currency,
@@ -21,9 +21,6 @@ class CurrencyNumber extends React.Component {
           maximumFractionDigits: 2,
         }).format(parseFloat(money))
       : Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(money));
-
-    // fix Intl.NumberFormat did not work on wechat webview in some version and some device
-    const price = formatPrice === null || formatPrice === '' ? money : formatPrice;
 
     if (country === 'MY' && isSafari) {
       return price.replace(/^(\D+)/, '$1 ');

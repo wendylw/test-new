@@ -90,7 +90,7 @@
     "serve:sourcemap": "node scripts/serve-sourcemap --port 8080",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "chromatic": "npx chromatic --exit-zero-on-changes"
+    "chromatic": "npx chromatic --project-token ejo2it5a6d"
   },
   "eslintConfig": {
     "extends": "react-app",
