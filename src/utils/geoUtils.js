@@ -1,6 +1,7 @@
 import { intersection, findIndex } from 'lodash';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
+import * as crossStorage from './cross-storage';
 
 const googleMaps = window.google.maps;
 
@@ -151,9 +152,39 @@ export const getDevicePositionInfo = (withCache = true) => {
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
 const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
 
+export const migrateHistoricalDeliveryAddress = async () => {
+  let oldAddresses = [];
+  const oldAddressStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+  if (!oldAddressStr) {
+    return;
+  }
+  if (oldAddressStr) {
+    try {
+      oldAddresses = JSON.parse(oldAddressStr);
+    } catch {
+      localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+      return;
+    }
+  }
+  try {
+    const newAddresses = await getHistoricalDeliveryAddresses();
+    const newAddressMap = {};
+    newAddresses.forEach(placeInfo => (newAddressMap[placeInfo.address] = true));
+    for (let i = 0; i < oldAddresses.length; i++) {
+      const placeInfo = oldAddresses[i];
+      if (!newAddressMap[placeInfo.address]) {
+        await setHistoricalDeliveryAddresses(placeInfo);
+      }
+    }
+    localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+  } catch (e) {
+    console.error(e.message);
+  }
+};
+
 export const getHistoricalDeliveryAddresses = async () => {
   try {
-    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
     if (!storageStr) {
       return [];
     }
@@ -161,7 +192,7 @@ export const getHistoricalDeliveryAddresses = async () => {
 
     // --Begin-- last version of cache doesn't have addressComponents field, we need it now
     if (results && results.length && !results[0].addressComponents) {
-      localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+      await crossStorage.removeItem(HISTORICAL_ADDRESS_KEY);
       return [];
     }
     // ---End--- last version of cache doesn't have addressComponents field, we need it now
@@ -179,7 +210,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     const clonedPositionInfo = { ...positionInfo };
     // won't save distance, because use may choose another store.
     delete clonedPositionInfo.distance;
-    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
     let positionInfoList;
     if (!storageStr) {
       positionInfoList = [];
@@ -197,7 +228,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     positionInfoList.unshift(clonedPositionInfo);
     // remove the oldest item, to prevent data size keeping growing.
     positionInfoList.splice(MAX_HISTORICAL_ADDRESS_COUNT);
-    localStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
+    await crossStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
   } catch (e) {
     console.error('failed to set historical delivery addresses', e);
   }
