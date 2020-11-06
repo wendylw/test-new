@@ -152,6 +152,7 @@ export const getDevicePositionInfo = (withCache = true) => {
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
 const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
 
+// This code can be removed after a few months later (probably March 2021)
 export const migrateHistoricalDeliveryAddress = async () => {
   let oldAddresses = [];
   const oldAddressStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
