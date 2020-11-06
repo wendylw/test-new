@@ -49,6 +49,10 @@ class Cart extends Component {
     this.setCartContainerHeight();
   }
 
+  componentWillUnmount() {
+    this.setState({ isCreatingOrder: false });
+  }
+
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
@@ -436,14 +440,15 @@ class Cart extends Component {
                 return;
               }
 
+              this.setState({ isCreatingOrder: true });
+
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
               });
             }}
             disabled={!items || !items.length || isInvalidTotal}
           >
-            {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
-            {!isCreatingOrder ? buttonText : null}
+            {isCreatingOrder ? t('Processing') : `${isInvalidTotal ? `*` : null}${buttonText}`}
           </button>
         </footer>
       </section>
