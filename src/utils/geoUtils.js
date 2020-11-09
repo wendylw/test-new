@@ -8,8 +8,15 @@ const googleMaps = window.google.maps;
 const latLng = ({ lat, lng }) => new googleMaps.LatLng(lat, lng);
 
 let autoCompleteSessionToken;
+let lastTokenGenerateTime = 0;
 export const getAutocompleteSessionToken = () => {
-  autoCompleteSessionToken = autoCompleteSessionToken || new googleMaps.places.AutocompleteSessionToken();
+  // According to https://stackoverflow.com/questions/50398801/how-long-do-the-new-places-api-session-tokens-last,
+  // the AutocompleteSessionToken expires in 3 mins. Note that there's NO official document for this value.
+  const now = Date.now();
+  if (!autoCompleteSessionToken || now - lastTokenGenerateTime > 180000) {
+    autoCompleteSessionToken = new googleMaps.places.AutocompleteSessionToken();
+    lastTokenGenerateTime = now;
+  }
   return autoCompleteSessionToken;
 };
 
@@ -284,7 +291,10 @@ export const computeDirectionDistanceMatrix = async (fromCoordsList, toCoordsLis
   });
 };
 
-export const getPlaceInfoFromPlaceId = placeId => {
+export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
+  if (options.fromAutocomplete) {
+    return getPlaceDetails(placeId);
+  }
   const geocoder = new googleMaps.Geocoder();
   return new Promise((resolve, reject) => {
     geocoder.geocode({ placeId }, (resp, status) => {
@@ -304,11 +314,11 @@ export const getPlaceInfoFromPlaceId = placeId => {
   });
 };
 
-// @deprecated: This api is too expensive, hence we don't use it for now.
-export const getPlaceDetails = async (
-  placeId,
-  { fields = ['geometry', 'formatted_address', 'address_components'] } = {}
-) => {
+// this api is very expensive, hence we won't export it for public use for now.
+// It should ONLY be used for getting the place detail after auto complete, which
+// is charged as <SKU: Autocomplete (included with Places Details) – Per Session>
+// (https://developers.google.com/places/web-service/usage-and-billing#ac-with-details-session)
+const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_components'] } = {}) => {
   const places = new googleMaps.places.PlacesService(document.createElement('div'));
 
   const placeDetails = await new Promise(resolve => {

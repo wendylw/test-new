@@ -1,6 +1,5 @@
 import Constants from '../../utils/constants';
 import { getPositionInfoBySource, loadPickedDeliveryAddress, savePickedDeliveryAddress } from '../../utils/geoUtils';
-import config from '../../config';
 import { get } from '../../utils/request';
 import Url from '../../utils/url';
 import Utils from '../../utils/utils';
