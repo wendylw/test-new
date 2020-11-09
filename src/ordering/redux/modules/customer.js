@@ -4,6 +4,7 @@ import Url from '../../../utils/url';
 import config from '../../../config';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import {
+  DeliveryDetailsStorageKey,
   fetchDeliveryAddress,
   fetchDeliveryDetails,
   patchDeliveryDetails,
@@ -11,6 +12,7 @@ import {
 } from '../../containers/Customer/utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { getUserAddressList } from '../../../redux/modules/entities/users';
+import Utils from '../../../utils/utils';
 
 const initialState = {
   deliveryDetails: {
@@ -208,6 +210,20 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         deliveryTo: deliveryToAddress,
         location: deliveryToLocation,
       } = findAvailableAddress;
+
+      // patch deliveryDetails to sessionStorage
+      const deliveryDetails = JSON.parse(Utils.getSessionVariable(DeliveryDetailsStorageKey));
+      Utils.setSessionVariable(
+        DeliveryDetailsStorageKey,
+        JSON.stringify({
+          ...deliveryDetails,
+          addressName,
+          addressDetails,
+          deliveryComments,
+          deliveryToAddress,
+          deliveryToLocation,
+        })
+      );
 
       return {
         ...state,
