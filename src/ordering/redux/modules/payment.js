@@ -11,7 +11,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { setHistoricalDeliveryAddresses } from '../../../utils/geoUtils';
+import { getMerchantDeliveryAddress, setHistoricalDeliveryAddresses } from '../../../utils/geoUtils';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
@@ -244,7 +244,7 @@ export const actions = {
 
     if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
       try {
-        await setHistoricalDeliveryAddresses(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
+        await setHistoricalDeliveryAddresses(getMerchantDeliveryAddress());
       } catch (e) {
         console.error(e);
       }

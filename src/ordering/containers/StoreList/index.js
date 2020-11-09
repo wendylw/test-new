@@ -16,6 +16,7 @@ import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
+import { getMerchantDeliveryAddress } from '../../../utils/geoUtils';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
@@ -78,9 +79,8 @@ class StoreList extends Component {
   }
 
   async componentDidMount() {
-    let address = Utils.getSessionVariable('deliveryAddress');
+    let address = getMerchantDeliveryAddress();
     if (address) {
-      address = JSON.parse(address);
       address = {
         location: {
           longitude: address.coords.lng,

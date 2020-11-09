@@ -13,6 +13,7 @@ import Constants from '../../../../../utils/constants';
 import { withRouter } from 'react-router-dom';
 import config from '../../../../../config';
 import qs from 'qs';
+import { getMerchantDeliveryAddress } from '../../../../../utils/geoUtils';
 class CategoryProductList extends Component {
   prevCategory = null;
 
@@ -33,7 +34,7 @@ class CategoryProductList extends Component {
   };
 
   handleIncreaseProductInCart = async product => {
-    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    let deliveryAddress = getMerchantDeliveryAddress();
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
 
     if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
@@ -98,7 +99,7 @@ class CategoryProductList extends Component {
   };
 
   handleShowProductDetail = async product => {
-    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const deliveryAddress = getMerchantDeliveryAddress();
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
 
     if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {

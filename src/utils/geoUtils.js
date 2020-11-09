@@ -453,3 +453,44 @@ export const loadPickedDeliveryAddress = async () => {
     return null;
   }
 };
+
+// Why do we need "merchant delivery address"?
+// Before November 2020, we store delivery addresses for each merchant in sessionStorage, which
+// makes the delivery addresses independent across stores (because sessionStorage cannot be shared
+// across domains). Then we decided to save data using cross-storage, so that the delivery address
+// can be shared. However, the api of cross-storage must be async, while sessionStorage is sync.
+// Unfortunately it's too complex to change sync to async directly (there's even a render method
+// that's using sessionStorage). So I decided not to change the sessionStorage part, just move them
+// to a unified method, and only change the place where we get the address. Hopefully we will have
+// a data layer in the future, so that we can finally get rid of the dependency of sessionStorage.
+
+const MERCHANT_DELIVERY_ADDRESS_STORAGE_KEY = 'deliveryAddress';
+
+export const setMerchantDeliveryAddress = address => {
+  try {
+    Utils.setSessionVariable(MERCHANT_DELIVERY_ADDRESS_STORAGE_KEY, JSON.stringify(address));
+  } catch (e) {
+    console.error(e.message);
+  }
+};
+
+export const getMerchantDeliveryAddress = () => {
+  try {
+    const dataStr = Utils.getSessionVariable(MERCHANT_DELIVERY_ADDRESS_STORAGE_KEY);
+    if (dataStr) {
+      return JSON.stringify(dataStr);
+    }
+    return null;
+  } catch (e) {
+    console.error(e.message);
+    return null;
+  }
+};
+
+export const removeMerchantDeliveryAddress = () => {
+  try {
+    Utils.removeSessionVariable(MERCHANT_DELIVERY_ADDRESS_STORAGE_KEY);
+  } catch (e) {
+    console.error(e.message);
+  }
+};

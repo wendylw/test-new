@@ -9,7 +9,7 @@ import Header from '../../../components/Header';
 import ErrorToast from '../../../components/ErrorToast';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Utils from '../../../utils/utils';
-import { computeStraightDistance } from '../../../utils/geoUtils';
+import { computeStraightDistance, getMerchantDeliveryAddress } from '../../../utils/geoUtils';
 import Constants from '../../../utils/constants';
 
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
@@ -204,7 +204,7 @@ class Customer extends Component {
 
     switch (type) {
       case DELIVERY_METHOD.DELIVERY:
-        const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+        const deliveryAddress = getMerchantDeliveryAddress() || {};
         const address = (deliveryAddress.address || '').trim();
         return !isEmpty(address);
       default:
@@ -242,7 +242,7 @@ class Customer extends Component {
 
             const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
             // cache delivery address
-            Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
+            Utils.setSessionVariable('cachedeliveryAddress', JSON.stringify(getMerchantDeliveryAddress()));
             Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
             Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
 
@@ -278,7 +278,7 @@ class Customer extends Component {
     }
 
     const { addressDetails, deliveryComments } = this.props.deliveryDetails;
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { address: deliveryToAddress } = getMerchantDeliveryAddress() || {};
 
     return (
       <React.Fragment>
@@ -378,7 +378,7 @@ class Customer extends Component {
             onClick={async () => {
               const { search } = window.location;
 
-              Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
+              Utils.setSessionVariable('cachedeliveryAddress', JSON.stringify(getMerchantDeliveryAddress()));
               Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
               Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
 

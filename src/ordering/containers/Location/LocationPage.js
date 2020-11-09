@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import LocationPicker, { savePickedDeliveryAddress } from '../../../components/LocationPicker';
+import LocationPicker, {
+  getMerchantDeliveryAddress,
+  removeMerchantDeliveryAddress,
+  setMerchantDeliveryAddress,
+  savePickedDeliveryAddress,
+} from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
@@ -45,7 +50,7 @@ class LocationPage extends Component {
           errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
         },
         () => {
-          Utils.removeSessionVariable('deliveryAddress');
+          removeMerchantDeliveryAddress();
           Utils.removeSessionVariable('outRange');
         }
       );
@@ -120,7 +125,7 @@ class LocationPage extends Component {
     //   return;
     // }
 
-    Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
+    setMerchantDeliveryAddress({ ...placeInfo });
     Utils.setSessionVariable('deliveryAddressUpdate', true);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
@@ -166,7 +171,7 @@ class LocationPage extends Component {
   render() {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
-    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
+    const outRangeSearchText = getMerchantDeliveryAddress().address;
     return (
       <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <Header

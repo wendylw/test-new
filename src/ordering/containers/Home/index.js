@@ -37,7 +37,12 @@ import { isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
-import { computeStraightDistance, loadPickedDeliveryAddress } from '../../../utils/geoUtils';
+import {
+  computeStraightDistance,
+  getMerchantDeliveryAddress,
+  loadPickedDeliveryAddress,
+  setMerchantDeliveryAddress,
+} from '../../../utils/geoUtils';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
 
@@ -226,7 +231,7 @@ export class Home extends Component {
 
   checkRange = () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
+    if (search.h && getMerchantDeliveryAddress() && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo = {} } = this.props;
 
       let { stores = [], qrOrderingSettings } = businessInfo;
@@ -234,7 +239,7 @@ export class Home extends Component {
         const { deliveryRadius } = qrOrderingSettings;
         stores = stores[0];
         const { location } = stores;
-        const distance = computeStraightDistance(JSON.parse(Utils.getSessionVariable('deliveryAddress')).coords, {
+        const distance = computeStraightDistance(getMerchantDeliveryAddress().coords, {
           lat: location.latitude,
           lng: location.longitude,
         });
@@ -362,7 +367,7 @@ export class Home extends Component {
 
   checkOrderTime = async () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
+    if ((getMerchantDeliveryAddress() && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
       const { qrOrderingSettings } = businessInfo || {};
       // const { validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
@@ -450,7 +455,7 @@ export class Home extends Component {
 
     try {
       if (deliveryAddress) {
-        sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryAddress));
+        setMerchantDeliveryAddress(deliveryAddress);
       }
     } catch (e) {
       captureException(e);
