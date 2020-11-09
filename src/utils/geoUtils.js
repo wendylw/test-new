@@ -438,7 +438,7 @@ const DELIVERY_ADDRESS_STORAGE_KEY = 'PICKED_DELIVERY_ADDRESS';
 
 export const savePickedDeliveryAddress = async address => {
   try {
-    await crossStorage.setItem(DELIVERY_ADDRESS_STORAGE_KEY, address);
+    await crossStorage.setItem(DELIVERY_ADDRESS_STORAGE_KEY, JSON.stringify(address));
   } catch {}
 };
 
