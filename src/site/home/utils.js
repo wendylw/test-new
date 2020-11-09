@@ -93,5 +93,12 @@ export const getPlaceInfo = async (options = {}) => {
 };
 
 export const submitStoreMenu = async ({ store, source, shippingType = 'delivery' }) => {
-  document.location.href = Utils.getMerchantStoreUrl({ store, source, type: shippingType });
+  const response = await get(Url.API_URLS.GET_STORE_HASH_DATA(store.id).url);
+  const { redirectTo } = response || {};
+  const storeUrlParams = {
+    business: store.business,
+    hash: redirectTo,
+    source: source,
+  };
+  document.location.href = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
 };
