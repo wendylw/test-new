@@ -16,18 +16,6 @@ const getPlaceInfoFromLocation = ({ location }) => {
   return null;
 };
 
-export const migrateSavedPlaceInfo = async () => {
-  try {
-    const oldPlaceInfoStr = localStorage.getItem('user.placeInfo');
-    if (oldPlaceInfoStr) {
-      const placeInfo = JSON.stringify(oldPlaceInfoStr);
-      savePickedDeliveryAddress(placeInfo);
-    }
-  } catch (e) {
-    console.error(e.message);
-  }
-};
-
 export const getPlaceInfoByDeviceByAskPermission = async () => {
   try {
     const placeInfo = await getPositionInfoBySource('device', true);

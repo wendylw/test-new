@@ -156,13 +156,30 @@ export const getDevicePositionInfo = (withCache = true) => {
   return getPositionInfoBySource('device', withCache);
 };
 
+migrateSavedPlaceInfo();
+migrateHistoricalDeliveryAddress();
+
+export const migrateSavedPlaceInfo = async () => {
+  try {
+    const oldPlaceInfoStr = Utils.getLocalStorageVariable('user.placeInfo');
+    if (oldPlaceInfoStr) {
+      const placeInfo = JSON.parse(oldPlaceInfoStr);
+      await savePickedDeliveryAddress(placeInfo);
+      Utils.removeLocalStorageVariable('user.placeInfo');
+    }
+  } catch (e) {
+    console.error(e.message);
+    Utils.removeLocalStorageVariable('user.placeInfo');
+  }
+};
+
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
 const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
 
 // This code can be removed after a few months later (probably March 2021)
 export const migrateHistoricalDeliveryAddress = async () => {
   let oldAddresses = [];
-  const oldAddressStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+  const oldAddressStr = Utils.getLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
   if (!oldAddressStr) {
     return;
   }
@@ -170,7 +187,7 @@ export const migrateHistoricalDeliveryAddress = async () => {
     try {
       oldAddresses = JSON.parse(oldAddressStr);
     } catch {
-      localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+      Utils.removeLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
       return;
     }
   }
@@ -184,7 +201,7 @@ export const migrateHistoricalDeliveryAddress = async () => {
         await setHistoricalDeliveryAddresses(placeInfo);
       }
     }
-    localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+    Utils.removeLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
   } catch (e) {
     console.error(e.message);
   }
