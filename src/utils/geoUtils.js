@@ -478,7 +478,7 @@ export const getMerchantDeliveryAddress = () => {
   try {
     const dataStr = Utils.getSessionVariable(MERCHANT_DELIVERY_ADDRESS_STORAGE_KEY);
     if (dataStr) {
-      return JSON.stringify(dataStr);
+      return JSON.parse(dataStr);
     }
     return null;
   } catch (e) {
