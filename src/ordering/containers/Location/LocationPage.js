@@ -6,6 +6,7 @@ import LocationPicker, {
   removeMerchantDeliveryAddress,
   setMerchantDeliveryAddress,
   savePickedDeliveryAddress,
+  setHistoricalDeliveryAddresses,
 } from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
@@ -134,6 +135,7 @@ class LocationPage extends Component {
       history.go(-1);
     }
     savePickedDeliveryAddress(placeInfo);
+    setHistoricalDeliveryAddresses(placeInfo);
   };
 
   handleBackClicked = () => {
