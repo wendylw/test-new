@@ -24,6 +24,8 @@ export const migrateSavedPlaceInfo = async () => {
       const placeInfo = JSON.stringify(oldPlaceInfoStr);
       savePickedDeliveryAddress(placeInfo);
     }
+  } catch (e) {
+    console.error(e.message);
   }
 };
 
