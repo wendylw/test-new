@@ -15,16 +15,6 @@ export const isSourceBeepitCom = () => {
   return false;
 };
 
-// todo: this should be global use
-export const fetchRedirectPageState = async () => {
-  try {
-    return await get('/go2page/state');
-  } catch (e) {
-    console.error(e);
-    return {};
-  }
-};
-
 export const windowSize = () => ({
   width: window.innerWidth || document.body.clientWidth,
   height: window.innerHeight || document.body.clientHeight,

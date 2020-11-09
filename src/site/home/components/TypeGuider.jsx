@@ -6,6 +6,9 @@ import RedirectForm from '../../../ordering/containers/Payment/components/Redire
 
 const disabledPickupList = ['5ea0203a433b7415bbe13529', '5ea25997d4d63725b156b815'];
 
+/**
+ * @deprecated
+ */
 class TypeGuider extends Component {
   state = {
     url: '',

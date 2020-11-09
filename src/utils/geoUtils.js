@@ -433,3 +433,23 @@ export const getCountryCodeByPlaceInfo = placeInfo => {
     return '';
   }
 };
+
+const DELIVERY_ADDRESS_STORAGE_KEY = 'PICKED_DELIVERY_ADDRESS';
+
+export const savePickedDeliveryAddress = async address => {
+  try {
+    await crossStorage.setItem(DELIVERY_ADDRESS_STORAGE_KEY, address);
+  } catch {}
+};
+
+export const loadPickedDeliveryAddress = async () => {
+  try {
+    const dataStr = await crossStorage.getItem(DELIVERY_ADDRESS_STORAGE_KEY);
+    if (dataStr) {
+      return JSON.parse(dataStr);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};

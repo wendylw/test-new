@@ -33,11 +33,11 @@ import {
   getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
+import { isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
-import { computeStraightDistance } from '../../../utils/geoUtils';
+import { computeStraightDistance, loadPickedDeliveryAddress } from '../../../utils/geoUtils';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
 
@@ -118,10 +118,7 @@ export class Home extends Component {
   componentDidMount = async () => {
     const { homeActions, deliveryInfo, appActions } = this.props;
 
-    if (isSourceBeepitCom()) {
-      // sync deliveryAddress from beepit.com
-      await this.setupDeliveryAddressByRedirectState();
-    }
+    await this.setupDeliveryAddress();
 
     this.handleDeliveryTimeInSession();
 
@@ -448,12 +445,12 @@ export class Home extends Component {
   };
 
   // get deliveryTo info from cookie and set into localStorage
-  setupDeliveryAddressByRedirectState = async () => {
-    const state = await fetchRedirectPageState();
+  setupDeliveryAddress = async () => {
+    const deliveryAddress = await loadPickedDeliveryAddress();
 
     try {
-      if (state.deliveryAddress) {
-        sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
+      if (deliveryAddress) {
+        sessionStorage.setItem('deliveryAddress', deliveryAddress);
       }
     } catch (e) {
       captureException(e);
@@ -658,7 +655,14 @@ export class Home extends Component {
 
     return !h
       ? isValidToOrderFromMulitpeStore
-      : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations });
+      : Utils.isValidTimeToOrder({
+          validDays,
+          validTimeFrom,
+          validTimeTo,
+          breakTimeFrom,
+          breakTimeTo,
+          vacations,
+        });
   };
 
   renderHeaderChildren() {

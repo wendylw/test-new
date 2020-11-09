@@ -2,6 +2,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import config from '../../../config';
 
+// TODO: remove?
 class JumpMenu extends React.Component {
   state = {
     url: '',
