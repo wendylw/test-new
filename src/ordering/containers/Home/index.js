@@ -450,7 +450,7 @@ export class Home extends Component {
 
     try {
       if (deliveryAddress) {
-        sessionStorage.setItem('deliveryAddress', deliveryAddress);
+        sessionStorage.setItem('deliveryAddress', JSON.stringify(deliveryAddress));
       }
     } catch (e) {
       captureException(e);
