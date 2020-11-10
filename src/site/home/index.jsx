@@ -71,7 +71,6 @@ class Home extends React.Component {
       }
     } else {
       const { placeInfo, source } = await getPlaceInfo({
-        location,
         fromDevice: false,
         fromIp: false,
         fromLocationPage: false,
