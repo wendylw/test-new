@@ -340,11 +340,15 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
             }
           }}
         >
-          <CurrencyNumber
-            className="text-center text-weight-bolder text-uppercase"
-            addonBefore={t('Pay')}
-            money={total || 0}
-          />
+          {processing ? (
+            t('Processing')
+          ) : (
+            <CurrencyNumber
+              className="text-center text-weight-bolder text-uppercase"
+              addonBefore={t('Pay')}
+              money={total || 0}
+            />
+          )}
         </CreateOrderButton>
       </footer>
 
