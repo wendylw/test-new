@@ -22,7 +22,7 @@ const sockPath = process.env.WDS_SOCKET_PATH || '/sockjs-node';
 const isDefaultSockHost = !process.env.WDS_SOCKET_HOST;
 
 function mayProxy(pathname) {
-  const isStaticPath = pathname.startsWith('/static/');
+  const isStaticPath = pathname.startsWith('/static/') || pathname.endsWith('hot-update.js');
   const maybePublicPath = path.resolve(__dirname, '../public' + pathname.replace(new RegExp('^' + servedPathname), ''));
   const isPublicFileRequest = fs.existsSync(maybePublicPath);
   // used by webpackHotDevClient

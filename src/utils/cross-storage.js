@@ -1,5 +1,9 @@
 import { CrossStorageClient } from 'cross-storage';
 
+if (!process.env.REACT_APP_CROSS_STORAGE_BASE_URL) {
+  throw new Error('cross-storage base url not specified!');
+}
+
 const storage = new CrossStorageClient(`${process.env.REACT_APP_CROSS_STORAGE_BASE_URL}/cross-storage/hub.html`, {
   timeout: 5000,
 });
