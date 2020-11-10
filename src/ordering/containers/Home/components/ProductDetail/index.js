@@ -487,6 +487,7 @@ class ProductDetail extends Component {
           <button
             className="button add__button button__fill text-uppercase text-weight-bolder "
             disabled={
+              increasingProductOnCat ||
               !this.isSubmitable() ||
               Utils.isProductSoldOut(product || {}) ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
