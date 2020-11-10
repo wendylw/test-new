@@ -4,6 +4,16 @@
   height: 100vh;
   background-color: $gray-5;
 
+  .billing {
+    margin-top: 6.2vw;
+    padding-top: 3.8vw;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .billing__label {
+    color: $gray-2;
+  }
+
   &__container {
     height: 100%;
     width: 100%;
@@ -27,5 +37,14 @@
 .cart-promotion {
   &__button-acquisition {
     max-height: 50px;
+  }
+}
+
+@media (min-width: 420px) {
+  .ordering-cart {
+    .billing {
+      margin-top: 24px;
+      padding-top: 16px;
+    }
   }
 }
