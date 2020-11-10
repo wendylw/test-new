@@ -448,7 +448,8 @@ class Cart extends Component {
             }}
             disabled={!items || !items.length || isInvalidTotal}
           >
-            {isCreatingOrder ? t('Processing') : `${isInvalidTotal ? `*` : null}${buttonText}`}
+            {isCreatingOrder ? t('Processing') : isInvalidTotal && `*`}
+            {!isCreatingOrder && buttonText}
           </button>
         </footer>
       </section>
