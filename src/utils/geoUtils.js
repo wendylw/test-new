@@ -157,25 +157,24 @@ export const getDevicePositionInfo = (withCache = true) => {
 };
 
 export const migrateSavedPlaceInfo = async () => {
+  const legacyKey = 'user.placeInfo';
   try {
-    const oldPlaceInfoStr = Utils.getLocalStorageVariable('user.placeInfo');
+    const oldPlaceInfoStr = Utils.getLocalStorageVariable(legacyKey);
     if (oldPlaceInfoStr) {
       const placeInfo = JSON.parse(oldPlaceInfoStr);
       await savePickedDeliveryAddress(placeInfo);
-      Utils.removeLocalStorageVariable('user.placeInfo');
+      Utils.removeLocalStorageVariable(legacyKey);
     }
   } catch (e) {
     console.error(e.message);
-    Utils.removeLocalStorageVariable('user.placeInfo');
+    Utils.removeLocalStorageVariable(legacyKey);
   }
 };
 
-const MAX_HISTORICAL_ADDRESS_COUNT = 5;
-const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
-
 export const migrateHistoricalDeliveryAddress = async () => {
   let oldAddresses = [];
-  const oldAddressStr = Utils.getLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
+  const legacyKey = 'HISTORICAL_DELIVERY_ADDRESSES';
+  const oldAddressStr = Utils.getLocalStorageVariable(legacyKey);
   if (!oldAddressStr) {
     return;
   }
@@ -183,7 +182,7 @@ export const migrateHistoricalDeliveryAddress = async () => {
     try {
       oldAddresses = JSON.parse(oldAddressStr);
     } catch {
-      Utils.removeLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
+      Utils.removeLocalStorageVariable(legacyKey);
       return;
     }
   }
@@ -197,12 +196,14 @@ export const migrateHistoricalDeliveryAddress = async () => {
         await setHistoricalDeliveryAddresses(placeInfo);
       }
     }
-    Utils.removeLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
+    Utils.removeLocalStorageVariable(legacyKey);
   } catch (e) {
     console.error(e.message);
   }
 };
 
+const MAX_HISTORICAL_ADDRESS_COUNT = 5;
+const HISTORICAL_ADDRESS_KEY = 'CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES';
 export const getHistoricalDeliveryAddresses = async () => {
   try {
     const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
@@ -457,7 +458,7 @@ export const getCountryCodeByPlaceInfo = placeInfo => {
   }
 };
 
-const DELIVERY_ADDRESS_STORAGE_KEY = 'PICKED_DELIVERY_ADDRESS';
+const DELIVERY_ADDRESS_STORAGE_KEY = 'CROSS_STORAGE_PICKED_DELIVERY_ADDRESS';
 
 export const savePickedDeliveryAddress = async address => {
   try {
