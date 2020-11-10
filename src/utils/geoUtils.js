@@ -517,7 +517,3 @@ export const removeMerchantDeliveryAddress = () => {
     console.error(e.message);
   }
 };
-
-// This code can be removed after a few months later (probably March 2021)
-migrateSavedPlaceInfo();
-migrateHistoricalDeliveryAddress();

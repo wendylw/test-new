@@ -12,12 +12,17 @@ import Bootstrap from './Bootstrap';
 import './index.css';
 import Utils from './utils/utils';
 import './utils/cross-storage';
+import { migrateSavedPlaceInfo, migrateHistoricalDeliveryAddress } from './utils/geoUtils';
 
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
 try {
   // kick off the polyfill!
   smoothscroll.polyfill();
+
+  // This code can be removed after a few months later (probably March 2021)
+  migrateSavedPlaceInfo();
+  migrateHistoricalDeliveryAddress();
 
   window.heap?.addUserProperties({
     account: config.business,
