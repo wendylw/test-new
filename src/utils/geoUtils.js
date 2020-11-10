@@ -156,9 +156,6 @@ export const getDevicePositionInfo = (withCache = true) => {
   return getPositionInfoBySource('device', withCache);
 };
 
-migrateSavedPlaceInfo();
-migrateHistoricalDeliveryAddress();
-
 export const migrateSavedPlaceInfo = async () => {
   try {
     const oldPlaceInfoStr = Utils.getLocalStorageVariable('user.placeInfo');
@@ -176,7 +173,6 @@ export const migrateSavedPlaceInfo = async () => {
 const MAX_HISTORICAL_ADDRESS_COUNT = 5;
 const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
 
-// This code can be removed after a few months later (probably March 2021)
 export const migrateHistoricalDeliveryAddress = async () => {
   let oldAddresses = [];
   const oldAddressStr = Utils.getLocalStorageVariable(HISTORICAL_ADDRESS_KEY);
@@ -521,3 +517,7 @@ export const removeMerchantDeliveryAddress = () => {
     console.error(e.message);
   }
 };
+
+// This code can be removed after a few months later (probably March 2021)
+migrateSavedPlaceInfo();
+migrateHistoricalDeliveryAddress();
