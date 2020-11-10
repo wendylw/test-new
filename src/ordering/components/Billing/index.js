@@ -84,17 +84,17 @@ export class Billing extends Component {
       <section ref={billingRef} className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
         <ul className="billing__list">
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-            <label className="margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
+            <label className="billing__label margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
             <CurrencyNumber className="text-size-big" money={subtotal || 0} />
           </li>
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-            <label className="text-size-big">{(receiptTemplateData || {}).taxName || t('Tax')}</label>
+            <label className="billing__label text-size-big">{(receiptTemplateData || {}).taxName || t('Tax')}</label>
             <CurrencyNumber className="text-size-big" money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
           {isDeliveryType ? (
             <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
-              <label className="margin-top-bottom-smaller text-size-big">{t('DeliveryFee')}</label>
+              <label className="billing__label margin-top-bottom-smaller text-size-big">{t('DeliveryFee')}</label>
               {shippingFee ? (
                 <CurrencyNumber className="text-size-big" money={shippingFee || 0} />
               ) : (
