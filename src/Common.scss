@@ -163,7 +163,7 @@ address {
     @extend .text-omit-base;
 
     display: -webkit-box;
-    word-break: break-all;
+    word-break: break-word;
     hyphens: auto;
   }
 }
