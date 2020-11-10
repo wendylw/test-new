@@ -21,7 +21,6 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import { setMerchantDeliveryAddress } from '../../../utils/geoUtils';
 
 class App extends Component {
   constructor(props) {
@@ -59,7 +58,7 @@ class App extends Component {
         lng: parseFloat(lng),
       },
     };
-    setMerchantDeliveryAddress(addressInfo);
+    sessionStorage.setItem('deliveryAddress', JSON.stringify(addressInfo));
   };
 
   async componentDidMount() {

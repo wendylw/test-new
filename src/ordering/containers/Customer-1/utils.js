@@ -1,6 +1,5 @@
 import Utils from '../../../utils/utils';
 import { captureException } from '@sentry/react';
-import { getMerchantDeliveryAddress } from '../../../utils/geoUtils';
 export const DeliveryDetailsStorageKey = 'deliveryDetails';
 
 export const updateDeliveryDetails = async fields => {
@@ -30,7 +29,7 @@ export const fetchDeliveryDetails = async () => {
 
 export const fetchDeliveryAddress = async () => {
   try {
-    return getMerchantDeliveryAddress();
+    return JSON.parse(Utils.getSessionVariable('deliveryAddress'));
   } catch (e) {
     captureException(e);
     console.error(e);

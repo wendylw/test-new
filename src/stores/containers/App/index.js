@@ -25,7 +25,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { computeStraightDistance, getMerchantDeliveryAddress } from '../../../utils/geoUtils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -160,8 +160,9 @@ class App extends Component {
   };
 
   checkDeliveryAddress = async type => {
-    let deliveryAddress = getMerchantDeliveryAddress();
+    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     if (deliveryAddress) {
+      deliveryAddress = JSON.parse(deliveryAddress);
       let stores = this.props.stores;
       const nearly = await this.getNearlyStore(stores, type, deliveryAddress);
 

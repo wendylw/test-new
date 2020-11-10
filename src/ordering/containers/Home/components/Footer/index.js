@@ -15,7 +15,6 @@ import { getAllBusinesses } from '../../../../../redux/modules/entities/business
 import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
 import Url from '../../../../../utils/url';
-import { getMerchantDeliveryAddress } from '../../../../../utils/geoUtils';
 export class Footer extends Component {
   constructor(props) {
     super(props);
@@ -121,7 +120,7 @@ export class Footer extends Component {
     const { history, business, allBusinessInfo } = this.props;
     const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
     if (enablePreOrder) {
-      const { address: deliveryToAddress } = getMerchantDeliveryAddress() || {};
+      const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
       if (

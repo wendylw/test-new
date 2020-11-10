@@ -52,32 +52,24 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    if (!checkStateRestoreStatus()) {
-      const { location } = this.props;
-      const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
+    if (checkStateRestoreStatus()) {
+      return;
+    }
+    const { location } = this.props;
+    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 
-      // if no placeInfo at all
-      if (!placeInfo) {
-        return this.gotoLocationPage();
-      }
+    // if no placeInfo at all
+    if (!placeInfo) {
+      return this.gotoLocationPage();
+    }
 
-      // placeInfo ok
-      this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
+    // placeInfo ok
+    this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
 
-      this.reloadStoreListIfNecessary();
+    this.reloadStoreListIfNecessary();
 
-      if (source === 'ip') {
-        this.getPlaceInfoByDevice();
-      }
-    } else {
-      const { placeInfo, source } = await getPlaceInfo({
-        fromDevice: false,
-        fromIp: false,
-        fromLocationPage: false,
-      });
-      if (placeInfo) {
-        this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
-      }
+    if (source === 'ip') {
+      this.getPlaceInfoByDevice();
     }
   };
 

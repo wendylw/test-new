@@ -33,16 +33,11 @@ import {
   getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
+import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
-import {
-  computeStraightDistance,
-  getMerchantDeliveryAddress,
-  loadPickedDeliveryAddress,
-  setMerchantDeliveryAddress,
-} from '../../../utils/geoUtils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
 
@@ -123,7 +118,10 @@ export class Home extends Component {
   componentDidMount = async () => {
     const { homeActions, deliveryInfo, appActions } = this.props;
 
-    await this.setupDeliveryAddress();
+    if (isSourceBeepitCom()) {
+      // sync deliveryAddress from beepit.com
+      await this.setupDeliveryAddressByRedirectState();
+    }
 
     this.handleDeliveryTimeInSession();
 
@@ -231,7 +229,7 @@ export class Home extends Component {
 
   checkRange = () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    if (search.h && getMerchantDeliveryAddress() && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
+    if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo = {} } = this.props;
 
       let { stores = [], qrOrderingSettings } = businessInfo;
@@ -239,7 +237,7 @@ export class Home extends Component {
         const { deliveryRadius } = qrOrderingSettings;
         stores = stores[0];
         const { location } = stores;
-        const distance = computeStraightDistance(getMerchantDeliveryAddress().coords, {
+        const distance = computeStraightDistance(JSON.parse(Utils.getSessionVariable('deliveryAddress')).coords, {
           lat: location.latitude,
           lng: location.longitude,
         });
@@ -367,7 +365,7 @@ export class Home extends Component {
 
   checkOrderTime = async () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    if ((getMerchantDeliveryAddress() && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
+    if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
       const { qrOrderingSettings } = businessInfo || {};
       // const { validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
@@ -450,12 +448,12 @@ export class Home extends Component {
   };
 
   // get deliveryTo info from cookie and set into localStorage
-  setupDeliveryAddress = async () => {
-    const deliveryAddress = await loadPickedDeliveryAddress();
+  setupDeliveryAddressByRedirectState = async () => {
+    const state = await fetchRedirectPageState();
 
     try {
-      if (deliveryAddress) {
-        setMerchantDeliveryAddress(deliveryAddress);
+      if (state.deliveryAddress) {
+        sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
       }
     } catch (e) {
       captureException(e);
@@ -660,14 +658,7 @@ export class Home extends Component {
 
     return !h
       ? isValidToOrderFromMulitpeStore
-      : Utils.isValidTimeToOrder({
-          validDays,
-          validTimeFrom,
-          validTimeTo,
-          breakTimeFrom,
-          breakTimeTo,
-          vacations,
-        });
+      : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations });
   };
 
   renderHeaderChildren() {

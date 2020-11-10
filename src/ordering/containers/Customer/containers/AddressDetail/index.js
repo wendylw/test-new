@@ -16,7 +16,6 @@ import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
-import { getMerchantDeliveryAddress } from '../../../../../utils/geoUtils';
 
 const actions = {
   EDIT: 'edit',
@@ -36,7 +35,7 @@ class AddressDetail extends Component {
     const { addressId, addressName, deliveryToAddress, addressDetails, deliveryComments, deliveryToLocation } =
       deliveryDetails || {};
     const { address: savedAddress, coords: savedCoords } = savedAddressInfo || {};
-    const { address, coords } = getMerchantDeliveryAddress() || {};
+    const { address, coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // if choose a new location, update the savedAddressInfo
     if (address !== savedAddress || coords.lat !== savedCoords.latitude || coords.lng !== savedCoords.longitude) {

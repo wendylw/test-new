@@ -22,7 +22,6 @@ import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import '../DineMethods/StoresTakingMealMethod.scss';
-import { getMerchantDeliveryAddress } from '../../../utils/geoUtils';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 let METHODS_LIST = [
@@ -75,7 +74,7 @@ class DeliveryMethods extends Component {
       business,
       allBusinessInfo,
     });
-    const deliveryTo = getMerchantDeliveryAddress();
+    const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
     if (enablePreOrder) {
       // remove delivery time write in session to prevent date inconsistence issus
       Utils.removeExpectedDeliveryTime();

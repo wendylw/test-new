@@ -2,7 +2,6 @@ import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';
-import { getMerchantDeliveryAddress } from './geoUtils';
 const Utils = {};
 
 Utils.getQueryString = key => {
@@ -449,7 +448,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
 
   const { phone } = (stores && stores[0]) || {};
   const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-  const { address: deliveryToAddress } = getMerchantDeliveryAddress() || {};
+  const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
   return {
     deliveryFee,
@@ -542,7 +541,7 @@ Utils.removeExpectedDeliveryTime = () => {
 
 Utils.getDeliveryCoords = () => {
   try {
-    const deliveryAddress = getMerchantDeliveryAddress();
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     return deliveryAddress.coords;
   } catch (e) {
     console.error('Cannot get delivery coordinate', e);

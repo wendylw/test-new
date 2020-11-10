@@ -24,7 +24,6 @@ import { withRouter } from 'react-router-dom';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import './ProductDetail.scss';
-import { getMerchantDeliveryAddress } from '../../../../../utils/geoUtils';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -381,7 +380,7 @@ class ProductDetail extends Component {
     const { history } = this.props;
     const { storeId } = config;
 
-    let deliveryAddress = getMerchantDeliveryAddress();
+    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     const { h } = search;
 

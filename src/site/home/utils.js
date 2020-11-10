@@ -1,5 +1,6 @@
 import Constants from '../../utils/constants';
-import { getPositionInfoBySource, loadPickedDeliveryAddress, savePickedDeliveryAddress } from '../../utils/geoUtils';
+import { getPositionInfoBySource } from '../../utils/geoUtils';
+import config from '../../config';
 import { get } from '../../utils/request';
 import Url from '../../utils/url';
 import Utils from '../../utils/utils';
@@ -16,18 +17,39 @@ const getPlaceInfoFromLocation = ({ location }) => {
   return null;
 };
 
+export const savePlaceInfo = placeInfo => {
+  return localStorage.setItem('user.placeInfo', JSON.stringify(placeInfo));
+};
+
+export const removePlaceInfo = () => {
+  return localStorage.removeItem('user.placeInfo');
+};
+
+export const readPlaceInfo = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user.placeInfo'));
+  } catch (e) {
+    return null;
+  }
+};
+
 export const getPlaceInfoByDeviceByAskPermission = async () => {
   try {
     const placeInfo = await getPositionInfoBySource('device', true);
-    await savePickedDeliveryAddress(placeInfo); // now save into localStorage
+    await savePlaceInfo(placeInfo); // now save into localStorage
     return placeInfo;
   } catch (e) {
     console.warn(e);
   }
 };
 
-export const getPlaceInfo = async (options = {}) => {
-  const { fromLocationPage = true, fromCache = true, fromDevice = true, fromIp = true, location } = options;
+export const getPlaceInfo = async ({
+  fromLocationPage = true,
+  fromCache = true,
+  fromDevice = true,
+  fromIp = true,
+  location,
+} = {}) => {
   // first to use place from location picker
   let placeInfo = null;
   let source = '';
@@ -41,7 +63,14 @@ export const getPlaceInfo = async (options = {}) => {
   }
   if (!placeInfo && fromCache) {
     try {
-      placeInfo = await loadPickedDeliveryAddress();
+      placeInfo = readPlaceInfo();
+
+      // --Begin-- last version of cache doesn't have addressComponents field, we need it now
+      if (placeInfo && !placeInfo.addressComponents) {
+        removePlaceInfo();
+        placeInfo = null;
+      }
+      // ---End--- last version of cache doesn't have addressComponents field, we need it now
 
       if (placeInfo) {
         source = 'cache';
@@ -74,12 +103,12 @@ export const getPlaceInfo = async (options = {}) => {
     }
   }
 
-  await savePickedDeliveryAddress(placeInfo); // now save into localStorage
+  savePlaceInfo(placeInfo); // now save into localStorage
 
   return { placeInfo, source };
 };
 
-export const submitStoreMenu = async ({ store, source, shippingType = 'delivery' }) => {
+export const submitStoreMenu = async ({ deliveryAddress, store, source, shippingType = 'delivery' }) => {
   const response = await get(Url.API_URLS.GET_STORE_HASH_DATA(store.id).url);
   const { redirectTo } = response || {};
   const storeUrlParams = {
@@ -87,5 +116,29 @@ export const submitStoreMenu = async ({ store, source, shippingType = 'delivery'
     hash: redirectTo,
     source: source,
   };
-  document.location.href = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
+  const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
+
+  let form = document.createElement('form');
+  let input1 = document.createElement('input');
+  let input2 = document.createElement('input');
+
+  form.action = config.beepOnlineStoreUrl(store.business) + '/go2page';
+  form.method = 'POST';
+
+  input1.name = 'target';
+  input1.value = redirectUrl;
+  form.appendChild(input1);
+
+  if (!Boolean(deliveryAddress)) {
+    console.error('delivery address is empty');
+    return;
+  }
+
+  input2.name = 'deliveryAddress';
+  input2.value = JSON.stringify(deliveryAddress);
+  form.appendChild(input2);
+
+  document.body.append(form);
+  form.submit();
+  document.body.removeChild(form);
 };

@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import LocationPicker, {
-  getMerchantDeliveryAddress,
-  removeMerchantDeliveryAddress,
-  setMerchantDeliveryAddress,
-  savePickedDeliveryAddress,
-  setHistoricalDeliveryAddresses,
-} from '../../../components/LocationPicker';
+import LocationPicker, { setHistoricalDeliveryAddresses } from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
@@ -51,7 +45,7 @@ class LocationPage extends Component {
           errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
         },
         () => {
-          removeMerchantDeliveryAddress();
+          Utils.removeSessionVariable('deliveryAddress');
           Utils.removeSessionVariable('outRange');
         }
       );
@@ -126,7 +120,7 @@ class LocationPage extends Component {
     //   return;
     // }
 
-    setMerchantDeliveryAddress({ ...placeInfo });
+    Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
     Utils.setSessionVariable('deliveryAddressUpdate', true);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
@@ -134,7 +128,6 @@ class LocationPage extends Component {
     } else {
       history.go(-1);
     }
-    savePickedDeliveryAddress(placeInfo);
     setHistoricalDeliveryAddresses(placeInfo);
   };
 
@@ -173,7 +166,7 @@ class LocationPage extends Component {
   render() {
     const { t } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
-    const outRangeSearchText = getMerchantDeliveryAddress().address;
+    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <Header

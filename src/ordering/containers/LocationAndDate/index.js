@@ -5,7 +5,7 @@ import { IconNext, IconSearch } from '../../../components/Icons';
 
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { computeStraightDistance, getMerchantDeliveryAddress } from '../../../utils/geoUtils';
+import { computeStraightDistance } from '../../../utils/geoUtils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -100,7 +100,7 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
-    const { address: deliveryToAddress } = getMerchantDeliveryAddress() || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // Should do setState to here for what is in componentDidUpdate to work
     this.setState({
@@ -143,7 +143,7 @@ class LocationAndDate extends Component {
     await this.props.homeActions.loadCoreStores();
     const { allStore } = this.props;
 
-    if (getMerchantDeliveryAddress()) {
+    if (Utils.getSessionVariable('deliveryAddress')) {
       if (allStore.length) {
         let stores = allStore;
         let type = Constants.DELIVERY_METHOD.DELIVERY;
@@ -317,7 +317,7 @@ class LocationAndDate extends Component {
   };
 
   findNearyStore = async (stores, type) => {
-    const deliveryAddress = getMerchantDeliveryAddress();
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
 
     stores.forEach((item, idx, arr) => {
       if (item.location) {
@@ -358,7 +358,7 @@ class LocationAndDate extends Component {
 
     this.checkOnlyType(allStore);
     if (
-      getMerchantDeliveryAddress() &&
+      Utils.getSessionVariable('deliveryAddress') &&
       this.state.search.type === DELIVERY_METHOD.DELIVERY &&
       (!search.h || Utils.getSessionVariable('deliveryAddressUpdate'))
     ) {
@@ -1198,7 +1198,7 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const { selectedDate = {} } = this.state;
     const { selectedHour = {}, displayHourList, timeSlot, isDeliveryType } = this.state;
-    const { address: deliveryToAddress } = getMerchantDeliveryAddress() || {};
+    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryInfo = Utils.getDeliveryInfo({ business, allBusinessInfo });
 
     if (!displayHourList.includes(selectedHour.from) || (isDeliveryType && timeSlot.includes(selectedHour.from))) {
@@ -1275,7 +1275,7 @@ class LocationAndDate extends Component {
     const cachedeliveryAddress = Utils.getSessionVariable('cachedeliveryAddress');
     const cacheexpectedDeliveryDate = Utils.getSessionVariable('cacheexpectedDeliveryDate');
     const cacheexpectedDeliveryHour = Utils.getSessionVariable('cacheexpectedDeliveryHour');
-    const deliveryAddress = JSON.stringify(getMerchantDeliveryAddress());
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
 
