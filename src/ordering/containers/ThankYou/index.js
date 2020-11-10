@@ -879,32 +879,32 @@ export class ThankYou extends PureComponent {
               <React.Fragment>
                 {storePhone &&
                   (Utils.isWebview() ? (
-                    trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                    !supportCallPhone ? (
                       <a
-                        href={trackingUrl}
-                        className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-                        target="__blank"
-                        data-heap-name="ordering.thank-you.logistics-tracking-link"
+                        href="javascript:void(0)"
+                        className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
+                        onClick={() => this.copyPhoneNumber(storePhone, 'store')}
                       >
-                        {t('TrackOrder')}
+                        {t('CallStore')}
                       </a>
-                    ) : null
-                  ) : !supportCallPhone ? (
+                    ) : (
+                      <a
+                        href={`tel:+${storePhone}`}
+                        className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                      >
+                        {t('CallStore')}
+                      </a>
+                    )
+                  ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                     <a
-                      href="javascript:void(0)"
-                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
-                      onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+                      href={trackingUrl}
+                      className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                      target="__blank"
+                      data-heap-name="ordering.thank-you.logistics-tracking-link"
                     >
-                      {t('CallStore')}
+                      {t('TrackOrder')}
                     </a>
-                  ) : (
-                    <a
-                      href={`tel:+${storePhone}`}
-                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-                    >
-                      {t('CallStore')}
-                    </a>
-                  ))}
+                  ) : null)}
                 {Utils.isWebview() && !supportCallPhone ? (
                   <a
                     href="javascript:void(0)"
