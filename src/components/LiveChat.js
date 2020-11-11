@@ -5,7 +5,7 @@ import _get from 'lodash/get';
 import _isUndefined from 'lodash/isUndefined';
 import './LiveChat.scss';
 
-const zendeskDepartmentId = 2147674363;
+const zendeskDepartmentId = process.env.REACT_APP_ZENDESK_DEPARTMENT_ID;
 class LiveChat extends Component {
   state = { renderingZendeskBtn: _isUndefined(window.zE) };
   zendeskButtonObserver = undefined;
@@ -16,20 +16,19 @@ class LiveChat extends Component {
     });
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { name, phone } = this.props;
-    window.zE &&
+
+    if (prevProps.name !== name && prevProps.phone !== phone && window.zE) {
       window.zE('webWidget', 'prefill', {
         name: {
           value: name,
-        },
-        email: {
-          value: 'user@example.com',
         },
         phone: {
           value: phone,
         },
       });
+    }
   }
 
   componentWillUnmount() {
@@ -75,8 +74,8 @@ class LiveChat extends Component {
 
     if (!window.zE) {
       const zendeskScript = document.createElement('script');
-      zendeskScript.src = 'https://static.zdassets.com/ekr/snippet.js?key=3d4279e8-9891-42d5-8264-c96951ff1fd8';
-      zendeskScript.id = 'ze-snippet';
+      zendeskScript.src = process.env.REACT_APP_ZENDESK_SCRIPT_URL;
+      zendeskScript.id = process.env.REACT_APP_ZENDESK_SCRIPT_ID;
       zendeskScript.async = true;
       const promisify = new Promise((resolve, reject) => {
         zendeskScript.onload = resolve;
@@ -131,9 +130,9 @@ class LiveChat extends Component {
 
     return (
       renderingZendeskBtn && (
-        <div className="live-chat">
-          <div className="loader live-chat__loader"></div>
-          <div className="live-chat__loading-text">{t('ContactUs')}</div>
+        <div className="live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal">
+          <div className="loader live-chat__loader margin-left-right-smaller"></div>
+          <div className="live-chat__loading-text margin-left-right-smaller text-weight-bolder">{t('ContactUs')}</div>
         </div>
       )
     );

@@ -1,23 +1,22 @@
 .live-chat {
-  width: 190px;
-  height: 63px;
-  position: relative;
   opacity: 0.5;
 
   &__loading-text {
-    position: absolute;
-    line-height: 63px;
-    right: 3.8vw;
-    font-weight: 700;
     font-size: 1.1rem;
     letter-spacing: 0.6px;
     color: #00b0ff;
   }
 
   &__loader {
-    position: absolute;
     color: #00b0ff;
-    top: 40%;
-    left: 0;
+    margin: 2.4vw;
+  }
+}
+
+@media (min-width: 420px) {
+  .live-chat {
+    &__loader {
+      margin: 8px;
+    }
   }
 }
