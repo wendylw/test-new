@@ -560,7 +560,7 @@ class CreditCard extends Component {
             }}
           >
             {payNowLoading ? (
-              <div className="loader"></div>
+              t('Processing')
             ) : (
               <CurrencyNumber
                 className="text-center text-weight-bolder text-uppercase"
