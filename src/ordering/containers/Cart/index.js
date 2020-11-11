@@ -464,7 +464,7 @@ class Cart extends Component {
                 await this.handleClickContinue();
               });
             }}
-            disabled={!items || !items.length || isInvalidTotal}
+            disabled={!items || !items.length || isInvalidTotal || isCreatingOrder}
           >
             {isCreatingOrder ? t('Processing') : isInvalidTotal && `*`}
             {!isCreatingOrder && buttonText}
