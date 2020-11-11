@@ -6,11 +6,10 @@
 
   .billing {
     margin-top: 6.2vw;
-    padding-top: 3.8vw;
-    border-radius: 8px 8px 0 0;
   }
 
-  .billing__label {
+  .billing__label,
+  .billing__text {
     color: $gray-2;
   }
 
@@ -44,7 +43,6 @@
   .ordering-cart {
     .billing {
       margin-top: 24px;
-      padding-top: 16px;
     }
   }
 }
