@@ -418,7 +418,11 @@ export const getPayments = createSelector(
         // for Malaysia
         if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
           return paymentOptions[
-            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
+            total &&
+            process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL &&
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL)
+              ? 'creditCard'
+              : 'stripe'
           ];
         }
 
