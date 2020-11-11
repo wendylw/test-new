@@ -261,8 +261,13 @@ class Cart extends Component {
   };
 
   renderAdditionalComments() {
-    const { t } = this.props;
+    const { t, shoppingCart } = this.props;
     const { additionalComments } = this.state;
+    const { items } = shoppingCart || {};
+
+    if (!shoppingCart || !items.length) {
+      return null;
+    }
 
     return (
       <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
