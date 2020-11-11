@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react';
 import { CrossStorageClient } from 'cross-storage';
 
 if (!process.env.REACT_APP_CROSS_STORAGE_BASE_URL) {
@@ -30,6 +31,6 @@ export const clear = async () => {
 };
 
 storage.onConnect().catch(e => {
-  console.error(`cannot establish cross domain storage: ${e}`);
+  captureException(e);
   storage.close();
 });
