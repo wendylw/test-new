@@ -5,7 +5,7 @@ import _get from 'lodash/get';
 import _isUndefined from 'lodash/isUndefined';
 import './LiveChat.scss';
 
-const zendeskDepartmentId = process.env.REACT_APP_ZENDESK_DEPARTMENT_ID;
+const zendeskDepartmentId = Number(process.env.REACT_APP_ZENDESK_DEPARTMENT_ID);
 class LiveChat extends Component {
   state = { renderingZendeskBtn: _isUndefined(window.zE) };
   zendeskButtonObserver = undefined;
