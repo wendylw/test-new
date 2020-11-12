@@ -138,7 +138,21 @@
         window.heap && window.heap.track('common.google-maps-auth-errors');
       }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=quarterly&key=%REACT_APP_GOOGLE_MAPS_API_KEY%&libraries=geometry,places"></script>
+    <script>
+      (function () {
+        // fix FB-1755: Some browsers caches the google maps script for a long time, which makes the token expired.
+        // In order to solve this, we force the browser to refetch the script after 12 hours. This won't have too
+        // much impact on performance, because the content of the script changes every day, so the cache is invalidated
+        // anyway.
+        var GOOGLE_MAPS_INVALIDATE_INTERVAL = 12 * 3600 * 1000;
+        var timestamp = Math.floor(Date.now() / GOOGLE_MAPS_INVALIDATE_INTERVAL) * GOOGLE_MAPS_INVALIDATE_INTERVAL;
+
+        var src = "https://maps.googleapis.com/maps/api/js?v=quarterly&key=%REACT_APP_GOOGLE_MAPS_API_KEY%&libraries=geometry,places&timestamp=" + timestamp;
+        // Must use document.write. If we use document.body.appendChild, the main code (which depends on google map) might be executed before google maps is executed
+        // TODO: we should finally make the geoUtils to be an async function, that only resolves when google maps is ready.
+        document.write('<script src="'+src + '">\u003c/script>'); // if not using unicode escape (\u003c), browser will think the outside script is closed.
+      })();
+    </script>
   </body>
 
 </html>
