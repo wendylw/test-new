@@ -33,10 +33,12 @@ class Cart extends Component {
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
     cartContainerHeight: '100%',
+    productsContainerHeight: '0',
   };
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
+    this.setProductsContainerHeight(prevStates.productsContainerHeight);
   }
 
   async componentDidMount() {
@@ -47,6 +49,7 @@ class Cart extends Component {
     window.scrollTo(0, 0);
     this.handleResizeEvent();
     this.setCartContainerHeight();
+    this.setProductsContainerHeight();
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -58,6 +61,19 @@ class Cart extends Component {
     if (preContainerHeight !== containerHeight) {
       this.setState({
         cartContainerHeight: containerHeight,
+      });
+    }
+  };
+
+  setProductsContainerHeight = preProductsContainerHeight => {
+    const productsContainerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl, this.billingEl],
+    });
+
+    if (preProductsContainerHeight !== productsContainerHeight) {
+      this.setState({
+        productsContainerHeight: productsContainerHeight,
       });
     }
   };
@@ -274,7 +290,10 @@ class Cart extends Component {
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
-          onBlur={this.setCartContainerHeight}
+          onBlur={() => {
+            this.setCartContainerHeight();
+            this.setProductsContainerHeight();
+          }}
         ></textarea>
         {additionalComments ? (
           <IconClose
@@ -336,7 +355,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder, cartContainerHeight } = this.state;
+    const { isCreatingOrder, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -358,6 +377,8 @@ class Cart extends Component {
     if (!(cartSummary && items)) {
       return null;
     }
+
+    console.log(productsContainerHeight);
 
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
@@ -388,9 +409,17 @@ class Cart extends Component {
             height: cartContainerHeight,
           }}
         >
-          <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
-          {this.renderAdditionalComments()}
+          <div
+            className="ordering-cart__products-container"
+            style={{
+              minHeight: productsContainerHeight,
+            }}
+          >
+            <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
+            {this.renderAdditionalComments()}
+          </div>
           <Billing
+            billingRef={ref => (this.billingEl = ref)}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
