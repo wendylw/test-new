@@ -4,10 +4,6 @@
   height: 100vh;
   background-color: $gray-5;
 
-  .billing {
-    margin-top: 6.2vw;
-  }
-
   .billing__label,
   .billing__text {
     color: $gray-2;
@@ -17,6 +13,10 @@
     height: 100%;
     width: 100%;
     overflow-y: auto;
+  }
+
+  &__products-container {
+    padding-bottom: 6.2vw;
   }
 
   &__additional-comments {
@@ -41,8 +41,8 @@
 
 @media (min-width: 420px) {
   .ordering-cart {
-    .billing {
-      margin-top: 24px;
+    &__products-container {
+      padding-bottom: 24px;
     }
   }
 }
