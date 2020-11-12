@@ -6,6 +6,7 @@ import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
+import Utils from '../../../utils/utils';
 
 import { actions as thankYouActionCreators, getOrder, getPromotion } from '../../redux/modules/thankYou';
 import './OrderingDetails.scss';
@@ -90,6 +91,8 @@ export class OrderDetails extends Component {
 
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
+    const isWebView = Utils.isWebview();
+
     let orderUserName = '';
     let orderUserPhone = '';
 
@@ -114,7 +117,17 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+          {!isWebView ? (
+            <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+          ) : (
+            <button
+              className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+              onClick={this.handleVisitMerchantInfoPage}
+              data-heap-name="ordering.order-detail.contact-us-btn"
+            >
+              <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
+            </button>
+          )}
         </Header>
 
         <div className="ordering-details__container">

@@ -1060,7 +1060,17 @@ export class ThankYou extends PureComponent {
             }}
           >
             {!isDineInType ? (
-              <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+              !isWebview ? (
+                <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+              ) : (
+                <button
+                  className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+                  onClick={this.handleVisitMerchantInfoPage}
+                  data-heap-name="ordering.thank-you.contact-us-btn"
+                >
+                  <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
+                </button>
+              )
             ) : (
               <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
                 {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
