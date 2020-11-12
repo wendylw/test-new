@@ -6,7 +6,7 @@ import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
-import Utils from '../../../utils/utils';
+import { getUser } from '../../redux/modules/app';
 
 import { actions as thankYouActionCreators, getOrder, getPromotion } from '../../redux/modules/thankYou';
 import './OrderingDetails.scss';
@@ -86,12 +86,12 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, history, t } = this.props;
+    const { order, history, t, user } = this.props;
     const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
 
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
-    const isWebView = Utils.isWebview();
+    const { isWebView } = user;
 
     let orderUserName = '';
     let orderUserPhone = '';
@@ -174,6 +174,7 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
+      user: getUser(state),
       order: getOrder(state),
       promotion: getPromotion(state),
     }),
