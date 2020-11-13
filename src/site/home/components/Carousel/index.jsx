@@ -126,7 +126,7 @@ class Carousel extends Component {
             <section
               key={beepCollectionId}
               data-heap-name="site.home.carousel.container"
-              data-heap-collection-name="name"
+              data-heap-collection-name={name}
             >
               <div className="flex flex-space-between flex-middle padding-left-right-normal">
                 <h3 className="text-size-bigger text-weight-bolder">{name}</h3>
