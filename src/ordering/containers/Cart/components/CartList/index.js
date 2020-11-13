@@ -65,9 +65,8 @@ class CartList extends Component {
       displayPrice,
       quantity,
       image,
+      originalDisplayPrice,
     } = cartItem;
-    const originalDisplayPrice = 2.0;
-    // TODO need get originalDisplayPrice form api
 
     return (
       <ProductItem
