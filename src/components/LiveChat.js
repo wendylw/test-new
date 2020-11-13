@@ -87,6 +87,11 @@ class LiveChat extends Component {
         if (isMobile) {
           window.zESettings = {
             webWidget: {
+              navigation: {
+                popoutButton: {
+                  enabled: false,
+                },
+              },
               position: {
                 horizontal: 'right',
                 vertical: 'top',
@@ -120,6 +125,11 @@ class LiveChat extends Component {
         } else {
           window.zESettings = {
             webWidget: {
+              navigation: {
+                popoutButton: {
+                  enabled: false,
+                },
+              },
               launcher: {
                 chatLabel: {
                   '*': t('ContactUs'),
