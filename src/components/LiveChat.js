@@ -4,16 +4,18 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isUndefined from 'lodash/isUndefined';
 import './LiveChat.scss';
+import Utils from '../utils/utils';
 
 const zendeskDepartmentId = Number(process.env.REACT_APP_ZENDESK_DEPARTMENT_ID);
 class LiveChat extends Component {
-  state = { renderingZendeskBtn: _isUndefined(window.zE) };
+  state = { renderingZendeskBtn: _isUndefined(window.$zopim) };
   zendeskButtonObserver = undefined;
 
   componentDidMount() {
     this.loadZendeskWidget().then(() => {
       window.zE('webWidget', 'show');
     });
+    this.setObserver();
   }
 
   componentDidUpdate(prevProps) {
@@ -47,6 +49,7 @@ class LiveChat extends Component {
       if (document.getElementById('launcher')) {
         this.setState({ renderingZendeskBtn: false });
         this.zendeskButtonObserver.disconnect();
+        window.$zopim?.livechat.badge.hide();
       }
     });
     this.zendeskButtonObserver.observe(document.body, config);
@@ -71,7 +74,6 @@ class LiveChat extends Component {
 
   loadZendeskWidget = () => {
     const { t } = this.props;
-
     if (!window.zE) {
       const zendeskScript = document.createElement('script');
       zendeskScript.src = process.env.REACT_APP_ZENDESK_SCRIPT_URL;
@@ -81,39 +83,57 @@ class LiveChat extends Component {
         zendeskScript.onload = resolve;
         zendeskScript.onerror = reject;
       }).then(() => {
-        this.setObserver();
-        window.zESettings = {
-          webWidget: {
-            position: {
-              horizontal: 'right',
-              vertical: 'top',
-            },
-            offset: {
-              mobile: {
-                horizontal: '-20px',
-                vertical: '-3px',
+        const isMobile = Utils.getUserAgentInfo().isMobile;
+        if (isMobile) {
+          window.zESettings = {
+            webWidget: {
+              position: {
+                horizontal: 'right',
+                vertical: 'top',
+              },
+              offset: {
+                mobile: {
+                  horizontal: '-20px',
+                  vertical: '-3px',
+                },
+              },
+              color: {
+                launcher: '#FFFFFF',
+                launcherText: '#00b0ff',
+              },
+              launcher: {
+                mobile: {
+                  labelVisible: true,
+                },
+                chatLabel: {
+                  '*': t('ContactUs'),
+                },
+              },
+              chat: {
+                departments: {
+                  enabled: [zendeskDepartmentId],
+                  select: zendeskDepartmentId,
+                },
               },
             },
-            color: {
-              launcher: '#FFFFFF',
-              launcherText: '#00b0ff',
-            },
-            launcher: {
-              mobile: {
-                labelVisible: true,
+          };
+        } else {
+          window.zESettings = {
+            webWidget: {
+              launcher: {
+                chatLabel: {
+                  '*': t('ContactUs'),
+                },
               },
-              chatLabel: {
-                '*': t('ContactUs'),
-              },
-            },
-            chat: {
-              departments: {
-                enabled: [zendeskDepartmentId],
-                select: zendeskDepartmentId,
+              chat: {
+                departments: {
+                  enabled: [zendeskDepartmentId],
+                  select: zendeskDepartmentId,
+                },
               },
             },
-          },
-        };
+          };
+        }
         window.zE('webWidget:on', 'chat:start', this.sendOrderInfo);
         window.zE('webWidget:on', 'chat:connected', this.setOfflineFormGreeting);
       });
