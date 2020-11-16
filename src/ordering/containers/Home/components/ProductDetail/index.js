@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
+import _forEach from 'lodash/forEach';
 import { withTranslation } from 'react-i18next';
 import Swipe, { SwipeItem } from 'swipejs/react';
 import Tag from '../../../../../components/Tag';
@@ -34,7 +35,6 @@ const EXECLUDE_KEYS = ['variationType'];
 SwiperCore.use([Autoplay, Pagination]);
 
 class ProductDetail extends Component {
-  currentProductId = null;
   productEl = null;
   productDescriptionImage = null;
   productDetailImage = null;
@@ -50,6 +50,7 @@ class ProductDetail extends Component {
     currentProductDescriptionImageIndex: 0,
     minimumVariations: [],
     optionQuantity: {},
+    childrenProduct: null,
   };
 
   componentDidMount() {
@@ -118,19 +119,27 @@ class ProductDetail extends Component {
       return;
     }
 
+    const selectedValues = [];
+
     product.variations.forEach(variation => {
       if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
         const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
 
         if (defaultOption) {
           newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
+          selectedValues.push(defaultOption.value);
         }
       }
     });
 
-    this.currentProductId = product.id;
+    let childrenProduct = null;
+
+    if (product.childrenMap) {
+      childrenProduct = product.childrenMap.find(({ variation }) => variation.every(v => selectedValues.includes(v)));
+    }
 
     this.setState({
+      childrenProduct,
       variationsByIdMap: newMap,
       cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
     });
@@ -146,42 +155,58 @@ class ProductDetail extends Component {
     }
   }
 
-  displayPrice() {
-    const { product } = this.props;
-    const { childrenMap, unitPrice = 0, onlineUnitPrice = 0, displayPrice = 0 } = product || {};
-    const { variationsByIdMap, optionQuantity } = this.state;
-    const selectedValues = [];
-    const selectedVariations = [];
+  getTotalPriceDiff() {
+    const { variationsByIdMap, optionQuantity, childrenProduct } = this.state;
     let totalPriceDiff = 0;
 
-    Object.keys(variationsByIdMap).forEach(function(id) {
-      const options = variationsByIdMap[id];
-      Object.keys(options).forEach(key => {
-        const item = options[key];
-        if (item.value) {
-          selectedVariations.push(item);
+    _forEach(variationsByIdMap, options => {
+      _forEach(options, (option, key) => {
+        if (key === 'variationType') {
+          return;
+        }
 
-          totalPriceDiff += optionQuantity[key] > 1 ? optionQuantity[key] * item.priceDiff : item.priceDiff;
-          selectedValues.push(item.value);
+        // childrenProduct only need add the multiple choice of variations priceDiff
+        if (childrenProduct) {
+          if (options.variationType === VARIATION_TYPES.MULTIPLE_CHOICE) {
+            totalPriceDiff += option.priceDiff * (optionQuantity[key] || 1);
+          }
+        } else {
+          totalPriceDiff += option.priceDiff * (optionQuantity[key] || 1);
         }
       });
     });
 
-    const childProduct = (childrenMap || []).find(({ variation }) => variation.every(v => selectedValues.includes(v)));
+    return totalPriceDiff;
+  }
 
-    if (childProduct) {
-      this.currentProductId = childProduct.childId;
+  getDisplayPrice() {
+    const { product } = this.props;
+    const { childrenProduct } = this.state;
 
-      childProduct.variation.forEach(cv => {
-        totalPriceDiff -= selectedVariations.find(sv => sv.value === cv).priceDiff;
-      });
-
-      return childProduct.displayPrice + totalPriceDiff;
+    if (childrenProduct) {
+      return childrenProduct.displayPrice + this.getTotalPriceDiff();
     }
 
-    const price = displayPrice || unitPrice || onlineUnitPrice;
+    if (product) {
+      return product.displayPrice + this.getTotalPriceDiff();
+    }
 
-    return (price + totalPriceDiff).toFixed(2);
+    return 0;
+  }
+
+  getOriginalDisplayPrice() {
+    const { product } = this.props;
+    const { childrenProduct } = this.state;
+
+    if (childrenProduct && childrenProduct.originalDisplayPrice) {
+      return childrenProduct.originalDisplayPrice + this.getTotalPriceDiff();
+    }
+
+    if (product && product.originalDisplayPrice) {
+      return product.originalDisplayPrice + this.getTotalPriceDiff();
+    }
+
+    return null;
   }
 
   getVariationText() {
@@ -280,6 +305,7 @@ class ProductDetail extends Component {
 
   setVariationsByIdMap(variation, option) {
     const { variationsByIdMap } = this.state;
+    const product = this.props.product || {};
     const newVariation = this.getNewVariationsByIdMap(variation, option);
     let newMap = variationsByIdMap;
 
@@ -293,7 +319,23 @@ class ProductDetail extends Component {
       }
     }
 
-    this.setState({ variationsByIdMap: newMap });
+    const selectedValues = [];
+    _forEach(newMap, options => {
+      _forEach(options, (option, key) => {
+        if (key === 'variationType') {
+          return;
+        }
+
+        selectedValues.push(option.value);
+      });
+    });
+
+    let childrenProduct = null;
+    if (product.childrenMap) {
+      childrenProduct = product.childrenMap.find(({ variation }) => variation.every(v => selectedValues.includes(v)));
+    }
+
+    this.setState({ variationsByIdMap: newMap, childrenProduct });
   }
 
   updateOptionQuantity = updateOptionQuantity => {
@@ -463,12 +505,12 @@ class ProductDetail extends Component {
 
   addCartDisplayPrice = () => {
     const { cartQuantity } = this.state;
-    return this.displayPrice() * cartQuantity;
+    return this.getDisplayPrice() * cartQuantity;
   };
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity, minimumVariations } = this.state;
+    const { cartQuantity, minimumVariations, childrenProduct } = this.state;
     const { id: productId } = product || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
@@ -518,7 +560,7 @@ class ProductDetail extends Component {
                 this.handleAddOrUpdateShoppingCartItem({
                   action: 'add',
                   business: config.business,
-                  productId: this.currentProductId || productId,
+                  productId: (childrenProduct && childrenProduct.childId) || productId,
                   quantity: cartQuantity,
                   variations,
                 });
@@ -601,7 +643,7 @@ class ProductDetail extends Component {
             </h2>
             <CurrencyNumber
               className="padding-small text-size-big text-opacity text-weight-bolder"
-              money={Number(this.displayPrice()) || 0}
+              money={this.getDisplayPrice()}
             />
           </summary>
 
@@ -726,9 +768,16 @@ class ProductDetail extends Component {
               <div className="product-detail__info-summary flex  flex-space-between padding-small flex-top">
                 <h2 className="product-detail__title text-size-biggest text-weight-bolder">{title}</h2>
                 <div className="product-detail__price flex flex-column text-right flex-end">
+                  {this.getOriginalDisplayPrice() && (
+                    <CurrencyNumber
+                      className=" product-item__price text-line-through text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
+                      money={this.getOriginalDisplayPrice()}
+                      numberOnly={true}
+                    />
+                  )}
                   <CurrencyNumber
                     className=" text-size-biggest text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
-                    money={Number(this.displayPrice()) || 0}
+                    money={this.getDisplayPrice()}
                     numberOnly={true}
                   />
                   {Utils.isProductSoldOut(product || {}) ? (
