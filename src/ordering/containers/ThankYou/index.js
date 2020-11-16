@@ -114,6 +114,17 @@ export class ThankYou extends PureComponent {
     this.closeMap();
   }
 
+  setContainerHeight() {
+    if (
+      Utils.isIOSWebview() &&
+      document.querySelector('.table-ordering') &&
+      document.querySelector('.ordering-thanks__container')
+    ) {
+      document.querySelector('.table-ordering').style.minHeight = '0';
+      document.querySelector('.ordering-thanks__container').style = { width: '100%' };
+    }
+  }
+
   closeMap = () => {
     try {
       if (Utils.isAndroidWebview()) {
