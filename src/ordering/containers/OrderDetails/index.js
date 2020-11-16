@@ -93,7 +93,7 @@ export class OrderDetails extends Component {
 
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
-    const { isWebView } = user;
+    const { isWebview } = user;
 
     let orderUserName = '';
     let orderUserPhone = '';
@@ -119,7 +119,7 @@ export class OrderDetails extends Component {
             })
           }
         >
-          {!isWebView ? (
+          {!isWebview ? (
             <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
           ) : (
             <button
