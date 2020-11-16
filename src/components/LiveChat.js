@@ -115,6 +115,9 @@ class LiveChat extends Component {
                 },
               },
               chat: {
+                title: {
+                  '*': 'Beep Live Chat',
+                },
                 departments: {
                   enabled: [zendeskDepartmentId],
                   select: zendeskDepartmentId,
