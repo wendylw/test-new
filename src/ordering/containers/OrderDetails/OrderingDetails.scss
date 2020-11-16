@@ -11,16 +11,25 @@
     padding-bottom: 120px;
   }
 
-  &__picture-succeed {
-    max-height: 160px;
-  }
-
   &__button-contact-us {
     color: $status-blue;
   }
 
-  &__items {
-    display: block;
+  &__list {
+    margin-bottom: 3.8vw;
+  }
+
+  &__summary {
+    width: 100%;
+  }
+
+  &__item-quantity {
+    display: inline-block;
+  }
+
+  &__item-content {
+    display: inline-block;
+    max-width: 90%;
   }
 
   &__item-title {
@@ -35,23 +44,6 @@
 
   &__billing-container {
     margin-top: 3.8vw;
-  }
-
-  &__subtitle {
-    color: $gray-3;
-  }
-
-  &__receipt-info {
-    width: 100%;
-  }
-
-  &__copy-button {
-    max-height: 30px;
-    line-height: 30px;
-
-    &:active {
-      background-color: $gray-5;
-    }
   }
 }
 

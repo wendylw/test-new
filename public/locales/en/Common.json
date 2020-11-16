@@ -173,17 +173,5 @@
   "SaveChanges": "Save Changes",
   "CodeVerificationFailed": "Code verification failed",
   "Reorder": "Reorder",
-  "AddressDetailLabel": "Label this address for easy reference",
-  "Copy": "Copy",
-  "PaymentMethod": "Payment Method",
-  "Cashback": "Cashback",
-  "ReceiptInfoForPickupId": "Order",
-  "ReceiptInfoForOrderId": "Receipt",
-  "OrderStatus": "Order Status",
-  "StoreName": "Store Name",
-  "DeliveryAddress": "Delivery Address",
-  "StoreAddress": "Store Address",
-  "Items": "Items",
-  "ServiceCharge": "Service Charge",
-  "ReportIssue": "Report Issue"
+  "AddressDetailLabel": "Label this address for easy reference"
 }
