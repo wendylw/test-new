@@ -22,11 +22,15 @@ import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 
+const { ROUTER_PATHS } = Constants;
+
 class App extends Component {
   constructor(props) {
     super(props);
+    const { pathname } = window.location;
+    const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
 
-    if (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview()) {
+    if (Utils.getUserAgentInfo().browser.includes('Safari') || (Utils.isIOSWebview() && !isThankYouPage)) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
