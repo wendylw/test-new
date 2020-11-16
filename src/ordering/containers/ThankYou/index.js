@@ -107,6 +107,8 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
+
+    this.setContainerHeight();
   }
 
   componentWillUnmount() {
@@ -115,13 +117,18 @@ export class ThankYou extends PureComponent {
   }
 
   setContainerHeight() {
+    const { isHideTopArea } = this.state;
+
     if (
+      (isHideTopArea,
       Utils.isIOSWebview() &&
-      document.querySelector('.table-ordering') &&
-      document.querySelector('.ordering-thanks__container')
+        document.querySelector('.table-ordering') &&
+        document.querySelector('.ordering-thanks__container'))
     ) {
       document.querySelector('.table-ordering').style.minHeight = '0';
-      document.querySelector('.ordering-thanks__container').style = { width: '100%' };
+      document.querySelector('.ordering-thanks').style.backgroundColor = 'transparent';
+      document.querySelector('.ordering-thanks__container').style.height = 'auto';
+      document.querySelector('.ordering-thanks__container').style.overflowY = 'visible';
     }
   }
 
@@ -255,7 +262,7 @@ export class ThankYou extends PureComponent {
     this.updateAppLocationAndStatus(updatedStatus, riderLocations);
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevStates) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
@@ -274,6 +281,8 @@ export class ThankYou extends PureComponent {
       const orderInfo = this.props.order;
       this.handleGtmEventTracking({ order: orderInfo });
     }
+
+    this.setContainerHeight();
   }
 
   getThankYouSource = () => {
@@ -807,7 +816,7 @@ export class ThankYou extends PureComponent {
     const { name: storeName, phone: storePhone } = storeInfo;
     const { logo: storeLogo } = onlineStoreInfo;
     const { supportCallPhone } = this.state;
-    console.log(supportCallPhone, 'supportCallPhone');
+
     return (
       <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
         <div className="padding-normal">
@@ -1259,14 +1268,18 @@ export class ThankYou extends PureComponent {
           )}
           <div
             className="ordering-thanks__container"
-            style={{
-              top: `${Utils.mainTop({
-                headerEls: [this.headerEl],
-              })}px`,
-              height: Utils.containerHeight({
-                headerEls: [this.headerEl],
-              }),
-            }}
+            style={
+              !Utils.isIOSWebview()
+                ? {
+                    top: `${Utils.mainTop({
+                      headerEls: [this.headerEl],
+                    })}px`,
+                    height: Utils.containerHeight({
+                      headerEls: [this.headerEl],
+                    }),
+                  }
+                : {}
+            }
           >
             {!isWebview && this.renderDownloadBanner()}
             {isDeliveryType ? (
