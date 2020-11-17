@@ -64,8 +64,15 @@ class App extends Component {
     const { appActions } = this.props;
     const { pathname } = window.location;
     const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
+    const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDER_DETAILS}`);
+    const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.MERCHANT_INFO}`);
 
-    if (!isThankYouPage && (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())) {
+    if (
+      !isThankYouPage &&
+      !isOrderDetailPage &&
+      !isMerchantInfPage &&
+      (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())
+    ) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
