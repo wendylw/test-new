@@ -178,6 +178,7 @@ class Cart extends Component {
       await this.additionalCommentsEl.blur();
     }
 
+    // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
     const timer = setTimeout(() => {
       clearTimeout(timer);
 
