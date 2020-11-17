@@ -296,10 +296,10 @@ class Cart extends Component {
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
-          onBlur={() => {
-            this.setCartContainerHeight();
-            this.setProductsContainerHeight();
-          }}
+          // onBlur={() => {
+          //   this.setCartContainerHeight();
+          //   this.setProductsContainerHeight();
+          // }}
         ></textarea>
         {additionalComments ? (
           <IconClose
@@ -383,8 +383,6 @@ class Cart extends Component {
     if (!(cartSummary && items)) {
       return null;
     }
-
-    console.log(productsContainerHeight);
 
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
