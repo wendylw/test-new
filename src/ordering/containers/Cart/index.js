@@ -186,7 +186,7 @@ class Cart extends Component {
         // search: window.location.search,
         search: newSearchParams,
       });
-    }, 1000);
+    }, 500);
   };
 
   isPromotionValid() {
