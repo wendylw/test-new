@@ -23,19 +23,10 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 
 const { ROUTER_PATHS } = Constants;
-const { pathname } = window.location;
-const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
 
 class App extends Component {
   constructor(props) {
     super(props);
-
-    if (!isThankYouPage && (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())) {
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-    }
 
     if (Utils.isAndroidWebview()) {
       const res = window.androidInterface.getAddress();
@@ -71,6 +62,15 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
+    const { pathname } = window.location;
+    const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
+
+    if (!isThankYouPage && (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
 
     this.visitErrorPage();
     await appActions.getLoginStatus();
