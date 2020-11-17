@@ -23,12 +23,12 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 
 const { ROUTER_PATHS } = Constants;
+const { pathname } = window.location;
+const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
 
 class App extends Component {
   constructor(props) {
     super(props);
-    const { pathname } = window.location;
-    const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
 
     if (!isThankYouPage && (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())) {
       document.body.style.position = 'fixed';
