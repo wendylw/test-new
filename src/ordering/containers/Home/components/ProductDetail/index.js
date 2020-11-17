@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import _forEach from 'lodash/forEach';
+import _get from 'lodash/get';
 import { withTranslation } from 'react-i18next';
 import Swipe, { SwipeItem } from 'swipejs/react';
 import Tag from '../../../../../components/Tag';
@@ -119,24 +120,17 @@ class ProductDetail extends Component {
       return;
     }
 
-    const selectedValues = [];
-
     product.variations.forEach(variation => {
       if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
         const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
 
         if (defaultOption) {
           newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
-          selectedValues.push(defaultOption.value);
         }
       }
     });
 
-    let childrenProduct = null;
-
-    if (product.childrenMap) {
-      childrenProduct = product.childrenMap.find(({ variation }) => variation.every(v => selectedValues.includes(v)));
-    }
+    const childrenProduct = this.getChildrenProductBySelectedVariations(newMap);
 
     this.setState({
       childrenProduct,
@@ -305,7 +299,6 @@ class ProductDetail extends Component {
 
   setVariationsByIdMap(variation, option) {
     const { variationsByIdMap } = this.state;
-    const product = this.props.product || {};
     const newVariation = this.getNewVariationsByIdMap(variation, option);
     let newMap = variationsByIdMap;
 
@@ -319,8 +312,21 @@ class ProductDetail extends Component {
       }
     }
 
+    const childrenProduct = this.getChildrenProductBySelectedVariations(newMap);
+
+    this.setState({ variationsByIdMap: newMap, childrenProduct });
+  }
+
+  getChildrenProductBySelectedVariations(selectedVariations) {
+    const { product } = this.props;
+    const childrenMap = _get(product, 'childrenMap', null);
+
+    if (!childrenMap) {
+      return null;
+    }
+
     const selectedValues = [];
-    _forEach(newMap, options => {
+    _forEach(selectedVariations, options => {
       _forEach(options, (option, key) => {
         if (key === 'variationType') {
           return;
@@ -330,12 +336,7 @@ class ProductDetail extends Component {
       });
     });
 
-    let childrenProduct = null;
-    if (product.childrenMap) {
-      childrenProduct = product.childrenMap.find(({ variation }) => variation.every(v => selectedValues.includes(v)));
-    }
-
-    this.setState({ variationsByIdMap: newMap, childrenProduct });
+    return childrenMap.find(({ variation }) => variation.every(v => selectedValues.includes(v)));
   }
 
   updateOptionQuantity = updateOptionQuantity => {
