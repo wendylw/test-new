@@ -30,7 +30,7 @@ class App extends Component {
     const { pathname } = window.location;
     const isThankYouPage = pathname.includes(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`);
 
-    if (Utils.getUserAgentInfo().browser.includes('Safari') || (Utils.isIOSWebview() && !isThankYouPage)) {
+    if (!isThankYouPage && (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
