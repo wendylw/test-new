@@ -46,6 +46,10 @@ class App extends Component {
   state = {};
 
   setAppAddressToSession = res => {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+    if (deliveryAddress && deliveryAddress.address) {
+      return;
+    }
     const { address, country, countryCode, lat, lng } = res;
     const addressInfo = {
       address: address,
@@ -187,8 +191,6 @@ class App extends Component {
   render() {
     let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
-
-    console.log(window.location);
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
