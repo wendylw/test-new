@@ -280,8 +280,8 @@ class Cart extends Component {
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
 
-      if (container) {
-        container.scrollTop = container.scrollHeight;
+      if (container && this.additionalCommentsEl && Utils.getUserAgentInfo().isMobile) {
+        container.scrollTop = this.additionalCommentsEl.offsetTop;
       }
     }, 300);
   };
@@ -307,10 +307,6 @@ class Cart extends Component {
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
-          // onBlur={() => {
-          //   this.setCartContainerHeight();
-          //   this.setProductsContainerHeight();
-          // }}
         ></textarea>
         {additionalComments ? (
           <IconClose
