@@ -281,8 +281,8 @@ class Cart extends Component {
       const container = document.querySelector('.ordering-cart__container');
       const productContainer = document.querySelector('.ordering-cart__products-container');
 
-      if (container && Utils.getUserAgentInfo().isMobile) {
-        console.log(productsContainerHeight);
+      if (container && productContainer && Utils.getUserAgentInfo().isMobile) {
+        console.log(productContainer);
         console.log(this.billingEl.clientHeight);
         console.log(container.clientHeight);
         console.log(document.body.clientHeight - window.innerHeight);
