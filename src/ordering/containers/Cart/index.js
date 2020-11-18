@@ -284,7 +284,7 @@ class Cart extends Component {
       const normalScroll = productsContainerHeight + this.billingEl.clientHeight;
 
       if (container && Utils.getUserAgentInfo().isMobile) {
-        container.scrollTop = normalScroll - 2 * container.clientHeight + window.innerHeight;
+        container.scrollTop = normalScroll - container.clientHeight - (document.body.clientHeight - window.innerHeight);
       }
     }, 300);
   };
