@@ -271,17 +271,14 @@ class Cart extends Component {
   }
 
   AdditionalCommentsFocus = () => {
+    const { productsContainerHeight } = this.state;
+
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
-      const el = this.additionalCommentsEl;
+      const normalScroll = productsContainerHeight + this.billingEl.clientHeight;
 
       if (container && el && Utils.getUserAgentInfo().isMobile) {
-        const normalScrollTop =
-          el.offsetTop - container.clientHeight / 2 + el.clientHeight + this.footerEl.clientHeight;
-
-        if (normalScrollTop > 0) {
-          container.scrollTop = normalScrollTop - window.innerHeight + container.clientHeight / 2;
-        }
+        container.scrollTop = normalScroll - 2 * container.clientHeight + window.innerHeight;
       }
     }, 300);
   };
