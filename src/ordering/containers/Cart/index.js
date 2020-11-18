@@ -279,17 +279,16 @@ class Cart extends Component {
   AdditionalCommentsFocus = () => {
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
+      const productContainer = document.querySelector('.ordering-cart__products-container');
 
       if (container && Utils.getUserAgentInfo().isMobile) {
-        const { productsContainerHeight } = this.state;
-
         console.log(productsContainerHeight);
         console.log(this.billingEl.clientHeight);
         console.log(container.clientHeight);
         console.log(document.body.clientHeight - window.innerHeight);
 
         container.scrollTop =
-          productsContainerHeight +
+          productContainer.clientHeight +
           this.billingEl.clientHeight -
           container.clientHeight -
           (document.body.clientHeight - window.innerHeight);
