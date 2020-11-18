@@ -5,7 +5,7 @@ const fs = require('fs');
 const target = process.env.PROXY;
 let proxy;
 if (target) {
-  proxy = createProxyMiddleware({ target, changeOrigin: true });
+  proxy = createProxyMiddleware({ target, changeOrigin: process.env.PROXY_CHANGE_ORIGIN !== 'false' });
 }
 
 let servedPathname = '';
