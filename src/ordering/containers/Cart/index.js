@@ -282,11 +282,6 @@ class Cart extends Component {
       const productContainer = document.querySelector('.ordering-cart__products-container');
 
       if (container && productContainer && Utils.getUserAgentInfo().isMobile) {
-        console.log(productContainer);
-        console.log(this.billingEl.clientHeight);
-        console.log(container.clientHeight);
-        console.log(document.body.clientHeight - window.innerHeight);
-
         container.scrollTop =
           productContainer.clientHeight +
           this.billingEl.clientHeight -
