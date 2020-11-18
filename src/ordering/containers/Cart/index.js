@@ -281,7 +281,8 @@ class Cart extends Component {
       const container = document.querySelector('.ordering-cart__container');
 
       if (container && this.additionalCommentsEl && Utils.getUserAgentInfo().isMobile) {
-        container.scrollTop = this.additionalCommentsEl.offsetTop;
+        container.scrollTop =
+          this.additionalCommentsEl.offsetTop + body.document.clientHeight - this.additionalCommentsEl.clientHeight;
       }
     }, 300);
   };
