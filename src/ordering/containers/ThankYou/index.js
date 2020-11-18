@@ -43,6 +43,7 @@ import './OrderingThanks.scss';
 import qs from 'qs';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
+import { captureException } from '@sentry/react';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -57,6 +58,8 @@ export class ThankYou extends PureComponent {
     phoneCopyTitle: '',
     phoneCopyContent: '',
   };
+
+  pollOrderStatusTimer = null;
 
   componentDidMount() {
     // expected delivery time is for pre order
@@ -75,23 +78,31 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
+    // this.pollOrderStatus(); // order status api is not ready, we just leave the code here and will enable it in the future
   }
 
   loadOrder = async () => {
     const { thankYouActions, receiptNumber } = this.props;
 
-    await thankYouActions.loadOrder(receiptNumber);
+    thankYouActions.loadOrder(receiptNumber);
+  };
+
+  pollOrderStatus = () => {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
-      clearInterval(this.timer);
-      const { order } = this.props;
-      const { status } = order;
-
-      this.timer = setInterval(async () => {
-        await thankYouActions.loadOrderStatus(receiptNumber);
-        const { updatedStatus } = this.props;
-
-        if (updatedStatus !== status) {
-          await this.loadOrder();
+      this.pollOrderStatusTimer = setInterval(async () => {
+        const {
+          thankYouActions,
+          receiptNumber,
+          order: { status },
+        } = this.props;
+        try {
+          await thankYouActions.loadOrderStatus(receiptNumber);
+          const { updatedStatus } = this.props;
+          if (updatedStatus !== status) {
+            await this.loadOrder(receiptNumber);
+          }
+        } catch (e) {
+          captureException(e);
         }
       }, 60000);
     }
@@ -117,6 +128,10 @@ export class ThankYou extends PureComponent {
       this.handleGtmEventTracking({ order: orderInfo });
     }
   }
+
+  componentWillUnmount = () => {
+    clearInterval(this.pollOrderStatusTimer);
+  };
 
   getThankYouSource = () => {
     return Utils.getCookieVariable('__ty_source', '');
