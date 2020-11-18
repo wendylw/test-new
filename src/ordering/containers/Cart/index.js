@@ -279,13 +279,15 @@ class Cart extends Component {
   AdditionalCommentsFocus = () => {
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
+      const el = this.additionalCommentsEl;
 
-      if (container && this.additionalCommentsEl && Utils.getUserAgentInfo().isMobile) {
-        container.scrollTop =
-          this.additionalCommentsEl.offsetTop +
-          this.additionalCommentsEl.clientHeight +
-          this.footerEl.clientHeight -
-          document.body.clientHeight;
+      if (container && el && Utils.getUserAgentInfo().isMobile) {
+        const normalScrollTop =
+          el.offsetTop - container.clientHeight / 2 + el.clientHeight + this.footerEl.clientHeight;
+
+        if (normalScrollTop > 0) {
+          container.scrollTop = normalScrollTop - window.innerHeight + container.clientHeight / 2;
+        }
       }
     }, 300);
   };
