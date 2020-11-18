@@ -276,7 +276,7 @@ class Cart extends Component {
 
       if (container && this.additionalCommentsEl && Utils.getUserAgentInfo().isMobile) {
         container.scrollTop =
-          this.additionalCommentsEl.offsetTop + body.document.clientHeight - this.additionalCommentsEl.clientHeight;
+          this.additionalCommentsEl.offsetTop + document.body.clientHeight - this.additionalCommentsEl.clientHeight;
       }
     }, 300);
   };
