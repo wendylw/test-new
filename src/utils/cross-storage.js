@@ -1,3 +1,9 @@
+/*
+ * IMPORTANT WARNING: cross-storage may NOT work on Safari. It's can be only used to
+ * enhance user experience on the browsers that supports it. Do NOT let your critical
+ * features rely on it!!
+ * Refer to: https://github.com/zendesk/cross-storage#compatibility
+ */
 import { captureException } from '@sentry/react';
 import { CrossStorageClient } from 'cross-storage';
 
