@@ -281,10 +281,20 @@ class Cart extends Component {
 
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
-      const normalScroll = productsContainerHeight + this.billingEl.clientHeight;
+
+      console.log(
+        productsContainerHeight +
+          this.billingEl.clientHeight -
+          container.clientHeight -
+          (document.body.clientHeight - window.innerHeight)
+      );
 
       if (container && Utils.getUserAgentInfo().isMobile) {
-        container.scrollTop = normalScroll - container.clientHeight - (document.body.clientHeight - window.innerHeight);
+        container.scrollTop =
+          productsContainerHeight +
+          this.billingEl.clientHeight -
+          container.clientHeight -
+          (document.body.clientHeight - window.innerHeight);
       }
     }, 300);
   };
