@@ -283,7 +283,7 @@ class Cart extends Component {
       const container = document.querySelector('.ordering-cart__container');
       const normalScroll = productsContainerHeight + this.billingEl.clientHeight;
 
-      if (container && el && Utils.getUserAgentInfo().isMobile) {
+      if (container && Utils.getUserAgentInfo().isMobile) {
         container.scrollTop = normalScroll - 2 * container.clientHeight + window.innerHeight;
       }
     }, 300);
