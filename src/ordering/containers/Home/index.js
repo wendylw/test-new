@@ -157,6 +157,7 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
+
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });

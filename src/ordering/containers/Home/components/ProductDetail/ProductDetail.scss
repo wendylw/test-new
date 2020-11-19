@@ -88,8 +88,8 @@
   }
 
   &__info-title {
-    word-break: break-all;
-    hyphens: auto;
+    word-break: break-word;
+    hyphens: none;
   }
 
   &__info-tag {
