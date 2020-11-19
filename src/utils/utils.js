@@ -345,6 +345,10 @@ Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
+Utils.isTakeAwayType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
+};
+
 Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
   // ValidDays received from api side, sunday is 1, monday is two
   // convert it to browser weekday format first, for which sunday is 0, monday is 1
@@ -566,28 +570,6 @@ Utils.utoa = str => {
 // base64 to unicode string
 Utils.atou = str => {
   return decodeURIComponent(escape(window.atob(str)));
-};
-
-// deliveryTo uses the placeInfo from <Location />
-// use setDeliveryToCookie and getDeliveryToCookie to share user location between domains
-//
-// setDeliveryToCookie(deliveryAddress: PlaceInfo) => void
-Utils.setDeliveryAddressCookie = deliveryAddress => {
-  const placeInfoBase64 = Utils.utoa(JSON.stringify(deliveryAddress));
-  const domain = (process.env.REACT_APP_MERCHANT_STORE_URL || '').split('%business%')[1];
-  document.cookie = `deliveryAddress=${placeInfoBase64}; path=/; domain=${domain}`;
-};
-
-// getDeliveryToCookie(void) => PlaceInfo || undefined
-Utils.getDeliveryAddressCookie = () => {
-  const placeInfoBase64 = (document.cookie.split(';').find(kv => kv.trim().split('=')[0] === 'deliveryAddress') || '')
-    .trim()
-    .slice('deliveryAddress='.length);
-  try {
-    return JSON.parse(Utils.atou(placeInfoBase64));
-  } catch (e) {
-    return null;
-  }
 };
 
 Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
