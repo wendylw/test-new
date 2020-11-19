@@ -1242,7 +1242,15 @@ export class ThankYou extends PureComponent {
                   if (window.androidInterface) {
                     window.androidInterface.gotoHome();
                   } else if (window.webkit) {
-                    window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                    const version = window.prompt('getAppVersion');
+
+                    if (version < '1.1.0') {
+                      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                    } else {
+                      window.webkit.messageHandlers.shareAction.postMessage({
+                        functionName: 'gotoHome',
+                      });
+                    }
                   }
                 } else {
                   // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
