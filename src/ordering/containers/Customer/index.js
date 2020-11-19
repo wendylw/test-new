@@ -151,7 +151,7 @@ class Customer extends Component {
   };
 
   renderDeliveryPickupDetail() {
-    if (Utils.isDineInType()) {
+    if (Utils.isDineInType() || Utils.isTakeAwayType()) {
       return null;
     }
 
