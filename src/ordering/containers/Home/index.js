@@ -158,8 +158,7 @@ export class Home extends Component {
     this.checkRange();
     this.checkOrderTime();
 
-    console.log(window.innerHeight);
-    console.log(windowSize());
+    this.setState({ windowSize: windowSize() });
 
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
