@@ -25,10 +25,14 @@ export const fetchRedirectPageState = async () => {
   }
 };
 
-export const windowSize = () => ({
-  width: window.innerWidth || document.body.clientWidth,
-  height: window.innerHeight || document.body.clientHeight,
-});
+export const windowSize = () => {
+  console.log(window.innerHeight);
+
+  return {
+    width: window.innerWidth || document.body.clientWidth,
+    height: window.innerHeight || document.body.clientHeight,
+  };
+};
 
 export const mainTop = ({ headerEls = [] }) => {
   let top = 0;
