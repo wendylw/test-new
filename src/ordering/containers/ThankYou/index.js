@@ -139,7 +139,9 @@ export class ThankYou extends PureComponent {
       }
 
       if (Utils.isIOSWebview()) {
-        window.webkit.messageHandlers.shareAction.postMessage('closeMap');
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'closeMap',
+        });
       }
     } catch (e) {}
     this.setState({
