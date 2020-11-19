@@ -897,7 +897,7 @@ export class Home extends Component {
         <Footer
           {...otherProps}
           style={{
-            top: `${(window.innerHeight || document.body.clientHeight) -
+            top: `${windowSize -
               marginBottom({
                 footerEls: [this.footerEl],
               })}px`,

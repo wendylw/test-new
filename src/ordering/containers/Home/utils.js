@@ -26,8 +26,8 @@ export const fetchRedirectPageState = async () => {
 };
 
 export const windowSize = () => ({
-  width: document.body.clientWidth || window.innerWidth,
-  height: document.body.clientHeight || window.innerHeight,
+  width: window.innerWidth || document.body.clientWidth,
+  height: window.innerHeight || document.body.clientHeight,
 });
 
 export const mainTop = ({ headerEls = [] }) => {
