@@ -182,11 +182,6 @@ class Cart extends Component {
     const timer = setTimeout(() => {
       clearTimeout(timer);
 
-      window.innerHeight = document.body.clientHeight;
-
-      console.log(window.innerHeight);
-      console.log(document.body.clientHeight);
-
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
         // search: window.location.search,

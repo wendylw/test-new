@@ -158,7 +158,12 @@ export class Home extends Component {
     this.checkRange();
     this.checkOrderTime();
 
+    console.log(window.innerHeight);
+    console.log(document.body.clientHeight);
+    console.log(windowSize());
+
     window.addEventListener('resize', () => {
+      console.log(111);
       this.setState({ windowSize: windowSize() });
     });
   };
