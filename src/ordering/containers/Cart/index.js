@@ -35,10 +35,12 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
     isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
+    productsContainerHeight: '0',
   };
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
+    this.setProductsContainerHeight(prevStates.productsContainerHeight);
   }
 
   async componentDidMount() {
@@ -49,17 +51,35 @@ class Cart extends Component {
     window.scrollTo(0, 0);
     this.handleResizeEvent();
     this.setCartContainerHeight();
+    this.setProductsContainerHeight();
+  }
+
+  componentWillUnmount() {
+    this.setState({ isCreatingOrder: false });
   }
 
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
-      footerEls: [this.billingEl, this.footerEl],
+      footerEls: [this.footerEl],
     });
 
     if (preContainerHeight !== containerHeight) {
       this.setState({
         cartContainerHeight: containerHeight,
+      });
+    }
+  };
+
+  setProductsContainerHeight = preProductsContainerHeight => {
+    const productsContainerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl, this.billingEl],
+    });
+
+    if (preProductsContainerHeight !== productsContainerHeight) {
+      this.setState({
+        productsContainerHeight: productsContainerHeight,
       });
     }
   };
@@ -151,13 +171,23 @@ class Cart extends Component {
     Utils.setSessionVariable('additionalComments', e.target.value);
   }
 
-  handleClickBack = () => {
+  handleClickBack = async () => {
     const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      // search: window.location.search,
-      search: newSearchParams,
-    });
+
+    if (this.additionalCommentsEl) {
+      await this.additionalCommentsEl.blur();
+    }
+
+    // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
+    const timer = setTimeout(() => {
+      clearTimeout(timer);
+
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        // search: window.location.search,
+        search: newSearchParams,
+      });
+    }, 100);
   };
 
   isPromotionValid() {
@@ -249,20 +279,31 @@ class Cart extends Component {
   AdditionalCommentsFocus = () => {
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
+      const productContainer = document.querySelector('.ordering-cart__products-container');
 
-      if (container) {
-        container.scrollTop = container.scrollHeight;
+      if (container && productContainer && Utils.getUserAgentInfo().isMobile) {
+        container.scrollTop =
+          productContainer.clientHeight +
+          this.billingEl.clientHeight -
+          container.clientHeight -
+          (document.body.clientHeight - window.innerHeight);
       }
     }, 300);
   };
 
   renderAdditionalComments() {
-    const { t } = this.props;
+    const { t, shoppingCart } = this.props;
     const { additionalComments } = this.state;
+    const { items } = shoppingCart || {};
+
+    if (!shoppingCart || !items.length) {
+      return null;
+    }
 
     return (
       <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
         <textarea
+          ref={ref => (this.additionalCommentsEl = ref)}
           className="ordering-cart__textarea form__textarea padding-small margin-left-right-small"
           rows="2"
           placeholder={t('OrderNotesPlaceholder')}
@@ -271,7 +312,6 @@ class Cart extends Component {
           data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
-          onBlur={this.setCartContainerHeight}
         ></textarea>
         {additionalComments ? (
           <IconClose
@@ -354,7 +394,7 @@ class Cart extends Component {
 
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight } = this.state;
+    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -406,17 +446,15 @@ class Cart extends Component {
             height: cartContainerHeight,
           }}
         >
-          <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
-          {this.renderAdditionalComments()}
-        </div>
-        <aside
-          className="sticky-wrapper"
-          style={{
-            bottom: `${Utils.marginBottom({
-              footerEls: [this.footerEl],
-            })}px`,
-          }}
-        >
+          <div
+            className="ordering-cart__products-container"
+            style={{
+              minHeight: productsContainerHeight,
+            }}
+          >
+            <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
+            {this.renderAdditionalComments()}
+          </div>
           <Billing
             billingRef={ref => (this.billingEl = ref)}
             tax={tax}
@@ -432,7 +470,7 @@ class Cart extends Component {
           >
             {this.renderPromotionItem()}
           </Billing>
-        </aside>
+        </div>
         <footer
           ref={ref => (this.footerEl = ref)}
           className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
@@ -459,14 +497,16 @@ class Cart extends Component {
                 return;
               }
 
+              this.setState({ isCreatingOrder: true });
+
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
               });
             }}
-            disabled={!items || !items.length || isInvalidTotal}
+            disabled={!items || !items.length || isInvalidTotal || isCreatingOrder}
           >
-            {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
-            {!isCreatingOrder ? buttonText : null}
+            {isCreatingOrder ? t('Processing') : isInvalidTotal && `*`}
+            {!isCreatingOrder && buttonText}
           </button>
         </footer>
         <ProductSoldOutModal
