@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import PhoneInput, {
+  formatPhoneNumberIntl,
+  isValidPhoneNumber,
+  getCountryCallingCode,
+} from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import './PhoneViewContainer.scss';
@@ -26,6 +30,21 @@ class PhoneViewContainer extends React.Component {
       this.setState({ isSavingPhone: isLoading });
     }
   }
+
+  intiCode = country => {
+    country &&
+      !this.state.isInitCoed &&
+      setTimeout(() => {
+        const t = document.querySelector(
+          '.react-phone-number-input__input.react-phone-number-input__phone.react-phone-number-input__input--style'
+        );
+
+        t.value = `+${getCountryCallingCode(country)}`;
+        this.setState({
+          isInitCoed: true,
+        });
+      }, 0);
+  };
 
   handleUpdatePhoneNumber(phone) {
     const { updatePhoneNumber } = this.props;
