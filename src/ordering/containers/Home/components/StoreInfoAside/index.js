@@ -46,11 +46,11 @@ class StoreInfoAside extends Component {
               <time>
                 {`${this.formatHour(validTimeFrom)}`} - {`${this.formatHour(breakTimeFrom)}`},{' '}
                 {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
-              </time >
+              </time>
             ) : (
-                <span>{t('Closed')}</span>
-              )}
-          </li >
+              <span>{t('Closed')}</span>
+            )}
+          </li>
         );
       });
   };
@@ -65,7 +65,9 @@ class StoreInfoAside extends Component {
       onToggle,
       storeAddress,
       telephone,
+      enablePreOrder,
       isValidTimeToOrder,
+      footerEl,
     } = this.props;
     const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
@@ -76,7 +78,7 @@ class StoreInfoAside extends Component {
       return null;
     }
 
-    if (show || (initDom && !isValidTimeToOrder)) {
+    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
       classList.push('active');
     }
 
@@ -106,7 +108,6 @@ class StoreInfoAside extends Component {
             <summary className="store-info-aside__summary padding-left-right-small">
               <div className="flex flex-middle">
                 <h2 className="text-size-big text-weight-bolder text-middle text-omit__single-line">
-
                   {onlineStoreInfo.storeName}
                   {name ? ` (${name})` : ''}
                 </h2>
@@ -116,11 +117,11 @@ class StoreInfoAside extends Component {
                     className="tag__small tag__info margin-left-right-small text-middle text-size-small"
                   />
                 ) : (
-                    <Tag
-                      text={t('Closed')}
-                      className="tag__small tag__error margin-left-right-small text-middle text-size-small"
-                    />
-                  )}
+                  <Tag
+                    text={t('Closed')}
+                    className="tag__small tag__error margin-left-right-small text-middle text-size-small"
+                  />
+                )}
               </div>
               {storeAddress ? (
                 <address className="text-size-big margin-top-bottom-small text-line-height-base">
@@ -138,7 +139,7 @@ class StoreInfoAside extends Component {
               ) : null}
               <h4 className="margin-top-bottom-normal text-weight-bolder text-opacity">{t('DeliveryHours')}</h4>
               <ul>{this.renderDeliveryHour()}</ul>
-            </summary >
+            </summary>
           </div>
         </div>
       </aside>
