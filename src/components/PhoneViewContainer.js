@@ -12,11 +12,16 @@ import './PhoneViewContainer.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const DEFAULT_COUNTRY = 'MY';
+const INTERNATIONAL = {
+  NAME: 'ZZ',
+  CODE: '1',
+};
 
 class PhoneViewContainer extends React.Component {
   state = {
     phone: this.props.phone,
     isSavingPhone: this.props.isLoading,
+    isInitCoed: false,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -32,23 +37,51 @@ class PhoneViewContainer extends React.Component {
   }
 
   intiCode = country => {
-    country &&
-      !this.state.isInitCoed &&
-      setTimeout(() => {
-        const t = document.querySelector(
+    let value = '';
+    if (!country) return value;
+
+    if (country === INTERNATIONAL.NAME) {
+      value = `+${INTERNATIONAL.CODE}`;
+    } else {
+      value = `+${getCountryCallingCode(country)}`;
+    }
+
+    if (country && !this.state.isInitCoed) {
+      const timer = setTimeout(() => {
+        const input = document.querySelector(
           '.react-phone-number-input__input.react-phone-number-input__phone.react-phone-number-input__input--style'
         );
 
-        t.value = `+${getCountryCallingCode(country)}`;
+        input.value = value;
         this.setState({
           isInitCoed: true,
         });
+
+        clearTimeout(timer);
       }, 0);
+    }
   };
 
-  handleUpdatePhoneNumber(phone) {
+  async handleUpdatePhoneNumber(phone) {
     const { updatePhoneNumber } = this.props;
     const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+
+    if (phone === undefined) {
+      this.setState(
+        {
+          isInitCoed: false,
+        },
+        () => {
+          this.intiCode(selectedCountry);
+        }
+      );
+    }
+
+    await this.props.customerActions.patchDeliveryDetails({
+      phone:
+        metadataMobile.countries[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]),
+    });
 
     if (metadataMobile.countries[selectedCountry]) {
       updatePhoneNumber(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));
@@ -97,7 +130,7 @@ class PhoneViewContainer extends React.Component {
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
           data-heap-name="common.phone-view-container.phone-number-input"
-          value={formatPhoneNumberIntl(phone)}
+          value={formatPhoneNumberIntl(phone) || this.intiCode(country)}
           country={country || DEFAULT_COUNTRY}
           metadata={metadataMobile}
           onChange={phone => this.handleUpdatePhoneNumber(phone)}
