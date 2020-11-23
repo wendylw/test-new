@@ -838,28 +838,23 @@ Utils.getFulfillDate = () => {
   }
 };
 
-Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
-  let timer = null;
-
-  function timerSetting(resolve, reject) {
-    timer = setTimeout(() => {
-      clearTimeout(timer);
-
-      if (retriesLeft === 1) {
-        reject(error);
-      } else {
-        Utils.retry(fn, retriesLeft - 1, interval).then(resolve, reject);
-      }
-    }, interval);
-  }
-
+// This function only retry when the error is ChunkLoadError, do NOT use it as a common promise retry util!
+Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) => {
   return new Promise((resolve, reject) => {
     fn()
-      .then(resolve, () => {
-        timerSetting(resolve, reject);
-      })
+      .then(resolve)
       .catch(error => {
-        timerSetting(resolve, reject);
+        setTimeout(() => {
+          // if the target module has some runtime error (for example, try to access window.notExistingObj.notExistingProp),
+          // the promise will throw correct error for the first time, but will resolve an empty module next time, which makes
+          // the entire module seems to be resolved, however it's actually not working. To avoid this kind of thing, we will
+          // only deal with ChunkLoadError, which means the module cannot be loaded (mostly because of network issues).
+          if (error.name !== 'ChunkLoadError' || retriesLeft <= 1) {
+            reject(error);
+          } else {
+            Utils.attemptLoad(fn, retriesLeft - 1, interval).then(resolve, reject);
+          }
+        }, interval);
       });
   });
 };
