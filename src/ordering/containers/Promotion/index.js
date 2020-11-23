@@ -131,7 +131,7 @@ class Promotion extends Component {
             disabled={promoCode === '' || inProcess || isAppliedSuccess}
             onClick={this.handleApplyPromotion}
           >
-            {inProcess ? <div className="loader"></div> : t('Apply')}
+            {inProcess ? t('Processing') : t('Apply')}
           </button>
         </footer>
       </section>
