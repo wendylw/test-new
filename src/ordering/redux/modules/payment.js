@@ -11,7 +11,6 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
@@ -107,6 +106,7 @@ export const actions = {
 
     // expectedDeliveryHour & expectedDeliveryDate will always be there if
     // there is preOrder in url
+    const orderSource = getOrderSource();
     const business = getBusiness(getState());
     const businessInfo = getBusinessByName(getState(), business);
     const { qrOrderingSettings = {} } = businessInfo || {};
@@ -123,12 +123,13 @@ export const actions = {
       shoppingCartIds,
       tableId,
       cashback,
+      orderSource,
     };
 
     // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
     let expectDeliveryDateInfo = null;
     try {
-      if (enablePreOrder) {
+      if (enablePreOrder && !(shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY)) {
         const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
         // => {"from":2,"to":3}
         const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
@@ -171,11 +172,13 @@ export const actions = {
       variables = {
         ...variables,
         contactDetail,
+        shippingType,
         ...expectDeliveryDateInfo,
       };
     } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
       variables = {
         ...variables,
+        shippingType: Utils.mapString2camelCase(shippingType),
         contactDetail,
       };
     }
@@ -238,14 +241,6 @@ export const actions = {
       );
     }
 
-    if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
-      try {
-        await setHistoricalDeliveryAddresses(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
     return result;
   },
 
@@ -283,6 +278,18 @@ export const actions = {
       params: { country },
     },
   }),
+};
+
+const getOrderSource = () => {
+  let orderSource = '';
+  if (Utils.isWebview()) {
+    orderSource = 'BeepApp';
+  } else if (sessionStorage.getItem('orderSource')) {
+    orderSource = 'BeepSite';
+  } else {
+    orderSource = 'BeepStore';
+  }
+  return orderSource;
 };
 
 const createOrder = variables => {
@@ -411,7 +418,11 @@ export const getPayments = createSelector(
         // for Malaysia
         if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
           return paymentOptions[
-            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
+            total &&
+            process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL &&
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL)
+              ? 'creditCard'
+              : 'stripe'
           ];
         }
 
@@ -432,5 +443,5 @@ export const getDefaultPayment = state => {
 };
 
 export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
-  return payments.find(payment => payment.label === currentPayment);
+  return (payments || []).find(payment => payment.label === currentPayment);
 });

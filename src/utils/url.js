@@ -6,24 +6,19 @@ const API_URLS = {
   },
   GET_CART_TYPE: (isDeliveryType, deliveryCoords) => {
     let CartObj = API_URLS.GET_CART;
-    const params = {};
-    if (isDeliveryType) {
-      params.shippingType = 'delivery';
-      if (deliveryCoords) {
-        params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
-      }
-    }
     const { expectDeliveryDateFrom } = Utils.getFulfillDate();
+    const params = {
+      shippingType: Utils.getApiRequestShippingType(),
+    };
 
-    expectDeliveryDateFrom && (params.fulfillDate = expectDeliveryDateFrom);
-    const queryString = Object.keys(params)
-      .map(key => `${key}=${params[key]}`)
-      .join('&');
-    if (isDeliveryType) {
-      CartObj.url = `/api/cart?${queryString}`;
-    } else {
-      CartObj.url = expectDeliveryDateFrom ? `/api/cart?fulfillDate=${expectDeliveryDateFrom}` : `/api/cart`;
+    if (isDeliveryType && deliveryCoords) {
+      params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
     }
+
+    if (expectDeliveryDateFrom) {
+      params.fulfillDate = expectDeliveryDateFrom;
+    }
+    CartObj.params = params;
     return CartObj;
   },
   GET_BRAINTREE_TOKEN: {
@@ -91,6 +86,10 @@ const API_URLS = {
     method: 'post',
     mode: 'cors',
   }),
+  GET_OTP: {
+    url: '/api/otp',
+    method: 'post',
+  },
   GET_CUSTOMER_PROFILE: consumerId => ({
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
@@ -165,10 +164,30 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/profile`,
     method: 'get',
   }),
+  GET_ORDER_STATUS: ({ orderId }) => ({
+    url: `/api/transactions/${orderId}/status`,
+    method: 'get',
+  }),
   GET_COLLECTION: {
     url: '/api/stores/collection',
     method: 'get',
   },
+  CREATE_AND_UPDATE_PROFILE: consumerId => ({
+    url: `/api/consumers/${consumerId}/profile`,
+    method: 'put',
+  }),
+  GET_ADDRESS_LIST: (consumerId, storeId) => ({
+    url: `/api/consumers/${consumerId}/store/${storeId}/address`,
+    method: 'get',
+  }),
+  CREATE_ADDRESS: consumerId => ({
+    url: `/api/consumers/${consumerId}/address`,
+    method: 'post',
+  }),
+  UPDATE_ADDRESS: (consumerId, addressId) => ({
+    url: `/api/consumers/${consumerId}/address/${addressId}`,
+    method: 'put',
+  }),
 };
 
 export default {

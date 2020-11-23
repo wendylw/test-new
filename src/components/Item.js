@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import LazyLoad from 'react-lazyload';
 import withDataAttributes from './withDataAttributes';
 import Image from './Image';
 import Tag from './Tag';
+import './Item.scss';
 
 export class Item extends Component {
   render() {
     const {
-      t,
       children,
       className,
       contentClassName,
@@ -18,11 +19,14 @@ export class Item extends Component {
       detail,
       operateItemDetail,
       productDetailImageRef,
-      hasTag,
+      tagText,
       dataAttributes,
+      isLazyLoad,
+      productItemMinHeight,
+      scrollContainer,
     } = this.props;
-    const classList = ['item border__bottom-divider item-padding'];
-    const contentClassList = ['item__content flex'];
+    const classList = ['item border__bottom-divider'];
+    const contentClassList = ['item__content flex padding-left-right-smaller padding-top-bottom-small'];
 
     if (className) {
       classList.push(className);
@@ -32,22 +36,62 @@ export class Item extends Component {
       contentClassList.push(contentClassName);
     }
 
-    return (
-      <li className={classList.join(' ')} {...dataAttributes}>
-        <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-          <Image ref={productDetailImageRef} className="item__image-container" src={image} alt={title} />
-          <div className="item__detail flex flex-column flex-space-between" data-testid="itemDetail">
-            <div className="item__detail-content">
-              {hasTag ? (
-                <div className="tag__card-container">
-                  <Tag text={t('BestSeller')} className="tag__card active downsize"></Tag>
+    if (isLazyLoad) {
+      return (
+        <LazyLoad offset={0} height={productItemMinHeight} scrollContainer={scrollContainer}>
+          <div className={classList.join(' ')} {...dataAttributes}>
+            <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
+              <div className="item__image-container flex__shrink-fixed margin-small">
+                <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
+              </div>
+              <div
+                className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
+                data-testid="itemDetail"
+              >
+                <div className="item__summary-content">
+                  {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
+                  <h3 className="item__title margin-top-bottom-smaller text-line-height-base text-omit__multiple-line text-weight-bolder">
+                    {title}
+                  </h3>
+                  {variation ? (
+                    <p
+                      className="item__description margin-top-bottom-small text-omit__multiple-line"
+                      data-testid="itemDetailSummary"
+                    >
+                      {variation}
+                    </p>
+                  ) : null}
                 </div>
-              ) : null}
-              <summary className="item__title font-weight-bolder">
-                <span className="item__title-productName">{title}</span>
-              </summary>
+                {detail}
+              </div>
+            </div>
+
+            {children}
+          </div>
+        </LazyLoad>
+      );
+    }
+
+    return (
+      <div className={classList.join(' ')} {...dataAttributes}>
+        <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
+          <div className="item__image-container flex__shrink-fixed margin-small">
+            <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
+          </div>
+          <div
+            className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
+            data-testid="itemDetail"
+          >
+            <div className="item__summary-content">
+              {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
+              <h3 className="item__title margin-top-bottom-smaller text-omit__multiple-line text-weight-bolder">
+                {title}
+              </h3>
               {variation ? (
-                <p className="item__description" data-testid="itemDetailSummary">
+                <p
+                  className="item__description margin-top-bottom-small text-omit__multiple-line"
+                  data-testid="itemDetailSummary"
+                >
                   {variation}
                 </p>
               ) : null}
@@ -57,7 +101,7 @@ export class Item extends Component {
         </div>
 
         {children}
-      </li>
+      </div>
     );
   }
 }
@@ -71,7 +115,7 @@ Item.propTypes = {
   detail: PropTypes.any,
   operateItemDetail: PropTypes.func,
   productDetailImageRef: PropTypes.any,
-  hasTag: PropTypes.bool,
+  tagText: PropTypes.string,
 };
 
 Item.defaultProps = {
@@ -80,5 +124,5 @@ Item.defaultProps = {
   operateItemDetail: () => {},
   hasTag: false,
 };
-
+export const ItemComponent = Item;
 export default withDataAttributes(withTranslation()(Item));

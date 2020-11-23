@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react';
 //Deal with every single action that has FETCH_REQUEST field.
 export default store => next => action => {
   const {
@@ -35,11 +34,10 @@ export default store => next => action => {
       return next({ ...other, type: successType, response });
     })
     .catch(error => {
-      console.error(error);
-      captureException(error);
       if (error.name === 'AbortError') {
         return next({ ...other, type: cancelType || failureType, error });
       }
+      console.error(error);
       return next({ ...other, type: failureType, error });
     });
 };

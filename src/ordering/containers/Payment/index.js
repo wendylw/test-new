@@ -1,6 +1,6 @@
+import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import qs from 'qs';
 import Header from '../../../components/Header';
 import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators } from '../../redux/modules/app';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -25,11 +26,13 @@ import {
   getUnavailablePayments,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
-import { getPaymentName, getSupportCreditCardBrands, getPaymentRedirectAndWebHookUrl } from './utils';
+import { getPaymentName, getPaymentRedirectAndWebHookUrl } from './utils';
 import Loader from './components/Loader';
 import PaymentLogo from './components/PaymentLogo';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import Radio from '../../../components/Radio';
 import { getBusinessInfo } from '../../redux/modules/cart';
+import './OrderingPayment.scss';
 
 const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -38,15 +41,42 @@ const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_MET
 class Payment extends Component {
   state = {
     payNowLoading: false,
+    cartContainerHeight: '100%',
   };
 
   componentDidMount = async () => {
-    const { payments, unavailablePaymentList } = this.props;
+    const { history, payments, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
     const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
+    const { addressId } = deliveryDetails || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
+    !addressId && (await customerActions.initDeliveryDetails(type));
     this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
-    await this.props.homeActions.loadShoppingCart();
+
+    const { deliveryDetails: newDeliveryDetails } = this.props;
+    const { deliveryToLocation } = newDeliveryDetails || {};
+
+    await this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
   };
+
+  componentDidUpdate(prevProps, prevStates) {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
+    });
+
+    if (prevStates.cartContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  }
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
@@ -98,20 +128,6 @@ class Payment extends Component {
     }
   };
 
-  getPaymentShowLabel(payment) {
-    const { t, merchantCountry } = this.props;
-    if (payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY) {
-      const supportCreditCardBrands = getSupportCreditCardBrands(merchantCountry);
-      return supportCreditCardBrands
-        .map(brand => {
-          return t(brand);
-        })
-        .join(' / ');
-    } else {
-      return t(payment.label);
-    }
-  }
-
   handleBeforeCreateOrder = () => {
     const { history, currentPaymentInfo } = this.props;
 
@@ -141,38 +157,50 @@ class Payment extends Component {
       currentPaymentInfo,
     } = this.props;
     const { total } = cartSummary || {};
-    const { payNowLoading } = this.state;
-    const className = ['table-ordering__payment' /*, 'hide' */];
+    const { payNowLoading, cartContainerHeight } = this.state;
+    const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
     const promptDom =
       total >= minimumFpxTotal ? (
-        <span className="payment__prompt">{t('TemporarilyUnavailable')}</span>
+        <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
       ) : (
-        <span className="payment__prompt">
+        <p className="margin-top-bottom-smaller">
           ({' '}
           <Trans i18nKey="MinimumConsumption">
             <span>Min</span>
             <CurrencyNumber money={minimumFpxTotal} />
           </Trans>{' '}
           )
-        </span>
+        </p>
       );
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
         <Header
-          className="border__bottom-divider gray has-right flex-middle"
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.payment.header"
           isPage={true}
           title={t('SelectPayment')}
           navFunc={this.handleClickBack}
         />
 
-        <div>
-          <ul className="payment__list">
+        <div
+          className="ordering-payment__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: cartContainerHeight,
+          }}
+        >
+          <ul>
             {payments.map(payment => {
-              const classList = ['payment__item border__bottom-divider flex flex-middle flex-space-between'];
+              const classList = [
+                'ordering-payment__item flex flex-middle flex-space-between padding-small border__bottom-divider',
+              ];
               const disabledPayment = unavailablePaymentList.find(p => p === payment.key);
 
               if (!payment) {
@@ -192,27 +220,34 @@ class Payment extends Component {
                   data-heap-payment-name={payment.label}
                   onClick={() => this.setCurrentPayment(payment)}
                 >
-                  <figure className="payment__image-container">
-                    <PaymentLogo payment={payment} />
-                  </figure>
-                  <div className="payment__name">
-                    <label className="font-weight-bolder">{this.getPaymentShowLabel(payment)}</label>
-                    {disabledPayment ? promptDom : null}
+                  <div className="ordering-payment__item-content">
+                    <figure className="ordering-payment__image-container text-middle margin-small">
+                      <PaymentLogo payment={payment} />
+                    </figure>
+                    <div className="ordering-payment__description text-middle padding-left-right-normal">
+                      <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
+                        {t(payment.label)}
+                      </label>
+                      {payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY ? (
+                        <p className="ordering-payment__prompt">{`${t('Visa')}, ${t('MasterCard')}`}</p>
+                      ) : null}
+                      {disabledPayment ? promptDom : null}
+                    </div>
                   </div>
-                  <div className={`radio ${currentPayment === payment.label ? 'active' : ''}`}>
-                    <i className="radio__check-icon"></i>
-                    <input type="radio"></input>
-                  </div>
+                  <Radio className="margin-left-right-small" checked={currentPayment === payment.label} />
                 </li>
               );
             })}
           </ul>
         </div>
 
-        <div className="footer-operation">
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
+        >
           <CreateOrderButton
             history={history}
-            className="border-radius-base"
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
             disabled={payNowLoading}
@@ -224,9 +259,9 @@ class Payment extends Component {
               });
             }}
           >
-            {payNowLoading ? <div className="loader"></div> : t('PayNow')}
+            {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>
-        </div>
+        </footer>
 
         {paymentData ? (
           <RedirectForm
@@ -244,7 +279,7 @@ class Payment extends Component {
 // to use container to make Payment initialization based on payments from a country
 const PaymentContainer = props => {
   if (!props.merchantCountry) {
-    return <Loader />;
+    return <Loader className={'loading-cover opacity'} />;
   }
 
   return <Payment {...props} />;
@@ -269,12 +304,14 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(PaymentContainer);

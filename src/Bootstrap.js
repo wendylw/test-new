@@ -5,26 +5,26 @@ import Constants from './utils/constants';
 import Utils from './utils/utils';
 import NotFound from './NotFound';
 
-const AsyncTermsPrivacy = lazy(() => import('./containers/TermsPrivacy'));
+const AsyncTermsPrivacy = lazy(() => Utils.retry(() => import('./containers/TermsPrivacy')));
 
-const AsyncStoresApp = lazy(() => import('./stores'));
+const AsyncStoresApp = lazy(() => Utils.retry(() => import('./stores')));
 
-const AsyncOrdering = lazy(() => import('./ordering'));
+const AsyncOrdering = lazy(() => Utils.retry(() => import('./ordering')));
 
-const AsyncCashbackApp = lazy(() => import('./cashback'));
+const AsyncCashbackApp = lazy(() => Utils.retry(() => import('./cashback')));
 
-const AsyncQRScanner = lazy(() => import('./qrscan'));
+const AsyncQRScanner = lazy(() => Utils.retry(() => import('./qrscan')));
 
-const AsyncSite = lazy(() => import('./site'));
+const AsyncSite = lazy(() => Utils.retry(() => import('./site')));
 
-const AsyncVoucher = lazy(() => import('./voucher'));
+const AsyncVoucher = lazy(() => Utils.retry(() => import('./voucher')));
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
   renderSitePages = () => {
     return (
-      <Suspense fallback={<div className="loader theme page-loader"></div>}>
+      <Suspense fallback={<div className="loader theme full-page"></div>}>
         <AsyncSite />
       </Suspense>
     );
@@ -32,7 +32,7 @@ class Bootstrap extends Component {
 
   renderMerchantPages = () => {
     return (
-      <Suspense fallback={<div className="loader theme page-loader"></div>}>
+      <Suspense fallback={<div className="loader theme full-page"></div>}>
         <Switch>
           <Route
             exact

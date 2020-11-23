@@ -14,6 +14,11 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+Utils.getApiRequestShippingType = () => {
+  const type = Utils.getQueryVariable('type');
+  return type ? Utils.mapString2camelCase(type) : undefined;
+};
+
 Utils.isWebview = function isWebview() {
   return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
 };
@@ -31,12 +36,13 @@ Utils.getQueryVariable = variable => {
   var vars = query.split('&');
   for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split('=');
-    if (pair[0] == variable) {
+    if (pair[0] === variable) {
       return pair[1];
     }
   }
   return false;
 };
+
 // Utils.isWebview = function isWebview() {
 //   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
 // };
@@ -301,6 +307,10 @@ Utils.getUserAgentInfo = function getUserAgentInfo() {
   };
 };
 
+Utils.isSafari = function isSafari() {
+  return Utils.getUserAgentInfo().browser.includes('Safari');
+};
+
 Utils.isValidUrl = function(url) {
   const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
   return domainRegex.test(url);
@@ -333,6 +343,10 @@ Utils.isDineInType = () => {
 
 Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
+};
+
+Utils.isTakeAwayType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
 };
 
 Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
@@ -558,28 +572,6 @@ Utils.atou = str => {
   return decodeURIComponent(escape(window.atob(str)));
 };
 
-// deliveryTo uses the placeInfo from <Location />
-// use setDeliveryToCookie and getDeliveryToCookie to share user location between domains
-//
-// setDeliveryToCookie(deliveryAddress: PlaceInfo) => void
-Utils.setDeliveryAddressCookie = deliveryAddress => {
-  const placeInfoBase64 = Utils.utoa(JSON.stringify(deliveryAddress));
-  const domain = (process.env.REACT_APP_MERCHANT_STORE_URL || '').split('%business%')[1];
-  document.cookie = `deliveryAddress=${placeInfoBase64}; path=/; domain=${domain}`;
-};
-
-// getDeliveryToCookie(void) => PlaceInfo || undefined
-Utils.getDeliveryAddressCookie = () => {
-  const placeInfoBase64 = (document.cookie.split(';').find(kv => kv.trim().split('=')[0] === 'deliveryAddress') || '')
-    .trim()
-    .slice('deliveryAddress='.length);
-  try {
-    return JSON.parse(Utils.atou(placeInfoBase64));
-  } catch (e) {
-    return null;
-  }
-};
-
 Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
   if (type) storeUrl += `&type=${type}`;
@@ -601,6 +593,18 @@ Utils.addParamToSearch = (key, value) => {
   } else {
     return searchStr + separator + key + '=' + value;
   }
+};
+
+Utils.mapString2camelCase = string => {
+  const stringList = string.split('-');
+  if (stringList.length > 1) {
+    for (let i = 1; i < stringList.length; i++) {
+      const itemList = stringList[i].split('');
+      itemList[0] = itemList[0].toUpperCase();
+      stringList[i] = itemList.join('');
+    }
+  }
+  return stringList.join('');
 };
 
 Utils.removeParam = (key, sourceURL) => {
@@ -634,11 +638,37 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
+Utils.getTimeUnit = time => {
+  try {
+    const hour = new Date(time);
+    return hour < 12 ? 'AM' : 'PM';
+  } catch (e) {
+    return null;
+  }
+};
+
 Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
   return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
+};
+
+Utils.getContainerElementHeight = (headerEls, footerEl) => {
+  const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+  let headerFooterHeight = 0;
+
+  if (headerEls && headerEls.length) {
+    headerEls.forEach(el => {
+      headerFooterHeight += el.clientHeight || el.offsetHeight;
+    });
+  }
+
+  if (footerEl) {
+    headerFooterHeight += footerEl.clientHeight || footerEl.offsetHeight;
+  }
+
+  return windowHeight - headerFooterHeight;
 };
 
 Utils.zero = num => (num < 10 ? '0' + num : num + '');
@@ -653,7 +683,7 @@ Utils.getHourList = (validFrom, validTo, useSHLog, type, isToday) => {
     let hasonDemand = timeString(new Date()) > start ? 'now' : '';
 
     validFrom =
-      validFrom.split(':')[1] == '00'
+      validFrom.split(':')[1] === '00'
         ? zero(+validFrom.split(':')[0] + 1) + ':00'
         : zero(+validFrom.split(':')[0] + 2) + ':00';
 
@@ -810,6 +840,85 @@ Utils.getFulfillDate = () => {
   } else {
     return {};
   }
+};
+
+Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
+  let timer = null;
+
+  function timerSetting(resolve, reject) {
+    timer = setTimeout(() => {
+      clearTimeout(timer);
+
+      if (retriesLeft === 1) {
+        reject(error);
+      } else {
+        Utils.retry(fn, retriesLeft - 1, interval).then(resolve, reject);
+      }
+    }, interval);
+  }
+
+  return new Promise((resolve, reject) => {
+    fn()
+      .then(resolve, () => {
+        timerSetting(resolve, reject);
+      })
+      .catch(error => {
+        timerSetting(resolve, reject);
+      });
+  });
+};
+
+Utils.judgeClient = () => {
+  let client = '';
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    //判断iPhone|iPad|iPod|iOS
+    client = 'iOS';
+  } else if (/(Android)/i.test(navigator.userAgent)) {
+    //判断Android
+    client = 'Android';
+  } else {
+    client = 'PC';
+  }
+  return client;
+};
+
+Utils.windowSize = () => ({
+  width: document.body.clientWidth || window.innerWidth,
+  height: document.body.clientHeight || window.innerHeight,
+});
+
+Utils.mainTop = ({ headerEls = [] }) => {
+  let top = 0;
+
+  if (headerEls.length) {
+    headerEls.forEach(headerEl => {
+      top += headerEl ? headerEl.clientHeight || headerEl.offsetHeight : 0;
+    });
+  }
+
+  return top;
+};
+
+Utils.marginBottom = ({ footerEls = [] }) => {
+  let bottom = 0;
+
+  if (footerEls.length) {
+    footerEls.forEach(footerEl => {
+      bottom += footerEl ? footerEl.clientHeight || footerEl.offsetHeight : 0;
+    });
+  }
+
+  return bottom;
+};
+
+Utils.containerHeight = ({ headerEls, footerEls }) => {
+  return `${Utils.windowSize().height -
+    Utils.mainTop({
+      headerEls,
+    }) -
+    Utils.marginBottom({
+      footerEls,
+    })}px`;
 };
 
 export default Utils;

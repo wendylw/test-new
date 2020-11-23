@@ -89,7 +89,7 @@ class QRScan extends Component {
 
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = error => {
-          console.error('[QRScan] getCamera failed:', error);
+          console.warn('[QRScan] getCamera failed:', error);
           if (error.name !== 'NotAllowedError') {
             this.gotoNotSupport();
           }
@@ -217,7 +217,7 @@ class QRScan extends Component {
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
-              className="icon icon__big icon__gray text-middle"
+              className="icon icon__big icon__default text-middle"
               onClick={this.handleBackClicked}
               data-heap-name="site.scan.back-btn"
             />

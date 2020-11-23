@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import Modal from '../../../components/Modal';
+import './MessageModal.scss';
 
 class MessageModal extends Component {
   handleClickOK = () => {
@@ -11,37 +13,23 @@ class MessageModal extends Component {
     const { message, description, buttonText } = data;
 
     return (
-      <section
-        className="modal__align-middle modal flex flex-middle flex-space-between"
-        style={styles.section}
-        data-heap-name="ordering.common.message-modal.container"
-      >
-        <div className="modal__content">
-          <header className="hint-modal__header modal__header">
-            <h4 className="font-weight-bolder">{message}</h4>
-          </header>
-          <div className="modal__body">
-            <p className="modal__text">{description}</p>
-          </div>
-          <footer>
-            <button
-              className="button__fill button__block font-weight-bolder"
-              data-heap-name="ordering.common.message-modal.ok-btn"
-              onClick={this.handleClickOK}
-            >
-              {buttonText || t('OK')}
-            </button>
-          </footer>
-        </div>
-      </section>
+      <Modal data-heap-name="ordering.common.message-modal.container" className="message-modal" show={true}>
+        <Modal.Body className="text-center">
+          <h4 className="padding-small text-size-biggest text-weight-bolder">{message}</h4>
+          <p className="modal__text  padding-top-bottom-small">{description}</p>
+        </Modal.Body>
+        <Modal.Footer className="padding-small">
+          <button
+            className="button button__fill button__block text-weight-bolder"
+            data-heap-name="ordering.common.message-modal.ok-btn"
+            onClick={this.handleClickOK}
+          >
+            {buttonText || t('OK')}
+          </button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 }
-
-const styles = {
-  section: {
-    display: 'block',
-  },
-};
 
 export default withTranslation()(MessageModal);

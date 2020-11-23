@@ -8,7 +8,7 @@ import { compose, bindActionCreators } from 'redux';
 import Constants from '../../../utils/constants';
 import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
-import uploadImage from '../../../images/upload-image.svg';
+import { IconInsertPhoto } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import Radio from '../../../components/Radio';
 import {
@@ -33,6 +33,7 @@ import {
 } from '../../redux/modules/thankYou';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import { IconClose } from '../../../components/Icons';
+import './OrderingReportDriver.scss';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -157,7 +158,7 @@ class ReportDriver extends Component {
       case SUBMIT_STATUS.NOT_SUBMIT:
         return t('Submit');
       case SUBMIT_STATUS.IN_PROGRESS:
-        return <div className="loader"></div>;
+        return t('Processing');
       case SUBMIT_STATUS.SUBMITTED:
         return t('Submitted');
       default:
@@ -168,21 +169,31 @@ class ReportDriver extends Component {
   renderThankYou() {
     const { t } = this.props;
     return (
-      <section className="table-ordering__report-driver-thankyou">
+      <section className="ordering-report-thanks">
         <Header
-          className="report-driver__header flex-middle"
+          className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></Header>
-        <div className="report-driver-thankyou__image">
-          <img alt="Thank your feedback" src={feedBackThankyou} />
-        </div>
-        <h3 className="report-driver-thankyou__title">{t('Thankyou')}</h3>
-        <main className="report-driver-thankyou__content">{t('ThankyouYourFeedbackContent')}</main>
-        <div className="report-driver-thankyou__done-button">
-          <button onClick={this.handleDone}>{t('Done')}</button>
+        <div className="padding-normal">
+          <div className="text-center padding-left-right-normal">
+            <img className="ordering-report-thanks__image" alt="Thank your feedback" src={feedBackThankyou} />
+          </div>
+          <h2 className="ordering-report-thanks__page-title text-center text-size-large text-weight-light">
+            {t('ThankYou')}!
+          </h2>
+          <p className="ordering-report-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
+            {t('ThankyouYourFeedbackContent')}
+          </p>
+          <button
+            className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
+            onClick={this.handleDone}
+          >
+            {t('Done')}
+          </button>
         </div>
       </section>
     );
@@ -190,23 +201,25 @@ class ReportDriver extends Component {
 
   renderNotesField({ t, inputNotes, disabled, required }) {
     return (
-      <div className="report-driver__note">
-        <h3 className="report-driver__note-title">
-          {t('Notes')}
-          {required ? <span className="report-driver__required-mark">{t('Common:Required')}</span> : null}
+      <div className="padding-top-bottom-small margin-top-bottom-small">
+        <h3 className="margin-small">
+          <span className="text-weight-bolder">{t('Notes')}</span>
+          {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
-        <textarea
-          className="report-driver__note-textarea"
-          data-heap-name="ordering.report-driver.notes-input"
-          placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
-          rows="6"
-          maxLength={NOTE_MAX_LENGTH}
-          value={inputNotes}
-          onChange={this.handleNotesChange}
-          disabled={disabled}
-        ></textarea>
-        <div className="report-driver__note-char-length">
-          {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
+        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-large">
+          <textarea
+            className="ordering-report-driver__textarea form__textarea padding-small"
+            data-heap-name="ordering.report-driver.notes-input"
+            placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
+            rows="5"
+            maxLength={NOTE_MAX_LENGTH}
+            value={inputNotes}
+            onChange={this.handleNotesChange}
+            disabled={disabled}
+          ></textarea>
+          <p className="text-size-small text-right padding-small text-opacity">
+            {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
+          </p>
         </div>
       </div>
     );
@@ -214,35 +227,36 @@ class ReportDriver extends Component {
 
   renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled, required }) {
     return (
-      <div className="report-driver__upload-photo">
-        <h3 className="report-driver__upload-photo-title">
-          {t('UploadPhoto')}
-          {required ? <span className="report-driver__required-mark">{t('Common:Required')}</span> : null}
+      <div className="padding-top-bottom-small margin-top-bottom-small">
+        <h3 className="margin-small">
+          <span className="text-weight-bolder">{t('UploadPhoto')}</span>
+          {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
         {uploadPhotoFile ? (
-          <div className="report-driver__upload-photo-viewer">
+          <div className="ordering-report-driver__upload-image-container margin-small border-radius-large">
             <img alt="upload file" src={uploadPhotoUrl} />
             {disabled ? null : (
               <button
                 onClick={this.handleRemoveUploadPhoto}
-                className="report-driver__upload-photo-remove-button"
+                className="ordering-report-driver__button-close button"
                 data-heap-name="ordering.report-driver.remove-image"
               >
-                <IconClose />
+                <IconClose className="ordering-report-driver__icon-close icon icon__small" />
               </button>
             )}
           </div>
         ) : (
-          <div className="report-driver__upload-photo-uploader">
+          <div className="ordering-report-driver__upload-container text-center margin-small">
             <input
+              className="ordering-report-driver__input"
               onChange={this.handleUploadPhoto}
               type="file"
               accept="image/*"
               data-heap-name="ordering.report-driver.add-image"
             />
-            <div className="report-driver__upload-photo-reminder">
-              <img alt="upload" src={uploadImage} />
-              <p>{t('UploadFileHere')}</p>
+            <div className="ordering-report-driver__upload padding-normal border-radius-large">
+              <IconInsertPhoto className="icon icon__small" />
+              <p className="text-size-small">{t('UploadFileHere')}</p>
             </div>
           </div>
         )}
@@ -275,18 +289,20 @@ class ReportDriver extends Component {
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
 
     return (
-      <section className="table-ordering__report-driver" data-heap-name="ordering.report-driver.container">
+      <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
         <Header
-          className="report-driver__header flex-middle"
+          className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></Header>
-        <main className="report-driver__main">
-          <div className="report-driver__select-reason">
-            <h3 className="report-driver__select-reason-title">{t('SelectAReportReason')}</h3>
-            <ul className="report-driver__select-reason-list">
+
+        <div className="ordering-report-driver__container padding-top-bottom-small">
+          <div className="card padding-small margin-normal">
+            <h3 className="margin-small text-weight-bolder">{t('SelectAReportReason')}</h3>
+            <ul className="margin-small">
               {REPORT_DRIVER_REASONS.map(reason => ({
                 ...reason,
                 label: t(reason.i18n_key),
@@ -301,7 +317,7 @@ class ReportDriver extends Component {
                 })
                 .map(({ code, label }) => {
                   return (
-                    <li key={code} className="report-driver__select-reason-item">
+                    <li key={code} className="flex flex-top padding-top-bottom-small">
                       <Radio
                         onChange={() => {
                           this.handleSelectReason(code);
@@ -313,38 +329,39 @@ class ReportDriver extends Component {
                         name="reason"
                         disabled={disabled}
                       />
-                      <label htmlFor={`reason_${code}`}>{label}</label>
+                      <label className="padding-left-right-small margin-smaller" htmlFor={`reason_${code}`}>
+                        {label}
+                      </label>
                     </li>
                   );
                 })}
             </ul>
+            {selectedReasonNoteField
+              ? this.renderNotesField({ t, inputNotes, disabled, required: selectedReasonNoteField.required })
+              : null}
+
+            {selectedReasonPhotoField
+              ? this.renderPhotoField({
+                  t,
+                  uploadPhotoFile,
+                  uploadPhotoUrl,
+                  disabled,
+                  required: selectedReasonPhotoField.required,
+                })
+              : null}
+
+            <div className="margin-small">
+              <button
+                className="button button__block button__fill text-uppercase text-weight-bolder"
+                data-heap-name="ordering.report-driver.submit-btn"
+                disabled={this.isSubmitButtonDisable()}
+                onClick={this.handleSubmit}
+              >
+                {this.renderSubmitButtonContent()}
+              </button>
+            </div>
           </div>
-
-          {selectedReasonNoteField
-            ? this.renderNotesField({ t, inputNotes, disabled, required: selectedReasonNoteField.required })
-            : null}
-
-          {selectedReasonPhotoField
-            ? this.renderPhotoField({
-                t,
-                uploadPhotoFile,
-                uploadPhotoUrl,
-                disabled,
-                required: selectedReasonPhotoField.required,
-              })
-            : null}
-
-          <div className="report-driver__submit">
-            <button
-              className="report-driver__submit-button"
-              data-heap-name="ordering.report-driver.submit-btn"
-              disabled={this.isSubmitButtonDisable()}
-              onClick={this.handleSubmit}
-            >
-              {this.renderSubmitButtonContent()}
-            </button>
-          </div>
-        </main>
+        </div>
       </section>
     );
   }

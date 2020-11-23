@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation, Trans } from 'react-i18next';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
+import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOnlineStoreInfo, getOtpType } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
@@ -26,11 +26,11 @@ class Login extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber(phoneNumber) {
-    const { appActions } = this.props;
+  handleSubmitPhoneNumber(phoneNumber, type) {
+    const { appActions, otpType } = this.props;
     const { phone } = this.state;
 
-    appActions.getOtp({ phone: phoneNumber || phone });
+    appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
   }
 
   async handleWebLogin(otp) {
@@ -52,6 +52,7 @@ class Login extends React.Component {
   renderOtpModal() {
     const { t, user } = this.props;
     const { isFetching, isLogin, hasOtp } = user || {};
+    const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
       return null;
@@ -60,7 +61,7 @@ class Login extends React.Component {
     return (
       <OtpModal
         buttonText={t('OK')}
-        ResendOtpTime={20}
+        ResendOtpTime={RESEND_OTP_TIME}
         phone={Utils.getLocalStorageVariable('user.p')}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
@@ -75,7 +76,7 @@ class Login extends React.Component {
     const { isLogin, showLoginPage, hasOtp, isFetching } = user || {};
     const { country } = onlineStoreInfo || {};
     const { phone } = this.state;
-    const classList = ['login'];
+    const classList = [];
 
     if (isLogin) {
       return null;
@@ -103,31 +104,8 @@ class Login extends React.Component {
             updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
             onSubmit={this.handleSubmitPhoneNumber.bind(this)}
           >
-            <p className="terms-privacy text-center gray-font-opacity">
-              <BrowserRouter basename="/">
-                <Trans i18nKey="TermsAndPrivacyDescription">
-                  By tapping to continue, you agree to our
-                  <br />
-                  <Link
-                    className="font-weight-bolder link__non-underline"
-                    target="_blank"
-                    data-heap-name="ordering.common.login.term-link"
-                    to={Constants.ROUTER_PATHS.TERMS_OF_USE}
-                  >
-                    Terms of Service
-                  </Link>
-                  , and{' '}
-                  <Link
-                    className="font-weight-bolder link__non-underline"
-                    target="_blank"
-                    data-heap-name="ordering.common.login.privacy-policy-link"
-                    to={Constants.ROUTER_PATHS.PRIVACY}
-                  >
-                    Privacy Policy
-                  </Link>
-                  .
-                </Trans>
-              </BrowserRouter>
+            <p className="terms-privacy text-center text-opacity">
+              <TermsAndPrivacy />
             </p>
           </PhoneViewContainer>
         ) : null}
@@ -152,6 +130,7 @@ export default compose(
     state => ({
       user: getUser(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
+      otpType: getOtpType(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

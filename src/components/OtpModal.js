@@ -1,13 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { Trans, withTranslation } from 'react-i18next';
 import OtpInput from 'react-otp-input';
 import Header from './Header';
 import Constants from '../utils/constants';
-import beepOtpImage from '../images/beep-otp.png';
+import beepOtpLock from '../images/beep-otp-lock.svg';
+import beepOtpError from '../images/beep-otp-error.svg';
 import Utils from '../utils/utils';
 import { captureException } from '@sentry/react';
+import './OtpModal.scss';
+import TermsAndPrivacy from './TermsAndPrivacy';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -34,6 +37,8 @@ class OtpModal extends React.Component {
         () => {
           try {
             const bottomValue = this.getScrollBottom();
+
+            if (!this.addressAsideInnerRef || !this.addressAsideInnerRef.current) return;
             this.addressAsideInnerRef.current.style.transform = `translateY(-${bottomValue}px)`;
           } catch (e) {
             captureException(e);
@@ -46,6 +51,7 @@ class OtpModal extends React.Component {
         () => {
           setTimeout(() => {
             try {
+              if (!this.addressAsideInnerRef || !this.addressAsideInnerRef.current) return;
               this.addressAsideInnerRef.current.style.transform = 'none';
             } catch (e) {
               captureException(e);
@@ -71,13 +77,17 @@ class OtpModal extends React.Component {
   }
 
   updateAndValidateOtp = otp => {
-    const { sendOtp } = this.props;
+    const { sendOtp, updateOtpStatus } = this.props;
     this.setState(
       {
         otp,
       },
       () => {
         const { otp: newOtp } = this.state;
+        if (newOtp.length !== Constants.OTP_CODE_SIZE) {
+          updateOtpStatus();
+        }
+
         if (newOtp.length === Constants.OTP_CODE_SIZE) {
           // Unfocus the OTP input to prevent users from changing OTP
           // And at the same time do auto validation
@@ -103,30 +113,44 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const { t, onClose, getOtp, isLoading, phone, ResendOtpTime } = this.props;
+    const { t, onClose, getOtp, isLoading, phone, ResendOtpTime, isError } = this.props;
     const { currentOtpTime, isNewInput } = this.state;
 
     return (
-      <div className="full-aside" data-heap-name="common.otp-modal.container">
-        <Header navFunc={onClose} data-heap-name="common.otp-modal.header" />
+      <div className="otp-modal absolute-wrapper flex flex-column" data-heap-name="common.otp-modal.container">
+        <Header
+          className="otp-modal__header border__bottom-divider"
+          navFunc={onClose}
+          data-heap-name="common.otp-modal.header"
+        />
 
-        <section ref={this.addressAsideInnerRef} className="full-aside__content text-center">
-          <figure className="full-aside__image-container">
-            <img src={beepOtpImage} alt="otp" />
+        <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
+          <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
+            {isError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
           </figure>
-          <h2 className="full-aside__title">{t('OTPSentTitle', { phone })}</h2>
-          <div className="otp-input">
+          <h2 className="padding-normal text-size-big text-line-height-base">
+            <Trans i18nKey="OTPSentTitle">
+              We’ve sent you a One Time Passcode (OTP) to
+              <span className="text-size-big text-weight-bolder">{{ phone }}</span>. Enter it below to continue.
+            </Trans>
+          </h2>
+          <div className="margin-small">
             {isNewInput ? (
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                className={`otp-modal__group form__group flex flex-middle flex-space-between text-size-larger ${
+                  isError ? 'error' : ''
+                }`}
+              >
                 <input
                   id="newOtpInput"
                   ref={this.inputRef}
-                  className="otp-input__single-input"
+                  className="otp-modal__input form__input text-size-larger"
                   data-heap-name="common.otp-modal.new-otp-input"
                   onChange={e => this.updateAndValidateOtp(e.target.value)}
                   maxLength={Constants.OTP_CODE_SIZE}
                   type="tel"
                   placeholder="00000"
+                  autoComplete="off"
                 />
               </div>
             ) : (
@@ -143,21 +167,29 @@ class OtpModal extends React.Component {
                 }}
               />
             )}
+            {isError && <p className="otp-modal__failed-otp padding-top-bottom-small">{t('CodeVerificationFailed')}</p>}
           </div>
-          <button
-            className="otp-resend text-uppercase"
-            data-heap-name="common.otp-modal.resend-btn"
-            disabled={!!currentOtpTime}
-            onClick={() => {
-              this.setState({ currentOtpTime: ResendOtpTime });
-              this.countDown(ResendOtpTime);
-              getOtp(phone);
-            }}
-          >
-            {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
-          </button>
-          {isLoading && <div className="loader theme page-loader"></div>}
+          <div className="margin-top-bottom-normal">
+            <p className="otp-modal__resend-tip text-size-big">{t('ResendOTPTip')}</p>
+            <button
+              className="otp-modal__button-resend button button__link padding-small text-size-big text-weight-bolder"
+              data-heap-name="common.otp-modal.resend-btn"
+              disabled={!!currentOtpTime}
+              onClick={() => {
+                this.setState({ currentOtpTime: ResendOtpTime });
+                this.countDown(ResendOtpTime);
+                getOtp(phone);
+              }}
+            >
+              {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? `? (${currentOtpTime})` : '' })}
+            </button>
+          </div>
+          {isLoading && <div className="loader theme full-page"></div>}
         </section>
+
+        <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
+          <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
+        </p>
       </div>
     );
   }
@@ -168,14 +200,17 @@ OtpModal.propTypes = {
   buttonText: PropTypes.string,
   ResendOtpTime: PropTypes.number,
   isLoading: PropTypes.bool,
+  isError: PropTypes.bool,
   onClose: PropTypes.func,
   getOtp: PropTypes.func,
   sendOtp: PropTypes.func,
 };
 
 OtpModal.defaultProps = {
+  phone: '',
   buttonText: '',
   ResendOtpTime: 0,
+  isLoading: false,
   onClose: () => {},
   sendOtp: () => {},
 };

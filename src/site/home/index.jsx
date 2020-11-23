@@ -1,24 +1,33 @@
 import React, { Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DeliverToBar from '../../components/DeliverToBar';
-import { IconSearch } from '../../components/Icons';
+import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
-import { collectionCardActionCreators, getIconCollections } from '../redux/modules/entities/storeCollections';
+import {
+  collectionCardActionCreators,
+  getIconCollections,
+  getBannerCollections,
+  getCarouselCollections,
+} from '../redux/modules/entities/storeCollections';
 import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
 import { getAllCurrentStores, getPaginationInfo, getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
-import CampaignBar from './containers/CampaignBar';
+// import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
 import { checkStateRestoreStatus } from '../redux/modules/index';
+import Banners from './components/Banners';
+import Carousel from './components/Carousel';
+import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -84,6 +93,8 @@ class Home extends React.Component {
   reloadStoreListIfNecessary = () => {
     if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
       this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.BANNER);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.CAROUSEL);
       this.props.homeActions.reloadStoreList();
       Home.lastUsedPlaceId = this.props.currentPlaceId;
     }
@@ -162,7 +173,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, storeCollections } = this.props;
+    const { t, currentPlaceInfo, storeCollections, bannerCollections, carouselCollections } = this.props;
 
     if (!currentPlaceInfo) {
       return <i className="loader theme full-page text-size-huge" />;
@@ -173,14 +184,20 @@ class Home extends React.Component {
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <DeliverToBar
+          data-heap-name="site.home.delivery-bar"
           title={t('DeliverTo')}
+          icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
           className={`entry__deliver-to base-box-shadow ${
             this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
           }`}
-          address={currentPlaceInfo ? currentPlaceInfo.address : ''}
+          content={currentPlaceInfo ? currentPlaceInfo.address : ''}
           gotoLocationPage={this.gotoLocationPage}
           backLeftPosition={this.backLeftPosition}
-        />
+        >
+          <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
+            <IconScanner className="icon icon__primary" onClick={this.backLeftPosition} />
+          </Link>
+        </DeliverToBar>
 
         <section
           ref={this.sectionRef}
@@ -198,7 +215,7 @@ class Home extends React.Component {
 
             <div className="entry-home__search">
               <div className="form__group flex flex-middle">
-                <IconSearch className="entry-home__search-icon icon icon__small icon__gray" />
+                <IconSearch className="entry-home__search-icon icon icon__small icon__default" />
                 <input
                   className="form__input entry-home__input"
                   data-testid="searchStore"
@@ -211,18 +228,27 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {isCampaignActive && (
-            <CampaignBar
-              countryCode={countryCode}
-              onToggle={() => {
-                this.setState({ campaignShown: !this.state.campaignShown });
-              }}
-            />
+          {isCampaignActive && countryCode.toUpperCase() === 'MY' && (
+            <a
+              className="offer-details__bar"
+              data-heap-name="site.home.campaign-bar"
+              target="_blank"
+              href="https://app.beepit.com/download/?utm_source=beep&utm_medium=homepage&utm_campaign=launch_campaign&utm_content=top_banner"
+              rel="noopener noreferrer"
+            >
+              <p className="flex flex-middle flex-center">
+                <img className="offer-details__bar-image" src={BeepAppLink} alt="" />
+              </p>
+            </a>
           )}
 
           <Suspense fallback={null}>
             <CollectionCard collections={storeCollections} backLeftPosition={this.backLeftPosition} />
           </Suspense>
+
+          <Banners collections={bannerCollections} />
+
+          <Carousel collections={carouselCollections} currentPlaceInfo={currentPlaceInfo} />
 
           <div className="store-card-list__container padding-normal">
             {currentPlaceInfo.coords ? this.renderStoreList() : null}
@@ -243,6 +269,8 @@ export default compose(
       stores: getAllCurrentStores(state),
       storeLinkInfo: getStoreLinkInfo(state),
       storeCollections: getIconCollections(state),
+      bannerCollections: getBannerCollections(state),
+      carouselCollections: getCarouselCollections(state),
     }),
     dispatch => ({
       rootActions: bindActionCreators(rootActionCreators, dispatch),

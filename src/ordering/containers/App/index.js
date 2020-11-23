@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getMessageModal,
   getError,
   getUser,
+  getApiError,
 } from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
+import '../../../Common.scss';
 import Routes from '../Routes';
-import '../../../App.scss';
 import DocumentFavicon from '../../../components/DocumentFavicon';
-import ErrorToast from '../../../components/ErrorToast';
 import MessageModal from '../../components/MessageModal';
-import Login from '../../components/Login';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
@@ -25,6 +25,13 @@ import Utils from '../../../utils/utils';
 class App extends Component {
   constructor(props) {
     super(props);
+
+    if (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview()) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
 
     if (Utils.isAndroidWebview()) {
       const res = window.androidInterface.getAddress();
@@ -39,6 +46,10 @@ class App extends Component {
   state = {};
 
   setAppAddressToSession = res => {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+    if (deliveryAddress && deliveryAddress.address) {
+      return;
+    }
     const { address, country, countryCode, lat, lng } = res;
     const addressInfo = {
       address: address,
@@ -47,8 +58,8 @@ class App extends Component {
         countryCode: countryCode,
       },
       coords: {
-        lat: lat,
-        lng: lng,
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
       },
     };
     sessionStorage.setItem('deliveryAddress', JSON.stringify(addressInfo));
@@ -108,9 +119,10 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo } = this.props;
+    const { appActions, user, pageError, businessInfo, apiErrorMessage } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
+    const { code: errorCode } = apiErrorMessage;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
@@ -140,6 +152,8 @@ class App extends Component {
     }`;
 
     if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
+      Utils.setSessionVariable('errorMessage', pageError.message);
+
       return (window.location.href = errorPageUrl);
     }
   }
@@ -152,35 +166,67 @@ class App extends Component {
     this.props.appActions.hideMessageModal();
   };
 
+  handleApiErrorHide = apiErrorMessage => {
+    const { appActions } = this.props;
+    const { redirectUrl } = apiErrorMessage;
+    const { ROUTER_PATHS } = Constants;
+    const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
+    const h = Utils.getQueryVariable('h');
+    const type = Utils.getQueryVariable('type');
+    let callback_url;
+
+    appActions.hideApiMessageModal();
+    if (redirectUrl && window.location.pathname !== redirectUrl) {
+      switch (redirectUrl) {
+        case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
+          callback_url = encodeURIComponent(ORDERING_HOME);
+          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}&callbackUrl=${callback_url}`;
+          break;
+        default:
+          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
+      }
+    }
+  };
+
   render() {
-    const { user, error, messageModal, onlineStoreInfo } = this.props;
-    const { message } = error || {};
-    const { prompt } = user || {};
+    let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="table-ordering" data-heap-name="ordering.app.container">
-        {message ? <ErrorToast message={message} clearError={this.handleClearError} /> : null}
+      <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
+        {apiErrorMessage.show ? (
+          <MessageModal
+            data={apiErrorMessage}
+            onHide={() => {
+              this.handleApiErrorHide(apiErrorMessage);
+            }}
+          />
+        ) : null}
         <Routes />
-        <Login className="aside" title={prompt} />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
   }
 }
 
-export default connect(
-  state => ({
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    businessInfo: getBusinessInfo(state),
-    user: getUser(state),
-    error: getError(state),
-    pageError: getPageError(state),
-    messageModal: getMessageModal(state),
-  }),
-  dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(['ApiError', 'Common']),
+  connect(
+    state => {
+      return {
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        businessInfo: getBusinessInfo(state),
+        user: getUser(state),
+        error: getError(state),
+        pageError: getPageError(state),
+        messageModal: getMessageModal(state),
+        apiErrorMessage: getApiError(state),
+      };
+    },
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+    })
+  )
 )(App);

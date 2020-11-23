@@ -11,53 +11,33 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, CREATE_ORDER_ERROR_CODES } = Constants;
+const { PRODUCT_SOLD_OUT, PRODUCT_SOLD_OUT_EC } = CREATE_ORDER_ERROR_CODES;
 
 class CreateOrderButton extends React.Component {
-  componentDidMount() {
-    this.visitCustomerPage();
-  }
-
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
-    const { isLogin } = user || {};
-    const { sentOtp, cartSummary } = this.props;
-    const { total } = cartSummary || {};
+    const { isFetching } = user || {};
 
-    if (!isLogin && isLogin !== this.props.user.isLogin) {
-      this.visitCustomerPage();
-    }
-
-    if (sentOtp && !total && isLogin && isLogin !== this.props.user.isLogin) {
-      this.handleCreateOrder();
+    if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
+      this.visitLoginPage();
     }
   }
 
-  visitCustomerPage = () => {
+  visitLoginPage = () => {
     const { history, user } = this.props;
     const { isLogin } = user || {};
-    const { location } = history || {};
-    const { pathname } = location || {};
 
-    if (!isLogin && pathname !== ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+    if (!isLogin) {
       history.push({
-        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
       });
     }
   };
 
   handleCreateOrder = async () => {
-    const {
-      history,
-      paymentActions,
-      user,
-      requestInfo,
-      cartSummary,
-      afterCreateOrder,
-      beforeCreateOrder,
-      validCreateOrder,
-    } = this.props;
+    const { history, paymentActions, user, requestInfo, cartSummary, afterCreateOrder, beforeCreateOrder } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartSummary || {};
@@ -67,7 +47,7 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
-
+    const { validCreateOrder } = this.props;
     // if (!Boolean(storeId)) {
     //   if (type === 'dine' || type === 'takeaway') {
     //     window.location.href = Constants.ROUTER_PATHS.DINE;
@@ -84,37 +64,8 @@ class CreateOrderButton extends React.Component {
     if ((isLogin || type === 'digital') && validCreateOrder) {
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
-      const { currentOrder, error } = this.props;
+      const { currentOrder /*error*/ } = this.props;
       const { orderId } = currentOrder || {};
-      const { code } = error || {};
-
-      if (code === 40003 || code === 40012) {
-        this.setTimeoutObject = setTimeout(() => {
-          clearTimeout(this.setTimeoutObject);
-
-          history.push({
-            pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-            search: window.location.search,
-          });
-        }, 2000);
-
-        return;
-      } else if ((code >= 40006 && code <= 40009) || code === 40013) {
-        if (type === 'dine' || type === 'takeaway') {
-          window.location.href = Constants.ROUTER_PATHS.DINE;
-        } else {
-          this.setTimeoutObject = setTimeout(() => {
-            clearTimeout(this.setTimeoutObject);
-
-            history.push({
-              pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-              search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-            });
-          }, 2000);
-        }
-
-        return;
-      }
 
       newOrderId = orderId;
 
@@ -139,7 +90,7 @@ class CreateOrderButton extends React.Component {
 
   render() {
     const { children, className, buttonType, disabled, dataAttributes } = this.props;
-    const classList = ['billing__link button button__fill button__block font-weight-bolder'];
+    const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
       classList.push(className);
