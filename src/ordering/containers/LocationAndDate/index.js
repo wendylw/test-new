@@ -80,6 +80,7 @@ class LocationAndDate extends Component {
     isDeliveryType: false,
     isPickUpType: false,
     nearlyStore: { name: '' },
+    // TODO: to clone url parameter to state is not a good idea, try to remove it later.
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
     onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
     displayHourList: [],
@@ -100,6 +101,7 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
+    this.ensureDeliveryType();
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // Should do setState to here for what is in componentDidUpdate to work
@@ -112,6 +114,18 @@ class LocationAndDate extends Component {
       this.setDeliveryType();
     } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
       this.setPickUpType(false);
+    }
+  };
+
+  ensureDeliveryType = () => {
+    const { type = '' } = this.state.search;
+    const deliveryType = type.toLowerCase();
+    if (![DELIVERY_METHOD.DELIVERY, DELIVERY_METHOD.PICKUP].includes(deliveryType)) {
+      if ([DELIVERY_METHOD.TAKE_AWAY, DELIVERY_METHOD.DINE_IN].includes(deliveryType)) {
+        window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}`;
+      } else {
+        window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}`;
+      }
     }
   };
 
