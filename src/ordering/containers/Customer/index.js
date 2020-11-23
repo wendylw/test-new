@@ -44,10 +44,10 @@ class Customer extends Component {
     !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
     homeActions.loadShoppingCart(
       deliveryToLocation.latitude &&
-      deliveryToLocation.longitude && {
-        lat: deliveryToLocation.latitude,
-        lng: deliveryToLocation.longitude,
-      }
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
     );
   }
 
@@ -176,13 +176,15 @@ class Customer extends Component {
         {/* Address Info of Delivery or Pickup */}
         <div className="ordering-customer__detail padding-top-bottom-normal padding-left-right-smaller">
           <div
-            className={`flex ${isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
-              }`}
+            className={`flex ${
+              isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+            }`}
           >
             <IconLocation className="icon icon__small icon__default margin-left-right-small" />
             <div
-              className={`ordering-customer__summary flex ${isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
-                } flex-space-between padding-left-right-small`}
+              className={`ordering-customer__summary flex ${
+                isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+              } flex-space-between padding-left-right-small`}
             >
               {isDeliveryType ? (
                 <Link
@@ -198,34 +200,34 @@ class Customer extends Component {
                       <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
                     </React.Fragment>
                   ) : (
-                      <React.Fragment>
-                        <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
-                          {t('DeliveryLocationLabel')}
-                        </h5>
-                        <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
-                          {' '}
-                          {t('DeliveryLocationDescription')}
-                        </p>
-                      </React.Fragment>
-                    )}
+                    <React.Fragment>
+                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
+                        {t('DeliveryLocationLabel')}
+                      </h5>
+                      <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                        {' '}
+                        {t('DeliveryLocationDescription')}
+                      </p>
+                    </React.Fragment>
+                  )}
                 </Link>
               ) : (
-                  <Link
-                    to={{
-                      pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-                      search: window.location.search,
-                      state: {
-                        from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                      },
-                    }}
-                    className="padding-top-bottom-smaller ordering-customer__button-link button__link"
-                  >
-                    <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
-                      {t('PickupLocationTitle')}
-                    </h3>
-                    <time className="ordering-customer__time padding-top-bottom-smaller">{pickUpAddress}</time>
-                  </Link>
-                )}
+                <Link
+                  to={{
+                    pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+                    search: window.location.search,
+                    state: {
+                      from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                    },
+                  }}
+                  className="padding-top-bottom-smaller ordering-customer__button-link button__link"
+                >
+                  <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                    {t('PickupLocationTitle')}
+                  </h3>
+                  <time className="ordering-customer__time padding-top-bottom-smaller">{pickUpAddress}</time>
+                </Link>
+              )}
 
               <IconNext className="icon" />
             </div>
@@ -285,157 +287,139 @@ class Customer extends Component {
     );
   }
 
-  intiCode = country => {
-    country &&
-      !this.state.isInitCoed &&
-      setTimeout(() => {
-        const input = document.querySelector(
-          '.react-phone-number-input__input.react-phone-number-input__phone.react-phone-number-input__input--style'
-        );
+  render() {
+    const { t, history, deliveryDetails, cartSummary, error } = this.props;
+    const { addressChange, processing } = this.state;
+    const { username, phone } = deliveryDetails;
+    const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
+    const formatPhone = formatPhoneNumberIntl(phone);
+    const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
+    const { total, shippingFee } = cartSummary || {};
 
-        input.value = `+${getCountryCallingCode(country)}`;
-        this.setState({
-          isInitCoed: true,
-        });
+    // console.log(shippingFee);
+    // console.log(addressChange);
 
-        clearTimeout(timer);
-      }, 0);
-  }
-};
-
-render() {
-  const { t, history, deliveryDetails, cartSummary, error } = this.props;
-  const { addressChange, processing } = this.state;
-  const { username, phone } = deliveryDetails;
-  const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
-  const formatPhone = formatPhoneNumberIntl(phone);
-  const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
-  const { total, shippingFee } = cartSummary || {};
-
-  // console.log(shippingFee);
-  // console.log(addressChange);
-
-  return (
-    <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
-      <Header
-        headerRef={ref => (this.headerEl = ref)}
-        className="flex-middle text-center"
-        contentClassName="flex-middle"
-        data-heap-name="ordering.customer.header"
-        isPage={true}
-        title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
-        navFunc={() => {
-          history.push({
-            pathname: ROUTER_PATHS.ORDERING_CART,
-            search: window.location.search,
-          });
-        }}
-      ></Header>
-      <div
-        className="ordering-customer__container"
-        style={{
-          top: `${Utils.mainTop({
-            headerEls: [this.headerEl],
-          })}px`,
-          height: `${Utils.windowSize().height -
-            Utils.mainTop({
-              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
-            }) -
-            Utils.marginBottom({
-              footerEls: [this.footerEl],
+    return (
+      <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
+        <Header
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle text-center"
+          contentClassName="flex-middle"
+          data-heap-name="ordering.customer.header"
+          isPage={true}
+          title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
+          navFunc={() => {
+            history.push({
+              pathname: ROUTER_PATHS.ORDERING_CART,
+              search: window.location.search,
+            });
+          }}
+        ></Header>
+        <div
+          className="ordering-customer__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
             })}px`,
-        }}
-      >
-        <ul>
-          {this.renderDeliveryPickupDetail()}
-          <li>
-            <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder">
-              {t('ContactDetails')}
-            </h4>
-            <Link
-              to={{
-                pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
-                search: window.location.search,
-              }}
-              className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
-            >
-              <IconAccountCircle className="icon icon__small icon__default margin-small" />
-              <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
-                <div className="padding-top-bottom-smaller">
-                  <p className="padding-top-bottom-smaller">
-                    {username ? (
-                      <span className="text-size-big">{username}</span>
-                    ) : (
+            height: `${Utils.windowSize().height -
+              Utils.mainTop({
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              }) -
+              Utils.marginBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+          }}
+        >
+          <ul>
+            {this.renderDeliveryPickupDetail()}
+            <li>
+              <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder">
+                {t('ContactDetails')}
+              </h4>
+              <Link
+                to={{
+                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
+                  search: window.location.search,
+                }}
+                className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
+              >
+                <IconAccountCircle className="icon icon__small icon__default margin-small" />
+                <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
+                  <div className="padding-top-bottom-smaller">
+                    <p className="padding-top-bottom-smaller">
+                      {username ? (
+                        <span className="text-size-big">{username}</span>
+                      ) : (
                         <React.Fragment>
                           <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
                           <span className="text-size-big text-error"> - *</span>
                           <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
                         </React.Fragment>
                       )}
-                  </p>
-                  {phone ? (
-                    <p className="padding-top-bottom-smaller">
-                      {/* Country Code */}
-                      <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
-                        0,
-                        splitIndex
-                      )} `}</span>
-                      {/* end of Country Code */}
-                      <span className="text-size-big">{formatPhone.substring(splitIndex + 1)}</span>
                     </p>
-                  ) : null}
+                    {phone ? (
+                      <p className="padding-top-bottom-smaller">
+                        {/* Country Code */}
+                        <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
+                          0,
+                          splitIndex
+                        )} `}</span>
+                        {/* end of Country Code */}
+                        <span className="text-size-big">{formatPhone.substring(splitIndex + 1)}</span>
+                      </p>
+                    ) : null}
+                  </div>
+                  <IconNext className="icon" />
                 </div>
-                <IconNext className="icon" />
-              </div>
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <footer
-        ref={ref => (this.footerEl = ref)}
-        className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
-      >
-        <button
-          className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-          data-heap-name="ordering.customer.back-btn"
-          onClick={() => {
-            history.push({
-              pathname: ROUTER_PATHS.ORDERING_CART,
-              search: window.location.search,
-            });
-          }}
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
         >
-          {t('Back')}
-        </button>
-        <CreateOrderButton
-          className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
-          history={history}
-          data-testid="customerContinue"
-          data-heap-name="ordering.customer.continue-btn"
-          disabled={processing}
-          validCreateOrder={!total && !this.validateFields().showModal}
-          beforeCreateOrder={this.handleBeforeCreateOrder}
-          afterCreateOrder={this.visitPaymentPage}
-        >
-          {processing ? t('Processing') : t('Continue')}
-        </CreateOrderButton>
-      </footer>
-      {error.show ? (
-        <MessageModal
-          data={error}
-          onHide={() => {
-            this.handleErrorHide();
-          }}
+          <button
+            className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            data-heap-name="ordering.customer.back-btn"
+            onClick={() => {
+              history.push({
+                pathname: ROUTER_PATHS.ORDERING_CART,
+                search: window.location.search,
+              });
+            }}
+          >
+            {t('Back')}
+          </button>
+          <CreateOrderButton
+            className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
+            history={history}
+            data-testid="customerContinue"
+            data-heap-name="ordering.customer.continue-btn"
+            disabled={processing}
+            validCreateOrder={!total && !this.validateFields().showModal}
+            beforeCreateOrder={this.handleBeforeCreateOrder}
+            afterCreateOrder={this.visitPaymentPage}
+          >
+            {processing ? t('Processing') : t('Continue')}
+          </CreateOrderButton>
+        </footer>
+        {error.show ? (
+          <MessageModal
+            data={error}
+            onHide={() => {
+              this.handleErrorHide();
+            }}
+          />
+        ) : null}
+        <AddressChangeModal
+          deliveryFee={shippingFee}
+          addressChange={addressChange}
+          continue={this.handleHideChangeShippingFeeModal}
         />
-      ) : null}
-      <AddressChangeModal
-        deliveryFee={shippingFee}
-        addressChange={addressChange}
-        continue={this.handleHideChangeShippingFeeModal}
-      />
-    </section>
-  );
-}
+      </section>
+    );
+  }
 }
 
 export default compose(
