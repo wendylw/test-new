@@ -18,7 +18,6 @@ import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
 export const initialState = {
   domProperties: {
-    verticalMenuBusinesses: config.verticalMenuBusinesses,
     // 33.8% equal (item padding + item image + item cart controller button height) / window width
     productItemMinHeight:
       ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
@@ -73,9 +72,11 @@ export const actions = {
       deliveryCoords = Utils.getDeliveryCoords();
     }
     config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
-    // if (!getState().home.onlineCategory.categoryIds.length) {
-    dispatch(fetchOnlineCategory({ fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom }));
-    // }
+
+    const fulfillDate = Utils.getFulfillDate().expectDeliveryDateFrom;
+    const shippingType = Utils.getApiRequestShippingType();
+
+    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
 
   loadCoreStores: address => (dispatch, getState) => {
@@ -101,7 +102,7 @@ export const actions = {
   }),
 
   // load shopping cart
-  loadShoppingCart: () => async (dispatch, getState) => {
+  loadShoppingCart: location => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     if (isDigital) {
@@ -113,7 +114,7 @@ export const actions = {
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
     }
-    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -536,16 +537,6 @@ export const getCategoryProductList = createSelector(
 );
 
 export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
-
-export const isVerticalMenuBusiness = state => {
-  const { verticalMenuBusinesses } = state.home.domProperties;
-
-  if (!verticalMenuBusinesses || !verticalMenuBusinesses.filter(b => Boolean(b)).length) {
-    return true;
-  } else {
-    return verticalMenuBusinesses.includes(getBusiness(state));
-  }
-};
 
 export const getPopUpModal = state => state.home.popUpModal;
 

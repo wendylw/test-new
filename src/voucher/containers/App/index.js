@@ -9,6 +9,7 @@ import {
   getPageErrorCode,
   PAGE_ERROR_CODE_LIST,
 } from '../../redux/modules/app';
+import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
@@ -80,7 +81,7 @@ class App extends Component {
     }
 
     return (
-      <main className="voucher-ordering">
+      <main className="voucher fixed-wrapper fixed-wrapper__main">
         <Routes />
         <DocumentFavicon icon={this.props.favicon || faviconImage} />
       </main>

@@ -1,0 +1,68 @@
+@import "../../../Variables.scss";
+
+.ordering-details {
+  height: 100vh;
+  background-color: $gray-6;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding-bottom: 120px;
+  }
+
+  &__picture-succeed {
+    max-height: 160px;
+  }
+
+  &__button-contact-us {
+    color: $status-blue;
+  }
+
+  &__items {
+    display: block;
+  }
+
+  &__item-title {
+    width: 100%;
+    word-break: break-word;
+    hyphens: none;
+  }
+
+  &__item-variations {
+    color: $theme-color;
+  }
+
+  &__billing-container {
+    margin-top: 3.8vw;
+  }
+
+  &__subtitle {
+    color: $gray-3;
+  }
+
+  &__receipt-info {
+    width: 100%;
+  }
+
+  &__copy-button {
+    max-height: 30px;
+    line-height: 30px;
+
+    &:active {
+      background-color: $gray-5;
+    }
+  }
+}
+
+@media (min-width: 420px) {
+  .ordering-details {
+    &__list {
+      margin-bottom: 12px;
+    }
+
+    &__billing-container {
+      margin-top: 12px;
+    }
+  }
+}

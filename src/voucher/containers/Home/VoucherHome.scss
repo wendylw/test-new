@@ -1,0 +1,32 @@
+@import "../../../Variables.scss";
+
+.voucher-home {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+  }
+
+  &__prompt-text {
+    color: $gray-2;
+  }
+
+  &__button-prompt-link {
+    color: $status-blue;
+  }
+
+  &__item-price {
+    width: 25%;
+  }
+
+  &__button-price {
+    width: 100%;
+    border-color: $gray-4;
+  }
+
+  &__price-number {
+    display: block;
+  }
+}

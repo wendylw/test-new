@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import LocationPicker from '../../../components/LocationPicker';
+import LocationPicker, { setHistoricalDeliveryAddresses } from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
-import '../../../App.scss';
 import Utils from '../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-
 import { connect } from 'react-redux';
+
+import './OrderingLocation.scss';
 
 class LocationPage extends Component {
   state = {
@@ -28,11 +28,12 @@ class LocationPage extends Component {
     this.loadStoreInfo();
     if (!config.storeId) {
       await this.props.appActions.loadCoreBusiness();
-      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business];
+      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business] || {};
+      const { deliveryRadius } = qrOrderingSettings || {};
 
       this.setState({
         storeInfo: {
-          radius: qrOrderingSettings.deliveryRadius * 1000,
+          radius: deliveryRadius * 1000,
           country,
         },
       });
@@ -52,7 +53,6 @@ class LocationPage extends Component {
   }
 
   async loadStoreInfo() {
-    const { t } = this.props;
     this.setState({ initializing: true });
     try {
       const { business, storeId } = config;
@@ -128,6 +128,7 @@ class LocationPage extends Component {
     } else {
       history.go(-1);
     }
+    setHistoricalDeliveryAddresses(placeInfo);
   };
 
   handleBackClicked = () => {
@@ -142,9 +143,13 @@ class LocationPage extends Component {
   renderInitError() {
     const { initError } = this.state;
     return (
-      <div className="location-page__error-screen">
-        <img className="location-page__error-screen-image" alt="Something went wrong" src={ErrorImage} />
-        <div className="location-page__error-screen-message">{initError}</div>
+      <div className="padding-top-bottom-normal text-center">
+        <img
+          className="ordering-location__error-screen-image margin-top-bottom-small"
+          alt="Something went wrong"
+          src={ErrorImage}
+        />
+        <p className="ordering-location__error-screen-message padding-normal">{initError}</p>
       </div>
     );
   }
@@ -152,8 +157,8 @@ class LocationPage extends Component {
   renderLoadingMask() {
     // a transparent mask to prevent user's input
     return (
-      <div className="location-page__loading-mask">
-        <div className="loader theme page-loader" />
+      <div className="fixed-wrapper">
+        <div className="loader theme full-page" />
       </div>
     );
   }
@@ -163,9 +168,11 @@ class LocationPage extends Component {
     const { initError, initializing, storeInfo, errorToast } = this.state;
     const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
-      <section className="table-ordering__location location-page" data-heap-name="ordering.location.container">
+      <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <Header
-          className="has-right flex-middle"
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle"
+          contentClassName="flex-middle"
           data-heap-name="ordering.location.header"
           isPage={true}
           title={t('DeliverTo')}
@@ -175,6 +182,15 @@ class LocationPage extends Component {
           this.renderInitError()
         ) : (
           <LocationPicker
+            style={{
+              top: `${Utils.mainTop({
+                headerEls: [this.headerEl],
+              })}px`,
+              height: `${Utils.windowSize().height -
+                Utils.mainTop({
+                  headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+                })}px`,
+            }}
             mode={'ORIGIN_STORE'}
             origin={storeInfo.coords}
             radius={storeInfo.radius}
@@ -184,7 +200,7 @@ class LocationPage extends Component {
           />
         )}
         {initializing && this.renderLoadingMask()}
-        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
       </section>
     );
   }

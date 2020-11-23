@@ -1,0 +1,19 @@
+@import "../../../../../Variables.scss";
+@import "../../../../../Variables.scss";
+
+.store-info-aside {
+  height: auto;
+
+  &__container {
+    bottom: 0;
+  }
+
+  &__button-link {
+    display: inline-block;
+    color: $status-blue;
+  }
+
+  &__summary {
+    width: 80%;
+  }
+}

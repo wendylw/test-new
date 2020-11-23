@@ -1,0 +1,10 @@
+@import "../../Variables.scss";
+
+.voucher-introduction {
+  color: $gray-2;
+
+  &__list {
+    padding-left: 25px;
+    list-style: disc;
+  }
+}

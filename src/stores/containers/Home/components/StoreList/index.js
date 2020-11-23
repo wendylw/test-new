@@ -8,7 +8,7 @@ class StoreList extends Component {
     const { storeList, onSelect } = this.props;
 
     return (
-      <ul className="list">
+      <ul>
         {storeList.map(store => {
           const { id, name } = store;
           const { ADDRESS_RANGE } = Constants;
@@ -16,7 +16,7 @@ class StoreList extends Component {
           return (
             <li
               key={id}
-              className="item border__bottom-divider border-radius-base flex flex-top"
+              className="padding-top-bottom-small padding-left-right-normal"
               data-testid="store"
               data-heap-name="stores.home.store-item"
               data-heap-store-name={name}
@@ -24,11 +24,13 @@ class StoreList extends Component {
                 onSelect(id);
               }}
             >
-              <div className="item__content flex flex-middle flex-space-between">
-                <div className="item__detail">
-                  <summary className="item__title font-weight-bolder">{name}</summary>
-                  <span className="gray-font-opacity">{Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}</span>
-                </div>
+              <div className="card margin-top-bottom-smaller margin-left-right-small flex flex-middle flex-space-between padding-normal border-radius-large">
+                <summary className="margin-top-bottom-small">
+                  <h4 className="margin-top-bottom-smaller text-size-big text-weight-bolder">{name}</h4>
+                  <p className="margin-top-bottom-smaller text-opacity">
+                    {Utils.getValidAddress(store, ADDRESS_RANGE.CITY)}
+                  </p>
+                </summary>
               </div>
             </li>
           );

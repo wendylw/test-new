@@ -8,7 +8,6 @@ import SearchBox from '../components/SearchBox';
 import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import StoreList from '../home/components/StoreList';
-import JumpMenu from '../home/components/JumpMenu';
 import EmptySearch from './components/EmptySearch';
 import MvpNotFoundImage from '../../images/mvp-no-search.svg';
 import MvpStartSearchImage from '../../images/mvp-start-search.svg';
@@ -123,7 +122,9 @@ class SearchPage extends React.Component {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
 
-    const existCollection = popularCollections.length > 0 || otherCollections.length > 0;
+    const existCollection =
+      (popularCollections && popularCollections.length > 0) || (otherCollections && otherCollections.length > 0);
+
     return (
       <React.Fragment>
         {(!existCollection || keyword) && (
@@ -177,7 +178,6 @@ class SearchPage extends React.Component {
                 withInfiniteScroll
               />
             </StoreListAutoScroll>
-            <JumpMenu {...storeLinkInfo} deliveryAddress={currentPlaceInfo} />
           </div>
         ) : null}
       </React.Fragment>
@@ -192,7 +192,7 @@ class SearchPage extends React.Component {
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
-              className="icon icon__big icon__gray text-middle"
+              className="icon icon__big icon__default text-middle"
               onClick={this.onGoBack}
               data-heap-name="site.search.back-btn"
             />
