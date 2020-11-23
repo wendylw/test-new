@@ -10,7 +10,7 @@ class StoreInfoAside extends Component {
   };
 
   formatHour = hourString => {
-    const [hour, minute] = hourString.split(':');
+    const [hour, minute] = hourString ? hourString.split(':') : [];
     if (hour === '12') {
       return minute === '00' ? `${hour}pm` : `${hour}:${minute}pm`;
     }
