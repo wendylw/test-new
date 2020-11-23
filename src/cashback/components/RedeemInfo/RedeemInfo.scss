@@ -1,0 +1,29 @@
+@import "../../../Variables";
+
+.redeem-info {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: $white;
+  z-index: 100;
+
+  &__image-container {
+    max-width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__button-link {
+    color: $gray-2;
+  }
+
+  &__list {
+    text-align: left;
+    padding-left: 20px;
+    margin: 0 auto;
+    max-width: 270px;
+    list-style-type: decimal;
+  }
+}

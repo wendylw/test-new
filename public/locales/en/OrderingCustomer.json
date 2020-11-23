@@ -1,0 +1,16 @@
+{
+  "DeliveryCustomerPageTitle": "Delivery & Contact Details",
+  "PickupCustomerPageTitle": "Pickup & Contact Details",
+  "DineInCustomerPageTitle": "Contact Details",
+  "DeliveryTo": "Delivery to",
+  "PickupOn": "Pickup on",
+  "DeliveryLocationLabel": "You’re in new location",
+  "DeliveryLocationDescription": "Select delivery address",
+  "PickupLocationTitle": "Pickup address",
+  "ContactDetails": "Contact details",
+  "NameReplaceHolder": "Your name",
+  "ContactEmptyTitle": "Contact Details Required",
+  "ContactEmptyDescription": "Please fill in your contact details for proceed checkout",
+  "DeliveryAddressEmptyTitle": "Delivery Address Required",
+  "DeliveryAddressEmptyDescription": "Please fill in your delivery address to proceed to checkout"
+}

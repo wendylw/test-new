@@ -81,7 +81,7 @@ class Location extends React.Component {
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
-              className="icon icon__big icon__gray text-middle"
+              className="icon icon__big icon__default text-middle"
               data-heap-name="site.location.back-btn"
               onClick={this.handleBackClicked}
             />

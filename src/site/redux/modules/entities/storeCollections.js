@@ -3,6 +3,9 @@ import Url from '../../../../utils/url';
 import { getCurrentPlaceInfo } from '../app';
 import { getCountryCodeByPlaceInfo } from '../../../../utils/geoUtils';
 import { combineReducers } from 'redux';
+import constants from '../../../../utils/constants';
+
+const { COLLECTIONS_TYPE } = constants;
 
 const initialState = {
   pageInfo: {
@@ -153,7 +156,8 @@ export default combineReducers({
 export const getAllStoreCollections = state => state.entities.storeCollections.collections;
 export const getStorePageInfo = state => state.entities.storeCollections.pageInfo;
 export const getCurrentCollection = state => state.entities.storeCollections.currentCollection;
-export const getOtherCollections = state => getAllStoreCollections(state)['SearchOthers'];
-export const getPopupCollections = state => getAllStoreCollections(state)['SearchPopular'];
-export const getIconCollections = state => getAllStoreCollections(state)['Icon'];
-export const getBannerCollections = state => getAllStoreCollections(state)['Banner'];
+export const getOtherCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.OTHERS];
+export const getPopupCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.POPULAR];
+export const getIconCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.ICON];
+export const getBannerCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.BANNER];
+export const getCarouselCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.CAROUSEL];

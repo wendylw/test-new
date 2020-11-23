@@ -1,0 +1,29 @@
+@import "src/Variables";
+
+.profile {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    color: $gray-3;
+  }
+
+  &__error-message {
+    color: $status-red;
+  }
+
+  &__input {
+    margin-bottom: 8px;
+    border: 1px solid $gray-4;
+
+    input {
+      height: 26px;
+    }
+
+    &.error {
+      border: 1px solid $status-red;
+    }
+  }
+}

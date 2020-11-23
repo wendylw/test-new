@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
 import { actions as appActionCreators, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
+import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
   state = {
@@ -54,6 +55,7 @@ class Login extends React.Component {
     const { user, t } = this.props;
     const { isFetching, isLogin, hasOtp } = user || {};
     const { phone } = this.state;
+    const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
       return null;
@@ -62,7 +64,7 @@ class Login extends React.Component {
     return (
       <OtpModal
         buttonText={t('OK')}
-        ResendOtpTime={20}
+        ResendOtpTime={RESEND_OTP_TIME}
         phone={phone}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
@@ -91,7 +93,7 @@ class Login extends React.Component {
     return (
       <section className={classList.join(' ')} data-heap-name="cashback.login.container">
         <PhoneViewContainer
-          className="aside-bottom not-full"
+          className="absolute-wrapper login__container padding-left-right-normal"
           title={title}
           phone={phone}
           country={country || businessCountry}
@@ -101,13 +103,13 @@ class Login extends React.Component {
           updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
-          <p className="terms-privacy text-center gray-font-opacity">
+          <p className="terms-privacy text-center text-opacity">
             <BrowserRouter basename="/">
               <Trans i18nKey="TermsAndPrivacyDescription">
                 By tapping to continue, you agree to our
                 <br />
                 <Link
-                  className="font-weight-bolder link__non-underline"
+                  className="text-weight-bolder link__non-underline"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.TERMS_OF_USE}
                   data-heap-name="cashback.login.term-link"
@@ -116,7 +118,7 @@ class Login extends React.Component {
                 </Link>
                 , and{' '}
                 <Link
-                  className="font-weight-bolder link__non-underline"
+                  className="text-weight-bolder link__non-underline"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.PRIVACY}
                   data-heap-name="cashback.login.privacy-policy-link"

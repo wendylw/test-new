@@ -6,7 +6,7 @@ import Cart from './Cart';
 import Payment from './Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
-import NeedHelp from './NeedHelp';
+import MerchantInfo from './MerchantInfo';
 import OrderDetails from './OrderDetails';
 import NotFound from '../../NotFound';
 
@@ -21,8 +21,12 @@ const ErrorPage = lazy(() => Utils.retry(() => import('./Error')));
 const LocationAndDate = lazy(() => Utils.retry(() => import('./LocationAndDate')));
 const Promotion = lazy(() => Utils.retry(() => import('./Promotion')));
 const ReportDriver = lazy(() => Utils.retry(() => import('./ReportDriver')));
-const Login = lazy(() => Utils.retry(() => import('./Login')));
+const PageLogin = lazy(() => Utils.retry(() => import('./PageLogin')));
 const StoreList = lazy(() => Utils.retry(() => import('./StoreList')));
+const Profile = lazy(() => Utils.retry(() => import('./Profile')));
+const AddressList = lazy(() => Utils.retry(() => import('./Customer/containers/AddressList')));
+const AddressDetail = lazy(() => Utils.retry(() => import('./Customer/containers/AddressDetail')));
+const ContactDetail = lazy(() => Utils.retry(() => import('./Customer/containers/ContactDetail')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -31,7 +35,7 @@ class Routes extends Component {
     const { match } = this.props;
     return (
       <Router basename={match.path}>
-        <Suspense fallback={<div className="loader theme page-loader"></div>}>
+        <Suspense fallback={<div className="loader theme full-page"></div>}>
           <Switch>
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
@@ -46,12 +50,28 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
             <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />
-            <Route exact path={ROUTER_PATHS.NEED_HELP} component={NeedHelp} />
+            <Route exact path={ROUTER_PATHS.MERCHANT_INFO} component={MerchantInfo} />
             <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />
-            <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={Login} />
+            <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={PageLogin} />
             <Route exact path={ROUTER_PATHS.ORDERING_STORE_LIST} component={StoreList} />
+            <Route exact path={ROUTER_PATHS.PROFILE} component={Profile} />
+            <Route
+              exact
+              path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`}
+              component={AddressList}
+            />
+            <Route
+              exact
+              path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`}
+              component={AddressDetail}
+            />
+            <Route
+              exact
+              path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`}
+              component={ContactDetail}
+            />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>

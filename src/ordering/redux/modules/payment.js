@@ -11,7 +11,6 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { setHistoricalDeliveryAddresses } from '../../containers/Location/utils';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
 import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
@@ -242,14 +241,6 @@ export const actions = {
       );
     }
 
-    if (shippingType === 'delivery' && result.type === types.CREATEORDER_SUCCESS) {
-      try {
-        await setHistoricalDeliveryAddresses(JSON.parse(Utils.getSessionVariable('deliveryAddress')));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
     return result;
   },
 
@@ -427,7 +418,11 @@ export const getPayments = createSelector(
         // for Malaysia
         if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
           return paymentOptions[
-            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL) ? 'creditCard' : 'stripe'
+            total &&
+            process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL &&
+            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL)
+              ? 'creditCard'
+              : 'stripe'
           ];
         }
 

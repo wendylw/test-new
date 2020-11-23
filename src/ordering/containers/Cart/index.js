@@ -18,8 +18,13 @@ import { actions as promotionActionCreators } from '../../redux/modules/promotio
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import { getErrorMessageByPromoStatus } from '../Promotion/utils';
+import ProductSoldOutModal from './components/ProductSoldOutModal/index';
+import './OrderingCart.scss';
+import Url from '../../../utils/url';
+import { get } from '../../../utils/request';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 const { PROMOTION_APPLIED_STATUS } = Constants;
@@ -28,7 +33,15 @@ class Cart extends Component {
     expandBilling: true,
     isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
+    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
+    cartContainerHeight: '100%',
+    productsContainerHeight: '0',
   };
+
+  componentDidUpdate(prevProps, prevStates) {
+    this.setCartContainerHeight(prevStates.cartContainerHeight);
+    this.setProductsContainerHeight(prevStates.productsContainerHeight);
+  }
 
   async componentDidMount() {
     const { homeActions } = this.props;
@@ -37,18 +50,88 @@ class Cart extends Component {
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
+    this.setCartContainerHeight();
+    this.setProductsContainerHeight();
   }
-  componentDidUpdate() {
-    this.setListHeight();
-  }
-  setListHeight = () => {
-    const clientHeight = document.documentElement.clientHeight;
-    const asideHeight = document.querySelectorAll('.aside-bottom')[0].offsetHeight;
-    const footerHeight = document.querySelectorAll('footer.footer-operation')[0].offsetHeight;
-    const h = clientHeight - 50 - footerHeight - asideHeight;
 
-    document.querySelector('.list__container').style.height = h + 'px';
+  componentWillUnmount() {
+    this.setState({ isCreatingOrder: false });
+  }
+
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
+    });
+
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
   };
+
+  setProductsContainerHeight = preProductsContainerHeight => {
+    const productsContainerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl, this.billingEl],
+    });
+
+    if (preProductsContainerHeight !== productsContainerHeight) {
+      this.setState({
+        productsContainerHeight: productsContainerHeight,
+      });
+    }
+  };
+
+  handleClickContinue = async () => {
+    const { user, history, customerActions, deliveryDetails } = this.props;
+    const { username, phone: orderPhone } = deliveryDetails || {};
+    const { consumerId, isLogin, profile } = user || {};
+    const { name, phone } = profile || {};
+
+    if (!isLogin) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        nextPage: true,
+      });
+    }
+
+    // if have name, redirect to customer page
+    // if have consumerId, get profile first and update consumer profile, then redirect to next page
+    if (isLogin && name) {
+      !username && (await customerActions.patchDeliveryDetails({ username: name }));
+      !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+      });
+    } else {
+      if (isLogin && consumerId) {
+        let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
+        let { firstName, email, birthday, phone } = await get(request.url);
+        this.props.appActions.updateProfileInfo({
+          name: firstName,
+          email,
+          birthday,
+          phone,
+        });
+        !username && (await customerActions.patchDeliveryDetails({ username: firstName }));
+        !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+        firstName
+          ? history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+              search: window.location.search,
+            })
+          : history.push({
+              pathname: Constants.ROUTER_PATHS.PROFILE,
+              search: window.location.search,
+            });
+      }
+    }
+  };
+
   handleResizeEvent() {
     window.addEventListener(
       'resize',
@@ -88,13 +171,23 @@ class Cart extends Component {
     Utils.setSessionVariable('additionalComments', e.target.value);
   }
 
-  handleClickBack = () => {
+  handleClickBack = async () => {
     const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      // search: window.location.search,
-      search: newSearchParams,
-    });
+
+    if (this.additionalCommentsEl) {
+      await this.additionalCommentsEl.blur();
+    }
+
+    // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
+    const timer = setTimeout(() => {
+      clearTimeout(timer);
+
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        // search: window.location.search,
+        search: newSearchParams,
+      });
+    }, 100);
   };
 
   isPromotionValid() {
@@ -185,18 +278,34 @@ class Cart extends Component {
 
   AdditionalCommentsFocus = () => {
     setTimeout(() => {
-      document.querySelector('.list__container').scrollTop = document.querySelector('.list__container').scrollHeight;
+      const container = document.querySelector('.ordering-cart__container');
+      const productContainer = document.querySelector('.ordering-cart__products-container');
+
+      if (container && productContainer && Utils.getUserAgentInfo().isMobile) {
+        container.scrollTop =
+          productContainer.clientHeight +
+          this.billingEl.clientHeight -
+          container.clientHeight -
+          (document.body.clientHeight - window.innerHeight);
+      }
     }, 300);
   };
 
   renderAdditionalComments() {
-    const { t } = this.props;
+    const { t, shoppingCart } = this.props;
     const { additionalComments } = this.state;
+    const { items } = shoppingCart || {};
+
+    if (!shoppingCart || !items.length) {
+      return null;
+    }
 
     return (
-      <div className="cart__note flex flex-middle flex-space-between">
+      <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
         <textarea
-          rows="4"
+          ref={ref => (this.additionalCommentsEl = ref)}
+          className="ordering-cart__textarea form__textarea padding-small margin-left-right-small"
+          rows="2"
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
@@ -206,7 +315,7 @@ class Cart extends Component {
         ></textarea>
         {additionalComments ? (
           <IconClose
-            className="cart__close-button"
+            className="icon icon__big icon__default flex__shrink-fixed"
             data-heap-name="ordering.cart.clear-additional-msg"
             onClick={this.handleClearAdditionalComments.bind(this)}
           />
@@ -219,48 +328,73 @@ class Cart extends Component {
     const { t, promotion } = this.props;
 
     return (
-      <li className="billing__item promotion__item">
+      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         {promotion ? (
-          <div className="promotion__container flex flex-middle flex-space-between">
-            <span className="flex font-weight-bolder">
-              <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
-              <div className="promotion-info__container">
-                <div className="promotion-code__container flex flex-middle text-nowrap">
-                  <span className="promotion-code font-weight-bolder">
+          <React.Fragment>
+            <span className="flex flex-middle flex-space-between padding-left-right-small text-weight-bolder">
+              <IconLocalOffer className="icon icon__small icon__primary text-middle" />
+              <div>
+                <div className="flex flex-middle text-omit__single-line">
+                  <span className="margin-left-right-small text-size-big text-weight-bolder">
                     {t(promotion.promoType)} ({this.showShortPromoCode()})
                   </span>
                   <button
                     onClick={this.handleDismissPromotion}
-                    className="dismiss__button"
+                    className="button"
                     data-heap-name="ordering.cart.dismiss-promo"
                   >
-                    <IconClose className="icon" />
+                    <IconClose className="icon icon__small" />
                   </button>
                 </div>
-                <div className="promotion__error">{this.getPromotionErrorMessage()}</div>
+                {Boolean(this.getPromotionErrorMessage()) ? (
+                  <p className="form__error-message margin-left-right-small text-omit__single-line text-weight-bolder">
+                    {this.getPromotionErrorMessage()}
+                  </p>
+                ) : null}
               </div>
             </span>
-            <span className="promotion-discount__container font-weight-bolder text-nowrap">
-              {'-'} <CurrencyNumber className="font-weight-bolder" money={promotion.discount} />
-            </span>
-          </div>
+            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
+              {'-'} <CurrencyNumber className="text-size-big text-weight-bolder" money={promotion.discount} />
+            </div>
+          </React.Fragment>
         ) : (
           <button
-            className="add-promo__button"
+            className="cart-promotion__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
             data-heap-name="ordering.cart.add-promo"
           >
-            <IconLocalOffer className="icon icon__privacy tag-icon text-middle" />
-            {t('AddPromoCode')}
+            <IconLocalOffer className="icon icon__small icon__primary text-middle" />
+            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
         )}
       </li>
     );
   }
 
+  checkCartItemSoldOut = (shoppingCart = {}) => {
+    const { unavailableItems = [], items = [] } = shoppingCart;
+    const cartList = [...unavailableItems, ...items];
+
+    for (let i = 0; i < cartList.length; i++) {
+      const cartItem = cartList[i];
+      const { markedSoldOut, variations } = cartItem;
+
+      if (markedSoldOut) {
+        return true;
+      }
+
+      if (Array.isArray(variations) && variations.length > 0) {
+        if (variations.find(variation => variation.markedSoldOut)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   render() {
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder } = this.state;
+    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -269,13 +403,13 @@ class Cart extends Component {
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-
+    // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
-      t('Pay')
+      t('PayNow')
     ) : (
       <Trans i18nKey="MinimumConsumption">
-        <span className="font-weight-bolder">Min</span>
-        <CurrencyNumber className="font-weight-bolder" money={minTotal} />
+        <span className="text-weight-bolder">Min</span>
+        <CurrencyNumber className="text-weight-bolder" money={minTotal} />
       </Trans>
     );
 
@@ -284,29 +418,45 @@ class Cart extends Component {
     }
 
     return (
-      <section className={`table-ordering__order` /* hide */} data-heap-name="ordering.cart.container">
+      <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <Header
-          className="border__bottom-divider gray flex-middle"
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
         >
           <button
-            className="warning__button"
+            className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleClearAll.bind(this)}
             data-heap-name="ordering.cart.clear-btn"
           >
-            <IconDelete />
-            <span className="warning__label text-middle">{t('ClearAll')}</span>
+            <IconDelete className="icon icon__normal icon__error text-middle" />
+            <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
           </button>
         </Header>
-        <div className="list__container" style={{ overflowY: 'scroll' }}>
-          <CartList isList={true} shoppingCart={shoppingCart} />
-          {this.renderAdditionalComments()}
-        </div>
-        <aside className="aside-bottom">
+        <div
+          className="ordering-cart__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: cartContainerHeight,
+          }}
+        >
+          <div
+            className="ordering-cart__products-container"
+            style={{
+              minHeight: productsContainerHeight,
+            }}
+          >
+            <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
+            {this.renderAdditionalComments()}
+          </div>
           <Billing
+            billingRef={ref => (this.billingEl = ref)}
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
@@ -320,46 +470,54 @@ class Cart extends Component {
           >
             {this.renderPromotionItem()}
           </Billing>
-        </aside>
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-3">
-            <button
-              className="billing__button button button__fill button__block dark font-weight-bolder"
-              onClick={this.handleClickBack.bind(this)}
-              data-heap-name="ordering.cart.back-btn"
-            >
-              {t('Back')}
-            </button>
-          </div>
-          <div className="footer-operation__item width-2-3">
-            <button
-              className="billing__link button button__fill button__block font-weight-bolder"
-              data-testid="pay"
-              data-heap-name="ordering.cart.pay-btn"
-              onClick={() => {
-                if (!this.isPromotionValid()) {
-                  this.props.appActions.showMessageModal({
-                    message: t('InvalidPromoCode'),
-                    description: this.getPromotionErrorMessage(),
-                    buttonText: t('Dismiss'),
-                  });
-
-                  return;
-                }
-                this.handleGtmEventTracking(() => {
-                  history.push({
-                    pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-                    search: window.location.search,
-                  });
+        </div>
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        >
+          <button
+            className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            onClick={this.handleClickBack.bind(this)}
+            data-heap-name="ordering.cart.back-btn"
+          >
+            {t('Back')}
+          </button>
+          <button
+            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+            data-testid="pay"
+            data-heap-name="ordering.cart.pay-btn"
+            onClick={() => {
+              if (!this.isPromotionValid()) {
+                this.props.appActions.showMessageModal({
+                  message: t('InvalidPromoCode'),
+                  description: this.getPromotionErrorMessage(),
+                  buttonText: t('Dismiss'),
                 });
-              }}
-              disabled={!items || !items.length || isInvalidTotal}
-            >
-              {isCreatingOrder ? <div className="loader"></div> : isInvalidTotal ? `*` : null}
-              {!isCreatingOrder ? buttonText : null}
-            </button>
-          </div>
+
+                return;
+              }
+
+              this.setState({ isCreatingOrder: true });
+
+              this.handleGtmEventTracking(async () => {
+                await this.handleClickContinue();
+              });
+            }}
+            disabled={!items || !items.length || isInvalidTotal || isCreatingOrder}
+          >
+            {isCreatingOrder ? t('Processing') : isInvalidTotal && `*`}
+            {!isCreatingOrder && buttonText}
+          </button>
         </footer>
+        <ProductSoldOutModal
+          show={isHaveProductSoldOut}
+          editHandler={() => {
+            this.setState({
+              isHaveProductSoldOut: null,
+            });
+            Utils.removeSessionVariable('isHaveProductSoldOut');
+          }}
+        />
       </section>
     );
   }
@@ -383,6 +541,7 @@ export default compose(
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
@@ -391,6 +550,7 @@ export default compose(
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Cart);
