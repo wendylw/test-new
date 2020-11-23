@@ -210,7 +210,7 @@ export class Footer extends Component {
             data-heap-name="ordering.home.footer.order-btn"
             disabled={
               (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
-              (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||
+              this.getDisplayPrice() <= 0 ||
               (!isValidTimeToOrder && !enablePreOrder) ||
               !isLiveOnline
             }

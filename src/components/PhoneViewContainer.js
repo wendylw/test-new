@@ -59,7 +59,7 @@ class PhoneViewContainer extends React.Component {
     let buttonContent = buttonText;
 
     if (isSavingPhone) {
-      buttonContent = <div className="loader"></div>;
+      buttonContent = t('Processing');
     }
 
     if (className) {

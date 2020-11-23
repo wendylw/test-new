@@ -50,6 +50,7 @@ class ProductDetail extends Component {
     currentProductDescriptionImageIndex: 0,
     minimumVariations: [],
     optionQuantity: {},
+    increasingProductOnCat: false,
   };
 
   componentDidMount() {
@@ -365,6 +366,7 @@ class ProductDetail extends Component {
 
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
+    this.setState({ increasingProductOnCat: false });
     this.handleHideProductDetail();
   };
 
@@ -468,7 +470,7 @@ class ProductDetail extends Component {
 
   renderProductOperator() {
     const { t, product } = this.props;
-    const { cartQuantity, minimumVariations } = this.state;
+    const { cartQuantity, minimumVariations, increasingProductOnCat } = this.state;
     const { id: productId } = product || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
@@ -485,6 +487,7 @@ class ProductDetail extends Component {
           <button
             className="button add__button button__fill text-uppercase text-weight-bolder "
             disabled={
+              increasingProductOnCat ||
               !this.isSubmitable() ||
               Utils.isProductSoldOut(product || {}) ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
@@ -515,6 +518,7 @@ class ProductDetail extends Component {
               });
 
               if (this.isSubmitable()) {
+                this.setState({ increasingProductOnCat: true });
                 this.handleAddOrUpdateShoppingCartItem({
                   action: 'add',
                   business: config.business,
@@ -525,11 +529,17 @@ class ProductDetail extends Component {
               }
             }}
           >
-            {t('AddCart')} -
-            <CurrencyNumber
-              className="padding-small text-weight-bolder flex__shrink-fixed"
-              money={Number(this.addCartDisplayPrice()) || 0}
-            />
+            {increasingProductOnCat ? (
+              t('Processing')
+            ) : (
+              <React.Fragment>
+                {t('AddCart')} -
+                <CurrencyNumber
+                  className="padding-small text-weight-bolder flex__shrink-fixed"
+                  money={Number(this.addCartDisplayPrice()) || 0}
+                />
+              </React.Fragment>
+            )}
           </button>
         </footer>
       </React.Fragment>
