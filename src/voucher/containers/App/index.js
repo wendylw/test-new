@@ -16,7 +16,7 @@ import faviconImage from '../../../images/favicon.ico';
 import PageError from '../../components/PageError';
 import PageLoader from '../../components/PageLoader';
 import config from '../../../config';
-
+import { getBusinessInfo } from '../../redux/modules/app';
 class App extends Component {
   componentDidMount() {
     this.props.appActions.loadAppBaseData();
@@ -29,6 +29,15 @@ class App extends Component {
   gotoHomePage = () => {
     window.location.href = config.beepitComUrl;
   };
+
+  componentDidUpdate() {
+    const { businessesInfo } = this.props;
+    const { country, isQROrderingEnabled } = businessesInfo || {};
+
+    if (country && !isQROrderingEnabled) {
+      window.location.href = window.location.origin;
+    }
+  }
 
   getPageErrorProps() {
     const { pageErrorCode, t } = this.props;
@@ -87,6 +96,7 @@ export default compose(
       favicon: getOnlineStoreInfoFavicon(state),
       showPageLoader: getShowPageLoader(state),
       pageErrorCode: getPageErrorCode(state),
+      businessesInfo: getBusinessInfo(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
