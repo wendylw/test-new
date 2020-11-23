@@ -31,6 +31,21 @@ class PhoneViewContainer extends React.Component {
     }
   }
 
+  intiCode = country => {
+    country &&
+      !this.state.isInitCoed &&
+      setTimeout(() => {
+        const t = document.querySelector(
+          '.react-phone-number-input__input.react-phone-number-input__phone.react-phone-number-input__input--style'
+        );
+
+        t.value = `+${getCountryCallingCode(country)}`;
+        this.setState({
+          isInitCoed: true,
+        });
+      }, 0);
+  };
+
   handleUpdatePhoneNumber(phone) {
     const { updatePhoneNumber } = this.props;
     const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
