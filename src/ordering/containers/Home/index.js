@@ -585,8 +585,9 @@ export class Home extends Component {
             }}
           />
         }
-        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
-          }`}
+        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${
+          enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
+        }`}
         showBackButton={showBackButton({
           isValidTimeToOrder,
           enablePreOrder,
@@ -721,19 +722,20 @@ export class Home extends Component {
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
             : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
-        contentClassName={`${isDeliveryType || isPickUpType
-          ? enableCashback && defaultLoyaltyRatio
-            ? 'flex-top'
+        contentClassName={`${
+          isDeliveryType || isPickUpType
+            ? enableCashback && defaultLoyaltyRatio
+              ? 'flex-top'
+              : 'flex-middle'
             : 'flex-middle'
-          : 'flex-middle'
-          } padding-left-right-small`}
+        } padding-left-right-small`}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => { }}
+        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => {}}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -852,8 +854,8 @@ export class Home extends Component {
               paddingBottom:
                 Utils.isSafari && Utils.getUserAgentInfo().isMobile
                   ? `${marginBottom({
-                    footerEls: [this.footerEl],
-                  })}px`
+                      footerEls: [this.footerEl],
+                    })}px`
                   : '0',
             }}
             onToggle={this.handleToggleAside.bind(this)}
@@ -889,15 +891,9 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-<<<<<<< HEAD
-            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
-            breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
-            breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
-=======
             breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
             breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
->>>>>>> add break time info
           />
         )}
 
