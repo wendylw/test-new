@@ -41,8 +41,12 @@ class App extends Component {
   state = {};
 
   setAppAddressToSession = res => {
+    if (!res) {
+      return;
+    }
+
     const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-    if (!res && deliveryAddress && deliveryAddress.address) {
+    if (deliveryAddress && deliveryAddress.address) {
       return;
     }
 
