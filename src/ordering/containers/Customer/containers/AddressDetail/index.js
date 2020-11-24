@@ -58,10 +58,7 @@ class AddressDetail extends Component {
           latitude: coords.lat,
           longitude: coords.lng,
         },
-        addressComponents: {
-          ...addressComponents,
-          city: addressComponents.city,
-        },
+        addressComponents,
       });
     }
 
@@ -86,10 +83,7 @@ class AddressDetail extends Component {
         type: actions.ADD,
         address,
         coords: { longitude: coords.lng, latitude: coords.lat },
-        addressComponents: {
-          ...addressComponents,
-          city: deliveryToCity,
-        },
+        addressComponents,
       });
     }
   };

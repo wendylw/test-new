@@ -47,6 +47,7 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
+    addressComponents,
   },
 };
 
