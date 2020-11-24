@@ -167,7 +167,7 @@ export const actions = {
           ...contactDetail,
           addressDetails,
           address: addressDetails ? `${addressDetails}, ${deliveryTo}` : deliveryTo,
-          city,
+          city: city || '',
           country,
           deliveryTo,
           location,
