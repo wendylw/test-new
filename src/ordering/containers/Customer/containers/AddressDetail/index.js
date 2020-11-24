@@ -41,16 +41,26 @@ class AddressDetail extends Component {
       deliveryToLocation,
       deliveryToCity,
     } = deliveryDetails || {};
-    const { address: savedAddress, coords: savedCoords } = savedAddressInfo || {};
+    const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } =
+      savedAddressInfo || {};
     const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // if choose a new location, update the savedAddressInfo
-    if (address !== savedAddress || coords.lat !== savedCoords.latitude || coords.lng !== savedCoords.longitude) {
+    if (
+      address !== savedAddress ||
+      coords.lat !== savedCoords.latitude ||
+      coords.lng !== savedCoords.longitude ||
+      addressComponents.city !== savedAddressComponents.city
+    ) {
       customerActions.updateSavedAddressInfo({
         address: address,
         coords: {
           latitude: coords.lat,
           longitude: coords.lng,
+        },
+        addressComponents: {
+          ...addressComponents,
+          city: addressComponents.city,
         },
       });
     }

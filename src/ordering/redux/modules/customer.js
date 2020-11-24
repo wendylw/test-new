@@ -82,7 +82,7 @@ export const actions = {
       const deliveryAddress = await fetchDeliveryAddress();
 
       if (deliveryAddress) {
-        const { addressComponents } = addressComponents;
+        const { addressComponents } = deliveryAddress;
 
         newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
         newDeliveryDetails.deliveryToLocation = {
