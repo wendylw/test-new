@@ -87,7 +87,7 @@ class LiveChat extends Component {
               labelVisible: true,
             },
             chatLabel: {
-              '*': t('NeedHelp'),
+              '*': `${t('NeedHelp')}?`,
             },
           },
           chat: {
@@ -112,7 +112,7 @@ class LiveChat extends Component {
           },
           launcher: {
             chatLabel: {
-              '*': t('NeedHelp'),
+              '*': `${t('NeedHelp')}?`,
             },
           },
           chat: {
@@ -174,7 +174,7 @@ class LiveChat extends Component {
         onClick={this.handleBtnClicked}
       >
         {waitingZendeskScript && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
-        <div className="live-chat__loading-text margin-left-right-smaller">{t('NeedHelp')}</div>
+        <div className="live-chat__loading-text margin-left-right-smaller">{`${t('NeedHelp')}?`}</div>
       </button>
     );
   }
