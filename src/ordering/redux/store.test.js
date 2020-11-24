@@ -33,6 +33,7 @@ it('src/ordering/redux/store.js', () => {
         },
         phone: '',
         username: '',
+        deliveryToCity: '',
       },
     },
     entities: {
