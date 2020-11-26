@@ -225,7 +225,7 @@ export const actions = {
     };
   },
 
-  updateUser: user => ({
+  updateUser: (user = {}) => ({
     type: types.UPDATE_USER,
     user,
   }),
@@ -386,9 +386,7 @@ const user = (state = initialState.user, action) => {
         success,
       };
     case types.UPDATE_USER:
-      const { user } = action || {};
-
-      return Object.assign({}, state, user);
+      return Object.assign({}, state, { user: action.user });
     default:
       return state;
   }
