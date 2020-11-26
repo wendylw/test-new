@@ -456,7 +456,7 @@ class Customer extends Component {
                 country={country}
                 metadata={metadataMobile}
                 onChange={phone => {
-                  const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+                  const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
                   this.props.customerActions.patchDeliveryDetails({
                     phone:
