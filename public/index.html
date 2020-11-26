@@ -45,6 +45,20 @@
     ;NREUM.loader_config={accountID:"464254",trustKey:"464254",agentID:"302798829",licenseKey:"3a0d73646d",applicationID:"302798829"}
     ;NREUM.info={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",licenseKey:"3a0d73646d",applicationID:"302798829",sa:1}
     </script>
+    <script>
+      if (window.newrelic) {
+        try {
+          var cookieArray = document.cookie.split(';');
+          var entry;
+          for (var i = 0; i < cookieArray.length; i++) {
+            entry = cookieArray[i];
+            if (/^session_tid=/.test(entry)) {
+              window.newrelic.setCustomAttribute('session_tid', entry.split('=')[1]);
+            }
+          }
+        } catch (e) { }
+      }
+    </script>
     
 
     <!-- Google Tag Manager -->
