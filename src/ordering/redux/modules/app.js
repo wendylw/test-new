@@ -32,6 +32,8 @@ export const initialState = {
     },
     isError: false,
     otpType: 'otp',
+    country: 'MY',
+    phone: Utils.getLocalStorageVariable('user.p'),
   },
   error: null, // network error
   messageModal: {
@@ -223,6 +225,11 @@ export const actions = {
     };
   },
 
+  updateUser: user => ({
+    type: types.UPDATE_USER,
+    user,
+  }),
+
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -308,6 +315,10 @@ const user = (state = initialState.user, action) => {
         accessToken: access_token,
         refreshToken: refresh_token,
       };
+    case types.FETCH_ONLINESTOREINFO_SUCCESS:
+      const { onlineStoreInfo } = action.responseGql.data || {};
+
+      return { ...state, country: onlineStoreInfo && onlineStoreInfo.country };
     case types.CREATE_LOGIN_SUCCESS:
       if (state.accessToken) {
         delete state.accessToken;
@@ -374,6 +385,10 @@ const user = (state = initialState.user, action) => {
         ...state,
         success,
       };
+    case types.UPDATE_USER:
+      const { user } = action || {};
+
+      return Object.assign({}, state, user);
     default:
       return state;
   }
