@@ -69,6 +69,7 @@ class PhoneViewContainer extends React.Component {
           </label>
         ) : null}
         {content ? <p className="text-weight-bolder">{content}</p> : null}
+        {/* react-phone-number-input style guide  https://catamphetamine.gitlab.io/react-phone-number-input/docs/index.html#phoneinputwithcountry */}
         <PhoneInput
           international // If input want to show country code when phone number is empty, pls add international on props
           smartCaret={false}
