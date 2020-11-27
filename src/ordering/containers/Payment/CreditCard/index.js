@@ -264,10 +264,20 @@ class CreditCard extends Component {
     return !(cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length));
   };
 
+  trackCreateOrder = () => {
+    const { merchantCountry } = this.props;
+    const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
+    window.newrelic?.addPageAction('CreateOrder', {
+      paymentName: getPaymentName(merchantCountry, currentPayment),
+    });
+  };
+
   async handleBeforeCreateOrder() {
     this.setState({
       payNowLoading: true,
     });
+
+    this.trackCreateOrder();
 
     await this.validateForm();
 

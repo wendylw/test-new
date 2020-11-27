@@ -131,6 +131,12 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
     }
   };
 
+  const trackCreateOrder = () => {
+    window.newrelic?.addPageAction('CreateOrder', {
+      paymentName: Constants.PAYMENT_METHOD_LABELS.STRIPE,
+    });
+  };
+
   const isNotCardComplete = !cardNumberComplete && !cardExpiryComplete && !cardCvcComplete;
 
   const isNotNameComplete = !Boolean(billingDetails.name);
@@ -320,6 +326,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={processing || !stripe}
           beforeCreateOrder={() => {
+            trackCreateOrder();
             setProcessing(true);
             setIsFormTouched(true);
           }}

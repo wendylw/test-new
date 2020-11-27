@@ -128,6 +128,13 @@ class Payment extends Component {
     }
   };
 
+  trackCreateOrder = () => {
+    const { merchantCountry, currentPayment } = this.props;
+    window.newrelic?.addPageAction('CreateOrder', {
+      paymentName: getPaymentName(merchantCountry, currentPayment),
+    });
+  };
+
   handleBeforeCreateOrder = () => {
     const { history, currentPaymentInfo } = this.props;
 
@@ -143,6 +150,8 @@ class Payment extends Component {
       });
 
       return;
+    } else {
+      this.trackCreateOrder();
     }
   };
 
