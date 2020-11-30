@@ -142,7 +142,7 @@ class OnlineBanking extends Component {
   }
 
   render() {
-    const { t, match, history, bankingList, cartSummary, onlineStoreInfo } = this.props;
+    const { t, match, history, bankingList, cartSummary, onlineStoreInfo, merchantCountry } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const { agentCode, payNowLoading } = this.state;
@@ -212,6 +212,7 @@ class OnlineBanking extends Component {
                 payNowLoading: !!orderId,
               });
             }}
+            paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY)}
           >
             {payNowLoading ? (
               t('Processing')

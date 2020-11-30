@@ -37,7 +37,16 @@ class CreateOrderButton extends React.Component {
   };
 
   handleCreateOrder = async () => {
-    const { history, paymentActions, user, requestInfo, cartSummary, afterCreateOrder, beforeCreateOrder } = this.props;
+    const {
+      history,
+      paymentActions,
+      user,
+      requestInfo,
+      cartSummary,
+      afterCreateOrder,
+      beforeCreateOrder,
+      paymentName,
+    } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartSummary || {};
@@ -62,6 +71,7 @@ class CreateOrderButton extends React.Component {
     // }
 
     if ((isLogin || type === 'digital') && validCreateOrder) {
+      window.newrelic?.addPageAction('CreateOrder', { paymentName: paymentName || 'N/A' });
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
 
       const { currentOrder /*error*/ } = this.props;
@@ -120,6 +130,7 @@ CreateOrderButton.propTypes = {
   disabled: PropTypes.bool,
   beforeCreateOrder: PropTypes.func,
   afterCreateOrder: PropTypes.func,
+  paymentName: PropTypes.string,
 };
 
 CreateOrderButton.defaultProps = {

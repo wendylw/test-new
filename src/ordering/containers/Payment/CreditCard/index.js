@@ -504,7 +504,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary } = this.props;
+    const { t, match, history, cartSummary, merchantCountry } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
@@ -558,6 +558,7 @@ class CreditCard extends Component {
                 payNowLoading: !!orderId,
               });
             }}
+            paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
           >
             {payNowLoading ? (
               t('Processing')
