@@ -107,14 +107,6 @@ class OnlineBanking extends Component {
     }
   }
 
-  trackCreateOrder = () => {
-    const { merchantCountry } = this.props;
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
-    window.newrelic?.addPageAction('CreateOrder', {
-      paymentName: getPaymentName(merchantCountry, currentPayment),
-    });
-  };
-
   handleSelectBank(e) {
     this.setState({
       agentCode: e.target.value,
@@ -214,7 +206,6 @@ class OnlineBanking extends Component {
               this.setState({
                 payNowLoading: true,
               });
-              this.trackCreateOrder();
             }}
             afterCreateOrder={orderId => {
               this.setState({
