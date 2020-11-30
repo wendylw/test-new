@@ -386,7 +386,7 @@ const user = (state = initialState.user, action) => {
         success,
       };
     case types.UPDATE_USER:
-      return Object.assign({}, state, { user: action.user });
+      return Object.assign({}, state, action.user);
     default:
       return state;
   }
