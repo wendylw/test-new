@@ -1,5 +1,5 @@
 import './sentry';
-import './track-id';
+import './tracing-id';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
