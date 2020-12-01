@@ -73,6 +73,7 @@ class ContactDetail extends Component {
 
               <div className="padding-top-bottom-small">
                 <PhoneInput
+                  international // If input want to show country code when phone number is empty, pls add international on props
                   smartCaret={false}
                   data-heap-name="ordering.contact-details.phone-input"
                   placeholder={t('EnterPhoneNumber')}
