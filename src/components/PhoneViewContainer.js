@@ -75,7 +75,6 @@ class PhoneViewContainer extends React.Component {
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
           data-heap-name="common.phone-view-container.phone-number-input"
-          countries={COUNTRIES}
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country || COUNTRIES[0]}
           country={country}
