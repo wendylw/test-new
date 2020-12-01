@@ -9,8 +9,7 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     attachStacktrace: true,
     environment: process.env.NODE_ENV,
     beforeSend: (event, hint) => {
-      console.log(event);
-      if (isInfiniteScrollerBug(event) || isFacebookJSONParseError(event)) {
+      if (isInfiniteScrollerBug(event)) {
         return null;
       }
       return event;
@@ -60,18 +59,6 @@ const isInfiniteScrollerBug = event => {
     return (
       /null is not an object \(evaluating '\w+\.scrollHeight'\)/.test(err.value) &&
       err.mechanism.data.handler === 'bound scrollListener'
-    );
-  } catch {
-    return false;
-  }
-};
-
-const isFacebookJSONParseError = event => {
-  try {
-    const err = event.exception.values[0];
-    return (
-      /JSON Parse error/.test(err.value) &&
-      err.stacktrace.frames.some(frame => frame.filename.includes('iab.autofill.payment.js'))
     );
   } catch {
     return false;

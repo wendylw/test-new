@@ -79,7 +79,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
-    // this.pollOrderStatus(); // order status api is not ready, we just leave the code here and will enable it in the future
+    this.pollOrderStatus();
   }
 
   loadOrder = async () => {
@@ -92,16 +92,18 @@ export class ThankYou extends PureComponent {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
       this.pollOrderStatusTimer = setInterval(async () => {
         const {
-          thankYouActions,
           receiptNumber,
-          order: { status },
+          // thankYouActions,
+          // order: { status },
         } = this.props;
         try {
-          await thankYouActions.loadOrderStatus(receiptNumber);
-          const { updatedStatus } = this.props;
-          if (updatedStatus !== status) {
-            await this.loadOrder(receiptNumber);
-          }
+          // order status api is not ready, we just leave the code here and will enable it in the future
+          // await thankYouActions.loadOrderStatus(receiptNumber);
+          // const { updatedStatus } = this.props;
+          // if (updatedStatus !== status) {
+          //   await this.loadOrder(receiptNumber);
+          // }
+          await this.loadOrder(receiptNumber);
         } catch (e) {
           captureException(e);
         }
