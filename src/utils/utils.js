@@ -345,6 +345,10 @@ Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 };
 
+Utils.isTakeAwayType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
+};
+
 Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
   // ValidDays received from api side, sunday is 1, monday is two
   // convert it to browser weekday format first, for which sunday is 0, monday is 1

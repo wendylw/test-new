@@ -495,7 +495,7 @@ class Customer extends Component {
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             afterCreateOrder={this.visitPaymentPage.bind(this)}
           >
-            {isFetching ? <div className="loader"></div> : t('Continue')}
+            {isFetching ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
         {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}

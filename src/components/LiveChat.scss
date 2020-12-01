@@ -1,0 +1,31 @@
+.live-chat {
+  color: #00b0ff;
+  user-select: none;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.5;
+  }
+
+  &__loading-text {
+    font-size: 1.1rem;
+    letter-spacing: 0.6px;
+  }
+
+  &__loader {
+    color: #00b0ff;
+    margin: 2.4vw;
+  }
+}
+
+@media (min-width: 420px) {
+  .live-chat {
+    &__loader {
+      margin: 8px;
+    }
+  }
+}
+
+iframe#launcher {
+  display: none;
+}

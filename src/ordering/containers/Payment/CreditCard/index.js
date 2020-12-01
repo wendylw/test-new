@@ -547,7 +547,7 @@ class CreditCard extends Component {
         >
           <CreateOrderButton
             history={history}
-            className="margin-top-bottom-smaller"
+            className="margin-top-bottom-smaller text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
@@ -560,7 +560,7 @@ class CreditCard extends Component {
             }}
           >
             {payNowLoading ? (
-              <div className="loader"></div>
+              t('Processing')
             ) : (
               <CurrencyNumber
                 className="text-center text-weight-bolder text-uppercase"

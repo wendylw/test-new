@@ -43,7 +43,7 @@ class PhoneView extends React.Component {
     let buttonContent = buttonText;
 
     if (isLoading) {
-      buttonContent = <div className="loader"></div>;
+      buttonContent = t('Processing');
     }
 
     return (
