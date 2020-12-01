@@ -20,9 +20,9 @@ class StoreInfoAside extends Component {
     }
 
     if (hourRemainder) {
-      timeString = `${hourRemainder}:${minute}${localeMeridiem}`;
+      timeString = `${hourRemainder}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
     } else {
-      timeString = `${hour === '00' || hour === '12' ? '12:00' : '11:59'}${localeMeridiem}`;
+      timeString = `${hour === '00' || hour === '12' ? '12' : '11:59'}${localeMeridiem}`;
     }
 
     return timeString;
@@ -43,7 +43,8 @@ class StoreInfoAside extends Component {
     if (
       !breakTimeFrom ||
       !breakTimeTo ||
-      validTimeFrom >= breakTimeTo || (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
+      validTimeFrom >= breakTimeTo ||
+      (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
     ) {
       return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
     }
