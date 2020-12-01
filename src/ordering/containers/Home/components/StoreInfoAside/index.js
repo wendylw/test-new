@@ -85,9 +85,9 @@ class StoreInfoAside extends Component {
       return null;
     }
 
-    // if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
-    classList.push('active');
-    // }
+    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
+      classList.push('active');
+    }
 
     return (
       <aside
