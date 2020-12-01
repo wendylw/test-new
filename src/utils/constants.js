@@ -230,7 +230,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40017Title',
     desc: 'ApiError:40017Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
-    buttonText: 'Common:Continue',
+    buttonText: 'Common:Close',
     showModal: true,
   },
   40018: {
