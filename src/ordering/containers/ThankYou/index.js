@@ -685,7 +685,7 @@ export class ThankYou extends PureComponent {
                       ? `+${driverPhone}`
                       : null
                     : storePhone
-                    ? `+${storePhone}`
+                    ? `${storePhone}`
                     : null}
                 </span>
               }
