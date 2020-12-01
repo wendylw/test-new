@@ -39,9 +39,6 @@ class StoreInfoAside extends Component {
       1: 'Sun',
     };
     const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
-    const businessHours = `${this.formatHour(validTimeFrom)} ${
-      breakTimeFrom && breakTimeTo ? `- ${this.formatHour(breakTimeFrom)}, ${this.formatHour(breakTimeTo)}` : ''
-    }- ${this.formatHour(validTimeTo)}`;
 
     return Object.keys(weekInfo)
       .sort()
@@ -49,7 +46,17 @@ class StoreInfoAside extends Component {
         return (
           <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
             <span>{t(weekInfo[day])}</span>
-            {validDays.includes(+day) ? <time>{businessHours}</time> : <span>{t('Closed')}</span>}
+            {validDays.includes(+day) ? (
+              <time>
+                {`${this.formatHour(validTimeFrom)} ${
+                  breakTimeFrom && breakTimeTo
+                    ? `- ${this.formatHour(breakTimeFrom)}, ${this.formatHour(breakTimeTo)}`
+                    : ''
+                }- ${this.formatHour(validTimeTo)}`}
+              </time>
+            ) : (
+              <span>{t('Closed')}</span>
+            )}
           </li>
         );
       });
