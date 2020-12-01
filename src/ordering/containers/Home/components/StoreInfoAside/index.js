@@ -28,6 +28,41 @@ class StoreInfoAside extends Component {
     return timeString;
   };
 
+  getOpeningHours = function({
+    breakTimeFrom,
+    breakTimeTo,
+    validTimeFrom = '00:00',
+    validTimeTo = '24:00',
+    formatBreakTimes,
+    formatValidTimes,
+  }) {
+    if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
+      return [];
+    }
+
+    if (
+      !breakTimeFrom ||
+      !breakTimeTo ||
+      validTimeFrom >= breakTimeTo || (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
+    ) {
+      return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+    }
+
+    if (validTimeFrom < breakTimeFrom && validTimeTo > breakTimeTo && breakTimeFrom !== breakTimeTo) {
+      return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}, ${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+    }
+
+    if (validTimeFrom >= breakTimeFrom && validTimeFrom <= breakTimeTo && breakTimeTo < validTimeTo) {
+      return [`${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+    }
+
+    if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
+      return [`${formatValidTimes[0]} - ${formatBreakTimes[1]}`];
+    }
+
+    return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+  };
+
   renderDeliveryHour = () => {
     const weekInfo = {
       2: 'Mon',
@@ -39,6 +74,16 @@ class StoreInfoAside extends Component {
       1: 'Sun',
     };
     const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
+    const formatBreakTimes = [this.formatHour(breakTimeFrom), this.formatHour(breakTimeTo)];
+    const formatValidTimes = [this.formatHour(validTimeFrom), this.formatHour(validTimeTo)];
+    const openingHours = this.getOpeningHours({
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      formatBreakTimes,
+      formatValidTimes,
+    });
 
     return Object.keys(weekInfo)
       .sort()
@@ -46,17 +91,7 @@ class StoreInfoAside extends Component {
         return (
           <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
             <span>{t(weekInfo[day])}</span>
-            {validDays.includes(+day) ? (
-              <time>
-                {`${this.formatHour(validTimeFrom)} ${
-                  breakTimeFrom && breakTimeTo
-                    ? `- ${this.formatHour(breakTimeFrom)}, ${this.formatHour(breakTimeTo)}`
-                    : ''
-                }- ${this.formatHour(validTimeTo)}`}
-              </time>
-            ) : (
-              <span>{t('Closed')}</span>
-            )}
+            <time>{validDays.includes(+day) || !openingHours.length ? openingHours : t('Closed')}</time>
           </li>
         );
       });
