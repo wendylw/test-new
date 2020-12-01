@@ -9,19 +9,23 @@ class StoreInfoAside extends Component {
     initDom: true,
   };
 
-  formatHour = hourString => {
+  formatHour = (hourString = '') => {
     const [hour, minute] = hourString ? hourString.split(':') : [];
-    if (hour === '12') {
-      return minute === '00' ? `${hour}pm` : `${hour}:${minute}pm`;
+    const hourRemainder = Number(hour) % 12;
+    const localeMeridiem = Number(hour) > 11 ? 'pm' : 'am';
+    let timeString = hourString;
+
+    if (isNaN(hourRemainder)) {
+      return '';
     }
-    if (hour === '24' || hour === '00') {
-      return minute === '00' ? '0am' : `00:${minute}am`;
-    }
-    if (hour > 12) {
-      return minute === '00' ? `${hour - 12}pm` : `${hour - 12}:${minute}pm`;
+
+    if (hourRemainder) {
+      timeString = `${hourRemainder}:${minute}${localeMeridiem}`;
     } else {
-      return minute === '00' ? `${+hour}am` : `${hour}:${minute}am`;
+      timeString = `${hour === '00' || hour === '12' ? '12:00' : '11:59'}${localeMeridiem}`;
     }
+
+    return timeString;
   };
 
   renderDeliveryHour = () => {
@@ -35,6 +39,9 @@ class StoreInfoAside extends Component {
       1: 'Sun',
     };
     const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
+    const businessHours = `${this.formatHour(validTimeFrom)} ${
+      breakTimeFrom && breakTimeTo ? `- ${this.formatHour(breakTimeFrom)}, ${this.formatHour(breakTimeTo)}` : ''
+    }- ${this.formatHour(validTimeTo)}`;
 
     return Object.keys(weekInfo)
       .sort()
@@ -42,14 +49,7 @@ class StoreInfoAside extends Component {
         return (
           <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
             <span>{t(weekInfo[day])}</span>
-            {validDays.includes(+day) ? (
-              <time>
-                {`${this.formatHour(validTimeFrom)}`} - {`${this.formatHour(breakTimeFrom)}`},{' '}
-                {`${this.formatHour(breakTimeTo)}`} - {`${this.formatHour(validTimeTo)}`}
-              </time>
-            ) : (
-              <span>{t('Closed')}</span>
-            )}
+            {validDays.includes(+day) ? <time>{businessHours}</time> : <span>{t('Closed')}</span>}
           </li>
         );
       });
@@ -78,9 +78,9 @@ class StoreInfoAside extends Component {
       return null;
     }
 
-    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
-      classList.push('active');
-    }
+    // if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
+    classList.push('active');
+    // }
 
     return (
       <aside
