@@ -4,6 +4,7 @@
   top: 0;
   height: 100vh;
   background-color: $gray-6;
+  z-index: $z-index-base;
 
   &__header {
     background-color: $gray-6;
