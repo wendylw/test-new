@@ -84,25 +84,62 @@ export class Footer extends Component {
     }
   };
 
+  getAppVersion = () => {
+    let appVersion = '';
+    if (Utils.isAndroidWebview()) {
+      appVersion = window.androidInterface.getAppVersion();
+    }
+    if (Utils.isIOSWebview()) {
+      appVersion = window.prompt('getAppVersion');
+    }
+    return appVersion;
+  };
+
   postAppMessage(user) {
     const { isExpired } = user || {};
+    const appVersion = this.getAppVersion();
+    console.log('appVersion', appVersion);
     if (Utils.isAndroidWebview() && isExpired) {
-      window.androidInterface.tokenExpired();
+      if (appVersion > '1.0.1') {
+        window.androidInterface.tokenExpired('true');
+      } else {
+        window.androidInterface.tokenExpired();
+      }
     }
     if (Utils.isAndroidWebview() && !isExpired) {
-      window.androidInterface.getToken();
+      if (appVersion > '1.0.1') {
+        window.androidInterface.getToken('true');
+      } else {
+        window.androidInterface.getToken();
+      }
     }
     if (Utils.isIOSWebview() && isExpired) {
-      window.webkit.messageHandlers.shareAction.postMessage({
-        functionName: 'tokenExpired',
-        callbackName: 'sendToken',
-      });
+      if (appVersion > '1.0.1') {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'tokenExpired',
+          callbackName: 'sendToken',
+          isCheckout: 'true',
+        });
+      } else {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'tokenExpired',
+          callbackName: 'sendToken',
+        });
+      }
     }
     if (Utils.isIOSWebview() && !isExpired) {
-      window.webkit.messageHandlers.shareAction.postMessage({
-        functionName: 'getToken',
-        callbackName: 'sendToken',
-      });
+      if (appVersion > '1.0.1') {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'getToken',
+          callbackName: 'sendToken',
+          isCheckout: 'true',
+        });
+      } else {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'getToken',
+          callbackName: 'sendToken',
+        });
+      }
     }
   }
 

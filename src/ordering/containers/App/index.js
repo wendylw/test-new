@@ -29,13 +29,21 @@ class App extends Component {
     super(props);
 
     if (Utils.isAndroidWebview()) {
-      const res = window.androidInterface.getAddress();
-      this.setAppAddressToSession(JSON.parse(res));
+      try {
+        const res = window.androidInterface.getAddress();
+        this.setAppAddressToSession(JSON.parse(res));
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     if (Utils.isIOSWebview()) {
-      const res = window.prompt('getAddress');
-      this.setAppAddressToSession(JSON.parse(res));
+      try {
+        const res = window.prompt('getAddress');
+        this.setAppAddressToSession(JSON.parse(res));
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
   state = {};
