@@ -19,7 +19,7 @@ class StoreInfoAside extends Component {
       return '';
     }
 
-    if (hourRemainder) {
+    if (hourRemainder || Number(minute)) {
       timeString = `${hourRemainder}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
     } else {
       timeString = `${hour === '00' || hour === '12' ? '12' : '11:59'}${localeMeridiem}`;
