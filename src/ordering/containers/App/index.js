@@ -83,9 +83,8 @@ class App extends Component {
     const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
 
     if (
-      (!(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
-        Utils.getUserAgentInfo().browser.includes('Safari')) ||
-      Utils.isIOSWebview()
+      !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
+      (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())
     ) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
