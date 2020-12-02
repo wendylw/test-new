@@ -9,7 +9,7 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     attachStacktrace: true,
     environment: process.env.NODE_ENV,
     beforeSend: (event, hint) => {
-      if (isInfiniteScrollerBug(event)) {
+      if (isInfiniteScrollerBug(event) || isCrossStorageBug(event)) {
         return null;
       }
       return event;
@@ -55,11 +55,19 @@ if (process.env.REACT_APP_SENTRY_DSN) {
 const isInfiniteScrollerBug = event => {
   try {
     const err = event.exception.values[0];
-    debugger;
     return (
       /null is not an object \(evaluating '\w+\.scrollHeight'\)/.test(err.value) &&
       err.mechanism.data.handler === 'bound scrollListener'
     );
+  } catch {
+    return false;
+  }
+};
+
+const isCrossStorageBug = event => {
+  try {
+    const err = event.exception.values[0];
+    return /CrossStorage/i.test(err.value);
   } catch {
     return false;
   }
