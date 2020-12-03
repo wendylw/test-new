@@ -19,7 +19,7 @@ class StoreInfoAside extends Component {
       return '';
     }
 
-    return `${!hour && !(hour % 24) && !Number(minute) ? '11:59' : timeString}${localeMeridiem}`;
+    return `${!(hour % 24) && !Number(minute) ? '11:59' : timeString}${localeMeridiem}`;
   };
 
   getOpeningHours = function({
