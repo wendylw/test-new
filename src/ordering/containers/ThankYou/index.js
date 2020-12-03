@@ -58,12 +58,8 @@ export class ThankYou extends PureComponent {
     let version = '0',
       supportCallPhone = false;
 
-    if (Utils.isAndroidWebview()) {
-      version = window.androidInterface.getAppVersion();
-    }
-
-    if (Utils.isIOSWebview()) {
-      version = window.prompt('getAppVersion');
+    if (Utils.isWebview()) {
+      version = window.beepAppVersion;
     }
 
     if (version > '1.0.1') {
@@ -171,7 +167,7 @@ export class ThankYou extends PureComponent {
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
         if (Utils.isAndroidWebview() && lat && lng) {
-          const res = window.androidInterface.getAppVersion();
+          const res = window.beepAppVersion;
           if (res > '1.0.1') {
             window.androidInterface.updateHeaderOptionsAndShowMap(
               JSON.stringify({
@@ -194,7 +190,7 @@ export class ThankYou extends PureComponent {
         }
 
         if (Utils.isIOSWebview() && lat && lng) {
-          const res = window.prompt('getAppVersion');
+          const res = window.beepAppVersion;
           if (res > '1.0.1') {
             window.webkit.messageHandlers.shareAction.postMessage({
               functionName: 'updateHeaderOptionsAndShowMap',
@@ -1253,14 +1249,14 @@ export class ThankYou extends PureComponent {
                   if (window.androidInterface) {
                     window.androidInterface.gotoHome();
                   } else if (window.webkit) {
-                    const version = window.prompt('getAppVersion');
+                    const version = window.beepAppVersion;
 
-                    if (version < '1.1.0') {
-                      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
-                    } else {
+                    if (version > '1.0.1') {
                       window.webkit.messageHandlers.shareAction.postMessage({
                         functionName: 'gotoHome',
                       });
+                    } else {
+                      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
                     }
                   }
                 } else {

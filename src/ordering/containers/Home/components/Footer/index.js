@@ -84,17 +84,6 @@ export class Footer extends Component {
     }
   };
 
-  getAppVersion = () => {
-    let appVersion = '';
-    if (Utils.isAndroidWebview()) {
-      appVersion = window.androidInterface.getAppVersion();
-    }
-    if (Utils.isIOSWebview()) {
-      appVersion = window.prompt('getAppVersion');
-    }
-    return appVersion;
-  };
-
   postAppMessage(user) {
     const { isExpired } = user || {};
     const appVersion = window.beepAppVersion;
