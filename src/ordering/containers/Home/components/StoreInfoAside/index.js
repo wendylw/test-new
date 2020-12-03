@@ -13,19 +13,13 @@ class StoreInfoAside extends Component {
     const [hour, minute] = hourString ? hourString.split(':') : [];
     const hourRemainder = Number(hour) % 12;
     const localeMeridiem = Number(hour) > 11 ? 'pm' : 'am';
-    let timeString = hourString;
+    const timeString = `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}`;
 
     if (isNaN(hourRemainder)) {
       return '';
     }
 
-    if (hourRemainder || Number(minute)) {
-      timeString = `${hourRemainder}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
-    } else {
-      timeString = `${hour === '00' || hour === '12' ? '12' : '11:59'}${localeMeridiem}`;
-    }
-
-    return timeString;
+    return `${!hour && !(hour % 24) && !Number(minute) ? '11:59' : timeString}${localeMeridiem}`;
   };
 
   getOpeningHours = function({
