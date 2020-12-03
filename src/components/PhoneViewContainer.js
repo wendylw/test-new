@@ -7,17 +7,16 @@ import Utils from '../utils/utils';
 import './PhoneViewContainer.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
-const COUNTRIES = ['MY', 'TH', 'PH', 'SG', 'CN'];
 
 class PhoneViewContainer extends React.Component {
   state = {
     isSavingPhone: this.props.isLoading,
   };
 
-  componentWillReceiveProps(nextProps) {
-    const { isLoading } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { isLoading } = this.props;
 
-    if (isLoading !== this.props.isLoading) {
+    if (isLoading !== prevProps.isLoading) {
       this.setState({ isSavingPhone: isLoading });
     }
   }
@@ -76,7 +75,7 @@ class PhoneViewContainer extends React.Component {
           placeholder={t('EnterPhoneNumber')}
           data-heap-name="common.phone-view-container.phone-number-input"
           value={formatPhoneNumberIntl(phone)}
-          defaultCountry={country || COUNTRIES[0]}
+          defaultCountry={country}
           country={country}
           metadata={metadataMobile}
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
