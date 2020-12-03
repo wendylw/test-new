@@ -24,6 +24,7 @@ const initialState = {
     addressDetails: '',
     deliveryComments: '',
     deliveryToAddress: '',
+    deliveryToCity: '',
     deliveryToLocation: {
       longitude: 0,
       latitude: 0,
@@ -46,6 +47,7 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
+    addressComponents: {},
   },
 };
 
@@ -81,11 +83,14 @@ export const actions = {
       const deliveryAddress = await fetchDeliveryAddress();
 
       if (deliveryAddress) {
+        const { addressComponents } = deliveryAddress;
+
         newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
         newDeliveryDetails.deliveryToLocation = {
           longitude: deliveryAddress.coords.lng,
           latitude: deliveryAddress.coords.lat,
         };
+        newDeliveryDetails.deliveryToCity = addressComponents && addressComponents.city ? addressComponents.city : '';
       }
 
       // if address chosen is different from address in session
@@ -209,6 +214,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         comments: deliveryComments,
         deliveryTo: deliveryToAddress,
         location: deliveryToLocation,
+        city: deliveryToCity,
       } = findAvailableAddress;
 
       // patch deliveryDetails to sessionStorage
@@ -222,6 +228,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
           deliveryComments,
           deliveryToAddress,
           deliveryToLocation,
+          deliveryToCity,
         })
       );
 
@@ -234,6 +241,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         deliveryComments,
         deliveryToAddress,
         deliveryToLocation,
+        deliveryToCity,
       };
     }
   }

@@ -5,6 +5,8 @@ import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
+import LiveChat from '../../../components/LiveChat';
+import { getUser } from '../../redux/modules/app';
 import Tag from '../../../components/Tag';
 import beepPreOrderSuccess from '../../../images/beep-pre-order-success.png';
 import {
@@ -231,9 +233,20 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, history, t, isUseStorehubLogistics, serviceCharge } = this.props;
-    const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
+    const { order, history, t, isUseStorehubLogistics, serviceCharge, user } = this.props;
+    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+
+    const { isWebview } = user;
+
+    let orderUserName = '';
+    let orderUserPhone = '';
+
+    if (deliveryInformation.length > 0) {
+      const { address } = deliveryInformation[0];
+      orderUserName = address.name;
+      orderUserPhone = address.phone;
+    }
 
     return (
       <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
@@ -250,13 +263,17 @@ export class OrderDetails extends Component {
             })
           }
         >
-          <button
-            className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-            onClick={this.handleVisitMerchantInfoPage}
-            data-heap-name="ordering.order-detail.contact-us-btn"
-          >
-            <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-          </button>
+          {!isWebview ? (
+            <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+          ) : (
+            <button
+              className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+              onClick={this.handleVisitMerchantInfoPage}
+              data-heap-name="ordering.order-detail.contact-us-btn"
+            >
+              <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
+            </button>
+          )}
         </Header>
 
         <div className="ordering-details__container">
@@ -323,6 +340,7 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
+      user: getUser(state),
       order: getOrder(state),
       promotion: getPromotion(state),
       serviceCharge: getServiceCharge(state),

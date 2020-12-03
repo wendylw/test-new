@@ -32,19 +32,33 @@ class AddressDetail extends Component {
 
   componentDidMount = async () => {
     const { deliveryDetails, savedAddressInfo, customerActions, location } = this.props;
-    const { addressId, addressName, deliveryToAddress, addressDetails, deliveryComments, deliveryToLocation } =
-      deliveryDetails || {};
-    const { address: savedAddress, coords: savedCoords } = savedAddressInfo || {};
-    const { address, coords } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const {
+      addressId,
+      addressName,
+      deliveryToAddress,
+      addressDetails,
+      deliveryComments,
+      deliveryToLocation,
+      deliveryToCity,
+    } = deliveryDetails || {};
+    const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } =
+      savedAddressInfo || {};
+    const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // if choose a new location, update the savedAddressInfo
-    if (address !== savedAddress || coords.lat !== savedCoords.latitude || coords.lng !== savedCoords.longitude) {
+    if (
+      address !== savedAddress ||
+      coords.lat !== savedCoords.latitude ||
+      coords.lng !== savedCoords.longitude ||
+      addressComponents.city !== savedAddressComponents.city
+    ) {
       customerActions.updateSavedAddressInfo({
         address: address,
         coords: {
           latitude: coords.lat,
           longitude: coords.lng,
         },
+        addressComponents,
       });
     }
 
@@ -57,6 +71,10 @@ class AddressDetail extends Component {
         details: addressDetails,
         comments: deliveryComments,
         coords: deliveryToLocation,
+        addressComponents: {
+          ...addressComponents,
+          city: deliveryToCity,
+        },
       });
     }
 
@@ -65,6 +83,7 @@ class AddressDetail extends Component {
         type: actions.ADD,
         address,
         coords: { longitude: coords.lng, latitude: coords.lat },
+        addressComponents,
       });
     }
   };
@@ -93,7 +112,7 @@ class AddressDetail extends Component {
 
   createOrUpdateAddress = async () => {
     const { history, user, savedAddressInfo, customerActions } = this.props;
-    const { id, type, name, address, details, comments, coords } = savedAddressInfo;
+    const { id, type, name, address, details, comments, coords, addressComponents } = savedAddressInfo;
     const { consumerId } = user || {};
     const data = {
       addressName: name,
@@ -101,6 +120,7 @@ class AddressDetail extends Component {
       addressDetails: details,
       comments: comments,
       location: coords,
+      city: addressComponents && addressComponents.city ? addressComponents.city : '',
     };
 
     let requestUrl;
@@ -121,6 +141,7 @@ class AddressDetail extends Component {
       deliveryComments: comments,
       deliveryToAddress: address,
       deliveryToLocation: coords,
+      deliveryToCity: addressComponents && addressComponents.city ? addressComponents.city : '',
     });
     customerActions.removeSavedAddressInfo();
     if (response) {
