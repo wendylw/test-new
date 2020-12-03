@@ -13,6 +13,8 @@ import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 
 const { AUTH_INFO } = Constants;
+const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
+const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 export const initialState = {
   user: {
@@ -32,8 +34,8 @@ export const initialState = {
     },
     isError: false,
     otpType: 'otp',
-    country: 'MY',
-    phone: Utils.getLocalStorageVariable('user.p'),
+    country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
+    phone: localePhoneNumber,
   },
   error: null, // network error
   messageModal: {
@@ -278,7 +280,7 @@ export const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, prompt, error, fields } = action;
+  const { type, response, prompt, error, fields, responseGql } = action;
   const { consumerId, login, user } = response || {};
 
   switch (type) {
@@ -383,6 +385,18 @@ const user = (state = initialState.user, action) => {
       };
     case types.UPDATE_USER:
       return Object.assign({}, state, action.user);
+    case types.FETCH_ONLINESTOREINFO_SUCCESS:
+    case types.FETCH_COREBUSINESS_SUCCESS:
+      const { data } = responseGql;
+      const { business, onlineStoreInfo } = data || {};
+
+      if (!state.phone && business && business.country) {
+        return { ...state, country: business.country };
+      } else if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
+        return { ...state, country: onlineStoreInfo.country };
+      } else {
+        return state;
+      }
     default:
       return state;
   }
