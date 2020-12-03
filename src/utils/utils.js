@@ -192,6 +192,18 @@ Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   return phone;
 };
 
+Utils.getCountry = function getCountry(phone, language, countries, defaultCountry) {
+  if (phone) {
+    return '';
+  }
+
+  if (language && language.split('-')[1]) {
+    return countries(language.split('-')[1]) || defaultCountry;
+  }
+
+  return defaultCountry;
+};
+
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
   if (!dateString) {
     return '';
