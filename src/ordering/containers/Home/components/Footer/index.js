@@ -97,8 +97,7 @@ export class Footer extends Component {
 
   postAppMessage(user) {
     const { isExpired } = user || {};
-    const appVersion = this.getAppVersion();
-    console.log('appVersion', appVersion);
+    const appVersion = window.beepAppVersion;
     if (Utils.isAndroidWebview() && isExpired) {
       if (appVersion > '1.0.1') {
         window.androidInterface.tokenExpired('true');
