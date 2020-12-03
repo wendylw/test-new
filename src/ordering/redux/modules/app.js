@@ -315,10 +315,6 @@ const user = (state = initialState.user, action) => {
         accessToken: access_token,
         refreshToken: refresh_token,
       };
-    case types.FETCH_ONLINESTOREINFO_SUCCESS:
-      const { onlineStoreInfo } = action.responseGql.data || {};
-
-      return { ...state, country: onlineStoreInfo && onlineStoreInfo.country };
     case types.CREATE_LOGIN_SUCCESS:
       if (state.accessToken) {
         delete state.accessToken;
