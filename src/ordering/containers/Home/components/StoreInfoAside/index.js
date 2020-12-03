@@ -52,7 +52,7 @@ class StoreInfoAside extends Component {
     }
 
     if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
-      return [`${formatValidTimes[0]} - ${formatBreakTimes[1]}`];
+      return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`];
     }
 
     return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
