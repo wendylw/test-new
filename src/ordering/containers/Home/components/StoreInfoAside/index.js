@@ -12,14 +12,13 @@ class StoreInfoAside extends Component {
   formatHour = (hourString = '') => {
     const [hour, minute] = hourString ? hourString.split(':') : [];
     const hourRemainder = Number(hour) % 12;
-    const localeMeridiem = Number(hour) > 11 ? 'pm' : 'am';
-    const timeString = `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}`;
+    const localeMeridiem = Number(hour) > 11 && Number(hour) < 24 ? 'pm' : 'am';
 
     if (isNaN(hourRemainder)) {
       return '';
     }
 
-    return `${hour && !(hour % 24) && !Number(minute) ? '11:59' : timeString}${localeMeridiem}`;
+    return `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
   };
 
   getOpeningHours = function({
