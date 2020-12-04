@@ -2,59 +2,12 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
+import Utils from '../../../../../utils/utils';
 import './StoreInfoAside.scss';
 
 class StoreInfoAside extends Component {
   state = {
     initDom: true,
-  };
-
-  formatHour = (hourString = '') => {
-    const [hour, minute] = hourString ? hourString.split(':') : [];
-    const hourRemainder = Number(hour) % 12;
-    const localeMeridiem = Number(hour) > 11 && Number(hour) < 24 ? 'pm' : 'am';
-
-    if (isNaN(hourRemainder)) {
-      return '';
-    }
-
-    return `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
-  };
-
-  getOpeningHours = function({
-    breakTimeFrom,
-    breakTimeTo,
-    validTimeFrom = '00:00',
-    validTimeTo = '24:00',
-    formatBreakTimes,
-    formatValidTimes,
-  }) {
-    if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
-      return [];
-    }
-
-    if (
-      !breakTimeFrom ||
-      !breakTimeTo ||
-      validTimeFrom >= breakTimeTo ||
-      (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
-    ) {
-      return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
-    }
-
-    if (validTimeFrom < breakTimeFrom && validTimeTo > breakTimeTo && breakTimeFrom !== breakTimeTo) {
-      return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}, ${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
-    }
-
-    if (validTimeFrom >= breakTimeFrom && validTimeFrom <= breakTimeTo && breakTimeTo < validTimeTo) {
-      return [`${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
-    }
-
-    if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
-      return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`];
-    }
-
-    return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
   };
 
   renderDeliveryHour = () => {
@@ -68,9 +21,9 @@ class StoreInfoAside extends Component {
       1: 'Sun',
     };
     const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
-    const formatBreakTimes = [this.formatHour(breakTimeFrom), this.formatHour(breakTimeTo)];
-    const formatValidTimes = [this.formatHour(validTimeFrom), this.formatHour(validTimeTo)];
-    const openingHours = this.getOpeningHours({
+    const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
+    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
+    const openingHours = Utils.getOpeningHours({
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
