@@ -197,11 +197,15 @@ Utils.getCountry = function getCountry(phone, language, countries, defaultCountr
     return '';
   }
 
-  if (language && language.split('-')[1]) {
-    return countries.includes(language.split('-')[1]) ? language.split('-')[1] : defaultCountry;
+  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
+    return defaultCountry;
   }
 
-  return defaultCountry;
+  if (countries.includes(language.split('-')[1])) {
+    return language.split('-')[1];
+  } else if (countries.includes(language.split('-')[0])) {
+    return language.split('-')[0];
+  }
 };
 
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
