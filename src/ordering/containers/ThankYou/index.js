@@ -44,6 +44,7 @@ import './OrderingThanks.scss';
 import qs from 'qs';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
+import { captureException } from '@sentry/react';
 import LiveChat from '../../../components/LiveChat';
 
 // const { ORDER_STATUS } = Constants;
@@ -87,6 +88,8 @@ export class ThankYou extends PureComponent {
       : null;
   };
 
+  pollOrderStatusTimer = null;
+
   componentDidMount() {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -103,14 +106,14 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
+
     this.loadOrder();
 
     this.setContainerHeight();
-  }
 
-  componentWillUnmount() {
-    clearInterval(this.timer);
-    this.closeMap();
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+      this.pollOrderStatus();
+    }
   }
 
   setContainerHeight() {
@@ -146,12 +149,13 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  updateAppLocationAndStatus = (updatedStatus, riderLocations) => {
+  updateAppLocationAndStatus = () => {
     //      nOrderStatusChanged(status: String) // 更新Order Status
     //      updateStorePosition(lat: Double, lng: Double) // 更新商家坐标
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
+    const { updatedStatus, riderLocations = [] } = this.props;
     const [lat = null, lng = null] = riderLocations || [];
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
@@ -232,33 +236,22 @@ export class ThankYou extends PureComponent {
     const { thankYouActions, receiptNumber } = this.props;
 
     await thankYouActions.loadOrder(receiptNumber);
+
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
-      clearInterval(this.timer);
-      const { order } = this.props;
-      const { status } = order;
+      await thankYouActions.loadOrderStatus(receiptNumber);
 
-      this.updateOrderStatusAndLocation(receiptNumber);
-
-      this.timer = setInterval(async () => {
-        await thankYouActions.loadOrderStatus(receiptNumber);
-        const { updatedStatus, riderLocations = [] } = this.props;
-
-        this.updateAppLocationAndStatus(updatedStatus, riderLocations);
-
-        if (updatedStatus !== status) {
-          await this.loadOrder();
-        }
-      }, 60000);
+      this.updateAppLocationAndStatus();
     }
   };
 
-  updateOrderStatusAndLocation = async receiptNumber => {
-    const { thankYouActions } = this.props;
-
-    await thankYouActions.loadOrderStatus(receiptNumber);
-    const { updatedStatus, riderLocations = [] } = this.props;
-
-    this.updateAppLocationAndStatus(updatedStatus, riderLocations);
+  pollOrderStatus = () => {
+    this.pollOrderStatusTimer = setInterval(async () => {
+      try {
+        await this.loadOrder();
+      } catch (e) {
+        captureException(e);
+      }
+    }, 60000);
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -283,6 +276,11 @@ export class ThankYou extends PureComponent {
 
     this.setContainerHeight();
   }
+
+  componentWillUnmount = () => {
+    clearInterval(this.pollOrderStatusTimer);
+    this.closeMap();
+  };
 
   getThankYouSource = () => {
     return Utils.getCookieVariable('__ty_source', '');
