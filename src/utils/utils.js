@@ -198,7 +198,7 @@ Utils.getCountry = function getCountry(phone, language, countries, defaultCountr
   }
 
   if (language && language.split('-')[1]) {
-    return countries(language.split('-')[1]) || defaultCountry;
+    return countries.includes(language.split('-')[1]) ? language.split('-')[1] : defaultCountry;
   }
 
   return defaultCountry;
