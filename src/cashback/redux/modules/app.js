@@ -10,6 +10,8 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post, get } from '../../../utils/request';
 
+const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const { AUTH_INFO } = Constants;
 
 export const initialState = {
@@ -21,6 +23,8 @@ export const initialState = {
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
+    country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
+    phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
   },
   error: null, // network error

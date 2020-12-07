@@ -13,9 +13,7 @@ import Utils from '../../../utils/utils';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
-  state = {
-    phone: Utils.getLocalStorageVariable('user.p'),
-  };
+  state = {};
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -23,13 +21,22 @@ class Login extends React.Component {
     appActions.resetOtpStatus();
   }
 
-  handleUpdatePhoneNumber(phone) {
-    this.setState({ phone });
+  handleUpdateUser(user) {
+    const { appActions } = this.props;
+
+    appActions.updateUser(user);
+  }
+
+  handleSubmitPhoneNumber(phone) {
+    const { appActions, otpType } = this.props;
+
+    appActions.getOtp({ phone, type: otpType });
+    this.setState({ sendOtp: true });
   }
 
   async handleSubmitPhoneNumber() {
-    const { appActions } = this.props;
-    const { phone } = this.state;
+    const { appActions, user } = this.props;
+    const { phone } = user || {};
 
     // appActions.getOtp({ phone });
     appActions.phoneNumberLogin({ phone });
@@ -53,8 +60,7 @@ class Login extends React.Component {
 
   renderOtpModal() {
     const { user, t } = this.props;
-    const { isFetching, isLogin, hasOtp } = user || {};
-    const { phone } = this.state;
+    const { isFetching, isLogin, hasOtp, phone } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
@@ -75,11 +81,8 @@ class Login extends React.Component {
   }
 
   render() {
-    const { user, title, className, businessInfo, onlineStoreInfo, t } = this.props;
-    const { isFetching, isLogin } = user || {};
-    const { country } = onlineStoreInfo || {};
-    const { country: businessCountry } = businessInfo || {};
-    const { phone } = this.state;
+    const { user, title, className, t } = this.props;
+    const { isFetching, isLogin, phone, country } = user || {};
     const classList = ['login'];
 
     if (className) {
@@ -96,11 +99,12 @@ class Login extends React.Component {
           className="absolute-wrapper login__container padding-left-right-normal"
           title={title}
           phone={phone}
-          country={country || businessCountry}
+          country={country}
           buttonText={t('Continue')}
           show={true}
           isLoading={isFetching}
-          updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
+          updatePhoneNumber={this.handleUpdateUser.bind(this)}
+          updateCountry={this.handleUpdateUser.bind(this)}
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
           <p className="terms-privacy text-center text-opacity">
@@ -148,8 +152,6 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      businessInfo: getBusinessInfo(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
