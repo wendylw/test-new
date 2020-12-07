@@ -134,6 +134,11 @@ export const actions = {
     }),
   }),
 
+  updateUser: (user = {}) => ({
+    type: types.UPDATE_USER,
+    user,
+  }),
+
   clearError: () => ({
     type: types.CLEAR_ERROR,
   }),
@@ -213,7 +218,7 @@ const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, code, prompt, error } = action;
+  const { type, response, responseGql, code, prompt, error } = action;
   const { login, consumerId } = response || {};
 
   switch (type) {
@@ -276,6 +281,20 @@ const user = (state = initialState.user, action) => {
       const { storeCreditsBalance, customerId } = response || {};
 
       return { ...state, storeCreditsBalance, customerId };
+    case types.UPDATE_USER:
+      return Object.assign({}, state, action.user);
+    case types.FETCH_ONLINESTOREINFO_SUCCESS:
+    case types.FETCH_COREBUSINESS_SUCCESS:
+      const { data } = responseGql;
+      const { business, onlineStoreInfo } = data || {};
+
+      if (!state.phone && business && business.country) {
+        return { ...state, country: business.country };
+      } else if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
+        return { ...state, country: onlineStoreInfo.country };
+      } else {
+        return state;
+      }
     default:
       return state;
   }
