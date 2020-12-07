@@ -199,7 +199,6 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
       deliveryDetails: getDeliveryDetails(state),
       otpType: getOtpType(state),
     }),
