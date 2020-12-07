@@ -8,6 +8,12 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     integrations: [new CaptureConsole({ levels: ['error', 'assert'] })],
     attachStacktrace: true,
     environment: process.env.NODE_ENV,
+    beforeSend: (event, hint) => {
+      if (isInfiniteScrollerBug(event) || isCrossStorageBug(event)) {
+        return null;
+      }
+      return event;
+    },
   });
 
   // inject xhr and fetch to inspect error
@@ -45,3 +51,24 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     return promise;
   };
 }
+
+const isInfiniteScrollerBug = event => {
+  try {
+    const err = event.exception.values[0];
+    return (
+      /null is not an object \(evaluating '\w+\.scrollHeight'\)/.test(err.value) &&
+      err.mechanism.data.handler === 'bound scrollListener'
+    );
+  } catch {
+    return false;
+  }
+};
+
+const isCrossStorageBug = event => {
+  try {
+    const err = event.exception.values[0];
+    return /CrossStorage/i.test(err.value);
+  } catch {
+    return false;
+  }
+};
