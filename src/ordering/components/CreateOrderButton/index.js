@@ -71,8 +71,13 @@ class CreateOrderButton extends React.Component {
     // }
 
     if ((isLogin || type === 'digital') && validCreateOrder) {
-      window.newrelic?.addPageAction('CreateOrder', { paymentName: paymentName || 'N/A' });
+      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
+        paymentName: paymentName || 'N/A',
+      });
       await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
+        paymentName: paymentName || 'N/A',
+      });
 
       const { currentOrder /*error*/ } = this.props;
       const { orderId } = currentOrder || {};

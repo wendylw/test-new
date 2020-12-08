@@ -66,6 +66,7 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
+    window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
     const { thankYouActions, order, onlineStoreInfo, user } = this.props;
     const { storeId } = order || {};
 
@@ -79,7 +80,6 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     await this.loadOrder();
-    window.newrelic?.addPageAction('OrderSuccess');
     this.pollOrderStatus();
   }
 
