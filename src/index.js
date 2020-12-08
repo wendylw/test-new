@@ -1,5 +1,4 @@
-import './sentry';
-import './tracing-id';
+import './utils/monitoring/monitor';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';

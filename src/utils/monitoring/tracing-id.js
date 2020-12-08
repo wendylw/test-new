@@ -8,7 +8,10 @@ try {
   cookieArray.forEach(cookieEntry => {
     tidKeys.forEach(tidKey => {
       if (new RegExp('^' + tidKey + '=').test(cookieEntry)) {
-        tids[tidKey] = cookieEntry.split('=')[1];
+        const tid = cookieEntry.split('=')[1];
+        if (tid) {
+          tids[tidKey] = tid;
+        }
       }
     });
   });
@@ -16,14 +19,4 @@ try {
   console.log(e);
 }
 
-try {
-  Object.keys(tids).forEach(key => {
-    const tid = tids[key];
-    window.newrelic?.setCustomAttribute(key, tid);
-    // todo: heap, gtm, sentry, ..., etc.
-  });
-} catch (e) {
-  console.log(e);
-}
-
-export {};
+export default tids;
