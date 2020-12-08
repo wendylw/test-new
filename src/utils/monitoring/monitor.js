@@ -72,10 +72,10 @@ try {
   console.log(e);
 }
 
-class ConsoleError extends Error {
+class SentryCapturedError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'ConsoleError';
+    this.name = 'SentryCapturedError';
   }
 }
 
@@ -83,13 +83,10 @@ const trackError = (event, hint) => {
   try {
     const errorMessage = event?.exception?.values?.[0] || event?.message || 'Unknown';
     window.heap?.track('common.error', { errorMessage, sentryId: event?.event_id });
-    // normal error is captured by new relic automatically, we only capture console error manually.
-    if (event && !event.exception && event.message) {
-      try {
-        throw new ConsoleError(event.message);
-      } catch (err) {
-        window.newrelic?.noticeError(err, { sentryId: event?.event_id });
-      }
+    try {
+      throw new SentryCapturedError(errorMessage);
+    } catch (err) {
+      window.newrelic?.noticeError(err, { sentryId: event?.event_id });
     }
   } catch (e) {
     console.log(e);
