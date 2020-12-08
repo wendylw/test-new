@@ -834,6 +834,14 @@ export class Home extends Component {
         ) : null}
 
         <div
+          onClick={() => {
+            throw new Error('Custom error');
+          }}
+        >
+          click me
+        </div>
+
+        <div
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
             top: `${mainTop({
