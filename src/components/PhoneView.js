@@ -54,7 +54,7 @@ class PhoneView extends React.Component {
           country={country}
           metadata={metadataMobile}
           onChange={phone => {
-            const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+            const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
             if (metadataMobile.countries[selectedCountry]) {
               setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));

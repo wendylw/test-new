@@ -704,7 +704,7 @@ export class ThankYou extends PureComponent {
                       ? `+${driverPhone}`
                       : null
                     : storePhone
-                    ? `+${storePhone}`
+                    ? `${storePhone}`
                     : null}
                 </span>
               }
@@ -1054,7 +1054,7 @@ export class ThankYou extends PureComponent {
             isPage={!isWebview}
             contentClassName="flex-middle"
             data-heap-name="ordering.thank-you.header"
-            title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
+            title={`#${orderId}`}
             navFunc={() => {
               if (isWebview) {
                 if (window.androidInterface) {

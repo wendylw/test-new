@@ -73,6 +73,7 @@ class ContactDetail extends Component {
 
               <div className="padding-top-bottom-small">
                 <PhoneInput
+                  international // If input want to show country code when phone number is empty, pls add international on props
                   smartCaret={false}
                   data-heap-name="ordering.contact-details.phone-input"
                   placeholder={t('EnterPhoneNumber')}
@@ -80,7 +81,7 @@ class ContactDetail extends Component {
                   country={country}
                   metadata={metadataMobile}
                   onChange={phone => {
-                    const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+                    const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
                     this.setState({
                       phone:
