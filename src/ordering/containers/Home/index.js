@@ -832,16 +832,6 @@ export class Home extends Component {
             </p>
           </Trans>
         ) : null}
-
-        <div
-          onClick={() => {
-            throw new Error('Custom error');
-          }}
-          style={{ color: 'red' }}
-        >
-          remove me later
-        </div>
-
         <div
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
