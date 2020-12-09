@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
+import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
@@ -530,3 +532,13 @@ export const getMerchantCountry = state => {
   return null;
 };
 export const getApiError = state => state.app.apiError;
+
+export const getBusinessInfo = state => {
+  const business = getBusiness(state);
+
+  return getBusinessByName(state, business) || {};
+};
+
+export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
+  return _get(businessInfo, 'timezoneOffset', 480);
+});
