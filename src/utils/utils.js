@@ -194,6 +194,22 @@ Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   return phone;
 };
 
+Utils.getCountry = function getCountry(phone, language, countries, defaultCountry) {
+  if (phone) {
+    return '';
+  }
+
+  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
+    return defaultCountry;
+  }
+
+  if (countries.includes(language.split('-')[1])) {
+    return language.split('-')[1];
+  } else if (countries.includes(language.split('-')[0])) {
+    return language.split('-')[0];
+  }
+};
+
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
   if (!dateString) {
     return '';
@@ -916,6 +932,54 @@ Utils.containerHeight = ({ headerEls, footerEls }) => {
     Utils.marginBottom({
       footerEls,
     })}px`;
+};
+
+Utils.formatHour = (hourString = '') => {
+  const [hour, minute] = hourString ? hourString.split(':') : [];
+  const hourRemainder = Number(hour) % 12;
+  const localeMeridiem = Number(hour) > 11 && Number(hour) < 24 ? 'pm' : 'am';
+
+  if (isNaN(hourRemainder)) {
+    return '';
+  }
+
+  return `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
+};
+
+Utils.getOpeningHours = function({
+  breakTimeFrom,
+  breakTimeTo,
+  validTimeFrom = '00:00',
+  validTimeTo = '24:00',
+  formatBreakTimes,
+  formatValidTimes = ['12am', '12am'],
+}) {
+  if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
+    return [];
+  }
+
+  if (
+    !breakTimeFrom ||
+    !breakTimeTo ||
+    validTimeFrom >= breakTimeTo ||
+    (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
+  ) {
+    return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeFrom < breakTimeFrom && validTimeTo > breakTimeTo && breakTimeFrom !== breakTimeTo) {
+    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}, ${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeFrom >= breakTimeFrom && validTimeFrom <= breakTimeTo && breakTimeTo < validTimeTo) {
+    return [`${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
+    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`];
+  }
+
+  return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
 };
 
 export default Utils;

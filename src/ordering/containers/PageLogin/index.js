@@ -20,7 +20,6 @@ import { actions as customerActionCreators, getDeliveryDetails } from '../../red
 class PageLogin extends React.Component {
   state = {
     sendOtp: false,
-    phone: Utils.getLocalStorageVariable('user.p'),
   };
 
   componentDidUpdate(prevProps) {
@@ -30,7 +29,6 @@ class PageLogin extends React.Component {
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
     }
-    console.log(this.props);
   }
 
   visitNextPage = async () => {
@@ -66,15 +64,16 @@ class PageLogin extends React.Component {
     appActions.resetOtpStatus();
   }
 
-  handleUpdatePhoneNumber(phone) {
-    this.setState({ phone });
+  handleUpdateUser(user) {
+    const { appActions } = this.props;
+
+    appActions.updateUser(user);
   }
 
-  handleSubmitPhoneNumber(phoneNumber, type) {
+  handleSubmitPhoneNumber(phone) {
     const { appActions, otpType } = this.props;
-    const { phone } = this.state;
 
-    appActions.getOtp({ phone: phoneNumber || phone, type: otpType });
+    appActions.getOtp({ phone, type: otpType });
     this.setState({ sendOtp: true });
   }
 
@@ -100,7 +99,7 @@ class PageLogin extends React.Component {
 
   renderOtpModal() {
     const { t, user } = this.props;
-    const { isFetching, isLogin, hasOtp, isError } = user || {};
+    const { isFetching, isLogin, hasOtp, isError, phone } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
@@ -111,7 +110,7 @@ class PageLogin extends React.Component {
       <OtpModal
         buttonText={t('OK')}
         ResendOtpTime={RESEND_OTP_TIME}
-        phone={Utils.getLocalStorageVariable('user.p')}
+        phone={phone}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
@@ -123,10 +122,8 @@ class PageLogin extends React.Component {
   }
 
   render() {
-    const { t, user, className, onlineStoreInfo, history } = this.props;
-    const { isLogin, showLoginPage, hasOtp, isFetching } = user || {};
-    const { country } = onlineStoreInfo || {};
-    const { phone } = this.state;
+    const { t, user, className, history } = this.props;
+    const { isLogin, showLoginPage, hasOtp, isFetching, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
     if (isLogin) {
@@ -173,7 +170,8 @@ class PageLogin extends React.Component {
               buttonText={t('Continue')}
               show={true}
               isLoading={isFetching}
-              updatePhoneNumber={this.handleUpdatePhoneNumber.bind(this)}
+              updatePhoneNumber={this.handleUpdateUser.bind(this)}
+              updateCountry={this.handleUpdateUser.bind(this)}
               onSubmit={this.handleSubmitPhoneNumber.bind(this)}
             ></PhoneViewContainer>
           </div>
@@ -201,7 +199,6 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
       deliveryDetails: getDeliveryDetails(state),
       otpType: getOtpType(state),
     }),
