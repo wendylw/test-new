@@ -837,8 +837,9 @@ export class Home extends Component {
           onClick={() => {
             throw new Error('Custom error');
           }}
+          style={{ color: 'red' }}
         >
-          click me
+          remove me later
         </div>
 
         <div
