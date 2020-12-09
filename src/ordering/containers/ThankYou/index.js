@@ -62,7 +62,7 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  async componentDidMount() {
+  componentDidMount() {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
@@ -79,7 +79,7 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-    await this.loadOrder();
+    this.loadOrder();
     this.pollOrderStatus();
   }
 

@@ -832,6 +832,7 @@ export class Home extends Component {
             </p>
           </Trans>
         ) : null}
+
         <div
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
