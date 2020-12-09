@@ -1,9 +1,10 @@
-import qs from 'qs';
+import qs, { parse } from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';
+import { stringifyTime, parseTime } from './datetime-lib';
+const { SH_LOGISTICS_VALID_TIME } = Constants;
 const Utils = {};
-
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -441,6 +442,34 @@ Utils.getValidTimeList = (qrOrderingSettings, type = Utils.isPickUpType() ? 'pic
   const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, validDays } = qrOrderingSettings;
 };
 
+Utils.getDeliveryValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
+  let logisticsValidTimeFrom = validTimeFrom;
+  let logisticsValidTimeTo = validTimeTo;
+
+  // use storeHub Logistics valid time
+  if (useStorehubLogistics) {
+    logisticsValidTimeFrom =
+      SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+  }
+
+  const logisticsValidTimeFromObj = parseTime(logisticsValidTimeFrom);
+  const logisticsValidTimeToObj = parseTime(logisticsValidTimeTo);
+  // add store prepare time
+  logisticsValidTimeFromObj.hour += minute === 0 ? 1 : 2;
+  logisticsValidTimeToObj.hour -= 1;
+
+  return {
+    deliveryValidTimeFrom: stringifyTime(logisticsValidTimeFromObj),
+    deliveryValidTimeTo: stringifyTime(logisticsValidTimeToObj),
+  };
+};
+
+Utils.getPickupValidTime = ({ validTimeFrom, validTimeTo }) => {
+  const validTimeFromObj = parseTime(validTimeFrom);
+  const validTimeToObj = parseTime(validTimeTo);
+};
+
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
@@ -460,7 +489,19 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     breakTimeFrom,
     breakTimeTo,
     vacations,
+    useStorehubLogistics,
   } = qrOrderingSettings || {};
+
+  let logisticsValidTimeFrom = validTimeFrom;
+  let logisticsValidTimeTo = validTimeTo;
+
+  // use storeHub Logistics valid time
+  if (useStorehubLogistics) {
+    logisticsValidTimeFrom =
+      SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+  }
+
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
   const deliveryFee = rate || 0;
@@ -489,6 +530,8 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     breakTimeFrom,
     breakTimeTo,
     vacations,
+    logisticsValidTimeFrom,
+    logisticsValidTimeTo,
   };
 };
 

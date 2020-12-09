@@ -383,6 +383,11 @@ const COLLECTIONS_TYPE = {
   BANNER: 'Banner',
   CAROUSEL: 'Carrousel',
 };
+// storeHub Logistics valid time period
+const SH_LOGISTICS_VALID_TIME = {
+  FROM: '9:00',
+  TO: '21:00',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -419,4 +424,5 @@ export default {
   COLLECTIONS_TYPE,
   ERROR_CODE_MAP,
   RESEND_OTP_TIME,
+  SH_LOGISTICS_VALID_TIME,
 };

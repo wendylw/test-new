@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
@@ -17,12 +19,13 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import { isAvailableOrderTime } from '../../../utils/deliveryTime';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
-import { actions as appActionsCreators } from '../../redux/modules/app';
+import { actions as appActionsCreators, getBusinessUTCOffset } from '../../redux/modules/app';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -40,6 +43,8 @@ import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
+
+dayjs.extend(utc);
 
 const localState = {
   blockScrollTop: 0,
@@ -376,6 +381,79 @@ export class Home extends Component {
 
   checkOrderTime = async () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const storeId = config.storeId;
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+
+    // should select store first
+    if (!storeId) {
+      return;
+    }
+
+    // have selected delivery time
+    if (expectedDeliveryDate && expectedDeliveryHour) {
+      return;
+    }
+
+    if (isDeliveryType || isPickUpType) {
+      const { deliveryInfo, businessUTCOffset } = this.props;
+      const {
+        validTimeFrom: storeValidTimeFrom,
+        validTimeTo: storeValidTimeTo,
+        logisticsValidTimeFrom,
+        logisticsValidTimeTo,
+        validDays,
+        vacations,
+        breakTimeFrom,
+        breakTimeTo,
+        disableOnDemandOrder,
+      } = deliveryInfo;
+      if (disableOnDemandOrder) {
+        return;
+      }
+
+      const validTimeFrom = isDeliveryType ? logisticsValidTimeFrom : storeValidTimeFrom;
+      const validTimeTo = isDeliveryType ? logisticsValidTimeTo : storeValidTimeTo;
+
+      const currentTime = dayjs().utcOffset(businessUTCOffset);
+      const availableOrderTime = isAvailableOrderTime(currentTime, {
+        validDays: validDays.map(day => day - 1), // set start 0
+        validTimeFrom,
+        validTimeTo,
+        vacations,
+        breakTimeFrom,
+        breakTimeTo,
+      });
+
+      if (!availableOrderTime) {
+        return;
+      }
+
+      Utils.setSessionVariable(
+        'expectedDeliveryDate',
+        JSON.stringify({
+          date: currentTime.startOf('day').toISOString(),
+          isOpen: true,
+          isToday: true,
+        })
+      );
+
+      Utils.setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from: 'now',
+          to: 'now',
+        })
+      );
+
+      this.setState({
+        deliveryBar: true,
+      });
+    }
+
     if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
       const { businessInfo } = this.props;
       const { qrOrderingSettings } = businessInfo || {};
@@ -585,8 +663,9 @@ export class Home extends Component {
             }}
           />
         }
-        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
-          }`}
+        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${
+          enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
+        }`}
         showBackButton={showBackButton({
           isValidTimeToOrder,
           enablePreOrder,
@@ -721,19 +800,20 @@ export class Home extends Component {
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
             : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
-        contentClassName={`${isDeliveryType || isPickUpType
-          ? enableCashback && defaultLoyaltyRatio
-            ? 'flex-top'
+        contentClassName={`${
+          isDeliveryType || isPickUpType
+            ? enableCashback && defaultLoyaltyRatio
+              ? 'flex-top'
+              : 'flex-middle'
             : 'flex-middle'
-          : 'flex-middle'
-          } padding-left-right-small`}
+        } padding-left-right-small`}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => { }}
+        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => {}}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -852,8 +932,8 @@ export class Home extends Component {
               paddingBottom:
                 Utils.isSafari && Utils.getUserAgentInfo().isMobile
                   ? `${marginBottom({
-                    footerEls: [this.footerEl],
-                  })}px`
+                      footerEls: [this.footerEl],
+                    })}px`
                   : '0',
             }}
             onToggle={this.handleToggleAside.bind(this)}
@@ -938,6 +1018,7 @@ export default compose(
         popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
         allStore: getStoresList(state),
+        businessUTCOffset: getBusinessUTCOffset(state),
       };
     },
     dispatch => ({
