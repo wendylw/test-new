@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { CaptureConsole } from '@sentry/integrations';
 import tids from './tracing-id';
-import shouldFilter from './filter-sentry-events';
+import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -81,7 +81,7 @@ class SentryCapturedError extends Error {
 
 const trackError = (event, hint) => {
   try {
-    const errorMessage = event?.exception?.values?.[0] || event?.message || 'Unknown';
+    const errorMessage = getErrorMessageFromHint(hint);
     window.heap?.track('common.error', { errorMessage, sentryId: event?.event_id });
     try {
       throw new SentryCapturedError(errorMessage);

@@ -1,12 +1,11 @@
-const shouldFilter = (event, hint) => {
-  try {
-    return isInfiniteScrollerBug(event) || isCrossStorageBug(event);
-  } catch {
-    return false;
+export const getErrorMessageFromHint = ({ originalException, syntheticException }) => {
+  if (typeof originalException === 'string') {
+    return originalException;
   }
+  return originalException?.message || syntheticException?.message || 'UnknownSentryErrorMessage';
 };
 
-const isInfiniteScrollerBug = event => {
+const isInfiniteScrollerBug = (event, hint) => {
   try {
     const err = event.exception.values[0];
     return (
@@ -18,10 +17,18 @@ const isInfiniteScrollerBug = event => {
   }
 };
 
-const isCrossStorageBug = event => {
+const isCrossStorageBug = (event, hint) => {
   try {
-    const err = event.exception.values[0];
-    return /CrossStorage/i.test(err.value);
+    const message = getErrorMessageFromHint(hint);
+    return /CrossStorage/i.test(message);
+  } catch {
+    return false;
+  }
+};
+
+const shouldFilter = (event, hint) => {
+  try {
+    return isInfiniteScrollerBug(event, hint) || isCrossStorageBug(event, hint);
   } catch {
     return false;
   }
