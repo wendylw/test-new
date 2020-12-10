@@ -14,6 +14,7 @@ import {
   isSameOrAfter,
   isBetween,
   setDateTime,
+  getTimeFromDayjs,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -206,5 +207,17 @@ describe('test setDateTime function', () => {
     ${'-24:30'} | ${'2020-04-02T08:02:17+08:00'} | ${'2020-04-01T00:30:00+08:00'}
   `('return $expected when set $date of time to $time', ({ time, date, expected }) => {
     expect(setDateTime(time, dayjs(date)).format()).toBe(expected);
+  });
+});
+
+describe('test getTimeFromDayjs function', () => {
+  test.each`
+    date                           | expected
+    ${'2020-04-02T08:02:17+08:00'} | ${'08:02'}
+    ${'2020-04-02T20:02:17+08:00'} | ${'20:02'}
+    ${'2020-04-02T00:00:17+08:00'} | ${'00:00'}
+    ${'2020-04-02T24:00:00+08:00'} | ${'00:00'}
+  `('return $expected when get time from $date', ({ time, date, expected }) => {
+    expect(getTimeFromDayjs(dayjs(date))).toBe(expected);
   });
 });

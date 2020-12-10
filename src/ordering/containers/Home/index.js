@@ -149,19 +149,9 @@ export class Home extends Component {
 
     this.getStatusFromMultipleStore();
 
-    const { deliveryInfo: NextdeliveryInfo } = this.props;
-    const { enablePreOrder } = NextdeliveryInfo || {};
-    if (!enablePreOrder) {
-      Utils.setSessionVariable(
-        'expectedDeliveryHour',
-        JSON.stringify({
-          from: 'now',
-          to: 'now',
-        })
-      );
-    }
     this.checkRange();
     this.checkOrderTime();
+    this.checkDeliveryBar();
 
     this.setState({ windowSize: windowSize() });
 
@@ -169,6 +159,16 @@ export class Home extends Component {
       this.setState({ windowSize: windowSize() });
     });
   };
+
+  checkDeliveryBar() {
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+
+    this.setState({
+      deliveryBar: deliveryAddress && expectedDeliveryDate && expectedDeliveryHour,
+    });
+  }
 
   componentDidUpdate(prevProps, prevState) {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
@@ -273,123 +273,15 @@ export class Home extends Component {
     }
   };
 
-  setDefaultDate = ({ validDays = [] }) => {
-    let defaultTime = new Date(); //TODO 应该用商家本地时间
-    if (!validDays.length) {
-      return;
-    }
-    let times = 0;
-    const getDateStringFromTime = time => {
-      time = new Date(time);
-      return `${time.getFullYear()}${Utils.zero(time.getMonth() + 1)}${Utils.zero(time.getDate())}`;
-    };
-    const isVacation = (list, date) => {
-      let isVacationDay = false;
-
-      for (let i = 0; i < list.length; i++) {
-        let item = list[i];
-        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
-          return true;
-        }
-      }
-      return isVacationDay;
-    };
-    const currentValidDays = Array.from(validDays, v => v - 1);
-
-    while (currentValidDays.indexOf(defaultTime.getDay()) === -1 || isVacation(getDateStringFromTime(defaultTime))) {
-      times++;
-      defaultTime.setDate(defaultTime.getDate() + 1);
-      if (times > 30) {
-        break;
-      }
-    }
-
-    const currentTime = new Date(); //TODO 应该用商家本地时间
-
-    if (defaultTime.getMonth() === currentTime.getMonth() && defaultTime.getDate() === currentTime.getDate()) {
-      Utils.setSessionVariable(
-        'expectedDeliveryDate',
-        JSON.stringify({
-          date: defaultTime.toISOString(),
-          isOpen: true,
-          isToday: true,
-        })
-      );
-    } else {
-      Utils.setSessionVariable(
-        'expectedDeliveryDate',
-        JSON.stringify({
-          date: defaultTime.toISOString(),
-          isOpen: true,
-          isToday: false,
-        })
-      );
-    }
-  };
-
-  setDefaultHour = ({ validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder }) => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    let deliverDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
-    if (deliverDate.isToday) {
-      const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, true);
-      if (timeList.length) {
-        let first = timeList[0];
-        let expectedDeliveryHour;
-        if (first === 'now') {
-          if (disableOnDemandOrder) {
-            first = timeList[1];
-            expectedDeliveryHour = {
-              from: first,
-              to: Utils.zero(+first.split(':')[0] + 1) + ':00',
-            };
-          } else {
-            expectedDeliveryHour = {
-              from: 'now',
-              to: 'now',
-            };
-          }
-        } else if (enablePreOrder) {
-          expectedDeliveryHour = {
-            from: first,
-            to: Utils.zero(+first.split(':')[0] + 1) + ':00',
-          };
-        }
-        Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
-      }
-    } else {
-      if (enablePreOrder) {
-        const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, false);
-        let first = timeList[0];
-        Utils.setSessionVariable(
-          'expectedDeliveryHour',
-          JSON.stringify({
-            from: first,
-            to: Utils.zero(+first.split(':')[0] + 1) + ':00',
-          })
-        );
-      } else {
-        Utils.setSessionVariable(
-          'expectedDeliveryHour',
-          JSON.stringify({
-            from: 'now',
-            to: 'now',
-          })
-        );
-      }
-    }
-  };
-
   checkOrderTime = async () => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
-    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     const storeId = config.storeId;
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
 
-    // should select store first
-    if (!storeId) {
+    if (!deliveryAddress || !storeId) {
       return;
     }
 
@@ -440,18 +332,9 @@ export class Home extends Component {
           isToday: true,
         })
       );
+      const expectedDeliveryHour = isDeliveryType ? { from: 'now', to: 'now' } : { from: 'now' };
 
-      Utils.setSessionVariable(
-        'expectedDeliveryHour',
-        JSON.stringify({
-          from: 'now',
-          to: 'now',
-        })
-      );
-
-      this.setState({
-        deliveryBar: true,
-      });
+      Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
     }
   };
 
