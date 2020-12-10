@@ -5,9 +5,9 @@
   position: fixed;
 }
 
-.phone-view .react-phone-number-input--focus .react-phone-number-input__input,
-.phone-view .react-phone-number-input .react-phone-number-input__input:focus,
-.phone-view .react-phone-number-input .react-phone-number-input__input {
+.phone-view .PhoneInput--focus .PhoneInputInput,
+.phone-view .PhoneInput .PhoneInputInput:focus,
+.phone-view .PhoneInput .PhoneInputInput {
   font-size: 1rem;
   font-weight: $font-weight-bolder;
   height: 40px;

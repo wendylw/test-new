@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
+import Utils from '../../../../../utils/utils';
 import './StoreInfoAside.scss';
 
 class StoreInfoAside extends Component {
@@ -19,18 +20,28 @@ class StoreInfoAside extends Component {
       7: 'Sat',
       1: 'Sun',
     };
-    const { t, validDays, validTimeFrom, validTimeTo } = this.props;
-
-    return (validDays || []).sort().map(day => {
-      return (
-        <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
-          <span>{t(weekInfo[day])}</span>
-          <time>
-            {`${validTimeFrom}`} - {`${validTimeTo}`}
-          </time>
-        </li>
-      );
+    const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
+    const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
+    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
+    const openingHours = Utils.getOpeningHours({
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      formatBreakTimes,
+      formatValidTimes,
     });
+
+    return Object.keys(weekInfo)
+      .sort()
+      .map(day => {
+        return (
+          <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
+            <span>{t(weekInfo[day])}</span>
+            <time>{validDays.includes(+day) || !openingHours.length ? openingHours : t('Closed')}</time>
+          </li>
+        );
+      });
   };
 
   render() {
@@ -82,6 +93,7 @@ class StoreInfoAside extends Component {
               src={onlineStoreInfo.logo}
               alt={onlineStoreInfo.title}
             />
+
             <summary className="store-info-aside__summary padding-left-right-small">
               <div className="flex flex-middle">
                 <h2 className="text-size-big text-weight-bolder text-middle text-omit__single-line">

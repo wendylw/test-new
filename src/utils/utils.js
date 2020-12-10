@@ -192,6 +192,22 @@ Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   return phone;
 };
 
+Utils.getCountry = function getCountry(phone, language, countries, defaultCountry) {
+  if (phone) {
+    return '';
+  }
+
+  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
+    return defaultCountry;
+  }
+
+  if (countries.includes(language.split('-')[1])) {
+    return language.split('-')[1];
+  } else if (countries.includes(language.split('-')[0])) {
+    return language.split('-')[0];
+  }
+};
+
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
   if (!dateString) {
     return '';
@@ -343,6 +359,10 @@ Utils.isDineInType = () => {
 
 Utils.isDigitalType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
+};
+
+Utils.isTakeAwayType = () => {
+  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
 };
 
 Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
@@ -566,28 +586,6 @@ Utils.utoa = str => {
 // base64 to unicode string
 Utils.atou = str => {
   return decodeURIComponent(escape(window.atob(str)));
-};
-
-// deliveryTo uses the placeInfo from <Location />
-// use setDeliveryToCookie and getDeliveryToCookie to share user location between domains
-//
-// setDeliveryToCookie(deliveryAddress: PlaceInfo) => void
-Utils.setDeliveryAddressCookie = deliveryAddress => {
-  const placeInfoBase64 = Utils.utoa(JSON.stringify(deliveryAddress));
-  const domain = (process.env.REACT_APP_MERCHANT_STORE_URL || '').split('%business%')[1];
-  document.cookie = `deliveryAddress=${placeInfoBase64}; path=/; domain=${domain}`;
-};
-
-// getDeliveryToCookie(void) => PlaceInfo || undefined
-Utils.getDeliveryAddressCookie = () => {
-  const placeInfoBase64 = (document.cookie.split(';').find(kv => kv.trim().split('=')[0] === 'deliveryAddress') || '')
-    .trim()
-    .slice('deliveryAddress='.length);
-  try {
-    return JSON.parse(Utils.atou(placeInfoBase64));
-  } catch (e) {
-    return null;
-  }
 };
 
 Utils.getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
@@ -860,28 +858,23 @@ Utils.getFulfillDate = () => {
   }
 };
 
-Utils.retry = (fn, retriesLeft = 5, interval = 1500) => {
-  let timer = null;
-
-  function timerSetting(resolve, reject) {
-    timer = setTimeout(() => {
-      clearTimeout(timer);
-
-      if (retriesLeft === 1) {
-        reject(error);
-      } else {
-        Utils.retry(fn, retriesLeft - 1, interval).then(resolve, reject);
-      }
-    }, interval);
-  }
-
+// This function only retry when the error is ChunkLoadError, do NOT use it as a common promise retry util!
+Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) => {
   return new Promise((resolve, reject) => {
     fn()
-      .then(resolve, () => {
-        timerSetting(resolve, reject);
-      })
+      .then(resolve)
       .catch(error => {
-        timerSetting(resolve, reject);
+        setTimeout(() => {
+          // if the target module has some runtime error (for example, try to access window.notExistingObj.notExistingProp),
+          // the promise will throw correct error for the first time, but will resolve an empty module next time, which makes
+          // the entire module seems to be resolved, however it's actually not working. To avoid this kind of thing, we will
+          // only deal with ChunkLoadError, which means the module cannot be loaded (mostly because of network issues).
+          if (error.name !== 'ChunkLoadError' || retriesLeft <= 1) {
+            reject(error);
+          } else {
+            Utils.attemptLoad(fn, retriesLeft - 1, interval).then(resolve, reject);
+          }
+        }, interval);
       });
   });
 };
@@ -937,6 +930,54 @@ Utils.containerHeight = ({ headerEls, footerEls }) => {
     Utils.marginBottom({
       footerEls,
     })}px`;
+};
+
+Utils.formatHour = (hourString = '') => {
+  const [hour, minute] = hourString ? hourString.split(':') : [];
+  const hourRemainder = Number(hour) % 12;
+  const localeMeridiem = Number(hour) > 11 && Number(hour) < 24 ? 'pm' : 'am';
+
+  if (isNaN(hourRemainder)) {
+    return '';
+  }
+
+  return `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
+};
+
+Utils.getOpeningHours = function({
+  breakTimeFrom,
+  breakTimeTo,
+  validTimeFrom = '00:00',
+  validTimeTo = '24:00',
+  formatBreakTimes,
+  formatValidTimes = ['12am', '12am'],
+}) {
+  if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
+    return [];
+  }
+
+  if (
+    !breakTimeFrom ||
+    !breakTimeTo ||
+    validTimeFrom >= breakTimeTo ||
+    (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
+  ) {
+    return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeFrom < breakTimeFrom && validTimeTo > breakTimeTo && breakTimeFrom !== breakTimeTo) {
+    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}, ${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeFrom >= breakTimeFrom && validTimeFrom <= breakTimeTo && breakTimeTo < validTimeTo) {
+    return [`${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
+    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`];
+  }
+
+  return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
 };
 
 export default Utils;

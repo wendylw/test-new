@@ -67,12 +67,14 @@ class ThankYou extends Component {
           </div>
 
           <div className="card margin-normal">
-            <div className="text-center padding-small border__bottom-divider">
-              <h4 className="margin-small text-size-big text-weight-bolder">{t('YourGiftVoucherCode')}</h4>
-              <span className="voucher-thanks__voucher-code padding-small text-size-huge text-weight-bolder">
-                {voucherCode}
-              </span>
-            </div>
+            {voucherCode ? (
+              <div className="text-center padding-small border__bottom-divider">
+                <h4 className="margin-small text-size-big text-weight-bolder">{t('YourGiftVoucherCode')}</h4>
+                <span className="voucher-thanks__voucher-code padding-small text-size-huge text-weight-bolder">
+                  {voucherCode}
+                </span>
+              </div>
+            ) : null}
             <div className="padding-top-bottom-smaller">
               {onlineStoreLogo ? (
                 <Image

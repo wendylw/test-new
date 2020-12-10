@@ -761,27 +761,24 @@ img {
 }
 
 /* react Phone number input box */
-.react-phone-number-input {
+.PhoneInput {
   @extend .margin-top-bottom-small;
+  @extend .form__group;
 
-  .react-phone-number-input__row {
-    @extend .form__group;
+  overflow: hidden;
 
-    overflow: hidden;
-  }
-
-  .react-phone-number-input__country--native {
+  .PhoneInputCountry {
     @extend .margin-left-right-small;
   }
 
-  .react-phone-number-input__icon {
+  .PhoneInputCountryIcon {
     border: 0;
     width: calc(0.51em * 4);
     height: calc(0.51em * 3);
   }
 
-  .react-phone-number-input__input,
-  .react-phone-number-input__input:focus {
+  .PhoneInputInput,
+  .PhoneInputInput:focus {
     @extend .form__input;
     @extend .text-size-biggest;
 

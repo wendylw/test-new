@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import Header from '../../../../../components/Header';
-import addAddress from '../../../../../images/add-address.svg';
 import { withTranslation } from 'react-i18next';
-import './AddressList.scss';
-import { IconBookmark, IconNext } from '../../../../../components/Icons';
+import { IconAddAddress, IconBookmark, IconNext } from '../../../../../components/Icons';
 import Tag from '../../../../../components/Tag';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -14,6 +12,7 @@ import {
   getDeliveryAddressList,
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
+import './AddressList.scss';
 
 class AddressList extends Component {
   componentDidMount() {
@@ -32,9 +31,7 @@ class AddressList extends Component {
       pathname: '/customer/addressDetail',
       search: window.location.search,
       state: {
-        from: {
-          pathname: '/customer/addressList',
-        },
+        fromAddressList: true,
       },
     });
   };
@@ -50,7 +47,16 @@ class AddressList extends Component {
   renderAddressCard = () => {
     const { t, addressList, history, customerActions } = this.props;
     return (addressList || []).map((address, index) => {
-      const { _id: addressId, addressName, deliveryTo, addressDetails, comments, availableStatus, location } = address;
+      const {
+        _id: addressId,
+        addressName,
+        deliveryTo,
+        addressDetails,
+        comments,
+        availableStatus,
+        location,
+        city: deliveryToCity,
+      } = address;
       return (
         <div
           className={`flex flex-space-between margin-left-right-normal border__bottom-divider ${
@@ -67,6 +73,7 @@ class AddressList extends Component {
                     deliveryComments: comments,
                     deliveryToAddress: deliveryTo,
                     deliveryToLocation: location,
+                    deliveryToCity,
                   });
                   history.push({
                     pathname: '/customer',
@@ -126,16 +133,14 @@ class AddressList extends Component {
               })}px`,
           }}
         >
-          <div className="flex flex-middle padding-normal">
-            <img src={addAddress} className="address-list__add-icon icon border-radius-base" />
-            <span
-              className="text-size-big text-weight-bolder padding-left-right-normal"
-              onClick={() => {
-                this.addNewAddress();
-              }}
-            >
-              {t('AddNewAddress')}
-            </span>
+          <div
+            className="flex flex-middle padding-normal"
+            onClick={() => {
+              this.addNewAddress();
+            }}
+          >
+            <IconAddAddress className="address-list__add-icon icon border-radius-base" />
+            <span className="text-size-big text-weight-bolder padding-left-right-normal">{t('AddNewAddress')}</span>
           </div>
           <div>
             <p className="address-list__save-title padding-normal text-weight-bolder">{t('SavedAddress')}</p>

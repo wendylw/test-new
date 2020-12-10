@@ -3,7 +3,7 @@ import i18next from 'i18next';
 export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
     MY: 'EN',
-    TH: 'TH',
+    TH: 'EN',
     PH: 'EN',
     EN: 'EN',
   };

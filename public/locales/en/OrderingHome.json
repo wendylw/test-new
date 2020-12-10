@@ -20,5 +20,6 @@
   "OfflinePromptDescription": "Apologies, our store is not ready to go online yet, but we will be back soon! Please try again later.",
   "Selected": "{{quantity}} Selected",
   "AddCart": "add to cart",
-  "Unavailable": "Unavailable"
+  "Unavailable": "Unavailable",
+  "Processing": "Processing"
 }

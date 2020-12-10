@@ -55,9 +55,11 @@ const StoreListItem = props => (
           </li>
         </ul>
       )}
-      <p className="margin-top-bottom-small text-size-small">
-        {props.t('openingHours')}: {props.openingHouers}
-      </p>
+      {props.openingHours ? (
+        <p className="margin-top-bottom-small text-size-small">
+          {props.t('openingHours')}: {props.openingHours}
+        </p>
+      ) : null}
     </summary>
 
     {props.storeId === props.store.id && (
@@ -203,38 +205,25 @@ class StoreList extends Component {
     );
   };
 
-  getOpeningHouers = item => {
+  getOpeningHours = item => {
     const { qrOrderingSettings } = item;
-    if (!qrOrderingSettings) return;
-    const { validTimeFrom, validTimeTo } = qrOrderingSettings;
 
-    let openingHouersStringFrom = `${
-      validTimeFrom.split(':')[0] < '12'
-        ? validTimeFrom + ' AM'
-        : +validTimeFrom.split(':')[0] - 12 < 10
-        ? '0' + (+validTimeFrom.split(':')[0] - 12) + ':' + validTimeFrom.split(':')[1] + ' PM'
-        : +validTimeFrom.split(':')[0] - 12 + ':' + validTimeFrom.split(':')[1] + ' PM'
-    }`;
-    let openingHouersStringTo = `${
-      validTimeTo.split(':')[0] < '12'
-        ? validTimeTo + ' AM'
-        : +validTimeTo.split(':')[0] - 12 < 10
-        ? '0' + (+validTimeTo.split(':')[0] - 12) + ':' + validTimeTo.split(':')[1] + ' PM'
-        : +validTimeTo.split(':')[0] - 12 + ':' + validTimeTo.split(':')[1] + ' PM'
-    }`;
-    if (validTimeFrom === '12:00') {
-      openingHouersStringFrom = '12:00 PM';
+    if (!qrOrderingSettings) {
+      return null;
     }
-    if (validTimeTo === '12:00') {
-      openingHouersStringTo = '12:00 PM';
-    }
-    if (validTimeFrom === '24:00') {
-      openingHouersStringFrom = '00:00 AM';
-    }
-    if (validTimeTo === '24:00') {
-      openingHouersStringTo = '00:00 AM';
-    }
-    return `${openingHouersStringFrom} - ${openingHouersStringTo}`;
+
+    const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
+    const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
+    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
+
+    return Utils.getOpeningHours({
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      formatBreakTimes,
+      formatValidTimes,
+    });
   };
 
   render() {
@@ -274,7 +263,7 @@ class StoreList extends Component {
               {storeList.map(item => (
                 <StoreListItem
                   store={item}
-                  openingHouers={this.getOpeningHouers(item)}
+                  openingHours={this.getOpeningHours(item)}
                   storeId={this.state.storeid}
                   select={this.selectStore}
                   key={item.id}
