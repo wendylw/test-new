@@ -26,12 +26,12 @@ class PeopleCountModal extends Component {
         onHide={() => history.replace(Constants.ROUTER_PATHS.ORDERING_HOME)}
       >
         <Modal.Header>
-          <h4 className="font-weight-bolder">{t('PeopleCountModalTitle')}</h4>
+          <h4 className="text-weight-bolder">{t('PeopleCountModalTitle')}</h4>
         </Modal.Header>
         <Modal.Body>
-          <ul className="customer-numbers grid">
+          <ul className="customer-numbers">
             {mostNumbers.map(n => (
-              <li className="text-center width-1-3" key={`${n}`}>
+              <li className="text-center" key={`${n}`}>
                 <span
                   className={`tag__card ${this.state.value === n ? 'active' : ''}`}
                   data-heap-name="common.people-count-modal.people-number"
@@ -42,7 +42,7 @@ class PeopleCountModal extends Component {
               </li>
             ))}
             {showLastNumber ? (
-              <li className="text-center width-2-3" key={`${lastNumber}`}>
+              <li className="text-center" key={`${lastNumber}`}>
                 <span
                   className={`tag__card ${this.state.value === Constants.PEOPLE_COUNT.MAX_PLUS ? 'active' : ''}`}
                   data-heap-name="common.people-count-modal.people-max-number"

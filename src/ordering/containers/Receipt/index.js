@@ -19,6 +19,7 @@ import {
 } from '../../redux/modules/thankYou';
 import { getUser } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
+import './Receipt.scss';
 
 const { DELIVERY_METHOD } = Constants;
 export class ReceiptDetail extends Component {
@@ -72,7 +73,7 @@ export class ReceiptDetail extends Component {
     const { items } = order || {};
 
     return (
-      <div className="list__container">
+      <div className="receipt__list">
         {(items || []).map(item => {
           const { id, title, variationTexts, displayPrice, unitPrice, quantity, image } = item;
 
@@ -88,13 +89,13 @@ export class ReceiptDetail extends Component {
               variation={(variationTexts || []).join(', ')}
               detail={
                 <CurrencyNumber
-                  className="price item__text font-weight-bolder"
+                  className="price item__text text-weight-bolder"
                   money={displayPrice || unitPrice || 0}
                 />
               }
             >
               <ItemOperator
-                className="flex-middle exhibit"
+                className="flex-middle exhibit margin-normal padding-top-bottom-normal"
                 data-heap-name="ordering.receipt.item-operator"
                 quantity={quantity}
                 decreaseDisabled={quantity === 0}
@@ -107,43 +108,47 @@ export class ReceiptDetail extends Component {
   }
 
   render() {
-    const { t, order, businessInfo, promotion, user } = this.props;
+    const { t, history, order, businessInfo, promotion } = this.props;
     const { orderId, tax, serviceCharge, subtotal, total, additionalComments } = order || {};
-    const { isLogin } = user || {};
 
     return (
-      <section className="table-ordering__receipt" data-heap-name="ordering.receipt.container">
+      <section className="receipt flex flex-column" data-heap-name="ordering.receipt.container">
         <Header
-          className="border__bottom-divider gray flex-middle"
+          className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
           title={t('ViewReceipt')}
           data-heap-name="ordering.receipt.header"
           navFunc={this.goBack}
         >
-          <span className="gray-font-opacity">{this.getHeaderContent()}</span>
+          <span className="flex__shrink-fixed text-opacity padding-left-right-small">{this.getHeaderContent()}</span>
         </Header>
-        <div className="receipt__content text-center">
-          <label className="receipt__label gray-font-opacity font-weight-bolder text-uppercase">
-            {t('ReceiptNumber')}
-          </label>
-          <span className="receipt__id-number">{orderId}</span>
+        <div className="receipt__container">
+          <div className="receipt__number-container text-center padding-normal border__bottom-divider">
+            <label className="receipt__number-label padding-top-bottom-small margin-top-bottom-small text-opacity text-uppercase">
+              {t('ReceiptNumber')}
+            </label>
+            <span className="receipt__number margin-top-bottom-small text-size-biggest">{orderId}</span>
+          </div>
+          {this.renderProductItem()}
+
+          {additionalComments ? (
+            <article className="padding-small border__bottom-divider">
+              <h4 className="margin-small text-weight-bolder text-uppercase">{t('Notes')}</h4>
+              <p className="margin-small text-opacity">{additionalComments}</p>
+            </article>
+          ) : null}
+          <Billing
+            history={history}
+            tax={tax}
+            businessInfo={businessInfo}
+            serviceCharge={serviceCharge}
+            subtotal={subtotal}
+            total={total}
+            promotion={promotion}
+            isLogin={true}
+            creditsBalance={this.getSpendCashback()}
+          />
         </div>
-        {this.renderProductItem()}
-        {additionalComments ? (
-          <article className="receipt__note border__bottom-divider">
-            <h4 className="receipt__title font-weight-bolder text-uppercase">{t('Notes')}</h4>
-            <p className="receipt__text gray-font-opacity">{additionalComments}</p>
-          </article>
-        ) : null}
-        <Billing
-          tax={tax}
-          businessInfo={businessInfo}
-          serviceCharge={serviceCharge}
-          subtotal={subtotal}
-          total={total}
-          promotion={promotion}
-          isLogin={true}
-          creditsBalance={this.getSpendCashback()}
-        />
       </section>
     );
   }
@@ -153,10 +158,10 @@ export default compose(
   withTranslation(),
   connect(
     state => ({
+      user: getUser(state),
       businessInfo: getBusinessInfo(state),
       order: getOrder(state),
       promotion: getPromotion(state),
-      user: getUser(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

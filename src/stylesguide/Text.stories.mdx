@@ -1,0 +1,160 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Utilities/Text" />
+
+<style>{`
+.text-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.text-sb__item {
+  margin-bottom: 20px;
+}
+
+.text-sb__label {
+  display: inline-block;
+  vertical-align: top;
+  width: 320px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.text-sb__content {
+  display: inline-block;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.text-sb__single-line {
+  width: 400px;
+  line-clamp: 1;    
+  -webkit-line-clamp: 1;
+}
+
+.text-sb__multiple-line {
+  width: 400px;
+  line-clamp: 2;    
+  -webkit-line-clamp: 2;
+}
+`}</style>
+
+# Text
+
+## Text alignment
+<div class="text-sb__card">
+  <div class="text-sb__item flex flex-middle">
+    <label class="text-sb__label">text-center</label>
+    <div class="text-center" style={{width: '100%'}}>Text Center</div>
+  </div>
+  <div class="text-sb__item flex flex-middle">
+    <label class="text-sb__label">text-left</label>
+    <div class="text-left" style={{width: '100%'}}>Text Left</div>
+  </div>
+  <div class="text-sb__item flex flex-middle">
+    <label class="text-sb__label">text-right</label>
+    <div class="text-right" style={{width: '100%'}}>Text Right</div>
+  </div>
+  <div class="text-sb__item flex flex-middle">
+    <label class="text-sb__label">text-middle</label>
+    <div style={{width: '100%'}}>
+      <div className="text-middle" style={{display: 'inline-block'}}>Text middle1</div>
+      <div className="text-middle" style={{display: 'inline-block'}}>Text middle2</div>
+    </div>
+  </div>
+</div>
+
+
+## Text Color
+
+<div class="text-sb__card">
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-opacity</label>
+    <div class="text-sb__content text-opacity">Text Opacity</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-error</label>
+    <div class="text-sb__content text-error">Text Error</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-success</label>
+    <div class="text-sb__content text-success">Text Success</div>
+  </div>
+</div>
+
+
+## Text Effects
+
+<div class="text-sb__card">
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-line-height-base</label>
+    <div class="text-sb__content text-line-height-base">Text Line Height Base (line-height: 1.4em;)</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-line-height-higher</label>
+    <div class="text-sb__content text-line-height-higher">Text Line Height Base (line-height: 1.6em;)</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-uppercase</label>
+    <div class="text-sb__content text-uppercase">Text Uppercase</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-lowercase</label>
+    <div class="text-sb__content text-lowercase">Text Lowercase</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-capitalize</label>
+    <div class="text-sb__content text-capitalize">text capitalize</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-line-through</label>
+    <div class="text-sb__content text-line-through">text line through</div>
+  </div>
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-size-reset</label>
+    <div class="text-sb__content">PS: This class name clear tiny space of default rendering for browser.</div>
+  </div>
+</div>
+
+
+## Text Omit
+
+### 
+### Text CSS of Single Line
+```js live=true
+.block__element {
+  width: [required attribute];
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
+}
+```
+
+<div class="text-sb__card">
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-omit__single-line</label>
+    <div class="text-sb__content">
+      <div class="text-omit__single-line text-sb__single-line">text omit single line text omit single line text omit single line text omit single line text omit single Line</div>
+    </div>
+  </div>
+</div>
+
+### Text CSS of Multiple Line
+```js live=true
+.block__element {
+  line-clamp: [line number];
+  -webkit-line-clamp: [line number];
+}
+```
+<div class="text-sb__card">
+  <div class="text-sb__item">
+    <label class="text-sb__label">text-omit__multiple-line</label>
+    <div class="text-sb__content">
+      <div class="text-omit__multiple-line text-sb__multiple-line">text omit multiple line text omit multiple line text omit multiple line text omit multiple line text omit multiple line text omit multiple line</div>
+    </div>
+  </div>
+</div>

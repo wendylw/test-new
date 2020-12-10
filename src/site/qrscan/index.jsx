@@ -217,7 +217,7 @@ class QRScan extends Component {
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
-              className="icon icon__big icon__gray text-middle"
+              className="icon icon__big icon__default text-middle"
               onClick={this.handleBackClicked}
               data-heap-name="site.scan.back-btn"
             />

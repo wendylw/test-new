@@ -45,7 +45,7 @@ class Campaign extends Component {
             <header className="header flex flex-space-between flex-middle sticky-wrapper">
               <div>
                 <IconClose
-                  className="icon icon__big icon__gray text-middle"
+                  className="icon icon__big icon__default text-middle"
                   data-heap-name="site.campaign.close-btn"
                   onClick={this.handleToggleOfferDetails}
                 />

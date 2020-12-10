@@ -9,13 +9,14 @@ import {
   getPageErrorCode,
   PAGE_ERROR_CODE_LIST,
 } from '../../redux/modules/app';
+import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import PageError from '../../components/PageError';
 import PageLoader from '../../components/PageLoader';
 import config from '../../../config';
-
+import { getBusinessInfo } from '../../redux/modules/app';
 class App extends Component {
   componentDidMount() {
     this.props.appActions.loadAppBaseData();
@@ -28,6 +29,15 @@ class App extends Component {
   gotoHomePage = () => {
     window.location.href = config.beepitComUrl;
   };
+
+  componentDidUpdate() {
+    const { businessesInfo } = this.props;
+    const { country, isQROrderingEnabled } = businessesInfo || {};
+
+    if (country && !isQROrderingEnabled) {
+      window.location.href = window.location.origin;
+    }
+  }
 
   getPageErrorProps() {
     const { pageErrorCode, t } = this.props;
@@ -71,7 +81,7 @@ class App extends Component {
     }
 
     return (
-      <main className="voucher-ordering">
+      <main className="voucher fixed-wrapper fixed-wrapper__main">
         <Routes />
         <DocumentFavicon icon={this.props.favicon || faviconImage} />
       </main>
@@ -86,6 +96,7 @@ export default compose(
       favicon: getOnlineStoreInfoFavicon(state),
       showPageLoader: getShowPageLoader(state),
       pageErrorCode: getPageErrorCode(state),
+      businessesInfo: getBusinessInfo(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

@@ -9,6 +9,7 @@ import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
 import { BackPosition, showBackButton } from '../utils/backHelper';
 import withDataAttributes from './withDataAttributes';
+import './Header.scss';
 
 class Header extends Component {
   renderLogoAndNavDom() {
@@ -19,16 +20,18 @@ class Header extends Component {
     // }
 
     const renderPageAction = () => {
-      if (
-        !isStoreHome ||
-        (isStoreHome &&
-          showBackButton({
-            isValidTimeToOrder,
-            enablePreOrder,
-            backPosition: BackPosition.STORE_NAME,
-          }))
-      ) {
-        const iconClassName = 'header__icon text-middle';
+      const isHomePageBack =
+        isStoreHome &&
+        showBackButton({
+          isValidTimeToOrder,
+          enablePreOrder,
+          backPosition: BackPosition.STORE_NAME,
+        });
+
+      if (!isStoreHome || isHomePageBack) {
+        const iconClassName = `icon ${
+          isHomePageBack ? 'icon__normal' : 'icon__big'
+        } icon__default text-middle flex__shrink-fixed`;
 
         return isPage ? (
           <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
@@ -41,7 +44,13 @@ class Header extends Component {
     return (
       <React.Fragment>
         {renderPageAction()}
-        {isStoreHome ? <Image className="header__image-container text-middle" src={logo} alt={title} /> : null}
+        {isStoreHome ? (
+          <Image
+            className="logo logo__normal text-middle margin-top-bottom-smaller margin-left-right-small flex__shrink-fixed"
+            src={logo}
+            alt={title}
+          />
+        ) : null}
       </React.Fragment>
     );
   }
@@ -50,6 +59,8 @@ class Header extends Component {
     const {
       t,
       className,
+      contentClassName,
+      style,
       isStoreHome,
       title,
       children,
@@ -60,18 +71,28 @@ class Header extends Component {
       enableCashback,
       defaultLoyaltyRatio,
       dataAttributes,
+      headerRef,
+      isDeliveryType,
+      isPickUpType,
     } = this.props;
-    const isDeliveryType = Utils.isDeliveryType();
-    const isPickUpType = Utils.isPickUpType();
-    const classList = [`header flex flex-space-between${isPickUpType ? ' pick-up' : ''}`];
+
+    const isDeliveryHomePage = isStoreHome && (isDeliveryType || isPickUpType);
+    const classList = ['header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper'];
+    const contentClassList = ['header__content flex padding-top-bottom-smaller'];
     const cashbackRatePercentage = defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : null;
 
     if (className) {
       classList.push(className);
     }
 
+    if (contentClassName) {
+      contentClassList.push(contentClassName);
+    }
+
     return (
       <header
+        ref={headerRef}
+        style={style}
         className={classList.join(' ')}
         {...dataAttributes}
         onClick={() => {
@@ -80,64 +101,57 @@ class Header extends Component {
           }
         }}
       >
-        {this.renderLogoAndNavDom()}
-        {isStoreHome && (isDeliveryType || isPickUpType) ? (
-          <div className="header__title-container">
-            <h1 className="header__title">
-              <span
-                className={`header__one-line-title font-weight-bolder text-middle ${
-                  !isValidTimeToOrder ? 'has-tag' : ''
-                }`}
-              >
-                {title}
-              </span>
-              {isValidTimeToOrder ? null : (
-                <div className="tag__card-container text-middle">
-                  {enablePreOrder ? (
-                    <Tag text={t('PreOrder')} className="tag__card blue downsize text-middle" />
-                  ) : (
-                    <Tag text={t('Closed')} className="tag__card warning downsize text-middle" />
-                  )}
-                </div>
-              )}
-            </h1>
-            {isDeliveryType ? (
-              <ul className="header__info-list">
-                <li className="header__info-item">
-                  <IconMotorcycle className="header__motor-icon text-middle" />
-                  <CurrencyNumber
-                    className="header__info-text text-middle font-weight-bolder"
-                    money={deliveryFee || 0}
+        <div className={contentClassList.join(' ')}>
+          {this.renderLogoAndNavDom()}
+          {isDeliveryHomePage ? (
+            <div className="header__store-info">
+              <div className="flex flex-middle">
+                <h1 className="header__store-name padding-top-bottom-smaller text-size-big text-weight-bolder text-middle text-omit__single-line">
+                  {title}
+                </h1>
+                {isValidTimeToOrder ? null : enablePreOrder ? (
+                  <Tag
+                    text={t('PreOrder')}
+                    className="tag__small tag__info margin-left-right-small text-middle text-size-small"
                   />
-                </li>
-                {enableCashback && cashbackRatePercentage ? (
-                  <li className="header__info-item">
-                    <IconWallet className="header__motor-icon text-middle" />
-                    <span className="header__info-text text-middle font-weight-bolder">
-                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            ) : null}
-            {isPickUpType ? (
-              <ul className="header__info-list">
-                {enableCashback && cashbackRatePercentage ? (
-                  <li className="header__info-item">
-                    <IconWallet className="header__motor-icon text-middle" />
-                    <span className="header__info-text text-middle font-weight-bolder">
-                      {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            ) : null}
-          </div>
-        ) : (
-          <h2 className="header__title font-weight-bolder text-middle" data-testid="headerTitle">
-            {title}
-          </h2>
-        )}
+                ) : (
+                  <Tag
+                    text={t('Closed')}
+                    className="tag__small tag__error margin-left-right-small text-middle text-size-small"
+                  />
+                )}
+              </div>
+              {isDeliveryType || isPickUpType ? (
+                <ul className="store-info">
+                  {isDeliveryType ? (
+                    <li className="store-info__item">
+                      <IconMotorcycle className="icon icon__smaller text-middle" />
+                      <CurrencyNumber
+                        className="store-info__text text-size-smaller text-middle"
+                        money={deliveryFee || 0}
+                      />
+                    </li>
+                  ) : null}
+                  {enableCashback && cashbackRatePercentage ? (
+                    <li className="store-info__item">
+                      <IconWallet className="icon icon__smaller text-middle" />
+                      <span className="store-info__text text-size-smaller text-middle">
+                        {t('EnabledCashbackText', { cashbackRate: cashbackRatePercentage })}
+                      </span>
+                    </li>
+                  ) : null}
+                </ul>
+              ) : null}
+            </div>
+          ) : (
+            <h2
+              className="header__title text-size-big text-weight-bolder text-middle text-middle text-omit__single-line"
+              data-testid="headerTitle"
+            >
+              {title}
+            </h2>
+          )}
+        </div>
         {children}
       </header>
     );
@@ -146,6 +160,8 @@ class Header extends Component {
 
 Header.propTypes = {
   className: PropTypes.string,
+  style: PropTypes.object,
+  headerRef: PropTypes.any,
   deliveryFee: PropTypes.number,
   isPage: PropTypes.bool,
   isStoreHome: PropTypes.bool,
@@ -157,6 +173,8 @@ Header.propTypes = {
   isValidTimeToOrder: PropTypes.bool,
   enableCashback: PropTypes.bool,
   defaultLoyaltyRatio: PropTypes.number,
+  isDeliveryType: PropTypes.bool,
+  isPickUpType: PropTypes.bool,
 };
 
 Header.defaultProps = {
@@ -170,6 +188,8 @@ Header.defaultProps = {
   defaultLoyaltyRatio: 0,
   navFunc: () => {},
   onClickHandler: () => {},
+  isDeliveryType: Utils.isDeliveryType(),
+  isPickUpType: Utils.isPickUpType(),
 };
-
+export const HeaderComponent = Header;
 export default withDataAttributes(withTranslation()(Header));

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './ErrorToast.scss';
 
 class ErrorToast extends Component {
   componentDidMount() {
@@ -18,8 +19,8 @@ class ErrorToast extends Component {
     const { className, message } = this.props;
 
     return (
-      <div className={`top-message error fixed${className ? ` ${className}` : ''}`}>
-        <div className="top-message__text">{message}</div>
+      <div className={`error-toast error-toast__error padding-normal ${className ? ` ${className}` : ''}`}>
+        <div className="text-line-height-base">{message}</div>
       </div>
     );
   }
@@ -28,10 +29,13 @@ class ErrorToast extends Component {
 ErrorToast.propTypes = {
   className: PropTypes.string,
   clearError: PropTypes.func,
+  message: PropTypes.string,
 };
 
 ErrorToast.defaultProps = {
   clearError: () => {},
+  className: '',
+  message: '',
 };
 
 export default ErrorToast;

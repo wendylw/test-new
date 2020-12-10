@@ -1,0 +1,158 @@
+@import "../../../Variables.scss";
+$gray-nav-item-text: #707070;
+
+.ordering-home {
+  height: 100vh;
+
+  .footer {
+    z-index: $z-index-base;
+  }
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: hidden;
+    background-color: $gray-6;
+  }
+
+  &__deliver-to {
+    top: 0;
+  }
+
+  &__deliver-to + &__header::before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: inline-block;
+    margin: 0 2.4vw;
+    border-top: 1px solid $gray-4;
+  }
+
+  &__header .header__content {
+    width: 85%;
+  }
+
+  &__dine-in-header .header__content {
+    width: 75%;
+  }
+
+  &__table-id {
+    max-width: 25%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  &__delivery-fee {
+    color: $white;
+    background-color: $theme-blue;
+  }
+
+  &__close-cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.category-nav {
+  position: sticky;
+  top: 0;
+  background-color: $gray-6;
+  width: 25%;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  &__content {
+    width: 100%;
+  }
+
+  &__list {
+    overflow-y: auto;
+  }
+
+  &__item {
+    color: $gray-nav-item-text;
+    border-left: 3px solid transparent;
+
+    &.active {
+      border-left-color: $theme-color;
+      background-color: $white;
+    }
+  }
+
+  &__text {
+    word-break: break-word;
+  }
+}
+
+.category {
+  width: 75%;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  &__header {
+    top: 0;
+    background-color: $gray-6;
+    z-index: 10;
+  }
+}
+
+.home-cart {
+  &__icon-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  &__icon-cart {
+    width: 38px;
+    height: 100%;
+    opacity: 0.5;
+
+    &.non-empty {
+      transform: rotate(-5deg);
+      opacity: 1;
+    }
+  }
+
+  &__items-number {
+    position: absolute;
+    bottom: 0;
+    right: -25%;
+    display: inline-block;
+    padding: 0.28714em;
+    min-width: 1.71428em;
+    height: 1.71428em;
+    color: $white;
+    background-color: $theme-blue;
+    border-radius: 50%;
+  }
+
+  &__amount {
+    color: $white;
+  }
+
+  &__money-minimum {
+    display: block;
+  }
+
+  &__order-button {
+    width: 45%;
+  }
+}
+
+@media (min-width: 770px) {
+  .ordering-home {
+    &__deliver-to + &__header::before {
+      margin: 0 8px;
+    }
+  }
+}

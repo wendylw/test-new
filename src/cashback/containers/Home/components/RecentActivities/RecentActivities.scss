@@ -1,0 +1,22 @@
+@import "src/Variables";
+
+.recent-activities {
+  max-height: 100%;
+  overflow: auto;
+  background-color: $main-color;
+
+  &__list-item {
+    color: $white;
+  }
+
+  &__list-icon {
+    svg {
+      height: 30px;
+      width: 30px;
+    }
+  }
+
+  &__time {
+    color: $gray-2;
+  }
+}

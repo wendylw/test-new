@@ -1,0 +1,189 @@
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
+import { IconSearch } from '../components/Icons';
+
+<Meta title="Utilities/FormGroup" />
+
+<style>{`
+.form__group {
+  border-radius: 4px;
+  border: 1px solid #dededf;
+  background-color:  #ffffff;
+}
+
+.form__group.error {
+  border-color: #fa4133;
+}
+
+.form__group.success {
+  border-color: #4caf50;
+}
+
+.form__input {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 8px;
+  border: 0;
+  border-radius: 4px;
+  line-height: 26px;
+  height: 40px;
+  width: 100%;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: none;
+  caret-color: #8d90a1;
+}
+
+.form__input-big {
+  height: 54px;
+}
+
+.form__search-icon {
+  padding: 8px 8px;
+  position: absolute;
+  color: #dededf;
+}
+
+.form__search-input {
+  padding-left: 40px;
+}
+
+.form__textarea {
+  min-height: 60px;
+  resize: none;
+}
+
+.form__select {
+  border: 0;
+  height: 40px;
+  padding-left: 8px;
+  width: 100%;
+  background-color: transparent;
+  -webkit-appearance: none;
+  box-shadow: none;
+  outline: none;
+  z-index: 1;
+}
+
+.form__error-message {
+  display: inline-block;
+  color: #fa4133;
+}
+
+.form-sb__card {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: rgba(0,0,0,0.10) 0 1px 3px 0;
+  border: 1px solid rgba(0,0,0,0.1);
+  margin: 25px 0 40px;
+  padding: 30px 20px;
+}
+
+.form-sb__item {
+  margin-bottom: 20px;
+}
+
+.form__input_label {
+  line-height: 40px;
+}
+
+.form__input-big_label {
+  line-height: 54px;
+}
+
+.form-sb__label {
+  display: inline-block;
+  width: 50%;
+  vertical-align: top;
+  margin-bottom: 20px;
+  color: #8d90a1;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.form-sb__content {
+  display: inline-block;
+  width: 50%;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+`}</style>
+
+# FormGroup
+
+## form input
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <input placeholder="type something..." class="form__input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input correct
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group success">
+    <input placeholder="type something correct..." class="form__input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input wrong
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group error">
+    <input placeholder="type something wrong..." class="form__input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input wrong with error message
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group error">
+    <input placeholder="type something wrong..." class="form__input"></input>
+  </div>
+  <div class="form__error-message">Error info...</div>
+</div>
+</Canvas>
+
+## form input with search
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <IconSearch className="form__search-icon icon icon__normal" />
+    <input placeholder="type something..." class="form__input form__search-input"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input(big)
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <input placeholder="type something..." class="form__input form__input-big"></input>
+  </div>
+</div>
+</Canvas>
+
+## form input textarea
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <textarea placeholder="type something..." class="form__input form__textarea"></textarea>
+  </div>
+</div>
+</Canvas>
+
+## form input selector
+<Canvas>
+<div class="form-sb__content">
+  <div class="form__group">
+    <select className="form__select">
+      <option>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+    </select>
+  </div>
+</div>
+</Canvas>

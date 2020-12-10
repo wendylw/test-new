@@ -1,0 +1,55 @@
+@import "../../../Variables.scss";
+
+.ordering-payment {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  &__item-content {
+    width: 90%;
+  }
+
+  &__image-container {
+    display: inline-block;
+    width: 16%;
+  }
+
+  &__image {
+    width: 100%;
+  }
+
+  &__description {
+    display: inline-block;
+    width: 75%;
+  }
+
+  &__label {
+    width: 100%;
+  }
+
+  &__item.disabled &__image-container {
+    filter: grayscale(100%) contrast(100%) brightness(100%);
+    -webkit-filter: grayscale(100%) contrast(100%) brightness(100%);
+    -moz-filter: grayscale(100%) contrast(100%) brightness(100%);
+    -ms-filter: grayscale(100%) contrast(100%) brightness(100%);
+    -o-filter: grayscale(100%) contrast(100%) brightness(100%);
+    transition: filter 0.4s;
+    -webkit-transition: -webkit-filter 0.4s;
+    -moz-transition: -moz-filter 0.4s;
+    -ms-transition: -ms-filter 0.4s;
+    -o-transition: -o-filter 0.4s;
+  }
+
+  &__item.disabled &__description,
+  &__prompt {
+    color: $gray-2;
+  }
+
+  &__item.disabled .radio {
+    opacity: 0;
+  }
+}

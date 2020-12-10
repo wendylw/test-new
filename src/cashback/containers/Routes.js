@@ -3,10 +3,10 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 import Utils from '../../utils/utils';
 import NotFound from '../../NotFound';
 
-const RecentActivities = lazy(() => Utils.retry(() => import('./Home/components/RecentActivities')));
-const Claim = lazy(() => Utils.retry(() => import('./Claim')));
-const Home = lazy(() => Utils.retry(() => import('./Home')));
-const Error = lazy(() => Utils.retry(() => import('../../components/Error')));
+const RecentActivities = lazy(() => Utils.attemptLoad(() => import('./Home/components/RecentActivities')));
+const Claim = lazy(() => Utils.attemptLoad(() => import('./Claim')));
+const Home = lazy(() => Utils.attemptLoad(() => import('./Home')));
+const Error = lazy(() => Utils.attemptLoad(() => import('../../components/Error')));
 
 class Routes extends Component {
   render() {
@@ -17,7 +17,7 @@ class Routes extends Component {
         <Suspense
           fallback={
             <div className="loading-cover">
-              <i className="loader theme page-loader"></i>
+              <i className="loader theme full-page"></i>
             </div>
           }
         >

@@ -1,0 +1,12 @@
+@import "../Variables.scss";
+
+.phone-view {
+  &__label {
+    display: block;
+  }
+
+  .PhoneInput .PhoneInputInput,
+  .PhoneInput .PhoneInputInput:focus {
+    height: 54px;
+  }
+}

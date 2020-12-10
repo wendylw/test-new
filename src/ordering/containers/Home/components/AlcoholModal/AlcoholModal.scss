@@ -1,0 +1,42 @@
+@import "../../../../../Variables.scss";
+
+.alcohol-modal {
+  .modal__content {
+    padding: 2.4vw;
+  }
+
+  &__body {
+    padding-bottom: 2.4vw;
+  }
+
+  &__image {
+    max-width: 50%;
+    margin: 0 auto;
+  }
+
+  &__title {
+    color: $gray-1;
+  }
+
+  &__policy {
+    margin-left: auto;
+    margin-right: auto;
+    color: $gray-2;
+  }
+
+  &__button-link {
+    color: $gray-2;
+  }
+}
+
+@media (min-width: 420px) {
+  .alcohol-modal {
+    .modal__content {
+      padding: 8px;
+    }
+
+    &__body {
+      padding-bottom: 16px;
+    }
+  }
+}

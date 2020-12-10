@@ -1,0 +1,283 @@
+@import "../../../Variables.scss";
+
+$total-text-size: 1.7142rem;
+
+@keyframes dots {
+  to {
+    width: 18px;
+  }
+}
+
+@-webkit-keyframes dots {
+  to {
+    width: 18px;
+  }
+}
+
+@keyframes dotsMore {
+  to {
+    width: 26px;
+  }
+}
+
+@-webkit-keyframes dotsMore {
+  to {
+    width: 26px;
+  }
+}
+
+.ordering-thanks {
+  height: 100vh;
+  background-color: $gray-6;
+
+  &__button-contact-us {
+    color: $status-blue;
+  }
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  &__image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 60%;
+  }
+
+  &__page-title {
+    color: $gray-2;
+  }
+
+  &__page-description {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__accepted &__title-dots,
+  &__paid &__title-dots {
+    text-align: left;
+    display: inline-block;
+  }
+
+  &__accepted &__title-dots {
+    width: 18px;
+  }
+
+  &__paid &__title-dots {
+    width: 24px;
+  }
+
+  &__accepted &__title-dots::after,
+  &__paid &__title-dots::after {
+    vertical-align: bottom;
+    display: inline-block;
+    margin-left: 2px;
+  }
+
+  &__accepted &__title-dots::after {
+    content: "...";
+    overflow: hidden;
+    -webkit-animation: dots steps(4, end) 2s infinite;
+    animation: dots steps(4, end) 2s infinite;
+    width: 0px;
+  }
+
+  &__paid &__title-dots::after {
+    content: ".....";
+    overflow: hidden;
+    -webkit-animation: dotsMore steps(6, end) 3s infinite;
+    animation: dotsMore steps(6, end) 3s infinite;
+    width: 0px;
+  }
+
+  &__description {
+    margin-right: 5px;
+  }
+
+  &__link-status {
+    letter-spacing: 1.25px;
+  }
+
+  &__pickup-number {
+    display: block;
+    color: $gray-2;
+  }
+
+  &__card-prompt {
+    position: relative;
+    overflow: visible;
+  }
+
+  &__card-prompt-congratulation {
+    max-width: 320px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  &__card-prompt-total {
+    display: block;
+  }
+
+  &__card-prompt-description {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 300px;
+  }
+
+  &__address,
+  &__time {
+    color: $gray-2;
+  }
+
+  &__total {
+    font-size: $total-text-size;
+  }
+
+  &__button-card-link {
+    border-top: 1px solid $gray-4;
+    color: $status-blue;
+    border-radius: 0;
+  }
+
+  &__footer {
+    bottom: 0;
+  }
+
+  &__button-footer-link {
+    color: $status-blue;
+  }
+
+  &__progress {
+    width: 14vw;
+    max-width: 25px;
+  }
+
+  &__prev {
+    display: block;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
+    background: $theme-color;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  &__prev::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 45vw;
+    background: $theme-color;
+    left: 50%;
+    margin: 0 auto 0;
+    max-height: 45px;
+  }
+
+  &__next {
+    display: block;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
+    background: $gray-4;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  &__next::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 45vw;
+    background: $gray-4;
+    left: 50%;
+    max-height: 45px;
+    bottom: 0;
+  }
+
+  &__active {
+    display: block;
+    width: 2.9vw;
+    height: 2.9vw;
+    max-width: 12px;
+    max-height: 12px;
+    background: $theme-color;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__active::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: $theme-color;
+    left: -45%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    opacity: 0.2;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  &__next-heigher::after {
+    height: 50vw;
+    max-height: 65px;
+  }
+
+  .line-height-normal {
+    line-height: 1.8rem;
+  }
+
+  .text-gray {
+    color: $gray-2;
+  }
+
+  &__progress-title {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  &__rider-logo {
+    width: 13.5vw;
+    height: 13.5vw;
+    max-width: 56px;
+    max-height: 56px;
+  }
+  &__rider-logo img {
+    height: 100%;
+  }
+
+  &__button .button {
+    border: 0;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: $status-blue;
+    line-height: 56px;
+    flex: 1;
+  }
+
+  &__button-link {
+    position: relative;
+  }
+
+  &__button-link::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    background: $gray-4;
+    height: 100%;
+    right: 0;
+  }
+}

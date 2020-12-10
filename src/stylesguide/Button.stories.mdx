@@ -1,0 +1,93 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Utilities/Button" />
+
+# Button
+
+###
+###
+## Button default
+
+<style>{`
+.button__box{
+  display:flex;
+  height:100px;
+  align-item:center;
+  justify-content: space-between;
+  width:100px;
+  height:88px;
+}
+.button__box .button{
+  width:100%;
+}
+
+`
+}
+</style>
+<div class='button button__box '>
+<button class="button  button__block">default</button>
+</div>
+
+```js live=true
+<button class="button  button__block">default</button>
+```
+
+## Button dark
+
+<div class=' button__box '>
+<button class="button button dark">dark</button>
+</div>
+
+```js live=true
+<button class="button button dark">dark</button>
+```
+
+## Button fill
+
+<div class=' button__box '>
+<button class="button  button__fill">fill</button>
+</div>
+
+```js live=true
+<button class="button  button__fill">fill</button>
+```
+
+## Button outline
+
+<div class=' button__box '>
+<button class=" button button__outline">outline</button>
+</div>
+
+```js live=true
+<button class=" button button__outline">outline</button>
+```
+
+## Button link
+
+<div class=' button__box '>
+<button class="button  button__link">link</button>
+</div>
+
+```js live=true
+<button class="button  button__link">link</button>
+```
+
+## Button disabled
+
+<div class=' button__box '>
+<button class="button  button__disabled">disabled</button>
+</div>
+
+```js live=true
+<button class="button  button__disabled">disabled</button>
+```
+
+## Button link-disabled
+
+<div class=' button__box '>
+<button class="button  button__link-disabled">link-disabled</button>
+</div>
+
+```js live=true
+<button class="button  button__link-disabled">link-disabled</button>
+```

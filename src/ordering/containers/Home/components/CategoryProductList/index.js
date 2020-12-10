@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import ProductItem from '../../../../components/ProductItem';
-import { ScrollObserver, ScrollObservable } from '../../../../../components/ScrollComponents';
+import { ScrollObservable } from '../../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -51,15 +51,16 @@ class CategoryProductList extends Component {
 
     try {
       await this.props.homeActions.increaseProductInCart(product);
-      await this.props.homeActions.loadShoppingCart();
 
       if (product.variations && product.variations.length) {
-        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
-
         onToggle('PRODUCT_DETAIL');
+
+        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
       } else {
         this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
       }
+
+      await this.props.homeActions.loadShoppingCart();
     } catch (e) {
       console.error(e);
     }
@@ -97,63 +98,46 @@ class CategoryProductList extends Component {
   };
 
   handleShowProductDetail = async product => {
-    const { onToggle } = this.props;
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
 
+    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
+      const { search } = window.location;
+      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+        search: `${search}&callbackUrl=${callbackUrl}`,
+      });
+      return;
+    }
+
+    const { onToggle } = this.props;
     const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
     const { data: productDetail = {} } = responseGql;
+
+    onToggle('PRODUCT_DETAIL');
+
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
-
-    onToggle('PRODUCT_DESCRIPTION');
   };
 
   render() {
-    const { categories, isVerticalMenu } = this.props;
+    const { categories, style } = this.props;
+
     return (
-      <div id="product-list" className="list__container">
-        <ScrollObserver
-          render={scrollid => {
-            const categoryList = categories || [];
-            const currentTarget = categoryList.find(category => category.id === scrollid) || categoryList[0];
-            let target = currentTarget;
-
-            if (!currentTarget || !isVerticalMenu) {
-              return null;
-            }
-
-            if (
-              document
-                .getElementById('root')
-                .getAttribute('class')
-                .includes('fixed')
-            ) {
-              target = this.prevCategory || {};
-            } else {
-              this.prevCategory = currentTarget;
-            }
-
-            return (
-              <h2 className="category__header fixed flex flex-middle flex-space-between" data-testid="categoryRight">
-                <label>{target.name || ''}</label>
-                {/* {target.cartQuantity ? (
-                  <span className="gray-font-opacity">
-                    {t('CartItemsInCategory', { cartQuantity: target.cartQuantity })}
-                  </span>
-                ) : null} */}
-              </h2>
-            );
-          }}
-        />
+      <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
           {categories.map(category => (
             <li key={category.id} id={category.id}>
               <ScrollObservable targetId={category.id} key={category.id}>
-                <h2 className="category__header flex flex-middle flex-space-between">
-                  <label>{category.name}</label>
+                <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
+                  <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
-                <ul className="list">
+                <div>
                   {(category.products || []).map(product => (
                     <ProductItem
+                      scrollContainer="#product-list"
                       key={product.id}
                       image={product.images[0]}
                       title={product.title}
@@ -167,10 +151,11 @@ class CategoryProductList extends Component {
                       showProductDetail={this.handleShowProductDetail.bind(this, product)}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
+                      showOperator={false}
                       data-heap-name="ordering.home.product-item"
                     />
                   ))}
-                </ul>
+                </div>
               </ScrollObservable>
             </li>
           ))}
@@ -182,13 +167,12 @@ class CategoryProductList extends Component {
 
 CategoryProductList.propTypes = {
   onToggle: PropTypes.func,
-  isVerticalMenu: PropTypes.bool,
   isValidTimeToOrder: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 CategoryProductList.defaultProps = {
   onToggle: () => {},
-  isVerticalMenu: false,
   isValidTimeToOrder: true,
 };
 

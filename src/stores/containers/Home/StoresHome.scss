@@ -1,0 +1,8 @@
+@import "../../../Variables.scss";
+
+.store-list {
+  &__content {
+    height: 100vh;
+    background-color: $gray-5;
+  }
+}

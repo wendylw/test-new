@@ -86,6 +86,10 @@ const API_URLS = {
     method: 'post',
     mode: 'cors',
   }),
+  GET_OTP: {
+    url: '/api/otp',
+    method: 'post',
+  },
   GET_CUSTOMER_PROFILE: consumerId => ({
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
@@ -168,6 +172,22 @@ const API_URLS = {
     url: '/api/stores/collection',
     method: 'get',
   },
+  CREATE_AND_UPDATE_PROFILE: consumerId => ({
+    url: `/api/consumers/${consumerId}/profile`,
+    method: 'put',
+  }),
+  GET_ADDRESS_LIST: (consumerId, storeId) => ({
+    url: `/api/consumers/${consumerId}/store/${storeId}/address`,
+    method: 'get',
+  }),
+  CREATE_ADDRESS: consumerId => ({
+    url: `/api/consumers/${consumerId}/address`,
+    method: 'post',
+  }),
+  UPDATE_ADDRESS: (consumerId, addressId) => ({
+    url: `/api/consumers/${consumerId}/address/${addressId}`,
+    method: 'put',
+  }),
 };
 
 export default {

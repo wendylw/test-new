@@ -1,0 +1,9 @@
+.address-detail {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+  }
+}

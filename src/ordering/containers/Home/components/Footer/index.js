@@ -99,7 +99,10 @@ export class Footer extends Component {
       });
     }
     if (Utils.isIOSWebview() && !isExpired) {
-      window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'getToken', callbackName: 'sendToken' });
+      window.webkit.messageHandlers.shareAction.postMessage({
+        functionName: 'getToken',
+        callbackName: 'sendToken',
+      });
     }
   }
 
@@ -152,82 +155,90 @@ export class Footer extends Component {
       isValidTimeToOrder,
       isLiveOnline,
       enablePreOrder,
+      footerRef,
+      style,
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
     return (
       <footer
-        className="footer-operation flex flex-middle flex-space-between"
+        ref={footerRef}
+        className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        style={style}
         data-heap-name="ordering.home.footer.container"
       >
-        <div className="cart-bar has-products flex flex-middle flex-space-between">
-          <button className="flex__shrink-fixed" data-heap-name="ordering.home.footer.cart-btn" onClick={onClickCart}>
-            <div className={`cart-bar__icon-container text-middle ${count === 0 ? 'empty' : ''}`}>
-              <IconCart />
-              <span className="tag__number">{count || 0}</span>
-            </div>
+        <button
+          className="button button__block text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle"
+          data-heap-name="ordering.home.footer.cart-btn"
+          onClick={onClickCart}
+        >
+          <div className="home-cart__icon-container text-middle">
+            <IconCart className={`home-cart__icon-cart icon icon__white ${count !== 0 ? 'non-empty' : ''}`} />
+            {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
+          </div>
 
-            <div className="cart-bar__money text-middle text-left">
-              <CurrencyNumber className="font-weight-bolder" money={this.getDisplayPrice() || 0} />
-              {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
-                <label className="cart-bar__money-minimum">
-                  {count ? (
-                    <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
-                      <span className="gray-font-opacity">Remaining</span>
-                      <CurrencyNumber
-                        className="gray-font-opacity"
-                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                      />
-                    </Trans>
-                  ) : (
-                    <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
-                      <span className="gray-font-opacity">Min</span>
-                      <CurrencyNumber
-                        className="gray-font-opacity"
-                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                      />
-                    </Trans>
-                  )}
-                </label>
-              ) : null}
-            </div>
+          <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
+            <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
+            {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
+              <label className="home-cart__money-minimum margin-top-bottom-smaller">
+                {count ? (
+                  <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
+                    <span className="text-opacity">Remaining</span>
+                    <CurrencyNumber
+                      className="text-opacity"
+                      money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                    />
+                  </Trans>
+                ) : (
+                  <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
+                    <span className="text-opacity">Min</span>
+                    <CurrencyNumber
+                      className="text-opacity"
+                      money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                    />
+                  </Trans>
+                )}
+              </label>
+            ) : null}
+          </div>
+        </button>
+        {tableId !== 'DEMO' ? (
+          <button
+            className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder flex__shrink-fixed"
+            data-testid="orderNow"
+            data-heap-name="ordering.home.footer.order-btn"
+            disabled={
+              (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
+              this.getDisplayPrice() <= 0 ||
+              (!isValidTimeToOrder && !enablePreOrder) ||
+              !isLiveOnline
+            }
+            onClick={() => {
+              onToggle();
+              this.handleRedirect();
+            }}
+          >
+            {isLiveOnline
+              ? !isValidTimeToOrder && enablePreOrder
+                ? t('PreOrderNow')
+                : t('OrderNow')
+              : t('StoreOffline')}
           </button>
-          {tableId !== 'DEMO' ? (
-            <button
-              className="cart-bar__order-button"
-              data-testid="orderNow"
-              data-heap-name="ordering.home.footer.order-btn"
-              disabled={
-                (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
-                (!Utils.isDeliveryType() && this.getDisplayPrice() <= 0) ||
-                (!isValidTimeToOrder && !enablePreOrder) ||
-                !isLiveOnline
-              }
-              onClick={() => {
-                onToggle();
-                this.handleRedirect();
-              }}
-            >
-              {isLiveOnline
-                ? !isValidTimeToOrder && enablePreOrder
-                  ? t('PreOrderNow')
-                  : t('OrderNow')
-                : t('StoreOffline')}
-            </button>
-          ) : null}
-        </div>
+        ) : null}
       </footer>
     );
   }
 }
 
 Footer.propTypes = {
+  footerRef: PropTypes.any,
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
   onClickCart: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enablePreOrder: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 Footer.defaultProps = {

@@ -1,14 +1,22 @@
 import { intersection, findIndex } from 'lodash';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
+import * as crossStorage from './cross-storage';
 
 const googleMaps = window.google.maps;
 
 const latLng = ({ lat, lng }) => new googleMaps.LatLng(lat, lng);
 
 let autoCompleteSessionToken;
+let lastTokenGenerateTime = 0;
 export const getAutocompleteSessionToken = () => {
-  autoCompleteSessionToken = autoCompleteSessionToken || new googleMaps.places.AutocompleteSessionToken();
+  // According to https://stackoverflow.com/questions/50398801/how-long-do-the-new-places-api-session-tokens-last,
+  // the AutocompleteSessionToken expires in 3 mins. Note that there's NO official document for this value.
+  const now = Date.now();
+  if (!autoCompleteSessionToken || now - lastTokenGenerateTime > 180000) {
+    autoCompleteSessionToken = new googleMaps.places.AutocompleteSessionToken();
+    lastTokenGenerateTime = now;
+  }
   return autoCompleteSessionToken;
 };
 
@@ -148,12 +156,42 @@ export const getDevicePositionInfo = (withCache = true) => {
   return getPositionInfoBySource('device', withCache);
 };
 
-const MAX_HISTORICAL_ADDRESS_COUNT = 5;
-const HISTORICAL_ADDRESS_KEY = 'HISTORICAL_DELIVERY_ADDRESSES';
+export const migrateHistoricalDeliveryAddress = async () => {
+  let oldAddresses = [];
+  const legacyKey = 'HISTORICAL_DELIVERY_ADDRESSES';
+  const oldAddressStr = Utils.getLocalStorageVariable(legacyKey);
+  if (!oldAddressStr) {
+    return;
+  }
+  if (oldAddressStr) {
+    try {
+      oldAddresses = JSON.parse(oldAddressStr);
+    } catch {
+      Utils.removeLocalStorageVariable(legacyKey);
+      return;
+    }
+  }
+  try {
+    const newAddresses = await getHistoricalDeliveryAddresses();
+    const newAddressMap = {};
+    newAddresses.forEach(placeInfo => (newAddressMap[placeInfo.address] = true));
+    for (let i = 0; i < oldAddresses.length; i++) {
+      const placeInfo = oldAddresses[i];
+      if (!newAddressMap[placeInfo.address]) {
+        await setHistoricalDeliveryAddresses(placeInfo);
+      }
+    }
+    Utils.removeLocalStorageVariable(legacyKey);
+  } catch (e) {
+    console.error(e.message);
+  }
+};
 
+const MAX_HISTORICAL_ADDRESS_COUNT = 5;
+const HISTORICAL_ADDRESS_KEY = 'CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES';
 export const getHistoricalDeliveryAddresses = async () => {
   try {
-    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
     if (!storageStr) {
       return [];
     }
@@ -161,7 +199,7 @@ export const getHistoricalDeliveryAddresses = async () => {
 
     // --Begin-- last version of cache doesn't have addressComponents field, we need it now
     if (results && results.length && !results[0].addressComponents) {
-      localStorage.removeItem(HISTORICAL_ADDRESS_KEY);
+      await crossStorage.removeItem(HISTORICAL_ADDRESS_KEY);
       return [];
     }
     // ---End--- last version of cache doesn't have addressComponents field, we need it now
@@ -179,7 +217,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     const clonedPositionInfo = { ...positionInfo };
     // won't save distance, because use may choose another store.
     delete clonedPositionInfo.distance;
-    const storageStr = localStorage.getItem(HISTORICAL_ADDRESS_KEY);
+    const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
     let positionInfoList;
     if (!storageStr) {
       positionInfoList = [];
@@ -197,7 +235,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     positionInfoList.unshift(clonedPositionInfo);
     // remove the oldest item, to prevent data size keeping growing.
     positionInfoList.splice(MAX_HISTORICAL_ADDRESS_COUNT);
-    localStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
+    await crossStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
   } catch (e) {
     console.error('failed to set historical delivery addresses', e);
   }
@@ -212,6 +250,7 @@ export const computeStraightDistance = (fromCoords, toCoords) => {
   const from = latLng(fromCoords);
   const to = latLng(toCoords);
   const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+
   straightDistanceCache[key] = result;
   return result;
 };
@@ -251,7 +290,10 @@ export const computeDirectionDistanceMatrix = async (fromCoordsList, toCoordsLis
   });
 };
 
-export const getPlaceInfoFromPlaceId = placeId => {
+export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
+  if (options.fromAutocomplete) {
+    return getPlaceDetails(placeId);
+  }
   const geocoder = new googleMaps.Geocoder();
   return new Promise((resolve, reject) => {
     geocoder.geocode({ placeId }, (resp, status) => {
@@ -271,11 +313,11 @@ export const getPlaceInfoFromPlaceId = placeId => {
   });
 };
 
-// @deprecated: This api is too expensive, hence we don't use it for now.
-export const getPlaceDetails = async (
-  placeId,
-  { fields = ['geometry', 'formatted_address', 'address_components'] } = {}
-) => {
+// this api is very expensive, hence we won't export it for public use for now.
+// It should ONLY be used for getting the place detail after auto complete, which
+// is charged as <SKU: Autocomplete (included with Places Details) – Per Session>
+// (https://developers.google.com/places/web-service/usage-and-billing#ac-with-details-session)
+const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_components'] } = {}) => {
   const places = new googleMaps.places.PlacesService(document.createElement('div'));
 
   const placeDetails = await new Promise(resolve => {

@@ -1,0 +1,23 @@
+@import "../../../Variables.scss";
+
+.voucher-contact {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+  }
+
+  &__description {
+    color: $gray-2;
+  }
+
+  &__group {
+    overflow: hidden;
+  }
+
+  &__input {
+    height: 54px;
+  }
+}

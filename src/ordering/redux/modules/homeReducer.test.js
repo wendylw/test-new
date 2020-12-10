@@ -9,7 +9,6 @@ import {
   getCartUnavailableItemIds,
   getCurrentProduct,
   getCartItemList,
-  isVerticalMenuBusiness,
   getShoppingCart as getShoppingCartSelector,
   getShoppingCartItemsByProducts as getShoppingCartItemsByProductsSelector,
   getCategoryProductList as getCategoryProductListSelector,
@@ -190,9 +189,6 @@ describe('src/ordering/redux/modules/home: selectors', () => {
   });
   it('getCartItemList', () => {
     expect(getCartItemList(state)).toEqual([]);
-  });
-  it('isVerticalMenuBusiness', () => {
-    expect(isVerticalMenuBusiness(state)).toEqual(true);
   });
   it('getShoppingCart', () => {
     const mockParams = {

@@ -1,0 +1,29 @@
+@import "src/Variables";
+
+.address-list {
+  &__container {
+    height: 100vh;
+    overflow: auto;
+    padding-bottom: 64px;
+  }
+
+  &__disabled {
+    color: $gray-3;
+  }
+
+  &__delivery-info {
+    flex: 1;
+  }
+
+  &__book-mark {
+    padding-top: 1rem;
+  }
+
+  &__add-icon {
+    border: 1px dashed $gray-3;
+  }
+
+  &__save-title {
+    background-color: $gray-5;
+  }
+}

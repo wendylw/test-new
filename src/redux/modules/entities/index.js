@@ -9,6 +9,7 @@ import products from './products';
 import stores from './stores';
 import businesses from './businesses';
 import error from './error';
+import users from './users';
 
 const rootReducer = combineReducers({
   paymentOptions,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   stores,
   businesses,
   error,
+  users,
 });
 
 export default rootReducer;

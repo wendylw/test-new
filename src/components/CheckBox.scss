@@ -1,0 +1,43 @@
+@import "../Variables.scss";
+
+.checkbox {
+  position: relative;
+  width: 26px;
+  height: 26px;
+
+  &__check-icon {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 2px solid $gray-4;
+    fill: $white;
+
+    svg {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      opacity: 0;
+    }
+  }
+
+  input[type="checkbox"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+
+  &.active &__check-icon {
+    border-color: $theme-color;
+    background-color: $theme-color;
+
+    svg {
+      opacity: 1;
+    }
+  }
+}

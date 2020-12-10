@@ -1,78 +1,68 @@
-import React, { Component } from 'react';
 import qs from 'qs';
-import isEmpty from 'lodash/isEmpty';
+import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import 'react-phone-number-input/style.css';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { IconNext } from '../../../components/Icons';
-import Header from '../../../components/Header';
-import ErrorToast from '../../../components/ErrorToast';
-import CreateOrderButton from '../../components/CreateOrderButton';
-import Utils from '../../../utils/utils';
-import { computeStraightDistance } from '../../../utils/geoUtils';
-import Constants from '../../../utils/constants';
-
-import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
-import { getBusiness } from '../../../ordering/redux/modules/app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getBusinessInfo } from '../../redux/modules/cart';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, getAddressChange, actions as customerActionCreators } from '../../redux/modules/customer';
+import { Link } from 'react-router-dom';
+import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+
+import Header from '../../../components/Header';
+import MessageModal from '../../components/MessageModal';
+import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
+import CreateOrderButton from '../../components/CreateOrderButton';
 import AddressChangeModal from './components/AddressChangeModal';
-import { actions as homeActionCreators, getShoppingCart } from '../../redux/modules/home';
-import { get } from '../../../utils/request';
-import Url from '../../../utils/url';
 
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
+import { actions as homeActionCreators } from '../../redux/modules/home';
+import { getBusinessInfo } from '../../redux/modules/cart';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
+import './OrderingCustomer.scss';
 
-const { ROUTER_PATHS, DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
+const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
+
 class Customer extends Component {
   state = {
-    formTextareaTitle: null,
-    asideName: null,
-    sentOtp: false,
-    errorToast: '',
-    consumerInfo: {
-      phone: '',
-      firstName: '',
-    },
+    addressChange: false,
+    processing: false,
   };
 
-  componentDidMount = async () => {
-    const { homeActions, customerActions, user } = this.props;
-    const { isWebview, consumerId, isLogin } = user || {};
+  async componentDidMount() {
+    const { history, homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
+    const { consumerId } = user || {};
+    const { storeId } = requestInfo || {};
+    const { addressId, deliveryToLocation } = deliveryDetails || {};
+    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (isWebview && isLogin && consumerId) {
-      let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
-      let consumerInfo = await get(request.url);
-      this.props.customerActions.patchDeliveryDetails({ phone: consumerInfo.phone, username: consumerInfo.firstName });
-    }
-
-    await homeActions.loadShoppingCart();
-
-    // init username, phone, deliveryToAddress, deliveryDetails
-
-    await customerActions.initDeliveryDetails(this.getShippingType());
-
-    this.props.addressChange && this.props.homeActions.loadShoppingCart();
-  };
+    // todo: think a better solution to avoid changing deliveryToAddress
+    //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
+    !addressId && (await customerActions.initDeliveryDetails(type));
+    !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
+    homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
+  }
 
   componentDidUpdate(prevProps) {
-    const { user } = prevProps;
-    const { isLogin } = user || {};
     const { cartSummary } = this.props;
-    const { sentOtp } = this.state;
-    const { total } = cartSummary || {};
+    const { cartSummary: prevCartSummary } = prevProps;
+    const { shippingFee } = cartSummary || {};
 
-    if (sentOtp && total && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
-      this.visitPaymentPage();
+    if (shippingFee && prevCartSummary.shippingFee && shippingFee !== prevCartSummary.shippingFee) {
+      this.setState({ addressChange: true });
     }
+  }
+
+  componentWillUnmount() {
+    this.setState({ processing: false });
   }
 
   getBusinessCountry = () => {
@@ -85,321 +75,239 @@ class Customer extends Component {
     }
   };
 
-  visitPaymentPage() {
-    const { history, user } = this.props;
-    const { isLogin } = user || {};
+  getDeliveryTime = () => {
+    const { t } = this.props;
 
-    if (isLogin) {
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+
+    if (date.date && hour.from) {
+      return date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
+        ? t('DeliverNow', { separator: ',' })
+        : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
+    }
+
+    return '';
+  };
+
+  getPickupTime = () => {
+    const { businessInfo = {} } = this.props;
+    const { locale } = businessInfo;
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+
+    return date && date.date && formatToDeliveryTime({ date, hour, locale });
+  };
+
+  validateFields() {
+    const { deliveryDetails } = this.props;
+    const { username, addressName } = deliveryDetails || {};
+    const isDeliveryType = Utils.isDeliveryType();
+    let error = {};
+
+    if (!Boolean(addressName) && isDeliveryType) {
+      error = {
+        showModal: true,
+        message: 'OrderingCustomer:DeliveryAddressEmptyTitle',
+        description: 'OrderingCustomer:DeliveryAddressEmptyDescription',
+        buttonText: 'OK',
+      };
+    } else if (!Boolean(username)) {
+      error = {
+        showModal: true,
+        message: 'OrderingCustomer:ContactEmptyTitle',
+        description: 'OrderingCustomer:ContactEmptyDescription',
+        buttonText: 'OK',
+      };
+    }
+
+    return error;
+  }
+
+  handleBeforeCreateOrder = () => {
+    const { customerActions } = this.props;
+    const error = this.validateFields();
+
+    if (error.showModal) {
+      customerActions.setError(error);
+    } else {
+      this.setState({ processing: true });
+    }
+  };
+
+  handleErrorHide() {
+    const { customerActions } = this.props;
+
+    customerActions.clearError();
+  }
+
+  handleHideChangeShippingFeeModal = () => {
+    const { customerActions } = this.props;
+
+    customerActions.updateAddressChange(false);
+  };
+
+  visitPaymentPage = () => {
+    const { history, cartSummary } = this.props;
+    const { total } = cartSummary || {};
+
+    if (total && !this.validateFields().showModal) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
       });
     }
-  }
+  };
 
-  checkDistanceError = () => {
-    const { businessInfo: business, deliveryDetails, t } = this.props;
-    const { stores } = business;
-    const [store = {}] = stores || [];
-    const { location } = store;
-
-    let { latitude, longitude } = location || {};
-    if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
-      return null;
-    }
-    if (latitude === undefined || longitude === undefined) {
-      return null;
-    }
-    latitude = +latitude;
-    longitude = +longitude;
-
-    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+  renderDeliveryPickupDetail() {
+    if (Utils.isDineInType() || Utils.isTakeAwayType()) {
       return null;
     }
 
-    const from = {
-      lat: latitude,
-      lng: longitude,
-    };
-    const to = {
-      lat: deliveryDetails.deliveryToLocation.latitude,
-      lng: deliveryDetails.deliveryToLocation.longitude,
-    };
-    const maxDistance = business.qrOrderingSettings.deliveryRadius;
-    const distance = computeStraightDistance(from, to);
-    if (distance / 1000 > maxDistance) {
-      return t(`OutOfDeliveryRange`, { distance: maxDistance.toFixed(1) });
-    }
-    return null;
-  };
-
-  async handleBeforeCreateOrder() {
-    const { appActions, user, deliveryDetails } = this.props;
-    const { phone } = deliveryDetails;
-    const { isLogin } = user || {};
-    const checkDistanceResult = this.checkDistanceError();
-    if (checkDistanceResult) {
-      this.setState({ errorToast: checkDistanceResult });
-      return;
-    }
-
-    if (!isValidPhoneNumber(phone)) {
-      return;
-    }
-
-    await Utils.setLocalStorageVariable('user.p', phone);
-
-    if (!isLogin) {
-      await appActions.getOtp({ phone });
-      this.setState({ sentOtp: true });
-    }
-  }
-
-  getShippingType() {
-    const { history } = this.props;
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    return type;
-  }
-
-  clearErrorToast = () => {
-    this.setState({ errorToast: null });
-  };
-
-  getHeaderTitle = () => {
-    const { t } = this.props;
-    const type = Utils.getOrderTypeFromUrl();
-
-    switch (type) {
-      case DELIVERY_METHOD.DELIVERY:
-        return t('DeliveryDetails');
-      case DELIVERY_METHOD.PICKUP:
-        return t('PickUpDetails');
-      case DELIVERY_METHOD.DINE_IN:
-      case DELIVERY_METHOD.TAKE_AWAY:
-      default:
-        return t('CustomerDetails');
-    }
-  };
-
-  getCanContinue = () => {
-    const { isFetching, deliveryDetails, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
-    const type = Utils.getOrderTypeFromUrl();
-    const username = (deliveryDetails.username || '').trim();
-    const phone = deliveryDetails.phone;
-
-    if (isFetching || !isValidPhoneNumber(phone) || isEmpty(username)) {
-      return false;
-    }
-
-    if (enablePreOrder && (type === DELIVERY_METHOD.DELIVERY || type === DELIVERY_METHOD.PICKUP)) {
-      if (!date.date) {
-        return false;
-      }
-      if (!hour.from) {
-        return false;
-      }
-    }
-
-    switch (type) {
-      case DELIVERY_METHOD.DELIVERY:
-        const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-        const address = (deliveryAddress.address || '').trim();
-        return !isEmpty(address);
-      default:
-    }
-
-    return true;
-  };
-
-  renderDeliveryTime = () => {
-    const { t, business, allBusinessInfo, history } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-
-    if (!enablePreOrder) {
-      return null;
-    }
-
-    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
-    let deliveryTime;
-    if (date.date && hour.from) {
-      deliveryTime =
-        date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
-          ? t('DeliverNow')
-          : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
-    } else {
-      deliveryTime = '';
-    }
+    const { t, businessInfo = {}, deliveryDetails } = this.props;
+    const { stores = [] } = businessInfo;
+    const isDeliveryType = Utils.isDeliveryType();
+    const { deliveryToAddress, addressDetails, deliveryComments, addressName } = deliveryDetails;
+    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
 
     return (
-      <div
-        className="form__group border-radius-base"
-        data-heap-name="ordering.customer.delivery-time"
-        onClick={async () => {
-          const { search } = window.location;
+      <li>
+        <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder text-capitalize">
+          {isDeliveryType ? t('DeliveryTo') : t('PickupOn')}
+        </h4>
+        {/* Address Info of Delivery or Pickup */}
+        <div className="ordering-customer__detail padding-top-bottom-normal padding-left-right-smaller">
+          <div
+            className={`flex ${
+              isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+            }`}
+          >
+            <IconLocation className="icon icon__small icon__default margin-left-right-small" />
+            <div
+              className={`ordering-customer__summary flex ${
+                isDeliveryType && addressDetails && Boolean(addressName) ? 'flex-bottom' : 'flex-middle'
+              } flex-space-between padding-left-right-small`}
+            >
+              {isDeliveryType ? (
+                <Link
+                  to={{
+                    pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
+                    search: window.location.search,
+                  }}
+                  className="ordering-customer__button-link button__link"
+                >
+                  {Boolean(addressName) ? (
+                    <React.Fragment>
+                      <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
+                      <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
+                        {t('DeliveryLocationLabel')}
+                      </h5>
+                      <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                        {' '}
+                        {t('DeliveryLocationDescription')}
+                      </p>
+                    </React.Fragment>
+                  )}
+                </Link>
+              ) : (
+                <Link
+                  to={{
+                    pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+                    search: window.location.search,
+                    state: {
+                      from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+                    },
+                  }}
+                  className="padding-top-bottom-smaller ordering-customer__button-link button__link"
+                >
+                  <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
+                    {t('PickupLocationTitle')}
+                  </h3>
+                  <time className="ordering-customer__time padding-top-bottom-smaller">{pickUpAddress}</time>
+                </Link>
+              )}
 
-          const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
-          // cache delivery address
-          Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
-          Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
-          Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
-
-          history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-            search: `${search}&callbackUrl=${callbackUrl}`,
-          });
-        }}
-      >
-        <p className={`form__textarea ${deliveryTime ? '' : 'gray-font-opacity'}`}>
-          {deliveryTime || t('AddDeliveryTimePlaceholder')}
-        </p>
-      </div>
-    );
-  };
-  AddressChangeModalContinue = () => {
-    this.props.customerActions.updateAddressChange(false);
-  };
-  handleInputChange = e => {
-    const inputValue = e.target.value;
-    e.target.name === 'addressDetails' &&
-      this.props.customerActions.patchDeliveryDetails({ addressDetails: inputValue });
-    e.target.name === 'deliveryComments' &&
-      this.props.customerActions.patchDeliveryDetails({ deliveryComments: inputValue });
-  };
-
-  renderDeliveryAddress() {
-    const { t, history } = this.props;
-
-    if (this.getShippingType() !== DELIVERY_METHOD.DELIVERY) {
-      return null;
-    }
-
-    const { addressDetails, deliveryComments } = this.props.deliveryDetails;
-    const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-
-    return (
-      <React.Fragment>
-        <label className="form__label font-weight-bolder">{t('DeliveryTimeAndAddressTitle')}</label>
-        {this.renderDeliveryTime()}
-
-        <div
-          className="form__group border-radius-base flex flex-middle flex-space-between"
-          data-heap-name="ordering.customer.delivery-address"
-          onClick={async () => {
-            const { search } = window.location;
-
-            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
-
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-              search: `${search}&callbackUrl=${callbackUrl}`,
-            });
+              <IconNext className="icon" />
+            </div>
+          </div>
+          {isDeliveryType && addressDetails && Boolean(addressName) ? (
+            <Link
+              to={{
+                pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
+                search: window.location.search,
+                state: {
+                  fromCustomer: true,
+                },
+              }}
+              className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
+            >
+              <article className="ordering-customer__address-detail flex flex-middle flex-space-between padding-smaller border-radius-base">
+                <div className="ordering-customer__address-content">
+                  <p className="padding-smaller text-size-small">{addressDetails}</p>
+                  {deliveryComments ? <p className="padding-smaller text-size-small">{deliveryComments}</p> : null}
+                </div>
+                <button className="ordering-customer__address-edit-button button button__link flex__shrink-fixed padding-small text-weight-bolder text-capitalize">
+                  {t('Edit')}
+                </button>
+              </article>
+            </Link>
+          ) : null}
+        </div>
+        {/* enf of Address Info of Delivery or Pickup */}
+        {/* Time of Delivery or Pickup */}
+        <Link
+          to={{
+            pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+            search: window.location.search,
+            state: {
+              from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+            },
           }}
+          className="ordering-customer__time ordering-customer__detail button__link padding-left-right-smaller"
         >
-          <p className={`form__textarea ${deliveryToAddress ? '' : 'gray-font-opacity'}`}>
-            {deliveryToAddress || t('AddAddressPlaceholder')}
-          </p>
-          <IconNext className="flex__shrink-fixed" />
-        </div>
-        <div className="form__group border-radius-base  form-field">
-          <input
-            className="input input__block"
-            data-heap-name="ordering.customer.delivery-address-detail"
-            type="text"
-            maxLength="140"
-            placeholder={t('AddressDetailsPlaceholder')}
-            value={addressDetails}
-            name="addressDetails"
-            onChange={this.handleInputChange}
-          />
-        </div>
-        <div className="form__group border-radius-base form-field">
-          <input
-            className="input input__block"
-            data-heap-name="ordering.customer.delivery-note"
-            type="text"
-            maxLength="140"
-            value={deliveryComments}
-            name="deliveryComments"
-            onChange={this.handleInputChange}
-            placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-          />
-        </div>
-      </React.Fragment>
-    );
-  }
-
-  renderPickUpInfo() {
-    const { t, history, business, allBusinessInfo, businessInfo = {} } = this.props;
-    const { stores = [], country: locale } = businessInfo;
-    const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY);
-    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
-
-    if (this.getShippingType() !== DELIVERY_METHOD.PICKUP || !enablePreOrder) {
-      return null;
-    }
-
-    const pickUpTime =
-      date &&
-      date.date &&
-      formatToDeliveryTime({
-        date,
-        hour,
-        locale,
-      });
-
-    return (
-      <React.Fragment>
-        <label className="form__label font-weight-bolder">{t('PickUpTimeAndAddressTitle')}</label>
-        <div
-          className="form__group border-radius-base"
-          data-heap-name="ordering.customer.pickup-time"
-          onClick={async () => {
-            const { search } = window.location;
-
-            Utils.setSessionVariable('cachedeliveryAddress', Utils.getSessionVariable('deliveryAddress'));
-            Utils.setSessionVariable('cacheexpectedDeliveryDate', Utils.getSessionVariable('expectedDeliveryDate'));
-            Utils.setSessionVariable('cacheexpectedDeliveryHour', Utils.getSessionVariable('expectedDeliveryHour'));
-
-            const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
-
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-              search: `${search}&callbackUrl=${callbackUrl}`,
-            });
-          }}
-        >
-          <p className={`form__textarea ${pickUpTime ? '' : 'gray-font-opacity'}`}>
-            {pickUpTime || t('PickUpAtPlaceholder')}
-          </p>
-        </div>
-        <div className="form__group border-radius-base">
-          <p className={`form__textarea ${pickUpAddress ? '' : 'gray-font-opacity'}`}>
-            {pickUpAddress || t('PickUpAtPlaceholder')}
-          </p>
-        </div>
-      </React.Fragment>
+          <div className="flex flex-middle">
+            <IconMotorcycle className="icon icon__small icon__default margin-small" />
+            <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-small">
+              <div className="padding-top-bottom-smaller">
+                <label className="text-size-big padding-top-bottom-smaller text-weight-bolder">
+                  {isDeliveryType ? t('Delivery') : t('PickupTime')}
+                </label>
+                <p className="padding-top-bottom-smaller">
+                  {isDeliveryType ? this.getDeliveryTime() : this.getPickupTime()}
+                </p>
+              </div>
+              <IconNext className="icon" />
+            </div>
+          </div>
+        </Link>
+        {/* end of Time of Delivery or Pickup */}
+      </li>
     );
   }
 
   render() {
-    const { t, user, history, onlineStoreInfo, deliveryDetails, addressChange, shoppingCart, cartSummary } = this.props;
-    const { errorToast } = this.state;
-    const { isFetching } = user || {};
-    const { country } = onlineStoreInfo || {};
-    const { shippingFee } = shoppingCart.summary;
-    const { total } = cartSummary || {};
+    const { t, history, deliveryDetails, cartSummary, error } = this.props;
+    const { addressChange, processing } = this.state;
+    const { username, phone } = deliveryDetails;
+    const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
+    const formatPhone = formatPhoneNumberIntl(phone);
+    const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
+    const { total, shippingFee } = cartSummary || {};
+
+    // console.log(shippingFee);
+    // console.log(addressChange);
 
     return (
-      <section className={`table-ordering__customer`} data-heap-name="ordering.customer.container">
+      <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
         <Header
-          className="text-center gray flex-middle"
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle text-center"
+          contentClassName="flex-middle"
           data-heap-name="ordering.customer.header"
           isPage={true}
-          title={this.getHeaderTitle()}
+          title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
           navFunc={() => {
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
@@ -407,80 +315,107 @@ class Customer extends Component {
             });
           }}
         ></Header>
-        <div className="customer__content">
-          <form className="customer__form">
-            <div className="form__group" data-testid="customerName">
-              <input
-                className="input input__block"
-                data-heap-name="ordering.customer.name-input"
-                type="text"
-                placeholder={t('Name')}
-                defaultValue={deliveryDetails.username}
-                onChange={e => {
-                  this.props.customerActions.patchDeliveryDetails({ username: e.target.value.trim() });
-                }}
-              />
-            </div>
-
-            <div className="form__group" data-testid="customerPhoneNumber">
-              <PhoneInput
-                smartCaret={false}
-                data-heap-name="ordering.customer.phone-input"
-                placeholder={t('EnterPhoneNumber')}
-                value={formatPhoneNumberIntl(deliveryDetails.phone)}
-                country={country}
-                metadata={metadataMobile}
-                onChange={phone => {
-                  const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
-
-                  this.props.customerActions.patchDeliveryDetails({
-                    phone:
-                      metadataMobile.countries[selectedCountry] &&
-                      Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]),
-                  });
-                }}
-              />
-            </div>
-
-            {this.renderDeliveryAddress()}
-            {this.renderPickUpInfo()}
-          </form>
-        </div>
-
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-3">
-            <button
-              className="billing__button button button__fill button__block dark font-weight-bolder"
-              data-heap-name="ordering.customer.back-btn"
-              onClick={() => {
-                history.push({
-                  pathname: ROUTER_PATHS.ORDERING_CART,
+        <div
+          className="ordering-customer__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: `${Utils.windowSize().height -
+              Utils.mainTop({
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              }) -
+              Utils.marginBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+          }}
+        >
+          <ul>
+            {this.renderDeliveryPickupDetail()}
+            <li>
+              <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder">
+                {t('ContactDetails')}
+              </h4>
+              <Link
+                to={{
+                  pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
                   search: window.location.search,
-                });
-              }}
-            >
-              {t('Back')}
-            </button>
-          </div>
-          <div className="footer-operation__item width-2-3">
-            <CreateOrderButton
-              history={history}
-              data-testid="customerContinue"
-              data-heap-name="ordering.customer.continue-btn"
-              disabled={!this.getCanContinue() || isFetching}
-              validCreateOrder={!total}
-              beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-              afterCreateOrder={this.visitPaymentPage.bind(this)}
-            >
-              {isFetching ? <div className="loader"></div> : t('Continue')}
-            </CreateOrderButton>
-          </div>
+                }}
+                className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
+              >
+                <IconAccountCircle className="icon icon__small icon__default margin-small" />
+                <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
+                  <div className="padding-top-bottom-smaller">
+                    <p className="padding-top-bottom-smaller">
+                      {username ? (
+                        <span className="text-size-big">{username}</span>
+                      ) : (
+                        <React.Fragment>
+                          <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
+                          <span className="text-size-big text-error"> - *</span>
+                          <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
+                        </React.Fragment>
+                      )}
+                    </p>
+                    {phone ? (
+                      <p className="padding-top-bottom-smaller">
+                        {/* Country Code */}
+                        <span className="text-size-big text-weight-bolder">{`${formatPhone.substring(
+                          0,
+                          splitIndex
+                        )} `}</span>
+                        {/* end of Country Code */}
+                        <span className="text-size-big">{formatPhone.substring(splitIndex + 1)}</span>
+                      </p>
+                    ) : null}
+                  </div>
+                  <IconNext className="icon" />
+                </div>
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        >
+          <button
+            className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            data-heap-name="ordering.customer.back-btn"
+            onClick={() => {
+              history.push({
+                pathname: ROUTER_PATHS.ORDERING_CART,
+                search: window.location.search,
+              });
+            }}
+          >
+            {t('Back')}
+          </button>
+          <CreateOrderButton
+            className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
+            history={history}
+            data-testid="customerContinue"
+            data-heap-name="ordering.customer.continue-btn"
+            disabled={processing}
+            validCreateOrder={!total && !this.validateFields().showModal}
+            beforeCreateOrder={this.handleBeforeCreateOrder}
+            afterCreateOrder={this.visitPaymentPage}
+          >
+            {processing ? t('Processing') : t('Continue')}
+          </CreateOrderButton>
         </footer>
-        {errorToast && <ErrorToast message={errorToast} clearError={this.clearErrorToast} />}
+        {error.show ? (
+          <MessageModal
+            data={error}
+            onHide={() => {
+              this.handleErrorHide();
+            }}
+          />
+        ) : null}
         <AddressChangeModal
           deliveryFee={shippingFee}
           addressChange={addressChange}
-          continue={this.AddressChangeModalContinue}
+          continue={this.handleHideChangeShippingFeeModal}
         />
       </section>
     );
@@ -488,29 +423,21 @@ class Customer extends Component {
 }
 
 export default compose(
-  withTranslation('OrderingDelivery'),
+  withTranslation(['OrderingCustomer']),
   connect(
-    state => {
-      const currentOrderId = getCurrentOrderId(state);
-
-      return {
-        user: getUser(state),
-        cartSummary: getCartSummary(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        deliveryDetails: getDeliveryDetails(state),
-        business: getBusiness(state),
-        allBusinessInfo: getAllBusinesses(state),
-        businessInfo: getBusinessInfo(state),
-        addressChange: getAddressChange(state),
-        shoppingCart: getShoppingCart(state),
-      };
-    },
+    state => ({
+      user: getUser(state),
+      business: getBusiness(state),
+      businessInfo: getBusinessInfo(state),
+      allBusinessInfo: getAllBusinesses(state),
+      deliveryDetails: getDeliveryDetails(state),
+      cartSummary: getCartSummary(state),
+      requestInfo: getRequestInfo(state),
+      error: getCustomerError(state),
+    }),
     dispatch => ({
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
-      appActions: bindActionCreators(appActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Customer);

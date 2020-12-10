@@ -1,0 +1,12 @@
+@import "../../../Variables.scss";
+
+.taking-meal-method {
+  &__summary {
+    width: 100%;
+  }
+
+  &__image-container {
+    display: inline-block;
+    width: 14%;
+  }
+}

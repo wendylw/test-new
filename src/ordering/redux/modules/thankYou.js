@@ -223,3 +223,10 @@ export const getIsUseStorehubLogistics = createSelector([getOrder], order => {
 export const getReceiptNumber = state => {
   return Utils.getQueryString('receiptNumber');
 };
+
+export const getServiceCharge = state => {
+  const order = getOrder(state);
+  const { items } = order || {};
+  const serviceChargeItem = (items || []).find(item => item.itemType === 'ServiceCharge');
+  return serviceChargeItem && serviceChargeItem.displayPrice;
+};

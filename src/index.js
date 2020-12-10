@@ -1,4 +1,4 @@
-import './sentry';
+import './utils/monitoring/monitor';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
@@ -11,12 +11,17 @@ import Bootstrap from './Bootstrap';
 
 import './index.css';
 import Utils from './utils/utils';
+import './utils/cross-storage';
+import { migrateHistoricalDeliveryAddress } from './utils/geoUtils';
 
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/iframe-has-title */
 try {
   // kick off the polyfill!
   smoothscroll.polyfill();
+
+  // This code can be removed after a few months later (probably March 2021)
+  migrateHistoricalDeliveryAddress();
 
   window.heap?.addUserProperties({
     account: config.business,

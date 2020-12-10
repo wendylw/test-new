@@ -1,0 +1,147 @@
+@import "../Variables.scss";
+
+.item-operator {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  &::before {
+    content: "";
+    display: block;
+    margin: 2.4vw;
+    width: 6vw;
+    max-width: 26px;
+    height: 6vw;
+    max-height: 26px;
+    border-width: 2px;
+  }
+
+  &.exhibit {
+    display: block;
+    text-align: right;
+    top: 0;
+  }
+
+  &--minus::before {
+    content: none;
+  }
+
+  &--minus &__button-minus {
+    display: block;
+  }
+
+  &__button {
+    border: 0;
+    background-color: transparent;
+  }
+
+  &__button-minus {
+    display: none;
+  }
+
+  &__button:disabled &__ctrl {
+    color: $white;
+    background-color: $gray-4;
+  }
+
+  &__button:disabled &__add {
+    border-color: $gray-4;
+  }
+
+  &__ctrl {
+    position: relative;
+    display: block;
+    width: 6vw;
+    max-width: 26px;
+    height: 6vw;
+    max-height: 26px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 50%;
+
+    &::before {
+      height: 26px;
+    }
+  }
+
+  &__minus {
+    border-color: $gray-2;
+    background-color: $white;
+
+    &:active {
+      border-color: $minus-button-active;
+    }
+  }
+
+  &__minus:active &__icon::before {
+    background-color: $minus-button-active;
+  }
+
+  &__add {
+    border-color: $theme-color;
+    background-color: $theme-color;
+
+    &:active {
+      border-color: $add-button-active;
+      background-color: $add-button-active;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &::before,
+    &::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      content: "";
+      display: block;
+      margin: auto;
+      border-radius: 6px;
+      opacity: 0.9;
+    }
+
+    &::before {
+      width: 65%;
+      height: 2px;
+    }
+
+    &::after {
+      height: 65%;
+      width: 2px;
+    }
+  }
+
+  &__minus &__icon {
+    &::before {
+      background-color: $gray-2;
+    }
+  }
+
+  &__add &__icon {
+    &::before,
+    &::after {
+      background-color: $white;
+    }
+  }
+
+  &__quantity {
+    display: block;
+    width: 24px;
+  }
+}
+
+@media (min-width: 420px) {
+  .item-operator {
+    &::before {
+      margin: 8px;
+    }
+  }
+}

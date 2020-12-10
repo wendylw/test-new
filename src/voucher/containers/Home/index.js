@@ -16,7 +16,9 @@ import {
   getBusinessDisplayName,
 } from '../../redux/modules/app';
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
-import VoucherAboutContent from '../../components/VoucherAboutContent';
+import VoucherIntroduction from '../../components/VoucherIntroduction';
+import VoucherGiftCard from '../../components/VoucherGiftCard';
+import './VoucherHome.scss';
 
 class Home extends Component {
   componentDidMount() {
@@ -52,64 +54,66 @@ class Home extends Component {
     } = this.props;
 
     const storeName = onlineStoreName || businessDisplayName;
+    const { id: selectedVoucherId, unitPrice } = selectedVoucher || {};
 
     return (
-      <div className="gift-card__page" data-heap-name="voucher.home.container">
-        <div className="gift-card__card">
-          <h1 className="font-weight-bolder gift-card__header text-center">{t('GiveThePerfectGift')}</h1>
-          <div className="gift-card__card-container">
-            <div className="gift-card__store">
-              <div className="gift-card__store-item gift-card__store-logo">
-                {onlineStoreLogo ? <img alt={`${storeName} Logo`} src={onlineStoreLogo} /> : null}
-              </div>
-              {selectedVoucher ? (
-                <div className="gift-card__store-item gift-card__store-amount">
-                  {currencySymbol}
-                  {selectedVoucher.unitPrice}
-                </div>
-              ) : null}
-              <div className="gift-card__store-item gift-card__store-name">{storeName}</div>
-            </div>
-          </div>
-          <div className="gift-card__caption text-center">
-            {t('GiftCardFindOutMore')}
-            <a href={beepSiteUrl}>{storeName} &gt;</a>
-          </div>
-        </div>
-        <div className="gift-card__amount">
-          <h2 className="gift-card__amount-title">{t('GiftCardChooseAmount')}</h2>
-          <ul className="flex flex-middle flex-space-between gift-card__amount-items">
-            {voucherList.map(voucher => (
-              <li
-                key={voucher.id}
-                className={`flex flex-space-between flex-column text-center gift-card__amount-item ${
-                  selectedVoucher && selectedVoucher.id === voucher.id ? 'selected' : ''
-                }`}
-                data-heap-name="voucher.home.voucher-item"
-                onClick={() => {
-                  this.handleSelectVoucher(voucher);
-                }}
+      <section className="voucher-home flex flex-column" data-heap-name="voucher.home.container">
+        <div className="voucher-home__container">
+          <div>
+            <h1 className="text-center text-size-huge text-weight-bolder">{t('GiveThePerfectGift')}</h1>
+            <VoucherGiftCard
+              onlineStoreLogo={onlineStoreLogo}
+              storeName={storeName}
+              currencySymbol={currencySymbol}
+              selectedVoucher={unitPrice || null}
+            />
+
+            <p className="voucher-home__prompt margin-normal text-center">
+              <span className="voucher-home__prompt-text">{t('GiftCardFindOutMore')}</span>
+              <a
+                className="voucher-home__button-prompt-link button button__link padding-top-bottom-normal margin-left-right-smaller text-weight-bolder"
+                href={beepSiteUrl}
               >
-                <span>{currencySymbol}</span>
-                <span className="font-weight-bolder gift-card__amount-number">{voucher.unitPrice}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <VoucherAboutContent onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
-        <footer className="footer-operation grid flex flex-middle flex-space-between">
-          <div className="footer-operation__item width-1-1">
-            <button
-              className="continue__button button button__fill button__block font-weight-bolder"
-              onClick={this.handleContinue}
-              disabled={!selectedVoucher}
-              data-heap-name="voucher.home.continue-btn"
-            >
-              {t('CONTINUE')}
-            </button>
+                {storeName} &gt;
+              </a>
+            </p>
           </div>
+          <div>
+            <h2 className="text-center padding-normal text-size-big text-weight-bolder">{t('GiftCardChooseAmount')}</h2>
+            <ul className="flex flex-middle flex-space-between padding-normal margin-top-bottom-small">
+              {(voucherList || []).map(voucher => (
+                <li className="voucher-home__item-price padding-left-right-small" key={voucher.id}>
+                  <button
+                    className={`voucher-home__button-price button ${
+                      selectedVoucher && selectedVoucherId === voucher.id ? 'button__fill' : 'button__outline'
+                    } padding-top-bottom-smaller padding-left-right-normal`}
+                    data-heap-name="voucher.home.voucher-item"
+                    onClick={() => {
+                      this.handleSelectVoucher(voucher);
+                    }}
+                  >
+                    <span>{currencySymbol}</span>
+                    <span className="voucher-home__price-number text-size-big text-weight-bolder">
+                      {voucher.unitPrice}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <VoucherIntroduction onlineStoreName={storeName} validityPeriodDays={validityPeriodDays} />
+        </div>
+        <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+          <button
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+            onClick={this.handleContinue}
+            disabled={!selectedVoucher}
+            data-heap-name="voucher.home.continue-btn"
+          >
+            {t('Continue')}
+          </button>
         </footer>
-      </div>
+      </section>
     );
   }
 }
