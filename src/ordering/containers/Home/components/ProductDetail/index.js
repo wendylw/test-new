@@ -29,7 +29,7 @@ const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
   MULTIPLE_CHOICE: 'MultipleChoice',
 };
-const EXCLUDE_KEYS = ['variationType'];
+const EXCLUDED_KEYS = ['variationType'];
 
 SwiperCore.use([Autoplay, Pagination]);
 
@@ -222,7 +222,7 @@ class ProductDetail extends Component {
 
       if (allowMultiQty && variationsByIdMap[id]) {
         let selectTotal = 0;
-        let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXCLUDE_KEYS[0]);
+        let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXCLUDED_KEYS[0]);
 
         optionKeyList.forEach(key => {
           selectTotal += optionQuantity[key];
@@ -506,7 +506,7 @@ class ProductDetail extends Component {
 
               Object.keys(variationsByIdMap).forEach(function(variationId) {
                 Object.keys(variationsByIdMap[variationId]).forEach(key => {
-                  if (!EXCLUDE_KEYS.includes(key)) {
+                  if (!EXCLUDED_KEYS.includes(key)) {
                     variations.push({
                       variationId,
                       optionId: key,
