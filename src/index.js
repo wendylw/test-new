@@ -29,9 +29,6 @@ try {
   window.heap?.addEventProperties({
     BusinessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
   });
-  window.heap?.addEventProperties({
-    isBeepAppWebview: Utils.isWebview() ? 'yes' : 'no',
-  });
 } catch (e) {
   throw e;
 } finally {

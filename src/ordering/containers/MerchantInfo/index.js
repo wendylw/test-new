@@ -57,7 +57,7 @@ export class MerchantInfo extends Component {
           isPage={false}
           title={t('ContactUs')}
           navFunc={() => {
-            if (history.length > 1) {
+            if (history.length) {
               history.goBack();
             } else {
               history.push({

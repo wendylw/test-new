@@ -22,43 +22,34 @@ import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 
-const { ROUTER_PATHS } = Constants;
-
 class App extends Component {
   constructor(props) {
     super(props);
 
+    if (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview()) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
+
     if (Utils.isAndroidWebview()) {
-      try {
-        const res = window.androidInterface.getAddress();
-        this.setAppAddressToSession(JSON.parse(res));
-      } catch (e) {
-        console.error(e);
-      }
+      const res = window.androidInterface.getAddress();
+      this.setAppAddressToSession(JSON.parse(res));
     }
 
     if (Utils.isIOSWebview()) {
-      try {
-        const res = window.prompt('getAddress');
-        console.log('res', JSON.parse(res));
-        this.setAppAddressToSession(JSON.parse(res));
-      } catch (e) {
-        console.error(e);
-      }
+      const res = window.prompt('getAddress');
+      this.setAppAddressToSession(JSON.parse(res));
     }
   }
   state = {};
 
   setAppAddressToSession = res => {
-    if (!res) {
-      return;
-    }
-
     const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
     if (deliveryAddress && deliveryAddress.address) {
       return;
     }
-
     const { address, country, countryCode, lat, lng } = res;
     const addressInfo = {
       address: address,
@@ -76,21 +67,6 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
-    const { pathname } = window.location;
-    const isThankYouPage = pathname.includes(`${ROUTER_PATHS.THANK_YOU}`);
-    const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDER_DETAILS}`);
-    const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
-    const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
-
-    if (
-      !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
-      (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())
-    ) {
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-    }
 
     this.visitErrorPage();
     try {
