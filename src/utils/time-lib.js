@@ -224,3 +224,13 @@ export const setDateTime = (time, date = dayjs()) => {
     .second(0)
     .millisecond(0);
 };
+
+/**
+ * get dayjs time
+ * @param {Dayjs} date
+ */
+export const getTimeFromDayjs = (date = dayjs()) => {
+  invariant(dayjs.isDayjs(date), 'Not Dayjs object');
+
+  return date.format('hh:mm');
+};

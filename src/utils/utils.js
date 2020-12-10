@@ -2,7 +2,7 @@ import qs, { parse } from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';
-import { stringifyTime, parseTime } from './datetime-lib';
+
 const { SH_LOGISTICS_VALID_TIME } = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
@@ -442,7 +442,7 @@ Utils.getValidTimeList = (qrOrderingSettings, type = Utils.isPickUpType() ? 'pic
   const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, validDays } = qrOrderingSettings;
 };
 
-Utils.getDeliveryValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
+Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
   let logisticsValidTimeFrom = validTimeFrom;
   let logisticsValidTimeTo = validTimeTo;
 
@@ -453,21 +453,10 @@ Utils.getDeliveryValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics
     logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
   }
 
-  const logisticsValidTimeFromObj = parseTime(logisticsValidTimeFrom);
-  const logisticsValidTimeToObj = parseTime(logisticsValidTimeTo);
-  // add store prepare time
-  logisticsValidTimeFromObj.hour += minute === 0 ? 1 : 2;
-  logisticsValidTimeToObj.hour -= 1;
-
   return {
-    deliveryValidTimeFrom: stringifyTime(logisticsValidTimeFromObj),
-    deliveryValidTimeTo: stringifyTime(logisticsValidTimeToObj),
+    logisticsValidTimeFrom,
+    logisticsValidTimeTo,
   };
-};
-
-Utils.getPickupValidTime = ({ validTimeFrom, validTimeTo }) => {
-  const validTimeFromObj = parseTime(validTimeFrom);
-  const validTimeToObj = parseTime(validTimeTo);
 };
 
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
@@ -492,15 +481,11 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     useStorehubLogistics,
   } = qrOrderingSettings || {};
 
-  let logisticsValidTimeFrom = validTimeFrom;
-  let logisticsValidTimeTo = validTimeTo;
-
-  // use storeHub Logistics valid time
-  if (useStorehubLogistics) {
-    logisticsValidTimeFrom =
-      SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
-    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
-  }
+  const { logisticsValidTimeFrom, logisticsValidTimeTo } = Utils.getLogisticsValidTime({
+    validTimeFrom,
+    validTimeTo,
+    useStorehubLogistics,
+  });
 
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
@@ -513,6 +498,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
 
   return {
     deliveryFee,
+    useStorehubLogistics,
     minOrder,
     storeAddress,
     deliveryToAddress,

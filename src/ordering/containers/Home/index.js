@@ -19,7 +19,7 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
-import { isAvailableOrderTime } from '../../../utils/deliveryTime';
+import { isAvailableOrderTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -401,28 +401,28 @@ export class Home extends Component {
     if (isDeliveryType || isPickUpType) {
       const { deliveryInfo, businessUTCOffset } = this.props;
       const {
-        validTimeFrom: storeValidTimeFrom,
-        validTimeTo: storeValidTimeTo,
-        logisticsValidTimeFrom,
-        logisticsValidTimeTo,
         validDays,
         vacations,
         breakTimeFrom,
         breakTimeTo,
         disableOnDemandOrder,
+        validTimeFrom,
+        validTimeTo,
+        logisticsValidTimeFrom,
+        logisticsValidTimeTo,
       } = deliveryInfo;
       if (disableOnDemandOrder) {
         return;
       }
 
-      const validTimeFrom = isDeliveryType ? logisticsValidTimeFrom : storeValidTimeFrom;
-      const validTimeTo = isDeliveryType ? logisticsValidTimeTo : storeValidTimeTo;
+      const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
+      const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
 
       const currentTime = dayjs().utcOffset(businessUTCOffset);
       const availableOrderTime = isAvailableOrderTime(currentTime, {
         validDays: validDays.map(day => day - 1), // set start 0
-        validTimeFrom,
-        validTimeTo,
+        validTimeFrom: orderValidTimeFrom,
+        validTimeTo: orderValidTimeTo,
         vacations,
         breakTimeFrom,
         breakTimeTo,
@@ -448,24 +448,6 @@ export class Home extends Component {
           to: 'now',
         })
       );
-
-      this.setState({
-        deliveryBar: true,
-      });
-    }
-
-    if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
-      const { businessInfo } = this.props;
-      const { qrOrderingSettings } = businessInfo || {};
-      // const { validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
-
-      if (!Utils.getSessionVariable('expectedDeliveryDate')) {
-        // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
-        this.setDefaultDate(qrOrderingSettings || {});
-      }
-      if (!Utils.getSessionVariable('expectedDeliveryHour')) {
-        this.setDefaultHour(qrOrderingSettings);
-      }
 
       this.setState({
         deliveryBar: true,

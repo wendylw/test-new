@@ -244,18 +244,3 @@ export const isSameTime = (time1, time2, unitToCheck = []) => {
 
   return true;
 };
-
-// parse like "10:30" to {hour: 10, minute: 30}
-export const parseTime = time => {
-  const [hour, minute] = time.split(':');
-
-  return {
-    hour: Number(hour),
-    minute: Number(minute),
-  };
-};
-
-// stringify {hour: 10, minute: 30} to "10:30"
-export const stringifyTime = ({ hour, minute }) => {
-  return `${padZero(hour)}:${padZero(minute)}`;
-};
