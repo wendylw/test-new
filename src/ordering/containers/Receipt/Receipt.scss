@@ -5,6 +5,10 @@ $receipt-number-text-size: 1.7142rem;
 .receipt {
   height: 100vh;
 
+  .item__title {
+    width: 85%;
+  }
+
   &__container {
     padding-bottom: 120px;
     height: 100%;

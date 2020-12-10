@@ -504,7 +504,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary } = this.props;
+    const { t, match, history, cartSummary, merchantCountry } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
@@ -547,7 +547,7 @@ class CreditCard extends Component {
         >
           <CreateOrderButton
             history={history}
-            className="margin-top-bottom-smaller"
+            className="margin-top-bottom-smaller text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
@@ -558,9 +558,10 @@ class CreditCard extends Component {
                 payNowLoading: !!orderId,
               });
             }}
+            paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
           >
             {payNowLoading ? (
-              <div className="loader"></div>
+              t('Processing')
             ) : (
               <CurrencyNumber
                 className="text-center text-weight-bolder text-uppercase"
@@ -580,7 +581,7 @@ class CreditCard extends Component {
           />
         ) : null}
 
-        <Loader className={'loading-cover opacity'} loaded={domLoaded} />
+        <Loader className="loading-cover opacity" loaded={domLoaded} />
       </section>
     );
   }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import LocationPicker from '../../../components/LocationPicker';
+import LocationPicker, { setHistoricalDeliveryAddresses } from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
@@ -128,6 +128,7 @@ class LocationPage extends Component {
     } else {
       history.go(-1);
     }
+    setHistoricalDeliveryAddresses(placeInfo);
   };
 
   handleBackClicked = () => {

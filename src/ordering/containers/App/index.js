@@ -46,6 +46,10 @@ class App extends Component {
   state = {};
 
   setAppAddressToSession = res => {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
+    if (deliveryAddress && deliveryAddress.address) {
+      return;
+    }
     const { address, country, countryCode, lat, lng } = res;
     const addressInfo = {
       address: address,
@@ -65,40 +69,45 @@ class App extends Component {
     const { appActions } = this.props;
 
     this.visitErrorPage();
-    await appActions.getLoginStatus();
-    const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
+    try {
+      await appActions.getLoginStatus();
+      const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
-    if (Utils.notHomeOrLocationPath(window.location.pathname)) {
-      await appActions.loadCoreBusiness();
-    }
+      if (Utils.notHomeOrLocationPath(window.location.pathname)) {
+        await appActions.loadCoreBusiness();
+      }
 
-    const { user, businessInfo } = this.props;
-    const { isLogin } = user || {};
-    const { onlineStoreInfo } = responseGql.data || {};
+      const { user, businessInfo } = this.props;
+      const { isLogin } = user || {};
+      const { onlineStoreInfo } = responseGql.data || {};
 
-    if (isLogin) {
-      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
-        const { data = {} } = responseGql;
+      if (isLogin) {
+        appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
+          const { data = {} } = responseGql;
+          this.setGtmData({
+            userInfo: data.user,
+            businessInfo,
+          });
+
+          this.setGtmData({
+            userInfo: data.user,
+            businessInfo,
+          });
+        });
+      }
+
+      const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
+
+      if (window.location.pathname !== thankYouPageUrl) {
         this.setGtmData({
-          userInfo: data.user,
+          onlineStoreInfo,
+          userInfo: user,
           businessInfo,
         });
-
-        this.setGtmData({
-          userInfo: data.user,
-          businessInfo,
-        });
-      });
-    }
-
-    const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
-
-    if (window.location.pathname !== thankYouPageUrl) {
-      this.setGtmData({
-        onlineStoreInfo,
-        userInfo: user,
-        businessInfo,
-      });
+      }
+    } catch (e) {
+      // we don't need extra actions for exceptions, the state is already in redux.
+      console.log(e);
     }
   }
 
@@ -187,8 +196,6 @@ class App extends Component {
   render() {
     let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
-
-    console.log(window.location);
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">

@@ -43,6 +43,8 @@ import './OrderingThanks.scss';
 import qs from 'qs';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
+import { captureException } from '@sentry/react';
+import LiveChat from '../../../components/LiveChat';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -58,10 +60,13 @@ export class ThankYou extends PureComponent {
     phoneCopyContent: '',
   };
 
+  pollOrderStatusTimer = null;
+
   componentDidMount() {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
+    window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
     const { thankYouActions, order, onlineStoreInfo, user } = this.props;
     const { storeId } = order || {};
 
@@ -75,23 +80,33 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
     this.loadOrder();
+    this.pollOrderStatus();
   }
 
   loadOrder = async () => {
     const { thankYouActions, receiptNumber } = this.props;
 
-    await thankYouActions.loadOrder(receiptNumber);
+    thankYouActions.loadOrder(receiptNumber);
+  };
+
+  pollOrderStatus = () => {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
-      clearInterval(this.timer);
-      const { order } = this.props;
-      const { status } = order;
-
-      this.timer = setInterval(async () => {
-        await thankYouActions.loadOrderStatus(receiptNumber);
-        const { updatedStatus } = this.props;
-
-        if (updatedStatus !== status) {
-          await this.loadOrder();
+      this.pollOrderStatusTimer = setInterval(async () => {
+        const {
+          receiptNumber,
+          // thankYouActions,
+          // order: { status },
+        } = this.props;
+        try {
+          // order status api is not ready, we just leave the code here and will enable it in the future
+          // await thankYouActions.loadOrderStatus(receiptNumber);
+          // const { updatedStatus } = this.props;
+          // if (updatedStatus !== status) {
+          //   await this.loadOrder(receiptNumber);
+          // }
+          await this.loadOrder(receiptNumber);
+        } catch (e) {
+          captureException(e);
         }
       }, 60000);
     }
@@ -117,6 +132,10 @@ export class ThankYou extends PureComponent {
       this.handleGtmEventTracking({ order: orderInfo });
     }
   }
+
+  componentWillUnmount = () => {
+    clearInterval(this.pollOrderStatusTimer);
+  };
 
   getThankYouSource = () => {
     return Utils.getCookieVariable('__ty_source', '');
@@ -685,7 +704,7 @@ export class ThankYou extends PureComponent {
                       ? `+${driverPhone}`
                       : null
                     : storePhone
-                    ? `+${storePhone}`
+                    ? `${storePhone}`
                     : null}
                 </span>
               }
@@ -844,12 +863,6 @@ export class ThankYou extends PureComponent {
       <div className="padding-small">
         <div className="padding-left-right-small flex flex-middle flex-space-between">
           <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
-          {isPickUpType && !isPreOrder ? (
-            <div className="margin-top-bottom-small">
-              <span className="margin-left-right-small text-size-bigger">{t('Total')}</span>
-              <CurrencyNumber className="text-size-bigger text-weight-bolder" money={total || 0} />
-            </div>
-          ) : null}
         </div>
 
         {isPickUpType && isPreOrder ? (
@@ -997,7 +1010,7 @@ export class ThankYou extends PureComponent {
   render() {
     const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId } = order || {};
+    const { orderId, tableId, deliveryInformation = [] } = order || {};
     const { isWebview } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
@@ -1020,6 +1033,15 @@ export class ThankYou extends PureComponent {
       options.push(`type=${type}`);
     }
 
+    let orderUserName = '';
+    let orderUserPhone = '';
+
+    if (deliveryInformation.length > 0) {
+      const { address } = deliveryInformation[0];
+      orderUserName = address.name;
+      orderUserPhone = address.phone;
+    }
+
     return (
       <section
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
@@ -1032,7 +1054,7 @@ export class ThankYou extends PureComponent {
             isPage={!isWebview}
             contentClassName="flex-middle"
             data-heap-name="ordering.thank-you.header"
-            title={isTakeaway ? `#${orderId}` : t('OrderPaid')}
+            title={`#${orderId}`}
             navFunc={() => {
               if (isWebview) {
                 if (window.androidInterface) {
@@ -1050,13 +1072,17 @@ export class ThankYou extends PureComponent {
             }}
           >
             {!isDineInType ? (
-              <button
-                className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-                onClick={this.handleVisitMerchantInfoPage}
-                data-heap-name="ordering.thank-you.contact-us-btn"
-              >
-                <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-              </button>
+              !isWebview ? (
+                <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+              ) : (
+                <button
+                  className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+                  onClick={this.handleVisitMerchantInfoPage}
+                  data-heap-name="ordering.thank-you.contact-us-btn"
+                >
+                  <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
+                </button>
+              )
             ) : (
               <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
                 {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}

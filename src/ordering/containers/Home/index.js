@@ -49,10 +49,6 @@ const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD } = Constants;
 export class Home extends Component {
-  deliveryEntryEl = null;
-  headerEl = null;
-  footerEl = null;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -72,7 +68,12 @@ export class Home extends Component {
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
+    this.checkUrlType();
   }
+  deliveryEntryEl = null;
+  headerEl = null;
+  footerEl = null;
+  scrollDepthNumerator = 0;
 
   checkTableId = () => {
     const { table, storeId } = config;
@@ -88,7 +89,14 @@ export class Home extends Component {
     }
   };
 
-  scrollDepthNumerator = 0;
+  checkUrlType = () => {
+    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    const { type } = search;
+
+    if (!type) {
+      window.location.href = window.location.origin;
+    }
+  };
 
   // copied and modified from https://docs.heap.io/docs/scroll-tracking
   trackScrollDepth = () => {
@@ -149,6 +157,9 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
+
+    this.setState({ windowSize: windowSize() });
+
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
@@ -574,9 +585,8 @@ export class Home extends Component {
             }}
           />
         }
-        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${
-          enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
-        }`}
+        extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
+          }`}
         showBackButton={showBackButton({
           isValidTimeToOrder,
           enablePreOrder,
@@ -711,20 +721,19 @@ export class Home extends Component {
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
             : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
-        contentClassName={`${
-          isDeliveryType || isPickUpType
-            ? enableCashback && defaultLoyaltyRatio
-              ? 'flex-top'
-              : 'flex-middle'
+        contentClassName={`${isDeliveryType || isPickUpType
+          ? enableCashback && defaultLoyaltyRatio
+            ? 'flex-top'
             : 'flex-middle'
-        } padding-left-right-small`}
+          : 'flex-middle'
+          } padding-left-right-small`}
         style={{ top: this.deliveryEntryEl ? `${this.deliveryEntryEl.clientHeight}px` : 0 }}
         data-heap-name="ordering.home.header"
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => {}}
+        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => { }}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -793,6 +802,8 @@ export class Home extends Component {
       freeShippingMinAmount,
       enableConditionalFreeShipping,
       enableLiveOnline,
+      breakTimeFrom,
+      breakTimeTo,
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
@@ -841,8 +852,8 @@ export class Home extends Component {
               paddingBottom:
                 Utils.isSafari && Utils.getUserAgentInfo().isMobile
                   ? `${marginBottom({
-                      footerEls: [this.footerEl],
-                    })}px`
+                    footerEls: [this.footerEl],
+                  })}px`
                   : '0',
             }}
             onToggle={this.handleToggleAside.bind(this)}
@@ -878,7 +889,9 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-            isValidTimeToOrder={this.isValidTimeToOrder()}
+            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
+            breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
+            breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
           />
         )}
 

@@ -137,6 +137,10 @@ address {
   text-align: right;
 }
 
+.text-top {
+  vertical-align: top;
+}
+
 .text-middle {
   vertical-align: middle;
 }
@@ -159,8 +163,8 @@ address {
     @extend .text-omit-base;
 
     display: -webkit-box;
-    word-break: break-all;
-    hyphens: auto;
+    word-break: break-word;
+    hyphens: none;
   }
 }
 
@@ -793,27 +797,31 @@ img {
 }
 
 /* react Phone number input box */
-.react-phone-number-input {
+.PhoneInput {
   @extend .margin-top-bottom-small;
+  @extend .form__group;
+  overflow: hidden;
 
-  .react-phone-number-input__row {
-    @extend .form__group;
-
-    overflow: hidden;
-  }
-
-  .react-phone-number-input__country--native {
+  .PhoneInputCountry {
     @extend .margin-left-right-small;
   }
 
-  .react-phone-number-input__icon {
+  .PhoneInputCountryIcon,
+  .PhoneInputCountrySelect:focus + .PhoneInputCountryIcon--border {
     border: 0;
-    width: calc(0.51em * 4);
-    height: calc(0.51em * 3);
+    margin-left: 2px;
+    margin-right: 2px;
+    width: calc(0.51em * 4.5);
+    height: calc(0.51em * 3.5);
+    box-shadow: none;
   }
 
-  .react-phone-number-input__input,
-  .react-phone-number-input__input:focus {
+  .PhoneInputCountrySelect:focus + .PhoneInputCountryIcon--border + .PhoneInputCountrySelectArrow {
+    color: $gray-3;
+  }
+
+  .PhoneInputInput,
+  .PhoneInputInput:focus {
     @extend .form__input;
     @extend .text-size-biggest;
 
