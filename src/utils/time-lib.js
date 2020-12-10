@@ -1,5 +1,7 @@
 import invariant from 'invariant';
 import { padZero } from './datetime-lib';
+import dayjs from 'dayjs';
+
 const InvalidTimeErrorMessage = 'Invalid time string form';
 
 /**
@@ -206,16 +208,19 @@ export const isValidTime = time => {
 };
 
 /**
- * set date hour and minute by time
+ * set dayjs hour and minute by time
  * @param {string} time
- * @param {Date} date
- * @return {Date}
+ * @param {Dayjs} date
+ * @return {Dayjs}
  */
-export const setDateTime = (time, date = new Date()) => {
+export const setDateTime = (time, date = dayjs()) => {
   invariant(isValidTime(time), InvalidTimeErrorMessage);
-  invariant(date instanceof Date, 'Not Date object');
+  invariant(dayjs.isDayjs(date), 'Not Dayjs object');
 
   const { hour, minute } = parse(time);
-  date.setHours(hour, minute, 0, 0);
-  return date;
+  return date
+    .hour(hour)
+    .minute(minute)
+    .second(0)
+    .millisecond(0);
 };

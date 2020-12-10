@@ -15,6 +15,7 @@ import {
   isBetween,
   setDateTime,
 } from './time-lib';
+import dayjs from 'dayjs';
 
 describe('test add function', () => {
   test.each`
@@ -197,9 +198,13 @@ describe('test isValidTime function', () => {
 
 describe('test setDateTime function', () => {
   test.each`
-    time       | date                          | expected
-    ${'00:00'} | ${'2020-12-10T03:13:44.232Z'} | ${'2020-12-10T03:13:00.000Z'}
+    time        | date                           | expected
+    ${'00:00'}  | ${'2020-04-02T08:02:17+08:00'} | ${'2020-04-02T00:00:00+08:00'}
+    ${'13:35'}  | ${'2020-04-02T08:02:17+08:00'} | ${'2020-04-02T13:35:00+08:00'}
+    ${'25:15'}  | ${'2020-04-02T08:02:17+08:00'} | ${'2020-04-03T01:15:00+08:00'}
+    ${'-2:00'}  | ${'2020-04-02T08:02:17+08:00'} | ${'2020-04-01T22:00:00+08:00'}
+    ${'-24:30'} | ${'2020-04-02T08:02:17+08:00'} | ${'2020-04-01T00:30:00+08:00'}
   `('return $expected when set $date of time to $time', ({ time, date, expected }) => {
-    expect(setDateTime(time, new Date(date)).toISOString()).toBe(expected);
+    expect(setDateTime(time, dayjs(date)).format()).toBe(expected);
   });
 });
