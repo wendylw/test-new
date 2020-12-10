@@ -186,7 +186,7 @@ export const toMinutes = (value, unit) => {
  */
 export const minutesToTime = minutes => {
   const hour = Math.floor(minutes / 60);
-  const minute = minutes % 60;
+  const minute = minutes - hour * 60;
 
   return stringify({ hour, minute });
 };
@@ -198,7 +198,7 @@ export const minutesToTime = minutes => {
  */
 export const isValidTime = time => {
   try {
-    const regex = /^-?\d+\:\d+$/;
+    const regex = /^-?\d+:[0-5]\d$/;
     return regex.test(time);
   } catch (e) {
     return false;
@@ -216,6 +216,6 @@ export const setDateTime = (time, date = new Date()) => {
   invariant(date instanceof Date, 'Not Date object');
 
   const { hour, minute } = parse(time);
-  date.setHours(hour, minute);
+  date.setHours(hour, minute, 0, 0);
   return date;
 };
