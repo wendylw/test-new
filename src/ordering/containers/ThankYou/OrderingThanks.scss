@@ -142,6 +142,7 @@ $total-text-size: 1.7142rem;
     border-top: 1px solid $gray-4;
     color: $status-blue;
     border-radius: 0;
+    min-height: 56px;
   }
 
   &__footer {
@@ -266,6 +267,7 @@ $total-text-size: 1.7142rem;
     color: $status-blue;
     line-height: 56px;
     flex: 1;
+    min-height: 56px;
   }
 
   &__button-link {
