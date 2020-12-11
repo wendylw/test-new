@@ -1043,19 +1043,27 @@ export class ThankYou extends PureComponent {
       locale: onlineStoreInfo.country,
     });
 
+    let immediatePickUpTime = formatPickupAddress({
+      date: new Date().getTime() + 1000 * 60 * 30,
+      locale: onlineStoreInfo.country,
+    });
+    immediatePickUpTime = `${immediatePickUpTime.split(',')[0]},${toDayDateMonth(new Date())}, ${
+      immediatePickUpTime.split(',')[1]
+    }`;
+
     return (
       <div className="padding-small">
         <div className="padding-left-right-small flex flex-middle flex-space-between">
           <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
         </div>
 
-        {isPickUpType && isPreOrder ? (
+        {isPickUpType ? (
           <div className="padding-left-right-small">
             <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
-              <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
-                {pickupTime}
+              <span className="ordering-thanks__time padding-top-ottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
+                {isPreOrder ? pickupTime : immediatePickUpTime}
               </span>
             </p>
           </div>
@@ -1065,7 +1073,7 @@ export class ThankYou extends PureComponent {
           <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('DeliveringTo')}</h4>
         ) : null}
 
-        {isPickUpType && isPreOrder ? (
+        {isPickUpType ? (
           <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('PickupAt')}</h4>
         ) : null}
 
