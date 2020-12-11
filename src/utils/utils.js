@@ -437,11 +437,6 @@ Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTi
   return true;
 };
 
-// get valid time list fron qrsetting
-Utils.getValidTimeList = (qrOrderingSettings, type = Utils.isPickUpType() ? 'pickup' : 'delivery') => {
-  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, validDays } = qrOrderingSettings;
-};
-
 Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
   let logisticsValidTimeFrom = validTimeFrom;
   let logisticsValidTimeTo = validTimeTo;
