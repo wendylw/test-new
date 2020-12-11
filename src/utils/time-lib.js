@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import { padZero } from './datetime-lib';
 import dayjs from 'dayjs';
 
-const InvalidTimeErrorMessage = 'Invalid time string form';
+const InvalidTimeErrorMessage = 'Invalid time string format';
 
 /**
  * add a specified amount of time
