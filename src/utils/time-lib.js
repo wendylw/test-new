@@ -62,7 +62,10 @@ export const parse = time => {
  * @returns {string} time string
  */
 export const stringify = ({ hour, minute }) => {
-  return `${padZero(hour)}:${padZero(minute)}`;
+  const h = Math.floor(minute / 60);
+  const m = Math.abs(minute % 60);
+
+  return `${padZero(hour + h)}:${padZero(m)}`;
 };
 
 /**
@@ -148,7 +151,7 @@ export const isBetween = (time, { minTime, maxTime }, inclusivity = '()') => {
     case '[]':
       return isSameOrAfter(time, minTime) && isSameOrBefore(time, maxTime);
     default:
-      throw new Error("Wrong argument of 'inclusivity'");
+      throw new Error("Invalid argument of 'inclusivity'");
   }
 };
 
@@ -177,7 +180,7 @@ export const toMinutes = (value, unit) => {
     case 'minute':
       return Number(value);
     default:
-      throw new Error("Wrong argument of 'unit'");
+      throw new Error("Invalid argument of 'unit'");
   }
 };
 

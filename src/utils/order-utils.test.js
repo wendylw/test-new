@@ -4,15 +4,7 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
 describe('test isAvailableOrderTime function', () => {
-  test.each`
-    inValidDays | inValidTime | inBreakTime | inVacations | expected
-    ${true}     | ${true}     | ${true}     | ${true}     | ${true}
-  `(
-    'return $expected, when inValidDays:$inValidDays, inValidTime:$inValidTime, inBreakTime:$inBreakTime, inVacations:$inVacations',
-    ({ inValidDays, inValidTime, inBreakTime, inVacations, expected }) => {
-      // how to write UT
-    }
-  );
+  test.todo('Do we actually need test isAvailableOrderTime function?');
 });
 
 describe('test isInValidDays function', () => {

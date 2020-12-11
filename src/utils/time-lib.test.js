@@ -47,26 +47,48 @@ describe('test minus function', () => {
 
 describe('test toMinutes function', () => {
   test.each`
-    value | unit      | expected
-    ${16} | ${'hour'} | ${960}
+    value  | unit        | expected
+    ${16}  | ${'hour'}   | ${960}
+    ${15}  | ${'minute'} | ${15}
+    ${0}   | ${'hour'}   | ${0}
+    ${-10} | ${'hour'}   | ${-600}
+    ${-10} | ${'minute'} | ${-10}
+    ${'a'} | ${'hour'}   | ${NaN}
   `('return $expected minutes when $value $unit to minutes', ({ value, unit, expected }) => {
     expect(toMinutes(value, unit)).toBe(expected);
+  });
+
+  test('throw error when unit of argument is invalid', () => {
+    expect(() => {
+      toMinutes(10, 'invalid unit');
+    }).toThrowError("Invalid argument of 'unit'");
   });
 });
 
 describe('test stringify function', () => {
   test.each`
-    param                       | expected
-    ${{ hour: 16, minute: 30 }} | ${'16:30'}
-  `('return $expected when stringify $param', ({ param, expected }) => {
-    expect(stringify(param)).toBe(expected);
+    timeObject                    | expected
+    ${{ hour: 16, minute: 30 }}   | ${'16:30'}
+    ${{ hour: 0, minute: 0 }}     | ${'00:00'}
+    ${{ hour: -10, minute: 0 }}   | ${'-10:00'}
+    ${{ hour: -1, minute: 0 }}    | ${'-1:00'}
+    ${{ hour: 0, minute: 5 }}     | ${'00:05'}
+    ${{ hour: 35, minute: 5 }}    | ${'35:05'}
+    ${{ hour: 0, minute: 100 }}   | ${'01:40'}
+    ${{ hour: 0, minute: -100 }}  | ${'-2:40'}
+    ${{ hour: -1, minute: -100 }} | ${'-3:40'}
+  `('return $expected when stringify $timeObject', ({ timeObject, expected }) => {
+    expect(stringify(timeObject)).toBe(expected);
   });
 });
 
 describe('test parse function', () => {
   test.each`
-    time       | expected
-    ${'16:40'} | ${{ hour: 16, minute: 40 }}
+    time        | expected
+    ${'00:00'}  | ${{ hour: 0, minute: 0 }}
+    ${'24:00'}  | ${{ hour: 24, minute: 0 }}
+    ${'16:40'}  | ${{ hour: 16, minute: 40 }}
+    ${'-16:40'} | ${{ hour: -16, minute: 40 }}
   `('return $expected when parse $time', ({ time, expected }) => {
     expect(parse(time)).toEqual(expected);
   });
@@ -89,6 +111,8 @@ describe('test isBefore function', () => {
   test.each`
     time       | compareTime | expected
     ${'10:00'} | ${'12:00'}  | ${true}
+    ${'-1:00'} | ${'00:00'}  | ${true}
+    ${'02:00'} | ${'01:00'}  | ${false}
   `('return $expected when $time is before $compareTime', ({ time, compareTime, expected }) => {
     expect(isBefore(time, compareTime)).toBe(expected);
   });
@@ -99,6 +123,7 @@ describe('test isAfter function', () => {
     time       | compareTime | expected
     ${'10:00'} | ${'12:00'}  | ${false}
     ${'10:00'} | ${'09:59'}  | ${true}
+    ${'00:00'} | ${'-1:59'}  | ${true}
   `('return $expected when $time is after $compareTime', ({ time, compareTime, expected }) => {
     expect(isAfter(time, compareTime)).toBe(expected);
   });
@@ -107,9 +132,12 @@ describe('test isAfter function', () => {
 describe('test isSame function', () => {
   test.each`
     time       | compareTime | expected
+    ${'00:00'} | ${'00:00'}  | ${true}
+    ${'-0:00'} | ${'00:00'}  | ${true}
+    ${'24:00'} | ${'24:00'}  | ${true}
     ${'10:00'} | ${'12:00'}  | ${false}
     ${'10:00'} | ${'09:59'}  | ${false}
-    ${'24:00'} | ${'24:00'}  | ${true}
+    ${'-1:00'} | ${'1:00'}   | ${false}
   `('return $expected when $time is same $compareTime', ({ time, compareTime, expected }) => {
     expect(isSame(time, compareTime)).toBe(expected);
   });
@@ -121,6 +149,7 @@ describe('test isSameOrBefore function', () => {
     ${'10:00'} | ${'12:00'}  | ${true}
     ${'10:00'} | ${'10:00'}  | ${true}
     ${'15:00'} | ${'10:00'}  | ${false}
+    ${'00:00'} | ${'00:00'}  | ${true}
   `('return $expected when $time is same or before $compareTime', ({ time, compareTime, expected }) => {
     expect(isSameOrBefore(time, compareTime)).toBe(expected);
   });
@@ -132,6 +161,7 @@ describe('test isSameOrAfter function', () => {
     ${'10:00'} | ${'12:00'}  | ${false}
     ${'10:00'} | ${'10:00'}  | ${true}
     ${'15:00'} | ${'10:00'}  | ${true}
+    ${'00:00'} | ${'00:00'}  | ${true}
   `('return $expected when $time is same or after $compareTime', ({ time, compareTime, expected }) => {
     expect(isSameOrAfter(time, compareTime)).toBe(expected);
   });
@@ -156,6 +186,12 @@ describe('test isBetween function', () => {
       expect(isBetween(time, compareTimes, inclusivity)).toBe(expected);
     }
   );
+
+  test('throw error when inclusivity of argument is invalid', () => {
+    expect(() => {
+      isBetween('00:00', { minTime: '01:00', maxTime: '02:00' }, 'invalid inclusivity');
+    }).toThrowError("Invalid argument of 'inclusivity'");
+  });
 });
 
 describe('test getAmountOfMinutes function', () => {
